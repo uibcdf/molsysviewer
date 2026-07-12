@@ -140520,6 +140520,42 @@ var AnnotationHandlers = class {
       }))
     );
   }
+  hasTag(tag) {
+    return this.specsByTag.has(tag) || this.refsByTag.has(tag);
+  }
+  renameTag(oldTag, newTag) {
+    if (!oldTag || !newTag || oldTag === newTag) return;
+    const refs = this.refsByTag.get(oldTag);
+    if (refs) {
+      this.refsByTag.delete(oldTag);
+      this.refsByTag.set(newTag, refs);
+    }
+    const spec = this.specsByTag.get(oldTag);
+    if (spec) {
+      this.specsByTag.delete(oldTag);
+      this.specsByTag.set(newTag, {
+        ...spec,
+        tag: newTag,
+        layer_tag: spec.layer_tag === oldTag ? newTag : spec.layer_tag
+      });
+    }
+    for (const tags of this.layerTagIndex.values()) {
+      if (tags.delete(oldTag)) tags.add(newTag);
+    }
+    const ownLayer = this.layerTagIndex.get(oldTag);
+    if (ownLayer) {
+      this.layerTagIndex.delete(oldTag);
+      this.layerTagIndex.set(newTag, ownLayer);
+    }
+  }
+  dropTag(tag) {
+    const refs = Array.from(this.refsByTag.get(tag) ?? []);
+    this.refsByTag.delete(tag);
+    this.specsByTag.delete(tag);
+    for (const ref of refs) this.labelRefs.delete(ref);
+    for (const tags of this.layerTagIndex.values()) tags.delete(tag);
+    this.layerTagIndex.delete(tag);
+  }
   async setVisibility(tag, visible) {
     const layerGroup = this.layerTagIndex.get(tag);
     if (layerGroup && layerGroup.size > 0) {
@@ -140544,9 +140580,6 @@ var AnnotationHandlers = class {
         style: spec.style
       }
     });
-  }
-  hasTag(tag) {
-    return this.specsByTag.has(tag);
   }
   getSpec(tag) {
     const spec = this.specsByTag.get(tag);
@@ -145070,6 +145103,9 @@ var StateHandlers = class {
     this.visibilityVersion = 0;
     this.requestedGlobalHidden = null;
   }
+  taggedKey(kind, tag) {
+    return `${kind || "layer"}\0${tag}`;
+  }
   parseMolstarThemeSpec(value) {
     if (typeof value === "string" && value.trim() !== "") {
       return { name: value, params: {} };
@@ -145151,15 +145187,16 @@ var StateHandlers = class {
     const resolvedRef = StateObjectRef.resolveRef(ref);
     if (!resolvedRef) return;
     if (!tag) return;
-    if (!this.tagIndex.has(tag)) this.tagIndex.set(tag, /* @__PURE__ */ new Set());
-    this.tagIndex.get(tag).add(resolvedRef);
-    if (!this.layerMeta.has(tag)) {
-      this.layerMeta.set(tag, { kind, meta: {} });
+    const key2 = this.taggedKey(kind, tag);
+    if (!this.tagIndex.has(key2)) this.tagIndex.set(key2, /* @__PURE__ */ new Set());
+    this.tagIndex.get(key2).add(resolvedRef);
+    if (!this.layerMeta.has(key2)) {
+      this.layerMeta.set(key2, { kind, meta: {} });
       this.callbacks.notify({ event: "layer_ack", tag, kind, meta: {} });
     }
-    if (this.pendingLayerVisibility.has(tag)) {
-      const hide = this.pendingLayerVisibility.get(tag);
-      this.pendingLayerVisibility.delete(tag);
+    if (this.pendingLayerVisibility.has(key2)) {
+      const hide = this.pendingLayerVisibility.get(key2);
+      this.pendingLayerVisibility.delete(key2);
       setSubtreeVisibility(this.plugin.state.data, resolvedRef, hide);
     }
   }
@@ -145903,38 +145940,41 @@ var StateHandlers = class {
   }
   async createLayer(msg) {
     const tag = msg.tag ?? "layer";
-    this.layerMeta.set(tag, { kind: msg.kind, meta: msg.meta });
+    this.layerMeta.set(this.taggedKey("layer", tag), { kind: msg.kind, meta: msg.meta });
     this.callbacks.notify({ event: "layer_ack", tag, kind: msg.kind, meta: msg.meta });
   }
   async showLayer(msg) {
-    await this.toggleLayerVisibility(msg.tag, false);
+    await this.toggleLayerVisibility(msg.tag, false, msg.kind);
   }
   async hideLayer(msg) {
-    await this.toggleLayerVisibility(msg.tag, true);
+    await this.toggleLayerVisibility(msg.tag, true, msg.kind);
   }
   async deleteLayer(msg) {
     const tag = msg.tag ?? "layer";
-    const refs = this.tagIndex.get(tag);
+    const key2 = this.taggedKey(msg.kind, tag);
+    const refs = this.tagIndex.get(key2);
     if (refs && refs.size) {
       await Promise.all(Array.from(refs).map((ref) => this.removeStateObject(ref)));
-      this.tagIndex.delete(tag);
+      this.tagIndex.delete(key2);
     }
-    this.layerMeta.delete(tag);
-    this.callbacks.notify({ event: "layer_deleted", tag });
+    this.layerMeta.delete(key2);
+    this.callbacks.notify({ event: "layer_deleted", tag, kind: msg.kind });
   }
   async setLayerTag(msg) {
     const oldTag = msg.tag ?? "layer";
     const newTag = msg.new_tag;
     if (!newTag || oldTag === newTag) return;
-    const refs = this.tagIndex.get(oldTag);
+    const oldKey = this.taggedKey(msg.kind, oldTag);
+    const newKey = this.taggedKey(msg.kind, newTag);
+    const refs = this.tagIndex.get(oldKey);
     if (refs) {
-      this.tagIndex.delete(oldTag);
-      this.tagIndex.set(newTag, refs);
+      this.tagIndex.delete(oldKey);
+      this.tagIndex.set(newKey, refs);
     }
-    const meta = this.layerMeta.get(oldTag);
+    const meta = this.layerMeta.get(oldKey);
     if (meta) {
-      this.layerMeta.delete(oldTag);
-      this.layerMeta.set(newTag, meta);
+      this.layerMeta.delete(oldKey);
+      this.layerMeta.set(newKey, meta);
     }
   }
   async setWholeRepresentation(msg) {
@@ -146153,10 +146193,10 @@ var StateHandlers = class {
       }
       return;
     }
-    const refs = this.tagIndex.get(tag);
+    const refs = this.tagIndex.get(this.taggedKey("shape", tag));
     if (!refs || refs.size === 0) return;
     await Promise.all(Array.from(refs).map((ref) => this.removeStateObject(ref)));
-    this.tagIndex.delete(tag);
+    this.tagIndex.delete(this.taggedKey("shape", tag));
   }
   async handleShowHideGlobal(hide, target = "whole") {
     if (target === "whole") {
@@ -146241,22 +146281,23 @@ var StateHandlers = class {
     entry.representations.forEach((ref) => setSubtreeVisibility(this.plugin.state.data, ref, hide));
     await this.applyComposedTransparency();
   }
-  async toggleLayerVisibility(tag, hide) {
+  async toggleLayerVisibility(tag, hide, kind) {
     const layerTag = tag ?? "layer";
-    const kind = this.layerMeta.get(layerTag)?.kind;
-    if ((kind === "annotation" || kind === "measurement") && this.callbacks.setManagedLayerVisibility) {
-      const handled = await this.callbacks.setManagedLayerVisibility(layerTag, kind, !hide);
+    const key2 = this.taggedKey(kind, layerTag);
+    const managedKind = this.layerMeta.get(key2)?.kind ?? kind;
+    if ((managedKind === "annotation" || managedKind === "measurement") && this.callbacks.setManagedLayerVisibility) {
+      const handled = await this.callbacks.setManagedLayerVisibility(layerTag, managedKind, !hide);
       if (handled) {
-        this.pendingLayerVisibility.delete(layerTag);
+        this.pendingLayerVisibility.delete(key2);
         return;
       }
     }
-    const refs = this.tagIndex.get(layerTag);
+    const refs = this.tagIndex.get(key2);
     if (!refs || refs.size === 0) {
-      this.pendingLayerVisibility.set(layerTag, hide);
+      this.pendingLayerVisibility.set(key2, hide);
       return;
     }
-    this.pendingLayerVisibility.delete(layerTag);
+    this.pendingLayerVisibility.delete(key2);
     refs.forEach((ref) => setSubtreeVisibility(this.plugin.state.data, ref, hide));
   }
   async ensureDefaultGlobalRepresentation() {
@@ -156911,7 +156952,7 @@ var MolSysViewerController = class _MolSysViewerController {
       if (action === "hide_measurement") {
         const tag = typeof details?.tag === "string" ? details.tag : null;
         if (!tag) return;
-        void this.handleMessage({ op: "hide_layer", tag });
+        void this.handleMessage({ op: "hide_layer", tag, kind: "measurement" });
         return;
       }
       if (action === "delete_measurement") {
@@ -157194,8 +157235,8 @@ var MolSysViewerController = class _MolSysViewerController {
         const result2 = await this.getImageDataUri(options);
         return typeof result2 === "string" ? result2 : void 0;
       },
-      showLayer: (tag) => this.state.showLayer({ op: "show_layer", tag }),
-      hideLayer: (tag) => this.state.hideLayer({ op: "hide_layer", tag }),
+      showLayer: (tag) => this.state.showLayer({ op: "show_layer", tag, kind: "shape" }),
+      hideLayer: (tag) => this.state.hideLayer({ op: "hide_layer", tag, kind: "shape" }),
       notify: (msg) => this.notify?.(msg)
     });
     this.trajectory.onTrajectoryState(
@@ -157957,7 +157998,7 @@ var MolSysViewerController = class _MolSysViewerController {
         case "update_sphere": {
           const tag = typeof msg.tag === "string" ? msg.tag : typeof msg.options?.tag === "string" ? msg.options.tag : void 0;
           if (typeof tag === "string") {
-            await this.state.deleteLayer({ op: "delete_layer", tag });
+            await this.state.deleteLayer({ op: "delete_layer", tag, kind: "shape" });
             await this.shapes.addSphere({ op: "add_sphere", options: { ...msg.options ?? {}, tag } });
           }
           break;
@@ -158186,13 +158227,19 @@ var MolSysViewerController = class _MolSysViewerController {
           await this.state.hideLayer(msg);
           break;
         case "delete_layer":
-          if (typeof msg.tag === "string" && this.measurements.hasTag(msg.tag)) {
+          if (msg.kind === "annotation" && typeof msg.tag === "string" && this.annotations.hasTag(msg.tag)) {
+            this.annotations.dropTag(msg.tag);
+          }
+          if (msg.kind === "measurement" && typeof msg.tag === "string" && this.measurements.hasTag(msg.tag)) {
             this.measurements.dropTag(msg.tag);
           }
           await this.state.deleteLayer(msg);
           break;
         case "set_layer_tag":
-          if (typeof msg.tag === "string" && typeof msg.new_tag === "string" && this.measurements.hasTag(msg.tag)) {
+          if (msg.kind === "annotation" && typeof msg.tag === "string" && typeof msg.new_tag === "string" && this.annotations.hasTag(msg.tag)) {
+            this.annotations.renameTag(msg.tag, msg.new_tag);
+          }
+          if (typeof msg.tag === "string" && typeof msg.new_tag === "string" && msg.kind === "measurement" && this.measurements.hasTag(msg.tag)) {
             this.measurements.renameTag(msg.tag, msg.new_tag);
           }
           await this.state.setLayerTag(msg);
@@ -158751,17 +158798,18 @@ var MolSysViewerController = class _MolSysViewerController {
     }
     if (op4 === "hide_layer" || op4 === "show_layer") {
       const tag = msg.tag;
+      const kind = msg.kind;
       if (typeof tag !== "string") return;
       const hidden = op4 === "hide_layer";
-      if (this.addonsAnnotations.has(tag)) {
+      if (kind === "annotation" && this.addonsAnnotations.has(tag)) {
         const item2 = this.addonsAnnotations.get(tag);
         this.addonsAnnotations.set(tag, { ...item2, hidden });
       }
-      if (this.addonsMeasurements.has(tag)) {
+      if (kind === "measurement" && this.addonsMeasurements.has(tag)) {
         const item2 = this.addonsMeasurements.get(tag);
         this.addonsMeasurements.set(tag, { ...item2, hidden });
       }
-      if (this.addonsShapes.has(tag)) {
+      if (kind === "shape" && this.addonsShapes.has(tag)) {
         const item2 = this.addonsShapes.get(tag);
         this.addonsShapes.set(tag, { ...item2, hidden });
       }
@@ -158769,10 +158817,11 @@ var MolSysViewerController = class _MolSysViewerController {
     }
     if (op4 === "delete_layer") {
       const tag = msg.tag;
+      const kind = msg.kind;
       if (typeof tag !== "string") return;
-      this.addonsAnnotations.delete(tag);
-      this.addonsMeasurements.delete(tag);
-      this.addonsShapes.delete(tag);
+      if (kind === "annotation") this.addonsAnnotations.delete(tag);
+      if (kind === "measurement") this.addonsMeasurements.delete(tag);
+      if (kind === "shape") this.addonsShapes.delete(tag);
       if (this.addonsActive?.tag === tag) this.addonsActive = null;
       if (this.addonsContext?.tag === tag) this.addonsContext = null;
       return;
@@ -158780,8 +158829,9 @@ var MolSysViewerController = class _MolSysViewerController {
     if (op4 === "set_layer_tag") {
       const oldTag = msg.tag;
       const newTag = msg.new_tag;
+      const kind = msg.kind;
       if (typeof oldTag !== "string" || typeof newTag !== "string") return;
-      if (this.addonsAnnotations.has(oldTag)) {
+      if (kind === "annotation" && this.addonsAnnotations.has(oldTag)) {
         const item2 = this.addonsAnnotations.get(oldTag);
         this.addonsAnnotations.delete(oldTag);
         this.addonsAnnotations.set(newTag, item2);
@@ -158792,7 +158842,7 @@ var MolSysViewerController = class _MolSysViewerController {
           this.addonsContext = { section: "annotations", tag: newTag };
         }
       }
-      if (this.addonsMeasurements.has(oldTag)) {
+      if (kind === "measurement" && this.addonsMeasurements.has(oldTag)) {
         const item2 = this.addonsMeasurements.get(oldTag);
         this.addonsMeasurements.delete(oldTag);
         this.addonsMeasurements.set(newTag, item2);
@@ -158800,7 +158850,7 @@ var MolSysViewerController = class _MolSysViewerController {
           this.addonsActive = { section: "measurements", tag: newTag };
         }
       }
-      if (this.addonsShapes.has(oldTag)) {
+      if (kind === "shape" && this.addonsShapes.has(oldTag)) {
         const item2 = this.addonsShapes.get(oldTag);
         this.addonsShapes.delete(oldTag);
         this.addonsShapes.set(newTag, item2);
@@ -158861,7 +158911,7 @@ var MolSysViewerController = class _MolSysViewerController {
           this.focusTarget({ atom_indices: item2.atomIndices });
         } : void 0,
         onToggleVisibility: () => {
-          void this.handleMessage({ op: item2.hidden ? "show_layer" : "hide_layer", tag });
+          void this.handleMessage({ op: item2.hidden ? "show_layer" : "hide_layer", tag, kind: "annotation" });
         },
         onDelete: () => {
           this.notify?.({ event: "interaction_context_action", action: "delete_annotation", tag });
@@ -158881,7 +158931,7 @@ var MolSysViewerController = class _MolSysViewerController {
           this.focusTarget({ atom_indices: item2.atomIndices });
         } : void 0,
         onToggleVisibility: () => {
-          void this.handleMessage({ op: item2.hidden ? "show_layer" : "hide_layer", tag });
+          void this.handleMessage({ op: item2.hidden ? "show_layer" : "hide_layer", tag, kind: "measurement" });
         },
         onDelete: () => {
           this.notify?.({ event: "interaction_context_action", action: "delete_measurement", tag });
@@ -158901,7 +158951,7 @@ var MolSysViewerController = class _MolSysViewerController {
           this.focusTarget({ atom_indices: item2.atomIndices });
         } : void 0,
         onToggleVisibility: () => {
-          void this.handleMessage({ op: item2.hidden ? "show_layer" : "hide_layer", tag });
+          void this.handleMessage({ op: item2.hidden ? "show_layer" : "hide_layer", tag, kind: "shape" });
         },
         onDelete: () => {
           this.notify?.({ event: "interaction_context_action", action: "delete_shape", tag });
@@ -159782,10 +159832,12 @@ var MolSysViewerController = class _MolSysViewerController {
         if (msg.options?.labels) this.groupPanel.clearAnnotationOverlays();
         break;
       case "delete_layer":
-        this.groupPanel.clearAnnotationOverlaysByTag(msg.tag);
+        if (msg.kind === "annotation") {
+          this.groupPanel.clearAnnotationOverlaysByTag(msg.tag);
+        }
         break;
       case "set_layer_tag":
-        if (typeof msg.tag === "string" && typeof msg.new_tag === "string") {
+        if (msg.kind === "annotation" && typeof msg.tag === "string" && typeof msg.new_tag === "string") {
           this.groupPanel.retagAnnotationOverlays(msg.tag, msg.new_tag);
         }
         break;

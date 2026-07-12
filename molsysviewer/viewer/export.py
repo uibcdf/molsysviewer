@@ -48,9 +48,10 @@ class ExportMixin:
 
     def _with_export_layer_tag(self, msg: dict) -> dict:
         tag = self._tag_from_message(msg)
-        if not isinstance(tag, str):
+        kind = self._kind_from_message(msg)
+        if not isinstance(tag, str) or kind not in {"shape", "annotation", "measurement", "section"}:
             return dict(msg)
-        obj = self._scene_objects.get(tag)
+        obj = self._scene_objects.get((kind, tag))
         if obj is None:
             return dict(msg)
         layer_tag = getattr(obj, "layer_tag", None)
@@ -68,11 +69,12 @@ class ExportMixin:
 
     def _clean_message_history(self) -> list[dict]:
         deleted_dead_layer_tags = {
-            msg.get("tag")
+            (msg.get("kind"), msg.get("tag"))
             for msg in self._message_history
             if msg.get("op") == "delete_layer"
             and isinstance(msg.get("tag"), str)
-            and msg.get("tag") not in self.layers
+            and msg.get("kind") != "layer"
+            and (msg.get("kind"), msg.get("tag")) not in self._scene_objects
         }
         dead_layer_ops = {
             "add_label",
@@ -84,7 +86,10 @@ class ExportMixin:
         }
         cleaned: list[dict] = []
         for msg in self._message_history:
-            if msg.get("op") in dead_layer_ops and msg.get("tag") in deleted_dead_layer_tags:
+            if (
+                msg.get("op") in dead_layer_ops
+                and (self._kind_from_message(msg), self._tag_from_message(msg)) in deleted_dead_layer_tags
+            ):
                 continue
             if msg.get("op") == "update_visibility":
                 opts = msg.get("options") or {}

@@ -7,6 +7,18 @@ from ..layers import GroupLayer, Layer, SceneObject
 
 
 class SceneRegistryMixin:
+    @staticmethod
+    def _scene_object_key(kind: str, tag: str) -> tuple[str, str]:
+        return str(kind), str(tag)
+
+    def _get_scene_object(self, kind: str, tag: str) -> SceneObject | None:
+        return self._scene_objects.get(self._scene_object_key(kind, tag))
+
+    def _scene_objects_of_kind(self, kind: str):
+        for (object_kind, tag), obj in self._scene_objects.items():
+            if object_kind == kind:
+                yield tag, obj
+
     def _unregister_layer(self, tag: str) -> None:
         self._layers.pop(tag, None)
 
@@ -15,11 +27,11 @@ class SceneRegistryMixin:
             self._layers.pop(old_tag, None)
         self._layers[new_tag] = layer
 
-    def _unregister_scene_object(self, tag: str) -> None:
+    def _unregister_scene_object(self, kind: str, tag: str) -> None:
         status = getattr(self, "_shape_render_status", None)
         if isinstance(status, dict):
             status.pop(tag, None)
-        obj = self._scene_objects.pop(tag, None)
+        obj = self._scene_objects.pop(self._scene_object_key(kind, tag), None)
         if obj is None:
             return
         layer_tag = getattr(obj, "layer_tag", None)
@@ -29,9 +41,8 @@ class SceneRegistryMixin:
                 self._layers.pop(layer_tag, None)
 
     def _reregister_scene_object(self, old_tag: str, new_tag: str, obj: SceneObject) -> None:
-        if old_tag in self._scene_objects:
-            self._scene_objects.pop(old_tag, None)
-        self._scene_objects[new_tag] = obj
+        self._scene_objects.pop(self._scene_object_key(obj.kind, old_tag), None)
+        self._scene_objects[self._scene_object_key(obj.kind, new_tag)] = obj
 
     def _sync_layer_group_hidden_state(self, layer_tag: str) -> None:
         layer = self._layers.get(layer_tag)
@@ -43,7 +54,7 @@ class SceneRegistryMixin:
             return
         layer._hidden = all(getattr(item, "_hidden", False) for item in members.values())  # noqa: SLF001
 
-    def _update_scene_object_history_layer_tag(self, tag: str, layer_tag: str) -> None:
+    def _update_scene_object_history_layer_tag(self, kind: str, tag: str, layer_tag: str) -> None:
         def rewrite(history: list[dict]) -> list[dict]:
             rewritten: list[dict] = []
             for item in history:
@@ -61,9 +72,12 @@ class SceneRegistryMixin:
                 rewritten.append(updated)
             return rewritten
 
-        self._shape_history = rewrite(self._shape_history)
-        self._annotation_history = rewrite(self._annotation_history)
-        self._measurement_history = rewrite(self._measurement_history)
+        if kind == "shape":
+            self._shape_history = rewrite(self._shape_history)
+        elif kind == "annotation":
+            self._annotation_history = rewrite(self._annotation_history)
+        elif kind == "measurement":
+            self._measurement_history = rewrite(self._measurement_history)
 
     def _set_scene_object_layer_tag(self, obj: SceneObject, new_layer_tag: str) -> None:
         text = str(new_layer_tag).strip()
@@ -74,7 +88,7 @@ class SceneRegistryMixin:
             return
         self._ensure_layer_group(text, kind=getattr(obj, "kind", None))
         obj.layer_tag = text
-        self._update_scene_object_history_layer_tag(obj.tag, text)
+        self._update_scene_object_history_layer_tag(obj.kind, obj.tag, text)
         if isinstance(old_layer_tag, str):
             old_layer = self._layers.get(old_layer_tag)
             if isinstance(old_layer, GroupLayer) and len(old_layer.members) == 0:
@@ -106,7 +120,7 @@ class SceneRegistryMixin:
 
     def _move_or_rename_layer_group_for_object_tag_change(self, old_tag: str, new_tag: str, obj: SceneObject) -> None:
         old_layer = self._layers.get(old_tag)
-        if isinstance(old_layer, GroupLayer) and len(old_layer.members) == 1 and obj.tag in old_layer.members:
+        if isinstance(old_layer, GroupLayer) and len(old_layer.members) == 1 and (obj.kind, obj.tag) in old_layer.members:
             self._layers.pop(old_tag, None)
             old_layer.tag = new_tag
             self._layers[new_tag] = old_layer
@@ -129,8 +143,6 @@ class SceneRegistryMixin:
             raise ValueError("Tag must be a non-empty string.")
         if current_tag is not None and text == current_tag:
             return text
-        if text in self._scene_objects:
-            raise ValueError(f"Scene-object tag {text!r} already exists.")
         return text
 
     @signal(tags=["layer"])

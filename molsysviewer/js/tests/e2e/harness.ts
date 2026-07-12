@@ -30,6 +30,7 @@ declare global {
         probeRegionOrderOwnership: typeof probeRegionOrderOwnership;
         inspectScene: typeof inspectScene;
         probeAtomColors: typeof probeAtomColors;
+        inspectTaggedRefs: typeof inspectTaggedRefs;
     } | undefined;
 }
 
@@ -57,6 +58,20 @@ export type SceneSnapshot = {
         reprs: RenderedRepresentation[];
     }>;
 };
+
+export function inspectTaggedRefs(
+    controller: MolSysViewerController,
+    kind: string,
+    tag: string,
+): Array<{ ref: string; hidden: boolean }> {
+    const profiled = controller as ProfileController;
+    const key = `${kind}\u0000${tag}`;
+    const refs = ((profiled.state as any).tagIndex as Map<string, Set<string>> | undefined)?.get(key) ?? new Set();
+    return Array.from(refs).map(ref => ({
+        ref,
+        hidden: profiled.plugin.state.data.cells.get(ref)?.state?.isHidden === true,
+    }));
+}
 
 function readRepresentation(plugin: any, ref: string): RenderedRepresentation | null {
     const cell = plugin.state.data.cells.get(ref);
@@ -1207,5 +1222,6 @@ if (typeof window !== "undefined") {
         probeRegionOrderOwnership,
         inspectScene,
         probeAtomColors,
+        inspectTaggedRefs,
     };
 }

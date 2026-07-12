@@ -300,7 +300,7 @@ class SceneManager:
         view._section_history.append(record)  # noqa: SLF001
 
         section = _Section(view, tag)
-        view._scene_objects[tag] = section  # noqa: SLF001
+        view._scene_objects[("section", tag)] = section  # noqa: SLF001
 
         view._send({"op": "set_sections", "sections": list(view._section_history)})  # noqa: SLF001
         return section
@@ -312,7 +312,8 @@ class SceneManager:
         from . import pyunitwizard as puw  # noqa: PLC0415
 
         view = self._view
-        obj = view._scene_objects.get(tag)  # noqa: SLF001
+        matches = [obj for (_kind, object_tag), obj in view._scene_objects.items() if object_tag == tag]  # noqa: SLF001
+        obj = matches[0] if len(matches) == 1 else None
         if obj is None:
             raise ValueError(f"No scene object found with tag {tag!r}.")
         if not hasattr(obj, "get_coordinates"):
@@ -374,18 +375,18 @@ class SceneManager:
         if len(new_history) == len(view._section_history):  # noqa: SLF001
             raise KeyError(f"No section found with tag {tag!r}.")
         view._section_history = new_history  # noqa: SLF001
-        view._scene_objects.pop(tag, None)  # noqa: SLF001
+        view._scene_objects.pop(("section", tag), None)  # noqa: SLF001
         view._send({"op": "set_sections", "sections": new_history})  # noqa: SLF001
 
     def clear_sections(self) -> None:
         """Remove all active clipping planes."""
         view = self._view
         section_tags = [
-            tag for tag, obj in view._scene_objects.items()  # noqa: SLF001
-            if getattr(obj, "kind", None) == "section"
+            tag for (kind, tag), _obj in view._scene_objects.items()  # noqa: SLF001
+            if kind == "section"
         ]
         for tag in section_tags:
-            view._scene_objects.pop(tag, None)  # noqa: SLF001
+            view._scene_objects.pop(("section", tag), None)  # noqa: SLF001
         view._section_history.clear()  # noqa: SLF001
         view._send({"op": "set_sections", "sections": []})  # noqa: SLF001
 

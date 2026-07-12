@@ -197,10 +197,10 @@ class SceneMixin:
         if labels:
             self._annotation_history.clear()
             annotation_tags = [
-                tag for tag, layer in self._scene_objects.items() if getattr(layer, "kind", None) == "annotation"
+                tag for (kind, tag) in self._scene_objects if kind == "annotation"
             ]
             for tag in annotation_tags:
-                self._scene_objects.pop(tag, None)
+                self._scene_objects.pop(("annotation", tag), None)
                 self._layers.pop(tag, None)
         self._send(
             {

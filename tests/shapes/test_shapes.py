@@ -36,7 +36,7 @@ def test_bounding_sphere_empty_points_returns_scene_fallback():
 def test_empty_shape_focus_warns_and_zooms_scene_center():
     view = MolSysView()
     shape = Shape(view, "empty")
-    view._scene_objects["empty"] = shape  # noqa: SLF001
+    view._scene_objects[("shape", "empty")] = shape  # noqa: SLF001
     view._shape_history.append(  # noqa: SLF001
         {
             "op": "add_channel_tube",
@@ -119,7 +119,7 @@ def test_shapes_manager_supports_subscript_and_duplicate_tag_guard():
     assert manager["foo"] is layer
     assert manager.tags() == ["foo"]
     assert view._layers["foo"].shapes == {"foo": layer}
-    assert view._layers["foo"].members == {"foo": layer}
+    assert view._layers["foo"].members == {("shape", "foo"): layer}
 
     with pytest.raises(ValueError, match="already exists"):
         manager.add_sphere(
@@ -152,7 +152,7 @@ def test_shapes_manager_supports_explicit_shared_layer_tag():
     assert first.layer_tag == "cluster"
     assert second.layer_tag == "cluster"
     assert set(view._layers["cluster"].shapes.keys()) == {"foo", "bar"}
-    assert set(view._layers["cluster"].members.keys()) == {"foo", "bar"}
+    assert set(view._layers["cluster"].members.keys()) == {("shape", "foo"), ("shape", "bar")}
 
 
 def test_shared_shape_layer_retag_rewrites_history_and_live_members():

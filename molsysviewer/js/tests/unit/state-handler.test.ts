@@ -69,13 +69,14 @@ test("state handler emits layer ack and keeps metadata through retag", async () 
     await handler.setLayerTag({
         op: "set_layer_tag",
         tag: "layer-a",
+        kind: "layer",
         new_tag: "layer-b",
     });
 
     const layerMeta = (handler as any).layerMeta as Map<string, any>;
-    assert.strictEqual(layerMeta.has("layer-a"), false);
-    assert.strictEqual(layerMeta.has("layer-b"), true);
-    assert.deepStrictEqual(layerMeta.get("layer-b"), { kind: "shape", meta: { source: "unit-test" } });
+    assert.strictEqual(layerMeta.has("layer\u0000layer-a"), false);
+    assert.strictEqual(layerMeta.has("layer\u0000layer-b"), true);
+    assert.deepStrictEqual(layerMeta.get("layer\u0000layer-b"), { kind: "shape", meta: { source: "unit-test" } });
 });
 
 test("state handler stores pending layer visibility when layer refs do not exist", async () => {
@@ -88,12 +89,12 @@ test("state handler stores pending layer visibility when layer refs do not exist
         notify: (_msg: any) => {},
     });
 
-    await handler.hideLayer({ op: "hide_layer", tag: "layer-pending" });
+    await handler.hideLayer({ op: "hide_layer", tag: "layer-pending", kind: "shape" });
     const pending = (handler as any).pendingLayerVisibility as Map<string, boolean>;
-    assert.strictEqual(pending.get("layer-pending"), true);
+    assert.strictEqual(pending.get("shape\u0000layer-pending"), true);
 
-    await handler.showLayer({ op: "show_layer", tag: "layer-pending" });
-    assert.strictEqual(pending.get("layer-pending"), false);
+    await handler.showLayer({ op: "show_layer", tag: "layer-pending", kind: "shape" });
+    assert.strictEqual(pending.get("shape\u0000layer-pending"), false);
 });
 
 test("state handler applies one batch region visibility message to every tag", async () => {
@@ -775,12 +776,29 @@ test("state handler registerShapeRef indexes ref and emits layer ack for new tag
 
     const tagIndex = (handler as any).tagIndex as Map<string, Set<any>>;
     const layerMeta = (handler as any).layerMeta as Map<string, any>;
-    assert.strictEqual(tagIndex.has("shape-tag"), true);
-    assert.strictEqual(tagIndex.get("shape-tag")?.has("ref-1"), true);
-    assert.strictEqual(layerMeta.has("shape-tag"), true);
+    assert.strictEqual(tagIndex.has("shape\u0000shape-tag"), true);
+    assert.strictEqual(tagIndex.get("shape\u0000shape-tag")?.has("ref-1"), true);
+    assert.strictEqual(layerMeta.has("shape\u0000shape-tag"), true);
     assert.deepStrictEqual(notifications, [
         { event: "layer_ack", tag: "shape-tag", kind: "shape", meta: {} },
     ]);
+});
+
+test("state handler keeps same-tag refs isolated by scene-object kind", async () => {
+    const handler = new StateHandlers({ state: { data: {} } } as any, {
+        getStructure: () => undefined,
+        getLoadedStructure: () => undefined,
+        getCurrentStructureRef: () => undefined,
+        getComponents: () => [],
+        notify: (_msg: any) => {},
+    });
+
+    handler.registerTaggedRef("shape-ref" as any, "site1", "shape");
+    handler.registerTaggedRef("annotation-ref" as any, "site1", "annotation");
+
+    const tagIndex = (handler as any).tagIndex as Map<string, Set<any>>;
+    assert.deepStrictEqual(Array.from(tagIndex.get("shape\u0000site1") ?? []), ["shape-ref"]);
+    assert.deepStrictEqual(Array.from(tagIndex.get("annotation\u0000site1") ?? []), ["annotation-ref"]);
 });
 
 test("state handler clears orphan default global representations before applying a new global representation", async () => {

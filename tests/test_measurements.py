@@ -149,7 +149,7 @@ def test_measurements_manager_supports_registry_access_and_duplicate_tag_guard()
     assert view.measurements["dist_1"] is layer
     assert view.measurements.tags() == ["dist_1"]
     assert view.layers["dist_1"].measurements == {"dist_1": layer}
-    assert view.layers["dist_1"].members == {"dist_1": layer}
+    assert view.layers["dist_1"].members == {("measurement", "dist_1"): layer}
 
     with pytest.raises(ValueError, match="already exists"):
         view.measurements.add_distance([2], [3], tag="dist_1")
@@ -167,7 +167,7 @@ def test_measurements_manager_supports_explicit_shared_layer_tag():
     assert second.layer_tag == "geom"
     assert "geom" in view.layers
     assert set(view.layers["geom"].measurements.keys()) == {"dist_1", "ang_1"}
-    assert set(view.layers["geom"].members.keys()) == {"dist_1", "ang_1"}
+    assert set(view.layers["geom"].members.keys()) == {("measurement", "dist_1"), ("measurement", "ang_1")}
 
 
 def test_measurements_manager_can_move_measurement_between_layers():

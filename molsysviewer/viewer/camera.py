@@ -177,6 +177,7 @@ class CameraManager:
         self,
         tag: str,
         *,
+        kind: str | None = None,
         duration_ms: int = 250,
         extra_radius: float = 0.5,
         skip_digestion: bool = False,
@@ -196,7 +197,13 @@ class CameraManager:
             Extra padding around the object's bounding sphere (nm).
         """
         view = self._view  # noqa: SLF001
-        if tag in view._regions:  # noqa: SLF001
+        if kind == "region" or (kind is None and tag in view._regions):  # noqa: SLF001
+            if kind is None:
+                scene_matches = [key for key in view._scene_objects if key[1] == tag]  # noqa: SLF001
+                if scene_matches:
+                    raise ValueError(f"Ambiguous object tag {tag!r}; pass kind explicitly.")
+            if tag not in view._regions:  # noqa: SLF001
+                raise KeyError(f"Unknown region tag: {tag!r}")
             self.focus_region(
                 view._regions[tag],  # noqa: SLF001
                 duration_ms=duration_ms,
@@ -205,7 +212,13 @@ class CameraManager:
             )
             return
 
-        obj = view._scene_objects.get(tag)  # noqa: SLF001
+        if kind is None:
+            matches = [obj for (_object_kind, object_tag), obj in view._scene_objects.items() if object_tag == tag]  # noqa: SLF001
+            if len(matches) > 1:
+                raise ValueError(f"Ambiguous object tag {tag!r}; pass kind explicitly.")
+            obj = matches[0] if matches else None
+        else:
+            obj = view._scene_objects.get((kind, tag))  # noqa: SLF001
         if obj is None:
             raise KeyError(f"Unknown object tag: {tag!r}")
         if not hasattr(obj, "focus"):

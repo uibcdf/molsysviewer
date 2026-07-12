@@ -144,6 +144,10 @@ export class StateHandlers {
 
     constructor(private plugin: PluginContext, private callbacks: StateCallbacks) {}
 
+    private taggedKey(kind: string | undefined, tag: string): string {
+        return `${kind || "layer"}\u0000${tag}`;
+    }
+
     private parseMolstarThemeSpec(
         value: unknown,
     ): { name: string; params: Record<string, unknown> } | undefined {
@@ -240,17 +244,18 @@ export class StateHandlers {
         const resolvedRef = StateObjectRef.resolveRef(ref);
         if (!resolvedRef) return;
         if (!tag) return;
-        if (!this.tagIndex.has(tag)) this.tagIndex.set(tag, new Set());
-        this.tagIndex.get(tag)!.add(resolvedRef);
+        const key = this.taggedKey(kind, tag);
+        if (!this.tagIndex.has(key)) this.tagIndex.set(key, new Set());
+        this.tagIndex.get(key)!.add(resolvedRef);
 
-        if (!this.layerMeta.has(tag)) {
-            this.layerMeta.set(tag, { kind, meta: {} });
+        if (!this.layerMeta.has(key)) {
+            this.layerMeta.set(key, { kind, meta: {} });
             this.callbacks.notify({ event: "layer_ack", tag, kind, meta: {} });
         }
 
-        if (this.pendingLayerVisibility.has(tag)) {
-            const hide = this.pendingLayerVisibility.get(tag)!;
-            this.pendingLayerVisibility.delete(tag);
+        if (this.pendingLayerVisibility.has(key)) {
+            const hide = this.pendingLayerVisibility.get(key)!;
+            this.pendingLayerVisibility.delete(key);
             setSubtreeVisibility(this.plugin.state.data, resolvedRef, hide);
         }
     }
@@ -1177,42 +1182,45 @@ export class StateHandlers {
 
     async createLayer(msg: CreateLayerMessage) {
         const tag = msg.tag ?? "layer";
-        this.layerMeta.set(tag, { kind: msg.kind, meta: msg.meta });
+        this.layerMeta.set(this.taggedKey("layer", tag), { kind: msg.kind, meta: msg.meta });
         this.callbacks.notify({ event: "layer_ack", tag, kind: msg.kind, meta: msg.meta });
     }
 
     async showLayer(msg: ShowLayerMessage) {
-        await this.toggleLayerVisibility(msg.tag, false);
+        await this.toggleLayerVisibility(msg.tag, false, msg.kind);
     }
 
     async hideLayer(msg: HideLayerMessage) {
-        await this.toggleLayerVisibility(msg.tag, true);
+        await this.toggleLayerVisibility(msg.tag, true, msg.kind);
     }
 
     async deleteLayer(msg: DeleteLayerMessage) {
         const tag = msg.tag ?? "layer";
-        const refs = this.tagIndex.get(tag);
+        const key = this.taggedKey(msg.kind, tag);
+        const refs = this.tagIndex.get(key);
         if (refs && refs.size) {
             await Promise.all(Array.from(refs).map(ref => this.removeStateObject(ref)));
-            this.tagIndex.delete(tag);
+            this.tagIndex.delete(key);
         }
-        this.layerMeta.delete(tag);
-        this.callbacks.notify({ event: "layer_deleted", tag });
+        this.layerMeta.delete(key);
+        this.callbacks.notify({ event: "layer_deleted", tag, kind: msg.kind });
     }
 
     async setLayerTag(msg: SetLayerTagMessage) {
         const oldTag = msg.tag ?? "layer";
         const newTag = msg.new_tag;
         if (!newTag || oldTag === newTag) return;
-        const refs = this.tagIndex.get(oldTag);
+        const oldKey = this.taggedKey(msg.kind, oldTag);
+        const newKey = this.taggedKey(msg.kind, newTag);
+        const refs = this.tagIndex.get(oldKey);
         if (refs) {
-            this.tagIndex.delete(oldTag);
-            this.tagIndex.set(newTag, refs);
+            this.tagIndex.delete(oldKey);
+            this.tagIndex.set(newKey, refs);
         }
-        const meta = this.layerMeta.get(oldTag);
+        const meta = this.layerMeta.get(oldKey);
         if (meta) {
-            this.layerMeta.delete(oldTag);
-            this.layerMeta.set(newTag, meta);
+            this.layerMeta.delete(oldKey);
+            this.layerMeta.set(newKey, meta);
         }
     }
 
@@ -1458,10 +1466,10 @@ export class StateHandlers {
             }
             return;
         }
-        const refs = this.tagIndex.get(tag);
+        const refs = this.tagIndex.get(this.taggedKey("shape", tag));
         if (!refs || refs.size === 0) return;
         await Promise.all(Array.from(refs).map(ref => this.removeStateObject(ref)));
-        this.tagIndex.delete(tag);
+        this.tagIndex.delete(this.taggedKey("shape", tag));
     }
 
     private async handleShowHideGlobal(hide: boolean, target: "whole" | "all" = "whole") {
@@ -1554,22 +1562,23 @@ export class StateHandlers {
         await this.applyComposedTransparency();
     }
 
-    private async toggleLayerVisibility(tag: string | undefined, hide: boolean) {
+    private async toggleLayerVisibility(tag: string | undefined, hide: boolean, kind: string) {
         const layerTag = tag ?? "layer";
-        const kind = this.layerMeta.get(layerTag)?.kind;
-        if ((kind === "annotation" || kind === "measurement") && this.callbacks.setManagedLayerVisibility) {
-            const handled = await this.callbacks.setManagedLayerVisibility(layerTag, kind, !hide);
+        const key = this.taggedKey(kind, layerTag);
+        const managedKind = this.layerMeta.get(key)?.kind ?? kind;
+        if ((managedKind === "annotation" || managedKind === "measurement") && this.callbacks.setManagedLayerVisibility) {
+            const handled = await this.callbacks.setManagedLayerVisibility(layerTag, managedKind, !hide);
             if (handled) {
-                this.pendingLayerVisibility.delete(layerTag);
+                this.pendingLayerVisibility.delete(key);
                 return;
             }
         }
-        const refs = this.tagIndex.get(layerTag);
+        const refs = this.tagIndex.get(key);
         if (!refs || refs.size === 0) {
-            this.pendingLayerVisibility.set(layerTag, hide);
+            this.pendingLayerVisibility.set(key, hide);
             return;
         }
-        this.pendingLayerVisibility.delete(layerTag);
+        this.pendingLayerVisibility.delete(key);
         refs.forEach(ref => setSubtreeVisibility(this.plugin.state.data, ref, hide));
     }
 

@@ -54,20 +54,20 @@ class ShapesManager:
     def tags(self, skip_digestion: bool = False) -> list[str]:
         return [
             tag
-            for tag, layer in getattr(self._view, "_scene_objects", {}).items()
-            if getattr(layer, "kind", None) == "shape"
+            for kind, tag in getattr(self._view, "_scene_objects", {})
+            if kind == "shape"
         ]  # noqa: SLF001
 
     @signal(tags=["shape"])
     @digest()
     def contains(self, tag: str, skip_digestion: bool = False) -> bool:
-        layer = getattr(self._view, "_scene_objects", {}).get(tag)  # noqa: SLF001
+        layer = getattr(self._view, "_scene_objects", {}).get(("shape", tag))  # noqa: SLF001
         return layer is not None and getattr(layer, "kind", None) == "shape"
 
     @signal(tags=["shape"])
     @digest()
     def get(self, tag: str, skip_digestion: bool = False):
-        layer = getattr(self._view, "_scene_objects", {}).get(tag)  # noqa: SLF001
+        layer = getattr(self._view, "_scene_objects", {}).get(("shape", tag))  # noqa: SLF001
         if layer is None or getattr(layer, "kind", None) != "shape":
             return None
         return layer
@@ -131,7 +131,7 @@ class ShapesManager:
             if tag is not None and msg_tag != tag:
                 continue
 
-            layer = getattr(self._view, "_scene_objects", {}).get(msg_tag)
+            layer = getattr(self._view, "_scene_objects", {}).get(("shape", msg_tag))
             shape_kind = {
                 "add_sphere": "sphere",
                 "add_network_links": "link",
@@ -494,22 +494,22 @@ class ShapesManager:
             if tag is None:
                 shape_tags = [
                     t
-                    for t, obj in getattr(self._view, "_scene_objects", {}).items()
-                    if getattr(obj, "kind", None) == "shape"
+                    for (kind, t), obj in getattr(self._view, "_scene_objects", {}).items()
+                    if kind == "shape"
                 ]
                 for t in shape_tags:
-                    self._view._unregister_scene_object(t)
+                    self._view._unregister_scene_object("shape", t)
             else:
-                self._view._unregister_scene_object(tag)
+                self._view._unregister_scene_object("shape", tag)
         else:
             scene_objects = getattr(self._view, "_scene_objects", None)
             if isinstance(scene_objects, dict):
                 if tag is None:
-                    shape_tags = [t for t, obj in scene_objects.items() if getattr(obj, "kind", None) == "shape"]
+                    shape_tags = [t for (kind, t), obj in scene_objects.items() if kind == "shape"]
                     for t in shape_tags:
-                        scene_objects.pop(t, None)
+                        scene_objects.pop(("shape", t), None)
                 else:
-                    scene_objects.pop(tag, None)
+                    scene_objects.pop(("shape", tag), None)
 
 
 

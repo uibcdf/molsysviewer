@@ -158,18 +158,23 @@ class LayerHandle:
         }
 
     @property
-    def members(self) -> Dict[str, Any]:
-        members: Dict[str, Any] = {}
-        members.update(self.shapes)
-        members.update(self.annotations)
-        members.update(self.measurements)
-        members.update(self.regions)
+    def members(self) -> Dict[tuple[str, str], Any]:
+        members: Dict[tuple[str, str], Any] = {}
+        for kind, values in (
+            ("shape", self.shapes),
+            ("annotation", self.annotations),
+            ("measurement", self.measurements),
+            ("region", self.regions),
+        ):
+            members.update({(kind, tag): obj for tag, obj in values.items()})
         return members
 
     def _send(self, op: str, **payload: Any) -> None:
         if not self._active:
             return
         msg = {"op": op, "tag": self.tag, **payload}
+        if op in {"show_layer", "hide_layer", "delete_layer", "set_layer_tag"}:
+            msg.setdefault("kind", "layer")
         self._view._send(msg)  # noqa: SLF001
 
     def _send_create(self) -> None:
@@ -198,7 +203,7 @@ class LayerHandle:
         """Remove this layer and its visuals."""
         if not self._active:
             return
-        self._view._send({"op": "delete_layer", "tag": self.tag})  # noqa: SLF001
+        self._view._send({"op": "delete_layer", "tag": self.tag, "kind": "layer"})  # noqa: SLF001
         self._active = False
         self._view._unregister_layer(self.tag)  # noqa: SLF001
 
@@ -211,7 +216,7 @@ class LayerHandle:
         if hasattr(self._view, "_assert_nonstructural_tag_available"):
             new_tag = self._view._assert_nonstructural_tag_available(new_tag, current_tag=self.tag)  # noqa: SLF001
         old_tag = self.tag
-        self._view._send({"op": "set_layer_tag", "tag": old_tag, "new_tag": new_tag})  # noqa: SLF001
+        self._view._send({"op": "set_layer_tag", "tag": old_tag, "new_tag": new_tag, "kind": "layer"})  # noqa: SLF001
         self.tag = new_tag
         self._view._reregister_layer(old_tag, new_tag, self)  # noqa: SLF001
 
@@ -240,6 +245,11 @@ class SceneObject(LayerHandle):
         if hasattr(self._view, "_sync_layer_group_hidden_state"):
             self._view._sync_layer_group_hidden_state(self.layer_tag)  # noqa: SLF001
 
+    def _send(self, op: str, **payload: Any) -> None:
+        if op in {"show_layer", "hide_layer", "delete_layer", "set_layer_tag"}:
+            payload["kind"] = self.kind
+        super()._send(op, **payload)
+
     def show(self, skip_digestion: bool = False) -> None:
         super().show(skip_digestion=True)
         self._sync_group_layer_hidden_state()
@@ -255,7 +265,7 @@ class SceneObject(LayerHandle):
             new_tag = self._view._assert_scene_object_tag_available(new_tag, current_tag=self.tag)  # noqa: SLF001
         old_tag = self.tag
         old_layer_tag = self.layer_tag
-        self._view._send({"op": "set_layer_tag", "tag": old_tag, "new_tag": new_tag})  # noqa: SLF001
+        self._view._send({"op": "set_layer_tag", "tag": old_tag, "new_tag": new_tag, "kind": self.kind})  # noqa: SLF001
         self.tag = new_tag
         self._view._reregister_scene_object(old_tag, new_tag, self)  # noqa: SLF001
         if old_layer_tag == old_tag:
@@ -272,10 +282,10 @@ class SceneObject(LayerHandle):
     def delete(self, skip_digestion: bool = False) -> None:
         if not self._active:
             return
-        self._view._send({"op": "delete_layer", "tag": self.tag})  # noqa: SLF001
+        self._view._send({"op": "delete_layer", "tag": self.tag, "kind": self.kind})  # noqa: SLF001
         self._active = False
         if hasattr(self._view, "_unregister_scene_object"):
-            self._view._unregister_scene_object(self.tag)  # noqa: SLF001
+            self._view._unregister_scene_object(self.kind, self.tag)  # noqa: SLF001
         self._sync_group_layer_hidden_state()
 
 
@@ -361,7 +371,7 @@ class Layer(LayerHandle):
     def info(self) -> list[dict]:
         """Return a summary of all objects in this layer."""
         rows = []
-        for tag, obj in self.members.items():
+        for (_kind, tag), obj in self.members.items():
             kind = getattr(obj, "kind", "unknown")
             rows.append({
                 "kind": kind,
@@ -399,7 +409,7 @@ class Shape(SceneObject):
         if hasattr(self._view, "_replace_shape_message"):
             self._view._replace_shape_message(self.tag, next_msg)  # noqa: SLF001
         if hasattr(self._view, "_send_runtime_only"):
-            self._view._send_runtime_only({"op": "delete_layer", "tag": self.tag})  # noqa: SLF001
+            self._view._send_runtime_only({"op": "delete_layer", "tag": self.tag, "kind": self.kind})  # noqa: SLF001
             payload = dict(runtime_msg or next_msg)
             options = payload.get("options")
             if isinstance(options, dict):
@@ -411,7 +421,7 @@ class Shape(SceneObject):
             payload["options"] = options
             self._view._send_runtime_only(payload)  # noqa: SLF001
             if getattr(self, "_hidden", False):
-                self._view._send_runtime_only({"op": "hide_layer", "tag": self.tag})  # noqa: SLF001
+                self._view._send_runtime_only({"op": "hide_layer", "tag": self.tag, "kind": self.kind})  # noqa: SLF001
 
     def _require_shape_message(self) -> dict:
         getter = getattr(self._view, "_get_shape_message", None)
@@ -439,7 +449,7 @@ class Shape(SceneObject):
         if hasattr(self._view, "_send_runtime_only"):
             self._view._send_runtime_only({"op": "update_sphere", "tag": self.tag, "options": next_options})  # noqa: SLF001
             if getattr(self, "_hidden", False):
-                self._view._send_runtime_only({"op": "hide_layer", "tag": self.tag})  # noqa: SLF001
+                self._view._send_runtime_only({"op": "hide_layer", "tag": self.tag, "kind": self.kind})  # noqa: SLF001
 
     @staticmethod
     def _normalize_to_count(values, count: int, cast) -> list[Any]:
@@ -1187,7 +1197,7 @@ class Section(SceneObject):
         history = getattr(self._view, "_section_history", [])
         new_history = [r for r in history if r.get("tag") != self.tag]
         self._view._section_history = new_history  # noqa: SLF001
-        self._view._scene_objects.pop(self.tag, None)  # noqa: SLF001
+        self._view._scene_objects.pop((self.kind, self.tag), None)  # noqa: SLF001
         self._view._send({"op": "set_sections", "sections": new_history})  # noqa: SLF001
 
 

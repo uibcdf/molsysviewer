@@ -21,7 +21,7 @@ class MolSysMTInterfaceMixin:
         layer_tags = sorted(self._layers.keys())
         region_tags = sorted(self._regions.keys())
         shape_tags = sorted(
-            tag for tag, item in self._scene_objects.items() if getattr(item, "kind", None) == "shape"
+            tag for (kind, tag) in self._scene_objects if kind == "shape"
         )
         annotation_tags = sorted(self.annotations.tags)
         measurement_tags = sorted(self.measurements.tags(skip_digestion=True))
@@ -224,8 +224,8 @@ class MolSysMTInterfaceMixin:
                     "details": f"shapes={n_shapes}, annotations={n_annotations}, measurements={n_measurements}, regions={n_regions}",
                 }
             )
-        for tag, item in sorted(self._scene_objects.items()):
-            if getattr(item, "kind", None) != "shape":
+        for (kind, tag), item in sorted(self._scene_objects.items()):
+            if kind != "shape":
                 continue
             records.append(
                 {

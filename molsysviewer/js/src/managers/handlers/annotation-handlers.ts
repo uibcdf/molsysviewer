@@ -149,6 +149,45 @@ export class AnnotationHandlers {
         );
     }
 
+    hasTag(tag: string): boolean {
+        return this.specsByTag.has(tag) || this.refsByTag.has(tag);
+    }
+
+    renameTag(oldTag: string, newTag: string) {
+        if (!oldTag || !newTag || oldTag === newTag) return;
+        const refs = this.refsByTag.get(oldTag);
+        if (refs) {
+            this.refsByTag.delete(oldTag);
+            this.refsByTag.set(newTag, refs);
+        }
+        const spec = this.specsByTag.get(oldTag);
+        if (spec) {
+            this.specsByTag.delete(oldTag);
+            this.specsByTag.set(newTag, {
+                ...spec,
+                tag: newTag,
+                layer_tag: spec.layer_tag === oldTag ? newTag : spec.layer_tag,
+            });
+        }
+        for (const tags of this.layerTagIndex.values()) {
+            if (tags.delete(oldTag)) tags.add(newTag);
+        }
+        const ownLayer = this.layerTagIndex.get(oldTag);
+        if (ownLayer) {
+            this.layerTagIndex.delete(oldTag);
+            this.layerTagIndex.set(newTag, ownLayer);
+        }
+    }
+
+    dropTag(tag: string) {
+        const refs = Array.from(this.refsByTag.get(tag) ?? []);
+        this.refsByTag.delete(tag);
+        this.specsByTag.delete(tag);
+        for (const ref of refs) this.labelRefs.delete(ref);
+        for (const tags of this.layerTagIndex.values()) tags.delete(tag);
+        this.layerTagIndex.delete(tag);
+    }
+
     async setVisibility(tag: string, visible: boolean) {
         // If the tag matches a layer_tag group, delegate to each member annotation.
         const layerGroup = this.layerTagIndex.get(tag);
@@ -174,10 +213,6 @@ export class AnnotationHandlers {
                 style: spec.style,
             },
         });
-    }
-
-    hasTag(tag: string): boolean {
-        return this.specsByTag.has(tag);
     }
 
     getSpec(tag: string): { text: string; atom_indices: number[] } | undefined {

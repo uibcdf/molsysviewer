@@ -259,7 +259,7 @@ class MolSysView(
         self._dynamic_region_cache_limit: int = 512
         self._dynamic_region_evaluation_budget_ms: float = 25.0
         self._layers: Dict[str, Layer] = {}
-        self._scene_objects: Dict[str, SceneObject] = {}
+        self._scene_objects: Dict[tuple[str, str], SceneObject] = {}
         self._selections: Dict[str, Selection] = {}
         self._tag_managers = {
             "region": TagsManager("region", "region", lambda: self._regions.keys()),
@@ -267,36 +267,28 @@ class MolSysView(
                 "shape",
                 "shape",
                 lambda: (
-                    item.tag
-                    for item in self._scene_objects.values()
-                    if getattr(item, "kind", None) == "shape"
+                    tag for kind, tag in self._scene_objects if kind == "shape"
                 ),
             ),
             "annotation": TagsManager(
                 "annotation",
                 "annotation",
                 lambda: (
-                    item.tag
-                    for item in self._scene_objects.values()
-                    if getattr(item, "kind", None) == "annotation"
+                    tag for kind, tag in self._scene_objects if kind == "annotation"
                 ),
             ),
             "measurement": TagsManager(
                 "measurement",
                 "measurement",
                 lambda: (
-                    item.tag
-                    for item in self._scene_objects.values()
-                    if getattr(item, "kind", None) == "measurement"
+                    tag for kind, tag in self._scene_objects if kind == "measurement"
                 ),
             ),
             "section": TagsManager(
                 "section",
                 "section",
                 lambda: (
-                    item.tag
-                    for item in self._scene_objects.values()
-                    if getattr(item, "kind", None) == "section"
+                    tag for kind, tag in self._scene_objects if kind == "section"
                 ),
             ),
             "layer": TagsManager("layer", "layer", lambda: self._layers.keys()),
@@ -851,7 +843,8 @@ class MolSysView(
             # objects (shapes/annotations/measurements).  Mol* sends a layer_ack
             # for every Mol* node — including one per sphere in a batch — but
             # Python tracks those under _scene_objects, not _layers.
-            if tag and tag not in self._scene_objects:
+            kind = str(content.get("kind") or "layer")
+            if tag and (kind, tag) not in self._scene_objects:
                 if tag not in self._layers:
                     layer = Layer(self, tag, kind=content.get("kind"), meta=content.get("meta") or {})
                     self._layers[tag] = layer
@@ -2309,7 +2302,7 @@ class MolSysView(
             if remapped is None:
                 tag = self._tag_from_message(msg)
                 if tag is not None:
-                    self._unregister_scene_object(tag)
+                    self._unregister_scene_object("shape", tag)
                 continue
             new_shape_history.append(remapped)
             self._send_replay(remapped)
@@ -2321,7 +2314,7 @@ class MolSysView(
             if remapped is None:
                 tag = self._tag_from_message(msg)
                 if tag is not None:
-                    self._unregister_scene_object(tag)
+                    self._unregister_scene_object("annotation", tag)
                 continue
             new_annotation_history.append(remapped)
             self._send_replay(remapped)
@@ -2333,7 +2326,7 @@ class MolSysView(
             if remapped is None:
                 tag = self._tag_from_message(msg)
                 if tag is not None:
-                    self._unregister_scene_object(tag)
+                    self._unregister_scene_object("measurement", tag)
                 continue
             new_measurement_history.append(remapped)
             self._send_replay(remapped)

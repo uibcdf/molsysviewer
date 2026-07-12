@@ -24,11 +24,35 @@ class HistoryMixin:
                 return opt_tag
         return None
 
-    def _rewrite_history_layer_tag(self, history: list[dict], old_tag: str, new_tag: str) -> list[dict]:
+    def _kind_from_message(self, msg: dict) -> str | None:
+        kind = msg.get("kind")
+        if isinstance(kind, str) and kind:
+            return kind
+        op = msg.get("op")
+        if op == "add_label" or op == "update_label":
+            return "annotation"
+        if op in {"add_distance_measurement", "add_angle_measurement", "add_dihedral_measurement"}:
+            return "measurement"
+        if isinstance(op, str) and op.startswith("add_"):
+            return "shape"
+        return None
+
+    def _rewrite_history_layer_tag(
+        self,
+        history: list[dict],
+        old_tag: str,
+        new_tag: str,
+        *,
+        kind: str | None = None,
+    ) -> list[dict]:
         rewritten: list[dict] = []
         for item in history:
             options = item.get("options")
-            if not isinstance(options, dict) or options.get("layer_tag") != old_tag:
+            if (
+                not isinstance(options, dict)
+                or options.get("layer_tag") != old_tag
+                or (kind not in {None, "layer"} and self._kind_from_message(item) != kind)
+            ):
                 rewritten.append(item)
                 continue
             updated = dict(item)
@@ -38,11 +62,19 @@ class HistoryMixin:
             rewritten.append(updated)
         return rewritten
 
-    def _rewrite_scene_layer_histories(self, old_tag: str, new_tag: str) -> None:
-        self._shape_history = self._rewrite_history_layer_tag(self._shape_history, old_tag, new_tag)
-        self._annotation_history = self._rewrite_history_layer_tag(self._annotation_history, old_tag, new_tag)
-        self._measurement_history = self._rewrite_history_layer_tag(self._measurement_history, old_tag, new_tag)
-        self._message_history = self._rewrite_history_layer_tag(self._message_history, old_tag, new_tag)
+    def _rewrite_scene_layer_histories(self, old_tag: str, new_tag: str, kind: str) -> None:
+        if kind in {"layer", "shape"}:
+            self._shape_history = self._rewrite_history_layer_tag(self._shape_history, old_tag, new_tag)
+        if kind in {"layer", "annotation"}:
+            self._annotation_history = self._rewrite_history_layer_tag(self._annotation_history, old_tag, new_tag)
+        if kind in {"layer", "measurement"}:
+            self._measurement_history = self._rewrite_history_layer_tag(self._measurement_history, old_tag, new_tag)
+        self._message_history = self._rewrite_history_layer_tag(
+            self._message_history,
+            old_tag,
+            new_tag,
+            kind=kind,
+        )
 
     _REGION_OPS = frozenset({
         "create_region", "set_region_representation",
@@ -74,7 +106,8 @@ class HistoryMixin:
 
         if op == "delete_layer":
             cleared_tag = msg.get("tag")
-            if not isinstance(cleared_tag, str):
+            kind = msg.get("kind")
+            if not isinstance(cleared_tag, str) or kind not in {"shape", "layer"}:
                 return
             self._shape_history = [m for m in self._shape_history if self._tag_from_message(m) != cleared_tag]
             return
@@ -82,9 +115,12 @@ class HistoryMixin:
         if op == "set_layer_tag":
             old_tag = msg.get("tag")
             new_tag = msg.get("new_tag")
-            if not isinstance(old_tag, str) or not isinstance(new_tag, str):
+            kind = msg.get("kind")
+            if not isinstance(old_tag, str) or not isinstance(new_tag, str) or kind not in {"shape", "layer"}:
                 return
-            self._rewrite_scene_layer_histories(old_tag, new_tag)
+            self._rewrite_scene_layer_histories(old_tag, new_tag, kind)
+            if kind != "shape":
+                return
             rewritten: list[dict] = []
             for item in self._shape_history:
                 tag = self._tag_from_message(item)
@@ -133,7 +169,8 @@ class HistoryMixin:
 
         if op == "delete_layer":
             cleared_tag = msg.get("tag")
-            if not isinstance(cleared_tag, str):
+            kind = msg.get("kind")
+            if not isinstance(cleared_tag, str) or kind not in {"annotation", "layer"}:
                 return
             self._annotation_history = [m for m in self._annotation_history if self._tag_from_message(m) != cleared_tag]
             return
@@ -141,9 +178,12 @@ class HistoryMixin:
         if op == "set_layer_tag":
             old_tag = msg.get("tag")
             new_tag = msg.get("new_tag")
-            if not isinstance(old_tag, str) or not isinstance(new_tag, str):
+            kind = msg.get("kind")
+            if not isinstance(old_tag, str) or not isinstance(new_tag, str) or kind not in {"annotation", "layer"}:
                 return
-            self._rewrite_scene_layer_histories(old_tag, new_tag)
+            self._rewrite_scene_layer_histories(old_tag, new_tag, kind)
+            if kind != "annotation":
+                return
             rewritten: list[dict] = []
             for item in self._annotation_history:
                 tag = self._tag_from_message(item)
@@ -201,7 +241,8 @@ class HistoryMixin:
 
         if op == "delete_layer":
             cleared_tag = msg.get("tag")
-            if not isinstance(cleared_tag, str):
+            kind = msg.get("kind")
+            if not isinstance(cleared_tag, str) or kind not in {"measurement", "layer"}:
                 return
             self._measurement_history = [m for m in self._measurement_history if self._tag_from_message(m) != cleared_tag]
             return
@@ -209,9 +250,12 @@ class HistoryMixin:
         if op == "set_layer_tag":
             old_tag = msg.get("tag")
             new_tag = msg.get("new_tag")
-            if not isinstance(old_tag, str) or not isinstance(new_tag, str):
+            kind = msg.get("kind")
+            if not isinstance(old_tag, str) or not isinstance(new_tag, str) or kind not in {"measurement", "layer"}:
                 return
-            self._rewrite_scene_layer_histories(old_tag, new_tag)
+            self._rewrite_scene_layer_histories(old_tag, new_tag, kind)
+            if kind != "measurement":
+                return
             rewritten: list[dict] = []
             for item in self._measurement_history:
                 tag = self._tag_from_message(item)

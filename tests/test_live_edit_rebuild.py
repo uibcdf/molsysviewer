@@ -113,7 +113,7 @@ def test_append_structures_rebuild_preserves_state_and_sets_multiple_structures(
     )
     assert pocket_msg["options"]["atom_indices"] == [0, 1, 2]
 
-    assert {"op": "hide_layer", "tag": "pocket"} in view._message_history
+    assert {"op": "hide_layer", "tag": "pocket", "kind": "shape"} in view._message_history
     assert {"op": "hide_region", "tag": "frag"} in view._message_history
 
 
@@ -241,7 +241,7 @@ def test_add_rebuild_preserves_state_and_expands_atom_payload(monkeypatch):
     )
     assert pocket_msg["options"]["atom_indices"] == [0, 1, 2]
 
-    assert {"op": "hide_layer", "tag": "pocket"} in view._message_history
+    assert {"op": "hide_layer", "tag": "pocket", "kind": "shape"} in view._message_history
     assert {"op": "hide_region", "tag": "frag"} in view._message_history
 
     visibility_msg = next(msg for msg in reversed(view._message_history) if msg.get("op") == "update_visibility")
@@ -274,7 +274,7 @@ def test_set_rebuild_updates_group_name_and_preserves_hidden_state():
     payload_msg = next(msg for msg in view._message_history if msg.get("op") == "load_molsys_payload")
     assert payload_msg["payload"]["atoms"]["residue_name"][:5] == ["ACE2"] * 5
 
-    assert {"op": "hide_layer", "tag": "pocket"} in view._message_history
+    assert {"op": "hide_layer", "tag": "pocket", "kind": "shape"} in view._message_history
     assert {"op": "hide_region", "tag": "frag"} in view._message_history
 
 
@@ -476,9 +476,9 @@ def test_remove_rebuild_drops_fully_orphaned_scene_objects_and_regions():
     assert "orphan-shape" not in view.shapes.tags(skip_digestion=True)
     assert "orphan-label" not in view.annotations.tags
     assert "orphan-distance" not in view.measurements.tags(skip_digestion=True)
-    assert "orphan-shape" not in view._scene_objects  # noqa: SLF001
-    assert "orphan-label" not in view._scene_objects  # noqa: SLF001
-    assert "orphan-distance" not in view._scene_objects  # noqa: SLF001
+    assert ("shape", "orphan-shape") not in view._scene_objects  # noqa: SLF001
+    assert ("annotation", "orphan-label") not in view._scene_objects  # noqa: SLF001
+    assert ("measurement", "orphan-distance") not in view._scene_objects  # noqa: SLF001
 
     assert not any(msg.get("tag") == "orphan-region" for msg in view._message_history)  # noqa: SLF001
     assert not any(
@@ -606,7 +606,7 @@ def test_remove_rebuild_remaps_regions_shapes_and_visibility():
     )
     assert links_msg["options"]["atom_pairs"] == [[1, 2]]
 
-    assert {"op": "hide_layer", "tag": "pocket"} in view._message_history
+    assert {"op": "hide_layer", "tag": "pocket", "kind": "shape"} in view._message_history
     assert not any(
         msg.get("op") == "add_pocket_surface" and msg.get("options", {}).get("tag") == "dropme"
         for msg in view._message_history
@@ -729,4 +729,4 @@ def test_remove_rebuild_drops_dynamic_shape_when_all_frames_are_orphaned():
         msg.get("op") == "add_sphere" and msg.get("options", {}).get("tag") == "orphan-site"
         for msg in view._shape_history  # noqa: SLF001
     )
-    assert "orphan-site" not in view._scene_objects  # noqa: SLF001
+    assert ("shape", "orphan-site") not in view._scene_objects  # noqa: SLF001

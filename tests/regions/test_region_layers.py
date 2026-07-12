@@ -27,7 +27,7 @@ def test_set_layer_creates_group_and_registers_membership():
     assert "site" in view.layers
     layer = view.layers["site"]
     assert "A" in layer.regions
-    assert "A" in layer.members
+    assert ("region", "A") in layer.members
 
 
 def test_layer_hide_and_show_apply_to_member_regions():

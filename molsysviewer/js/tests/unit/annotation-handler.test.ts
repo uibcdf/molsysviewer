@@ -3,6 +3,24 @@ import test from "node:test";
 
 import { AnnotationHandlers } from "../../src/managers/handlers/annotation-handlers";
 
+test("AnnotationHandlers renameTag moves only the addressed annotation bookkeeping", () => {
+    const handler = new AnnotationHandlers({ state: { data: {} } } as any, {
+        getStructure: () => undefined,
+        registerRef: () => void 0,
+    });
+    const refsByTag = (handler as any).refsByTag as Map<string, Set<string>>;
+    const specsByTag = (handler as any).specsByTag as Map<string, any>;
+    refsByTag.set("site1", new Set(["annotation-ref"]));
+    specsByTag.set("site1", { text: "site", atom_indices: [0], tag: "site1", layer_tag: "site1" });
+
+    handler.renameTag("site1", "label1");
+
+    assert.strictEqual(refsByTag.has("site1"), false);
+    assert.deepStrictEqual(Array.from(refsByTag.get("label1") ?? []), ["annotation-ref"]);
+    assert.strictEqual(specsByTag.get("label1")?.tag, "label1");
+    assert.strictEqual(specsByTag.get("label1")?.layer_tag, "label1");
+});
+
 test("AnnotationHandlers.addLabel creates a Mol* label from atom indices and registers refs under the tag", async () => {
     const calls: any[] = [];
     const refs: Array<{ ref: string; tag?: string }> = [];

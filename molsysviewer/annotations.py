@@ -22,16 +22,15 @@ class AnnotationsManager:
         return layer
 
     def _ensure_layer(self, tag: str, *, layer_tag: str | None = None) -> Layer:
-        tag = self._view._assert_scene_object_tag_available(tag)  # noqa: SLF001
-        tag = self._view._tag_managers["annotation"].observe(tag)  # noqa: SLF001
+        tag = self._view._tag_managers["annotation"].validate(tag)  # noqa: SLF001
         resolved_layer_tag = str(layer_tag).strip() if layer_tag is not None else tag
         self._view._ensure_layer_group(resolved_layer_tag, kind="annotation")  # noqa: SLF001
         annotation = Annotation(self._view, tag, layer_tag=resolved_layer_tag, meta={})
-        self._view._scene_objects[tag] = annotation  # noqa: SLF001
+        self._view._scene_objects[("annotation", tag)] = annotation  # noqa: SLF001
         return annotation
 
     def _annotation_layer(self, tag: str) -> Layer | None:
-        layer = self._view._scene_objects.get(tag)  # noqa: SLF001
+        layer = self._view._scene_objects.get(("annotation", tag))  # noqa: SLF001
         if layer is None or getattr(layer, "kind", None) != "annotation":
             return None
         return layer
@@ -101,7 +100,7 @@ class AnnotationsManager:
     @property
     def tags(self) -> list[str]:
         """Return the active annotation tags."""
-        return [tag for tag, layer in self._view._scene_objects.items() if getattr(layer, "kind", None) == "annotation"]  # noqa: SLF001
+        return [tag for kind, tag in self._view._scene_objects if kind == "annotation"]  # noqa: SLF001
 
     @signal(tags=["annotation"])
     @digest()

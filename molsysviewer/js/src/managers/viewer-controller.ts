@@ -1071,7 +1071,7 @@ export class MolSysViewerController {
             if (action === "hide_measurement") {
                 const tag = typeof details?.tag === "string" ? details.tag : null;
                 if (!tag) return;
-                void this.handleMessage({ op: "hide_layer", tag });
+                void this.handleMessage({ op: "hide_layer", tag, kind: "measurement" });
                 return;
             }
             if (action === "delete_measurement") {
@@ -1377,8 +1377,8 @@ export class MolSysViewerController {
                 const result = await this.getImageDataUri(options);
                 return typeof result === "string" ? result : undefined;
             },
-            showLayer: (tag) => this.state.showLayer({ op: "show_layer", tag }),
-            hideLayer: (tag) => this.state.hideLayer({ op: "hide_layer", tag }),
+            showLayer: (tag) => this.state.showLayer({ op: "show_layer", tag, kind: "shape" }),
+            hideLayer: (tag) => this.state.hideLayer({ op: "hide_layer", tag, kind: "shape" }),
             notify: (msg) => this.notify?.(msg),
         });
         // Subscriptions to local event bus
@@ -2033,7 +2033,7 @@ export class MolSysViewerController {
                             ? (msg as any).options.tag
                             : undefined;
                     if (typeof tag === "string") {
-                        await this.state.deleteLayer({ op: "delete_layer", tag });
+                        await this.state.deleteLayer({ op: "delete_layer", tag, kind: "shape" });
                         await this.shapes.addSphere({ op: "add_sphere", options: { ...((msg as any).options ?? {}), tag } });
                     }
                     break;
@@ -2164,15 +2164,27 @@ export class MolSysViewerController {
                 case "show_layer": await this.state.showLayer(msg); break;
                 case "hide_layer": await this.state.hideLayer(msg); break;
                 case "delete_layer":
-                    if (typeof (msg as any).tag === "string" && this.measurements.hasTag((msg as any).tag)) {
+                    if ((msg as any).kind === "annotation" && typeof (msg as any).tag === "string" && this.annotations.hasTag((msg as any).tag)) {
+                        this.annotations.dropTag((msg as any).tag);
+                    }
+                    if ((msg as any).kind === "measurement" && typeof (msg as any).tag === "string" && this.measurements.hasTag((msg as any).tag)) {
                         this.measurements.dropTag((msg as any).tag);
                     }
                     await this.state.deleteLayer(msg);
                     break;
                 case "set_layer_tag":
                     if (
+                        (msg as any).kind === "annotation"
+                        && typeof (msg as any).tag === "string"
+                        && typeof (msg as any).new_tag === "string"
+                        && this.annotations.hasTag((msg as any).tag)
+                    ) {
+                        this.annotations.renameTag((msg as any).tag, (msg as any).new_tag);
+                    }
+                    if (
                         typeof (msg as any).tag === "string"
                         && typeof (msg as any).new_tag === "string"
+                        && (msg as any).kind === "measurement"
                         && this.measurements.hasTag((msg as any).tag)
                     ) {
                         this.measurements.renameTag((msg as any).tag, (msg as any).new_tag);
@@ -2778,17 +2790,18 @@ export class MolSysViewerController {
 
         if (op === "hide_layer" || op === "show_layer") {
             const tag = (msg as any).tag;
+            const kind = (msg as any).kind;
             if (typeof tag !== "string") return;
             const hidden = op === "hide_layer";
-            if (this.addonsAnnotations.has(tag)) {
+            if (kind === "annotation" && this.addonsAnnotations.has(tag)) {
                 const item = this.addonsAnnotations.get(tag)!;
                 this.addonsAnnotations.set(tag, { ...item, hidden });
             }
-            if (this.addonsMeasurements.has(tag)) {
+            if (kind === "measurement" && this.addonsMeasurements.has(tag)) {
                 const item = this.addonsMeasurements.get(tag)!;
                 this.addonsMeasurements.set(tag, { ...item, hidden });
             }
-            if (this.addonsShapes.has(tag)) {
+            if (kind === "shape" && this.addonsShapes.has(tag)) {
                 const item = this.addonsShapes.get(tag)!;
                 this.addonsShapes.set(tag, { ...item, hidden });
             }
@@ -2797,10 +2810,11 @@ export class MolSysViewerController {
 
         if (op === "delete_layer") {
             const tag = (msg as any).tag;
+            const kind = (msg as any).kind;
             if (typeof tag !== "string") return;
-            this.addonsAnnotations.delete(tag);
-            this.addonsMeasurements.delete(tag);
-            this.addonsShapes.delete(tag);
+            if (kind === "annotation") this.addonsAnnotations.delete(tag);
+            if (kind === "measurement") this.addonsMeasurements.delete(tag);
+            if (kind === "shape") this.addonsShapes.delete(tag);
             if (this.addonsActive?.tag === tag) this.addonsActive = null;
             if (this.addonsContext?.tag === tag) this.addonsContext = null;
             return;
@@ -2809,8 +2823,9 @@ export class MolSysViewerController {
         if (op === "set_layer_tag") {
             const oldTag = (msg as any).tag;
             const newTag = (msg as any).new_tag;
+            const kind = (msg as any).kind;
             if (typeof oldTag !== "string" || typeof newTag !== "string") return;
-            if (this.addonsAnnotations.has(oldTag)) {
+            if (kind === "annotation" && this.addonsAnnotations.has(oldTag)) {
                 const item = this.addonsAnnotations.get(oldTag)!;
                 this.addonsAnnotations.delete(oldTag);
                 this.addonsAnnotations.set(newTag, item);
@@ -2821,7 +2836,7 @@ export class MolSysViewerController {
                     this.addonsContext = { section: "annotations", tag: newTag };
                 }
             }
-            if (this.addonsMeasurements.has(oldTag)) {
+            if (kind === "measurement" && this.addonsMeasurements.has(oldTag)) {
                 const item = this.addonsMeasurements.get(oldTag)!;
                 this.addonsMeasurements.delete(oldTag);
                 this.addonsMeasurements.set(newTag, item);
@@ -2829,7 +2844,7 @@ export class MolSysViewerController {
                     this.addonsActive = { section: "measurements", tag: newTag };
                 }
             }
-            if (this.addonsShapes.has(oldTag)) {
+            if (kind === "shape" && this.addonsShapes.has(oldTag)) {
                 const item = this.addonsShapes.get(oldTag)!;
                 this.addonsShapes.delete(oldTag);
                 this.addonsShapes.set(newTag, item);
@@ -2907,7 +2922,7 @@ export class MolSysViewerController {
                         this.focusTarget({ atom_indices: item.atomIndices });
                     } : undefined,
                     onToggleVisibility: () => {
-                        void this.handleMessage({ op: item.hidden ? "show_layer" : "hide_layer", tag });
+                        void this.handleMessage({ op: item.hidden ? "show_layer" : "hide_layer", tag, kind: "annotation" });
                     },
                     onDelete: () => {
                         this.notify?.({ event: "interaction_context_action", action: "delete_annotation", tag });
@@ -2931,7 +2946,7 @@ export class MolSysViewerController {
                         this.focusTarget({ atom_indices: item.atomIndices });
                     } : undefined,
                     onToggleVisibility: () => {
-                        void this.handleMessage({ op: item.hidden ? "show_layer" : "hide_layer", tag });
+                        void this.handleMessage({ op: item.hidden ? "show_layer" : "hide_layer", tag, kind: "measurement" });
                     },
                     onDelete: () => {
                         this.notify?.({ event: "interaction_context_action", action: "delete_measurement", tag });
@@ -2955,7 +2970,7 @@ export class MolSysViewerController {
                         this.focusTarget({ atom_indices: item.atomIndices });
                     } : undefined,
                     onToggleVisibility: () => {
-                        void this.handleMessage({ op: item.hidden ? "show_layer" : "hide_layer", tag });
+                        void this.handleMessage({ op: item.hidden ? "show_layer" : "hide_layer", tag, kind: "shape" });
                     },
                     onDelete: () => {
                         this.notify?.({ event: "interaction_context_action", action: "delete_shape", tag });
@@ -3969,10 +3984,12 @@ export class MolSysViewerController {
                 if ((msg as any).options?.labels) this.groupPanel.clearAnnotationOverlays();
                 break;
             case "delete_layer":
-                this.groupPanel.clearAnnotationOverlaysByTag((msg as any).tag);
+                if ((msg as any).kind === "annotation") {
+                    this.groupPanel.clearAnnotationOverlaysByTag((msg as any).tag);
+                }
                 break;
             case "set_layer_tag":
-                if (typeof (msg as any).tag === "string" && typeof (msg as any).new_tag === "string") {
+                if ((msg as any).kind === "annotation" && typeof (msg as any).tag === "string" && typeof (msg as any).new_tag === "string") {
                     this.groupPanel.retagAnnotationOverlays((msg as any).tag, (msg as any).new_tag);
                 }
                 break;

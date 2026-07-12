@@ -211,7 +211,7 @@ class SphereShapes:
                 layer_tag=shared_layer_tag,
                 meta={"shape_kind": "sphere", "shape_name": "Sphere"},
             )
-            objects[normalized_tag] = shape
+            objects[("shape", normalized_tag)] = shape
             self._view._send(  # noqa: SLF001
                 {
                     "op": "add_sphere",
@@ -293,18 +293,17 @@ class SphereShapes:
         self._view._send({"op": "clear_shapes_by_tag", "tag": tag})
         if hasattr(self._view, "_unregister_scene_object"):
             if tag is None:
-                shape_tags = [t for t, obj in getattr(self._view, "_scene_objects", {}).items() if getattr(obj, "kind", None) == "shape"]
+                shape_tags = [t for (kind, t), obj in getattr(self._view, "_scene_objects", {}).items() if kind == "shape"]
                 for t in shape_tags:
-                    self._view._unregister_scene_object(t)
+                    self._view._unregister_scene_object("shape", t)
             else:
-                self._view._unregister_scene_object(tag)
+                self._view._unregister_scene_object("shape", tag)
         else:
             scene_objects = getattr(self._view, "_scene_objects", None)
             if isinstance(scene_objects, dict):
                 if tag is None:
-                    shape_tags = [t for t, obj in scene_objects.items() if getattr(obj, "kind", None) == "shape"]
+                    shape_tags = [t for (kind, t), obj in scene_objects.items() if kind == "shape"]
                     for t in shape_tags:
-                        scene_objects.pop(t, None)
+                        scene_objects.pop(("shape", t), None)
                 else:
-                    scene_objects.pop(tag, None)
-
+                    scene_objects.pop(("shape", tag), None)

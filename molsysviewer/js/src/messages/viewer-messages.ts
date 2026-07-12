@@ -541,21 +541,25 @@ export type CreateLayerMessage = {
 export type ShowLayerMessage = {
     op: "show_layer";
     tag?: string;
+    kind: string;
 };
 
 export type HideLayerMessage = {
     op: "hide_layer";
     tag?: string;
+    kind: string;
 };
 
 export type DeleteLayerMessage = {
     op: "delete_layer";
     tag?: string;
+    kind: string;
 };
 
 export type SetLayerTagMessage = {
     op: "set_layer_tag";
     tag?: string;
+    kind: string;
     new_tag: string;
 };
 

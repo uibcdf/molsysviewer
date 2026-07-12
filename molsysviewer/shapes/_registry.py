@@ -5,16 +5,14 @@ from ..layers import GroupLayer, Shape
 
 def normalize_new_shape_tag(view, tag: str) -> str:
     text = str(tag).strip()
-    checker = getattr(view, "_assert_scene_object_tag_available", None)
-    if callable(checker):
-        text = checker(text)
-        managers = getattr(view, "_tag_managers", {})
-        manager = managers.get("shape")
-        return manager.observe(text) if manager is not None else text
+    managers = getattr(view, "_tag_managers", {})
+    manager = managers.get("shape")
+    if manager is not None:
+        return manager.validate(text)
     if text == "":
         raise ValueError("Shape tag must be a non-empty string.")
     objects = getattr(view, "_scene_objects", {})
-    if text in objects:
+    if ("shape", text) in objects:
         raise ValueError(f"Shape tag {text!r} already exists.")
     return text
 
@@ -33,5 +31,5 @@ def register_shape_layer(view, tag: str, layer_tag: str | None = None, meta: dic
         objects = {}
         setattr(view, "_scene_objects", objects)
     shape = Shape(view, normalized_tag, layer_tag=normalized_layer_tag, meta=dict(meta or {}))
-    objects[normalized_tag] = shape
+    objects[("shape", normalized_tag)] = shape
     return shape

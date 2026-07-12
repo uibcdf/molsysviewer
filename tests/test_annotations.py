@@ -70,7 +70,7 @@ def test_annotation_manager_supports_query_and_layer_operations():
     assert layer is not None
     assert view.annotations["notes"] is layer
     assert view.layers["notes"].annotations == {"notes": layer}
-    assert view.layers["notes"].members == {"notes": layer}
+    assert view.layers["notes"].members == {("annotation", "notes"): layer}
     assert layer.tag == "notes"
     assert view.annotations.records()[0]["options"]["text"] == "Group 0"
     assert view.annotations.info("notes") == {
@@ -123,7 +123,7 @@ def test_annotation_manager_supports_explicit_shared_layer_tag():
     assert second.layer_tag == "analysis"
     assert "analysis" in view.layers
     assert set(view.layers["analysis"].annotations.keys()) == {"notes-a", "notes-b"}
-    assert set(view.layers["analysis"].members.keys()) == {"notes-a", "notes-b"}
+    assert set(view.layers["analysis"].members.keys()) == {("annotation", "notes-a"), ("annotation", "notes-b")}
 
 
 def test_annotation_manager_can_move_annotation_between_layers():
