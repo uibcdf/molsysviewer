@@ -73,5 +73,8 @@ async function run() {
 
 run().catch(error => {
     console.error(error);
-    process.exitCode = 1;
+    // process.exit, not process.exitCode: a failed assertion skips browser.close(),
+    // so Chromium stays alive and the event loop never drains. Setting exitCode
+    // would leave the process hanging until CI's timeout instead of failing fast.
+    process.exit(1);
 });
