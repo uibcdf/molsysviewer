@@ -12,7 +12,7 @@ def test_zoom_sends_message(monkeypatch):
 
     view.zoom(selection=[2, 3, 4], duration_ms=100, extra_radius=2.5, min_radius=0.5)
 
-    msg = view._pending_messages[-1]  # noqa: SLF001
+    msg = view._message_history[-1]  # noqa: SLF001
     assert msg["op"] == "zoom"
     assert msg["atom_indices"] == [2, 3, 4]
     assert msg["options"] == {"duration_ms": 100, "extra_radius": 2.5, "min_radius": 0.5}

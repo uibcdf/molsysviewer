@@ -41,7 +41,8 @@ def test_molsysview_load_uses_molsysmt_payload():
     molsys = msm.convert(PDB_TEXT, to_form="molsysmt.MolSys")
 
     view = MolSysView(debug_js=True)
-    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+    sent = []
+    view.widget.send = lambda msg: sent.append(msg)  # type: ignore[attr-defined]
 
     result = view.load(molsys)
     assert result is None
@@ -55,10 +56,13 @@ def test_molsysview_load_uses_molsysmt_payload():
     assert view.atom_mask is not None  # noqa: SLF001
     assert view.atom_mask.tolist() == [True] * n_atoms  # noqa: SLF001
 
-    # Message is queued because the widget isn't ready yet.
-    assert view._pending_messages  # noqa: SLF001
-    msg = view._pending_messages[-1]  # noqa: SLF001
-    assert msg["op"] == "load_molsys_payload"
+    # The scene is retained for the ready handshake, but not sent before the widget is ready.
+    msg = next(  # noqa: SLF001
+        message
+        for message in reversed(view._message_history)
+        if message.get("op") == "load_molsys_payload"
+    )
+    assert sent == []
 
     payload = msg["payload"]
     atoms = payload["atoms"]

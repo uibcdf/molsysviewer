@@ -207,7 +207,6 @@ class MolSysView(
         self._already_shown = False
 
         self._ready = False
-        self._pending_messages: list[dict] = []
         self._message_history: list[dict] = []
         self._last_camera_snapshot: dict | None = None
         self._current_figure_spec: dict | None = None
@@ -811,9 +810,8 @@ class MolSysView(
             return
         elif event == "ready":
             self._ready = True
-            # Clear pending messages since they were already synced and processed
-            # via initial_messages trait on startup.
-            self._pending_messages.clear()
+            for message in list(self._message_history):
+                self.widget.send(message)
             self._sync_region_summaries_runtime()
             self._sync_whole_summary_runtime()
         elif event == "request_widget_runtime_source":
@@ -2240,7 +2238,6 @@ class MolSysView(
 
         # Rebuild the message history to reflect the new state (important for HTML exports).
         self._message_history = []
-        self._pending_messages = []
         # Force the next visibility update to send a full state (the frontend is
         # reset by the rebuild, so a delta against the old mask would be wrong).
         self._last_visibility_mask = None
