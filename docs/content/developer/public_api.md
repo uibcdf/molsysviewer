@@ -209,7 +209,7 @@ Related object wrappers are also part of the intended public surface:
 - `view.annotations.set_text(tag, text)`
 - `view.annotations.set_tag(tag, new_tag)`
 - `view.annotations.set_layer_tag(tag, new_layer_tag)`
-- `view.annotations.tags`
+- `view.annotations.tags()`
 - `view.annotations.count()`
 - `view.annotations.contains(tag)`
 - `view.annotations.get(tag)`

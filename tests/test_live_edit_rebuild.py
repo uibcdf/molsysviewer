@@ -474,7 +474,7 @@ def test_remove_rebuild_drops_fully_orphaned_scene_objects_and_regions():
 
     assert "orphan-region" not in list(view.regions)
     assert "orphan-shape" not in view.shapes.tags(skip_digestion=True)
-    assert "orphan-label" not in view.annotations.tags
+    assert "orphan-label" not in view.annotations.tags()
     assert "orphan-distance" not in view.measurements.tags(skip_digestion=True)
     assert ("shape", "orphan-shape") not in view._scene_objects  # noqa: SLF001
     assert ("annotation", "orphan-label") not in view._scene_objects  # noqa: SLF001

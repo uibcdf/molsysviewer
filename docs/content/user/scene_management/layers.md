@@ -12,7 +12,7 @@ import molsysviewer as viewer
 view = viewer.new_view("1CRN")
 view.show()
 
-pockets = view.new_layer(tag="pockets", kind="shapes")
+pockets = view.layers.add("pockets", kind="shapes")
 ```
 
 ## Add content to a layer
@@ -40,4 +40,3 @@ pockets.set_tag("pockets-v2")
 
 Notes
 - You can hide a layer before it has content. When you later add shapes with that tag, they inherit the hidden state.
-

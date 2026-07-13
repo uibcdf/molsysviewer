@@ -401,6 +401,97 @@ class Layer(LayerHandle):
         obj.set_layer_tag(obj.tag)
 
 
+class LayersManager(dict[str, Layer]):
+    """Live registry and public manager for scene grouping layers."""
+
+    def __init__(self, view: Any) -> None:
+        super().__init__()
+        self._view = view
+
+    @signal(tags=["layer"])
+    @digest()
+    def add(
+        self,
+        tag: str,
+        *,
+        kind: str | None = None,
+        meta: dict[str, Any] | None = None,
+        skip_digestion: bool = False,
+    ) -> Layer:
+        normalized = self._view._tag_managers["layer"].validate(tag)  # noqa: SLF001
+        layer = Layer(self._view, normalized, kind=kind, meta=dict(meta or {}))
+        self[normalized] = layer
+        layer._send_create()  # noqa: SLF001
+        return layer
+
+    def tags(self, skip_digestion: bool = False) -> list[str]:
+        return list(self.keys())
+
+    def count(self, skip_digestion: bool = False) -> int:
+        return len(self)
+
+    def contains(self, tag: str, skip_digestion: bool = False) -> bool:
+        return tag in self
+
+    def get(self, tag: str, default=None, skip_digestion: bool = False):
+        return super().get(tag, default)
+
+    def records(self, skip_digestion: bool = False) -> list[dict[str, Any]]:
+        result = self.info(skip_digestion=True)
+        return result if isinstance(result, list) else [result]
+
+    def info(self, tag: str | None = None, skip_digestion: bool = False):
+        def summarize(layer: Layer) -> dict[str, Any]:
+            return {
+                "tag": layer.tag,
+                "kind": layer.kind,
+                "meta": dict(layer.meta),
+                "visible": not layer._hidden,  # noqa: SLF001
+                "n_members": len(layer.members),
+            }
+
+        if tag is not None:
+            layer = super().get(tag)
+            if layer is None:
+                raise KeyError(tag)
+            return summarize(layer)
+        return [summarize(layer) for layer in self.values()]
+
+    def delete(self, tag: str, skip_digestion: bool = False) -> None:
+        layer = super().get(tag)
+        if layer is None:
+            raise KeyError(tag)
+        layer.delete(skip_digestion=True)
+
+    def clear(self, tag: str | None = None, skip_digestion: bool = False) -> None:
+        if tag is not None:
+            self.delete(tag, skip_digestion=True)
+            return
+        for layer_tag in list(self.keys()):
+            self.delete(layer_tag, skip_digestion=True)
+
+    def set_tag(self, tag: str, new_tag: str, skip_digestion: bool = False) -> Layer:
+        layer = super().get(tag)
+        if layer is None:
+            raise KeyError(tag)
+        layer.set_tag(new_tag, skip_digestion=True)
+        return layer
+
+    def show(self, tag: str, skip_digestion: bool = False) -> Layer:
+        layer = super().get(tag)
+        if layer is None:
+            raise KeyError(tag)
+        layer.show(skip_digestion=True)
+        return layer
+
+    def hide(self, tag: str, skip_digestion: bool = False) -> Layer:
+        layer = super().get(tag)
+        if layer is None:
+            raise KeyError(tag)
+        layer.hide(skip_digestion=True)
+        return layer
+
+
 class Shape(SceneObject):
     def __init__(self, view: Any, tag: str, *, layer_tag: str | None = None, meta: Optional[Dict[str, Any]] = None) -> None:
         super().__init__(view, tag, kind="shape", layer_tag=layer_tag, meta=meta)
@@ -1199,6 +1290,3 @@ class Section(SceneObject):
         self._view._section_history = new_history  # noqa: SLF001
         self._view._scene_objects.pop((self.kind, self.tag), None)  # noqa: SLF001
         self._view._send({"op": "set_sections", "sections": new_history})  # noqa: SLF001
-
-
-GroupLayer = Layer

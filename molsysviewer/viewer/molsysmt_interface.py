@@ -23,9 +23,9 @@ class MolSysMTInterfaceMixin:
         shape_tags = sorted(
             tag for (kind, tag) in self._scene_objects if kind == "shape"
         )
-        annotation_tags = sorted(self.annotations.tags)
+        annotation_tags = sorted(self.annotations.tags())
         measurement_tags = sorted(self.measurements.tags(skip_digestion=True))
-        selection_tags = sorted(self.selections.tags)
+        selection_tags = sorted(self.selections.tags())
 
         return {
             "whole": {

@@ -4,6 +4,9 @@ def digest_items(items, forms=None, caller=None):
 
     from molsysmt.basic import get_form
 
+    if items is None:
+        return []
+
     aux_items = items
 
     if not isinstance(items, (list, tuple)):

@@ -49,6 +49,31 @@ class ShapesManager:
             raise KeyError(tag)
         return layer
 
+    def add(self, kind: str, **kwargs):
+        """Create a shape of explicit *kind* through its public constructor."""
+        methods = {
+            "sphere": self.add_sphere,
+            "pocket_surface": self.add_pocket_surface,
+            "alpha_spheres": self.add_set_alpha_spheres,
+            "links": self.add_links,
+            "displacement_vectors": self.add_displacement_vectors,
+            "triangle_faces": self.add_triangle_faces,
+            "tetrahedra": self.add_tetrahedra,
+            "pocket_blob": self.add_pocket_blob,
+            "scalar_isosurface": self.add_scalar_isosurface,
+            "channel_tube": self.add_channel_tube,
+            "rings": self.add_rings,
+            "anisotropy_ellipsoids": self.add_anisotropy_ellipsoids,
+            "interaction_sites": self.add_interaction_sites,
+            "pharmacophore_features": self.add_pharmacophore_features,
+        }
+        normalized = str(kind).strip().lower().replace("-", "_")
+        try:
+            method = methods[normalized]
+        except KeyError as exc:
+            raise ValueError(f"Unsupported shape kind {kind!r}; choose from {sorted(methods)}.") from exc
+        return method(**kwargs)
+
     @signal(tags=["shape"])
     @digest()
     def tags(self, skip_digestion: bool = False) -> list[str]:
@@ -89,6 +114,39 @@ class ShapesManager:
     def items(self, skip_digestion: bool = False) -> list[tuple]:
         """Return (tag, Shape) pairs for all shapes."""
         return [(tag, self.get(tag, skip_digestion=True)) for tag in self.tags(skip_digestion=True)]
+
+    def count(self, skip_digestion: bool = False) -> int:
+        return len(self.tags(skip_digestion=True))
+
+    def records(self, skip_digestion: bool = False) -> list[dict]:
+        return [dict(record) for record in self._view._shape_history]  # noqa: SLF001
+
+    def delete(self, tag: str, skip_digestion: bool = False) -> None:
+        shape = self.get(tag, skip_digestion=True)
+        if shape is None:
+            raise KeyError(tag)
+        shape.delete(skip_digestion=True)
+
+    def set_tag(self, tag: str, new_tag: str, skip_digestion: bool = False):
+        shape = self.get(tag, skip_digestion=True)
+        if shape is None:
+            raise KeyError(tag)
+        shape.set_tag(new_tag, skip_digestion=True)
+        return shape
+
+    def show(self, tag: str, skip_digestion: bool = False):
+        shape = self.get(tag, skip_digestion=True)
+        if shape is None:
+            raise KeyError(tag)
+        shape.show(skip_digestion=True)
+        return shape
+
+    def hide(self, tag: str, skip_digestion: bool = False):
+        shape = self.get(tag, skip_digestion=True)
+        if shape is None:
+            raise KeyError(tag)
+        shape.hide(skip_digestion=True)
+        return shape
 
     @signal(tags=["shape", "query"])
     @digest()
@@ -291,15 +349,6 @@ class ShapesManager:
         **kwargs,
     ):
         return self.blobs.add_scalar_isosurface(*args, **kwargs)
-
-    @signal(tags=["shape"])
-    def add_gaussian_isosurface(
-        self,
-        *args,
-        skip_digestion: bool = False,
-        **kwargs,
-    ):
-        return self.blobs.add_gaussian_isosurface(*args, **kwargs)
 
     @signal(tags=["shape"])
     def add_channel_tube(

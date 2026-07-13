@@ -42,11 +42,13 @@ def test_reset_viewer_clears_internal_histories():
 def test_reset_viewer_last_message_is_clear_all():
     view = MolSysView()
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+    view.layers.add("analysis", skip_digestion=True)
 
     view.reset_viewer(skip_digestion=True)
 
     # _message_history is an append-only log; reset appends clear_all last
     assert view._message_history[-1]["op"] == "clear_all"  # noqa: SLF001
+    assert "delete_layer" not in [message.get("op") for message in view._message_history]  # noqa: SLF001
 
 
 # ---------------------------------------------------------------------------

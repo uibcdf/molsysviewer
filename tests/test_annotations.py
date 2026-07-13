@@ -39,7 +39,7 @@ def test_group_label_uses_annotation_prefix_by_default():
 
     assert layer.tag == "annotation1"
     assert layer.layer_tag == "annotation1"
-    assert view.annotations.tags == ["annotation1"]
+    assert view.annotations.tags() == ["annotation1"]
     assert view.annotations.records()[0]["tag"] == "annotation1"
     assert view.annotations.records()[0]["options"]["tag"] == "annotation1"
     assert view.annotations.records()[0]["options"]["layer_tag"] == "annotation1"
@@ -64,7 +64,7 @@ def test_annotation_manager_supports_query_and_layer_operations():
     view.annotations.add_annotation(text="Group 0", selection="group_index==0", tag="notes")
 
     assert view.annotations.count() == 1
-    assert view.annotations.tags == ["notes"]
+    assert view.annotations.tags() == ["notes"]
     assert view.annotations.contains("notes") is True
     layer = view.annotations.get("notes")
     assert layer is not None
@@ -78,6 +78,7 @@ def test_annotation_manager_supports_query_and_layer_operations():
         "tag": "notes",
         "layer_tag": "notes",
         "text": "Group 0",
+        "style": {},
         "n_atoms": len(view.select(selection="group_index==0")),
         "atom_indices": list(view.select(selection="group_index==0")),
         "visible": True,
@@ -99,7 +100,7 @@ def test_annotation_manager_supports_query_and_layer_operations():
     assert view.annotations.records()[0]["options"]["tag"] == "analysis-label"
 
     view.annotations.delete("analysis-label")
-    assert view.annotations.tags == []
+    assert view.annotations.tags() == []
     assert view.annotations.count() == 0
 
 
@@ -157,7 +158,7 @@ def test_annotation_manager_clear_tag_and_global_clear():
     assert [item["tag"] for item in view.annotations.records()] == ["notes-2"]
 
     view.annotations.clear()
-    assert view.annotations.tags == []
+    assert view.annotations.tags() == []
     assert view.annotations.records() == []
     assert view.annotations.count() == 0
 
@@ -173,6 +174,32 @@ def test_annotation_manager_can_update_label_text_replay_safely():
     exported = [msg for msg in view._build_export_messages() if msg.get("tag") == "notes"]  # noqa: SLF001
     assert [msg["op"] for msg in exported] == ["add_label", "update_label"]
     assert exported[-1]["options"]["text"] == "After"
+
+
+def test_annotation_manager_set_style_preserves_identity_layer_and_replay():
+    view = demo["dialanine"]
+    annotation = view.annotations.add_annotation(
+        text="Styled",
+        selection="group_index==0",
+        tag="notes",
+        layer_tag="analysis",
+    )
+
+    returned = view.annotations.set_style(
+        "notes",
+        {"color": "#FF0000", "size_em": 1.5},
+        skip_digestion=True,
+    )
+
+    assert returned is annotation
+    assert returned.tag == "notes"
+    assert returned.layer_tag == "analysis"
+    assert view.annotations.info("notes")["style"] == {"color": "#FF0000", "size_em": 1.5}
+    assert view.annotations.records()[0]["options"]["style"] == {"color": "#FF0000", "size_em": 1.5}
+    # The replay message is a separate channel from the Python object: the object can keep its
+    # layer while the message that feeds the HTML export, the popup and the rebuild re-homes the
+    # annotation somewhere else — silently.
+    assert view.annotations.records()[0]["options"]["layer_tag"] == "analysis"
 
 
 def test_annotation_manager_set_anchor_reanchors_by_selection_replay_safely():

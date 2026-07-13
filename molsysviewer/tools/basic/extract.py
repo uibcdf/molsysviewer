@@ -65,11 +65,11 @@ def _import_extracted_state(
     for layer in source.layers.values():
         if not getattr(layer, "_active", True):
             continue
-        new_layer = result.new_layer(
-            tag=layer.tag,
+        new_layer = result.layers.add(
+            layer.tag,
             kind=layer.kind,
+            meta=dict(layer.meta) if isinstance(layer.meta, dict) else {},
             skip_digestion=True,
-            **(dict(layer.meta) if isinstance(layer.meta, dict) else {}),
         )
         if getattr(layer, "_hidden", False):
             new_layer.hide(skip_digestion=True)

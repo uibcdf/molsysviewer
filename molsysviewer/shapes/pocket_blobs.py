@@ -139,8 +139,6 @@ class PocketBlobs:
             name=name,
         )
 
-    add_gaussian_isosurface = add_scalar_isosurface
-
     @signal(tags=["shape", "pocket"])
     @digest()
     def add_pocket_blob(

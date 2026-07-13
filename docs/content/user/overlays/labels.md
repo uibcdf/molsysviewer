@@ -103,5 +103,5 @@ view.annotations.set_anchor("n-term-label", selection="group_index==1")
 ```python
 view.annotations.info()          # list of all annotation summaries
 view.annotations.info("n-term-label")  # single annotation
-view.annotations.tags            # list of active tags
+view.annotations.tags()          # list of active tags
 ```

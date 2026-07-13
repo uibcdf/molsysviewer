@@ -122,7 +122,7 @@ def test_set_layer_is_undoable():
 
 def test_set_layer_accepts_a_layer_object():
     view = _mute(demo["dialanine"])
-    layer = view.new_layer(tag="site")
+    layer = view.layers.add("site")
     r = _region(view, [0, 1, 2], "A", representation="cartoon")
     r.set_layer(layer, skip_digestion=True)
     assert r.layer == "site"

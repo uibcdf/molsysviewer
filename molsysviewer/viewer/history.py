@@ -224,6 +224,10 @@ class HistoryMixin:
                         options["atom_indices"] = new_options["atom_indices"]
                     if "tag" in new_options:
                         options["tag"] = new_options["tag"]
+                    if "layer_tag" in new_options:
+                        options["layer_tag"] = new_options["layer_tag"]
+                    if "style" in new_options:
+                        options["style"] = dict(new_options["style"] or {})
                 updated["options"] = options
                 rewritten.append(updated)
             self._annotation_history = rewritten

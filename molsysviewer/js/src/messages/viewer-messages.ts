@@ -156,6 +156,7 @@ export type UpdateLabelMessage = {
         text?: string;
         atom_indices?: number[];
         tag?: string;
+        layer_tag?: string;
         style?: LabelStyle;
     };
 };

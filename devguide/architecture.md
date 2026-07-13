@@ -118,12 +118,12 @@ This is part of the runtime contract because it affects rebuilds, exports, and p
 
 There are three registries on every `MolSysView` instance:
 
-- **`_scene_objects: dict[str, SceneObject]`** — individual Shape, Annotation,
-  and Measurement objects.  Each entry is keyed by its unique `tag`.
+- **`_scene_objects: dict[tuple[str, str], SceneObject]`** — individual Shape,
+  Annotation, and Measurement objects. Each entry is keyed by `(kind, tag)`.
 - **`_regions: dict[str, Region]`** — structural regions over the molecular system.
-- **`_layers: dict[str, Layer]`** — `GroupLayer` instances that group one or
+- **`_layers: LayersManager`** — `Layer` instances that group one or
   more scene objects (or structural regions) under a shared visibility/color
-  toggle.  Each entry is keyed by the layer's `tag`.
+  toggle. It remains a `dict` subclass keyed by the layer's `tag`.
 
 ### The scene model in one paragraph
 
@@ -141,10 +141,11 @@ scene-level history (`view.history`, snapshot-based undo/redo). All of it serial
 
 ### Key invariants
 
-1. **Tag uniqueness is global.** A tag can appear in `_scene_objects` OR in
-   `_layers`, never both.  Auto-tag counters (`_shape_counter`,
-   `_layer_counter`, etc.) are incremented monotonically; they are propagated
-   when views are extracted or merged so collisions cannot occur.
+1. **Identity is `(domain, tag)`.** A tag is unique inside its domain, while
+   different domains may deliberately reuse it (for example, a shape and an
+   annotation may both be named `site1`). `TagsManager` owns each domain's
+   naming policy and monotonic high-water mark; the live registries remain the
+   source of truth for which tags exist.
 
 2. **`layer_tag` is the grouping channel — for scene objects.**  A `SceneObject` carries a
    `layer_tag` attribute that names the `Layer` it belongs to.  When no

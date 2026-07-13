@@ -114,6 +114,7 @@ export class AnnotationHandlers {
                 text: msg.options?.text,
                 atom_indices: msg.options?.atom_indices,
                 tag,
+                layer_tag: msg.options?.layer_tag ?? prevSpec?.layer_tag,
                 style: msg.options?.style ?? prevSpec?.style,
             },
         });

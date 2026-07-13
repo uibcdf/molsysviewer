@@ -1,9 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
-from smonitor import signal
-from .._private.arg_digestion import digest
-from ..layers import GroupLayer, Layer, SceneObject
+from ..layers import Layer, SceneObject
 
 
 class SceneRegistryMixin:
@@ -37,7 +34,7 @@ class SceneRegistryMixin:
         layer_tag = getattr(obj, "layer_tag", None)
         if isinstance(layer_tag, str):
             layer = self._layers.get(layer_tag)
-            if isinstance(layer, GroupLayer) and len(layer.members) == 0:
+            if isinstance(layer, Layer) and len(layer.members) == 0:
                 self._layers.pop(layer_tag, None)
 
     def _reregister_scene_object(self, old_tag: str, new_tag: str, obj: SceneObject) -> None:
@@ -91,7 +88,7 @@ class SceneRegistryMixin:
         self._update_scene_object_history_layer_tag(obj.kind, obj.tag, text)
         if isinstance(old_layer_tag, str):
             old_layer = self._layers.get(old_layer_tag)
-            if isinstance(old_layer, GroupLayer) and len(old_layer.members) == 0:
+            if isinstance(old_layer, Layer) and len(old_layer.members) == 0:
                 self._layers.pop(old_layer_tag, None)
             else:
                 self._sync_layer_group_hidden_state(old_layer_tag)
@@ -101,7 +98,7 @@ class SceneRegistryMixin:
         """Drop a grouping layer left empty (e.g. after a region moved out or
         was deleted), otherwise refresh its aggregate hidden state."""
         layer = self._layers.get(layer_tag)
-        if isinstance(layer, GroupLayer) and len(layer.members) == 0:
+        if isinstance(layer, Layer) and len(layer.members) == 0:
             self._layers.pop(layer_tag, None)
         else:
             self._sync_layer_group_hidden_state(layer_tag)
@@ -112,7 +109,7 @@ class SceneRegistryMixin:
             raise ValueError("Layer tag must be a non-empty string.")
         layer = self._layers.get(text)
         if layer is None:
-            layer = GroupLayer(self, text, kind=kind or "layer", meta={})
+            layer = Layer(self, text, kind=kind or "layer", meta={})
             self._layers[text] = layer
         elif kind is not None:
             layer.kind = kind
@@ -120,7 +117,7 @@ class SceneRegistryMixin:
 
     def _move_or_rename_layer_group_for_object_tag_change(self, old_tag: str, new_tag: str, obj: SceneObject) -> None:
         old_layer = self._layers.get(old_tag)
-        if isinstance(old_layer, GroupLayer) and len(old_layer.members) == 1 and (obj.kind, obj.tag) in old_layer.members:
+        if isinstance(old_layer, Layer) and len(old_layer.members) == 1 and (obj.kind, obj.tag) in old_layer.members:
             self._layers.pop(old_tag, None)
             old_layer.tag = new_tag
             self._layers[new_tag] = old_layer
@@ -144,25 +141,5 @@ class SceneRegistryMixin:
         if current_tag is not None and text == current_tag:
             return text
         return text
-
-    @signal(tags=["layer"])
-    @digest()
-    def new_layer(
-        self,
-        *,
-        tag: str | None = None,
-        kind: str | None = None,
-        skip_digestion: bool = False,
-        **meta: Any,
-    ) -> Layer:
-        """Create a new layer (non-structural visual group)."""
-        tag = tag or self._next_layer_tag()
-        tag = self._assert_nonstructural_tag_available(tag)
-        tag = self._tag_managers["layer"].observe(tag)
-        layer = Layer(self, tag, kind=kind, meta=meta)
-        self._layers[tag] = layer
-        layer._send_create()  # noqa: SLF001
-        return layer
-
 
 __all__ = ["SceneRegistryMixin"]

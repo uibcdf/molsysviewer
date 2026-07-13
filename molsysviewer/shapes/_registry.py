@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..layers import GroupLayer, Shape
+from ..layers import Layer, Shape
 
 
 def normalize_new_shape_tag(view, tag: str) -> str:
@@ -25,7 +25,7 @@ def register_shape_layer(view, tag: str, layer_tag: str | None = None, meta: dic
     else:
         layers = getattr(view, "_layers", None)
         if layers is not None and normalized_layer_tag not in layers:
-            layers[normalized_layer_tag] = GroupLayer(view, normalized_layer_tag, kind="shape", meta={})
+            layers[normalized_layer_tag] = Layer(view, normalized_layer_tag, kind="shape", meta={})
     objects = getattr(view, "_scene_objects", None)
     if objects is None:
         objects = {}

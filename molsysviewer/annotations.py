@@ -97,8 +97,7 @@ class AnnotationsManager:
 
         raise ValueError("Provide selection, atom_indices, or group_index.")
 
-    @property
-    def tags(self) -> list[str]:
+    def tags(self, skip_digestion: bool = False) -> list[str]:
         """Return the active annotation tags."""
         return [tag for kind, tag in self._view._scene_objects if kind == "annotation"]  # noqa: SLF001
 
@@ -146,6 +145,7 @@ class AnnotationsManager:
                 "tag": record_tag,
                 "layer_tag": None if layer is None else getattr(layer, "layer_tag", record_tag),
                 "text": options.get("text"),
+                "style": dict(options.get("style") or {}),
                 "n_atoms": len(atom_indices),
                 "atom_indices": list(atom_indices),
                 "visible": False if layer is None else not getattr(layer, "_hidden", False),
@@ -222,6 +222,10 @@ class AnnotationsManager:
 
         self._view._send({"op": "add_label", "tag": object_tag, "options": options})  # noqa: SLF001
         return layer
+
+    def add(self, *args, **kwargs) -> Layer:
+        """Create an annotation; canonical manager alias for :meth:`add_annotation`."""
+        return self.add_annotation(*args, **kwargs)
 
     @signal(tags=["annotation"])
     @digest()
@@ -361,6 +365,31 @@ class AnnotationsManager:
                     "tag": tag,
                     "text": text.strip(),
                     "atom_indices": list(atom_indices),
+                },
+            }
+        )
+        return layer
+
+    @signal(tags=["annotation"])
+    @digest()
+    def set_style(self, tag: str, style: dict[str, Any], skip_digestion: bool = False) -> Layer:
+        """Update an annotation's visual style without recreating its identity."""
+        layer = self._require_annotation_layer(tag)
+        if not isinstance(style, dict):
+            raise TypeError("set_style() requires a style dictionary.")
+        record = self.info(tag, skip_digestion=True)
+        if not isinstance(record, dict):
+            raise ValueError(f"No annotation record found for tag {tag!r}.")
+        self._view._send(  # noqa: SLF001
+            {
+                "op": "update_label",
+                "tag": tag,
+                "options": {
+                    "tag": tag,
+                    "text": record.get("text"),
+                    "atom_indices": list(record.get("atom_indices") or []),
+                    "layer_tag": layer.layer_tag,
+                    "style": dict(style),
                 },
             }
         )

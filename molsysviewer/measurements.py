@@ -36,6 +36,19 @@ class MeasurementsManager:
             raise KeyError(tag)
         return layer
 
+    def add(self, kind: str, *selections: Any, **kwargs: Any) -> Layer:
+        """Create a measurement of explicit *kind*."""
+        methods = {
+            "distance": self.add_distance,
+            "angle": self.add_angle,
+            "dihedral": self.add_dihedral,
+        }
+        try:
+            method = methods[str(kind).strip().lower()]
+        except KeyError as exc:
+            raise ValueError(f"Unsupported measurement kind {kind!r}; choose from {sorted(methods)}.") from exc
+        return method(*selections, **kwargs)
+
     def _ensure_layer(self, tag: str, *, layer_tag: str | None = None) -> Layer:
         tag = self._view._tag_managers["measurement"].validate(tag)  # noqa: SLF001
         resolved_layer_tag = str(layer_tag).strip() if layer_tag is not None else tag

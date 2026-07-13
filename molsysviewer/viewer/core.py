@@ -38,7 +38,7 @@ from ..styles import StylesManager
 from ..shapes import ShapesManager
 from ..regions import Region, RegionsManager
 from ..whole import Whole
-from ..layers import Layer, SceneObject
+from ..layers import Layer, LayersManager, SceneObject
 from ..tags import TagsManager
 from ..colors import colors as global_colors
 from .. import config
@@ -258,7 +258,7 @@ class MolSysView(
         self._dynamic_region_cache: OrderedDict[tuple[str, int], tuple[int, ...]] = OrderedDict()
         self._dynamic_region_cache_limit: int = 512
         self._dynamic_region_evaluation_budget_ms: float = 25.0
-        self._layers: Dict[str, Layer] = {}
+        self._layers: LayersManager = LayersManager(self)
         self._scene_objects: Dict[tuple[str, str], SceneObject] = {}
         self._selections: Dict[str, Selection] = {}
         self._tag_managers = {
@@ -1732,7 +1732,7 @@ class MolSysView(
         return list(self._js_logs)
 
     @property
-    def layers(self) -> Mapping[str, Layer]:
+    def layers(self) -> LayersManager:
         """Public registry of layers (non-structural visuals)."""
         return self._layers
 

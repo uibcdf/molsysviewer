@@ -12,7 +12,7 @@ These concepts are user-visible and must remain stable.
 ## Python API (sketch)
 
 - `view.regions.add(selection, tag=None, representation=None, **repr_params) -> Region`
-- `view.new_layer(kind=None, tag=None, **meta) -> Layer`
+- `view.layers.add(tag, *, kind=None, meta=None) -> Layer`
 - Public registries: `view.regions` / `view.layers` (example: `view.regions["set1"].hide()`).
 - `Region`: `set_representation(...)`, `reset_representation()`, `hide()/show()`, `focus()`, `show_only()`, `delete()`, complements (`new_complementary_region()`), boolean composition, and `mode`/`provenance` metadata.
 - `Layer`: `hide()/show()`, `delete()`, `set_tag()` (and possibly `merge()` in the future).

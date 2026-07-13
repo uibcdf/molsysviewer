@@ -47,7 +47,7 @@ def test_core_public_api_does_not_emit_missing_digester_warnings(tmp_path):
     )
 
     region = view.regions.add(atom_indices=[0, 1, 2], tag="frag", representation="sticks", skip_digestion=True)
-    layer = view.new_layer(tag="audit-layer", skip_digestion=True)
+    layer = view.layers.add("audit-layer", skip_digestion=True)
 
     with warnings.catch_warnings(record=True) as records:
         warnings.simplefilter("always")

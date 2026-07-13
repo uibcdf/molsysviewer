@@ -173,7 +173,7 @@ class SelectionsManager:
         return sel
 
     def __iter__(self):
-        for tag in self.tags:
+        for tag in self.tags():
             yield self._selection(tag)
 
     def __contains__(self, tag: object) -> bool:
@@ -192,8 +192,7 @@ class SelectionsManager:
                 return dict(record)
         return None
 
-    @property
-    def tags(self) -> list[str]:
+    def tags(self, skip_digestion: bool = False) -> list[str]:
         """Return the stored persistent selection tags."""
         return [str(record.get("tag")) for record in self._view._selection_history if isinstance(record.get("tag"), str)]  # noqa: SLF001
 

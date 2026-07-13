@@ -393,7 +393,7 @@ class SceneMixin:
         self.atom_mask = None
         self.structure_mask = None
         self._regions.clear()
-        self._layers.clear()
+        dict.clear(self._layers)
         self._scene_objects.clear()
         self._selections.clear()
         for manager in self._tag_managers.values():

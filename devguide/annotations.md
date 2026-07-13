@@ -405,7 +405,7 @@ Current API (implemented and stable):
 - `view.annotations.set_text(tag, text)`
 - `view.annotations.set_tag(tag, new_tag)`
 - `view.annotations.set_layer_tag(tag, new_layer_tag)`
-- `view.annotations.tags` (property, list)
+- `view.annotations.tags()` (method returning a list)
 - `view.annotations.count()`
 - `view.annotations.contains(tag)`
 - `view.annotations.get(tag)`

@@ -254,8 +254,9 @@ test("AnnotationHandlers.setVisibility rebuilds labels from stored spec", async 
     }
 });
 
-test("AnnotationHandlers.updateLabel updates spec so subsequent setVisibility rebuilds with new text", async () => {
-    const addCalls: Array<{ text: string }> = [];
+test("AnnotationHandlers.updateLabel preserves layer and style when visibility rebuilds the label", async () => {
+    const addCalls: Array<{ text: string; textColor?: number }> = [];
+    const overlays: Array<{ layerTag?: string; color?: string }> = [];
     const removeCalls: string[] = [];
     let callCount = 0;
     const plugin: any = {
@@ -263,7 +264,10 @@ test("AnnotationHandlers.updateLabel updates spec so subsequent setVisibility re
             structure: {
                 measurement: {
                     async addLabel(_loci: any, options: any) {
-                        addCalls.push({ text: options.labelParams?.customText ?? "" });
+                        addCalls.push({
+                            text: options.labelParams?.customText ?? "",
+                            textColor: options.visualParams?.textColor,
+                        });
                         const ref = `sel-${callCount}`;
                         callCount++;
                         return { selection: { ref }, representation: { ref: `repr-${callCount - 1}` } };
@@ -283,6 +287,10 @@ test("AnnotationHandlers.updateLabel updates spec so subsequent setVisibility re
         const handler = new AnnotationHandlers(plugin, {
             getStructure: () => ({}) as any,
             registerRef: () => void 0,
+            addLabelOverlay: msg => overlays.push({
+                layerTag: msg.options?.layer_tag,
+                color: msg.options?.style?.color,
+            }),
         });
         (handler as any).buildLociFromAtomIndices = () => ({
             structure: {},
@@ -292,7 +300,13 @@ test("AnnotationHandlers.updateLabel updates spec so subsequent setVisibility re
         await handler.addLabel({
             op: "add_label",
             tag: "ann",
-            options: { text: "Original text", atom_indices: [0], tag: "ann" },
+            options: {
+                text: "Original text",
+                atom_indices: [0],
+                tag: "ann",
+                layer_tag: "notes",
+                style: { color: "#123456" },
+            },
         });
         assert.strictEqual(addCalls[0].text, "Original text");
 
@@ -308,6 +322,8 @@ test("AnnotationHandlers.updateLabel updates spec so subsequent setVisibility re
         await handler.setVisibility("ann", false);
         await handler.setVisibility("ann", true);
         assert.strictEqual(addCalls[2].text, "Updated text");
+        assert.strictEqual(addCalls[2].textColor, 0x123456);
+        assert.deepStrictEqual(overlays.at(-1), { layerTag: "notes", color: "#123456" });
     } finally {
         (PluginCommands.State as any).RemoveObject = originalRemove;
     }

@@ -137,11 +137,11 @@ def _import_view_state(result: MolSysView, source_views: list[MolSysView]) -> No
                 continue
             new_tag = _unique_tag(layer.tag, used_layer_tags, source_index)
             tag_map[layer.tag] = new_tag
-            merged_layer = result.new_layer(
-                tag=new_tag,
+            merged_layer = result.layers.add(
+                new_tag,
                 kind=layer.kind,
+                meta=dict(layer.meta) if isinstance(layer.meta, dict) else {},
                 skip_digestion=True,
-                **(dict(layer.meta) if isinstance(layer.meta, dict) else {}),
             )
             if getattr(layer, "_hidden", False):
                 merged_layer.hide(skip_digestion=True)
