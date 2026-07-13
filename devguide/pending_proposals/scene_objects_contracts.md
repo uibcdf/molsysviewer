@@ -929,7 +929,12 @@ it on their behalf, without a word, is not "defensive" — it is losing their wo
 
 - The object **survives**, carrying an explicit **`broken`** state and its reason
   (which anchor atoms are gone).
-- It may become **valid again after an undo** — which is impossible if it was deleted.
+- **`broken` is a state, not a tombstone: the object can be repaired.** Repair is
+  **explicit** — `set_anchor()` re-points the object at atoms that exist, and it becomes
+  valid again. **It is not undo.** `apply_system_edit` deliberately *invalidates* the
+  history (verified: the undo stack is emptied), so a structural edit cannot be walked
+  back — which is precisely why the object must survive the edit rather than be deleted
+  by it. A deleted object cannot be repaired by anything.
 - `broken` is part of the summary and **serialises** (S5).
 - The panel row shows a **warning marker**, and nothing renders for it.
 
