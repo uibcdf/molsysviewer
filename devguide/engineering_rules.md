@@ -107,12 +107,41 @@ What it caught, when nothing else did:
   swallowed the exception and the test asserted only `isinstance(…, dict)` — which `{}` satisfies;
 - a canvas-wide colour wipe that could not be undone.
 
-Two corollaries:
+### When to mutate: **mutate what *prevents*, not what *produces***
+
+Mutating everything is expensive and it generates noise. The rule that keeps the value and drops
+most of the cost:
+
+| the mechanism | mutate it? | why |
+|---|---|---|
+| **a guard** — an `if`, a filter, a check that *prevents* a bad outcome | **yes, always** | It is **invisible when it works.** Delete it and nothing looks wrong: the feature still works, the suite stays green. A guard wired to no test is indistinguishable from a guard that does not exist — and the only way to tell them apart is to remove it and look. |
+| **a feature** — code that *produces* a good outcome | no | If it breaks, it shows. Its ordinary tests already cover it. |
+
+**Why this matters more than it sounds:** a broken guard fails **silently**, months later, far from
+the change that broke it. And a guard is exactly what a future refactor deletes, because a lone `if`
+with no test attached looks redundant.
+
+This is why Contract T (identity) demanded it end to end: **the whole contract is a guard.** Keying
+by `(domain, tag)` adds no capability — it only *prevents* aliasing. Rip it out and everything keeps
+"working". The panel phases, which are mostly visible behaviour, need far less of this.
+
+**Evidence (2026-07-12, Phase 0 commit 2):** three mechanisms mutated. Two were confirmations. The
+third — the only actual *guard*, the `kind` filter in the history rewriter — was **wired to no test
+at all**: with it removed, renaming the shape `site1` corrupted the annotation `site1`'s
+`layer_tag`, silently poisoning the replay, the HTML export and the popup, **and all 17 tests stayed
+green**. The test that claimed to cover it asserted the record's `tag` while the corruption happened
+in `options["layer_tag"]` — a different channel.
+
+Three corollaries:
 
 - **Verify documentation against the code, not against the plan.** Executing each claim a doc page
   made is what exposed a real Contract A defect: the docs were right and the *code* was wrong.
 - **Never `git checkout <file>` to undo a mutation.** It reverts to HEAD and destroys uncommitted
   work. Copy the file aside first (`cp file /tmp/backup`) and restore from the copy.
+- **Mutating the frontend: rebuild the *harness*, not the runtime.** The e2e suites load
+  `tests/e2e/harness.bundle.js` (`npm run build:harness`), **not** `molsysviewer/viewer.js`. Mutate
+  `js/src/`, run only `build:runtime`, and the mutation never reaches the browser — you will conclude
+  a sound e2e is hollow. This nearly produced a false accusation during the Phase 0 audit.
 
 ---
 

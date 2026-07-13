@@ -188,6 +188,22 @@ Desglose del `importtime`:
 **efectos secundarios en el import** (leer ficheros, registrar cosas). Hacerlos perezosos cambia
 **cuándo** ocurren. Comprobar ejecutando, no razonando.
 
+**Cambio de comportamiento deliberado:** `import molsysviewer` ya no importa
+`molsysviewer._pyunitwizard` y, por tanto, no configura los valores por defecto globales de
+PyUnitWizard como efecto lateral. Esto alinea el paquete con el modelo lazy de MolSysMT y evita
+que un import desnudo altere otra librería global. El código que necesite la configuración de
+unidades de MolSysViewer debe materializarla explícitamente:
+
+```python
+import molsysviewer as msv
+
+puw = msv.pyunitwizard
+```
+
+Las APIs de MolSysViewer que trabajan con magnitudes materializan ese módulo por su propio camino.
+La diferencia sólo afecta a código que hacía un import desnudo de MolSysViewer y después usaba
+directamente otro import de `pyunitwizard`, confiando en el antiguo efecto lateral.
+
 ### 3b. PyUnitWizard importa seis backends para declarar unos `TypeVar` (**hermano**)
 
 `pyunitwizard/_private/quantity_or_unit.py` importa **todos** los backends instalados —pint,

@@ -33,9 +33,10 @@ Relying on overlaying structures in a single viewport often causes visual clutte
 
 ## 3. Technical Implementation Details (How)
 
-1.  **Mol\* Multi-Viewport Configuration:**
-    *   Mol* natively supports rendering multiple viewports within the same WebGL canvas using viewport regions or by instantiating multiple sub-renderers.
-    *   Alternatively, the frontend can mount multiple canvas elements next to each other, each running a separate Mol* plugin instance or a shared WebGL context.
+1.  **Mol\* Multi-Viewport Configuration — one canvas, not many. This is now a decision, not an option.**
+    *   Mol* natively supports rendering multiple viewports within the same WebGL canvas using viewport regions or by instantiating multiple sub-renderers. **This is the required approach.**
+    *   ~~Alternatively, the frontend can mount multiple canvas elements next to each other, each running a separate Mol\* plugin instance.~~ **Ruled out (2026-07-12).** Browsers cap the number of live **WebGL contexts** (typically **8–16**, and Chrome silently evicts the oldest when the cap is hit). One canvas per comparison, in a notebook where the user also has other viewers in other cells, exhausts them — and the failure mode is not an error but a **black canvas**, or an older viewer in a different cell going blank without warning.
+    *   The cap is per *page*, not per widget, so it is not something MolSysViewer can budget for on its own: every viewer in every cell shares it. That is precisely why a single shared context is the only safe design.
 2.  **Camera Sync Pipeline:**
     *   Listen to camera change events on each viewport.
     *   When a transformation change occurs (rotation, translate, zoom), copy the camera parameters (target, position, up vector) to the peer viewports.

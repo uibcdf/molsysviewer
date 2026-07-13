@@ -26,6 +26,25 @@ but it is applied to the backend echo too, where nobody chose it. Whatever this 
 it should decide **whether a picking level is a canvas-interaction setting or a property of the
 active selection itself**, and whether a Python-set selection is allowed to be rewritten by it.
 
+### 0.1 Proposed answer (2026-07-12): snapping is a *mouse* rule, not a *selection* rule
+
+The picking level exists to make **clicking** pleasant — nobody wants to click half a residue.
+It has no business rewriting a selection that **Python stated exactly**.
+
+> `view.active_selection.set([0, 1])` must come back as **two** atoms.
+
+So: `lociToGroupItems()` applies to **pointer input only**. A selection arriving from the API is
+taken literally, and the picking level is what it always should have been — a property of the
+*canvas interaction*, not of the *active selection*.
+
+**Cost, stated honestly.** The active selection is currently *held* as group-level items, so this
+is not a one-line change: the model becomes atom-level and the snapping moves to the input edge.
+The visible consequence is that a Python-set selection may highlight **part of a residue**, which
+is exactly what was asked for and will look unfamiliar.
+
+**Not in the scene-objects block.** It touches the active-selection model, which that block does
+not open. Flagged here so the decision is taken deliberately rather than inherited.
+
 ---
 
 ## 1. Why

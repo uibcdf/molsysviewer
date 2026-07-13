@@ -28,6 +28,25 @@ Rationale: a naked `radius=3.5` meant as angstroms used to be silently read as
 `3.5 nm` (= 35 Å), producing giant, misplaced, or invisible shapes. Requiring
 units makes the mistake impossible.
 
+## Lazy PyUnitWizard initialization
+
+Importing `molsysviewer` alone does not configure PyUnitWizard. This is
+intentional: the package keeps its heavy unit stack lazy and a bare import no
+longer changes process-wide PyUnitWizard defaults as a side effect. Access the
+public attribute when code needs MolSysViewer's configured PyUnitWizard:
+
+```python
+import molsysviewer as msv
+
+puw = msv.pyunitwizard
+distance = puw.quantity(0.5, "nm")
+```
+
+MolSysViewer APIs that consume quantities initialize this integration through
+their normal import path. The explicit access is needed only by code that uses
+PyUnitWizard directly and relies on MolSysViewer's default form, parser, or
+standard units.
+
 ## Writing a public method that takes a magnitude
 
 1. **Validate at the public surface.** Decorate the method that owns the real
