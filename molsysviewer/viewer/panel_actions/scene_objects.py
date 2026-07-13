@@ -1,8 +1,13 @@
 from __future__ import annotations
 
+from math import isfinite
+from numbers import Real
 from typing import Any, Mapping
 
 import molsysmt as msm
+
+from ... import pyunitwizard as puw
+from ...shapes import SHAPE_STYLE_CAPABILITIES
 
 
 def _tag(content: Mapping[str, Any], action: str) -> str:
@@ -121,9 +126,116 @@ def toggle_shape_visibility(view: Any, content: Mapping[str, Any]) -> None:
     if shape is None:
         raise ValueError(f"No shape found with tag {tag!r}.")
     if view.shapes.info(tag, skip_digestion=True)[0]["visible"]:
-        shape.hide(skip_digestion=True)
+        view.shapes.hide(tag, skip_digestion=True)
     else:
-        shape.show(skip_digestion=True)
+        view.shapes.show(tag, skip_digestion=True)
+
+
+def _shape_and_op(view: Any, content: Mapping[str, Any], action: str):
+    tag = _tag(content, action)
+    shape = view.shapes.get(tag, skip_digestion=True)
+    records = view.shapes.info(tag, skip_digestion=True)
+    if shape is None or not records:
+        raise ValueError(f"No shape found with tag {tag!r}.")
+    return shape, str(records[0].get("op"))
+
+
+def _shape_for_capability(view: Any, content: Mapping[str, Any], action: str, capability: str):
+    shape, op = _shape_and_op(view, content, action)
+    supported = SHAPE_STYLE_CAPABILITIES.get(str(op))
+    if supported is None or capability not in supported:
+        raise ValueError(f"{action} is not supported for shape op {op!r}.")
+    return shape
+
+
+def rename_shape(view: Any, content: Mapping[str, Any]) -> None:
+    new_tag = content.get("new_tag")
+    if not isinstance(new_tag, str) or not new_tag.strip():
+        raise ValueError("rename_shape requires non-empty new_tag.")
+    view.shapes.set_tag(_tag(content, "rename_shape"), new_tag.strip(), skip_digestion=True)
+
+
+def set_shape_layer(view: Any, content: Mapping[str, Any]) -> None:
+    tag = _tag(content, "set_shape_layer")
+    layer = content.get("layer")
+    view.shapes.set_layer_tag(
+        tag,
+        tag if layer is None or not str(layer).strip() else str(layer).strip(),
+        skip_digestion=True,
+    )
+
+
+def focus_shape(view: Any, content: Mapping[str, Any]) -> None:
+    tag = _tag(content, "focus_shape")
+    shape = view.shapes.get(tag, skip_digestion=True)
+    if shape is None:
+        raise ValueError(f"No shape found with tag {tag!r}.")
+    shape.focus()
+
+
+def set_shape_color(view: Any, content: Mapping[str, Any]) -> None:
+    color = content.get("color")
+    if not isinstance(color, str) or not color.strip():
+        raise ValueError("set_shape_color requires a color string.")
+    _, op = _shape_and_op(view, content, "set_shape_color")
+    capability = "set_color" if op == "add_sphere" else "set_colors"
+    shape = _shape_for_capability(view, content, "set_shape_color", capability)
+    getattr(shape, capability)(color.strip(), skip_digestion=True)
+
+
+def set_shape_alpha(view: Any, content: Mapping[str, Any]) -> None:
+    alpha = content.get("alpha")
+    if not isinstance(alpha, Real) or not isfinite(float(alpha)) or not 0.0 <= float(alpha) <= 1.0:
+        raise ValueError("set_shape_alpha requires alpha between 0 and 1.")
+    shape = _shape_for_capability(view, content, "set_shape_alpha", "set_alpha")
+    shape.set_alpha(float(alpha), skip_digestion=True)
+
+
+def _shape_length(content: Mapping[str, Any], action: str):
+    value = content.get("radius")
+    if not isinstance(value, Mapping):
+        raise ValueError(f"{action} requires radius with magnitude and unit.")
+    magnitude = value.get("magnitude")
+    unit = value.get("unit")
+    if not isinstance(magnitude, Real) or not isfinite(float(magnitude)) or float(magnitude) <= 0:
+        raise ValueError(f"{action} requires a positive finite magnitude.")
+    if not isinstance(unit, str) or not unit.strip():
+        raise ValueError(f"{action} requires an explicit unit.")
+    return puw.quantity(float(magnitude), unit.strip())
+
+
+def set_shape_radius(view: Any, content: Mapping[str, Any]) -> None:
+    _, op = _shape_and_op(view, content, "set_shape_radius")
+    capability = "set_radius" if op == "add_sphere" else "set_radii"
+    shape = _shape_for_capability(view, content, "set_shape_radius", capability)
+    getattr(shape, capability)(_shape_length(content, "set_shape_radius"), skip_digestion=True)
+
+
+def set_shape_scale(view: Any, content: Mapping[str, Any]) -> None:
+    kind = content.get("kind")
+    capability = {
+        "radius_scale": "set_radius_scale",
+        "length_scale": "set_length_scale",
+    }.get(kind)
+    if capability is None:
+        raise ValueError("set_shape_scale requires kind radius_scale or length_scale.")
+    value = content.get("value")
+    if not isinstance(value, Real) or not isfinite(float(value)) or float(value) <= 0:
+        raise ValueError("set_shape_scale requires a positive finite value.")
+    shape = _shape_for_capability(view, content, "set_shape_scale", capability)
+    getattr(shape, capability)(float(value), skip_digestion=True)
+
+
+def show_all_shapes(view: Any, _content: Mapping[str, Any]) -> None:
+    view.shapes.show_all(skip_digestion=True)
+
+
+def hide_all_shapes(view: Any, _content: Mapping[str, Any]) -> None:
+    view.shapes.hide_all(skip_digestion=True)
+
+
+def clear_shapes(view: Any, _content: Mapping[str, Any]) -> None:
+    view.shapes.clear(skip_digestion=True)
 
 
 def delete_measurement(view: Any, content: Mapping[str, Any]) -> None:
@@ -248,6 +360,16 @@ HANDLERS = {
     "clear_annotations": clear_annotations,
     "delete_shape": delete_shape,
     "toggle_shape_visibility": toggle_shape_visibility,
+    "rename_shape": rename_shape,
+    "set_shape_layer": set_shape_layer,
+    "focus_shape": focus_shape,
+    "set_shape_color": set_shape_color,
+    "set_shape_alpha": set_shape_alpha,
+    "set_shape_radius": set_shape_radius,
+    "set_shape_scale": set_shape_scale,
+    "show_all_shapes": show_all_shapes,
+    "hide_all_shapes": hide_all_shapes,
+    "clear_shapes": clear_shapes,
     "delete_measurement": delete_measurement,
     "toggle_measurement_visibility": toggle_measurement_visibility,
     "hide_measurement": hide_measurement,

@@ -563,6 +563,7 @@ export type MeasurementSeriesMessage = {
 export type SetShapeSummariesMessage = {
     op: "set_shape_summaries";
     shapes?: Array<{
+        op?: string;
         kind?: string;
         tag: string;
         layer_tag?: string | null;
@@ -570,6 +571,15 @@ export type SetShapeSummariesMessage = {
         subtitle?: string | null;
         atom_indices?: number[];
         hidden?: boolean;
+        color?: string | null;
+        n_colors?: number | null;
+        radius?: { magnitude?: number; unit?: string } | null;
+        n_radii?: number | null;
+        alpha?: number | null;
+        radius_scale?: number | null;
+        length_scale?: number | null;
+        broken?: boolean;
+        broken_reason?: string | null;
     }>;
 };
 

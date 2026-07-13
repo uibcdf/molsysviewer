@@ -12,7 +12,6 @@ import {
     makeStyledSelect,
 } from "./panels/ui-helpers";
 import { PanelContext, StudioPanel } from "./panels/types";
-import { InspectorListPanel } from "./panels/inspector-list-panel";
 import { ViewportPanel } from "./panels/viewport-panel";
 import { ExportPanel } from "./panels/export-panel";
 import { LayersPanel, LayerObjectSummary } from "./panels/layers-panel";
@@ -22,6 +21,7 @@ import { SystemPanel } from "./panels/system-panel";
 import { WholePanel } from "./panels/whole-panel";
 import { MeasuresPanel, MeasurementSeries, MeasurementSettings, MeasurementSummary } from "./panels/measures-panel";
 import { AnnotationsPanel, AnnotationSettings, AnnotationSummary } from "./panels/annotations-panel";
+import { ShapesPanel, ShapeRenderStatus, ShapeSummary } from "./panels/shapes-panel";
 import { PanelShell } from "./panel-shell";
 import { FloatingPanelShell } from "./floating-panel-shell";
 
@@ -158,7 +158,7 @@ export class GroupPanel {
     private readonly tabs: Map<TabKey, { button: HTMLButtonElement; badge: HTMLSpanElement }> = new Map();
 
     // Migrated subpanels (panel-per-module architecture)
-    private readonly shapesPanel: InspectorListPanel;
+    private readonly shapesPanel: ShapesPanel;
     private readonly measuresPanel: MeasuresPanel;
     private readonly annotationsPanel: AnnotationsPanel;
     private readonly wholePanel: WholePanel;
@@ -396,11 +396,7 @@ export class GroupPanel {
             }),
         );
         this.shapesSection = this.createSection("shapes");
-        this.shapesPanel = new InspectorListPanel("shapes", this.makePanelContext("shapes"), {
-            header: "3D Shapes",
-            subtitleFallback: "Geometry",
-            emptyText: "No shapes yet.",
-        });
+        this.shapesPanel = new ShapesPanel(this.makePanelContext("shapes"));
         this.layersSection = this.createSection("layers");
         this.layersPanel = new LayersPanel(this.makePanelContext("layers"));
         this.viewportSection = this.createSection("viewport");
@@ -774,8 +770,12 @@ export class GroupPanel {
         this.regionsPanel.updateDetails(details);
     }
 
-    setShapes(items: NavigateItem[]): void {
-        this.shapesPanel.setItems(items);
+    setShapes(items: ShapeSummary[], renderStatuses?: ReadonlyMap<string, ShapeRenderStatus>): void {
+        this.shapesPanel.setShapes(items, renderStatuses);
+    }
+
+    updateShapeRenderStatus(status: ShapeRenderStatus): void {
+        this.shapesPanel.updateRenderStatus(status);
     }
 
     setLayerObjects(items: LayerObjectSummary[]): void {

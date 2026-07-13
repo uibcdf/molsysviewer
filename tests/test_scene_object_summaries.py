@@ -6,10 +6,13 @@ import molsysmt as msm
 from molsysviewer import pyunitwizard as puw
 from molsysviewer import MolSysView
 from molsysviewer.demo import demo
+from molsysviewer.layers import Shape
+from molsysviewer.shapes import SHAPE_STYLE_CAPABILITIES
 from molsysviewer.viewer.panel_actions.scene_objects import (
     create_measurement,
     reanchor_annotation,
     set_annotation_style,
+    set_shape_color,
 )
 
 
@@ -91,7 +94,11 @@ def test_scene_object_summary_records_project_manager_info():
         assert "series" not in measurement
         assert "value_series" not in measurement
     shape = view._shape_summary_records()[0]  # noqa: SLF001
+    radius = shape.pop("radius")
+    assert radius["unit"] == "angstrom"
+    assert radius["magnitude"] == pytest.approx(10.0)
     assert shape == {
+        "op": "add_sphere",
         "kind": "sphere",
         "tag": "site",
         "layer_tag": "analysis",
@@ -99,7 +106,135 @@ def test_scene_object_summary_records_project_manager_info():
         "subtitle": "sphere",
         "atom_indices": [0],
         "hidden": False,
+        "color": "#00ff00",
+        "n_colors": None,
+        "n_radii": None,
+        "alpha": 0.4,
+        "radius_scale": None,
+        "length_scale": None,
+        "broken": False,
+        "broken_reason": None,
     }
+
+
+def test_shape_summary_carries_real_style_values_and_explicit_angstrom_unit():
+    view = _view()
+    view.shapes.add(
+        "sphere",
+        center=puw.quantity([0.0, 0.0, 0.0], "angstrom"),
+        radius=puw.quantity(3.0, "angstrom"),
+        color="#aBcDeF",
+        alpha=0.65,
+        tag="site",
+        skip_digestion=True,
+    )
+
+    info = view.shapes.info("site", skip_digestion=True)[0]
+    summary = view._shape_summary_records()[0]  # noqa: SLF001
+
+    assert info["op"] == "add_sphere"
+    assert info["color"] == "#abcdef"
+    assert summary["color"] == "#abcdef"
+    assert summary["alpha"] == pytest.approx(0.65)
+    assert summary["radius"] == {"magnitude": 3.0, "unit": "angstrom"}
+
+
+def test_shape_panel_actions_route_plural_style_without_not_implemented():
+    view = _view()
+    view.shapes.add_links(
+        coordinate_pairs=puw.quantity([[[0, 0, 0], [1, 0, 0]]], "angstrom"),
+        radius=puw.quantity(1.0, "angstrom"),
+        color="#112233",
+        alpha=0.4,
+        tag="links",
+        skip_digestion=True,
+    )
+
+    for action in (
+        {"action": "set_shape_color", "tag": "links", "color": "#445566"},
+        {"action": "set_shape_radius", "tag": "links", "radius": {"magnitude": 2.5, "unit": "angstrom"}},
+        {"action": "set_shape_alpha", "tag": "links", "alpha": 0.75},
+    ):
+        view._handle_frontend_event({"event": "interaction_context_action", **action})  # noqa: SLF001
+
+    options = view.shapes.records()[0]["options"]
+    assert options["colors"] == [0x445566]
+    assert options["radii"] == [2.5]
+    assert options["alpha"] == pytest.approx(0.75)
+
+
+def test_shape_panel_action_refuses_unsupported_control_before_mutator():
+    view = _view()
+    view.shapes.add_pocket_surface(atom_indices=[0, 1], tag="surface", skip_digestion=True)
+
+    with pytest.raises(ValueError, match="not supported for shape op 'add_pocket_surface'"):
+        set_shape_color(view, {"tag": "surface", "color": "#ffffff"})
+
+
+def test_shape_panel_capability_matrix_only_exposes_working_mutators():
+    argument = {
+        "set_color": "#445566",
+        "set_colors": "#445566",
+        "set_alpha": 0.75,
+        "set_radius": puw.quantity(2.5, "angstrom"),
+        "set_radii": puw.quantity(2.5, "angstrom"),
+        "set_radius_scale": 1.25,
+        "set_length_scale": 1.5,
+    }
+    generic_options = {
+        "center": [0.0, 0.0, 0.0],
+        "centers": [[0.0, 0.0, 0.0]],
+        "coordinate_pairs": [[[0.0, 0.0, 0.0], [1.0, 0.0, 0.0]]],
+        "tetra_coords": [[[0.0, 0.0, 0.0]] * 4],
+        "vertices": [[[0.0, 0.0, 0.0]] * 3],
+        "colors": [0x112233],
+        "radii": [1.0],
+        "tag": "shape",
+        "layer_tag": "shape",
+    }
+
+    for op, capabilities in SHAPE_STYLE_CAPABILITIES.items():
+        for capability in capabilities:
+            view = MolSysView()
+            view.widget.send = lambda _message: None  # type: ignore[method-assign]
+            shape = Shape(view, "shape")
+            view._scene_objects[("shape", "shape")] = shape  # noqa: SLF001
+            message = {"op": op, "options": dict(generic_options)}
+            view._shape_history = [message]  # noqa: SLF001
+            view._message_history = [message]  # noqa: SLF001
+
+            getattr(shape, capability)(argument[capability], skip_digestion=True)
+
+
+def test_shape_style_mutation_republishes_the_authoritative_summary():
+    view = _view()
+    view.shapes.add_sphere(tag="site", skip_digestion=True)
+    sent = []
+    view._ready = True  # noqa: SLF001
+    view.widget.send = lambda message: sent.append(message)  # type: ignore[method-assign]
+
+    view.shapes["site"].set_color("#445566", skip_digestion=True)
+
+    summaries = [message for message in sent if message.get("op") == "set_shape_summaries"]
+    assert summaries[-1]["shapes"][0]["color"] == "#445566"
+
+
+def test_adding_rings_publishes_the_authoritative_summary():
+    view = _view()
+    sent = []
+    view._ready = True  # noqa: SLF001
+    view.widget.send = lambda message: sent.append(message)  # type: ignore[method-assign]
+
+    view.shapes.add_rings(
+        centers=puw.quantity([[0.0, 0.0, 0.0]], "angstrom"),
+        normals=[[0.0, 0.0, 1.0]],
+        radii=puw.quantity([1.0], "angstrom"),
+        tag="ring",
+        skip_digestion=True,
+    )
+
+    summaries = [message for message in sent if message.get("op") == "set_shape_summaries"]
+    assert summaries[-1]["shapes"][0]["op"] == "add_rings"
 
 
 def test_ready_resends_all_scene_object_summaries_runtime_only(monkeypatch):

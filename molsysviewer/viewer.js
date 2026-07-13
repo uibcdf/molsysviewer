@@ -93289,8 +93289,8 @@ function setDistanceState(pair2, state) {
   return state;
 }
 var tmpState = getDistanceState();
-function getDistanceName(data, unitLabel) {
-  return data.pairs.length === 1 ? `Distance ${distanceLabel(data.pairs[0], { unitLabel, measureOnly: true })}` : `${data.pairs.length} Distances`;
+function getDistanceName(data, unitLabel2) {
+  return data.pairs.length === 1 ? `Distance ${distanceLabel(data.pairs[0], { unitLabel: unitLabel2, measureOnly: true })}` : `${data.pairs.length} Distances`;
 }
 function buildLines(data, props, lines) {
   const builder = LinesBuilder.create(128, 64, lines);
@@ -149200,8 +149200,8 @@ function makeRowElement(titleText, subtitleText, onActivate, onDelete, visibilit
   return row2;
 }
 function makeSettingsCard(titleText) {
-  const card4 = document.createElement("div");
-  Object.assign(card4.style, {
+  const card5 = document.createElement("div");
+  Object.assign(card5.style, {
     display: "flex",
     flexDirection: "column",
     gap: "8px",
@@ -149221,8 +149221,8 @@ function makeSettingsCard(titleText) {
     marginBottom: "2px"
   });
   header2.textContent = titleText;
-  card4.appendChild(header2);
-  return card4;
+  card5.appendChild(header2);
+  return card5;
 }
 function makeStyledSelect(options, selectedValue, onChange) {
   const select = document.createElement("select");
@@ -149353,60 +149353,6 @@ var BasePanel = class {
   }
   /** One-time setup on mount, before the first paint. Override as needed. */
   onMount() {
-  }
-};
-
-// src/ui/panels/inspector-list-panel.ts
-var InspectorListPanel = class extends BasePanel {
-  constructor(key2, ctx, config2) {
-    super();
-    this.key = key2;
-    this.ctx = ctx;
-    this.config = config2;
-    this.items = [];
-  }
-  /** Domain slice: the current list of items. */
-  setItems(items) {
-    this.items = [...items];
-    this.ctx.setBadge(String(this.items.length));
-    this.scheduleRender();
-  }
-  paint() {
-    if (!this.host) return;
-    this.host.replaceChildren();
-    this.host.appendChild(makeSectionHeader(this.config.header));
-    const list3 = document.createElement("div");
-    Object.assign(list3.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "6px"
-    });
-    this.host.appendChild(list3);
-    if (this.items.length > 0) {
-      for (const item2 of this.items) {
-        const row2 = makeRowElement(
-          item2.broken ? `\u26A0 ${item2.title}` : item2.title,
-          item2.broken ? item2.brokenReason || "Damaged anchor" : item2.subtitle || this.config.subtitleFallback,
-          item2.onActivate,
-          item2.onDelete,
-          { hidden: item2.hidden, onToggleVisibility: item2.onToggleVisibility }
-        );
-        row2.setAttribute("data-molsysviewer-scene-object-kind", this.key);
-        row2.setAttribute("data-molsysviewer-scene-object-tag", item2.key ?? item2.title);
-        row2.setAttribute("data-molsysviewer-scene-object-broken", String(!!item2.broken));
-        if (item2.brokenReason) row2.title = item2.brokenReason;
-        list3.appendChild(row2);
-      }
-    } else {
-      const empty2 = document.createElement("div");
-      Object.assign(empty2.style, {
-        fontSize: "11px",
-        color: "rgba(244,244,245,0.48)",
-        paddingLeft: "4px"
-      });
-      empty2.textContent = this.config.emptyText;
-      list3.appendChild(empty2);
-    }
   }
 };
 
@@ -149733,7 +149679,7 @@ var LayersPanel = class extends BasePanel {
     })).sort((a8, b8) => a8.tag.localeCompare(b8.tag));
   }
   renderAssignCard() {
-    const card4 = makeSettingsCard("Assign Region");
+    const card5 = makeSettingsCard("Assign Region");
     const row2 = document.createElement("form");
     row2.setAttribute("data-molsysviewer-layer-assign-form", "true");
     Object.assign(row2.style, {
@@ -149760,7 +149706,7 @@ var LayersPanel = class extends BasePanel {
       event.preventDefault();
       button.click();
     });
-    card4.appendChild(row2);
+    card5.appendChild(row2);
     const hint = document.createElement("div");
     Object.assign(hint.style, {
       fontSize: "10px",
@@ -149768,19 +149714,19 @@ var LayersPanel = class extends BasePanel {
       lineHeight: "1.4"
     });
     hint.textContent = "Leave the layer empty to detach the region.";
-    card4.appendChild(hint);
-    return card4;
+    card5.appendChild(hint);
+    return card5;
   }
   renderLayerCard(layer) {
-    const card4 = makeSettingsCard(layer.tag);
-    card4.setAttribute("data-molsysviewer-layer-card", layer.tag);
+    const card5 = makeSettingsCard(layer.tag);
+    card5.setAttribute("data-molsysviewer-layer-card", layer.tag);
     const counts = document.createElement("div");
     Object.assign(counts.style, {
       fontSize: "10px",
       color: "rgba(244,244,245,0.56)"
     });
     counts.textContent = `${layer.regions.length} regions \xB7 ${layer.objects.length} scene objects`;
-    card4.appendChild(counts);
+    card5.appendChild(counts);
     const actions = document.createElement("div");
     Object.assign(actions.style, {
       display: "grid",
@@ -149802,11 +149748,11 @@ var LayersPanel = class extends BasePanel {
     actions.appendChild(show);
     actions.appendChild(hide);
     actions.appendChild(del);
-    card4.appendChild(actions);
+    card5.appendChild(actions);
     for (const member of [...layer.regions, ...layer.objects]) {
-      card4.appendChild(this.renderMemberRow(layer.tag, member));
+      card5.appendChild(this.renderMemberRow(layer.tag, member));
     }
-    return card4;
+    return card5;
   }
   renderMemberRow(layerTag, member) {
     const row2 = document.createElement("div");
@@ -150681,10 +150627,10 @@ var RegionsPanel = class extends BasePanel {
     return container;
   }
   renderRegionCard(item2) {
-    const card4 = document.createElement("div");
-    card4.setAttribute("data-molsysviewer-region-card", item2.tag);
-    card4.setAttribute("data-molsysviewer-region-hidden", String(item2.hidden));
-    Object.assign(card4.style, {
+    const card5 = document.createElement("div");
+    card5.setAttribute("data-molsysviewer-region-card", item2.tag);
+    card5.setAttribute("data-molsysviewer-region-hidden", String(item2.hidden));
+    Object.assign(card5.style, {
       display: "flex",
       flexDirection: "column",
       gap: "7px",
@@ -150751,7 +150697,7 @@ var RegionsPanel = class extends BasePanel {
     remove3.setAttribute("data-molsysviewer-region-delete", item2.tag);
     header2.appendChild(visibility);
     header2.appendChild(remove3);
-    card4.appendChild(header2);
+    card5.appendChild(header2);
     const actions = document.createElement("div");
     actions.setAttribute("data-molsysviewer-region-actions", item2.tag);
     Object.assign(actions.style, {
@@ -150816,7 +150762,7 @@ var RegionsPanel = class extends BasePanel {
       button.style.padding = "3px 6px";
       actions.appendChild(button);
     }
-    card4.appendChild(actions);
+    card5.appendChild(actions);
     if (this.regionRenameTag === item2.tag) {
       const form = document.createElement("div");
       form.setAttribute("data-molsysviewer-region-rename-form", item2.tag);
@@ -150860,7 +150806,7 @@ var RegionsPanel = class extends BasePanel {
       form.appendChild(input);
       form.appendChild(submit);
       form.appendChild(cancel);
-      card4.appendChild(form);
+      card5.appendChild(form);
       if (this.regionRenameCollisionTag !== null) {
         const collisionTag = this.regionRenameCollisionTag;
         const collision = document.createElement("div");
@@ -150887,16 +150833,16 @@ var RegionsPanel = class extends BasePanel {
         collision.appendChild(chooseRename);
         collision.appendChild(overwrite);
         collision.appendChild(cancelCollision);
-        card4.appendChild(collision);
+        card5.appendChild(collision);
       }
     }
     if (this.activeStyleRegionTag === item2.tag) {
-      card4.appendChild(this.renderStyleComposer(item2));
+      card5.appendChild(this.renderStyleComposer(item2));
     }
     if (this.regionInspectOpen.has(item2.tag)) {
-      card4.appendChild(this.renderRegionInspect(item2.tag));
+      card5.appendChild(this.renderRegionInspect(item2.tag));
     }
-    return card4;
+    return card5;
   }
   renderRegionBooleanComposer() {
     const container = document.createElement("div");
@@ -151776,11 +151722,11 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
     if (this.savedSelections.length > 0) {
       const sorted = [...this.savedSelections].sort((a8, b8) => a8.tag.localeCompare(b8.tag));
       for (const item2 of sorted) {
-        const card4 = document.createElement("div");
-        card4.setAttribute("data-molsysviewer-group-panel-row", "true");
-        card4.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
-        card4.setAttribute("data-molsysviewer-saved-selection-card", item2.tag);
-        Object.assign(card4.style, {
+        const card5 = document.createElement("div");
+        card5.setAttribute("data-molsysviewer-group-panel-row", "true");
+        card5.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
+        card5.setAttribute("data-molsysviewer-saved-selection-card", item2.tag);
+        Object.assign(card5.style, {
           display: "flex",
           flexDirection: "column",
           padding: "8px 10px",
@@ -151791,16 +151737,16 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           transition: "background 0.1s ease",
           cursor: "pointer"
         });
-        card4.addEventListener("mouseenter", () => {
-          card4.setAttribute("data-molsysviewer-selection-row-hover", "true");
-          card4.style.background = "rgba(255,255,255,0.09)";
+        card5.addEventListener("mouseenter", () => {
+          card5.setAttribute("data-molsysviewer-selection-row-hover", "true");
+          card5.style.background = "rgba(255,255,255,0.09)";
         });
-        card4.addEventListener("mouseleave", () => {
-          card4.setAttribute("data-molsysviewer-selection-row-hover", "false");
-          card4.style.background = "rgba(255,255,255,0.05)";
+        card5.addEventListener("mouseleave", () => {
+          card5.setAttribute("data-molsysviewer-selection-row-hover", "false");
+          card5.style.background = "rgba(255,255,255,0.05)";
         });
-        card4.addEventListener("click", (e) => {
-          if (e && e.target && e.target !== card4) {
+        card5.addEventListener("click", (e) => {
+          if (e && e.target && e.target !== card5) {
             return;
           }
           e?.preventDefault();
@@ -151834,7 +151780,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
         subtitle.textContent = `(${item2.atom_count} atoms${levelText})`;
         title.appendChild(subtitle);
         topRow.appendChild(title);
-        card4.appendChild(topRow);
+        card5.appendChild(topRow);
         const btnRow = document.createElement("div");
         btnRow.setAttribute("data-molsysviewer-saved-selection-buttons-row", item2.tag);
         Object.assign(btnRow.style, {
@@ -151861,7 +151807,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           fontSize: "11px",
           outline: "none"
         });
-        card4.appendChild(inlineForm);
+        card5.appendChild(inlineForm);
         const showForm = (mode) => {
           btnRow.style.display = "none";
           inlineForm.replaceChildren();
@@ -151970,8 +151916,8 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           btn.style.fontSize = "10px";
           btnRow.appendChild(btn);
         }
-        card4.appendChild(btnRow);
-        savedList.appendChild(card4);
+        card5.appendChild(btnRow);
+        savedList.appendChild(card5);
       }
     } else {
       const emptyLabel = document.createElement("div");
@@ -153962,6 +153908,281 @@ var AnnotationsPanel = class extends BasePanel {
   }
 };
 
+// src/ui/panels/shapes-panel.ts
+var SHAPE_STYLE_CONTROLS = {
+  add_sphere: ["color", "alpha", "radius"],
+  add_network_links: ["colors", "alpha", "radii"],
+  add_channel_tube: ["colors", "alpha", "radii"],
+  add_tetrahedra: ["colors", "alpha"],
+  add_triangle_faces: ["colors", "alpha"],
+  add_anisotropy_ellipsoids: ["colors", "alpha"],
+  add_pharmacophore_features: ["colors", "alpha", "radii"],
+  add_displacement_vectors: ["radius_scale", "length_scale"],
+  add_pocket_blob: ["alpha", "radii", "radius_scale"],
+  add_pocket_surface: ["alpha"],
+  add_alpha_sphere_set: [],
+  add_hbonds: [],
+  add_rings: [],
+  add_scalar_isosurface: []
+};
+function card4() {
+  const element = document.createElement("div");
+  Object.assign(element.style, {
+    display: "flex",
+    flexDirection: "column",
+    gap: "7px",
+    padding: "10px",
+    borderRadius: "6px",
+    border: "1px solid rgba(255,255,255,0.08)",
+    background: "rgba(255,255,255,0.035)"
+  });
+  return element;
+}
+function unitLabel(unit2) {
+  return unit2 === "angstrom" || unit2 === "angstroms" ? "\xC5" : unit2;
+}
+var ShapesPanel = class extends BasePanel {
+  constructor(ctx) {
+    super();
+    this.ctx = ctx;
+    this.key = "shapes";
+    this.shapes = [];
+    this.renderStatuses = /* @__PURE__ */ new Map();
+    this.detailsTag = null;
+    this.coalescing = false;
+  }
+  setShapes(items, renderStatuses = /* @__PURE__ */ new Map()) {
+    this.shapes = [...items];
+    this.renderStatuses = new Map(renderStatuses);
+    if (this.detailsTag && !items.some((item2) => item2.tag === this.detailsTag)) this.detailsTag = null;
+    this.ctx.setBadge(String(items.length));
+    this.scheduleRender();
+  }
+  updateRenderStatus(status) {
+    this.renderStatuses.set(status.tag, status);
+    this.scheduleRender();
+  }
+  paint() {
+    if (!this.host) return;
+    this.host.replaceChildren();
+    this.host.appendChild(makeSectionHeader("Shapes"));
+    const list3 = document.createElement("div");
+    Object.assign(list3.style, { display: "flex", flexDirection: "column", gap: "7px" });
+    if (this.shapes.length === 0) {
+      const empty2 = document.createElement("div");
+      empty2.textContent = "No shapes yet. Shapes are created from Python (view.shapes.add_sphere(...)) or by an add-on.";
+      Object.assign(empty2.style, { color: "rgba(244,244,245,0.52)", fontSize: "11px" });
+      list3.appendChild(empty2);
+    } else {
+      for (const item2 of this.shapes) list3.appendChild(this.renderShape(item2));
+    }
+    this.host.appendChild(list3);
+    this.host.appendChild(this.renderGlobalActions());
+  }
+  renderShape(item2) {
+    const row2 = card4();
+    row2.setAttribute("data-molsysviewer-shape-tag", item2.tag);
+    row2.setAttribute("data-molsysviewer-shape-op", item2.op);
+    row2.setAttribute("data-molsysviewer-shape-broken", String(item2.broken));
+    row2.style.opacity = item2.hidden ? "0.48" : "1";
+    const head = document.createElement("div");
+    Object.assign(head.style, { display: "flex", alignItems: "center", gap: "6px" });
+    const identity2 = document.createElement("div");
+    identity2.textContent = `${item2.kind} \xB7 ${item2.tag}`;
+    identity2.setAttribute("data-molsysviewer-shape-identity", item2.tag);
+    Object.assign(identity2.style, {
+      flex: "1 1 0",
+      minWidth: "0",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
+      color: item2.broken ? "#fbbf24" : "#f4f4f5",
+      fontSize: "12px",
+      fontWeight: "650"
+    });
+    head.appendChild(identity2);
+    const focus = makeButton("\u2316", () => this.ctx.onAction("focus_shape", { tag: item2.tag }));
+    focus.title = "Focus shape";
+    focus.setAttribute("data-molsysviewer-shape-focus", item2.tag);
+    const eye = makeButton(item2.hidden ? "\u29BB" : "\u{1F441}", () => this.ctx.onAction("toggle_shape_visibility", { tag: item2.tag }));
+    eye.title = item2.hidden ? "Show shape" : "Hide shape";
+    eye.setAttribute("data-molsysviewer-shape-visibility", item2.tag);
+    const more = makeButton("\u22EF", () => {
+      this.detailsTag = this.detailsTag === item2.tag ? null : item2.tag;
+      this.scheduleRender();
+    });
+    more.title = "Rename or move to layer";
+    more.setAttribute("data-molsysviewer-shape-more", item2.tag);
+    const remove3 = makeButton("\xD7", () => this.ctx.onAction("delete_shape", { tag: item2.tag }));
+    remove3.title = "Delete shape";
+    remove3.setAttribute("data-molsysviewer-shape-delete", item2.tag);
+    for (const button of [focus, eye, more, remove3]) {
+      button.style.flex = "0 0 auto";
+      head.appendChild(button);
+    }
+    row2.appendChild(head);
+    const layer = document.createElement("div");
+    layer.textContent = item2.layerTag && item2.layerTag !== item2.tag ? `layer: ${item2.layerTag}` : item2.subtitle || item2.op;
+    Object.assign(layer.style, { fontSize: "10px", color: "rgba(244,244,245,0.56)" });
+    row2.appendChild(layer);
+    const status = this.renderStatuses.get(item2.tag);
+    if (status && status.status !== "rendered") row2.appendChild(this.renderWarning(status));
+    if (item2.broken) {
+      const warning = document.createElement("div");
+      warning.textContent = `\u26A0 ${item2.brokenReason || "Shape anchor is broken."}`;
+      warning.title = item2.brokenReason || "Shape anchor is broken.";
+      Object.assign(warning.style, { color: "#fbbf24", fontSize: "10px" });
+      row2.appendChild(warning);
+    }
+    if (this.detailsTag === item2.tag) row2.appendChild(this.renderDetails(item2));
+    row2.appendChild(this.renderStyle(item2));
+    return row2;
+  }
+  renderWarning(status) {
+    const warning = document.createElement("div");
+    const reason = status.reason || status.status.split("-").join(" ");
+    warning.textContent = `\u26A0 Not rendered on frame ${status.frame}: ${reason}`;
+    warning.title = reason;
+    warning.setAttribute("data-molsysviewer-shape-render-warning", status.tag);
+    Object.assign(warning.style, { color: "#fbbf24", fontSize: "10px" });
+    return warning;
+  }
+  renderDetails(item2) {
+    const editor = document.createElement("div");
+    Object.assign(editor.style, { display: "grid", gridTemplateColumns: "1fr auto", gap: "6px" });
+    const rename = document.createElement("input");
+    rename.value = item2.tag;
+    rename.setAttribute("data-molsysviewer-shape-rename", item2.tag);
+    const renameButton = makeButton("Rename", () => {
+      const newTag = rename.value.trim();
+      if (newTag && newTag !== item2.tag) this.ctx.onAction("rename_shape", { tag: item2.tag, new_tag: newTag });
+    });
+    renameButton.setAttribute("data-molsysviewer-shape-rename-confirm", item2.tag);
+    editor.appendChild(rename);
+    editor.appendChild(renameButton);
+    const layer = document.createElement("input");
+    layer.value = item2.layerTag && item2.layerTag !== item2.tag ? item2.layerTag : "";
+    layer.placeholder = "Layer (blank detaches)";
+    layer.setAttribute("data-molsysviewer-shape-layer", item2.tag);
+    const layerButton = makeButton("Set layer", () => this.ctx.onAction("set_shape_layer", {
+      tag: item2.tag,
+      layer: layer.value.trim() || null
+    }));
+    layerButton.setAttribute("data-molsysviewer-shape-layer-confirm", item2.tag);
+    editor.appendChild(layer);
+    editor.appendChild(layerButton);
+    return editor;
+  }
+  renderStyle(item2) {
+    const section = document.createElement("div");
+    section.setAttribute("data-molsysviewer-shape-style", item2.tag);
+    Object.assign(section.style, { display: "flex", flexDirection: "column", gap: "6px" });
+    const controls = SHAPE_STYLE_CONTROLS[item2.op] ?? [];
+    if (controls.length === 0) {
+      const empty2 = document.createElement("div");
+      empty2.textContent = "This shape type has no editable style.";
+      empty2.setAttribute("data-molsysviewer-shape-no-style", item2.tag);
+      Object.assign(empty2.style, { color: "rgba(244,244,245,0.52)", fontSize: "10px" });
+      section.appendChild(empty2);
+      return section;
+    }
+    if (controls.includes("color") || controls.includes("colors")) {
+      const color = document.createElement("input");
+      color.type = "color";
+      color.value = (item2.color || "#ffffff").toLowerCase();
+      color.setAttribute("data-molsysviewer-shape-color", item2.tag);
+      this.bindContinuous(color, () => this.ctx.onAction("set_shape_color", { tag: item2.tag, color: color.value }));
+      section.appendChild(this.controlRow(
+        controls.includes("colors") ? `Colours (${item2.nColors ?? 0})` : "Colour",
+        color
+      ));
+    }
+    if (controls.includes("alpha")) {
+      const alpha = document.createElement("input");
+      alpha.type = "range";
+      alpha.min = "0";
+      alpha.max = "1";
+      alpha.step = "0.05";
+      alpha.value = String(item2.alpha ?? 1);
+      alpha.setAttribute("data-molsysviewer-shape-alpha", item2.tag);
+      this.bindContinuous(alpha, () => this.ctx.onAction("set_shape_alpha", { tag: item2.tag, alpha: Number(alpha.value) }));
+      section.appendChild(this.controlRow(`Alpha ${alpha.value}`, alpha));
+    }
+    if ((controls.includes("radius") || controls.includes("radii")) && item2.radius) {
+      const radius = document.createElement("input");
+      radius.type = "number";
+      radius.min = "0.01";
+      radius.step = "0.1";
+      radius.value = String(item2.radius.magnitude);
+      radius.setAttribute("data-molsysviewer-shape-radius", item2.tag);
+      this.bindContinuous(radius, () => this.ctx.onAction("set_shape_radius", {
+        tag: item2.tag,
+        radius: { magnitude: Number(radius.value), unit: item2.radius.unit }
+      }));
+      const label2 = controls.includes("radii") ? `Radii (${item2.nRadii ?? 0})` : "Radius";
+      section.appendChild(this.controlRow(`${label2} ${unitLabel(item2.radius.unit)}`, radius));
+    }
+    if (controls.includes("radius_scale")) {
+      section.appendChild(this.scaleControl(item2, "radius_scale", item2.radiusScale ?? 1, "Radius scale"));
+    }
+    if (controls.includes("length_scale")) {
+      section.appendChild(this.scaleControl(item2, "length_scale", item2.lengthScale ?? 1, "Length scale"));
+    }
+    return section;
+  }
+  scaleControl(item2, kind, value, label2) {
+    const input = document.createElement("input");
+    input.type = "number";
+    input.min = "0.01";
+    input.step = "0.05";
+    input.value = String(value);
+    input.setAttribute(`data-molsysviewer-shape-${kind.replace("_", "-")}`, item2.tag);
+    this.bindContinuous(input, () => this.ctx.onAction("set_shape_scale", { tag: item2.tag, kind, value: Number(input.value) }));
+    return this.controlRow(label2, input);
+  }
+  controlRow(labelText, control) {
+    const row2 = document.createElement("div");
+    Object.assign(row2.style, { display: "grid", gridTemplateColumns: "110px 1fr", alignItems: "center", gap: "7px" });
+    const label2 = document.createElement("span");
+    label2.textContent = labelText;
+    Object.assign(label2.style, { fontSize: "10px", color: "rgba(244,244,245,0.66)" });
+    row2.appendChild(label2);
+    row2.appendChild(control);
+    return row2;
+  }
+  bindContinuous(input, apply) {
+    input.addEventListener("focus", () => this.beginCoalescing());
+    input.addEventListener("pointerdown", () => this.beginCoalescing());
+    input.addEventListener("input", apply);
+    input.addEventListener("change", () => this.endCoalescing());
+    input.addEventListener("blur", () => this.endCoalescing());
+  }
+  beginCoalescing() {
+    if (this.coalescing) return;
+    this.coalescing = true;
+    this.ctx.onAction("begin_scene_history_coalescing");
+  }
+  endCoalescing() {
+    if (!this.coalescing) return;
+    this.coalescing = false;
+    this.ctx.onAction("end_scene_history_coalescing");
+  }
+  renderGlobalActions() {
+    const row2 = document.createElement("div");
+    Object.assign(row2.style, { display: "flex", gap: "6px", marginTop: "8px" });
+    for (const [label2, action] of [
+      ["Show all", "show_all_shapes"],
+      ["Hide all", "hide_all_shapes"],
+      ["Clear all", "clear_shapes"]
+    ]) {
+      const button = makeButton(label2, () => this.ctx.onAction(action));
+      button.setAttribute("data-molsysviewer-shape-global-action", action);
+      row2.appendChild(button);
+    }
+    return row2;
+  }
+};
+
 // src/ui/panel-shell.ts
 var PanelShell = class {
   constructor(host, options) {
@@ -155475,11 +155696,7 @@ var GroupPanel = class {
       })
     );
     this.shapesSection = this.createSection("shapes");
-    this.shapesPanel = new InspectorListPanel("shapes", this.makePanelContext("shapes"), {
-      header: "3D Shapes",
-      subtitleFallback: "Geometry",
-      emptyText: "No shapes yet."
-    });
+    this.shapesPanel = new ShapesPanel(this.makePanelContext("shapes"));
     this.layersSection = this.createSection("layers");
     this.layersPanel = new LayersPanel(this.makePanelContext("layers"));
     this.viewportSection = this.createSection("viewport");
@@ -155796,8 +156013,11 @@ var GroupPanel = class {
   updateRegionDetails(details) {
     this.regionsPanel.updateDetails(details);
   }
-  setShapes(items) {
-    this.shapesPanel.setItems(items);
+  setShapes(items, renderStatuses) {
+    this.shapesPanel.setShapes(items, renderStatuses);
+  }
+  updateShapeRenderStatus(status) {
+    this.shapesPanel.updateRenderStatus(status);
   }
   setLayerObjects(items) {
     this.layersPanel.setObjects(items);
@@ -156712,9 +156932,9 @@ var AddonsPanel = class {
         this.workspaceOverviewHost.appendChild(diagHeader);
         diagnosticsRendered = true;
       }
-      const card4 = document.createElement("div");
-      card4.setAttribute("data-molsysviewer-addons-addon-discovery-failure", failure.source);
-      Object.assign(card4.style, {
+      const card5 = document.createElement("div");
+      card5.setAttribute("data-molsysviewer-addons-addon-discovery-failure", failure.source);
+      Object.assign(card5.style, {
         display: "flex",
         flexDirection: "column",
         alignItems: "stretch",
@@ -156745,11 +156965,11 @@ var AddonsPanel = class {
       badge.textContent = failure.kind === "lifecycle" ? "Lifecycle Error" : "Discovery Error";
       header3.appendChild(name);
       header3.appendChild(badge);
-      card4.appendChild(header3);
+      card5.appendChild(header3);
       const desc = document.createElement("div");
       Object.assign(desc.style, { fontSize: "10px", color: "rgba(252,165,165,0.72)" });
       desc.textContent = failure.reason || "Error loading entry point.";
-      card4.appendChild(desc);
+      card5.appendChild(desc);
       const traceBox = document.createElement("pre");
       Object.assign(traceBox.style, {
         display: "none",
@@ -156764,13 +156984,13 @@ var AddonsPanel = class {
         whiteSpace: "pre-wrap"
       });
       traceBox.textContent = failure.traceback || "No traceback detail.";
-      card4.appendChild(traceBox);
-      card4.addEventListener("click", (e) => {
+      card5.appendChild(traceBox);
+      card5.addEventListener("click", (e) => {
         e.preventDefault();
         const isVisible = traceBox.style.display === "block";
         traceBox.style.display = isVisible ? "none" : "block";
       });
-      this.workspaceOverviewHost.appendChild(card4);
+      this.workspaceOverviewHost.appendChild(card5);
     }
   }
   // ── Left Column: Workspace Navigation (Mimicking Studio layout) ──
@@ -157448,6 +157668,7 @@ var MolSysViewerController = class _MolSysViewerController {
       systemLoaded: false
     };
     this.shapeSummaries = [];
+    this.shapeRenderStatuses = /* @__PURE__ */ new Map();
     this.dynamicRegionEvaluationInFlight = null;
     this.dynamicRegionEvaluationPendingFrame = null;
     this.addonsScene = null;
@@ -157964,10 +158185,7 @@ var MolSysViewerController = class _MolSysViewerController {
           (state) => cb2(state.currentFrame),
           { immediate: false }
         ),
-        notifyShapeRenderStatus: (status) => this.notify?.({
-          event: "shape_render_status",
-          ...status
-        })
+        notifyShapeRenderStatus: (status) => this.handleShapeRenderStatus(status)
       }
     );
     this.annotations = new AnnotationHandlers(plugin, {
@@ -158240,6 +158458,20 @@ var MolSysViewerController = class _MolSysViewerController {
   nextMeasurementTag() {
     this.measurementTagCounter += 1;
     return `measurement_${this.measurementTagCounter}`;
+  }
+  handleShapeRenderStatus(status) {
+    const panelStatus = {
+      tag: status.tag,
+      op: status.op,
+      frame: status.frame,
+      status: status.status,
+      requestedAtoms: status.requested_atoms,
+      usedAtoms: status.used_atoms,
+      reason: status.reason
+    };
+    this.shapeRenderStatuses.set(status.tag, panelStatus);
+    this.groupPanel.updateShapeRenderStatus(panelStatus);
+    this.notify?.({ event: "shape_render_status", ...status });
   }
   handleWebGLContextLost() {
     if (this.webglContextLost) return;
@@ -159048,14 +159280,28 @@ var MolSysViewerController = class _MolSysViewerController {
         case "set_shape_summaries": {
           const records = Array.isArray(msg.shapes) ? msg.shapes : [];
           this.shapeSummaries = records.filter((item2) => typeof item2?.tag === "string").map((item2) => ({
+            op: typeof item2.op === "string" ? item2.op : "",
             kind: typeof item2.kind === "string" ? item2.kind : "shape",
             tag: item2.tag,
             layerTag: typeof item2.layer_tag === "string" ? item2.layer_tag : void 0,
             title: typeof item2.title === "string" ? item2.title : item2.tag,
             subtitle: typeof item2.subtitle === "string" ? item2.subtitle : void 0,
             hidden: !!item2.hidden,
-            atomIndices: Array.isArray(item2.atom_indices) ? item2.atom_indices.filter((value) => typeof value === "number") : []
+            atomIndices: Array.isArray(item2.atom_indices) ? item2.atom_indices.filter((value) => typeof value === "number") : [],
+            color: typeof item2.color === "string" ? item2.color.toLowerCase() : void 0,
+            nColors: typeof item2.n_colors === "number" ? item2.n_colors : void 0,
+            radius: item2.radius && typeof item2.radius.magnitude === "number" && typeof item2.radius.unit === "string" ? { magnitude: item2.radius.magnitude, unit: item2.radius.unit } : void 0,
+            nRadii: typeof item2.n_radii === "number" ? item2.n_radii : void 0,
+            alpha: typeof item2.alpha === "number" ? item2.alpha : void 0,
+            radiusScale: typeof item2.radius_scale === "number" ? item2.radius_scale : void 0,
+            lengthScale: typeof item2.length_scale === "number" ? item2.length_scale : void 0,
+            broken: !!item2.broken,
+            brokenReason: typeof item2.broken_reason === "string" ? item2.broken_reason : void 0
           }));
+          const currentTags = new Set(this.shapeSummaries.map((item2) => item2.tag));
+          for (const tag of this.shapeRenderStatuses.keys()) {
+            if (!currentTags.has(tag)) this.shapeRenderStatuses.delete(tag);
+          }
           break;
         }
         case "set_dynamic_region_atoms":
@@ -159579,27 +159825,8 @@ var MolSysViewerController = class _MolSysViewerController {
       this.measurementSettings
     );
     this.groupPanel.setShapes(
-      [...this.shapeSummaries].sort((left, right) => left.tag.localeCompare(right.tag)).map((item2) => {
-        const tag = item2.tag;
-        return {
-          key: tag,
-          title: item2.title,
-          subtitle: item2.layerTag && item2.layerTag !== tag ? item2.subtitle ? `${tag} \xB7 ${item2.subtitle} \xB7 layer: ${item2.layerTag}` : `${tag} \xB7 layer: ${item2.layerTag}` : item2.subtitle ? `${tag} \xB7 ${item2.subtitle}` : tag,
-          hidden: item2.hidden,
-          active: this.addonsActive?.section === "shapes" && this.addonsActive.tag === tag,
-          onActivate: item2.atomIndices.length > 0 ? () => {
-            this.addonsActive = { section: "shapes", tag };
-            this.refreshAddonsPanel();
-            this.focusTarget({ atom_indices: item2.atomIndices });
-          } : void 0,
-          onToggleVisibility: () => {
-            this.notify?.({ event: "interaction_context_action", action: "toggle_shape_visibility", tag });
-          },
-          onDelete: () => {
-            this.notify?.({ event: "interaction_context_action", action: "delete_shape", tag });
-          }
-        };
-      })
+      [...this.shapeSummaries].sort((left, right) => left.tag.localeCompare(right.tag)),
+      this.shapeRenderStatuses
     );
     this.groupPanel.setLayerObjects([
       ...this.annotationSummaries.map((item2) => ({
@@ -160067,9 +160294,9 @@ var MolSysViewerController = class _MolSysViewerController {
       fontLink.href = "https://fonts.googleapis.com/css2?family=Varela+Round&display=swap";
       document.head.appendChild(fontLink);
     }
-    const card4 = document.createElement("div");
-    card4.setAttribute("data-molsysviewer-welcome-card", "true");
-    Object.assign(card4.style, {
+    const card5 = document.createElement("div");
+    card5.setAttribute("data-molsysviewer-welcome-card", "true");
+    Object.assign(card5.style, {
       position: "absolute",
       top: "50%",
       left: "50%",
@@ -160115,7 +160342,7 @@ var MolSysViewerController = class _MolSysViewerController {
           <circle cx="80" cy="30" r="24" fill="url(#rad-yellow)" />
           <circle cx="115" cy="45" r="24" fill="url(#rad-blue)" />
         </svg>`;
-    card4.appendChild(svgContainer.firstElementChild);
+    card5.appendChild(svgContainer.firstElementChild);
     const titleEl = document.createElement("div");
     Object.assign(titleEl.style, {
       fontSize: "20px",
@@ -160128,7 +160355,7 @@ var MolSysViewerController = class _MolSysViewerController {
       fontFamily: "'Varela Round', system-ui, sans-serif"
     });
     titleEl.textContent = "MolSysViewer";
-    card4.appendChild(titleEl);
+    card5.appendChild(titleEl);
     const descEl = document.createElement("div");
     Object.assign(descEl.style, {
       fontSize: "12px",
@@ -160140,7 +160367,7 @@ var MolSysViewerController = class _MolSysViewerController {
       // Clean body text
     });
     descEl.textContent = "An interactive, high-performance molecular visualization workbench integrated directly into your notebook.";
-    card4.appendChild(descEl);
+    card5.appendChild(descEl);
     const codeBox = document.createElement("div");
     Object.assign(codeBox.style, {
       background: "rgba(0, 0, 0, 0.3)",
@@ -160205,7 +160432,7 @@ var MolSysViewerController = class _MolSysViewerController {
     const line3 = document.createElement("span");
     line3.textContent = "view.show()";
     codeBox.appendChild(line3);
-    card4.appendChild(codeBox);
+    card5.appendChild(codeBox);
     const btn = document.createElement("button");
     Object.assign(btn.style, {
       background: "linear-gradient(135deg, #ce5027 0%, #ffcc00 100%)",
@@ -160236,12 +160463,12 @@ var MolSysViewerController = class _MolSysViewerController {
       btn.textContent = "Loading Crambin...";
       void this.handleMessage({ op: "load_pdb_id", pdb_id: "1CRN" });
     };
-    card4.appendChild(btn);
+    card5.appendChild(btn);
     if (!this.host.style.position || this.host.style.position === "static") {
       this.host.style.position = "relative";
     }
-    this.host.appendChild(card4);
-    this.welcomeCard = card4;
+    this.host.appendChild(card5);
+    this.welcomeCard = card5;
   }
   hideWelcomeCard() {
     if (this.welcomeCard) {
@@ -161306,8 +161533,8 @@ var HelpOverlay = class {
       zIndex: "40",
       pointerEvents: "auto"
     });
-    const card4 = document.createElement("div");
-    card4.className = "molsysviewer-help-card";
+    const card5 = document.createElement("div");
+    card5.className = "molsysviewer-help-card";
     const header2 = document.createElement("div");
     header2.className = "molsysviewer-help-header";
     const title = document.createElement("span");
@@ -161321,7 +161548,7 @@ var HelpOverlay = class {
     closeBtn.addEventListener("click", () => this.hide());
     header2.appendChild(title);
     header2.appendChild(closeBtn);
-    card4.appendChild(header2);
+    card5.appendChild(header2);
     const grid = document.createElement("div");
     grid.className = "molsysviewer-help-grid";
     grid.appendChild(makeSection("Mouse", [
@@ -161341,11 +161568,11 @@ var HelpOverlay = class {
       ["H", "Toggle this help"],
       ["Esc", "Close panel / cancel"]
     ]));
-    card4.appendChild(grid);
+    card5.appendChild(grid);
     this.root.addEventListener("pointerdown", (ev) => {
       if (ev.target === this.root) this.hide();
     });
-    this.root.appendChild(card4);
+    this.root.appendChild(card5);
     this.host.appendChild(this.root);
   }
   toggle() {
