@@ -1,6 +1,6 @@
 # Studio subpanel — Measures (implementation plan)
 
-**Status:** proposed (2026-07-12). Companion to
+**Status:** implemented and audited (2026-07-13). Companion to
 [the spec](studio_measures_subpanel.md) and
 [the UI design](studio_measures_subpanel_ui_design.md).
 
@@ -69,9 +69,6 @@ command: it must never enter `_message_history` or it corrupts the replay).
 | `endpoint_policy` | `str` | `string` | `info()['endpoint_policy']` | per-measurement policy shown on `⋯` |
 | `n_picks` | `int` | `number` | `info()['n_picks']` | sanity, and the empty-value case |
 | `atom_indices` | `list[int]` | `number[]` | flattened `endpoint_atom_indices` | focus |
-| `series` | `list[float] \| None` | `number[] \| null` | `series(tag)`, magnitudes — **full, when it fits** (§3) | the value at the active frame, read locally |
-| `sparkline` | `list[float] \| None` | `number[] \| null` | **min/max-bucketed** downsample of the series (§3) | the sparkline only — **never the displayed value** |
-| `series_index` | `int \| None` | `number \| null` | active frame index | the marker on the sparkline |
 
 Plus, once per push (domain-level, not per record):
 
@@ -81,47 +78,55 @@ Plus, once per push (domain-level, not per record):
 | `representative_atoms` | `settings()['representative_atoms']` | the four inputs |
 | `active_selection_count` | the active selection | *"Needs 2 picks · you have 1"* |
 
-**`value` and `series` cross the wire as bare magnitudes, with `unit` beside
+**`value` and `sparkline` cross the wire as bare magnitudes, with `unit` beside
 them.** A `puw` quantity is not JSON. Do **not** stringify the quantity in Python
 and parse it in TS: that is a second unit system living in the frontend, and it
 will drift. Python owns the unit; the panel formats.
 
-## 3. Frame dependence — the trap, and how it is solved
+## 3. Frame dependence and lazy trajectory series
 
 `info()['value']` is the value **at the active frame** (`_active_series_index`).
 Naively, that means re-syncing the summary on every frame — a message per frame at
 30 fps, which would saturate the channel this repo has already had to rescue once
 (`scene_contracts.md` §0).
 
-**Solution: Python sends the series once; the frontend indexes it locally.**
-Python pushes the whole series with the summary, and `viewer-controller.ts` updates
-the displayed number and the sparkline marker **in JavaScript**, from the active
-frame index. Python re-sends the summary only when a measurement is created,
-deleted or edited — **and when the trajectory or the system changes**
-(`load(mode="append_structures")`, `apply_system_edit`). That last clause is not
-optional: without it the frontend keeps indexing a cached series that no longer
-matches the frame count.
+The authoritative summary remains small and carries only the value at the active
+frame. Python re-sends it on `trajectory_frame_changed` (the playback notifier is
+throttled to 5 Hz), so the frontend never recomputes a scientific value or indexes
+a downsample as if it were exact data.
 
-### The `series` / `sparkline` split — do not merge these two
+The full series is **never part of `set_measurement_summaries`**. It is requested
+only when the user expands one measurement, through
+`request_measurement_series {tag, request_id}`. Python replies runtime-only with:
 
-They look like one field and they are two, and merging them **puts a wrong number
-on screen**:
+| field | type | meaning |
+|---|---|---|
+| `tag` | `str` | measurement identity |
+| `request_id` | `int \| None` | stale-response rejection |
+| `unit` | `str` | presentation unit owned by Python |
+| `n_frames` | `int` | original series length |
+| `sparkline` | `list[float]` | min/max-bucketed drawing data |
+| `sparkline_indices` | `list[int]` | original frame for every sparkline point |
+| `series_index` | `int \| None` | frame active when the response was built |
 
-- **`series`** — the exact value per frame. This is what the frontend indexes to
-  display `5.93 Å`.
-- **`sparkline`** — a downsampled copy, **for drawing only**.
+The panel accepts a response only when its `(tag, request_id)` matches the latest
+request. Summary and lazy sparkline messages are runtime projections and never enter the
+replay history.
+
+### The sparkline is drawing data, never an exact-value source
+
+Only the downsampled **`sparkline`** crosses the lazy-response seam. It is
+strictly drawing data. The exact displayed row value always comes from the
+authoritative summary.
 
 If the panel indexed a 200-point downsample with a frame index that runs to
 100 000, it would render `undefined` — or, if someone "fixed" that by scaling the
 index, **the value of a different frame, looking perfectly plausible**.
 
-**The policy is a threshold**, and it must be measured, not assumed:
-
-- series short enough (start at ~5 000 frames — most loaded trajectories):
-  **send it whole**, the frontend indexes it, and the value is always exact;
-- longer: send the `sparkline` for drawing, and refresh the exact `value`
-  **throttled** (4–5 Hz, never 30) — a number flickering at 30 fps is unreadable
-  anyway, so nothing is lost.
+The full exact series remains in Python. Sending it in addition to the sparkline
+would add dead channel traffic because the panel never indexes it; for 100 000
+frames that duplicate payload is roughly 781 KiB before JSON overhead. The exact
+current value continues to arrive through the frame-dependent summary.
 
 **Do not let the frontend recompute the value.** The endpoint policies (`centroid`,
 `representative_atom`) mean the number is not a trivial distance between two atoms;
@@ -157,6 +162,7 @@ each with a handler in the `event == "interaction_context_action"` dispatcher in
 | `clear_measurements` | `—` | `measurements.clear()` |
 | `set_measurement_endpoint_policy` | `{policy}` | `measurements.set_endpoint_policy(policy)` |
 | `set_measurement_representative_atom` | `{target, atom_name}` | `measurements.set_representative_atom(...)` |
+| `request_measurement_series` | `{tag, request_id}` | runtime-only lazy `measurements.series(tag)` response |
 
 **Already exist, reuse — do not duplicate:** `delete_measurement` (`core.py:1437`)
 already goes through Python correctly. Focus stays a local camera move.

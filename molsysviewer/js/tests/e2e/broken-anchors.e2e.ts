@@ -43,9 +43,10 @@ async function run() {
         assert.match(await annotationRow.innerText(), /Missing anchor atom indices/);
 
         await page.locator('[data-molsysviewer-group-panel-tab="measures"]').click();
-        const measurementRow = page.locator('[data-molsysviewer-scene-object-tag="broken-distance"]');
-        assert.strictEqual(await measurementRow.getAttribute("data-molsysviewer-scene-object-broken"), "true");
-        assert.match(await measurementRow.innerText(), /Missing anchor atom indices/);
+        const measurementRow = page.locator('[data-molsysviewer-measurement-tag="broken-distance"]');
+        assert.strictEqual(await measurementRow.getAttribute("data-molsysviewer-measurement-broken"), "true");
+        assert.strictEqual(await measurementRow.locator('[data-molsysviewer-measurement-value="broken-distance"]').innerText(), "—");
+        assert.match(await measurementRow.getAttribute("title") || "", /Missing anchor atom indices/);
 
         const refs = await page.evaluate(() => {
             const controller = (window as any).__controller;

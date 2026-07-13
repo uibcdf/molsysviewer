@@ -1080,6 +1080,7 @@ class MolSysView(
                 )
             else:
                 self._set_active_selection_recipe([])
+            self._sync_measurement_summaries_runtime()
             if _selection_changed:
                 self.history._end_operation()  # noqa: SLF001
             addons = getattr(self, "addons", None)

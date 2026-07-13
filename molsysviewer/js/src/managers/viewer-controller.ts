@@ -36,6 +36,7 @@ import { FloatingPanelShell } from "../ui/floating-panel-shell";
 import { MsvPerAtomColorThemeProvider } from "../themes/per-atom-color";
 import { MsvPhysicochemicalColorThemeProvider } from "../themes/physicochemical-color";
 import { HoverTooltip } from "../ui/hover-tooltip";
+import type { MeasurementSeries, MeasurementSettings, MeasurementSummary } from "../ui/panels/measures-panel";
 type SavedSelectionRecord = SavedSelectionSummary & { atom_indices: number[] };
 
 type InteractionKind = "hover" | "click" | "context";
@@ -554,7 +555,13 @@ export class MolSysViewerController {
     private lastPrimaryGroupClick: { key: string; time: number } | null = null;
     private savedSelections: SavedSelectionRecord[] = [];
     private annotationSummaries: Array<{ kind: string; tag: string; layerTag?: string; text: string; hidden: boolean; atomIndices: number[]; broken: boolean; brokenReason?: string }> = [];
-    private measurementSummaries: Array<{ kind: string; tag: string; layerTag?: string; picks: number; hidden: boolean; atomIndices: number[]; value?: number; unit?: string; broken: boolean; brokenReason?: string }> = [];
+    private measurementSummaries: MeasurementSummary[] = [];
+    private measurementSettings: MeasurementSettings = {
+        endpointPolicyDefault: "centroid",
+        representativeAtoms: { protein: "CA", nucleic: "P", lipid: "P", other: "" },
+        structureIndex: 0,
+        systemLoaded: false,
+    };
     private shapeSummaries: Array<{ kind: string; tag: string; layerTag?: string; title: string; subtitle?: string; hidden: boolean; atomIndices: number[] }> = [];
     private dynamicRegionEvaluationInFlight: number | null = null;
     private dynamicRegionEvaluationPendingFrame: number | null = null;
@@ -1073,13 +1080,13 @@ export class MolSysViewerController {
             if (action === "hide_measurement") {
                 const tag = typeof details?.tag === "string" ? details.tag : null;
                 if (!tag) return;
-                void this.handleMessage({ op: "hide_layer", tag, kind: "measurement" });
+                this.notify?.({ event: "interaction_context_action", action: "hide_measurement", tag });
                 return;
             }
             if (action === "delete_measurement") {
                 const tag = typeof details?.tag === "string" ? details.tag : null;
                 if (!tag) return;
-                void this.handleMessage({ op: "clear_layer", tag });
+                this.notify?.({ event: "interaction_context_action", action: "delete_measurement", tag });
                 return;
             }
             if (action === "activate_selection") {
@@ -2159,17 +2166,44 @@ export class MolSysViewerController {
                 case "set_measurement_summaries": {
                     const records = Array.isArray((msg as any).measurements) ? (msg as any).measurements : [];
                     this.measurementSummaries = records.filter((item: any) => typeof item?.tag === "string").map((item: any) => ({
-                        kind: typeof item.kind === "string" ? item.kind : "measurement",
+                        kind: ["distance", "angle", "dihedral"].includes(item.kind) ? item.kind : "measurement",
                         tag: item.tag,
                         layerTag: typeof item.layer_tag === "string" ? item.layer_tag : undefined,
                         picks: typeof item.n_picks === "number" ? item.n_picks : 0,
                         hidden: !!item.hidden,
                         atomIndices: Array.isArray(item.atom_indices) ? item.atom_indices.filter((value: unknown): value is number => typeof value === "number") : [],
-                        value: typeof item.value === "number" ? item.value : undefined,
-                        unit: typeof item.unit === "string" ? item.unit : undefined,
+                        value: typeof item.value === "number" ? item.value : null,
+                        unit: typeof item.unit === "string" ? item.unit : "",
+                        endpointLabels: Array.isArray(item.endpoint_labels) ? item.endpoint_labels.filter((value: unknown): value is string => typeof value === "string") : [],
+                        endpointPolicy: typeof item.endpoint_policy === "string" ? item.endpoint_policy : "centroid",
                         broken: !!item.broken,
                         brokenReason: typeof item.broken_reason === "string" ? item.broken_reason : undefined,
                     }));
+                    const atoms = (msg as any).representative_atoms ?? {};
+                    this.measurementSettings = {
+                        endpointPolicyDefault: ["atom", "centroid", "representative_atom"].includes((msg as any).endpoint_policy_default)
+                            ? (msg as any).endpoint_policy_default : "centroid",
+                        representativeAtoms: {
+                            protein: typeof atoms.protein === "string" ? atoms.protein : "CA",
+                            nucleic: typeof atoms.nucleic === "string" ? atoms.nucleic : "P",
+                            lipid: typeof atoms.lipid === "string" ? atoms.lipid : "P",
+                            other: typeof atoms.other === "string" ? atoms.other : "",
+                        },
+                        structureIndex: typeof (msg as any).structure_index === "number" ? (msg as any).structure_index : 0,
+                        systemLoaded: !!(msg as any).system_loaded,
+                    };
+                    break;
+                }
+                case "measurement_series": {
+                    this.groupPanel.updateMeasurementSeries({
+                        tag: String((msg as any).tag ?? ""),
+                        requestId: typeof (msg as any).request_id === "number" ? (msg as any).request_id : null,
+                        unit: typeof (msg as any).unit === "string" ? (msg as any).unit : "",
+                        nFrames: typeof (msg as any).n_frames === "number" ? (msg as any).n_frames : 0,
+                        sparkline: Array.isArray((msg as any).sparkline) ? (msg as any).sparkline.filter((value: unknown): value is number => typeof value === "number") : [],
+                        sparklineIndices: Array.isArray((msg as any).sparkline_indices) ? (msg as any).sparkline_indices.filter((value: unknown): value is number => typeof value === "number") : [],
+                        seriesIndex: typeof (msg as any).series_index === "number" ? (msg as any).series_index : null,
+                    } satisfies MeasurementSeries);
                     break;
                 }
                 case "set_shape_summaries": {
@@ -2742,33 +2776,8 @@ export class MolSysViewerController {
                 })
         );
         this.groupPanel.setMeasurements(
-            [...this.measurementSummaries]
-                .sort((left, right) => left.tag.localeCompare(right.tag))
-                .map((item) => {
-                    const tag = item.tag;
-                    return {
-                    key: tag,
-                    title: item.kind[0].toUpperCase() + item.kind.slice(1),
-                    subtitle: item.layerTag && item.layerTag !== tag
-                        ? `${tag} · ${item.picks} picks · layer: ${item.layerTag}`
-                        : `${tag} · ${item.picks} picks`,
-                    hidden: item.hidden,
-                    broken: item.broken,
-                    brokenReason: item.brokenReason,
-                    active: this.addonsActive?.section === "measurements" && this.addonsActive.tag === tag,
-                    onActivate: item.atomIndices.length > 0 ? () => {
-                        this.addonsActive = { section: "measurements", tag };
-                        this.refreshAddonsPanel();
-                        this.focusTarget({ atom_indices: item.atomIndices });
-                    } : undefined,
-                    onToggleVisibility: () => {
-                        this.notify?.({ event: "interaction_context_action", action: "toggle_measurement_visibility", tag });
-                    },
-                    onDelete: () => {
-                        this.notify?.({ event: "interaction_context_action", action: "delete_measurement", tag });
-                    },
-                    };
-                })
+            [...this.measurementSummaries].sort((left, right) => left.tag.localeCompare(right.tag)),
+            this.measurementSettings,
         );
         this.groupPanel.setShapes(
             [...this.shapeSummaries]

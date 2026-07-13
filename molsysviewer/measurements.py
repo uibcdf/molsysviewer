@@ -615,12 +615,14 @@ class MeasurementsManager:
             "representative_atoms": dict(self._representative_atoms),
         }
 
+    @records_scene_history
     @signal(tags=["measurement"])
     @digest()
     def set_endpoint_policy(self, endpoint_policy: str, *, skip_digestion: bool = False) -> None:
         self._endpoint_policy_default = self._normalize_endpoint_policy(endpoint_policy)
         self._sync_frontend_settings()
 
+    @records_scene_history
     @signal(tags=["measurement"])
     @digest()
     def set_representative_atom(self, target: str, atom_name: str, *, skip_digestion: bool = False) -> None:

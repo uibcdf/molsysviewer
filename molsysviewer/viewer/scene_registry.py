@@ -51,6 +51,8 @@ class SceneRegistryMixin:
         records = []
         for record in self.measurements.info():
             value = record.get("value")
+            kind = str(record.get("kind") or "measurement")
+            unit = "angstrom" if kind == "distance" else "degree"
             atom_indices = sorted({
                 int(index)
                 for pick in record.get("picks_atom_indices") or []
@@ -58,19 +60,62 @@ class SceneRegistryMixin:
             })
             records.append(
                 {
-                    "kind": record.get("kind"),
+                    "kind": kind,
                     "tag": record.get("tag"),
                     "layer_tag": record.get("layer_tag"),
                     "n_picks": int(record.get("n_picks") or 0),
                     "atom_indices": atom_indices,
-                    "value": None if value is None else float(puw.get_value(value)),
-                    "unit": None if value is None else str(puw.get_unit(value)),
+                    "value": None if value is None else float(puw.get_value(value, to_unit=unit)),
+                    "unit": unit,
+                    "endpoint_labels": list(record.get("endpoint_labels") or []),
+                    "endpoint_policy": record.get("endpoint_policy"),
                     "hidden": not bool(record.get("visible")),
                     "broken": bool(record.get("broken")),
                     "broken_reason": record.get("broken_reason"),
                 }
             )
         return records
+
+    @staticmethod
+    def _minmax_downsample(values: list[float], max_points: int = 240) -> tuple[list[float], list[int]]:
+        if len(values) <= max_points:
+            return list(values), list(range(len(values)))
+        import math
+
+        bucket_size = max(1, math.ceil(len(values) / max(1, max_points // 2)))
+        sampled: list[tuple[int, float]] = []
+        for start in range(0, len(values), bucket_size):
+            bucket = values[start:start + bucket_size]
+            low = min(range(len(bucket)), key=bucket.__getitem__)
+            high = max(range(len(bucket)), key=bucket.__getitem__)
+            for offset in sorted({low, high}):
+                sampled.append((start + offset, float(bucket[offset])))
+        return [value for _, value in sampled], [index for index, _ in sampled]
+
+    def _measurement_series_payload(self, tag: str, request_id: int | None = None) -> dict:
+        from .. import pyunitwizard as puw
+
+        info = self.measurements.info(tag)
+        if not info:
+            raise ValueError(f"No measurement found with tag {tag!r}.")
+        record = info[0]
+        kind = str(record.get("kind") or "measurement")
+        unit = "angstrom" if kind == "distance" else "degree"
+        quantity = self.measurements.series(tag)
+        values = [] if quantity is None else [
+            float(value) for value in puw.get_value(quantity, to_unit=unit)
+        ]
+        sparkline, sparkline_indices = self._minmax_downsample(values)
+        return {
+            "op": "measurement_series",
+            "tag": tag,
+            "request_id": request_id,
+            "unit": unit,
+            "n_frames": len(values),
+            "sparkline": sparkline,
+            "sparkline_indices": sparkline_indices,
+            "series_index": self.measurements._active_series_index(len(values)) if values else None,  # noqa: SLF001
+        }
 
     def _shape_summary_records(self) -> list[dict]:
         display = {
@@ -112,9 +157,15 @@ class SceneRegistryMixin:
         })
 
     def _sync_measurement_summaries_runtime(self) -> None:
+        settings = self.measurements.settings(skip_digestion=True)
         self._send_runtime_only({
             "op": "set_measurement_summaries",
             "measurements": self._measurement_summary_records(),
+            "endpoint_policy_default": settings["endpoint_policy_default"],
+            "representative_atoms": settings["representative_atoms"],
+            "active_selection_count": len(self.active_selection.group_indices),
+            "structure_index": int(self._current_structure_index),
+            "system_loaded": self._molsys is not None,
         })
 
     def _sync_shape_summaries_runtime(self) -> None:

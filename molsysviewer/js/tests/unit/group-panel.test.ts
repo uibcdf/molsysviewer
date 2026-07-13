@@ -2051,6 +2051,135 @@ test("GroupPanel Whole opacity brackets live changes for history", async () => {
     }
 });
 
+test("GroupPanel Measures renders scientific values and routes every mutation through panel actions", async () => {
+    const restore = installFakeDom();
+    const previousWindow = (globalThis as any).window;
+    try {
+        (globalThis as any).window = { confirm: () => true };
+        const host = new FakeElement() as any;
+        const actions: Array<{ action: string; details?: any }> = [];
+        const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, (action, details) => {
+            actions.push({ action, details });
+        });
+        panel.setMeasurements([{
+            kind: "distance",
+            tag: "d1",
+            layerTag: "analysis",
+            picks: 2,
+            hidden: false,
+            atomIndices: [0, 1],
+            value: 5.934,
+            unit: "angstrom",
+            endpointLabels: ["N (ALA 1)", "C (ALA 2)"],
+            endpointPolicy: "centroid",
+            broken: false,
+        }, {
+            kind: "angle",
+            tag: "broken-angle",
+            picks: 3,
+            hidden: false,
+            atomIndices: [2, 3],
+            value: 112.4,
+            unit: "degree",
+            endpointLabels: [],
+            endpointPolicy: "atom",
+            broken: true,
+            brokenReason: "Missing anchor atom indices: [4]",
+        }], {
+            endpointPolicyDefault: "representative_atom",
+            representativeAtoms: { protein: "CA", nucleic: "P", lipid: "P", other: "" },
+            structureIndex: 0,
+            systemLoaded: true,
+        });
+        panel.updateSelection({
+            source_kind: "element",
+            atom_indices: [0, 1],
+            group_indices: [0, 1],
+            count_atoms: 2,
+            count_groups: 2,
+        } as any);
+        (panel as any).switchTab("measures");
+        const root = host.children[0];
+
+        assert.strictEqual(findFirstByAttribute(root, "data-molsysviewer-measurement-value", "d1")?.textContent, "5.93 Å");
+        assert.strictEqual(findFirstByAttribute(root, "data-molsysviewer-measurement-value", "broken-angle")?.textContent, "—");
+        assert.strictEqual(
+            findFirstByAttribute(root, "data-molsysviewer-measurement-endpoints", "d1")?.textContent,
+            "N (ALA 1) → C (ALA 2)",
+        );
+
+        findFirstByAttribute(root, "data-molsysviewer-measurement-create-kind", "distance")?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        findFirstByAttribute(root, "data-molsysviewer-measurement-visibility", "d1")?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        findFirstByAttribute(root, "data-molsysviewer-measurement-delete", "d1")?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.slice(-3), [
+            { action: "create_measurement", details: { kind: "distance" } },
+            { action: "toggle_measurement_visibility", details: { tag: "d1" } },
+            { action: "delete_measurement", details: { tag: "d1" } },
+        ]);
+
+        findFirstByAttribute(root, "data-molsysviewer-measurement-series-toggle", "d1")?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.strictEqual(actions.at(-1)?.action, "request_measurement_series");
+        assert.strictEqual(actions.at(-1)?.details.tag, "d1");
+        assert.strictEqual(typeof actions.at(-1)?.details.request_id, "number");
+        const requestId = actions.at(-1)?.details.request_id;
+
+        panel.updateMeasurementSeries({
+            tag: "d1", requestId: requestId + 1, unit: "angstrom", nFrames: 2,
+            sparkline: [5.934, 6.1], sparklineIndices: [0, 1], seriesIndex: 0,
+        });
+        assert.strictEqual(
+            findFirstByAttribute(host.children[0], "data-molsysviewer-measurement-series", "d1"),
+            null,
+            "a stale lazy-series response must not replace the pending request",
+        );
+        panel.updateMeasurementSeries({
+            tag: "d1", requestId, unit: "angstrom", nFrames: 2,
+            sparkline: [5.934, 6.1], sparklineIndices: [0, 1], seriesIndex: 0,
+        });
+        assert.ok(findFirstByAttribute(host.children[0], "data-molsysviewer-measurement-series", "d1"));
+
+        const clickEvent = { preventDefault() {}, stopPropagation() {} };
+        findFirstByAttribute(host.children[0], "data-molsysviewer-measurement-more", "d1")?.dispatch("click", clickEvent);
+        await new Promise(resolve => setTimeout(resolve, 0));
+        const rename = findFirstByAttribute(host.children[0], "data-molsysviewer-measurement-rename-input", "d1") as any;
+        rename.value = "distance";
+        findFirstByAttribute(host.children[0], "data-molsysviewer-measurement-rename", "d1")?.dispatch("click", clickEvent);
+        const layer = findFirstByAttribute(host.children[0], "data-molsysviewer-measurement-layer-input", "d1") as any;
+        layer.value = "analysis-2";
+        findFirstByAttribute(host.children[0], "data-molsysviewer-measurement-layer", "d1")?.dispatch("click", clickEvent);
+        assert.deepStrictEqual(actions.slice(-2), [
+            { action: "rename_measurement", details: { tag: "d1", new_tag: "distance" } },
+            { action: "set_measurement_layer", details: { tag: "d1", layer: "analysis-2" } },
+        ]);
+
+        for (const action of ["show_all_measurements", "hide_all_measurements", "clear_measurements"] as const) {
+            findFirstByAttribute(host.children[0], "data-molsysviewer-measurement-global", action)?.dispatch("click", clickEvent);
+        }
+        assert.deepStrictEqual(actions.slice(-3).map(item => item.action), [
+            "show_all_measurements", "hide_all_measurements", "clear_measurements",
+        ]);
+
+        findFirstByAttribute(host.children[0], "data-molsysviewer-measurement-policy", "centroid")?.dispatch("change");
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "set_measurement_endpoint_policy",
+            details: { policy: "centroid" },
+        });
+
+        const representative = findFirstByAttribute(host.children[0], "data-molsysviewer-measurement-representative", "protein") as any;
+        representative.value = "CB";
+        representative.dispatch("change");
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "set_measurement_representative_atom",
+            details: { target: "protein", atom_name: "CB" },
+        });
+
+        panel.dispose();
+    } finally {
+        (globalThis as any).window = previousWindow;
+        restore();
+    }
+});
+
 test("GroupPanel tabs have correct tooltips and initial subtitle labels", () => {
     const restore = installFakeDom();
     try {
