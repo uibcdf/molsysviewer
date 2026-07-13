@@ -3,6 +3,7 @@ from __future__ import annotations
 import pytest
 
 from molsysviewer.demo import demo
+from molsysviewer import pyunitwizard as puw
 
 
 def _mute(view):
@@ -14,6 +15,250 @@ def test_import_state_rejects_version_1():
     view = _mute(demo["dialanine"])
     with pytest.raises(ValueError, match="version 1"):
         view.import_state({"version": 1, "regions": []})
+
+
+def test_export_state_v2_captures_scene_objects_layers_and_structured_anchor():
+    view = _mute(demo["dialanine"])
+    layer = view.layers.add("analysis", kind="mixed", meta={"owner": "lab"}, skip_digestion=True)
+    annotation = view.annotations.add(
+        "site",
+        atom_indices=[0, 1],
+        tag="note1",
+        layer_tag="analysis",
+        label_style={"color": "#123456"},
+    )
+    annotation.hide(skip_digestion=True)
+    measurement = view.measurements.add("distance", [0], [1], tag="distance1")
+    measurement.hide(skip_digestion=True)
+    shape = view.shapes.add(
+        "sphere",
+        center=puw.quantity([0.0, 0.0, 0.0], "nm"),
+        radius=puw.quantity(0.2, "nm"),
+        color="#FF8800",
+        tag="site1",
+        layer_tag="analysis",
+        skip_digestion=True,
+    )
+    shape.hide(skip_digestion=True)
+    layer.hide(skip_digestion=True)
+
+    state = view.export_state()
+
+    assert state["annotations"][0]["anchor"] == {"type": "atoms", "indices": [0, 1]}
+    assert "atom_indices" not in state["annotations"][0]["options"]
+    assert state["annotations"][0]["hidden"] is True
+    assert state["measurements"][0]["hidden"] is True
+    assert state["shapes"][0]["options"]["color"] == 0xFF8800
+    assert state["shapes"][0]["options"]["radius"] == 2.0
+    assert state["shapes"][0]["layer_tag"] == "analysis"
+    assert state["shapes"][0]["hidden"] is True
+    assert state["layers"] == [{
+        "tag": "analysis",
+        "kind": "shape",
+        "meta": {"owner": "lab"},
+        "provenance": "user",
+        "hidden": True,
+    }]
+
+
+def test_scene_objects_and_user_layer_round_trip_as_usable_python_model():
+    source = _mute(demo["dialanine"])
+    source.layers.add("analysis", kind="mixed", meta={"owner": "lab"}, skip_digestion=True)
+    annotation = source.annotations.add(
+        "site",
+        atom_indices=[0, 1],
+        tag="note1",
+        layer_tag="analysis",
+    )
+    measurement = source.measurements.add(
+        "distance",
+        [0],
+        [1],
+        tag="distance1",
+        layer_tag="analysis",
+    )
+    shape = source.shapes.add(
+        "sphere",
+        center=puw.quantity([0.0, 0.0, 0.0], "nm"),
+        radius=puw.quantity(0.2, "nm"),
+        color="#FF8800",
+        tag="site1",
+        layer_tag="analysis",
+        skip_digestion=True,
+    )
+    annotation.hide(skip_digestion=True)
+    measurement.hide(skip_digestion=True)
+    shape.hide(skip_digestion=True)
+
+    target = _mute(demo["dialanine"])
+    target.import_state(source.export_state())
+
+    assert target.annotations.get("note1") is not None
+    assert target.measurements.get("distance1") is not None
+    assert target.shapes.get("site1") is not None
+    assert target.measurements.count() == len(target.measurements.tags()) == 1
+    assert target.annotations.info("note1")["visible"] is False
+    assert target.measurements.info("distance1")[0]["visible"] is False
+    assert target.shapes.info("site1")[0]["visible"] is False
+    assert target.shapes.records()[0]["options"]["color"] == 0xFF8800
+    assert target.shapes.records()[0]["options"]["radius"] == 2.0
+    assert target.layers["analysis"].provenance == "user"
+    assert target.layers["analysis"].meta == {"owner": "lab"}
+
+    target.measurements.show("distance1", skip_digestion=True)
+    target.measurements.hide("distance1", skip_digestion=True)
+    target.shapes.delete("site1", skip_digestion=True)
+    assert target.shapes.get("site1") is None
+
+
+def test_hidden_user_layer_applies_after_its_members_are_restored():
+    source = _mute(demo["dialanine"])
+    layer = source.layers.add("analysis", skip_digestion=True)
+    source.annotations.add("site", atom_indices=[0], tag="note1", layer_tag="analysis")
+    layer.hide(skip_digestion=True)
+
+    target = _mute(demo["dialanine"])
+    target.import_state(source.export_state())
+
+    assert target.layers["analysis"]._hidden is True  # noqa: SLF001
+    assert target.annotations.get("note1")._hidden is True  # noqa: SLF001
+
+
+def test_old_v2_document_without_additive_scene_object_keys_imports_cleanly():
+    target = _mute(demo["dialanine"])
+    target.import_state({"version": 2, "regions": [], "annotations": [], "measurements": [], "selections": []})
+
+    assert target.shapes.count() == 0
+    assert target.layers.count() == 0
+
+
+def test_import_clears_scene_history_and_does_not_grow_replay_history():
+    source = _mute(demo["dialanine"])
+    source.annotations.add("site", atom_indices=[0], tag="note1")
+    state = source.export_state()
+
+    target = _mute(demo["dialanine"])
+    target.regions.add(atom_indices=[0], tag="temporary", skip_digestion=True)
+    assert target.history.can_undo() is True
+
+    target.import_state(state)
+    first_size = len(target._message_history)  # noqa: SLF001
+    assert target.history.can_undo() is False
+    target.import_state(state)
+
+    assert len(target._message_history) == first_size  # noqa: SLF001
+    assert target.history.can_undo() is False
+
+
+def test_import_suspends_checkpoints_while_rebuilding_regions(monkeypatch):
+    source = _mute(demo["dialanine"])
+    region = source.regions.add(atom_indices=[0, 1], tag="site", skip_digestion=True)
+    region.set_representation("spacefill", skip_digestion=True)
+    state = source.export_state()
+    target = _mute(demo["dialanine"])
+    calls = 0
+    original = target.export_state
+
+    def counted_export_state():
+        nonlocal calls
+        calls += 1
+        return original()
+
+    monkeypatch.setattr(target, "export_state", counted_export_state)
+
+    target.import_state(state)
+
+    assert calls == 0
+
+
+def test_stored_tag_high_water_gap_is_restored_before_new_allocations():
+    state = {
+        "version": 2,
+        "regions": [],
+        "annotations": [],
+        "measurements": [],
+        "selections": [],
+        "tag_high_water_marks": {"measurement": 12},
+    }
+    target = _mute(demo["dialanine"])
+
+    target.import_state(state)
+    created = target.measurements.add("distance", [0], [1])
+
+    assert created.tag == "measurement13"
+
+
+def test_missing_anchors_restore_as_broken_manageable_objects():
+    state = {
+        "version": 2,
+        "annotations": [{
+            "op": "add_label",
+            "tag": "note1",
+            "options": {"tag": "note1", "text": "lost"},
+            "anchor": {"type": "atoms", "indices": [999]},
+        }],
+        "measurements": [{
+            "op": "add_distance_measurement",
+            "tag": "distance1",
+            "options": {"tag": "distance1", "picks_atom_indices": [[0], [999]]},
+        }],
+        "regions": [],
+        "selections": [],
+    }
+    target = _mute(demo["dialanine"])
+
+    target.import_state(state)
+
+    assert target.annotations.get("note1").broken is True
+    assert target.measurements.get("distance1").broken is True
+    assert target.annotations.info("note1")["broken"] is True
+    assert target.measurements.info("distance1")[0]["broken"] is True
+    assert "999" in target.annotations.info("note1")["broken_reason"]
+    target.annotations.delete("note1", skip_digestion=True)
+    target.measurements.delete("distance1", skip_digestion=True)
+
+
+def test_import_conflict_policy_is_domain_scoped_and_rename_rewrites_layer_membership():
+    source = _mute(demo["dialanine"])
+    source.layers.add("analysis", skip_digestion=True)
+    source.annotations.add("incoming", atom_indices=[0], tag="site1", layer_tag="analysis")
+    state = source.export_state()
+
+    target = _mute(demo["dialanine"])
+    target.layers.add("analysis", skip_digestion=True)
+    target.shapes.add(
+        "sphere",
+        center=puw.quantity([0.0, 0.0, 0.0], "nm"),
+        tag="site1",
+        skip_digestion=True,
+    )
+    target.annotations.add("existing", atom_indices=[1], tag="site1")
+
+    with pytest.raises(ValueError, match="layer tag 'analysis'"):
+        target.import_state(state, clear_first=False)
+
+    target.import_state(state, clear_first=False, on_conflict="rename")
+
+    assert target.annotations.get("site1_2") is not None
+    assert target.annotations.get("site1_2").layer_tag == "analysis_2"
+    assert target.shapes.get("site1") is not None
+
+
+def test_conflict_raise_is_preflighted_before_any_scene_mutation():
+    source = _mute(demo["dialanine"])
+    source.whole.set_representation("spacefill", skip_digestion=True)
+    source.annotations.add("incoming", atom_indices=[0], tag="site1")
+    state = source.export_state()
+
+    target = _mute(demo["dialanine"])
+    target.whole.set_representation("ball-and-stick", skip_digestion=True)
+    target.annotations.add("existing", atom_indices=[1], tag="site1")
+    before = target.export_state()
+
+    with pytest.raises(ValueError, match="annotation tag 'site1'"):
+        target.import_state(state, clear_first=False)
+
+    assert target.export_state() == before
 
 
 def test_round_trip_preserves_region_visual_recipe_and_hidden_state():
@@ -168,3 +413,72 @@ def test_import_raises_on_dependency_cycle():
     }
     with pytest.raises(ValueError, match="cycle"):
         view.import_state(state)
+
+
+def test_pre_phase1_v2_document_still_imports_cleanly():
+    # The new keys (shapes, layers, tag_high_water_marks) and the structured anchor are
+    # ADDITIVE: a session saved before this phase must still load. That is what keeps the
+    # format at v2 instead of forcing a v3 migration of every document in the wild.
+    #
+    # This is deliberately a hand-written document, not one produced by export_state():
+    # a round-trip test would silently start passing the *new* format the moment the
+    # writer changes, which is exactly the regression it is meant to catch.
+    view = demo["dialanine"]
+    old_document = {
+        "version": 2,
+        "annotations": [
+            {
+                "op": "add_label",
+                "tag": "legacy",
+                "options": {
+                    "text": "old",
+                    "tag": "legacy",
+                    "layer_tag": "legacy",
+                    "atom_indices": [0],  # flat anchor, pre-anchor-object
+                },
+            }
+        ],
+        "measurements": [],
+        "selections": [],
+        "regions": [],
+        "whole": {
+            "representation": None,
+            "preset": None,
+            "params": {},
+            "visible": True,
+            "color_scheme": None,
+            "color_layer": {},
+        },
+        "active_selection": {"atom_indices": []},
+        "order_high_water_mark": 0,
+        "uid_high_water_mark": 0,
+        # no "shapes", no "layers", no "tag_high_water_marks"
+    }
+
+    view.import_state(old_document)
+
+    assert view.annotations.tags() == ["legacy"]
+    assert view.shapes.tags() == []                       # absent key -> empty, not an error
+    assert view.annotations.info("legacy")["n_atoms"] == 1  # the flat anchor was understood
+    view.annotations.hide("legacy")                        # and the object is manageable
+    assert view.annotations.info("legacy")["visible"] is False
+
+
+def test_broken_measurement_reports_no_value_not_a_stale_one():
+    # Contract S7: a stale number is the worst outcome in this codebase. An error is loud, a
+    # missing value is visible, but a believable wrong one ends up in a figure and in a paper.
+    #
+    # Restoring a measurement onto a structure that cannot produce it must NOT surface the
+    # number that was computed on the *other* structure.
+    source = demo["181L"]
+    source.measurements.add_distance([0], [1400], tag="far")
+    original = source.measurements.info("far")[0]["value"]
+    assert original is not None
+    document = source.export_state()
+
+    target = demo["dialanine"]          # 22 atoms: atom 1400 does not exist here
+    target.import_state(document)
+
+    restored = target.measurements.info("far")[0]
+    assert restored["broken"] is True
+    assert restored["value"] is None, "the stale value from the other structure survived"

@@ -71,6 +71,8 @@ def test_measurements_info_and_records_report_persisted_measurements():
             "value": None,
             "visible": True,
             "active": True,
+            "broken": False,
+            "broken_reason": None,
         }
     ]
 
@@ -99,6 +101,8 @@ def test_measurements_info_reports_centroid_endpoint_policy_for_multi_atom_picks
             "value": None,
             "visible": True,
             "active": True,
+            "broken": False,
+            "broken_reason": None,
         }
     ]
 

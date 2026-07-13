@@ -66,7 +66,7 @@ def test_layer_toggle_of_visualless_region_is_quiet():
     assert r.visible is True
 
 
-def test_moving_a_region_cleans_up_the_emptied_layer():
+def test_moving_a_region_preserves_the_emptied_user_layer():
     view = _mute(demo["dialanine"])
     r = _region(view, [0, 1, 2], "A", representation="cartoon")
     r.set_layer("first", skip_digestion=True)
@@ -74,26 +74,29 @@ def test_moving_a_region_cleans_up_the_emptied_layer():
 
     r.set_layer("second", skip_digestion=True)
     assert r.layer == "second"
-    # "first" is now empty and must not linger.
-    assert "first" not in view.layers
+    assert "first" in view.layers
+    assert view.layers["first"].provenance == "user"
+    assert view.layers["first"].members == {}
     assert "second" in view.layers
 
 
-def test_deleting_a_region_cleans_up_its_empty_layer():
+def test_deleting_a_region_preserves_its_empty_user_layer():
     view = _mute(demo["dialanine"])
     r = _region(view, [0, 1, 2], "A", representation="cartoon")
     r.set_layer("site", skip_digestion=True)
     r.delete(skip_digestion=True)
-    assert "site" not in view.layers
+    assert view.layers["site"].provenance == "user"
+    assert view.layers["site"].members == {}
 
 
-def test_remove_from_layer_detaches_and_cleans_up():
+def test_remove_from_layer_detaches_and_preserves_user_layer():
     view = _mute(demo["dialanine"])
     r = _region(view, [0, 1, 2], "A", representation="cartoon")
     r.set_layer("site", skip_digestion=True)
     r.remove_from_layer(skip_digestion=True)
     assert r.layer is None
-    assert "site" not in view.layers
+    assert view.layers["site"].provenance == "user"
+    assert view.layers["site"].members == {}
 
 
 def test_layer_membership_survives_a_state_round_trip():
@@ -154,7 +157,7 @@ def test_context_action_assigns_and_detaches_region_layer():
     # An empty/null layer detaches.
     _action(view, "set_region_layer", tag="A", layer="")
     assert view.regions["A"].layer is None
-    assert "site" not in view.layers
+    assert view.layers["site"].provenance == "user"
 
 
 def test_context_action_set_layer_visibility_and_delete():

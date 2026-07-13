@@ -176,7 +176,7 @@ def test_import_state_merge_keeps_existing_measurements():
     assert view.measurements.count() == 2
 
 
-def test_import_state_skips_duplicate_selection_tags():
+def test_import_state_requires_explicit_skip_for_duplicate_selection_tags():
     view = MolSysView()
     msg = {
         "op": "save_selection", "tag": "sel1", "atom_indices": [1, 2],
@@ -187,7 +187,10 @@ def test_import_state_skips_duplicate_selection_tags():
     view._selection_history.append(msg)  # noqa: SLF001
 
     state = view.export_state()
-    view.import_state(state, clear_first=False)
+    with pytest.raises(ValueError, match="selection tag 'sel1'"):
+        view.import_state(state, clear_first=False)
+
+    view.import_state(state, clear_first=False, on_conflict="skip")
 
     assert sum(1 for r in view.selections.records() if r["tag"] == "sel1") == 1
 
@@ -204,4 +207,7 @@ def test_export_state_numpy_int_serializable():
     state = view.export_state()
     # Should not raise
     serialized = json.dumps(state)
-    assert '"atom_indices": [0, 1]' in serialized or json.loads(serialized)["annotations"][0]["options"]["atom_indices"] == [0, 1]
+    assert json.loads(serialized)["annotations"][0]["anchor"] == {
+        "type": "atoms",
+        "indices": [0, 1],
+    }

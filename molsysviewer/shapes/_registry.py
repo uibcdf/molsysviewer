@@ -21,7 +21,11 @@ def register_shape_layer(view, tag: str, layer_tag: str | None = None, meta: dic
     normalized_tag = normalize_new_shape_tag(view, tag)
     normalized_layer_tag = str(layer_tag).strip() if layer_tag is not None else normalized_tag
     if hasattr(view, "_ensure_layer_group"):
-        view._ensure_layer_group(normalized_layer_tag, kind="shape")  # noqa: SLF001
+        view._ensure_layer_group(  # noqa: SLF001
+            normalized_layer_tag,
+            kind="shape",
+            provenance="user" if layer_tag is not None else "auto",
+        )
     else:
         layers = getattr(view, "_layers", None)
         if layers is not None and normalized_layer_tag not in layers:

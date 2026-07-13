@@ -83,6 +83,8 @@ def test_annotation_manager_supports_query_and_layer_operations():
         "atom_indices": list(view.select(selection="group_index==0")),
         "visible": True,
         "active": True,
+        "broken": False,
+        "broken_reason": None,
     }
 
     view.annotations.hide("notes")

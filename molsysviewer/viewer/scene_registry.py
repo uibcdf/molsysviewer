@@ -34,7 +34,7 @@ class SceneRegistryMixin:
         layer_tag = getattr(obj, "layer_tag", None)
         if isinstance(layer_tag, str):
             layer = self._layers.get(layer_tag)
-            if isinstance(layer, Layer) and len(layer.members) == 0:
+            if isinstance(layer, Layer) and len(layer.members) == 0 and layer.provenance == "auto":
                 self._layers.pop(layer_tag, None)
 
     def _reregister_scene_object(self, old_tag: str, new_tag: str, obj: SceneObject) -> None:
@@ -83,12 +83,13 @@ class SceneRegistryMixin:
         old_layer_tag = getattr(obj, "layer_tag", None)
         if old_layer_tag == text:
             return
-        self._ensure_layer_group(text, kind=getattr(obj, "kind", None))
+        provenance = "auto" if text == getattr(obj, "tag", None) else "user"
+        self._ensure_layer_group(text, kind=getattr(obj, "kind", None), provenance=provenance)
         obj.layer_tag = text
         self._update_scene_object_history_layer_tag(obj.kind, obj.tag, text)
         if isinstance(old_layer_tag, str):
             old_layer = self._layers.get(old_layer_tag)
-            if isinstance(old_layer, Layer) and len(old_layer.members) == 0:
+            if isinstance(old_layer, Layer) and len(old_layer.members) == 0 and old_layer.provenance == "auto":
                 self._layers.pop(old_layer_tag, None)
             else:
                 self._sync_layer_group_hidden_state(old_layer_tag)
@@ -98,21 +99,30 @@ class SceneRegistryMixin:
         """Drop a grouping layer left empty (e.g. after a region moved out or
         was deleted), otherwise refresh its aggregate hidden state."""
         layer = self._layers.get(layer_tag)
-        if isinstance(layer, Layer) and len(layer.members) == 0:
+        if isinstance(layer, Layer) and len(layer.members) == 0 and layer.provenance == "auto":
             self._layers.pop(layer_tag, None)
         else:
             self._sync_layer_group_hidden_state(layer_tag)
 
-    def _ensure_layer_group(self, layer_tag: str, *, kind: str | None = None) -> Layer:
+    def _ensure_layer_group(
+        self,
+        layer_tag: str,
+        *,
+        kind: str | None = None,
+        provenance: str = "auto",
+    ) -> Layer:
         text = str(layer_tag).strip()
         if text == "":
             raise ValueError("Layer tag must be a non-empty string.")
         layer = self._layers.get(text)
         if layer is None:
-            layer = Layer(self, text, kind=kind or "layer", meta={})
+            layer = Layer(self, text, kind=kind or "layer", meta={}, provenance=provenance)
             self._layers[text] = layer
-        elif kind is not None:
-            layer.kind = kind
+        else:
+            if kind is not None:
+                layer.kind = kind
+            if provenance == "user":
+                layer._promote_to_user()  # noqa: SLF001
         return layer
 
     def _move_or_rename_layer_group_for_object_tag_change(self, old_tag: str, new_tag: str, obj: SceneObject) -> None:
@@ -122,7 +132,7 @@ class SceneRegistryMixin:
             old_layer.tag = new_tag
             self._layers[new_tag] = old_layer
             return
-        self._ensure_layer_group(new_tag)
+        self._ensure_layer_group(new_tag, provenance="user")
 
     def _assert_nonstructural_tag_available(self, tag: str, *, current_tag: str | None = None) -> str:
         text = str(tag).strip()

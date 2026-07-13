@@ -45,11 +45,43 @@ def test_layers_manager_add_preserves_kind_and_explicit_meta():
     assert layer.kind == "shape"
     assert layer.meta == {"owner": "test"}
     assert view.layers.records(skip_digestion=True) == [
-        {"tag": "analysis", "kind": "shape", "meta": {"owner": "test"}, "visible": True, "n_members": 0}
+        {
+            "tag": "analysis",
+            "kind": "shape",
+            "meta": {"owner": "test"},
+            "provenance": "user",
+            "visible": True,
+            "n_members": 0,
+        }
     ]
 
     view.layers.clear("analysis", skip_digestion=True)
     assert view.layers.count(skip_digestion=True) == 0
+
+
+def test_user_layer_survives_becoming_empty_but_auto_layer_does_not():
+    view = demo["dialanine"]
+    user_layer = view.layers.add("analysis", skip_digestion=True)
+    annotation = view.annotations.add("site", atom_indices=[0], tag="site1")
+
+    user_layer.attach(annotation)
+    user_layer.detach(annotation)
+
+    assert view.layers.get("analysis") is user_layer
+    assert user_layer.provenance == "user"
+
+    annotation.delete(skip_digestion=True)
+    assert view.layers.get("site1") is None
+
+    explicitly_grouped = view.annotations.add(
+        "grouped",
+        atom_indices=[0],
+        tag="site2",
+        layer_tag="named-group",
+    )
+    explicitly_grouped.delete(skip_digestion=True)
+    assert view.layers["named-group"].provenance == "user"
+    assert view.layers["named-group"].members == {}
 
 
 def test_layers_manager_add_rejects_misspelled_keyword():

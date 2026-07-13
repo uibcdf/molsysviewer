@@ -52,7 +52,11 @@ class MeasurementsManager:
     def _ensure_layer(self, tag: str, *, layer_tag: str | None = None) -> Layer:
         tag = self._view._tag_managers["measurement"].validate(tag)  # noqa: SLF001
         resolved_layer_tag = str(layer_tag).strip() if layer_tag is not None else tag
-        self._view._ensure_layer_group(resolved_layer_tag, kind="measurement")  # noqa: SLF001
+        self._view._ensure_layer_group(  # noqa: SLF001
+            resolved_layer_tag,
+            kind="measurement",
+            provenance="user" if layer_tag is not None else "auto",
+        )
         measurement = Measurement(self._view, tag, layer_tag=resolved_layer_tag, meta={})
         self._view._scene_objects[("measurement", tag)] = measurement  # noqa: SLF001
         return measurement
@@ -543,6 +547,13 @@ class MeasurementsManager:
             else:
                 stored_value = None
             layer = self._view._scene_objects.get(("measurement", layer_tag))  # noqa: SLF001
+            if layer is not None and bool(getattr(layer, "broken", False)):
+                # Contract S7: a broken measurement reports NO value. The stored number was
+                # derived from atoms that no longer exist — restoring it onto a structure that
+                # cannot produce it would surface a plausible, wrong figure. A stale number is
+                # the worst outcome in this codebase: an error is loud, a missing value is
+                # visible, but a believable wrong one ends up in a paper.
+                stored_value = None
             items.append(
                 {
                     "kind": kind,
@@ -557,6 +568,8 @@ class MeasurementsManager:
                     "value": stored_value,
                     "visible": False if layer is None else not getattr(layer, "_hidden", False),
                     "active": False if layer is None else bool(getattr(layer, "_active", False)),
+                    "broken": False if layer is None else bool(getattr(layer, "broken", False)),
+                    "broken_reason": None if layer is None else getattr(layer, "broken_reason", None),
                 }
             )
         return items

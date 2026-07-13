@@ -173,7 +173,7 @@ class Region:
         if text == old_tag:
             return
         if text is not None:
-            self._view._ensure_layer_group(text)  # noqa: SLF001
+            self._view._ensure_layer_group(text, provenance="user")  # noqa: SLF001
         self._layer = text
         if isinstance(old_tag, str):
             self._view._cleanup_empty_layer_group(old_tag)  # noqa: SLF001

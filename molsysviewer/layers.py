@@ -123,6 +123,8 @@ class LayerHandle:
         self.meta = meta or {}
         self._active = True
         self._hidden = False
+        self.broken = False
+        self.broken_reason: str | None = None
 
     @property
     def shapes(self) -> Dict[str, "Shape"]:
@@ -292,6 +294,23 @@ class SceneObject(LayerHandle):
 class Layer(LayerHandle):
     """Pure Python grouping layer for scene objects."""
 
+    def __init__(
+        self,
+        view: Any,
+        tag: str,
+        *,
+        kind: str | None = None,
+        meta: Optional[Dict[str, Any]] = None,
+        provenance: str = "auto",
+    ) -> None:
+        super().__init__(view, tag, kind=kind, meta=meta)
+        if provenance not in {"auto", "user"}:
+            raise ValueError("Layer provenance must be 'auto' or 'user'.")
+        self.provenance = provenance
+
+    def _promote_to_user(self) -> None:
+        self.provenance = "user"
+
     def _send_create(self) -> None:
         return
 
@@ -419,7 +438,13 @@ class LayersManager(dict[str, Layer]):
         skip_digestion: bool = False,
     ) -> Layer:
         normalized = self._view._tag_managers["layer"].validate(tag)  # noqa: SLF001
-        layer = Layer(self._view, normalized, kind=kind, meta=dict(meta or {}))
+        layer = Layer(
+            self._view,
+            normalized,
+            kind=kind,
+            meta=dict(meta or {}),
+            provenance="user",
+        )
         self[normalized] = layer
         layer._send_create()  # noqa: SLF001
         return layer
@@ -446,6 +471,7 @@ class LayersManager(dict[str, Layer]):
                 "tag": layer.tag,
                 "kind": layer.kind,
                 "meta": dict(layer.meta),
+                "provenance": layer.provenance,
                 "visible": not layer._hidden,  # noqa: SLF001
                 "n_members": len(layer.members),
             }

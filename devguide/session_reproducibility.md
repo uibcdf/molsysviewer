@@ -37,7 +37,10 @@ Today the reproducible unit is the **overlay state on top of a loaded
 structure** — the structure itself is not part of the document (`import_state`
 requires a compatible structure already loaded). The document carries:
 
-- annotations, measurements, saved selections;
+- annotations (structured anchors, style, visibility and broken state),
+  measurements (recipes, visibility and broken state), saved selections and
+  literal shape payloads;
+- user-created layers, including their provenance, visibility, kind and metadata;
 - **regions**: identity (`uid`, `tag`, `selection`), recipe (`provenance`,
   `mode`), ordering (`order`), visual state (`representation` incl. `inherit`,
   `preset`, `params`, `hidden`), and the region's own colour layer;
@@ -46,6 +49,8 @@ requires a compatible structure already loaded). The document carries:
 - the **order high-water mark**, so a region created after a reload still
   outranks the restored ones — without it, the winner in every overlap zone
   silently flips.
+- per-domain tag high-water marks, so the next generated tag cannot collide
+  with an imported or previously consumed tag.
 
 Regions are restored in **topological order** (a recipe's operands, referenced
 by `uid`, exist before the dependent is rebuilt). A corrupt graph (a cycle or a
@@ -73,11 +78,8 @@ new capability:
   loaded first. Whether a session should bundle (a reference to, or a copy of)
   its structure is an open product question. Until decided, document this
   limitation wherever save/load is surfaced to users.
-- **Layer membership** (`region.layer`) is a *format-only* field in v2: the
-  slot exists so v2 need not become v3, but the behaviour lands in Phase 9. When
-  it lands, it must round-trip and gain a test.
-- **Dynamic-region evaluation** (Phase 10): the recipe and `mode` serialise
-  today, but per-frame re-evaluation on reload must be validated once it exists.
+- **Sections are not in the document.** Clipping planes therefore do not yet
+  survive a session round-trip. This debt belongs to the Viewport work.
 - **No v1 reader.** v2 is the only accepted version by design (no external users
   yet). The moment there *are* saved sessions in the wild, a version-migration
   policy becomes a real obligation, not an optional one.

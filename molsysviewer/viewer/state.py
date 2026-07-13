@@ -2,9 +2,11 @@ from __future__ import annotations
 
 
 from typing import Any
+from copy import deepcopy
 
 from .._private.smonitor_emit import emit_suppressed_exception
 from ..regions import Region
+from ..shapes._registry import register_shape_layer
 
 STATE_VERSION = 2
 
@@ -75,6 +77,55 @@ class StateMixin:
                 record["atom_indices"] = list(region.atom_indices)
             regions.append(record)
 
+        annotations = []
+        for raw in self.annotations.records():
+            record = deepcopy(raw)
+            options = dict(record.get("options") or {})
+            atom_indices = list(options.pop("atom_indices", []))
+            record["options"] = options
+            record["anchor"] = {"type": "atoms", "indices": atom_indices}
+            annotation = self.annotations.get(str(record.get("tag")), skip_digestion=True)
+            record["hidden"] = bool(getattr(annotation, "_hidden", False))
+            record["broken"] = bool(getattr(annotation, "broken", False))
+            record["broken_reason"] = getattr(annotation, "broken_reason", None)
+            annotations.append(record)
+
+        measurements = []
+        for raw in self.measurements.records():
+            record = deepcopy(raw)
+            measurement = self.measurements.get(str(record.get("tag")), skip_digestion=True)
+            record["hidden"] = bool(getattr(measurement, "_hidden", False))
+            record["broken"] = bool(getattr(measurement, "broken", False))
+            record["broken_reason"] = getattr(measurement, "broken_reason", None)
+            measurements.append(record)
+
+        shapes = []
+        for raw in self.shapes.records(skip_digestion=True):
+            record = deepcopy(raw)
+            options = dict(record.get("options") or {})
+            tag = options.get("tag") or record.get("tag")
+            if not isinstance(tag, str):
+                continue
+            shape = self.shapes.get(tag, skip_digestion=True)
+            if shape is None:
+                continue
+            record["tag"] = tag
+            record["layer_tag"] = shape.layer_tag
+            record["hidden"] = bool(shape._hidden)  # noqa: SLF001
+            shapes.append(record)
+
+        layers = [
+            {
+                "tag": layer.tag,
+                "kind": layer.kind,
+                "meta": dict(layer.meta),
+                "provenance": layer.provenance,
+                "hidden": bool(layer._hidden),  # noqa: SLF001
+            }
+            for layer in self.layers.values()
+            if layer.provenance == "user"
+        ]
+
         active = {"atom_indices": list(self.active_selection.atom_indices)}
 
         whole = {
@@ -88,8 +139,10 @@ class StateMixin:
 
         return _to_python({
             "version": STATE_VERSION,
-            "annotations": self.annotations.records(),
-            "measurements": self.measurements.records(),
+            "annotations": annotations,
+            "measurements": measurements,
+            "shapes": shapes,
+            "layers": layers,
             "selections": self.selections.records(),
             "regions": regions,
             "whole": whole,
@@ -109,7 +162,13 @@ class StateMixin:
         layer = self._atom_color_layers.get(owner, {})
         return {str(int(index)): int(color) for index, color in layer.items()}
 
-    def import_state(self, state: dict, *, clear_first: bool = True) -> None:
+    def import_state(
+        self,
+        state: dict,
+        *,
+        clear_first: bool = True,
+        on_conflict: str = "raise",
+    ) -> None:
         """Restore viewer overlay state from a dict produced by :meth:`export_state`.
 
         Only ``version: 2`` documents are accepted; a ``version: 1`` document
@@ -130,57 +189,62 @@ class StateMixin:
                 f"Unsupported state version: {version!r}. This build reads only "
                 f"version {STATE_VERSION}; version 1 documents are no longer supported."
             )
+        if on_conflict not in {"raise", "skip", "rename"}:
+            raise ValueError("on_conflict must be 'raise', 'skip', or 'rename'.")
 
         region_records = list(state.get("regions", []))
         ordered_records = self._topologically_ordered_regions(region_records)
+        if not clear_first and on_conflict == "raise":
+            self._preflight_import_conflicts(state)
+        history_start = len(self._message_history)
+        with self.history.suspended() as already_suspended:
+            self._restore_high_water_marks(state)
+            if clear_first:
+                self._clear_state_for_import()
+            hidden_layers, layer_tag_map = self._restore_user_layers(
+                state.get("layers", []),
+                on_conflict=on_conflict,
+            )
+            self._restore_whole_state(state.get("whole"))
+            if self._molsys is not None:
+                for record in ordered_records:
+                    tag = self._import_tag("region", str(record.get("tag") or ""), on_conflict)
+                    if tag is None:
+                        continue
+                    restored_record = deepcopy(record)
+                    restored_record["tag"] = tag
+                    restored_record["layer"] = layer_tag_map.get(record.get("layer"), record.get("layer"))
+                    self._restore_region_v2(restored_record)
+            self._restore_annotations(
+                state.get("annotations", []),
+                on_conflict=on_conflict,
+                layer_tag_map=layer_tag_map,
+            )
+            self._restore_measurements(
+                state.get("measurements", []),
+                on_conflict=on_conflict,
+                layer_tag_map=layer_tag_map,
+            )
+            self._restore_shapes(
+                state.get("shapes", []),
+                on_conflict=on_conflict,
+                layer_tag_map=layer_tag_map,
+            )
+            for layer_tag in hidden_layers:
+                layer = self.layers.get(layer_tag)
+                if layer is not None:
+                    layer.hide(skip_digestion=True)
+            self._restore_selections(state.get("selections", []), on_conflict=on_conflict)
+            self._restore_active_selection(state.get("active_selection"))
+            self._send_resolved_atom_colors(replay=True)
+            self._sync_whole_summary_runtime()
 
         if clear_first:
-            self.clear_decorations(labels=True, shapes=False, styles=False, skip_digestion=True)
-            self.measurements.clear(skip_digestion=True)
-            self.selections.clear(skip_digestion=True)
-            for tag in list(self._regions):
-                try:
-                    self._regions[tag].delete(skip_digestion=True)
-                except Exception as exc:
-                    emit_suppressed_exception(
-                        "StateMixin.import_state.clear_region",
-                        exc,
-                        context={"tag": tag},
-                    )
-            self._atom_color_layers = {"whole": {}}
+            self._message_history = list(self._message_history[history_start:])
+        if not already_suspended:
+            self.history.clear()
 
-        for msg in state.get("annotations", []):
-            if isinstance(msg, dict) and msg.get("op") == "add_label":
-                self._send(msg)
-
-        for msg in state.get("measurements", []):
-            if isinstance(msg, dict) and msg.get("op") in (
-                "add_distance_measurement", "add_angle_measurement", "add_dihedral_measurement"
-            ):
-                self._send(msg)
-
-        for msg in state.get("selections", []):
-            if isinstance(msg, dict) and msg.get("op") == "save_selection":
-                tag = msg.get("tag")
-                if tag and not self.selections.contains(tag, skip_digestion=True):
-                    self._send(msg)
-
-        self._restore_whole_state(state.get("whole"))
-        self._restore_active_selection(state.get("active_selection"))
-
-        if self._molsys is not None:
-            for record in ordered_records:
-                try:
-                    self._restore_region_v2(record)
-                except Exception as exc:
-                    emit_suppressed_exception(
-                        "StateMixin.import_state.restore_region",
-                        exc,
-                        context={"tag": record.get("tag")},
-                    )
-
-        # Restore the high-water marks so regions created after the import keep
-        # winning over the restored ones, and uids never collide.
+    def _restore_high_water_marks(self, state: dict) -> None:
         self._region_order_counter = max(
             int(state.get("order_high_water_mark", self._region_order_counter)),
             self._region_order_counter,
@@ -189,15 +253,246 @@ class StateMixin:
             int(state.get("uid_high_water_mark", self._region_uid_counter)),
             self._region_uid_counter,
         )
-        tag_high_water_marks = state.get("tag_high_water_marks", {})
-        if isinstance(tag_high_water_marks, dict):
-            for domain, high_water_mark in tag_high_water_marks.items():
+        marks = state.get("tag_high_water_marks", {})
+        if isinstance(marks, dict):
+            for domain, mark in marks.items():
                 manager = self._tag_managers.get(str(domain))
                 if manager is not None:
-                    manager.restore(int(high_water_mark))
+                    manager.restore(int(mark))
 
-        self._send_resolved_atom_colors(replay=True)
-        self._sync_whole_summary_runtime()
+    def _preflight_import_conflicts(self, state: dict) -> None:
+        def tags(records: Any) -> list[str]:
+            if not isinstance(records, list):
+                return []
+            result = []
+            for record in records:
+                if not isinstance(record, dict):
+                    continue
+                tag = record.get("tag") or (record.get("options") or {}).get("tag")
+                if isinstance(tag, str) and tag:
+                    result.append(tag)
+            return result
+
+        incoming = {
+            "layer": tags(state.get("layers")),
+            "region": tags(state.get("regions")),
+            "annotation": tags(state.get("annotations")),
+            "measurement": tags(state.get("measurements")),
+            "shape": tags(state.get("shapes")),
+            "selection": tags(state.get("selections")),
+        }
+        for domain, incoming_tags in incoming.items():
+            manager = self._tag_managers[domain]
+            existing = set(manager._existing_tags())  # noqa: SLF001
+            if domain == "selection":
+                existing.update(self.selections.tags(skip_digestion=True))
+            for tag in incoming_tags:
+                if tag in existing:
+                    raise ValueError(f"Cannot import {domain} tag {tag!r}: it already exists.")
+
+    def _clear_state_for_import(self) -> None:
+        self.shapes.clear(skip_digestion=True)
+        self.annotations.clear(skip_digestion=True)
+        self.measurements.clear(skip_digestion=True)
+        self.selections.clear(skip_digestion=True)
+        for tag in list(self._regions):
+            self._regions[tag].delete(skip_digestion=True)
+        dict.clear(self._layers)
+        self._atom_color_layers = {"whole": {}}
+
+    def _restore_user_layers(self, records: Any, *, on_conflict: str) -> tuple[list[str], dict[str, str]]:
+        hidden: list[str] = []
+        tag_map: dict[str, str] = {}
+        for record in records if isinstance(records, list) else []:
+            if not isinstance(record, dict) or not record.get("tag"):
+                continue
+            tag = self._import_tag("layer", str(record["tag"]), on_conflict)
+            if tag is None:
+                continue
+            tag_map[str(record["tag"])] = tag
+            layer = self.layers.add(
+                tag,
+                kind=record.get("kind"),
+                meta=dict(record.get("meta") or {}),
+                skip_digestion=True,
+            )
+            if record.get("hidden"):
+                hidden.append(layer.tag)
+        return hidden, tag_map
+
+    def _restore_annotations(
+        self,
+        records: Any,
+        *,
+        on_conflict: str,
+        layer_tag_map: dict[str, str],
+    ) -> None:
+        for record in records if isinstance(records, list) else []:
+            if not isinstance(record, dict) or record.get("op") != "add_label":
+                continue
+            original_tag = str(record.get("tag") or "")
+            tag = self._import_tag("annotation", original_tag, on_conflict)
+            if tag is None:
+                continue
+            options = dict(record.get("options") or {})
+            layer_tag = layer_tag_map.get(options.get("layer_tag"), options.get("layer_tag"))
+            anchor = record.get("anchor")
+            if isinstance(anchor, dict) and anchor.get("type") == "atoms":
+                atom_indices = list(anchor.get("indices") or [])
+            else:
+                atom_indices = list(options.get("atom_indices") or [])
+            missing = self._missing_anchor_indices(atom_indices)
+            if not atom_indices or missing:
+                history_record = deepcopy(record)
+                history_options = dict(history_record.get("options") or {})
+                history_options["atom_indices"] = atom_indices
+                history_record["options"] = history_options
+                annotation = self.annotations._ensure_layer(  # noqa: SLF001
+                    tag,
+                    layer_tag=layer_tag,
+                )
+                annotation.broken = True
+                annotation.broken_reason = self._broken_anchor_reason(missing, empty=not atom_indices)
+                annotation._hidden = bool(record.get("hidden"))  # noqa: SLF001
+                self._annotation_history.append(history_record)
+                continue
+            annotation = self.annotations.add(
+                str(options.get("text") or ""),
+                atom_indices=atom_indices,
+                tag=tag,
+                layer_tag=layer_tag,
+                label_style=dict(options.get("style") or {}),
+                skip_digestion=True,
+            )
+            if record.get("hidden"):
+                annotation.hide(skip_digestion=True)
+
+    def _restore_measurements(
+        self,
+        records: Any,
+        *,
+        on_conflict: str,
+        layer_tag_map: dict[str, str],
+    ) -> None:
+        kinds = {
+            "add_distance_measurement": "distance",
+            "add_angle_measurement": "angle",
+            "add_dihedral_measurement": "dihedral",
+        }
+        for record in records if isinstance(records, list) else []:
+            if not isinstance(record, dict) or record.get("op") not in kinds:
+                continue
+            tag = self._import_tag("measurement", str(record.get("tag") or ""), on_conflict)
+            if tag is None:
+                continue
+            options = dict(record.get("options") or {})
+            layer_tag = layer_tag_map.get(options.get("layer_tag"), options.get("layer_tag"))
+            picks = [list(item) for item in options.get("picks_atom_indices", [])]
+            missing = self._missing_anchor_indices([index for pick in picks for index in pick])
+            if not picks or any(not pick for pick in picks) or missing:
+                measurement = self.measurements._ensure_layer(  # noqa: SLF001
+                    tag,
+                    layer_tag=layer_tag,
+                )
+                measurement.broken = True
+                measurement.broken_reason = self._broken_anchor_reason(
+                    missing,
+                    empty=not picks or any(not pick for pick in picks),
+                )
+                measurement._hidden = bool(record.get("hidden"))  # noqa: SLF001
+                self._measurement_history.append(deepcopy(record))
+                continue
+            measurement = self.measurements.add(
+                kinds[str(record["op"])],
+                *picks,
+                tag=tag,
+                layer_tag=layer_tag,
+                endpoint_policy=options.get("endpoint_policy"),
+                measurement_style=dict(options.get("style") or {}),
+                skip_digestion=True,
+            )
+            if record.get("hidden"):
+                measurement.hide(skip_digestion=True)
+
+    def _restore_shapes(
+        self,
+        records: Any,
+        *,
+        on_conflict: str,
+        layer_tag_map: dict[str, str],
+    ) -> None:
+        for record in records if isinstance(records, list) else []:
+            if not isinstance(record, dict) or not str(record.get("op", "")).startswith("add_"):
+                continue
+            original_tag = str(record.get("tag") or (record.get("options") or {}).get("tag") or "")
+            tag = self._import_tag("shape", original_tag, on_conflict)
+            if tag is None:
+                continue
+            msg = deepcopy(record)
+            msg.pop("hidden", None)
+            msg.pop("layer_tag", None)
+            options = dict(msg.get("options") or {})
+            options["tag"] = tag
+            requested_layer_tag = record.get("layer_tag") or options.get("layer_tag")
+            resolved_layer_tag = layer_tag_map.get(requested_layer_tag, requested_layer_tag)
+            if resolved_layer_tag is not None:
+                options["layer_tag"] = resolved_layer_tag
+            msg["tag"] = tag
+            msg["options"] = options
+            shape = register_shape_layer(
+                self,
+                tag,
+                layer_tag=resolved_layer_tag,
+                meta=options.get("meta"),
+            )
+            self._send(msg)
+            if record.get("hidden"):
+                shape.hide(skip_digestion=True)
+
+    def _restore_selections(self, records: Any, *, on_conflict: str) -> None:
+        for record in records if isinstance(records, list) else []:
+            if not isinstance(record, dict) or record.get("op") != "save_selection":
+                continue
+            tag = self._import_tag("selection", str(record.get("tag") or ""), on_conflict)
+            if tag is None:
+                continue
+            self.selections.add(
+                tag,
+                atom_indices=list(record.get("atom_indices") or []),
+                items=list(record.get("items") or []),
+                skip_digestion=True,
+            )
+
+    def _import_tag(self, domain: str, tag: str, policy: str) -> str | None:
+        manager = self._tag_managers[domain]
+        existing = set(manager._existing_tags())  # noqa: SLF001
+        if domain == "selection":
+            existing.update(self.selections.tags(skip_digestion=True))
+        if tag not in existing:
+            return tag
+        if policy == "skip":
+            return None
+        if policy == "raise":
+            raise ValueError(f"Cannot import {domain} tag {tag!r}: it already exists.")
+        suffix = 2
+        candidate = f"{tag}_{suffix}"
+        while candidate in existing:
+            suffix += 1
+            candidate = f"{tag}_{suffix}"
+        return candidate
+
+    def _missing_anchor_indices(self, indices: list) -> list[int]:
+        try:
+            n_atoms = int(self.get_n_atoms()) if self._molsys is not None else 0
+        except Exception:
+            n_atoms = 0
+        return sorted({int(index) for index in indices if int(index) < 0 or int(index) >= n_atoms})
+
+    @staticmethod
+    def _broken_anchor_reason(missing: list[int], *, empty: bool = False) -> str:
+        if empty:
+            return "Anchor contains no atoms."
+        return f"Missing anchor atom indices: {missing}"
 
     def _topologically_ordered_regions(self, records: list) -> list:
         """Return records ordered so every dependency precedes its dependents.
@@ -301,8 +596,6 @@ class StateMixin:
             uid=str(record["uid"]) if record.get("uid") is not None else None,
             provenance=provenance,
         )
-        if record.get("order") is not None:
-            region.order = int(record["order"])
         self._regions[tag] = region
 
         representation = record.get("representation")
@@ -331,6 +624,9 @@ class StateMixin:
 
         if record.get("hidden"):
             region.hide(skip_digestion=True)
+
+        if record.get("order") is not None:
+            region.order = int(record["order"])
 
         layer = record.get("layer")
         if isinstance(layer, str) and layer:

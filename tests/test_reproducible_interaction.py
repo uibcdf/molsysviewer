@@ -458,6 +458,8 @@ def test_context_action_hide_measurement_executes_python_bridge():
             "value": None,
             "visible": False,
             "active": True,
+            "broken": False,
+            "broken_reason": None,
         }
     ]
 
@@ -743,6 +745,8 @@ def test_full_reproducible_workflow_remaps_region_selection_label_and_measuremen
             "value": None,
             "visible": True,
             "active": True,
+            "broken": False,
+            "broken_reason": None,
         }
     ]
 

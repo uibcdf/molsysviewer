@@ -24,7 +24,11 @@ class AnnotationsManager:
     def _ensure_layer(self, tag: str, *, layer_tag: str | None = None) -> Layer:
         tag = self._view._tag_managers["annotation"].validate(tag)  # noqa: SLF001
         resolved_layer_tag = str(layer_tag).strip() if layer_tag is not None else tag
-        self._view._ensure_layer_group(resolved_layer_tag, kind="annotation")  # noqa: SLF001
+        self._view._ensure_layer_group(  # noqa: SLF001
+            resolved_layer_tag,
+            kind="annotation",
+            provenance="user" if layer_tag is not None else "auto",
+        )
         annotation = Annotation(self._view, tag, layer_tag=resolved_layer_tag, meta={})
         self._view._scene_objects[("annotation", tag)] = annotation  # noqa: SLF001
         return annotation
@@ -150,6 +154,8 @@ class AnnotationsManager:
                 "atom_indices": list(atom_indices),
                 "visible": False if layer is None else not getattr(layer, "_hidden", False),
                 "active": False if layer is None else bool(getattr(layer, "_active", False)),
+                "broken": False if layer is None else bool(getattr(layer, "broken", False)),
+                "broken_reason": None if layer is None else getattr(layer, "broken_reason", None),
             }
 
         records = self.records(skip_digestion=True)
@@ -209,7 +215,7 @@ class AnnotationsManager:
 
         object_tag = tag or self._view._next_annotation_tag()  # noqa: SLF001
         resolved_layer_tag = layer_tag if layer_tag is not None else object_tag
-        layer = self._ensure_layer(object_tag, layer_tag=resolved_layer_tag)
+        layer = self._ensure_layer(object_tag, layer_tag=layer_tag)
 
         options: dict[str, Any] = {
             "text": text,

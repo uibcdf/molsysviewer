@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from functools import wraps
+from contextlib import contextmanager
 from typing import Any
 
 
@@ -124,11 +125,18 @@ class SceneHistory:
         self._depth = 0
         self._notify_state()
 
+    @contextmanager
+    def suspended(self):
+        """Suspend checkpoint creation while rebuilding a scene."""
+        was_suspended = self._suspended
+        self._suspended = True
+        try:
+            yield was_suspended
+        finally:
+            self._suspended = was_suspended
+
     def _restore(self, snapshot: dict) -> None:
         # Suspend checkpointing so import_state's own mutations do not push
         # new history entries.
-        self._suspended = True
-        try:
+        with self.suspended():
             self._view.import_state(snapshot)
-        finally:
-            self._suspended = False
