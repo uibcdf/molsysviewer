@@ -5,6 +5,7 @@ from typing import Iterable, Sequence
 from smonitor import signal
 
 from .._private.arg_digestion import digest
+from ..scene_history import records_scene_history
 from ._registry import register_shape_layer
 
 
@@ -40,6 +41,7 @@ class PocketSurfaces:
 
     @signal(tags=["shape", "pocket"])
     @digest()
+    @records_scene_history
     def add_pocket_surface(
         self,
         *,

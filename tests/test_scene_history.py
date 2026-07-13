@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from molsysviewer.demo import demo
+from molsysviewer import pyunitwizard as puw
 
 
 def _mute(view):
@@ -141,3 +142,104 @@ def test_history_state_is_pushed_to_the_frontend():
     view.regions.add(atom_indices=[0, 1], tag="A", skip_digestion=True)
     states = [m for m in pushed if m.get("op") == "set_history_state"]
     assert states and states[-1]["can_undo"] is True
+
+
+def test_a_slider_drag_does_not_wipe_the_undo_history():
+    view = _mute(demo["dialanine"])
+    view.regions.add(atom_indices=[0, 1], tag="r1", skip_digestion=True)
+    view.regions.add(atom_indices=[2, 3], tag="r2", skip_digestion=True)
+    shape = view.shapes.add_sphere(tag="sphere1", alpha=0.2, skip_digestion=True)
+    assert len(view.history._undo) == 3  # noqa: SLF001
+
+    with view.history.coalescing():
+        for step in range(40):
+            shape.set_alpha(step / 40, skip_digestion=True)
+
+    assert len(view.history._undo) == 4  # noqa: SLF001
+    assert view.history.undo()
+    assert view.shapes.records()[0]["options"]["alpha"] == 0.2
+    assert view.history.undo()
+    assert view.shapes.tags() == []
+    assert view.history.undo()
+    assert view.regions.tags() == ["r1"]
+    assert view.history.undo()
+    assert view.regions.tags() == []
+
+
+def test_coalescing_keeps_distinct_operations_as_distinct_undo_steps():
+    view = _mute(demo["dialanine"])
+    shape = view.shapes.add_sphere(tag="sphere1", radius="1.0 nm", alpha=0.2, skip_digestion=True)
+    view.history.clear()
+
+    with view.history.coalescing():
+        shape.set_alpha(0.4, skip_digestion=True)
+        shape.set_alpha(0.8, skip_digestion=True)
+        shape.set_radius("1.5 nm", skip_digestion=True)
+        shape.set_radius("2.0 nm", skip_digestion=True)
+
+    assert len(view.history._undo) == 2  # noqa: SLF001
+    assert view.history.undo()
+    expected_radius = puw.get_value(puw.quantity(1.0, "nm"), to_unit="angstroms")
+    assert view.shapes.records()[0]["options"]["radius"] == expected_radius
+    assert view.history.undo()
+    assert view.shapes.records()[0]["options"]["alpha"] == 0.2
+
+
+def test_coalescing_keeps_same_tag_shape_and_layer_in_distinct_domains():
+    view = _mute(demo["dialanine"])
+    shape = view.shapes.add_sphere(tag="shared", skip_digestion=True)
+    layer = view.layers["shared"]
+    view.history.clear()
+
+    with view.history.coalescing():
+        shape.hide(skip_digestion=True)
+        layer.hide(skip_digestion=True)
+
+    assert len(view.history._undo) == 2  # noqa: SLF001
+
+
+def test_scene_object_domains_are_restored_by_undo():
+    view = _mute(demo["dialanine"])
+    view.annotations.add_annotation(text="site", atom_indices=[0], tag="note", skip_digestion=True)
+    view.measurements.add_distance([0], [1], tag="distance", skip_digestion=True)
+    view.shapes.add_sphere(tag="sphere", skip_digestion=True)
+    view.layers.add("analysis", skip_digestion=True)
+    view.history.clear()
+
+    view.annotations.delete("note", skip_digestion=True)
+    assert not view.annotations.contains("note", skip_digestion=True)
+    assert view.history.undo()
+    assert view.annotations.contains("note", skip_digestion=True)
+
+    view.measurements.delete("distance", skip_digestion=True)
+    assert not view.measurements.contains("distance", skip_digestion=True)
+    assert view.history.undo()
+    assert view.measurements.contains("distance", skip_digestion=True)
+
+    view.shapes.delete("sphere", skip_digestion=True)
+    assert not view.shapes.contains("sphere", skip_digestion=True)
+    assert view.history.undo()
+    assert view.shapes.contains("sphere", skip_digestion=True)
+
+    view.layers.delete("analysis", skip_digestion=True)
+    assert not view.layers.contains("analysis", skip_digestion=True)
+    assert view.history.undo()
+    assert view.layers.contains("analysis", skip_digestion=True)
+
+
+def test_specialized_shape_and_interactive_measurement_paths_enter_history():
+    view = _mute(demo["dialanine"])
+    view.shapes.spheres.add_sphere(tag="specialized", skip_digestion=True)
+    assert view.history.undo()
+    assert not view.shapes.contains("specialized", skip_digestion=True)
+
+    view.history.clear()
+    view._handle_frontend_event({  # noqa: SLF001
+        "event": "interaction_measurement_created",
+        "action": "distance",
+        "picked_count": 2,
+        "picks_atom_indices": [[0], [1]],
+    })
+    assert view.measurements.contains("measurement1", skip_digestion=True)
+    assert view.history.undo()
+    assert not view.measurements.contains("measurement1", skip_digestion=True)

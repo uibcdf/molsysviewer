@@ -1,8 +1,35 @@
 from __future__ import annotations
 
-from functools import wraps
 from contextlib import contextmanager
+from functools import wraps
 from typing import Any
+
+
+def _history_operation_key(
+    self: Any,
+    fn_name: str,
+    args: tuple[Any, ...],
+    kwargs: dict[str, Any],
+) -> tuple[str, str, str]:
+    """Return the stable identity used to coalesce repeated mutations."""
+    class_name = type(self).__name__
+    kind = "layer" if class_name in {"Layer", "LayersManager"} else getattr(self, "kind", None)
+    if not isinstance(kind, str) or not kind:
+        kind = {
+            "AnnotationsManager": "annotation",
+            "MeasurementsManager": "measurement",
+            "RegionsManager": "region",
+            "ShapesManager": "shape",
+            "Whole": "whole",
+        }.get(class_name, class_name.lower())
+        if class_name.endswith("Shapes"):
+            kind = "shape"
+
+    tag = getattr(self, "tag", None)
+    if not isinstance(tag, str):
+        candidate = kwargs.get("tag", args[0] if args else None)
+        tag = candidate if isinstance(candidate, str) else ""
+    return kind, tag, fn_name
 
 
 def records_scene_history(fn):
@@ -21,7 +48,7 @@ def records_scene_history(fn):
         history = getattr(view, "history", None)
         if history is None:
             return fn(self, *args, **kwargs)
-        history._begin_operation()  # noqa: SLF001
+        history._begin_operation(_history_operation_key(self, fn.__name__, args, kwargs))  # noqa: SLF001
         try:
             return fn(self, *args, **kwargs)
         finally:
@@ -50,23 +77,29 @@ class SceneHistory:
         self._redo: list[dict] = []
         self._depth = 0
         self._suspended = False
+        self._coalescing_depth = 0
+        self._coalesced_keys: set[tuple[str, str, str]] = set()
 
     # ── Auto-checkpoint hooks (used by the records-history decorator) ──────
 
-    def _begin_operation(self) -> None:
+    def _begin_operation(self, operation_key: tuple[str, str, str]) -> None:
         """Snapshot the pre-operation state, once, for the outermost mutating op."""
         if self._suspended:
             return
         if self._depth == 0:
-            snapshot = self._view.export_state()
-            # Skip a redundant checkpoint when the previous operation left the
-            # scene unchanged (e.g. a validation that raised, or a no-op call),
-            # so undo never lands on an identical state.
-            if not self._undo or self._undo[-1] != snapshot:
-                self._undo.append(snapshot)
-                if len(self._undo) > self._limit:
-                    self._undo.pop(0)
-            self._redo.clear()
+            already_coalesced = self._coalescing_depth > 0 and operation_key in self._coalesced_keys
+            if not already_coalesced:
+                snapshot = self._view.export_state()
+                # Skip a redundant checkpoint when the previous operation left the
+                # scene unchanged (e.g. a validation that raised, or a no-op call),
+                # so undo never lands on an identical state.
+                if not self._undo or self._undo[-1] != snapshot:
+                    self._undo.append(snapshot)
+                    if len(self._undo) > self._limit:
+                        self._undo.pop(0)
+                self._redo.clear()
+                if self._coalescing_depth > 0:
+                    self._coalesced_keys.add(operation_key)
         self._depth += 1
 
     def _end_operation(self) -> None:
@@ -123,7 +156,33 @@ class SceneHistory:
         self._undo.clear()
         self._redo.clear()
         self._depth = 0
+        self._coalescing_depth = 0
+        self._coalesced_keys.clear()
         self._notify_state()
+
+    def begin_coalescing(self) -> None:
+        """Open a window that records one checkpoint per object operation."""
+        if self._coalescing_depth == 0:
+            self._coalesced_keys.clear()
+        self._coalescing_depth += 1
+
+    def end_coalescing(self) -> None:
+        """Close a coalescing window opened by :meth:`begin_coalescing`."""
+        if self._coalescing_depth == 0:
+            return
+        self._coalescing_depth -= 1
+        if self._coalescing_depth == 0:
+            self._coalesced_keys.clear()
+            self._notify_state()
+
+    @contextmanager
+    def coalescing(self):
+        """Coalesce repeated mutations while preserving distinct operations."""
+        self.begin_coalescing()
+        try:
+            yield self
+        finally:
+            self.end_coalescing()
 
     @contextmanager
     def suspended(self):

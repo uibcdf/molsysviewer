@@ -74,6 +74,32 @@ export type StyleDraftControls = {
     opacityRow: HTMLDivElement;
 };
 
+export function bindContinuousHistory(
+    input: HTMLInputElement,
+    onStart: () => void,
+    onEnd: () => void,
+): void {
+    let active = false;
+    const start = () => {
+        if (active) return;
+        active = true;
+        onStart();
+    };
+    const end = () => {
+        if (!active) return;
+        active = false;
+        onEnd();
+    };
+    input.addEventListener("pointerdown", start);
+    input.addEventListener("focus", start);
+    input.addEventListener("pointerup", end);
+    input.addEventListener("pointercancel", end);
+    input.addEventListener("blur", end);
+    input.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === "Escape") end();
+    });
+}
+
 export function createStyleDraftControls(options: {
     id: string;
     dataPrefix: string;

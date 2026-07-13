@@ -1,7 +1,7 @@
 import type { WholeDetails, WholeSummary } from "../group-panel";
 import { makeButton, makeSectionHeader, makeStyledSelect } from "./ui-helpers";
 import { PanelContext, StudioPanel } from "./types";
-import { FALLBACK_PRESETS, FALLBACK_REPRESENTATIONS, createStyleDraftControls } from "./style-composer";
+import { FALLBACK_PRESETS, FALLBACK_REPRESENTATIONS, bindContinuousHistory, createStyleDraftControls } from "./style-composer";
 
 function labelFromToken(value: string): string {
     return value
@@ -64,6 +64,7 @@ export class WholePanel implements StudioPanel {
     private summary: WholeSummary | null = null;
     private details: WholeDetails | null = null;
     private requestId = 0;
+    private continuousHistoryEdit = false;
 
     constructor(private readonly ctx: PanelContext) {}
 
@@ -80,7 +81,7 @@ export class WholePanel implements StudioPanel {
     setSummary(summary: WholeSummary | null): void {
         this.summary = summary;
         this.ctx.setBadge(summary ? (summary.visible ? "Visible" : "Hidden") : "None");
-        this.render();
+        if (!this.continuousHistoryEdit) this.render();
     }
 
     updateDetails(details: WholeDetails): void {
@@ -175,7 +176,19 @@ export class WholePanel implements StudioPanel {
         const quality = controls.qualitySelect;
         section.appendChild(controls.representationRow);
         section.appendChild(controls.presetRow);
-        opacity.addEventListener("change", () => {
+        bindContinuousHistory(
+            opacity,
+            () => {
+                this.continuousHistoryEdit = true;
+                this.ctx.onAction("begin_scene_history_coalescing");
+            },
+            () => {
+                this.ctx.onAction("end_scene_history_coalescing");
+                this.continuousHistoryEdit = false;
+                this.render();
+            },
+        );
+        opacity.addEventListener("input", () => {
             this.ctx.onAction("set_whole_representation", {
                 ...(preset.value ? { preset: preset.value } : representation.value ? { representation: representation.value } : {}),
                 params: { ...params, alpha: Number(opacity.value) },

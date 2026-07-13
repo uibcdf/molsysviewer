@@ -8,6 +8,7 @@ from smonitor import signal
 
 from .. import pyunitwizard as puw
 from .._private.arg_digestion import digest
+from ..scene_history import records_scene_history
 from ._registry import register_shape_layer
 
 import numpy as np
@@ -40,6 +41,7 @@ class DisplacementVectors:
 
     @signal(tags=["shape", "vector"])
     @digest()
+    @records_scene_history
     def add_displacement_vectors(
         self,
         origins: Iterable[Sequence[float]] | np.ndarray | None,

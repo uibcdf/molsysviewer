@@ -6,6 +6,7 @@ from typing import Any
 from smonitor import signal
 
 from .._private.arg_digestion import digest
+from ..scene_history import records_scene_history
 from .anisotropy_ellipsoids import AnisotropyEllipsoids
 from .channel_tubes import ChannelTubes
 from .displacements import DisplacementVectors
@@ -49,6 +50,7 @@ class ShapesManager:
             raise KeyError(tag)
         return layer
 
+    @records_scene_history
     def add(self, kind: str, **kwargs):
         """Create a shape of explicit *kind* through its public constructor."""
         methods = {
@@ -121,12 +123,14 @@ class ShapesManager:
     def records(self, skip_digestion: bool = False) -> list[dict]:
         return [dict(record) for record in self._view._shape_history]  # noqa: SLF001
 
+    @records_scene_history
     def delete(self, tag: str, skip_digestion: bool = False) -> None:
         shape = self.get(tag, skip_digestion=True)
         if shape is None:
             raise KeyError(tag)
         shape.delete(skip_digestion=True)
 
+    @records_scene_history
     def set_tag(self, tag: str, new_tag: str, skip_digestion: bool = False):
         shape = self.get(tag, skip_digestion=True)
         if shape is None:
@@ -134,6 +138,7 @@ class ShapesManager:
         shape.set_tag(new_tag, skip_digestion=True)
         return shape
 
+    @records_scene_history
     def show(self, tag: str, skip_digestion: bool = False):
         shape = self.get(tag, skip_digestion=True)
         if shape is None:
@@ -141,6 +146,7 @@ class ShapesManager:
         shape.show(skip_digestion=True)
         return shape
 
+    @records_scene_history
     def hide(self, tag: str, skip_digestion: bool = False):
         shape = self.get(tag, skip_digestion=True)
         if shape is None:
@@ -257,6 +263,7 @@ class ShapesManager:
 
         return results
 
+    @records_scene_history
     @signal(tags=["shape"])
     @digest()
     def set_layer_tag(self, tag: str, new_layer_tag: str, skip_digestion: bool = False):
@@ -266,6 +273,7 @@ class ShapesManager:
         layer.set_layer_tag(new_layer_tag, skip_digestion=True)
         return layer
 
+    @records_scene_history
     @signal(tags=["shape"])
     @digest()
     def add_sphere(
@@ -291,6 +299,7 @@ class ShapesManager:
         )
 
 
+    @records_scene_history
     @signal(tags=["shape"])
     def add_pocket_surface(
         self,
@@ -300,6 +309,7 @@ class ShapesManager:
     ):
         return self.pockets.add_pocket_surface(*args, **kwargs)
 
+    @records_scene_history
     @signal(tags=["shape"])
     def add_set_alpha_spheres(
         self,
@@ -309,6 +319,7 @@ class ShapesManager:
     ):
         return self.spheres.add_set_alpha_spheres(*args, **kwargs)
 
+    @records_scene_history
     @signal(tags=["shape"])
     def add_links(
         self,
@@ -318,6 +329,7 @@ class ShapesManager:
     ):
         return self.links.add_links(*args, **kwargs)
 
+    @records_scene_history
     @signal(tags=["shape"])
     def add_displacement_vectors(
         self,
@@ -327,6 +339,7 @@ class ShapesManager:
     ):
         return self.vectors.add_displacement_vectors(*args, **kwargs)
 
+    @records_scene_history
     @signal(tags=["shape"])
     def add_triangle_faces(
         self,
@@ -336,6 +349,7 @@ class ShapesManager:
     ):
         return self.triangles.add_triangle_faces(*args, **kwargs)
 
+    @records_scene_history
     @signal(tags=["shape"])
     def add_tetrahedra(
         self,
@@ -345,6 +359,7 @@ class ShapesManager:
     ):
         return self.tetrahedra.add_tetrahedra(*args, **kwargs)
 
+    @records_scene_history
     @signal(tags=["shape"])
     def add_pocket_blob(
         self,
@@ -354,6 +369,7 @@ class ShapesManager:
     ):
         return self.blobs.add_pocket_blob(*args, **kwargs)
 
+    @records_scene_history
     @signal(tags=["shape"])
     def add_scalar_isosurface(
         self,
@@ -363,6 +379,7 @@ class ShapesManager:
     ):
         return self.blobs.add_scalar_isosurface(*args, **kwargs)
 
+    @records_scene_history
     @signal(tags=["shape"])
     def add_channel_tube(
         self,
@@ -372,6 +389,7 @@ class ShapesManager:
     ):
         return self.tubes.add_channel_tube(*args, **kwargs)
 
+    @records_scene_history
     @signal(tags=["shape"])
     def add_rings(
         self,
@@ -381,6 +399,7 @@ class ShapesManager:
     ):
         return self.rings.add_rings(*args, **kwargs)
 
+    @records_scene_history
     @signal(tags=["shape"])
     def add_anisotropy_ellipsoids(
         self,
@@ -390,6 +409,7 @@ class ShapesManager:
     ):
         return self.ellipsoids.add_anisotropy_ellipsoids(*args, **kwargs)
 
+    @records_scene_history
     @signal(tags=["shape"])
     def add_interaction_sites(
         self,
@@ -399,6 +419,7 @@ class ShapesManager:
     ):
         return self.interaction_sites.add_interaction_sites(*args, **kwargs)
 
+    @records_scene_history
     @signal(tags=["shape"])
     def add_pharmacophore_features(
         self,
@@ -413,6 +434,7 @@ class ShapesManager:
         )
         return self.interaction_sites.add_interaction_sites(*args, **kwargs)
 
+    @records_scene_history
     @signal(tags=["shape"])
     def add_topomt_feature(
         self,
@@ -547,6 +569,7 @@ class ShapesManager:
         else:
             raise NotImplementedError(f"Rendering for TopoMT feature type '{f_type}' is not implemented.")
 
+    @records_scene_history
     @signal(tags=["shape"])
     @digest()
     def clear(self, tag: str | None = None, skip_digestion: bool = False):

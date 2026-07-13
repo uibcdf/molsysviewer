@@ -8,6 +8,7 @@ from smonitor import signal
 from .. import pyunitwizard as puw
 from ..layers import Layer, Shape
 from .._private.arg_digestion import digest
+from ..scene_history import records_scene_history
 from ..colors import normalize_color
 from ._registry import register_shape_layer, normalize_new_shape_tag
 
@@ -40,6 +41,7 @@ class SphereShapes:
 
     @signal(tags=["shape", "sphere"])
     @digest()
+    @records_scene_history
     def add_sphere(
         self,
         center="[0.0, 0.0, 0.0] nm",
@@ -231,6 +233,7 @@ class SphereShapes:
 
     @signal(tags=["shape", "sphere"])
     @digest()
+    @records_scene_history
     def add_set_alpha_spheres(
         self,
         *,
@@ -288,6 +291,7 @@ class SphereShapes:
 
     @signal(tags=["shape", "sphere"])
     @digest()
+    @records_scene_history
     def clear(self, tag: str | None = None, skip_digestion: bool = False):
         """Delete shapes in the frontend (all or by tag)."""
         self._view._send({"op": "clear_shapes_by_tag", "tag": tag})

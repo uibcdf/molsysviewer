@@ -1024,7 +1024,7 @@ test("GroupPanel region cards expose lifecycle actions and explicit collision ch
     }
 });
 
-test("GroupPanel region style composer emits presets, release-only opacity, and gated colors", () => {
+test("GroupPanel region style composer brackets live opacity changes for history", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
@@ -1099,27 +1099,61 @@ test("GroupPanel region style composer emits presets, release-only opacity, and 
         quality.value = "high";
         colorScheme.value = "";
         opacity.value = "0.65";
-        const beforeInput = actions.length;
+        opacity.dispatch("pointerdown");
         opacity.dispatch("input");
-        assert.strictEqual(actions.length, beforeInput);
         assert.strictEqual(opacityValue?.textContent, "0.65");
-        opacity.dispatch("change");
-        assert.deepStrictEqual(actions.at(-1), {
+        panel.setRegions([{
+            tag: "binding",
+            atom_count: 8,
+            hidden: false,
+            representation: "line",
+            representation_params: { alpha: 0.65, quality: "high", sizeFactor: 0.8 },
+            available_attributes: ["b_factor"],
+        }]);
+        assert.strictEqual(
+            findFirstByAttribute(root, "data-molsysviewer-region-style-opacity", "binding"),
+            opacity,
+        );
+        opacity.dispatch("pointerup");
+        assert.deepStrictEqual(actions.slice(-3), [{
+            action: "begin_scene_history_coalescing",
+            details: undefined,
+        }, {
             action: "set_region_representation",
             details: {
                 tag: "binding",
                 representation: "line",
                 params: { alpha: 0.65, quality: "high", sizeFactor: 0.8 },
             },
-        });
+        }, {
+            action: "end_scene_history_coalescing",
+            details: undefined,
+        }]);
 
-        preset.value = "polymer-cartoon";
-        preset.dispatch("change");
-        assert.strictEqual(representation.value, "");
-        colorScheme.value = "uniform";
-        colorScheme.dispatch("change");
-        uniformColor.value = "#112233";
-        quality.value = "highest";
+        const refreshedRepresentation = findFirstByAttribute(
+            root,
+            "data-molsysviewer-region-style-representation",
+            "binding",
+        ) as any;
+        const refreshedPreset = findFirstByAttribute(root, "data-molsysviewer-region-style-preset", "binding") as any;
+        const refreshedQuality = findFirstByAttribute(root, "data-molsysviewer-region-style-quality", "binding") as any;
+        const refreshedColorScheme = findFirstByAttribute(
+            root,
+            "data-molsysviewer-region-style-color-scheme",
+            "binding",
+        ) as any;
+        const refreshedUniformColor = findFirstByAttribute(
+            root,
+            "data-molsysviewer-region-style-uniform-color",
+            "binding",
+        ) as any;
+        refreshedPreset.value = "polymer-cartoon";
+        refreshedPreset.dispatch("change");
+        assert.strictEqual(refreshedRepresentation.value, "");
+        refreshedColorScheme.value = "uniform";
+        refreshedColorScheme.dispatch("change");
+        refreshedUniformColor.value = "#112233";
+        refreshedQuality.value = "highest";
         findFirstByAttribute(root, "data-molsysviewer-region-style-apply", "binding")
             ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
         assert.deepStrictEqual(actions.at(-1), {
@@ -1940,7 +1974,7 @@ test("GroupPanel Whole panel renders summary and confirms hiding base-only regio
     }
 });
 
-test("GroupPanel Whole opacity updates readout on input and emits only on change", () => {
+test("GroupPanel Whole opacity brackets live changes for history", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
@@ -1966,13 +2000,33 @@ test("GroupPanel Whole opacity updates readout on input and emits only on change
         const readout = findFirstByAttribute(root, "data-molsysviewer-whole-opacity-value", "true");
         assert.ok(opacity);
         opacity.value = "0.25";
+        opacity.dispatch("pointerdown", { preventDefault() {}, stopPropagation() {} });
         opacity.dispatch("input", { preventDefault() {}, stopPropagation() {} });
         assert.strictEqual(readout?.textContent, "0.25");
-        assert.deepStrictEqual(actions, []);
-        opacity.dispatch("change", { preventDefault() {}, stopPropagation() {} });
-        assert.strictEqual(actions.length, 1);
-        assert.strictEqual(actions[0].action, "set_whole_representation");
-        assert.deepStrictEqual(actions[0].details.params.alpha, 0.25);
+        panel.setWholeSummary({
+            representation: "cartoon",
+            preset: null,
+            params: { alpha: 0.25 },
+            visible: true,
+            color_scheme: null,
+            scene_style_name: null,
+            available_attributes: [],
+            color_schemes: ["element_cpk"],
+            inheriting_region_count: 0,
+            none_state_region_count: 0,
+            covering_layer_count: 0,
+        });
+        assert.strictEqual(
+            findFirstByAttribute(root, "data-molsysviewer-whole-opacity", "true"),
+            opacity,
+        );
+        opacity.dispatch("pointerup", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.map(item => item.action), [
+            "begin_scene_history_coalescing",
+            "set_whole_representation",
+            "end_scene_history_coalescing",
+        ]);
+        assert.deepStrictEqual(actions[1].details.params.alpha, 0.25);
     } finally {
         restore();
     }
