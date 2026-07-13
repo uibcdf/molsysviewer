@@ -1,7 +1,12 @@
 from __future__ import annotations
 
+import pytest
+import molsysmt as msm
+
 from molsysviewer import pyunitwizard as puw
+from molsysviewer import MolSysView
 from molsysviewer.demo import demo
+from molsysviewer.viewer.panel_actions.scene_objects import create_measurement
 
 
 def _view():
@@ -26,6 +31,8 @@ def test_scene_object_summary_records_project_manager_info():
         tag="distance",
         layer_tag="analysis",
     )
+    view.measurements.add_angle([0], [1], [2], tag="angle")
+    view.measurements.add_dihedral([0], [1], [2], [3], tag="dihedral")
     view.shapes.add(
         "sphere",
         center=puw.quantity([0.0, 0.0, 0.0], "nm"),
@@ -45,12 +52,26 @@ def test_scene_object_summary_records_project_manager_info():
         "broken": False,
         "broken_reason": None,
     }]
-    measurement = view._measurement_summary_records()[0]  # noqa: SLF001
-    assert measurement["tag"] == "distance"
-    assert measurement["kind"] == "distance"
-    assert measurement["atom_indices"] == [0, 1]
-    assert measurement["value"] is not None
-    assert measurement["unit"] == "nanometer"
+    measurements = {
+        record["tag"]: record for record in view._measurement_summary_records()  # noqa: SLF001
+    }
+    assert measurements["distance"]["atom_indices"] == [0, 1]
+    for tag, kind, unit in (
+        ("distance", "distance", "angstrom"),
+        ("angle", "angle", "degree"),
+        ("dihedral", "dihedral", "degree"),
+    ):
+        measurement = measurements[tag]
+        assert measurement["kind"] == kind
+        assert measurement["value"] is not None
+        assert measurement["unit"] == unit
+        assert measurement["value"] == pytest.approx(
+            puw.get_value(view.measurements.info(tag)[0]["value"], to_unit=unit)
+        )
+        assert measurement["endpoint_labels"]
+        assert measurement["endpoint_policy"] == "centroid"
+        assert "series" not in measurement
+        assert "value_series" not in measurement
     shape = view._shape_summary_records()[0]  # noqa: SLF001
     assert shape == {
         "kind": "sphere",
@@ -139,6 +160,182 @@ def test_frame_change_refreshes_measurements_without_republishing_static_domains
     })
 
     assert [message["op"] for message in sent] == ["set_measurement_summaries"]
+
+
+def test_measurement_summary_reports_the_current_frame_value_in_presentation_units():
+    molsys = demo["dialanine"].molsys.copy()
+    moved = msm.structure.translate(
+        molsys,
+        translation=puw.quantity([[[0.1, 0.0, 0.0]]], "nm"),
+        selection=[1],
+        structure_indices=0,
+        skip_digestion=True,
+    )
+    msm.append_structures(
+        molsys,
+        moved,
+        structure_indices=0,
+        skip_digestion=True,
+    )
+    view = MolSysView()
+    view.widget.send = lambda _message: None  # type: ignore[method-assign]
+    view.load(molsys)
+    view.measurements.add_distance([0], [1], tag="d1")
+    expected = puw.get_value(view.measurements.series("d1"), to_unit="angstrom")[1]
+    sent = []
+    view._send_runtime_only = lambda message: sent.append(message)  # type: ignore[method-assign]
+
+    view._handle_frontend_event({  # noqa: SLF001
+        "event": "trajectory_frame_changed",
+        "frame": 1,
+        "is_playing": False,
+    })
+
+    summary = sent[-1]["measurements"][0]
+    assert summary["value"] == pytest.approx(expected)
+    assert summary["unit"] == "angstrom"
+    assert "series" not in summary
+    assert "value_series" not in summary
+
+
+def test_measurement_series_is_runtime_only_and_minmax_downsampled(monkeypatch):
+    view = _view()
+    view.measurements.add_distance([0], [1], tag="d1")
+    quantity = puw.quantity([float(index % 17) for index in range(6000)], "angstrom")
+    monkeypatch.setattr(view.measurements, "series", lambda _tag: quantity)
+
+    payload = view._measurement_series_payload("d1", request_id=7)  # noqa: SLF001
+
+    assert payload["request_id"] == 7
+    assert "series" not in payload
+    assert payload["n_frames"] == 6000
+    assert len(payload["sparkline"]) <= 240
+    assert len(payload["sparkline"]) == len(payload["sparkline_indices"])
+    assert max(payload["sparkline"]) == 16.0
+
+
+def test_measurement_series_panel_request_uses_runtime_only_transport():
+    view = _view()
+    view.measurements.add_distance([0], [1], tag="d1")
+    sent = []
+    view._send_runtime_only = lambda message: sent.append(message)  # type: ignore[method-assign]
+    history_size = len(view._message_history)  # noqa: SLF001
+
+    view._handle_frontend_event({  # noqa: SLF001
+        "event": "interaction_context_action",
+        "action": "request_measurement_series",
+        "tag": "d1",
+        "request_id": 17,
+    })
+
+    assert sent[-1]["op"] == "measurement_series"
+    assert sent[-1]["request_id"] == 17
+    assert len(view._message_history) == history_size  # noqa: SLF001
+
+
+def test_measurement_settings_round_trip_with_scene_state():
+    source = _view()
+    source.measurements.set_endpoint_policy("representative_atom")
+    source.measurements.set_representative_atom("protein", "CB")
+
+    restored = _view()
+    restored.import_state(source.export_state())
+
+    assert restored.measurements.settings() == {
+        "endpoint_policy_default": "representative_atom",
+        "representative_atoms": {
+            "protein": "CB",
+            "nucleic": "P",
+            "lipid": "P",
+            "other": "",
+        },
+    }
+
+
+def test_create_measurement_panel_action_uses_active_selection_groups_as_endpoints():
+    view = _view()
+    view.active_selection.set(selection="group_index in [0, 1]")
+
+    view._handle_frontend_event({  # noqa: SLF001
+        "event": "interaction_context_action",
+        "action": "create_measurement",
+        "kind": "distance",
+    })
+
+    record = view.measurements.info()[0]
+    assert record["kind"] == "distance"
+    assert record["n_picks"] == 2
+    assert all(record["picks_atom_indices"])
+
+
+@pytest.mark.parametrize(
+    ("kind", "selection", "match"),
+    [
+        ("rmsd", "group_index in [0, 1]", "requires kind"),
+        ("distance", "group_index==0", "requires 2 selected endpoints"),
+    ],
+)
+def test_create_measurement_panel_action_rejects_invalid_kind_or_endpoint_count(
+    kind, selection, match
+):
+    view = _view()
+    view.active_selection.set(selection=selection)
+
+    with pytest.raises(ValueError, match=match):
+        create_measurement(view, {"kind": kind})
+
+    assert view.measurements.count() == 0
+
+
+def test_measurement_panel_lifecycle_actions_mutate_the_python_model():
+    view = _view()
+    view.measurements.add_distance([0], [1], tag="d1")
+
+    def dispatch(action, **details):
+        view._handle_frontend_event({  # noqa: SLF001
+            "event": "interaction_context_action",
+            "action": action,
+            **details,
+        })
+
+    dispatch("toggle_measurement_visibility", tag="d1")
+    assert view.measurements.info("d1")[0]["visible"] is False
+    dispatch("rename_measurement", tag="d1", new_tag="distance")
+    dispatch("set_measurement_layer", tag="distance", layer="analysis")
+    assert view.measurements.info("distance")[0]["layer_tag"] == "analysis"
+    dispatch("show_all_measurements")
+    assert view.measurements.info("distance")[0]["visible"] is True
+    dispatch("hide_all_measurements")
+    assert view.measurements.info("distance")[0]["visible"] is False
+    dispatch("clear_measurements")
+    assert view.measurements.count() == 0
+
+
+def test_endpoint_policy_panel_action_affects_only_future_measurements_and_is_undoable():
+    view = _view()
+    view.active_selection.set(selection="group_index in [0, 1]")
+    view._handle_frontend_event({  # noqa: SLF001
+        "event": "interaction_context_action",
+        "action": "create_measurement",
+        "kind": "distance",
+    })
+    first_tag = view.measurements.tags()[0]
+
+    view._handle_frontend_event({  # noqa: SLF001
+        "event": "interaction_context_action",
+        "action": "set_measurement_endpoint_policy",
+        "policy": "representative_atom",
+    })
+    view._handle_frontend_event({  # noqa: SLF001
+        "event": "interaction_context_action",
+        "action": "create_measurement",
+        "kind": "distance",
+    })
+    second_tag = view.measurements.tags()[-1]
+
+    assert view.measurements.info(first_tag)[0]["endpoint_policy"] == "centroid"
+    assert view.measurements.info(second_tag)[0]["endpoint_policy"] == "representative_atom"
+    assert view.history.can_undo() is True
 
 
 def test_system_rebuild_republishes_all_scene_object_summaries():

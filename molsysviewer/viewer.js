@@ -149200,8 +149200,8 @@ function makeRowElement(titleText, subtitleText, onActivate, onDelete, visibilit
   return row2;
 }
 function makeSettingsCard(titleText) {
-  const card2 = document.createElement("div");
-  Object.assign(card2.style, {
+  const card3 = document.createElement("div");
+  Object.assign(card3.style, {
     display: "flex",
     flexDirection: "column",
     gap: "8px",
@@ -149221,8 +149221,8 @@ function makeSettingsCard(titleText) {
     marginBottom: "2px"
   });
   header2.textContent = titleText;
-  card2.appendChild(header2);
-  return card2;
+  card3.appendChild(header2);
+  return card3;
 }
 function makeStyledSelect(options, selectedValue, onChange) {
   const select = document.createElement("select");
@@ -149733,7 +149733,7 @@ var LayersPanel = class extends BasePanel {
     })).sort((a8, b8) => a8.tag.localeCompare(b8.tag));
   }
   renderAssignCard() {
-    const card2 = makeSettingsCard("Assign Region");
+    const card3 = makeSettingsCard("Assign Region");
     const row2 = document.createElement("form");
     row2.setAttribute("data-molsysviewer-layer-assign-form", "true");
     Object.assign(row2.style, {
@@ -149760,7 +149760,7 @@ var LayersPanel = class extends BasePanel {
       event.preventDefault();
       button.click();
     });
-    card2.appendChild(row2);
+    card3.appendChild(row2);
     const hint = document.createElement("div");
     Object.assign(hint.style, {
       fontSize: "10px",
@@ -149768,19 +149768,19 @@ var LayersPanel = class extends BasePanel {
       lineHeight: "1.4"
     });
     hint.textContent = "Leave the layer empty to detach the region.";
-    card2.appendChild(hint);
-    return card2;
+    card3.appendChild(hint);
+    return card3;
   }
   renderLayerCard(layer) {
-    const card2 = makeSettingsCard(layer.tag);
-    card2.setAttribute("data-molsysviewer-layer-card", layer.tag);
+    const card3 = makeSettingsCard(layer.tag);
+    card3.setAttribute("data-molsysviewer-layer-card", layer.tag);
     const counts = document.createElement("div");
     Object.assign(counts.style, {
       fontSize: "10px",
       color: "rgba(244,244,245,0.56)"
     });
     counts.textContent = `${layer.regions.length} regions \xB7 ${layer.objects.length} scene objects`;
-    card2.appendChild(counts);
+    card3.appendChild(counts);
     const actions = document.createElement("div");
     Object.assign(actions.style, {
       display: "grid",
@@ -149802,11 +149802,11 @@ var LayersPanel = class extends BasePanel {
     actions.appendChild(show);
     actions.appendChild(hide);
     actions.appendChild(del);
-    card2.appendChild(actions);
+    card3.appendChild(actions);
     for (const member of [...layer.regions, ...layer.objects]) {
-      card2.appendChild(this.renderMemberRow(layer.tag, member));
+      card3.appendChild(this.renderMemberRow(layer.tag, member));
     }
-    return card2;
+    return card3;
   }
   renderMemberRow(layerTag, member) {
     const row2 = document.createElement("div");
@@ -150681,10 +150681,10 @@ var RegionsPanel = class extends BasePanel {
     return container;
   }
   renderRegionCard(item2) {
-    const card2 = document.createElement("div");
-    card2.setAttribute("data-molsysviewer-region-card", item2.tag);
-    card2.setAttribute("data-molsysviewer-region-hidden", String(item2.hidden));
-    Object.assign(card2.style, {
+    const card3 = document.createElement("div");
+    card3.setAttribute("data-molsysviewer-region-card", item2.tag);
+    card3.setAttribute("data-molsysviewer-region-hidden", String(item2.hidden));
+    Object.assign(card3.style, {
       display: "flex",
       flexDirection: "column",
       gap: "7px",
@@ -150751,7 +150751,7 @@ var RegionsPanel = class extends BasePanel {
     remove3.setAttribute("data-molsysviewer-region-delete", item2.tag);
     header2.appendChild(visibility);
     header2.appendChild(remove3);
-    card2.appendChild(header2);
+    card3.appendChild(header2);
     const actions = document.createElement("div");
     actions.setAttribute("data-molsysviewer-region-actions", item2.tag);
     Object.assign(actions.style, {
@@ -150816,7 +150816,7 @@ var RegionsPanel = class extends BasePanel {
       button.style.padding = "3px 6px";
       actions.appendChild(button);
     }
-    card2.appendChild(actions);
+    card3.appendChild(actions);
     if (this.regionRenameTag === item2.tag) {
       const form = document.createElement("div");
       form.setAttribute("data-molsysviewer-region-rename-form", item2.tag);
@@ -150860,7 +150860,7 @@ var RegionsPanel = class extends BasePanel {
       form.appendChild(input);
       form.appendChild(submit);
       form.appendChild(cancel);
-      card2.appendChild(form);
+      card3.appendChild(form);
       if (this.regionRenameCollisionTag !== null) {
         const collisionTag = this.regionRenameCollisionTag;
         const collision = document.createElement("div");
@@ -150887,16 +150887,16 @@ var RegionsPanel = class extends BasePanel {
         collision.appendChild(chooseRename);
         collision.appendChild(overwrite);
         collision.appendChild(cancelCollision);
-        card2.appendChild(collision);
+        card3.appendChild(collision);
       }
     }
     if (this.activeStyleRegionTag === item2.tag) {
-      card2.appendChild(this.renderStyleComposer(item2));
+      card3.appendChild(this.renderStyleComposer(item2));
     }
     if (this.regionInspectOpen.has(item2.tag)) {
-      card2.appendChild(this.renderRegionInspect(item2.tag));
+      card3.appendChild(this.renderRegionInspect(item2.tag));
     }
-    return card2;
+    return card3;
   }
   renderRegionBooleanComposer() {
     const container = document.createElement("div");
@@ -151776,11 +151776,11 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
     if (this.savedSelections.length > 0) {
       const sorted = [...this.savedSelections].sort((a8, b8) => a8.tag.localeCompare(b8.tag));
       for (const item2 of sorted) {
-        const card2 = document.createElement("div");
-        card2.setAttribute("data-molsysviewer-group-panel-row", "true");
-        card2.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
-        card2.setAttribute("data-molsysviewer-saved-selection-card", item2.tag);
-        Object.assign(card2.style, {
+        const card3 = document.createElement("div");
+        card3.setAttribute("data-molsysviewer-group-panel-row", "true");
+        card3.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
+        card3.setAttribute("data-molsysviewer-saved-selection-card", item2.tag);
+        Object.assign(card3.style, {
           display: "flex",
           flexDirection: "column",
           padding: "8px 10px",
@@ -151791,16 +151791,16 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           transition: "background 0.1s ease",
           cursor: "pointer"
         });
-        card2.addEventListener("mouseenter", () => {
-          card2.setAttribute("data-molsysviewer-selection-row-hover", "true");
-          card2.style.background = "rgba(255,255,255,0.09)";
+        card3.addEventListener("mouseenter", () => {
+          card3.setAttribute("data-molsysviewer-selection-row-hover", "true");
+          card3.style.background = "rgba(255,255,255,0.09)";
         });
-        card2.addEventListener("mouseleave", () => {
-          card2.setAttribute("data-molsysviewer-selection-row-hover", "false");
-          card2.style.background = "rgba(255,255,255,0.05)";
+        card3.addEventListener("mouseleave", () => {
+          card3.setAttribute("data-molsysviewer-selection-row-hover", "false");
+          card3.style.background = "rgba(255,255,255,0.05)";
         });
-        card2.addEventListener("click", (e) => {
-          if (e && e.target && e.target !== card2) {
+        card3.addEventListener("click", (e) => {
+          if (e && e.target && e.target !== card3) {
             return;
           }
           e?.preventDefault();
@@ -151834,7 +151834,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
         subtitle.textContent = `(${item2.atom_count} atoms${levelText})`;
         title.appendChild(subtitle);
         topRow.appendChild(title);
-        card2.appendChild(topRow);
+        card3.appendChild(topRow);
         const btnRow = document.createElement("div");
         btnRow.setAttribute("data-molsysviewer-saved-selection-buttons-row", item2.tag);
         Object.assign(btnRow.style, {
@@ -151861,7 +151861,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           fontSize: "11px",
           outline: "none"
         });
-        card2.appendChild(inlineForm);
+        card3.appendChild(inlineForm);
         const showForm = (mode) => {
           btnRow.style.display = "none";
           inlineForm.replaceChildren();
@@ -151970,8 +151970,8 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           btn.style.fontSize = "10px";
           btnRow.appendChild(btn);
         }
-        card2.appendChild(btnRow);
-        savedList.appendChild(card2);
+        card3.appendChild(btnRow);
+        savedList.appendChild(card3);
       }
     } else {
       const emptyLabel = document.createElement("div");
@@ -153277,6 +153277,323 @@ var WholePanel = class {
     containsLine.textContent = `contains: ${Object.entries(contains).map(([key2, value]) => `${key2} ${value ? "yes" : "no"}`).join(" \xB7 ")}`;
     Object.assign(containsLine.style, { fontSize: "10px", color: "rgba(244,244,245,0.56)" });
     section.appendChild(containsLine);
+    return section;
+  }
+};
+
+// src/ui/panels/measures-panel.ts
+var defaultSettings = () => ({
+  endpointPolicyDefault: "centroid",
+  representativeAtoms: { protein: "CA", nucleic: "P", lipid: "P", other: "" },
+  structureIndex: 0,
+  systemLoaded: false
+});
+var emptySelection = () => ({
+  event: "interaction_active_selection_changed",
+  source_kind: "empty",
+  target_level: "none",
+  element_level: "none",
+  items: [],
+  atom_indices: [],
+  group_indices: [],
+  component_indices: [],
+  chain_indices: [],
+  molecule_indices: [],
+  entity_indices: [],
+  count_atoms: 0,
+  count_groups: 0,
+  count_shapes: 0,
+  count_annotations: 0
+});
+function card2() {
+  const element = document.createElement("div");
+  Object.assign(element.style, {
+    display: "flex",
+    flexDirection: "column",
+    gap: "7px",
+    padding: "10px",
+    borderRadius: "6px",
+    border: "1px solid rgba(255,255,255,0.08)",
+    background: "rgba(255,255,255,0.035)"
+  });
+  return element;
+}
+function labelUnit(unit2) {
+  if (unit2 === "angstrom") return "\xC5";
+  if (unit2 === "degree" || unit2 === "degrees") return "\xB0";
+  return unit2;
+}
+function formatValue(item2) {
+  if (item2.broken || item2.value === null || !Number.isFinite(item2.value)) return "\u2014";
+  const digits = item2.kind === "distance" ? 2 : 1;
+  return `${item2.value.toFixed(digits)} ${labelUnit(item2.unit)}`;
+}
+var MeasuresPanel = class extends BasePanel {
+  constructor(ctx) {
+    super();
+    this.ctx = ctx;
+    this.key = "measures";
+    this.measurements = [];
+    this.settings = defaultSettings();
+    this.selection = emptySelection();
+    this.expandedSeries = /* @__PURE__ */ new Set();
+    this.seriesByTag = /* @__PURE__ */ new Map();
+    this.expectedSeriesRequest = /* @__PURE__ */ new Map();
+    this.nextSeriesRequest = 1;
+    this.editTag = null;
+  }
+  setMeasurements(measurements, settings) {
+    this.measurements = [...measurements];
+    this.settings = settings;
+    this.ctx.setBadge(String(measurements.length));
+    this.scheduleRender();
+  }
+  setCurrentSelection(selection) {
+    this.selection = selection;
+    this.scheduleRender();
+  }
+  updateSeries(payload) {
+    const expected = this.expectedSeriesRequest.get(payload.tag);
+    if (expected === void 0 || payload.requestId !== expected) return;
+    this.seriesByTag.set(payload.tag, payload);
+    this.scheduleRender();
+  }
+  paint() {
+    if (!this.host) return;
+    this.host.replaceChildren();
+    this.host.appendChild(makeSectionHeader("Measures"));
+    this.host.appendChild(this.renderCreate());
+    this.host.appendChild(makeSectionHeader("Measurements"));
+    const list3 = document.createElement("div");
+    Object.assign(list3.style, { display: "flex", flexDirection: "column", gap: "7px" });
+    if (this.measurements.length === 0) {
+      const empty2 = document.createElement("div");
+      empty2.textContent = "No measurements yet. Select endpoints and choose a kind above.";
+      Object.assign(empty2.style, { color: "rgba(244,244,245,0.52)", fontSize: "11px" });
+      list3.appendChild(empty2);
+    } else {
+      for (const item2 of this.measurements) list3.appendChild(this.renderMeasurement(item2));
+    }
+    this.host.appendChild(list3);
+    this.host.appendChild(this.renderGlobalActions());
+    this.host.appendChild(this.renderSettings());
+  }
+  endpointCount() {
+    return this.selection.group_indices.length || this.selection.count_groups;
+  }
+  renderCreate() {
+    const section = card2();
+    section.setAttribute("data-molsysviewer-measurement-create", "true");
+    const count3 = this.endpointCount();
+    const title = document.createElement("strong");
+    title.textContent = `From active selection (${count3} endpoint${count3 === 1 ? "" : "s"})`;
+    Object.assign(title.style, { fontSize: "12px", color: "#f4f4f5" });
+    section.appendChild(title);
+    const row2 = document.createElement("div");
+    Object.assign(row2.style, { display: "flex", gap: "6px" });
+    for (const [kind, required] of [["distance", 2], ["angle", 3], ["dihedral", 4]]) {
+      const button = makeButton(
+        kind[0].toUpperCase() + kind.slice(1),
+        () => this.ctx.onAction("create_measurement", { kind })
+      );
+      button.disabled = !this.settings.systemLoaded || count3 !== required;
+      button.style.opacity = button.disabled ? "0.42" : "1";
+      button.setAttribute("data-molsysviewer-measurement-create-kind", kind);
+      row2.appendChild(button);
+    }
+    section.appendChild(row2);
+    const hint = document.createElement("div");
+    hint.textContent = !this.settings.systemLoaded ? "Load a structure first." : count3 >= 2 && count3 <= 4 ? `${count3} endpoints can create a ${count3 === 2 ? "distance" : count3 === 3 ? "angle" : "dihedral"}.` : `Distance needs 2, angle 3, and dihedral 4 endpoints; you have ${count3}.`;
+    Object.assign(hint.style, { fontSize: "10px", color: "rgba(244,244,245,0.58)" });
+    section.appendChild(hint);
+    return section;
+  }
+  renderMeasurement(item2) {
+    const row2 = card2();
+    row2.setAttribute("data-molsysviewer-measurement-tag", item2.tag);
+    row2.setAttribute("data-molsysviewer-measurement-broken", String(item2.broken));
+    row2.style.opacity = item2.hidden ? "0.42" : "1";
+    if (item2.brokenReason) row2.title = item2.brokenReason;
+    const head = document.createElement("div");
+    Object.assign(head.style, { display: "flex", alignItems: "center", gap: "8px" });
+    const value = document.createElement("div");
+    value.textContent = formatValue(item2);
+    value.setAttribute("data-molsysviewer-measurement-value", item2.tag);
+    Object.assign(value.style, {
+      flex: "1 1 0",
+      fontSize: "18px",
+      fontWeight: "700",
+      color: item2.broken ? "rgba(244,244,245,0.46)" : "#f4f4f5"
+    });
+    head.appendChild(value);
+    const eye = makeButton(
+      item2.hidden ? "\u29BB" : "\u{1F441}",
+      () => this.ctx.onAction("toggle_measurement_visibility", { tag: item2.tag })
+    );
+    eye.title = item2.hidden ? "Show measurement" : "Hide measurement";
+    eye.setAttribute("data-molsysviewer-measurement-visibility", item2.tag);
+    const more = makeButton("\u22EF", () => {
+      this.editTag = this.editTag === item2.tag ? null : item2.tag;
+      this.scheduleRender();
+    });
+    more.title = "Rename or move to layer";
+    more.setAttribute("data-molsysviewer-measurement-more", item2.tag);
+    const remove3 = makeButton("\xD7", () => this.ctx.onAction("delete_measurement", { tag: item2.tag }));
+    remove3.title = "Delete measurement";
+    remove3.setAttribute("data-molsysviewer-measurement-delete", item2.tag);
+    for (const button of [eye, more, remove3]) {
+      button.style.flex = "0 0 auto";
+      head.appendChild(button);
+    }
+    row2.appendChild(head);
+    const identity2 = document.createElement("div");
+    identity2.textContent = `${item2.kind} \xB7 ${item2.tag}${item2.layerTag && item2.layerTag !== item2.tag ? ` \xB7 layer: ${item2.layerTag}` : ""}`;
+    Object.assign(identity2.style, { fontSize: "10px", color: "rgba(244,244,245,0.58)" });
+    row2.appendChild(identity2);
+    const endpoints = document.createElement("div");
+    endpoints.textContent = item2.endpointLabels.length ? item2.endpointLabels.join(" \u2192 ") : `${item2.picks} picks`;
+    endpoints.setAttribute("data-molsysviewer-measurement-endpoints", item2.tag);
+    Object.assign(endpoints.style, { fontSize: "11px", color: "rgba(244,244,245,0.78)" });
+    row2.appendChild(endpoints);
+    if (!item2.broken) row2.appendChild(this.renderSeries(item2));
+    if (this.editTag === item2.tag) row2.appendChild(this.renderEdit(item2));
+    return row2;
+  }
+  renderSeries(item2) {
+    if (!this.expandedSeries.has(item2.tag)) {
+      const button = makeButton("Show trajectory", () => {
+        this.expandedSeries.add(item2.tag);
+        const requestId = this.nextSeriesRequest++;
+        this.expectedSeriesRequest.set(item2.tag, requestId);
+        this.ctx.onAction("request_measurement_series", { tag: item2.tag, request_id: requestId });
+        this.scheduleRender();
+      });
+      button.setAttribute("data-molsysviewer-measurement-series-toggle", item2.tag);
+      return button;
+    }
+    const payload = this.seriesByTag.get(item2.tag);
+    if (!payload) {
+      const pending = document.createElement("div");
+      pending.textContent = "Loading trajectory\u2026";
+      pending.setAttribute("data-molsysviewer-measurement-series-pending", item2.tag);
+      Object.assign(pending.style, { fontSize: "10px", color: "rgba(244,244,245,0.52)" });
+      return pending;
+    }
+    const wrap = document.createElement("div");
+    wrap.setAttribute("data-molsysviewer-measurement-series", item2.tag);
+    const canvas = document.createElement("canvas");
+    canvas.width = 260;
+    canvas.height = 38;
+    Object.assign(canvas.style, { width: "100%", height: "38px" });
+    wrap.appendChild(canvas);
+    const context2 = canvas.getContext?.("2d");
+    const values2 = payload.sparkline;
+    if (context2 && values2.length > 1) {
+      const min5 = Math.min(...values2);
+      const span = Math.max(1e-12, Math.max(...values2) - min5);
+      context2.strokeStyle = "#60a5fa";
+      context2.lineWidth = 1.5;
+      context2.beginPath();
+      values2.forEach((point, index) => {
+        const x = index * (canvas.width - 1) / (values2.length - 1);
+        const y = canvas.height - 3 - (point - min5) * (canvas.height - 6) / span;
+        if (index === 0) context2.moveTo(x, y);
+        else context2.lineTo(x, y);
+      });
+      context2.stroke();
+      if (payload.sparklineIndices.length === values2.length) {
+        const currentFrame = Math.max(0, Math.min(payload.nFrames - 1, this.settings.structureIndex));
+        const markerIndex = payload.sparklineIndices.reduce(
+          (best, frame2, index) => Math.abs(frame2 - currentFrame) < Math.abs(payload.sparklineIndices[best] - currentFrame) ? index : best,
+          0
+        );
+        const markerX = markerIndex * (canvas.width - 1) / (values2.length - 1);
+        context2.strokeStyle = "rgba(244,244,245,0.72)";
+        context2.lineWidth = 1;
+        context2.beginPath();
+        context2.moveTo(markerX, 1);
+        context2.lineTo(markerX, canvas.height - 1);
+        context2.stroke();
+      }
+    }
+    const caption = document.createElement("div");
+    const frame = payload.nFrames > 0 ? Math.max(0, Math.min(payload.nFrames - 1, this.settings.structureIndex)) + 1 : 0;
+    caption.textContent = `${payload.nFrames} frame${payload.nFrames === 1 ? "" : "s"} \xB7 current ${frame}`;
+    caption.setAttribute("data-molsysviewer-measurement-series-caption", item2.tag);
+    Object.assign(caption.style, { fontSize: "9px", color: "rgba(244,244,245,0.46)" });
+    wrap.appendChild(caption);
+    return wrap;
+  }
+  renderEdit(item2) {
+    const editor = document.createElement("div");
+    Object.assign(editor.style, { display: "grid", gridTemplateColumns: "1fr auto", gap: "6px" });
+    const rename = document.createElement("input");
+    rename.value = item2.tag;
+    rename.setAttribute("data-molsysviewer-measurement-rename-input", item2.tag);
+    const renameButton = makeButton("Rename", () => this.ctx.onAction("rename_measurement", { tag: item2.tag, new_tag: rename.value }));
+    renameButton.setAttribute("data-molsysviewer-measurement-rename", item2.tag);
+    const layer = document.createElement("input");
+    layer.value = item2.layerTag && item2.layerTag !== item2.tag ? item2.layerTag : "";
+    layer.placeholder = "No user layer";
+    layer.setAttribute("data-molsysviewer-measurement-layer-input", item2.tag);
+    const layerButton = makeButton("Set layer", () => this.ctx.onAction("set_measurement_layer", { tag: item2.tag, layer: layer.value || null }));
+    layerButton.setAttribute("data-molsysviewer-measurement-layer", item2.tag);
+    editor.appendChild(rename);
+    editor.appendChild(renameButton);
+    editor.appendChild(layer);
+    editor.appendChild(layerButton);
+    return editor;
+  }
+  renderGlobalActions() {
+    const row2 = document.createElement("div");
+    Object.assign(row2.style, { display: "flex", gap: "6px", marginTop: "8px" });
+    for (const [label2, action] of [
+      ["Show all", "show_all_measurements"],
+      ["Hide all", "hide_all_measurements"],
+      ["Clear all", "clear_measurements"]
+    ]) {
+      const button = makeButton(label2, () => {
+        if (action === "clear_measurements" && !window.confirm("Delete all measurements?")) return;
+        this.ctx.onAction(action);
+      });
+      button.setAttribute("data-molsysviewer-measurement-global", action);
+      row2.appendChild(button);
+    }
+    return row2;
+  }
+  renderSettings() {
+    const section = card2();
+    section.appendChild(makeSectionHeader("Endpoint policy"));
+    for (const policy of ["atom", "centroid", "representative_atom"]) {
+      const label2 = document.createElement("label");
+      const input = document.createElement("input");
+      input.type = "radio";
+      input.name = "molsysviewer-measurement-policy";
+      input.value = policy;
+      input.checked = this.settings.endpointPolicyDefault === policy;
+      input.setAttribute("data-molsysviewer-measurement-policy", policy);
+      input.addEventListener("change", () => this.ctx.onAction("set_measurement_endpoint_policy", { policy }));
+      label2.appendChild(input);
+      label2.appendChild(document.createTextNode(` ${policy.replace(/_/g, " ")}`));
+      Object.assign(label2.style, { fontSize: "11px", color: "rgba(244,244,245,0.78)" });
+      section.appendChild(label2);
+    }
+    for (const target of ["protein", "nucleic", "lipid", "other"]) {
+      const row2 = document.createElement("label");
+      row2.textContent = `${target} `;
+      const input = document.createElement("input");
+      input.value = this.settings.representativeAtoms[target];
+      input.disabled = this.settings.endpointPolicyDefault !== "representative_atom";
+      input.setAttribute("data-molsysviewer-measurement-representative", target);
+      input.addEventListener("change", () => this.ctx.onAction("set_measurement_representative_atom", { target, atom_name: input.value }));
+      row2.appendChild(input);
+      Object.assign(row2.style, { fontSize: "10px", color: "rgba(244,244,245,0.62)" });
+      section.appendChild(row2);
+    }
+    const note2 = document.createElement("div");
+    note2.textContent = "The policy applies to future measurements only.";
+    Object.assign(note2.style, { fontSize: "9px", color: "rgba(244,244,245,0.48)" });
+    section.appendChild(note2);
     return section;
   }
 };
@@ -154780,11 +155097,7 @@ var GroupPanel = class {
     this.regionsPanel = new RegionsPanel(this.makePanelContext("regions"), this.onFocusRegion);
     this.selectionPanel = new SelectionPanel(this.makePanelContext("selection"), this.onSelect, this.onActivateSavedSelection, (tag) => this.regionsPanel.hasRegion(tag));
     this.measuresSection = this.createSection("measures");
-    this.measuresPanel = new InspectorListPanel("measures", this.makePanelContext("measures"), {
-      header: "Measurements (Distances)",
-      subtitleFallback: "Distance line",
-      emptyText: "No measurements yet."
-    });
+    this.measuresPanel = new MeasuresPanel(this.makePanelContext("measures"));
     this.annotationsSection = this.createSection("annotations");
     this.annotationsPanel = new InspectorListPanel("annotations", this.makePanelContext("annotations"), {
       header: "Annotations (Labels)",
@@ -155082,6 +155395,7 @@ var GroupPanel = class {
     this.systemPanel.updateSelection(selection);
     this.selectionPanel.updateSelection(selection);
     this.regionsPanel.setCurrentSelection(selection);
+    this.measuresPanel.setCurrentSelection(selection);
   }
   updateSelectionHistoryState(state) {
     this.selectionPanel.updateHistory(state);
@@ -155130,8 +155444,11 @@ var GroupPanel = class {
   setAnnotations(items) {
     this.annotationsPanel.setItems(items);
   }
-  setMeasurements(items) {
-    this.measuresPanel.setItems(items);
+  setMeasurements(items, settings) {
+    this.measuresPanel.setMeasurements(items, settings);
+  }
+  updateMeasurementSeries(payload) {
+    this.measuresPanel.updateSeries(payload);
   }
   setScene(state) {
     this.viewportPanel.setScene(state);
@@ -156024,9 +156341,9 @@ var AddonsPanel = class {
         this.workspaceOverviewHost.appendChild(diagHeader);
         diagnosticsRendered = true;
       }
-      const card2 = document.createElement("div");
-      card2.setAttribute("data-molsysviewer-addons-addon-discovery-failure", failure.source);
-      Object.assign(card2.style, {
+      const card3 = document.createElement("div");
+      card3.setAttribute("data-molsysviewer-addons-addon-discovery-failure", failure.source);
+      Object.assign(card3.style, {
         display: "flex",
         flexDirection: "column",
         alignItems: "stretch",
@@ -156057,11 +156374,11 @@ var AddonsPanel = class {
       badge.textContent = failure.kind === "lifecycle" ? "Lifecycle Error" : "Discovery Error";
       header3.appendChild(name);
       header3.appendChild(badge);
-      card2.appendChild(header3);
+      card3.appendChild(header3);
       const desc = document.createElement("div");
       Object.assign(desc.style, { fontSize: "10px", color: "rgba(252,165,165,0.72)" });
       desc.textContent = failure.reason || "Error loading entry point.";
-      card2.appendChild(desc);
+      card3.appendChild(desc);
       const traceBox = document.createElement("pre");
       Object.assign(traceBox.style, {
         display: "none",
@@ -156076,13 +156393,13 @@ var AddonsPanel = class {
         whiteSpace: "pre-wrap"
       });
       traceBox.textContent = failure.traceback || "No traceback detail.";
-      card2.appendChild(traceBox);
-      card2.addEventListener("click", (e) => {
+      card3.appendChild(traceBox);
+      card3.addEventListener("click", (e) => {
         e.preventDefault();
         const isVisible = traceBox.style.display === "block";
         traceBox.style.display = isVisible ? "none" : "block";
       });
-      this.workspaceOverviewHost.appendChild(card2);
+      this.workspaceOverviewHost.appendChild(card3);
     }
   }
   // ── Left Column: Workspace Navigation (Mimicking Studio layout) ──
@@ -156752,6 +157069,12 @@ var MolSysViewerController = class _MolSysViewerController {
     this.savedSelections = [];
     this.annotationSummaries = [];
     this.measurementSummaries = [];
+    this.measurementSettings = {
+      endpointPolicyDefault: "centroid",
+      representativeAtoms: { protein: "CA", nucleic: "P", lipid: "P", other: "" },
+      structureIndex: 0,
+      systemLoaded: false
+    };
     this.shapeSummaries = [];
     this.dynamicRegionEvaluationInFlight = null;
     this.dynamicRegionEvaluationPendingFrame = null;
@@ -157042,13 +157365,13 @@ var MolSysViewerController = class _MolSysViewerController {
       if (action === "hide_measurement") {
         const tag = typeof details?.tag === "string" ? details.tag : null;
         if (!tag) return;
-        void this.handleMessage({ op: "hide_layer", tag, kind: "measurement" });
+        this.notify?.({ event: "interaction_context_action", action: "hide_measurement", tag });
         return;
       }
       if (action === "delete_measurement") {
         const tag = typeof details?.tag === "string" ? details.tag : null;
         if (!tag) return;
-        void this.handleMessage({ op: "clear_layer", tag });
+        this.notify?.({ event: "interaction_context_action", action: "delete_measurement", tag });
         return;
       }
       if (action === "activate_selection") {
@@ -158296,17 +158619,43 @@ var MolSysViewerController = class _MolSysViewerController {
         case "set_measurement_summaries": {
           const records = Array.isArray(msg.measurements) ? msg.measurements : [];
           this.measurementSummaries = records.filter((item2) => typeof item2?.tag === "string").map((item2) => ({
-            kind: typeof item2.kind === "string" ? item2.kind : "measurement",
+            kind: ["distance", "angle", "dihedral"].includes(item2.kind) ? item2.kind : "measurement",
             tag: item2.tag,
             layerTag: typeof item2.layer_tag === "string" ? item2.layer_tag : void 0,
             picks: typeof item2.n_picks === "number" ? item2.n_picks : 0,
             hidden: !!item2.hidden,
             atomIndices: Array.isArray(item2.atom_indices) ? item2.atom_indices.filter((value) => typeof value === "number") : [],
-            value: typeof item2.value === "number" ? item2.value : void 0,
-            unit: typeof item2.unit === "string" ? item2.unit : void 0,
+            value: typeof item2.value === "number" ? item2.value : null,
+            unit: typeof item2.unit === "string" ? item2.unit : "",
+            endpointLabels: Array.isArray(item2.endpoint_labels) ? item2.endpoint_labels.filter((value) => typeof value === "string") : [],
+            endpointPolicy: typeof item2.endpoint_policy === "string" ? item2.endpoint_policy : "centroid",
             broken: !!item2.broken,
             brokenReason: typeof item2.broken_reason === "string" ? item2.broken_reason : void 0
           }));
+          const atoms2 = msg.representative_atoms ?? {};
+          this.measurementSettings = {
+            endpointPolicyDefault: ["atom", "centroid", "representative_atom"].includes(msg.endpoint_policy_default) ? msg.endpoint_policy_default : "centroid",
+            representativeAtoms: {
+              protein: typeof atoms2.protein === "string" ? atoms2.protein : "CA",
+              nucleic: typeof atoms2.nucleic === "string" ? atoms2.nucleic : "P",
+              lipid: typeof atoms2.lipid === "string" ? atoms2.lipid : "P",
+              other: typeof atoms2.other === "string" ? atoms2.other : ""
+            },
+            structureIndex: typeof msg.structure_index === "number" ? msg.structure_index : 0,
+            systemLoaded: !!msg.system_loaded
+          };
+          break;
+        }
+        case "measurement_series": {
+          this.groupPanel.updateMeasurementSeries({
+            tag: String(msg.tag ?? ""),
+            requestId: typeof msg.request_id === "number" ? msg.request_id : null,
+            unit: typeof msg.unit === "string" ? msg.unit : "",
+            nFrames: typeof msg.n_frames === "number" ? msg.n_frames : 0,
+            sparkline: Array.isArray(msg.sparkline) ? msg.sparkline.filter((value) => typeof value === "number") : [],
+            sparklineIndices: Array.isArray(msg.sparkline_indices) ? msg.sparkline_indices.filter((value) => typeof value === "number") : [],
+            seriesIndex: typeof msg.series_index === "number" ? msg.series_index : null
+          });
           break;
         }
         case "set_shape_summaries": {
@@ -158860,29 +159209,8 @@ var MolSysViewerController = class _MolSysViewerController {
       })
     );
     this.groupPanel.setMeasurements(
-      [...this.measurementSummaries].sort((left, right) => left.tag.localeCompare(right.tag)).map((item2) => {
-        const tag = item2.tag;
-        return {
-          key: tag,
-          title: item2.kind[0].toUpperCase() + item2.kind.slice(1),
-          subtitle: item2.layerTag && item2.layerTag !== tag ? `${tag} \xB7 ${item2.picks} picks \xB7 layer: ${item2.layerTag}` : `${tag} \xB7 ${item2.picks} picks`,
-          hidden: item2.hidden,
-          broken: item2.broken,
-          brokenReason: item2.brokenReason,
-          active: this.addonsActive?.section === "measurements" && this.addonsActive.tag === tag,
-          onActivate: item2.atomIndices.length > 0 ? () => {
-            this.addonsActive = { section: "measurements", tag };
-            this.refreshAddonsPanel();
-            this.focusTarget({ atom_indices: item2.atomIndices });
-          } : void 0,
-          onToggleVisibility: () => {
-            this.notify?.({ event: "interaction_context_action", action: "toggle_measurement_visibility", tag });
-          },
-          onDelete: () => {
-            this.notify?.({ event: "interaction_context_action", action: "delete_measurement", tag });
-          }
-        };
-      })
+      [...this.measurementSummaries].sort((left, right) => left.tag.localeCompare(right.tag)),
+      this.measurementSettings
     );
     this.groupPanel.setShapes(
       [...this.shapeSummaries].sort((left, right) => left.tag.localeCompare(right.tag)).map((item2) => {
@@ -159373,9 +159701,9 @@ var MolSysViewerController = class _MolSysViewerController {
       fontLink.href = "https://fonts.googleapis.com/css2?family=Varela+Round&display=swap";
       document.head.appendChild(fontLink);
     }
-    const card2 = document.createElement("div");
-    card2.setAttribute("data-molsysviewer-welcome-card", "true");
-    Object.assign(card2.style, {
+    const card3 = document.createElement("div");
+    card3.setAttribute("data-molsysviewer-welcome-card", "true");
+    Object.assign(card3.style, {
       position: "absolute",
       top: "50%",
       left: "50%",
@@ -159421,7 +159749,7 @@ var MolSysViewerController = class _MolSysViewerController {
           <circle cx="80" cy="30" r="24" fill="url(#rad-yellow)" />
           <circle cx="115" cy="45" r="24" fill="url(#rad-blue)" />
         </svg>`;
-    card2.appendChild(svgContainer.firstElementChild);
+    card3.appendChild(svgContainer.firstElementChild);
     const titleEl = document.createElement("div");
     Object.assign(titleEl.style, {
       fontSize: "20px",
@@ -159434,7 +159762,7 @@ var MolSysViewerController = class _MolSysViewerController {
       fontFamily: "'Varela Round', system-ui, sans-serif"
     });
     titleEl.textContent = "MolSysViewer";
-    card2.appendChild(titleEl);
+    card3.appendChild(titleEl);
     const descEl = document.createElement("div");
     Object.assign(descEl.style, {
       fontSize: "12px",
@@ -159446,7 +159774,7 @@ var MolSysViewerController = class _MolSysViewerController {
       // Clean body text
     });
     descEl.textContent = "An interactive, high-performance molecular visualization workbench integrated directly into your notebook.";
-    card2.appendChild(descEl);
+    card3.appendChild(descEl);
     const codeBox = document.createElement("div");
     Object.assign(codeBox.style, {
       background: "rgba(0, 0, 0, 0.3)",
@@ -159511,7 +159839,7 @@ var MolSysViewerController = class _MolSysViewerController {
     const line3 = document.createElement("span");
     line3.textContent = "view.show()";
     codeBox.appendChild(line3);
-    card2.appendChild(codeBox);
+    card3.appendChild(codeBox);
     const btn = document.createElement("button");
     Object.assign(btn.style, {
       background: "linear-gradient(135deg, #ce5027 0%, #ffcc00 100%)",
@@ -159542,12 +159870,12 @@ var MolSysViewerController = class _MolSysViewerController {
       btn.textContent = "Loading Crambin...";
       void this.handleMessage({ op: "load_pdb_id", pdb_id: "1CRN" });
     };
-    card2.appendChild(btn);
+    card3.appendChild(btn);
     if (!this.host.style.position || this.host.style.position === "static") {
       this.host.style.position = "relative";
     }
-    this.host.appendChild(card2);
-    this.welcomeCard = card2;
+    this.host.appendChild(card3);
+    this.welcomeCard = card3;
   }
   hideWelcomeCard() {
     if (this.welcomeCard) {
@@ -160612,8 +160940,8 @@ var HelpOverlay = class {
       zIndex: "40",
       pointerEvents: "auto"
     });
-    const card2 = document.createElement("div");
-    card2.className = "molsysviewer-help-card";
+    const card3 = document.createElement("div");
+    card3.className = "molsysviewer-help-card";
     const header2 = document.createElement("div");
     header2.className = "molsysviewer-help-header";
     const title = document.createElement("span");
@@ -160627,7 +160955,7 @@ var HelpOverlay = class {
     closeBtn.addEventListener("click", () => this.hide());
     header2.appendChild(title);
     header2.appendChild(closeBtn);
-    card2.appendChild(header2);
+    card3.appendChild(header2);
     const grid = document.createElement("div");
     grid.className = "molsysviewer-help-grid";
     grid.appendChild(makeSection("Mouse", [
@@ -160647,11 +160975,11 @@ var HelpOverlay = class {
       ["H", "Toggle this help"],
       ["Esc", "Close panel / cancel"]
     ]));
-    card2.appendChild(grid);
+    card3.appendChild(grid);
     this.root.addEventListener("pointerdown", (ev) => {
       if (ev.target === this.root) this.hide();
     });
-    this.root.appendChild(card2);
+    this.root.appendChild(card3);
     this.host.appendChild(this.root);
   }
   toggle() {

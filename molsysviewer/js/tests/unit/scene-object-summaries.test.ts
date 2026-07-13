@@ -9,6 +9,7 @@ test("scene-object summaries drive panels and visibility goes through Python", a
     const notifications: unknown[] = [];
     let annotationRows: any[] = [];
     let measurementRows: any[] = [];
+    let measurementSettings: any = null;
     let layerRows: any[] = [];
 
     controller.annotationSummaries = [];
@@ -32,7 +33,8 @@ test("scene-object summaries drive panels and visibility goes through Python", a
     };
     controller.groupPanel = {
         setAnnotations: (items: any[]) => { annotationRows = items; },
-        setMeasurements: (items: any[]) => { measurementRows = items; },
+        setMeasurements: (items: any[], settings: any) => { measurementRows = items; measurementSettings = settings; },
+        updateMeasurementSeries: (_payload: any) => {},
         setShapes: (_items: any[]) => {},
         setLayerObjects: (items: any[]) => { layerRows = items; },
         setScene: (_summary: unknown) => {},
@@ -74,11 +76,17 @@ test("scene-object summaries drive panels and visibility goes through Python", a
                 n_picks: 2,
                 value: null,
                 unit: null,
+                endpoint_labels: ["CA (ALA 1)", "CA (ALA 2)"],
+                endpoint_policy: "centroid",
                 atom_indices: [1],
                 hidden: false,
                 broken: true,
                 broken_reason: "Anchor contains no atoms.",
             }],
+            endpoint_policy_default: "representative_atom",
+            representative_atoms: { protein: "CB", nucleic: "P", lipid: "P", other: "" },
+            structure_index: 3,
+            system_loaded: true,
         });
     } finally {
         console.error = originalError;
@@ -90,6 +98,11 @@ test("scene-object summaries drive panels and visibility goes through Python", a
     assert.strictEqual(annotationRows[0].brokenReason, "Missing anchor atom indices: [3]");
     assert.strictEqual(measurementRows[0].broken, true);
     assert.strictEqual(measurementRows[0].brokenReason, "Anchor contains no atoms.");
+    assert.deepStrictEqual(measurementRows[0].endpointLabels, ["CA (ALA 1)", "CA (ALA 2)"]);
+    assert.strictEqual(measurementSettings.endpointPolicyDefault, "representative_atom");
+    assert.strictEqual(measurementSettings.representativeAtoms.protein, "CB");
+    assert.strictEqual(measurementSettings.structureIndex, 3);
+    assert.strictEqual(measurementSettings.systemLoaded, true);
     assert.deepStrictEqual(layerRows.map(item => item.tag), ["note", "distance"]);
 
     let localDispatches = 0;

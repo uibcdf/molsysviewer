@@ -70,7 +70,7 @@ async function run() {
     const items = page.locator('[data-molsysviewer-group-item="true"]');
     await items.first().click({ button: "right" });
     
-    const distanceAction = page.locator('button:text-is("Distance")');
+    const distanceAction = page.locator('[data-molsysviewer-context-menu="true"] button:text-is("Distance")');
     await distanceAction.click();
     
     // 3. Verify tool state: started
@@ -117,7 +117,7 @@ async function run() {
     
     // 6. Right click on first item again to start angle measurement
     await items.first().click({ button: "right" });
-    const angleAction = page.locator('button:text-is("Angle")');
+    const angleAction = page.locator('[data-molsysviewer-context-menu="true"] button:text-is("Angle")');
     await angleAction.click();
     
     // 7. Verify tool state: started (angle)
@@ -160,5 +160,5 @@ async function run() {
 
 run().catch(err => {
     console.error(err);
-    process.exitCode = 1;
+    process.exit(1);
 });

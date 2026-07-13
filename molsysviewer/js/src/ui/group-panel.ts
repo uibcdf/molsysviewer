@@ -20,6 +20,7 @@ import { RegionsPanel } from "./panels/regions-panel";
 import { SelectionPanel } from "./panels/selection-panel";
 import { SystemPanel } from "./panels/system-panel";
 import { WholePanel } from "./panels/whole-panel";
+import { MeasuresPanel, MeasurementSeries, MeasurementSettings, MeasurementSummary } from "./panels/measures-panel";
 import { PanelShell } from "./panel-shell";
 import { FloatingPanelShell } from "./floating-panel-shell";
 
@@ -157,7 +158,7 @@ export class GroupPanel {
 
     // Migrated subpanels (panel-per-module architecture)
     private readonly shapesPanel: InspectorListPanel;
-    private readonly measuresPanel: InspectorListPanel;
+    private readonly measuresPanel: MeasuresPanel;
     private readonly annotationsPanel: InspectorListPanel;
     private readonly wholePanel: WholePanel;
     private readonly layersPanel: LayersPanel;
@@ -380,11 +381,7 @@ export class GroupPanel {
         this.regionsPanel = new RegionsPanel(this.makePanelContext("regions"), this.onFocusRegion);
         this.selectionPanel = new SelectionPanel(this.makePanelContext("selection"), this.onSelect, this.onActivateSavedSelection, (tag) => this.regionsPanel.hasRegion(tag));
         this.measuresSection = this.createSection("measures");
-        this.measuresPanel = new InspectorListPanel("measures", this.makePanelContext("measures"), {
-            header: "Measurements (Distances)",
-            subtitleFallback: "Distance line",
-            emptyText: "No measurements yet.",
-        });
+        this.measuresPanel = new MeasuresPanel(this.makePanelContext("measures"));
         this.annotationsSection = this.createSection("annotations");
         this.annotationsPanel = new InspectorListPanel("annotations", this.makePanelContext("annotations"), {
             header: "Annotations (Labels)",
@@ -728,6 +725,7 @@ export class GroupPanel {
         this.systemPanel.updateSelection(selection);
         this.selectionPanel.updateSelection(selection);
         this.regionsPanel.setCurrentSelection(selection);
+        this.measuresPanel.setCurrentSelection(selection);
     }
 
     updateSelectionHistoryState(state: { canUndo: boolean; canRedo: boolean }): void {
@@ -791,8 +789,12 @@ export class GroupPanel {
         this.annotationsPanel.setItems(items);
     }
 
-    setMeasurements(items: NavigateItem[]): void {
-        this.measuresPanel.setItems(items);
+    setMeasurements(items: MeasurementSummary[], settings: MeasurementSettings): void {
+        this.measuresPanel.setMeasurements(items, settings);
+    }
+
+    updateMeasurementSeries(payload: MeasurementSeries): void {
+        this.measuresPanel.updateSeries(payload);
     }
 
     setScene(state: SceneState): void {

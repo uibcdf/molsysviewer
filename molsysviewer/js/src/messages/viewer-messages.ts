@@ -531,10 +531,28 @@ export type SetMeasurementSummariesMessage = {
         atom_indices?: number[];
         value?: number | null;
         unit?: string | null;
+        endpoint_labels?: string[];
+        endpoint_policy?: string;
         hidden?: boolean;
         broken?: boolean;
         broken_reason?: string | null;
     }>;
+    endpoint_policy_default?: "atom" | "centroid" | "representative_atom";
+    representative_atoms?: Record<string, string>;
+    active_selection_count?: number;
+    structure_index?: number;
+    system_loaded?: boolean;
+};
+
+export type MeasurementSeriesMessage = {
+    op: "measurement_series";
+    tag: string;
+    request_id?: number | null;
+    unit?: string;
+    n_frames?: number;
+    sparkline?: number[];
+    sparkline_indices?: number[];
+    series_index?: number | null;
 };
 
 export type SetShapeSummariesMessage = {
@@ -886,6 +904,7 @@ export type KnownViewerMessage =
     SetWholeSummaryMessage |
     SetAnnotationSummariesMessage |
     SetMeasurementSummariesMessage |
+    MeasurementSeriesMessage |
     SetShapeSummariesMessage |
     SetDynamicRegionAtomsMessage |
     SetRegionOrderMessage |

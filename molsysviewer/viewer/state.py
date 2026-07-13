@@ -141,6 +141,7 @@ class StateMixin:
             "version": STATE_VERSION,
             "annotations": annotations,
             "measurements": measurements,
+            "measurement_settings": self.measurements.settings(skip_digestion=True),
             "shapes": shapes,
             "layers": layers,
             "selections": self.selections.records(),
@@ -206,6 +207,17 @@ class StateMixin:
                 on_conflict=on_conflict,
             )
             self._restore_whole_state(state.get("whole"))
+            measurement_settings = state.get("measurement_settings")
+            if isinstance(measurement_settings, dict):
+                policy = measurement_settings.get("endpoint_policy_default")
+                if isinstance(policy, str):
+                    self.measurements.set_endpoint_policy(policy, skip_digestion=True)
+                representative_atoms = measurement_settings.get("representative_atoms")
+                if isinstance(representative_atoms, dict):
+                    for target, atom_name in representative_atoms.items():
+                        self.measurements.set_representative_atom(
+                            str(target), str(atom_name), skip_digestion=True
+                        )
             if self._molsys is not None:
                 for record in ordered_records:
                     tag = self._import_tag("region", str(record.get("tag") or ""), on_conflict)
