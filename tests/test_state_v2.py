@@ -482,3 +482,17 @@ def test_broken_measurement_reports_no_value_not_a_stale_one():
     restored = target.measurements.info("far")[0]
     assert restored["broken"] is True
     assert restored["value"] is None, "the stale value from the other structure survived"
+
+
+def test_a_restored_measurement_is_usable_not_merely_present():
+    source = _mute(demo["dialanine"])
+    source.measurements.add_distance([0], [10], tag="d1")
+    original = source.measurements.info("d1")[0]
+    document = source.export_state()
+
+    target = _mute(demo["dialanine"])
+    target.import_state(document)
+
+    restored = target.measurements.info("d1")[0]
+    assert restored["broken"] is False
+    assert restored["value"] == original["value"]

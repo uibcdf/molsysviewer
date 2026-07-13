@@ -482,10 +482,7 @@ class StateMixin:
         return candidate
 
     def _missing_anchor_indices(self, indices: list) -> list[int]:
-        try:
-            n_atoms = int(self.get_n_atoms()) if self._molsys is not None else 0
-        except Exception:
-            n_atoms = 0
+        n_atoms = int(self._molsys.get_n_atoms()) if self._molsys is not None else 0
         return sorted({int(index) for index in indices if int(index) < 0 or int(index) >= n_atoms})
 
     @staticmethod
