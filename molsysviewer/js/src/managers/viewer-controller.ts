@@ -37,6 +37,7 @@ import { MsvPerAtomColorThemeProvider } from "../themes/per-atom-color";
 import { MsvPhysicochemicalColorThemeProvider } from "../themes/physicochemical-color";
 import { HoverTooltip } from "../ui/hover-tooltip";
 import type { MeasurementSeries, MeasurementSettings, MeasurementSummary } from "../ui/panels/measures-panel";
+import type { AnnotationSettings, AnnotationSummary } from "../ui/panels/annotations-panel";
 type SavedSelectionRecord = SavedSelectionSummary & { atom_indices: number[] };
 
 type InteractionKind = "hover" | "click" | "context";
@@ -554,7 +555,8 @@ export class MolSysViewerController {
     private readonly hoverDebounceMs = 60;
     private lastPrimaryGroupClick: { key: string; time: number } | null = null;
     private savedSelections: SavedSelectionRecord[] = [];
-    private annotationSummaries: Array<{ kind: string; tag: string; layerTag?: string; text: string; hidden: boolean; atomIndices: number[]; broken: boolean; brokenReason?: string }> = [];
+    private annotationSummaries: AnnotationSummary[] = [];
+    private annotationSettings: AnnotationSettings = { systemLoaded: false, activeSelectionCount: 0 };
     private measurementSummaries: MeasurementSummary[] = [];
     private measurementSettings: MeasurementSettings = {
         endpointPolicyDefault: "centroid",
@@ -2156,11 +2158,28 @@ export class MolSysViewerController {
                         tag: item.tag,
                         layerTag: typeof item.layer_tag === "string" ? item.layer_tag : undefined,
                         text: typeof item.text === "string" ? item.text : item.tag,
+                        style: item.style && typeof item.style === "object" ? {
+                            ...(typeof item.style.color === "string" ? { color: item.style.color } : {}),
+                            ...(typeof item.style.size_em === "number" ? { size_em: item.style.size_em } : {}),
+                            ...(typeof item.style.background === "boolean" ? { background: item.style.background } : {}),
+                            ...(typeof item.style.background_opacity === "number" ? { background_opacity: item.style.background_opacity } : {}),
+                        } : {},
                         hidden: !!item.hidden,
+                        nAtoms: typeof item.n_atoms === "number" ? item.n_atoms : 0,
                         atomIndices: Array.isArray(item.atom_indices) ? item.atom_indices.filter((value: unknown): value is number => typeof value === "number") : [],
+                        anchor: {
+                            type: typeof item.anchor?.type === "string" ? item.anchor.type : "atoms",
+                            indices: Array.isArray(item.anchor?.indices) ? item.anchor.indices.filter((value: unknown): value is number => typeof value === "number") : [],
+                        },
                         broken: !!item.broken,
                         brokenReason: typeof item.broken_reason === "string" ? item.broken_reason : undefined,
                     }));
+                    this.annotationSettings = {
+                        systemLoaded: !!(msg as any).system_loaded,
+                        activeSelectionCount: typeof (msg as any).active_selection_count === "number"
+                            ? (msg as any).active_selection_count
+                            : 0,
+                    };
                     break;
                 }
                 case "set_measurement_summaries": {
@@ -2749,31 +2768,8 @@ export class MolSysViewerController {
 
     private refreshAddonsPanel(refreshChrome = true): void {
         this.groupPanel.setAnnotations(
-            [...this.annotationSummaries]
-                .sort((left, right) => left.tag.localeCompare(right.tag))
-                .map((item) => {
-                    const tag = item.tag;
-                    return {
-                    key: tag,
-                    title: item.text,
-                    subtitle: item.layerTag && item.layerTag !== tag ? `${tag} · layer: ${item.layerTag}` : tag,
-                    hidden: item.hidden,
-                    broken: item.broken,
-                    brokenReason: item.brokenReason,
-                    active: this.addonsActive?.section === "annotations" && this.addonsActive.tag === tag,
-                    onActivate: item.atomIndices.length > 0 ? () => {
-                        this.addonsActive = { section: "annotations", tag };
-                        this.refreshAddonsPanel();
-                        this.focusTarget({ atom_indices: item.atomIndices });
-                    } : undefined,
-                    onToggleVisibility: () => {
-                        this.notify?.({ event: "interaction_context_action", action: "toggle_annotation_visibility", tag });
-                    },
-                    onDelete: () => {
-                        this.notify?.({ event: "interaction_context_action", action: "delete_annotation", tag });
-                    },
-                    };
-                })
+            [...this.annotationSummaries].sort((left, right) => left.tag.localeCompare(right.tag)),
+            this.annotationSettings,
         );
         this.groupPanel.setMeasurements(
             [...this.measurementSummaries].sort((left, right) => left.tag.localeCompare(right.tag)),

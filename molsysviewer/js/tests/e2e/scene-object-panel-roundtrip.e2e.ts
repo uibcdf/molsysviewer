@@ -45,8 +45,8 @@ async function run() {
 
         await page.locator('[data-molsysviewer-group-panel-toggle="true"]').click();
         await page.locator('[data-molsysviewer-group-panel-tab="annotations"]').click();
-        const row = page.locator('[data-molsysviewer-scene-object-tag="note"]');
-        await row.locator('button[title="Hide"]').click();
+        const row = page.locator('[data-molsysviewer-annotation-tag="note"]');
+        await row.locator('[data-molsysviewer-annotation-visibility="note"]').click();
         const action = await page.evaluate(() =>
             [...((window as any).__messages || [])].reverse().find((message: any) =>
                 message.event === "interaction_context_action"
@@ -73,7 +73,7 @@ async function run() {
             for (const message of messages) await controller.handleMessage(message);
             return {
                 refs: (window as any).Harness.inspectTaggedRefs(controller, "annotation", "note"),
-                eyeTitle: document.querySelector('[data-molsysviewer-scene-object-tag="note"] button[title="Show"]')?.getAttribute("title"),
+                eyeTitle: document.querySelector('[data-molsysviewer-annotation-visibility="note"]')?.getAttribute("title"),
             };
         }, backend.messages);
         assert.ok(rendered.refs.length > 0, "annotation registered no Mol* nodes");
@@ -81,7 +81,7 @@ async function run() {
             rendered.refs.every((item: any) => !item.exists || item.hidden),
             "Mol* annotation nodes stayed renderable",
         );
-        assert.strictEqual(rendered.eyeTitle, "Show", "panel did not consume Python's hidden summary");
+        assert.strictEqual(rendered.eyeTitle, "Show annotation", "panel did not consume Python's hidden summary");
 
         console.log("[E2E scene-object-panel-roundtrip] passed");
     } finally {

@@ -69,6 +69,12 @@ def test_scene_objects_and_user_layer_round_trip_as_usable_python_model():
         atom_indices=[0, 1],
         tag="note1",
         layer_tag="analysis",
+        label_style={
+            "color": "#123456",
+            "size_em": 1.4,
+            "background": False,
+            "background_opacity": 0.35,
+        },
     )
     measurement = source.measurements.add(
         "distance",
@@ -98,6 +104,12 @@ def test_scene_objects_and_user_layer_round_trip_as_usable_python_model():
     assert target.shapes.get("site1") is not None
     assert target.measurements.count() == len(target.measurements.tags()) == 1
     assert target.annotations.info("note1")["visible"] is False
+    assert target.annotations.info("note1")["style"] == {
+        "color": "#123456",
+        "size_em": 1.4,
+        "background": False,
+        "background_opacity": 0.35,
+    }
     assert target.measurements.info("distance1")[0]["visible"] is False
     assert target.shapes.info("site1")[0]["visible"] is False
     assert target.shapes.records()[0]["options"]["color"] == 0xFF8800

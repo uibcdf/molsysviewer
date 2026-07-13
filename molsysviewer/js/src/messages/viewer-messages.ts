@@ -514,11 +514,16 @@ export type SetAnnotationSummariesMessage = {
         tag: string;
         layer_tag?: string | null;
         text?: string | null;
+        style?: LabelStyle | null;
+        n_atoms?: number;
         atom_indices?: number[];
+        anchor?: { type?: string; indices?: number[] };
         hidden?: boolean;
         broken?: boolean;
         broken_reason?: string | null;
     }>;
+    active_selection_count?: number;
+    system_loaded?: boolean;
 };
 
 export type SetMeasurementSummariesMessage = {

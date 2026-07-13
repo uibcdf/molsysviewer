@@ -24,6 +24,18 @@ def add_label_from_selection(view: Any, content: Mapping[str, Any]) -> None:
     )
 
 
+def create_annotation(view: Any, content: Mapping[str, Any]) -> None:
+    text = content.get("text")
+    if not isinstance(text, str) or not text.strip():
+        raise ValueError("create_annotation requires non-empty text.")
+    raw_style = content.get("label_style")
+    view.annotations.add_label_from_active_selection(
+        text=text.strip(),
+        label_style=dict(raw_style) if isinstance(raw_style, dict) else None,
+        skip_digestion=True,
+    )
+
+
 def delete_annotation(view: Any, content: Mapping[str, Any]) -> None:
     view.annotations.delete(_tag(content, "delete_annotation"), skip_digestion=True)
 
@@ -37,6 +49,66 @@ def toggle_annotation_visibility(view: Any, content: Mapping[str, Any]) -> None:
         annotation.hide(skip_digestion=True)
     else:
         annotation.show(skip_digestion=True)
+
+
+def set_annotation_text(view: Any, content: Mapping[str, Any]) -> None:
+    text = content.get("text")
+    if not isinstance(text, str) or not text.strip():
+        raise ValueError("set_annotation_text requires non-empty text.")
+    view.annotations.set_text(
+        _tag(content, "set_annotation_text"), text.strip(), skip_digestion=True
+    )
+
+
+def rename_annotation(view: Any, content: Mapping[str, Any]) -> None:
+    new_tag = content.get("new_tag")
+    if not isinstance(new_tag, str) or not new_tag.strip():
+        raise ValueError("rename_annotation requires non-empty new_tag.")
+    view.annotations.set_tag(
+        _tag(content, "rename_annotation"), new_tag.strip(), skip_digestion=True
+    )
+
+
+def set_annotation_layer(view: Any, content: Mapping[str, Any]) -> None:
+    tag = _tag(content, "set_annotation_layer")
+    layer = content.get("layer")
+    view.annotations.set_layer_tag(
+        tag,
+        tag if layer is None or not str(layer).strip() else str(layer).strip(),
+        skip_digestion=True,
+    )
+
+
+def reanchor_annotation(view: Any, content: Mapping[str, Any]) -> None:
+    atom_indices = list(view.active_selection.atom_indices)
+    if not atom_indices:
+        raise ValueError("reanchor_annotation requires a non-empty active selection.")
+    view.annotations.set_anchor(
+        _tag(content, "reanchor_annotation"),
+        atom_indices=atom_indices,
+        skip_digestion=True,
+    )
+
+
+def set_annotation_style(view: Any, content: Mapping[str, Any]) -> None:
+    style = content.get("style")
+    if not isinstance(style, Mapping):
+        raise ValueError("set_annotation_style requires a style mapping.")
+    view.annotations.set_style(
+        _tag(content, "set_annotation_style"), dict(style), skip_digestion=True
+    )
+
+
+def show_all_annotations(view: Any, _content: Mapping[str, Any]) -> None:
+    view.annotations.show_all(skip_digestion=True)
+
+
+def hide_all_annotations(view: Any, _content: Mapping[str, Any]) -> None:
+    view.annotations.hide_all(skip_digestion=True)
+
+
+def clear_annotations(view: Any, _content: Mapping[str, Any]) -> None:
+    view.annotations.clear(skip_digestion=True)
 
 
 def delete_shape(view: Any, content: Mapping[str, Any]) -> None:
@@ -163,8 +235,17 @@ def request_measurement_series(view: Any, content: Mapping[str, Any]) -> None:
 
 HANDLERS = {
     "add_label_from_selection": add_label_from_selection,
+    "create_annotation": create_annotation,
     "delete_annotation": delete_annotation,
     "toggle_annotation_visibility": toggle_annotation_visibility,
+    "set_annotation_text": set_annotation_text,
+    "rename_annotation": rename_annotation,
+    "set_annotation_layer": set_annotation_layer,
+    "reanchor_annotation": reanchor_annotation,
+    "set_annotation_style": set_annotation_style,
+    "show_all_annotations": show_all_annotations,
+    "hide_all_annotations": hide_all_annotations,
+    "clear_annotations": clear_annotations,
     "delete_shape": delete_shape,
     "toggle_shape_visibility": toggle_shape_visibility,
     "delete_measurement": delete_measurement,

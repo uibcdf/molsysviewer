@@ -326,6 +326,22 @@ class AnnotationsManager:
         return layer
 
     @records_scene_history
+    @signal(tags=["annotation", "visibility"])
+    @digest()
+    def show_all(self, skip_digestion: bool = False) -> None:
+        """Show every annotation as one scene-history operation."""
+        for tag in self.tags(skip_digestion=True):
+            self._require_annotation_layer(tag).show(skip_digestion=True)
+
+    @records_scene_history
+    @signal(tags=["annotation", "visibility"])
+    @digest()
+    def hide_all(self, skip_digestion: bool = False) -> None:
+        """Hide every annotation as one scene-history operation."""
+        for tag in self.tags(skip_digestion=True):
+            self._require_annotation_layer(tag).hide(skip_digestion=True)
+
+    @records_scene_history
     @signal(tags=["annotation"])
     @digest()
     def delete(self, tag: str, skip_digestion: bool = False) -> None:

@@ -37,7 +37,13 @@ class SceneRegistryMixin:
                 "tag": record.get("tag"),
                 "layer_tag": record.get("layer_tag"),
                 "text": record.get("text"),
+                "style": dict(record.get("style") or {}),
+                "n_atoms": int(record.get("n_atoms") or 0),
                 "atom_indices": list(record.get("atom_indices") or []),
+                "anchor": {
+                    "type": "atoms",
+                    "indices": list(record.get("atom_indices") or []),
+                },
                 "hidden": not bool(record.get("visible")),
                 "broken": bool(record.get("broken")),
                 "broken_reason": record.get("broken_reason"),
@@ -154,6 +160,8 @@ class SceneRegistryMixin:
         self._send_runtime_only({
             "op": "set_annotation_summaries",
             "annotations": self._annotation_summary_records(),
+            "active_selection_count": len(self.active_selection.atom_indices),
+            "system_loaded": self._molsys is not None,
         })
 
     def _sync_measurement_summaries_runtime(self) -> None:
