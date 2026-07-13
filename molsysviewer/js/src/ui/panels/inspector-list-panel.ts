@@ -53,13 +53,16 @@ export class InspectorListPanel extends BasePanel {
 
         if (this.items.length > 0) {
             for (const item of this.items) {
-                list.appendChild(makeRowElement(
+                const row = makeRowElement(
                     item.title,
                     item.subtitle || this.config.subtitleFallback,
                     item.onActivate,
                     item.onDelete,
                     { hidden: item.hidden, onToggleVisibility: item.onToggleVisibility },
-                ));
+                );
+                row.setAttribute("data-molsysviewer-scene-object-kind", this.key);
+                row.setAttribute("data-molsysviewer-scene-object-tag", item.key ?? item.title);
+                list.appendChild(row);
             }
         } else {
             const empty = document.createElement("div");

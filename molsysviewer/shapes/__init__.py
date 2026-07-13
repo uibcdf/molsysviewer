@@ -180,6 +180,18 @@ class ShapesManager:
                 return str(v)
 
         results = []
+        def _atom_indices(options: dict) -> list[int]:
+            indices: set[int] = set()
+            for key in ("atom_indices", "atom_pairs", "atom_triplets", "atom_quads"):
+                stack = [options.get(key)]
+                while stack:
+                    value = stack.pop()
+                    if isinstance(value, int):
+                        indices.add(value)
+                    elif isinstance(value, (list, tuple)):
+                        stack.extend(value)
+            return sorted(indices)
+
         for msg in getattr(self._view, "_shape_history", []):
             op = msg.get("op", "")
             options = msg.get("options") or {}
@@ -212,6 +224,7 @@ class ShapesManager:
                 "layer_tag": options.get("layer_tag"),
                 "color": _hex(options.get("color")),
                 "visible": False if layer is None else not getattr(layer, "_hidden", False),
+                "atom_indices": _atom_indices(options),
             }
 
             from .. import pyunitwizard as puw

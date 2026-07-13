@@ -4,6 +4,140 @@ from ..layers import Layer, SceneObject
 
 
 class SceneRegistryMixin:
+    _ANNOTATION_SUMMARY_OPS = {"add_label", "update_label"}
+    _MEASUREMENT_SUMMARY_OPS = {
+        "add_distance_measurement",
+        "add_angle_measurement",
+        "add_dihedral_measurement",
+        "set_measurement_settings",
+    }
+    _SHAPE_SUMMARY_OPS = {
+        "add_sphere",
+        "add_network_links",
+        "add_alpha_sphere_set",
+        "add_pocket_surface",
+        "add_pocket_blob",
+        "add_scalar_isosurface",
+        "add_channel_tube",
+        "add_tetrahedra",
+        "add_triangle_faces",
+        "add_anisotropy_ellipsoids",
+        "add_displacement_vectors",
+        "add_pharmacophore_features",
+        "add_interaction_sites",
+        "add_hbonds",
+        "clear_shapes_by_tag",
+    }
+
+    def _annotation_summary_records(self) -> list[dict]:
+        records = self.annotations.info(skip_digestion=True)
+        return [
+            {
+                "kind": record.get("kind"),
+                "tag": record.get("tag"),
+                "layer_tag": record.get("layer_tag"),
+                "text": record.get("text"),
+                "atom_indices": list(record.get("atom_indices") or []),
+                "hidden": not bool(record.get("visible")),
+                "broken": bool(record.get("broken")),
+                "broken_reason": record.get("broken_reason"),
+            }
+            for record in records
+        ]
+
+    def _measurement_summary_records(self) -> list[dict]:
+        from .. import pyunitwizard as puw
+
+        records = []
+        for record in self.measurements.info():
+            value = record.get("value")
+            atom_indices = sorted({
+                int(index)
+                for pick in record.get("picks_atom_indices") or []
+                for index in pick
+            })
+            records.append(
+                {
+                    "kind": record.get("kind"),
+                    "tag": record.get("tag"),
+                    "layer_tag": record.get("layer_tag"),
+                    "n_picks": int(record.get("n_picks") or 0),
+                    "atom_indices": atom_indices,
+                    "value": None if value is None else float(puw.get_value(value)),
+                    "unit": None if value is None else str(puw.get_unit(value)),
+                    "hidden": not bool(record.get("visible")),
+                    "broken": bool(record.get("broken")),
+                    "broken_reason": record.get("broken_reason"),
+                }
+            )
+        return records
+
+    def _shape_summary_records(self) -> list[dict]:
+        display = {
+            "link": ("Links", "links"),
+            "triangle-faces": ("Triangle Faces", "triangle_faces"),
+            "channel-tube": ("Channel Tube", "channel_tube"),
+            "anisotropy-ellipsoids": ("Anisotropy Ellipsoids", "anisotropy_ellipsoids"),
+            "displacement-vectors": ("Displacement Vectors", "displacement_vectors"),
+            "pocket-blob": ("Pocket Blob", "pocket_blob"),
+            "scalar-isosurface": ("Pocket Blob", "pocket_blob"),
+            "pocket-surface": ("Pocket Surface", "pocket_surface"),
+        }
+
+        def labels(kind: str) -> tuple[str, str]:
+            return display.get(
+                kind,
+                (kind.replace("-", " ").replace("_", " ").title(), kind.replace("-", "_")),
+            )
+
+        records = []
+        for record in self.shapes.info(skip_digestion=True):
+            kind = str(record.get("kind") or "shape")
+            title, subtitle = labels(kind)
+            records.append({
+                "kind": record.get("kind"),
+                "tag": record.get("tag"),
+                "layer_tag": record.get("layer_tag"),
+                "title": title,
+                "subtitle": subtitle,
+                "atom_indices": list(record.get("atom_indices") or []),
+                "hidden": not bool(record.get("visible")),
+            })
+        return records
+
+    def _sync_annotation_summaries_runtime(self) -> None:
+        self._send_runtime_only({
+            "op": "set_annotation_summaries",
+            "annotations": self._annotation_summary_records(),
+        })
+
+    def _sync_measurement_summaries_runtime(self) -> None:
+        self._send_runtime_only({
+            "op": "set_measurement_summaries",
+            "measurements": self._measurement_summary_records(),
+        })
+
+    def _sync_shape_summaries_runtime(self) -> None:
+        self._send_runtime_only({
+            "op": "set_shape_summaries",
+            "shapes": self._shape_summary_records(),
+        })
+
+    def _sync_scene_object_summaries_for_message(self, msg: dict) -> None:
+        op = msg.get("op")
+        kind = msg.get("kind")
+        if op in {"clear_all", "clear_scene"} or kind == "layer":
+            self._sync_annotation_summaries_runtime()
+            self._sync_measurement_summaries_runtime()
+            self._sync_shape_summaries_runtime()
+            return
+        if kind == "annotation" or op in self._ANNOTATION_SUMMARY_OPS:
+            self._sync_annotation_summaries_runtime()
+        elif kind == "measurement" or op in self._MEASUREMENT_SUMMARY_OPS:
+            self._sync_measurement_summaries_runtime()
+        elif kind == "shape" or op in self._SHAPE_SUMMARY_OPS:
+            self._sync_shape_summaries_runtime()
+
     @staticmethod
     def _scene_object_key(kind: str, tag: str) -> tuple[str, str]:
         return str(kind), str(tag)
@@ -36,10 +170,12 @@ class SceneRegistryMixin:
             layer = self._layers.get(layer_tag)
             if isinstance(layer, Layer) and len(layer.members) == 0 and layer.provenance == "auto":
                 self._layers.pop(layer_tag, None)
+        self._sync_scene_object_summaries_for_message({"op": "delete_layer", "kind": kind})
 
     def _reregister_scene_object(self, old_tag: str, new_tag: str, obj: SceneObject) -> None:
         self._scene_objects.pop(self._scene_object_key(obj.kind, old_tag), None)
         self._scene_objects[self._scene_object_key(obj.kind, new_tag)] = obj
+        self._sync_scene_object_summaries_for_message({"op": "set_layer_tag", "kind": obj.kind})
 
     def _sync_layer_group_hidden_state(self, layer_tag: str) -> None:
         layer = self._layers.get(layer_tag)
@@ -94,6 +230,7 @@ class SceneRegistryMixin:
             else:
                 self._sync_layer_group_hidden_state(old_layer_tag)
         self._sync_layer_group_hidden_state(text)
+        self._sync_scene_object_summaries_for_message({"op": "set_layer_tag", "kind": obj.kind})
 
     def _cleanup_empty_layer_group(self, layer_tag: str) -> None:
         """Drop a grouping layer left empty (e.g. after a region moved out or

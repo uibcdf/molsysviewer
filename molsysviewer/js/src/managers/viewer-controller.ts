@@ -47,6 +47,9 @@ type PanelRefreshTarget = "navigate" | "addons";
 const PANEL_REFRESH_BY_OPERATION: Partial<Record<KnownViewerMessage["op"], readonly PanelRefreshTarget[]>> = {
     set_region_summaries: ["navigate"],
     set_whole_summary: ["navigate"],
+    set_annotation_summaries: ["addons"],
+    set_measurement_summaries: ["addons"],
+    set_shape_summaries: ["addons"],
     save_selection: ["navigate"],
     set_selection_tag: ["navigate"],
     delete_selection: ["navigate"],
@@ -193,15 +196,6 @@ type ContextInteractionPayload =
         page_x?: number;
         page_y?: number;
     };
-
-/** Flatten a raw payload value (an array of index arrays) into a deduped number[]. */
-function flattenToNumberIndices(source: unknown): number[] {
-    const arr: unknown[] = Array.isArray(source) ? source : [];
-    return Array.from(new Set(
-        arr.flatMap((item: unknown) => (Array.isArray(item) ? item : []))
-            .filter((value: unknown): value is number => typeof value === "number")
-    ));
-}
 
 function normalizeToElementLoci(loci: any): any {
     if (StructureElement.Loci.is(loci)) return loci;
@@ -559,9 +553,9 @@ export class MolSysViewerController {
     private readonly hoverDebounceMs = 60;
     private lastPrimaryGroupClick: { key: string; time: number } | null = null;
     private savedSelections: SavedSelectionRecord[] = [];
-    private readonly addonsAnnotations = new Map<string, { text: string; layerTag?: string; hidden: boolean; atomIndices: number[] }>();
-    private readonly addonsMeasurements = new Map<string, { kind: string; picks: number; layerTag?: string; hidden: boolean; atomIndices: number[] }>();
-    private readonly addonsShapes = new Map<string, { title: string; subtitle?: string; layerTag?: string; hidden: boolean; atomIndices: number[] }>();
+    private annotationSummaries: Array<{ kind: string; tag: string; layerTag?: string; text: string; hidden: boolean; atomIndices: number[] }> = [];
+    private measurementSummaries: Array<{ kind: string; tag: string; layerTag?: string; picks: number; hidden: boolean; atomIndices: number[] }> = [];
+    private shapeSummaries: Array<{ kind: string; tag: string; layerTag?: string; title: string; subtitle?: string; hidden: boolean; atomIndices: number[] }> = [];
     private dynamicRegionEvaluationInFlight: number | null = null;
     private dynamicRegionEvaluationPendingFrame: number | null = null;
     private addonsScene: { styleTag?: string; preset?: string; figurePreset?: string; figureScale?: number; figureVariants?: string[] } | null = null;
@@ -2140,6 +2134,43 @@ export class MolSysViewerController {
                 case "set_regions_visibility": await this.state.setRegionsVisibility(msg as any); break;
                 case "set_region_summaries": this.state.setRegionSummaries(msg as any); break;
                 case "set_whole_summary": this.state.setWholeSummary(msg as any); break;
+                case "set_annotation_summaries": {
+                    const records = Array.isArray((msg as any).annotations) ? (msg as any).annotations : [];
+                    this.annotationSummaries = records.filter((item: any) => typeof item?.tag === "string").map((item: any) => ({
+                        kind: typeof item.kind === "string" ? item.kind : "annotation",
+                        tag: item.tag,
+                        layerTag: typeof item.layer_tag === "string" ? item.layer_tag : undefined,
+                        text: typeof item.text === "string" ? item.text : item.tag,
+                        hidden: !!item.hidden,
+                        atomIndices: Array.isArray(item.atom_indices) ? item.atom_indices.filter((value: unknown): value is number => typeof value === "number") : [],
+                    }));
+                    break;
+                }
+                case "set_measurement_summaries": {
+                    const records = Array.isArray((msg as any).measurements) ? (msg as any).measurements : [];
+                    this.measurementSummaries = records.filter((item: any) => typeof item?.tag === "string").map((item: any) => ({
+                        kind: typeof item.kind === "string" ? item.kind : "measurement",
+                        tag: item.tag,
+                        layerTag: typeof item.layer_tag === "string" ? item.layer_tag : undefined,
+                        picks: typeof item.n_picks === "number" ? item.n_picks : 0,
+                        hidden: !!item.hidden,
+                        atomIndices: Array.isArray(item.atom_indices) ? item.atom_indices.filter((value: unknown): value is number => typeof value === "number") : [],
+                    }));
+                    break;
+                }
+                case "set_shape_summaries": {
+                    const records = Array.isArray((msg as any).shapes) ? (msg as any).shapes : [];
+                    this.shapeSummaries = records.filter((item: any) => typeof item?.tag === "string").map((item: any) => ({
+                        kind: typeof item.kind === "string" ? item.kind : "shape",
+                        tag: item.tag,
+                        layerTag: typeof item.layer_tag === "string" ? item.layer_tag : undefined,
+                        title: typeof item.title === "string" ? item.title : item.tag,
+                        subtitle: typeof item.subtitle === "string" ? item.subtitle : undefined,
+                        hidden: !!item.hidden,
+                        atomIndices: Array.isArray(item.atom_indices) ? item.atom_indices.filter((value: unknown): value is number => typeof value === "number") : [],
+                    }));
+                    break;
+                }
                 case "set_dynamic_region_atoms":
                     await this.state.setDynamicRegionAtoms(msg as any);
                     this.handleDynamicRegionEvaluationResponse((msg as any).frame);
@@ -2572,27 +2603,7 @@ export class MolSysViewerController {
         const op = (msg as any)?.op;
         if (typeof op !== "string") return;
 
-        const upsertWorkbenchShape = (
-            tag: string,
-            title: string,
-            subtitle: string | undefined,
-            layerTag: string | undefined,
-            atomIndices: number[],
-        ) => {
-            const existing = this.addonsShapes.get(tag);
-            this.addonsShapes.set(tag, {
-                title: existing?.title ?? title,
-                subtitle: existing?.subtitle ?? subtitle,
-                layerTag,
-                hidden: existing?.hidden ?? false,
-                atomIndices: atomIndices.length > 0 ? atomIndices : (existing?.atomIndices ?? []),
-            });
-        };
-
         if (op === "clear_all") {
-            this.addonsAnnotations.clear();
-            this.addonsMeasurements.clear();
-            this.addonsShapes.clear();
             this.addonsScene = null;
             this.addonsActive = null;
             this.addonsContext = null;
@@ -2601,8 +2612,6 @@ export class MolSysViewerController {
 
         if (op === "clear_scene") {
             const options = (msg as any).options ?? {};
-            if (options.labels) this.addonsAnnotations.clear();
-            if (options.shapes) this.addonsShapes.clear();
             if (options.styles) this.addonsScene = null;
             if (this.addonsActive?.section === "annotations" && options.labels) this.addonsActive = null;
             if (this.addonsActive?.section === "shapes" && options.shapes) this.addonsActive = null;
@@ -2611,210 +2620,9 @@ export class MolSysViewerController {
             return;
         }
 
-        if (op === "add_label") {
-            const tag = (msg as any).tag ?? (msg as any).options?.tag;
-            const text = (msg as any).options?.text;
-            const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
-            const atomIndices = Array.isArray((msg as any).options?.atom_indices)
-                ? (msg as any).options.atom_indices.filter((value: unknown): value is number => typeof value === "number")
-                : [];
-            if (typeof tag === "string" && typeof text === "string" && text.trim()) {
-                this.addonsAnnotations.set(tag, { text: text.trim(), layerTag, hidden: false, atomIndices });
-            }
-            return;
-        }
-
-        if (op === "update_label") {
-            const tag = (msg as any).tag ?? (msg as any).options?.tag;
-            const existing = typeof tag === "string" ? this.addonsAnnotations.get(tag) : undefined;
-            if (!existing || typeof tag !== "string") return;
-            const nextText = (msg as any).options?.text;
-            const nextAtomIndices = Array.isArray((msg as any).options?.atom_indices)
-                ? (msg as any).options.atom_indices.filter((value: unknown): value is number => typeof value === "number")
-                : existing.atomIndices;
-            this.addonsAnnotations.set(tag, {
-                text: typeof nextText === "string" && nextText.trim() ? nextText.trim() : existing.text,
-                layerTag: typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : existing.layerTag,
-                hidden: existing.hidden,
-                atomIndices: nextAtomIndices,
-            });
-            return;
-        }
-
-        if (op === "add_distance_measurement" || op === "add_angle_measurement" || op === "add_dihedral_measurement") {
-            const tag = (msg as any).tag ?? (msg as any).options?.tag;
-            const picksArray = Array.isArray((msg as any).options?.picks_atom_indices) ? (msg as any).options.picks_atom_indices : [];
-            const picks = picksArray.length;
-            const atomIndices = flattenToNumberIndices(picksArray);
-            const kind = op === "add_distance_measurement" ? "distance" : op === "add_angle_measurement" ? "angle" : "dihedral";
-            const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
-            if (typeof tag === "string") {
-                this.addonsMeasurements.set(tag, { kind, picks, layerTag, hidden: false, atomIndices });
-            }
-            return;
-        }
-
-        if (op === "add_sphere" || op === "update_sphere") {
-            const tag = (msg as any).tag ?? (msg as any).options?.tag;
-            const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
-            if (typeof tag === "string") {
-                upsertWorkbenchShape(tag, "Sphere", "sphere", layerTag, []);
-            }
-            return;
-        }
-
-        if (op === "add_network_links") {
-            const tag = (msg as any).options?.tag;
-            const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
-            const atomPairs = Array.isArray((msg as any).options?.atom_pairs) ? (msg as any).options.atom_pairs : [];
-            const atomIndices = flattenToNumberIndices(atomPairs);
-            if (typeof tag === "string") {
-                upsertWorkbenchShape(tag, "Links", "links", layerTag, atomIndices);
-            }
-            return;
-        }
-
-        if (op === "add_triangle_faces") {
-            const tag = (msg as any).options?.tag;
-            const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
-            const atomTriplets = Array.isArray((msg as any).options?.atom_triplets)
-                ? (msg as any).options.atom_triplets
-                : Array.isArray((msg as any).options?.atomTriplets)
-                    ? (msg as any).options.atomTriplets
-                    : [];
-            const atomIndices = flattenToNumberIndices(atomTriplets);
-            if (typeof tag === "string") {
-                upsertWorkbenchShape(tag, "Triangle Faces", "triangle_faces", layerTag, atomIndices);
-            }
-            return;
-        }
-
-        if (op === "add_channel_tube") {
-            const tag = (msg as any).options?.tag;
-            const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
-            if (typeof tag === "string") {
-                upsertWorkbenchShape(tag, "Channel Tube", "channel_tube", layerTag, []);
-            }
-            return;
-        }
-
-        if (op === "add_tetrahedra") {
-            const tag = (msg as any).options?.tag;
-            const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
-            const atomQuads = Array.isArray((msg as any).options?.atom_quads)
-                ? (msg as any).options.atom_quads
-                : Array.isArray((msg as any).options?.atomQuads)
-                    ? (msg as any).options.atomQuads
-                    : [];
-            const atomIndices = flattenToNumberIndices(atomQuads);
-            if (typeof tag === "string") {
-                upsertWorkbenchShape(tag, "Tetrahedra", "tetrahedra", layerTag, atomIndices);
-            }
-            return;
-        }
-
-        if (op === "add_anisotropy_ellipsoids") {
-            const tag = (msg as any).options?.tag;
-            const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
-            const atomIndices = Array.isArray((msg as any).options?.atom_indices)
-                ? (msg as any).options.atom_indices.filter((value: unknown): value is number => typeof value === "number")
-                : [];
-            if (typeof tag === "string") {
-                upsertWorkbenchShape(tag, "Anisotropy Ellipsoids", "anisotropy_ellipsoids", layerTag, atomIndices);
-            }
-            return;
-        }
-
-        if (op === "add_pharmacophore_features") {
-            const tag = (msg as any).options?.tag;
-            const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
-            if (typeof tag === "string") {
-                upsertWorkbenchShape(tag, "Pharmacophore", "pharmacophore", layerTag, []);
-            }
-            return;
-        }
-
-        if (op === "add_displacement_vectors") {
-            const tag = (msg as any).options?.tag;
-            const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
-            const atomIndices = Array.isArray((msg as any).options?.atom_indices)
-                ? (msg as any).options.atom_indices.filter((value: unknown): value is number => typeof value === "number")
-                : [];
-            if (typeof tag === "string") {
-                upsertWorkbenchShape(tag, "Displacement Vectors", "displacement_vectors", layerTag, atomIndices);
-            }
-            return;
-        }
-
-        if (op === "add_pocket_blob" || op === "add_scalar_isosurface") {
-            const tag = (msg as any).options?.tag;
-            const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
-            if (typeof tag === "string") {
-                upsertWorkbenchShape(tag, "Pocket Blob", "pocket_blob", layerTag, []);
-            }
-            return;
-        }
-
-        if (op === "add_pocket_surface") {
-            const tag = (msg as any).options?.tag;
-            const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
-            const atomIndices = Array.isArray((msg as any).options?.atom_indices)
-                ? (msg as any).options.atom_indices.filter((value: unknown): value is number => typeof value === "number")
-                : [];
-            if (typeof tag === "string") {
-                upsertWorkbenchShape(tag, "Pocket Surface", "pocket_surface", layerTag, atomIndices);
-            }
-            return;
-        }
-
-        if (op === "create_layer") {
-            const tag = (msg as any).tag;
-            const kind = (msg as any).kind;
-            const meta = (msg as any).meta ?? {};
-            if (typeof tag === "string" && kind === "shape") {
-                const title =
-                    typeof meta.shape_name === "string" && meta.shape_name.trim()
-                        ? meta.shape_name.trim()
-                        : typeof meta.label === "string" && meta.label.trim()
-                            ? meta.label.trim()
-                            : "Shape";
-                const subtitle = typeof meta.shape_kind === "string" && meta.shape_kind.trim() ? meta.shape_kind.trim() : undefined;
-                const layerTag = typeof meta.layer_tag === "string" && meta.layer_tag.trim() ? meta.layer_tag.trim() : undefined;
-                const atomIndices = Array.isArray(meta.atom_indices)
-                    ? meta.atom_indices.filter((value: unknown): value is number => typeof value === "number")
-                    : [];
-                this.addonsShapes.set(tag, { title, subtitle, layerTag, hidden: false, atomIndices });
-            }
-            return;
-        }
-
-        if (op === "hide_layer" || op === "show_layer") {
-            const tag = (msg as any).tag;
-            const kind = (msg as any).kind;
-            if (typeof tag !== "string") return;
-            const hidden = op === "hide_layer";
-            if (kind === "annotation" && this.addonsAnnotations.has(tag)) {
-                const item = this.addonsAnnotations.get(tag)!;
-                this.addonsAnnotations.set(tag, { ...item, hidden });
-            }
-            if (kind === "measurement" && this.addonsMeasurements.has(tag)) {
-                const item = this.addonsMeasurements.get(tag)!;
-                this.addonsMeasurements.set(tag, { ...item, hidden });
-            }
-            if (kind === "shape" && this.addonsShapes.has(tag)) {
-                const item = this.addonsShapes.get(tag)!;
-                this.addonsShapes.set(tag, { ...item, hidden });
-            }
-            return;
-        }
-
         if (op === "delete_layer") {
             const tag = (msg as any).tag;
-            const kind = (msg as any).kind;
             if (typeof tag !== "string") return;
-            if (kind === "annotation") this.addonsAnnotations.delete(tag);
-            if (kind === "measurement") this.addonsMeasurements.delete(tag);
-            if (kind === "shape") this.addonsShapes.delete(tag);
             if (this.addonsActive?.tag === tag) this.addonsActive = null;
             if (this.addonsContext?.tag === tag) this.addonsContext = null;
             return;
@@ -2825,34 +2633,19 @@ export class MolSysViewerController {
             const newTag = (msg as any).new_tag;
             const kind = (msg as any).kind;
             if (typeof oldTag !== "string" || typeof newTag !== "string") return;
-            if (kind === "annotation" && this.addonsAnnotations.has(oldTag)) {
-                const item = this.addonsAnnotations.get(oldTag)!;
-                this.addonsAnnotations.delete(oldTag);
-                this.addonsAnnotations.set(newTag, item);
-                if (this.addonsActive?.section === "annotations" && this.addonsActive.tag === oldTag) {
-                    this.addonsActive = { section: "annotations", tag: newTag };
+            const section = kind === "annotation"
+                ? "annotations"
+                : kind === "measurement"
+                    ? "measurements"
+                    : kind === "shape"
+                        ? "shapes"
+                        : null;
+            if (section !== null) {
+                if (this.addonsActive?.section === section && this.addonsActive.tag === oldTag) {
+                    this.addonsActive = { section, tag: newTag };
                 }
-                if (this.addonsContext?.section === "annotations" && this.addonsContext.tag === oldTag) {
-                    this.addonsContext = { section: "annotations", tag: newTag };
-                }
-            }
-            if (kind === "measurement" && this.addonsMeasurements.has(oldTag)) {
-                const item = this.addonsMeasurements.get(oldTag)!;
-                this.addonsMeasurements.delete(oldTag);
-                this.addonsMeasurements.set(newTag, item);
-                if (this.addonsActive?.section === "measurements" && this.addonsActive.tag === oldTag) {
-                    this.addonsActive = { section: "measurements", tag: newTag };
-                }
-            }
-            if (kind === "shape" && this.addonsShapes.has(oldTag)) {
-                const item = this.addonsShapes.get(oldTag)!;
-                this.addonsShapes.delete(oldTag);
-                this.addonsShapes.set(newTag, item);
-                if (this.addonsActive?.section === "shapes" && this.addonsActive.tag === oldTag) {
-                    this.addonsActive = { section: "shapes", tag: newTag };
-                }
-                if (this.addonsContext?.section === "shapes" && this.addonsContext.tag === oldTag) {
-                    this.addonsContext = { section: "shapes", tag: newTag };
+                if (this.addonsContext?.section === section && this.addonsContext.tag === oldTag) {
+                    this.addonsContext = { section, tag: newTag };
                 }
             }
             return;
@@ -2908,9 +2701,11 @@ export class MolSysViewerController {
 
     private refreshAddonsPanel(refreshChrome = true): void {
         this.groupPanel.setAnnotations(
-            Array.from(this.addonsAnnotations.entries())
-                .sort(([left], [right]) => left.localeCompare(right))
-                .map(([tag, item]) => ({
+            [...this.annotationSummaries]
+                .sort((left, right) => left.tag.localeCompare(right.tag))
+                .map((item) => {
+                    const tag = item.tag;
+                    return {
                     key: tag,
                     title: item.text,
                     subtitle: item.layerTag && item.layerTag !== tag ? `${tag} · layer: ${item.layerTag}` : tag,
@@ -2922,17 +2717,20 @@ export class MolSysViewerController {
                         this.focusTarget({ atom_indices: item.atomIndices });
                     } : undefined,
                     onToggleVisibility: () => {
-                        void this.handleMessage({ op: item.hidden ? "show_layer" : "hide_layer", tag, kind: "annotation" });
+                        this.notify?.({ event: "interaction_context_action", action: "toggle_annotation_visibility", tag });
                     },
                     onDelete: () => {
                         this.notify?.({ event: "interaction_context_action", action: "delete_annotation", tag });
                     },
-                }))
+                    };
+                })
         );
         this.groupPanel.setMeasurements(
-            Array.from(this.addonsMeasurements.entries())
-                .sort(([left], [right]) => left.localeCompare(right))
-                .map(([tag, item]) => ({
+            [...this.measurementSummaries]
+                .sort((left, right) => left.tag.localeCompare(right.tag))
+                .map((item) => {
+                    const tag = item.tag;
+                    return {
                     key: tag,
                     title: item.kind[0].toUpperCase() + item.kind.slice(1),
                     subtitle: item.layerTag && item.layerTag !== tag
@@ -2946,17 +2744,20 @@ export class MolSysViewerController {
                         this.focusTarget({ atom_indices: item.atomIndices });
                     } : undefined,
                     onToggleVisibility: () => {
-                        void this.handleMessage({ op: item.hidden ? "show_layer" : "hide_layer", tag, kind: "measurement" });
+                        this.notify?.({ event: "interaction_context_action", action: "toggle_measurement_visibility", tag });
                     },
                     onDelete: () => {
                         this.notify?.({ event: "interaction_context_action", action: "delete_measurement", tag });
                     },
-                }))
+                    };
+                })
         );
         this.groupPanel.setShapes(
-            Array.from(this.addonsShapes.entries())
-                .sort(([left], [right]) => left.localeCompare(right))
-                .map(([tag, item]) => ({
+            [...this.shapeSummaries]
+                .sort((left, right) => left.tag.localeCompare(right.tag))
+                .map((item) => {
+                    const tag = item.tag;
+                    return {
                     key: tag,
                     title: item.title,
                     subtitle: item.layerTag && item.layerTag !== tag
@@ -2970,31 +2771,32 @@ export class MolSysViewerController {
                         this.focusTarget({ atom_indices: item.atomIndices });
                     } : undefined,
                     onToggleVisibility: () => {
-                        void this.handleMessage({ op: item.hidden ? "show_layer" : "hide_layer", tag, kind: "shape" });
+                        this.notify?.({ event: "interaction_context_action", action: "toggle_shape_visibility", tag });
                     },
                     onDelete: () => {
                         this.notify?.({ event: "interaction_context_action", action: "delete_shape", tag });
                     },
-                }))
+                    };
+                })
         );
         this.groupPanel.setLayerObjects([
-            ...Array.from(this.addonsAnnotations.entries()).map(([tag, item]) => ({
+            ...this.annotationSummaries.map((item) => ({
                 kind: "annotation" as const,
-                tag,
+                tag: item.tag,
                 title: item.text,
                 layerTag: item.layerTag,
                 hidden: item.hidden,
             })),
-            ...Array.from(this.addonsMeasurements.entries()).map(([tag, item]) => ({
+            ...this.measurementSummaries.map((item) => ({
                 kind: "measurement" as const,
-                tag,
+                tag: item.tag,
                 title: `${item.kind[0].toUpperCase()}${item.kind.slice(1)}`,
                 layerTag: item.layerTag,
                 hidden: item.hidden,
             })),
-            ...Array.from(this.addonsShapes.entries()).map(([tag, item]) => ({
+            ...this.shapeSummaries.map((item) => ({
                 kind: "shape" as const,
-                tag,
+                tag: item.tag,
                 title: item.title,
                 layerTag: item.layerTag,
                 hidden: item.hidden,

@@ -63,14 +63,18 @@ export function inspectTaggedRefs(
     controller: MolSysViewerController,
     kind: string,
     tag: string,
-): Array<{ ref: string; hidden: boolean }> {
+): Array<{ ref: string; exists: boolean; hidden: boolean }> {
     const profiled = controller as ProfileController;
     const key = `${kind}\u0000${tag}`;
     const refs = ((profiled.state as any).tagIndex as Map<string, Set<string>> | undefined)?.get(key) ?? new Set();
-    return Array.from(refs).map(ref => ({
-        ref,
-        hidden: profiled.plugin.state.data.cells.get(ref)?.state?.isHidden === true,
-    }));
+    return Array.from(refs).map(ref => {
+        const cell = profiled.plugin.state.data.cells.get(ref);
+        return {
+            ref,
+            exists: cell !== undefined,
+            hidden: cell?.state?.isHidden === true,
+        };
+    });
 }
 
 function readRepresentation(plugin: any, ref: string): RenderedRepresentation | null {

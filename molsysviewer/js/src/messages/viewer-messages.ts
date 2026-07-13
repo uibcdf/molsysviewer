@@ -507,6 +507,49 @@ export type SetWholeSummaryMessage = {
     covering_layer_count?: number;
 };
 
+export type SetAnnotationSummariesMessage = {
+    op: "set_annotation_summaries";
+    annotations?: Array<{
+        kind?: string;
+        tag: string;
+        layer_tag?: string | null;
+        text?: string | null;
+        atom_indices?: number[];
+        hidden?: boolean;
+        broken?: boolean;
+        broken_reason?: string | null;
+    }>;
+};
+
+export type SetMeasurementSummariesMessage = {
+    op: "set_measurement_summaries";
+    measurements?: Array<{
+        kind?: string;
+        tag: string;
+        layer_tag?: string | null;
+        n_picks?: number;
+        atom_indices?: number[];
+        value?: number | null;
+        unit?: string | null;
+        hidden?: boolean;
+        broken?: boolean;
+        broken_reason?: string | null;
+    }>;
+};
+
+export type SetShapeSummariesMessage = {
+    op: "set_shape_summaries";
+    shapes?: Array<{
+        kind?: string;
+        tag: string;
+        layer_tag?: string | null;
+        title?: string;
+        subtitle?: string | null;
+        atom_indices?: number[];
+        hidden?: boolean;
+    }>;
+};
+
 export type SetDynamicRegionAtomsMessage = {
     op: "set_dynamic_region_atoms";
     frame?: number;
@@ -841,6 +884,9 @@ export type KnownViewerMessage =
     SetRegionsVisibilityMessage |
     SetRegionSummariesMessage |
     SetWholeSummaryMessage |
+    SetAnnotationSummariesMessage |
+    SetMeasurementSummariesMessage |
+    SetShapeSummariesMessage |
     SetDynamicRegionAtomsMessage |
     SetRegionOrderMessage |
     BatchRegionOperationsMessage |

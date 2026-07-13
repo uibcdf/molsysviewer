@@ -61,13 +61,13 @@ export class ViewportPanel extends BasePanel {
         viewportCard.appendChild(bgRow);
 
         // A2. Spin toggle
-        viewportCard.appendChild(makeCheckboxRow("Auto-Rotate (Spin)", !!this.state.isSpinActive, () => {
-            this.ctx.onAction("toggle_spin");
+        viewportCard.appendChild(makeCheckboxRow("Auto-Rotate (Spin)", !!this.state.isSpinActive, (checked) => {
+            this.ctx.onAction("toggle_spin", { enabled: checked });
         }));
 
         // A3. Swing toggle
-        viewportCard.appendChild(makeCheckboxRow("Oscillate (Swing)", !!this.state.isSwingActive, () => {
-            this.ctx.onAction("toggle_swing");
+        viewportCard.appendChild(makeCheckboxRow("Oscillate (Swing)", !!this.state.isSwingActive, (checked) => {
+            this.ctx.onAction("toggle_swing", { enabled: checked });
         }));
 
         // B. Camera Card

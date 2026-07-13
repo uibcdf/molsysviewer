@@ -1,5 +1,6 @@
 import "./trajectory-handler.test";
 import "./viewer-controller-message-refresh.test";
+import "./scene-object-summaries.test";
 import "./state-handler.test";
 import "./loader-handler.test";
 import "./scene-handler.test";

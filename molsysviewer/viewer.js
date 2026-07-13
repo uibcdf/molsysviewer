@@ -149384,13 +149384,16 @@ var InspectorListPanel = class extends BasePanel {
     this.host.appendChild(list3);
     if (this.items.length > 0) {
       for (const item2 of this.items) {
-        list3.appendChild(makeRowElement(
+        const row2 = makeRowElement(
           item2.title,
           item2.subtitle || this.config.subtitleFallback,
           item2.onActivate,
           item2.onDelete,
           { hidden: item2.hidden, onToggleVisibility: item2.onToggleVisibility }
-        ));
+        );
+        row2.setAttribute("data-molsysviewer-scene-object-kind", this.key);
+        row2.setAttribute("data-molsysviewer-scene-object-tag", item2.key ?? item2.title);
+        list3.appendChild(row2);
       }
     } else {
       const empty2 = document.createElement("div");
@@ -149450,11 +149453,11 @@ var ViewportPanel = class extends BasePanel {
     bgRow.appendChild(bgLabel);
     bgRow.appendChild(bgSelect);
     viewportCard.appendChild(bgRow);
-    viewportCard.appendChild(makeCheckboxRow("Auto-Rotate (Spin)", !!this.state.isSpinActive, () => {
-      this.ctx.onAction("toggle_spin");
+    viewportCard.appendChild(makeCheckboxRow("Auto-Rotate (Spin)", !!this.state.isSpinActive, (checked) => {
+      this.ctx.onAction("toggle_spin", { enabled: checked });
     }));
-    viewportCard.appendChild(makeCheckboxRow("Oscillate (Swing)", !!this.state.isSwingActive, () => {
-      this.ctx.onAction("toggle_swing");
+    viewportCard.appendChild(makeCheckboxRow("Oscillate (Swing)", !!this.state.isSwingActive, (checked) => {
+      this.ctx.onAction("toggle_swing", { enabled: checked });
     }));
     const cameraCard = makeSettingsCard("Camera Projection");
     grid.appendChild(cameraCard);
@@ -156349,6 +156352,9 @@ var HoverTooltip = class {
 var PANEL_REFRESH_BY_OPERATION = {
   set_region_summaries: ["navigate"],
   set_whole_summary: ["navigate"],
+  set_annotation_summaries: ["addons"],
+  set_measurement_summaries: ["addons"],
+  set_shape_summaries: ["addons"],
   save_selection: ["navigate"],
   set_selection_tag: ["navigate"],
   delete_selection: ["navigate"],
@@ -156387,12 +156393,6 @@ var PANEL_REFRESH_BY_OPERATION = {
   load_pdb_id: ["addons"],
   set_addon_runtime_summary: ["addons"]
 };
-function flattenToNumberIndices(source) {
-  const arr = Array.isArray(source) ? source : [];
-  return Array.from(new Set(
-    arr.flatMap((item2) => Array.isArray(item2) ? item2 : []).filter((value) => typeof value === "number")
-  ));
-}
 function normalizeToElementLoci3(loci) {
   if (element_exports.Loci.is(loci)) return loci;
   try {
@@ -156683,9 +156683,9 @@ var MolSysViewerController = class _MolSysViewerController {
     this.hoverDebounceMs = 60;
     this.lastPrimaryGroupClick = null;
     this.savedSelections = [];
-    this.addonsAnnotations = /* @__PURE__ */ new Map();
-    this.addonsMeasurements = /* @__PURE__ */ new Map();
-    this.addonsShapes = /* @__PURE__ */ new Map();
+    this.annotationSummaries = [];
+    this.measurementSummaries = [];
+    this.shapeSummaries = [];
     this.dynamicRegionEvaluationInFlight = null;
     this.dynamicRegionEvaluationPendingFrame = null;
     this.addonsScene = null;
@@ -158204,6 +158204,43 @@ var MolSysViewerController = class _MolSysViewerController {
         case "set_whole_summary":
           this.state.setWholeSummary(msg);
           break;
+        case "set_annotation_summaries": {
+          const records = Array.isArray(msg.annotations) ? msg.annotations : [];
+          this.annotationSummaries = records.filter((item2) => typeof item2?.tag === "string").map((item2) => ({
+            kind: typeof item2.kind === "string" ? item2.kind : "annotation",
+            tag: item2.tag,
+            layerTag: typeof item2.layer_tag === "string" ? item2.layer_tag : void 0,
+            text: typeof item2.text === "string" ? item2.text : item2.tag,
+            hidden: !!item2.hidden,
+            atomIndices: Array.isArray(item2.atom_indices) ? item2.atom_indices.filter((value) => typeof value === "number") : []
+          }));
+          break;
+        }
+        case "set_measurement_summaries": {
+          const records = Array.isArray(msg.measurements) ? msg.measurements : [];
+          this.measurementSummaries = records.filter((item2) => typeof item2?.tag === "string").map((item2) => ({
+            kind: typeof item2.kind === "string" ? item2.kind : "measurement",
+            tag: item2.tag,
+            layerTag: typeof item2.layer_tag === "string" ? item2.layer_tag : void 0,
+            picks: typeof item2.n_picks === "number" ? item2.n_picks : 0,
+            hidden: !!item2.hidden,
+            atomIndices: Array.isArray(item2.atom_indices) ? item2.atom_indices.filter((value) => typeof value === "number") : []
+          }));
+          break;
+        }
+        case "set_shape_summaries": {
+          const records = Array.isArray(msg.shapes) ? msg.shapes : [];
+          this.shapeSummaries = records.filter((item2) => typeof item2?.tag === "string").map((item2) => ({
+            kind: typeof item2.kind === "string" ? item2.kind : "shape",
+            tag: item2.tag,
+            layerTag: typeof item2.layer_tag === "string" ? item2.layer_tag : void 0,
+            title: typeof item2.title === "string" ? item2.title : item2.tag,
+            subtitle: typeof item2.subtitle === "string" ? item2.subtitle : void 0,
+            hidden: !!item2.hidden,
+            atomIndices: Array.isArray(item2.atom_indices) ? item2.atom_indices.filter((value) => typeof value === "number") : []
+          }));
+          break;
+        }
         case "set_dynamic_region_atoms":
           await this.state.setDynamicRegionAtoms(msg);
           this.handleDynamicRegionEvaluationResponse(msg.frame);
@@ -158643,20 +158680,7 @@ var MolSysViewerController = class _MolSysViewerController {
   applyWorkbenchMessage(msg) {
     const op4 = msg?.op;
     if (typeof op4 !== "string") return;
-    const upsertWorkbenchShape = (tag, title, subtitle, layerTag, atomIndices) => {
-      const existing = this.addonsShapes.get(tag);
-      this.addonsShapes.set(tag, {
-        title: existing?.title ?? title,
-        subtitle: existing?.subtitle ?? subtitle,
-        layerTag,
-        hidden: existing?.hidden ?? false,
-        atomIndices: atomIndices.length > 0 ? atomIndices : existing?.atomIndices ?? []
-      });
-    };
     if (op4 === "clear_all") {
-      this.addonsAnnotations.clear();
-      this.addonsMeasurements.clear();
-      this.addonsShapes.clear();
       this.addonsScene = null;
       this.addonsActive = null;
       this.addonsContext = null;
@@ -158664,8 +158688,6 @@ var MolSysViewerController = class _MolSysViewerController {
     }
     if (op4 === "clear_scene") {
       const options = msg.options ?? {};
-      if (options.labels) this.addonsAnnotations.clear();
-      if (options.shapes) this.addonsShapes.clear();
       if (options.styles) this.addonsScene = null;
       if (this.addonsActive?.section === "annotations" && options.labels) this.addonsActive = null;
       if (this.addonsActive?.section === "shapes" && options.shapes) this.addonsActive = null;
@@ -158673,170 +158695,9 @@ var MolSysViewerController = class _MolSysViewerController {
       if (this.addonsContext?.section === "shapes" && options.shapes) this.addonsContext = null;
       return;
     }
-    if (op4 === "add_label") {
-      const tag = msg.tag ?? msg.options?.tag;
-      const text = msg.options?.text;
-      const layerTag = typeof msg.options?.layer_tag === "string" ? msg.options.layer_tag : void 0;
-      const atomIndices = Array.isArray(msg.options?.atom_indices) ? msg.options.atom_indices.filter((value) => typeof value === "number") : [];
-      if (typeof tag === "string" && typeof text === "string" && text.trim()) {
-        this.addonsAnnotations.set(tag, { text: text.trim(), layerTag, hidden: false, atomIndices });
-      }
-      return;
-    }
-    if (op4 === "update_label") {
-      const tag = msg.tag ?? msg.options?.tag;
-      const existing = typeof tag === "string" ? this.addonsAnnotations.get(tag) : void 0;
-      if (!existing || typeof tag !== "string") return;
-      const nextText = msg.options?.text;
-      const nextAtomIndices = Array.isArray(msg.options?.atom_indices) ? msg.options.atom_indices.filter((value) => typeof value === "number") : existing.atomIndices;
-      this.addonsAnnotations.set(tag, {
-        text: typeof nextText === "string" && nextText.trim() ? nextText.trim() : existing.text,
-        layerTag: typeof msg.options?.layer_tag === "string" ? msg.options.layer_tag : existing.layerTag,
-        hidden: existing.hidden,
-        atomIndices: nextAtomIndices
-      });
-      return;
-    }
-    if (op4 === "add_distance_measurement" || op4 === "add_angle_measurement" || op4 === "add_dihedral_measurement") {
-      const tag = msg.tag ?? msg.options?.tag;
-      const picksArray = Array.isArray(msg.options?.picks_atom_indices) ? msg.options.picks_atom_indices : [];
-      const picks = picksArray.length;
-      const atomIndices = flattenToNumberIndices(picksArray);
-      const kind = op4 === "add_distance_measurement" ? "distance" : op4 === "add_angle_measurement" ? "angle" : "dihedral";
-      const layerTag = typeof msg.options?.layer_tag === "string" ? msg.options.layer_tag : void 0;
-      if (typeof tag === "string") {
-        this.addonsMeasurements.set(tag, { kind, picks, layerTag, hidden: false, atomIndices });
-      }
-      return;
-    }
-    if (op4 === "add_sphere" || op4 === "update_sphere") {
-      const tag = msg.tag ?? msg.options?.tag;
-      const layerTag = typeof msg.options?.layer_tag === "string" ? msg.options.layer_tag : void 0;
-      if (typeof tag === "string") {
-        upsertWorkbenchShape(tag, "Sphere", "sphere", layerTag, []);
-      }
-      return;
-    }
-    if (op4 === "add_network_links") {
-      const tag = msg.options?.tag;
-      const layerTag = typeof msg.options?.layer_tag === "string" ? msg.options.layer_tag : void 0;
-      const atomPairs = Array.isArray(msg.options?.atom_pairs) ? msg.options.atom_pairs : [];
-      const atomIndices = flattenToNumberIndices(atomPairs);
-      if (typeof tag === "string") {
-        upsertWorkbenchShape(tag, "Links", "links", layerTag, atomIndices);
-      }
-      return;
-    }
-    if (op4 === "add_triangle_faces") {
-      const tag = msg.options?.tag;
-      const layerTag = typeof msg.options?.layer_tag === "string" ? msg.options.layer_tag : void 0;
-      const atomTriplets = Array.isArray(msg.options?.atom_triplets) ? msg.options.atom_triplets : Array.isArray(msg.options?.atomTriplets) ? msg.options.atomTriplets : [];
-      const atomIndices = flattenToNumberIndices(atomTriplets);
-      if (typeof tag === "string") {
-        upsertWorkbenchShape(tag, "Triangle Faces", "triangle_faces", layerTag, atomIndices);
-      }
-      return;
-    }
-    if (op4 === "add_channel_tube") {
-      const tag = msg.options?.tag;
-      const layerTag = typeof msg.options?.layer_tag === "string" ? msg.options.layer_tag : void 0;
-      if (typeof tag === "string") {
-        upsertWorkbenchShape(tag, "Channel Tube", "channel_tube", layerTag, []);
-      }
-      return;
-    }
-    if (op4 === "add_tetrahedra") {
-      const tag = msg.options?.tag;
-      const layerTag = typeof msg.options?.layer_tag === "string" ? msg.options.layer_tag : void 0;
-      const atomQuads = Array.isArray(msg.options?.atom_quads) ? msg.options.atom_quads : Array.isArray(msg.options?.atomQuads) ? msg.options.atomQuads : [];
-      const atomIndices = flattenToNumberIndices(atomQuads);
-      if (typeof tag === "string") {
-        upsertWorkbenchShape(tag, "Tetrahedra", "tetrahedra", layerTag, atomIndices);
-      }
-      return;
-    }
-    if (op4 === "add_anisotropy_ellipsoids") {
-      const tag = msg.options?.tag;
-      const layerTag = typeof msg.options?.layer_tag === "string" ? msg.options.layer_tag : void 0;
-      const atomIndices = Array.isArray(msg.options?.atom_indices) ? msg.options.atom_indices.filter((value) => typeof value === "number") : [];
-      if (typeof tag === "string") {
-        upsertWorkbenchShape(tag, "Anisotropy Ellipsoids", "anisotropy_ellipsoids", layerTag, atomIndices);
-      }
-      return;
-    }
-    if (op4 === "add_pharmacophore_features") {
-      const tag = msg.options?.tag;
-      const layerTag = typeof msg.options?.layer_tag === "string" ? msg.options.layer_tag : void 0;
-      if (typeof tag === "string") {
-        upsertWorkbenchShape(tag, "Pharmacophore", "pharmacophore", layerTag, []);
-      }
-      return;
-    }
-    if (op4 === "add_displacement_vectors") {
-      const tag = msg.options?.tag;
-      const layerTag = typeof msg.options?.layer_tag === "string" ? msg.options.layer_tag : void 0;
-      const atomIndices = Array.isArray(msg.options?.atom_indices) ? msg.options.atom_indices.filter((value) => typeof value === "number") : [];
-      if (typeof tag === "string") {
-        upsertWorkbenchShape(tag, "Displacement Vectors", "displacement_vectors", layerTag, atomIndices);
-      }
-      return;
-    }
-    if (op4 === "add_pocket_blob" || op4 === "add_scalar_isosurface") {
-      const tag = msg.options?.tag;
-      const layerTag = typeof msg.options?.layer_tag === "string" ? msg.options.layer_tag : void 0;
-      if (typeof tag === "string") {
-        upsertWorkbenchShape(tag, "Pocket Blob", "pocket_blob", layerTag, []);
-      }
-      return;
-    }
-    if (op4 === "add_pocket_surface") {
-      const tag = msg.options?.tag;
-      const layerTag = typeof msg.options?.layer_tag === "string" ? msg.options.layer_tag : void 0;
-      const atomIndices = Array.isArray(msg.options?.atom_indices) ? msg.options.atom_indices.filter((value) => typeof value === "number") : [];
-      if (typeof tag === "string") {
-        upsertWorkbenchShape(tag, "Pocket Surface", "pocket_surface", layerTag, atomIndices);
-      }
-      return;
-    }
-    if (op4 === "create_layer") {
-      const tag = msg.tag;
-      const kind = msg.kind;
-      const meta = msg.meta ?? {};
-      if (typeof tag === "string" && kind === "shape") {
-        const title = typeof meta.shape_name === "string" && meta.shape_name.trim() ? meta.shape_name.trim() : typeof meta.label === "string" && meta.label.trim() ? meta.label.trim() : "Shape";
-        const subtitle = typeof meta.shape_kind === "string" && meta.shape_kind.trim() ? meta.shape_kind.trim() : void 0;
-        const layerTag = typeof meta.layer_tag === "string" && meta.layer_tag.trim() ? meta.layer_tag.trim() : void 0;
-        const atomIndices = Array.isArray(meta.atom_indices) ? meta.atom_indices.filter((value) => typeof value === "number") : [];
-        this.addonsShapes.set(tag, { title, subtitle, layerTag, hidden: false, atomIndices });
-      }
-      return;
-    }
-    if (op4 === "hide_layer" || op4 === "show_layer") {
-      const tag = msg.tag;
-      const kind = msg.kind;
-      if (typeof tag !== "string") return;
-      const hidden = op4 === "hide_layer";
-      if (kind === "annotation" && this.addonsAnnotations.has(tag)) {
-        const item2 = this.addonsAnnotations.get(tag);
-        this.addonsAnnotations.set(tag, { ...item2, hidden });
-      }
-      if (kind === "measurement" && this.addonsMeasurements.has(tag)) {
-        const item2 = this.addonsMeasurements.get(tag);
-        this.addonsMeasurements.set(tag, { ...item2, hidden });
-      }
-      if (kind === "shape" && this.addonsShapes.has(tag)) {
-        const item2 = this.addonsShapes.get(tag);
-        this.addonsShapes.set(tag, { ...item2, hidden });
-      }
-      return;
-    }
     if (op4 === "delete_layer") {
       const tag = msg.tag;
-      const kind = msg.kind;
       if (typeof tag !== "string") return;
-      if (kind === "annotation") this.addonsAnnotations.delete(tag);
-      if (kind === "measurement") this.addonsMeasurements.delete(tag);
-      if (kind === "shape") this.addonsShapes.delete(tag);
       if (this.addonsActive?.tag === tag) this.addonsActive = null;
       if (this.addonsContext?.tag === tag) this.addonsContext = null;
       return;
@@ -158846,34 +158707,13 @@ var MolSysViewerController = class _MolSysViewerController {
       const newTag = msg.new_tag;
       const kind = msg.kind;
       if (typeof oldTag !== "string" || typeof newTag !== "string") return;
-      if (kind === "annotation" && this.addonsAnnotations.has(oldTag)) {
-        const item2 = this.addonsAnnotations.get(oldTag);
-        this.addonsAnnotations.delete(oldTag);
-        this.addonsAnnotations.set(newTag, item2);
-        if (this.addonsActive?.section === "annotations" && this.addonsActive.tag === oldTag) {
-          this.addonsActive = { section: "annotations", tag: newTag };
+      const section = kind === "annotation" ? "annotations" : kind === "measurement" ? "measurements" : kind === "shape" ? "shapes" : null;
+      if (section !== null) {
+        if (this.addonsActive?.section === section && this.addonsActive.tag === oldTag) {
+          this.addonsActive = { section, tag: newTag };
         }
-        if (this.addonsContext?.section === "annotations" && this.addonsContext.tag === oldTag) {
-          this.addonsContext = { section: "annotations", tag: newTag };
-        }
-      }
-      if (kind === "measurement" && this.addonsMeasurements.has(oldTag)) {
-        const item2 = this.addonsMeasurements.get(oldTag);
-        this.addonsMeasurements.delete(oldTag);
-        this.addonsMeasurements.set(newTag, item2);
-        if (this.addonsActive?.section === "measurements" && this.addonsActive.tag === oldTag) {
-          this.addonsActive = { section: "measurements", tag: newTag };
-        }
-      }
-      if (kind === "shape" && this.addonsShapes.has(oldTag)) {
-        const item2 = this.addonsShapes.get(oldTag);
-        this.addonsShapes.delete(oldTag);
-        this.addonsShapes.set(newTag, item2);
-        if (this.addonsActive?.section === "shapes" && this.addonsActive.tag === oldTag) {
-          this.addonsActive = { section: "shapes", tag: newTag };
-        }
-        if (this.addonsContext?.section === "shapes" && this.addonsContext.tag === oldTag) {
-          this.addonsContext = { section: "shapes", tag: newTag };
+        if (this.addonsContext?.section === section && this.addonsContext.tag === oldTag) {
+          this.addonsContext = { section, tag: newTag };
         }
       }
       return;
@@ -158914,83 +158754,92 @@ var MolSysViewerController = class _MolSysViewerController {
   }
   refreshAddonsPanel(refreshChrome = true) {
     this.groupPanel.setAnnotations(
-      Array.from(this.addonsAnnotations.entries()).sort(([left], [right]) => left.localeCompare(right)).map(([tag, item2]) => ({
-        key: tag,
-        title: item2.text,
-        subtitle: item2.layerTag && item2.layerTag !== tag ? `${tag} \xB7 layer: ${item2.layerTag}` : tag,
-        hidden: item2.hidden,
-        active: this.addonsActive?.section === "annotations" && this.addonsActive.tag === tag,
-        onActivate: item2.atomIndices.length > 0 ? () => {
-          this.addonsActive = { section: "annotations", tag };
-          this.refreshAddonsPanel();
-          this.focusTarget({ atom_indices: item2.atomIndices });
-        } : void 0,
-        onToggleVisibility: () => {
-          void this.handleMessage({ op: item2.hidden ? "show_layer" : "hide_layer", tag, kind: "annotation" });
-        },
-        onDelete: () => {
-          this.notify?.({ event: "interaction_context_action", action: "delete_annotation", tag });
-        }
-      }))
+      [...this.annotationSummaries].sort((left, right) => left.tag.localeCompare(right.tag)).map((item2) => {
+        const tag = item2.tag;
+        return {
+          key: tag,
+          title: item2.text,
+          subtitle: item2.layerTag && item2.layerTag !== tag ? `${tag} \xB7 layer: ${item2.layerTag}` : tag,
+          hidden: item2.hidden,
+          active: this.addonsActive?.section === "annotations" && this.addonsActive.tag === tag,
+          onActivate: item2.atomIndices.length > 0 ? () => {
+            this.addonsActive = { section: "annotations", tag };
+            this.refreshAddonsPanel();
+            this.focusTarget({ atom_indices: item2.atomIndices });
+          } : void 0,
+          onToggleVisibility: () => {
+            this.notify?.({ event: "interaction_context_action", action: "toggle_annotation_visibility", tag });
+          },
+          onDelete: () => {
+            this.notify?.({ event: "interaction_context_action", action: "delete_annotation", tag });
+          }
+        };
+      })
     );
     this.groupPanel.setMeasurements(
-      Array.from(this.addonsMeasurements.entries()).sort(([left], [right]) => left.localeCompare(right)).map(([tag, item2]) => ({
-        key: tag,
-        title: item2.kind[0].toUpperCase() + item2.kind.slice(1),
-        subtitle: item2.layerTag && item2.layerTag !== tag ? `${tag} \xB7 ${item2.picks} picks \xB7 layer: ${item2.layerTag}` : `${tag} \xB7 ${item2.picks} picks`,
-        hidden: item2.hidden,
-        active: this.addonsActive?.section === "measurements" && this.addonsActive.tag === tag,
-        onActivate: item2.atomIndices.length > 0 ? () => {
-          this.addonsActive = { section: "measurements", tag };
-          this.refreshAddonsPanel();
-          this.focusTarget({ atom_indices: item2.atomIndices });
-        } : void 0,
-        onToggleVisibility: () => {
-          void this.handleMessage({ op: item2.hidden ? "show_layer" : "hide_layer", tag, kind: "measurement" });
-        },
-        onDelete: () => {
-          this.notify?.({ event: "interaction_context_action", action: "delete_measurement", tag });
-        }
-      }))
+      [...this.measurementSummaries].sort((left, right) => left.tag.localeCompare(right.tag)).map((item2) => {
+        const tag = item2.tag;
+        return {
+          key: tag,
+          title: item2.kind[0].toUpperCase() + item2.kind.slice(1),
+          subtitle: item2.layerTag && item2.layerTag !== tag ? `${tag} \xB7 ${item2.picks} picks \xB7 layer: ${item2.layerTag}` : `${tag} \xB7 ${item2.picks} picks`,
+          hidden: item2.hidden,
+          active: this.addonsActive?.section === "measurements" && this.addonsActive.tag === tag,
+          onActivate: item2.atomIndices.length > 0 ? () => {
+            this.addonsActive = { section: "measurements", tag };
+            this.refreshAddonsPanel();
+            this.focusTarget({ atom_indices: item2.atomIndices });
+          } : void 0,
+          onToggleVisibility: () => {
+            this.notify?.({ event: "interaction_context_action", action: "toggle_measurement_visibility", tag });
+          },
+          onDelete: () => {
+            this.notify?.({ event: "interaction_context_action", action: "delete_measurement", tag });
+          }
+        };
+      })
     );
     this.groupPanel.setShapes(
-      Array.from(this.addonsShapes.entries()).sort(([left], [right]) => left.localeCompare(right)).map(([tag, item2]) => ({
-        key: tag,
-        title: item2.title,
-        subtitle: item2.layerTag && item2.layerTag !== tag ? item2.subtitle ? `${tag} \xB7 ${item2.subtitle} \xB7 layer: ${item2.layerTag}` : `${tag} \xB7 layer: ${item2.layerTag}` : item2.subtitle ? `${tag} \xB7 ${item2.subtitle}` : tag,
-        hidden: item2.hidden,
-        active: this.addonsActive?.section === "shapes" && this.addonsActive.tag === tag,
-        onActivate: item2.atomIndices.length > 0 ? () => {
-          this.addonsActive = { section: "shapes", tag };
-          this.refreshAddonsPanel();
-          this.focusTarget({ atom_indices: item2.atomIndices });
-        } : void 0,
-        onToggleVisibility: () => {
-          void this.handleMessage({ op: item2.hidden ? "show_layer" : "hide_layer", tag, kind: "shape" });
-        },
-        onDelete: () => {
-          this.notify?.({ event: "interaction_context_action", action: "delete_shape", tag });
-        }
-      }))
+      [...this.shapeSummaries].sort((left, right) => left.tag.localeCompare(right.tag)).map((item2) => {
+        const tag = item2.tag;
+        return {
+          key: tag,
+          title: item2.title,
+          subtitle: item2.layerTag && item2.layerTag !== tag ? item2.subtitle ? `${tag} \xB7 ${item2.subtitle} \xB7 layer: ${item2.layerTag}` : `${tag} \xB7 layer: ${item2.layerTag}` : item2.subtitle ? `${tag} \xB7 ${item2.subtitle}` : tag,
+          hidden: item2.hidden,
+          active: this.addonsActive?.section === "shapes" && this.addonsActive.tag === tag,
+          onActivate: item2.atomIndices.length > 0 ? () => {
+            this.addonsActive = { section: "shapes", tag };
+            this.refreshAddonsPanel();
+            this.focusTarget({ atom_indices: item2.atomIndices });
+          } : void 0,
+          onToggleVisibility: () => {
+            this.notify?.({ event: "interaction_context_action", action: "toggle_shape_visibility", tag });
+          },
+          onDelete: () => {
+            this.notify?.({ event: "interaction_context_action", action: "delete_shape", tag });
+          }
+        };
+      })
     );
     this.groupPanel.setLayerObjects([
-      ...Array.from(this.addonsAnnotations.entries()).map(([tag, item2]) => ({
+      ...this.annotationSummaries.map((item2) => ({
         kind: "annotation",
-        tag,
+        tag: item2.tag,
         title: item2.text,
         layerTag: item2.layerTag,
         hidden: item2.hidden
       })),
-      ...Array.from(this.addonsMeasurements.entries()).map(([tag, item2]) => ({
+      ...this.measurementSummaries.map((item2) => ({
         kind: "measurement",
-        tag,
+        tag: item2.tag,
         title: `${item2.kind[0].toUpperCase()}${item2.kind.slice(1)}`,
         layerTag: item2.layerTag,
         hidden: item2.hidden
       })),
-      ...Array.from(this.addonsShapes.entries()).map(([tag, item2]) => ({
+      ...this.shapeSummaries.map((item2) => ({
         kind: "shape",
-        tag,
+        tag: item2.tag,
         title: item2.title,
         layerTag: item2.layerTag,
         hidden: item2.hidden

@@ -354,6 +354,7 @@ class HistoryMixin:
         self._record_scene_look_message(msg)
         if self._ready:
             self.widget.send(msg)
+        self._sync_scene_object_summaries_for_message(msg)
 
     def _send_runtime_only(self, msg: dict) -> None:
         if self._ready:
@@ -363,6 +364,7 @@ class HistoryMixin:
         self._message_history.append(msg)
         if self._ready:
             self.widget.send(msg)
+        self._sync_scene_object_summaries_for_message(msg)
 
     def _get_shape_message(self, tag: str) -> dict | None:
         for msg in reversed(self._shape_history):

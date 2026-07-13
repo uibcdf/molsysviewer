@@ -79,15 +79,18 @@ async function run() {
                 ],
             });
             await controller.handleMessage({
-                op: "add_label",
-                tag: "note1",
-                options: { text: "Note", atom_indices: [0], layer_tag: "analysis" },
+                op: "set_annotation_summaries",
+                annotations: [{
+                    kind: "label", tag: "note1", text: "Note", atom_indices: [0],
+                    layer_tag: "analysis", hidden: false,
+                }],
             });
             await controller.handleMessage({
-                op: "create_layer",
-                tag: "marker",
-                kind: "shape",
-                meta: { shape_name: "Marker", shape_kind: "sphere", layer_tag: "geometry" },
+                op: "set_shape_summaries",
+                shapes: [{
+                    kind: "sphere", tag: "marker", title: "Marker", subtitle: "sphere",
+                    atom_indices: [], layer_tag: "geometry", hidden: false,
+                }],
             });
         }, payload);
 

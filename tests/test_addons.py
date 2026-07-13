@@ -2,6 +2,8 @@ from types import ModuleType
 import sys
 import importlib
 
+import pytest
+
 addons_module = importlib.import_module("molsysviewer.addons")
 from molsysviewer import (
     AddonContextActionSpec,
@@ -18,6 +20,15 @@ from molsysviewer import (
     addon_templates,
     addons,
 )
+
+
+@pytest.fixture(autouse=True)
+def _isolate_addon_registry(monkeypatch):
+    addons.clear()
+    monkeypatch.setattr(addons_module, "KNOWN_ADDON_MODULES", ())
+    monkeypatch.setattr(addons_module, "metadata_entry_points", lambda: {})
+    yield
+    addons.clear()
 
 
 def test_global_addons_registry_supports_complete_fake_addon():

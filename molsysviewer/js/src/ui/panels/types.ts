@@ -57,6 +57,12 @@ export type PanelAction =
     | "remove_region_from_layer"
     | "set_layer_visibility"
     | "delete_layer_group"
+    | "toggle_annotation_visibility"
+    | "toggle_measurement_visibility"
+    | "toggle_shape_visibility"
+    | "delete_annotation"
+    | "delete_measurement"
+    | "delete_shape"
     // Whole lifecycle & style
     | "set_whole_representation"
     | "reset_whole_representation"
