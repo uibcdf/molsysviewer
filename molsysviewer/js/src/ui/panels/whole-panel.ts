@@ -65,6 +65,7 @@ export class WholePanel implements StudioPanel {
     private details: WholeDetails | null = null;
     private requestId = 0;
     private continuousHistoryEdit = false;
+    private continuousHistoryRenderPending = false;
 
     constructor(private readonly ctx: PanelContext) {}
 
@@ -81,7 +82,11 @@ export class WholePanel implements StudioPanel {
     setSummary(summary: WholeSummary | null): void {
         this.summary = summary;
         this.ctx.setBadge(summary ? (summary.visible ? "Visible" : "Hidden") : "None");
-        if (!this.continuousHistoryEdit) this.render();
+        if (this.continuousHistoryEdit) {
+            this.continuousHistoryRenderPending = true;
+        } else {
+            this.render();
+        }
     }
 
     updateDetails(details: WholeDetails): void {
@@ -185,7 +190,11 @@ export class WholePanel implements StudioPanel {
             () => {
                 this.ctx.onAction("end_scene_history_coalescing");
                 this.continuousHistoryEdit = false;
-                this.render();
+                if (!this.continuousHistoryRenderPending) return;
+                this.continuousHistoryRenderPending = false;
+                // A blur can be caused by pressing another control. Let that
+                // control's click complete before replacing the panel DOM.
+                setTimeout(() => this.render(), 0);
             },
         );
         opacity.addEventListener("input", () => {

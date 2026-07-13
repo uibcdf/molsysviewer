@@ -229,6 +229,10 @@ class HistoryMixin:
                     if "style" in new_options:
                         options["style"] = dict(new_options["style"] or {})
                 updated["options"] = options
+                if "broken" in msg:
+                    updated["broken"] = bool(msg["broken"])
+                if "broken_reason" in msg:
+                    updated["broken_reason"] = msg["broken_reason"]
                 rewritten.append(updated)
             self._annotation_history = rewritten
             return

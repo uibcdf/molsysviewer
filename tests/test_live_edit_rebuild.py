@@ -461,7 +461,7 @@ def test_consecutive_live_edits_keep_replay_state_consistent(monkeypatch):
 
 
 
-def test_remove_rebuild_drops_fully_orphaned_scene_objects_and_regions():
+def test_remove_rebuild_drops_orphaned_regions_and_shapes_but_keeps_anchored_objects_broken():
     view = demo["dialanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
@@ -474,17 +474,111 @@ def test_remove_rebuild_drops_fully_orphaned_scene_objects_and_regions():
 
     assert "orphan-region" not in list(view.regions)
     assert "orphan-shape" not in view.shapes.tags(skip_digestion=True)
-    assert "orphan-label" not in view.annotations.tags()
-    assert "orphan-distance" not in view.measurements.tags(skip_digestion=True)
+    assert "orphan-label" in view.annotations.tags()
+    assert "orphan-distance" in view.measurements.tags(skip_digestion=True)
     assert ("shape", "orphan-shape") not in view._scene_objects  # noqa: SLF001
-    assert ("annotation", "orphan-label") not in view._scene_objects  # noqa: SLF001
-    assert ("measurement", "orphan-distance") not in view._scene_objects  # noqa: SLF001
+    assert view.annotations.info("orphan-label")["broken"] is True
+    assert view.measurements.info("orphan-distance")[0]["broken"] is True
 
     assert not any(msg.get("tag") == "orphan-region" for msg in view._message_history)  # noqa: SLF001
     assert not any(
         msg.get("options", {}).get("tag") in {"orphan-shape", "orphan-label", "orphan-distance"}
         for msg in view._message_history  # noqa: SLF001
     )
+
+
+def test_an_annotation_whose_anchor_is_deleted_survives_as_broken_not_as_nothing():
+    view = demo["dialanine"]
+    sent = []
+    view._ready = True  # noqa: SLF001
+    view.widget.send = lambda msg: sent.append(msg)  # type: ignore[attr-defined]
+    last_atom = int(view.molsys.get_n_atoms()) - 1
+    view.annotations.add("terminal", atom_indices=[last_atom], tag="a1")
+
+    apply_remove(view, selection=[last_atom])
+
+    assert "a1" in view.annotations.tags()
+    record = view.annotations.info("a1")
+    assert record["broken"] is True
+    assert str(last_atom) in record["broken_reason"]
+    document_record = next(item for item in view.export_state()["annotations"] if item["tag"] == "a1")
+    assert document_record["broken"] is True
+    assert document_record["broken_reason"] == record["broken_reason"]
+    summary = next(
+        msg for msg in reversed(sent) if msg.get("op") == "set_annotation_summaries"
+    )["annotations"][0]
+    assert summary["broken"] is True
+    assert summary["broken_reason"] == record["broken_reason"]
+
+    view.annotations.set_anchor("a1", atom_indices=[0])
+    healed = view.annotations.info("a1")
+    assert healed["broken"] is False
+    assert healed["broken_reason"] is None
+    healed_record = next(item for item in view.annotations.records() if item["tag"] == "a1")
+    assert healed_record["broken"] is False
+    assert healed_record["broken_reason"] is None
+
+
+def test_a_partially_remapped_measurement_never_reports_the_old_number():
+    view = demo["dialanine"]
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+    view.measurements.add_distance([0, 1, 2, 3, 4], [10, 11, 12], tag="c1")
+    stale_value = view.measurements.info("c1")[0]["value"]
+
+    apply_remove(view, selection=[3, 4])
+
+    record = view.measurements.info("c1")[0]
+    assert record["broken"] is False
+    assert record["value"] is not None
+    assert record["value"] != stale_value
+
+    view.measurements.add_distance([0, 1, 2], [8, 9, 10], tag="expected")
+    assert record["value"] == view.measurements.info("expected")[0]["value"]
+
+
+def test_a_destroyed_measurement_anchor_serializes_without_a_stale_value():
+    view = demo["dialanine"]
+    sent = []
+    view._ready = True  # noqa: SLF001
+    view.widget.send = lambda msg: sent.append(msg)  # type: ignore[attr-defined]
+    last_atom = int(view.molsys.get_n_atoms()) - 1
+    view.measurements.add_distance([0], [last_atom], tag="d1")
+    stale_value = view.measurements.info("d1")[0]["value"]
+    assert stale_value is not None
+
+    apply_remove(view, selection=[last_atom])
+
+    record = view.measurements.info("d1")[0]
+    assert record["broken"] is True
+    assert record["value"] is None
+    document_record = next(item for item in view.export_state()["measurements"] if item["tag"] == "d1")
+    assert document_record["broken"] is True
+    assert "value" not in document_record["options"]
+    assert "value_series" not in document_record["options"]
+    summary = next(
+        msg for msg in reversed(sent) if msg.get("op") == "set_measurement_summaries"
+    )["measurements"][0]
+    assert summary["broken"] is True
+    assert summary["value"] is None
+
+
+def test_a_broken_object_becomes_valid_again_after_undo_snapshot_restore():
+    source = demo["dialanine"]
+    source.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+    last_atom = int(source.molsys.get_n_atoms()) - 1
+    source.measurements.add_distance([0], [last_atom], tag="d1")
+    original_value = source.measurements.info("d1")[0]["value"]
+    pre_edit_snapshot = source.export_state()
+
+    apply_remove(source, selection=[last_atom])
+    assert source.measurements.info("d1")[0]["broken"] is True
+
+    restored = demo["dialanine"]
+    restored.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+    restored.import_state(pre_edit_snapshot)
+    record = restored.measurements.info("d1")[0]
+    assert record["broken"] is False
+    assert record["value"] == original_value
 
 
 def test_export_messages_after_live_edit_chain_remain_replay_safe(monkeypatch):

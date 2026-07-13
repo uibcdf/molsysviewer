@@ -52,6 +52,7 @@ export class RegionsPanel extends BasePanel {
     private regionBooleanAttention = false;
     private regionBooleanComposerElement: HTMLDivElement | null = null;
     private continuousHistoryEdit = false;
+    private continuousHistoryRenderPending = false;
 
     constructor(
         private readonly ctx: PanelContext,
@@ -61,7 +62,21 @@ export class RegionsPanel extends BasePanel {
     }
 
     private scheduleExternalRender(): void {
-        if (!this.continuousHistoryEdit) this.scheduleRender();
+        if (this.continuousHistoryEdit) {
+            this.continuousHistoryRenderPending = true;
+            return;
+        }
+        this.scheduleRender();
+    }
+
+    private finishContinuousHistoryEdit(): void {
+        this.ctx.onAction("end_scene_history_coalescing");
+        this.continuousHistoryEdit = false;
+        if (!this.continuousHistoryRenderPending) return;
+        this.continuousHistoryRenderPending = false;
+        // A blur can be caused by pressing another control. Let that control's
+        // click complete before replacing the panel DOM with the pending state.
+        setTimeout(() => this.scheduleRender(), 0);
     }
 
     setRegions(items: RegionSummary[]): void {
@@ -1117,11 +1132,7 @@ export class RegionsPanel extends BasePanel {
                 this.continuousHistoryEdit = true;
                 this.ctx.onAction("begin_scene_history_coalescing");
             },
-            () => {
-                this.ctx.onAction("end_scene_history_coalescing");
-                this.continuousHistoryEdit = false;
-                this.scheduleRender();
-            },
+            () => this.finishContinuousHistoryEdit(),
         );
         opacity.addEventListener("input", () => {
             if (!this.regionHasOwnVisual(item)) return;

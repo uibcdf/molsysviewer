@@ -8,6 +8,7 @@ test("scene-object summaries drive panels and visibility goes through Python", a
     const controller: any = Object.create(MolSysViewerController.prototype);
     const notifications: unknown[] = [];
     let annotationRows: any[] = [];
+    let measurementRows: any[] = [];
     let layerRows: any[] = [];
 
     controller.annotationSummaries = [];
@@ -31,7 +32,7 @@ test("scene-object summaries drive panels and visibility goes through Python", a
     };
     controller.groupPanel = {
         setAnnotations: (items: any[]) => { annotationRows = items; },
-        setMeasurements: (_items: any[]) => {},
+        setMeasurements: (items: any[]) => { measurementRows = items; },
         setShapes: (_items: any[]) => {},
         setLayerObjects: (items: any[]) => { layerRows = items; },
         setScene: (_summary: unknown) => {},
@@ -61,6 +62,22 @@ test("scene-object summaries drive panels and visibility goes through Python", a
                 layer_tag: "analysis",
                 atom_indices: [1, 2],
                 hidden: false,
+                broken: true,
+                broken_reason: "Missing anchor atom indices: [3]",
+            }],
+        });
+        await controller.handleMessage({
+            op: "set_measurement_summaries",
+            measurements: [{
+                tag: "distance",
+                kind: "distance",
+                n_picks: 2,
+                value: null,
+                unit: null,
+                atom_indices: [1],
+                hidden: false,
+                broken: true,
+                broken_reason: "Anchor contains no atoms.",
             }],
         });
     } finally {
@@ -69,7 +86,11 @@ test("scene-object summaries drive panels and visibility goes through Python", a
 
     assert.strictEqual(annotationRows.length, 1);
     assert.strictEqual(annotationRows[0].title, "Binding site");
-    assert.deepStrictEqual(layerRows.map(item => item.tag), ["note"]);
+    assert.strictEqual(annotationRows[0].broken, true);
+    assert.strictEqual(annotationRows[0].brokenReason, "Missing anchor atom indices: [3]");
+    assert.strictEqual(measurementRows[0].broken, true);
+    assert.strictEqual(measurementRows[0].brokenReason, "Anchor contains no atoms.");
+    assert.deepStrictEqual(layerRows.map(item => item.tag), ["note", "distance"]);
 
     let localDispatches = 0;
     controller.handleMessage = async () => { localDispatches += 1; };

@@ -447,13 +447,20 @@ class AnnotationsManager:
             {
                 "op": "update_label",
                 "tag": tag,
+                "broken": False,
+                "broken_reason": None,
                 "options": {
                     "tag": tag,
                     "text": record.get("text"),
                     "atom_indices": list(resolved_atom_indices),
+                    "layer_tag": layer.layer_tag,
+                    "style": dict(record.get("style") or {}),
                 },
             }
         )
+        layer.broken = False
+        layer.broken_reason = None
+        self._view._sync_annotation_summaries_runtime()  # noqa: SLF001
         return layer
 
     @records_scene_history

@@ -1410,12 +1410,36 @@ class MolSysView(
 
         return remapped
 
-    def _remap_measurement_message(self, msg: dict, atom_index_map: dict[int, int] | None) -> dict | None:
+    def _remap_annotation_message(self, msg: dict, atom_index_map: dict[int, int] | None) -> dict:
+        remapped = dict(msg)
+        options = remapped.get("options")
+        if msg.get("op") != "add_label" or not isinstance(options, dict):
+            return remapped
+
+        options = dict(options)
+        remapped["options"] = options
+        original = [int(index) for index in options.get("atom_indices") or []]
         if atom_index_map is None:
-            return msg
+            n_atoms = int(self._molsys.get_n_atoms()) if self._molsys is not None else 0
+            survivors = [index for index in original if 0 <= index < n_atoms]
+            missing = [index for index in original if index not in survivors]
+        else:
+            survivors = self._remap_indices(original, atom_index_map)
+            missing = [index for index in original if index not in atom_index_map]
+        options["atom_indices"] = survivors
+        broken = len(survivors) == 0
+        remapped["broken"] = broken
+        remapped["broken_reason"] = (
+            self._broken_anchor_reason(missing, empty=not original)
+            if broken
+            else None
+        )
+        return remapped
+
+    def _remap_measurement_message(self, msg: dict, atom_index_map: dict[int, int] | None) -> dict:
         op = msg.get("op")
         if op not in {"add_distance_measurement", "add_angle_measurement", "add_dihedral_measurement"}:
-            return msg
+            return dict(msg)
 
         remapped = dict(msg)
         options = remapped.get("options")
@@ -1426,19 +1450,60 @@ class MolSysView(
         picks = options.get("picks_atom_indices")
         if not isinstance(picks, list):
             return remapped
-        remapped_picks = [self._remap_indices(pick, atom_index_map) for pick in picks]
-        if any(len(pick) == 0 for pick in remapped_picks):
-            return None
+        original_picks = [[int(index) for index in pick] for pick in picks]
+        if atom_index_map is None:
+            n_atoms = int(self._molsys.get_n_atoms()) if self._molsys is not None else 0
+            remapped_picks = [
+                [index for index in pick if 0 <= index < n_atoms]
+                for pick in original_picks
+            ]
+            missing = sorted({
+                index
+                for original, survivors in zip(original_picks, remapped_picks)
+                for index in original
+                if index not in survivors
+            })
+        else:
+            remapped_picks = [self._remap_indices(pick, atom_index_map) for pick in original_picks]
+            missing = sorted({
+                index
+                for pick in original_picks
+                for index in pick
+                if index not in atom_index_map
+            })
         options["picks_atom_indices"] = remapped_picks
-        endpoint_atom_indices = options.get("endpoint_atom_indices")
-        if isinstance(endpoint_atom_indices, list):
-            remapped_endpoint_atoms = [self._remap_indices(pick, atom_index_map) for pick in endpoint_atom_indices]
-            if any(
-                len(original) > 0 and len(remapped_pick) == 0
-                for original, remapped_pick in zip(endpoint_atom_indices, remapped_endpoint_atoms)
-            ):
-                return None
-            options["endpoint_atom_indices"] = remapped_endpoint_atoms
+
+        options.pop("value", None)
+        options.pop("value_series", None)
+        broken_reason = None
+        if not remapped_picks or any(not pick for pick in remapped_picks):
+            broken_reason = self._broken_anchor_reason(
+                missing,
+                empty=not missing,
+            )
+        else:
+            policy = self.measurements._normalize_endpoint_policy(options.get("endpoint_policy"))  # noqa: SLF001
+            endpoint_kinds, endpoint_labels, endpoint_atom_indices = (
+                self.measurements._resolve_endpoint_metadata(remapped_picks, policy)  # noqa: SLF001
+            )
+            options["endpoint_policy"] = policy
+            options["endpoint_kinds"] = endpoint_kinds
+            options["endpoint_labels"] = endpoint_labels
+            options["endpoint_atom_indices"] = endpoint_atom_indices
+            series = self.measurements._compute_measurement_series(  # noqa: SLF001
+                str(op),
+                remapped_picks,
+                endpoint_atom_indices,
+                policy,
+            )
+            if series is None or len(series) == 0:
+                broken_reason = "Measurement value cannot be derived from its current anchors."
+            else:
+                options["value"] = float(series[0])
+                options["value_series"] = [float(value) for value in series]
+
+        remapped["broken"] = broken_reason is not None
+        remapped["broken_reason"] = broken_reason
         return remapped
 
     def _remap_selection_message(self, msg: dict, atom_index_map: dict[int, int] | None) -> dict | None:
@@ -1759,26 +1824,28 @@ class MolSysView(
 
         new_annotation_history: list[dict] = []
         for msg in self._annotation_history:
-            remapped = self._remap_shape_message(msg, atom_index_map)
-            if remapped is None:
-                tag = self._tag_from_message(msg)
-                if tag is not None:
-                    self._unregister_scene_object("annotation", tag)
-                continue
+            remapped = self._remap_annotation_message(msg, atom_index_map)
+            tag = self._tag_from_message(remapped)
+            annotation = self.annotations.get(tag, skip_digestion=True) if tag is not None else None
+            if annotation is not None:
+                annotation.broken = bool(remapped.get("broken"))
+                annotation.broken_reason = remapped.get("broken_reason")
             new_annotation_history.append(remapped)
-            self._send_replay(remapped)
+            if not remapped.get("broken"):
+                self._send_replay(remapped)
         self._annotation_history = new_annotation_history
 
         new_measurement_history: list[dict] = []
         for msg in self._measurement_history:
             remapped = self._remap_measurement_message(msg, atom_index_map)
-            if remapped is None:
-                tag = self._tag_from_message(msg)
-                if tag is not None:
-                    self._unregister_scene_object("measurement", tag)
-                continue
+            tag = self._tag_from_message(remapped)
+            measurement = self.measurements.get(tag, skip_digestion=True) if tag is not None else None
+            if measurement is not None:
+                measurement.broken = bool(remapped.get("broken"))
+                measurement.broken_reason = remapped.get("broken_reason")
             new_measurement_history.append(remapped)
-            self._send_replay(remapped)
+            if not remapped.get("broken"):
+                self._send_replay(remapped)
         self._measurement_history = new_measurement_history
 
         if atom_index_map is not None:
