@@ -23,6 +23,30 @@ import { WholePanel } from "./panels/whole-panel";
 import { PanelShell } from "./panel-shell";
 import { FloatingPanelShell } from "./floating-panel-shell";
 
+const TAB_ORDER_STORAGE_KEY = "molsysviewer-studio-tab-order";
+
+// localStorage must be reached inside a try/catch, not merely guarded for existence:
+// in a document with an opaque origin (the e2e harness, file://, a sandboxed iframe)
+// *reading the property itself* throws SecurityError. Guarding `window.localStorage`
+// and then touching it is exactly the bug that took three e2e suites down.
+function readTabOrderStorage(): string | null {
+    try {
+        return typeof window === "undefined" ? null : window.localStorage.getItem(TAB_ORDER_STORAGE_KEY);
+    } catch {
+        return null;   // tab order is a convenience; never let it break the viewer
+    }
+}
+
+function writeTabOrderStorage(order: TabKey[]): void {
+    try {
+        if (typeof window !== "undefined") {
+            window.localStorage.setItem(TAB_ORDER_STORAGE_KEY, JSON.stringify(order));
+        }
+    } catch {
+        // ignore: the order simply will not persist
+    }
+}
+
 export type NavigateItem = {
     key?: string;
     title: string;
@@ -421,7 +445,7 @@ export class GroupPanel {
             "export",
         ];
         let tabOrder = [...defaultOrder];
-        const savedOrder = typeof window !== "undefined" && window.localStorage ? window.localStorage.getItem("molsysviewer-studio-tab-order") : null;
+        const savedOrder = readTabOrderStorage();
         if (savedOrder) {
             try {
                 const parsed = JSON.parse(savedOrder);
@@ -562,10 +586,8 @@ export class GroupPanel {
                 order.splice(targetIdx, 0, draggedKey as TabKey);
             }
             
-            if (typeof window !== "undefined" && window.localStorage) {
-                window.localStorage.setItem("molsysviewer-studio-tab-order", JSON.stringify(order));
-            }
-            
+            writeTabOrderStorage(order);
+
             this.reorderTabsDOM(order);
         });
 

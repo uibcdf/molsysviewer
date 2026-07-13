@@ -140488,6 +140488,7 @@ var AnnotationHandlers = class {
         text: msg.options?.text,
         atom_indices: msg.options?.atom_indices,
         tag,
+        layer_tag: msg.options?.layer_tag ?? prevSpec?.layer_tag,
         style: msg.options?.style ?? prevSpec?.style
       }
     });
@@ -154523,6 +154524,22 @@ var FloatingPanelShell = class {
 };
 
 // src/ui/group-panel.ts
+var TAB_ORDER_STORAGE_KEY = "molsysviewer-studio-tab-order";
+function readTabOrderStorage() {
+  try {
+    return typeof window === "undefined" ? null : window.localStorage.getItem(TAB_ORDER_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+function writeTabOrderStorage(order) {
+  try {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(TAB_ORDER_STORAGE_KEY, JSON.stringify(order));
+    }
+  } catch {
+  }
+}
 var GroupPanel = class {
   constructor(host, onSelect, onInteraction, onFocus, onHover, onContext, onAnnotationContext, onActivateSavedSelection, onFocusRegion, onAction, options) {
     this.host = host;
@@ -154756,7 +154773,7 @@ var GroupPanel = class {
       "export"
     ];
     let tabOrder = [...defaultOrder];
-    const savedOrder = typeof window !== "undefined" && window.localStorage ? window.localStorage.getItem("molsysviewer-studio-tab-order") : null;
+    const savedOrder = readTabOrderStorage();
     if (savedOrder) {
       try {
         const parsed = JSON.parse(savedOrder);
@@ -154879,9 +154896,7 @@ var GroupPanel = class {
         targetIdx = order.indexOf(key2);
         order.splice(targetIdx, 0, draggedKey);
       }
-      if (typeof window !== "undefined" && window.localStorage) {
-        window.localStorage.setItem("molsysviewer-studio-tab-order", JSON.stringify(order));
-      }
+      writeTabOrderStorage(order);
       this.reorderTabsDOM(order);
     });
     button.addEventListener("mouseenter", () => {
