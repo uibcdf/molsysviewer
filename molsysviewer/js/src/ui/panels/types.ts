@@ -30,6 +30,8 @@ export type PanelAction =
     | "create_label_from_saved_selection"
     | "undo_active_selection"
     | "redo_active_selection"
+    | "begin_scene_history_coalescing"
+    | "end_scene_history_coalescing"
     // Selection -> Region / Region creation
     | "create_region_from_selection"
     | "create_region_from_saved_selection"

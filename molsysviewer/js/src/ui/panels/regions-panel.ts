@@ -4,7 +4,7 @@ import type { RegionDetails, RegionSummary, SavedSelectionSummary, SelectionQuer
 import { BasePanel } from "./base-panel";
 import { PanelAction, PanelContext } from "./types";
 import { makeButton, makeSectionHeader, makeStyledSelect } from "./ui-helpers";
-import { FALLBACK_PRESETS, createStyleDraftControls, makeStyleControlRow } from "./style-composer";
+import { FALLBACK_PRESETS, bindContinuousHistory, createStyleDraftControls, makeStyleControlRow } from "./style-composer";
 
 /**
  * Studio -> Regions subpanel.
@@ -51,12 +51,17 @@ export class RegionsPanel extends BasePanel {
     private nextRegionDetailsRequest = 1;
     private regionBooleanAttention = false;
     private regionBooleanComposerElement: HTMLDivElement | null = null;
+    private continuousHistoryEdit = false;
 
     constructor(
         private readonly ctx: PanelContext,
         private readonly onFocusRegion: (tag: string) => void,
     ) {
         super();
+    }
+
+    private scheduleExternalRender(): void {
+        if (!this.continuousHistoryEdit) this.scheduleRender();
     }
 
     setRegions(items: RegionSummary[]): void {
@@ -82,7 +87,7 @@ export class RegionsPanel extends BasePanel {
             }
         }
         this.ctx.setBadge(String(items.length));
-        this.scheduleRender();
+        this.scheduleExternalRender();
     }
 
     setStyleOptions(options: { representations: string[]; presets: string[]; wholeHidden?: boolean }): void {
@@ -92,7 +97,7 @@ export class RegionsPanel extends BasePanel {
         if (!this.regionCreateRepresentation && this.wholeHidden) {
             this.regionCreateRepresentation = "inherit";
         }
-        this.scheduleRender();
+        this.scheduleExternalRender();
     }
 
     setSavedSelections(items: SavedSelectionSummary[]): void {
@@ -102,7 +107,7 @@ export class RegionsPanel extends BasePanel {
             this.regionSavedSelectionTag = tags[0] ?? "";
         }
         if (this.regionCreateOrigin === "saved") {
-            this.scheduleRender();
+            this.scheduleExternalRender();
         }
     }
 
@@ -116,7 +121,7 @@ export class RegionsPanel extends BasePanel {
             return;
         }
         this.regionDetails.set(details.tag, details);
-        this.scheduleRender();
+        this.scheduleExternalRender();
     }
 
     /** Route a query preview; returns true if it belonged to this panel's composer. */
@@ -147,7 +152,7 @@ export class RegionsPanel extends BasePanel {
     setCurrentSelection(selection: ActiveSelectionPayload): void {
         this.currentSelection = selection;
         if (this.regionCreateOrigin === "active") {
-            this.scheduleRender();
+            this.scheduleExternalRender();
         }
     }
 
@@ -1106,7 +1111,19 @@ export class RegionsPanel extends BasePanel {
                 },
             };
         };
-        opacity.addEventListener("change", () => {
+        bindContinuousHistory(
+            opacity,
+            () => {
+                this.continuousHistoryEdit = true;
+                this.ctx.onAction("begin_scene_history_coalescing");
+            },
+            () => {
+                this.ctx.onAction("end_scene_history_coalescing");
+                this.continuousHistoryEdit = false;
+                this.scheduleRender();
+            },
+        );
+        opacity.addEventListener("input", () => {
             if (!this.regionHasOwnVisual(item)) return;
             this.ctx.onAction("set_region_representation", {
                 tag,

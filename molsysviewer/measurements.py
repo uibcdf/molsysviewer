@@ -9,6 +9,7 @@ from smonitor import signal
 from ._private.arg_digestion import digest
 from ._private.smonitor_emit import emit_suppressed_exception
 from .layers import Layer, Measurement
+from .scene_history import records_scene_history
 from . import pyunitwizard as puw
 
 _MEASUREMENT_POLICIES = {"atom", "centroid", "representative_atom"}
@@ -36,6 +37,7 @@ class MeasurementsManager:
             raise KeyError(tag)
         return layer
 
+    @records_scene_history
     def add(self, kind: str, *selections: Any, **kwargs: Any) -> Layer:
         """Create a measurement of explicit *kind*."""
         methods = {
@@ -434,6 +436,7 @@ class MeasurementsManager:
             }
         )
 
+    @records_scene_history
     def _register_interactive_measurement(self, event: dict, *, tag: str | None = None) -> Layer:
         action = event.get("action")
         picks = event.get("picks_atom_indices") or []
@@ -626,6 +629,7 @@ class MeasurementsManager:
         self._representative_atoms[normalized_target] = value
         self._sync_frontend_settings()
 
+    @records_scene_history
     @signal(tags=["measurement", "visibility"])
     @digest()
     def show(self, tag: str, skip_digestion: bool = False) -> Layer:
@@ -633,6 +637,7 @@ class MeasurementsManager:
         layer.show(skip_digestion=True)
         return layer
 
+    @records_scene_history
     @signal(tags=["measurement", "visibility"])
     @digest()
     def hide(self, tag: str, skip_digestion: bool = False) -> Layer:
@@ -640,12 +645,14 @@ class MeasurementsManager:
         layer.hide(skip_digestion=True)
         return layer
 
+    @records_scene_history
     @signal(tags=["measurement"])
     @digest()
     def delete(self, tag: str, skip_digestion: bool = False) -> None:
         layer = self._require_measurement_layer(tag)
         layer.delete(skip_digestion=True)
 
+    @records_scene_history
     @signal(tags=["measurement"])
     @digest()
     def clear(self, tag: str | None = None, skip_digestion: bool = False) -> None:
@@ -656,6 +663,7 @@ class MeasurementsManager:
         for measurement_tag in self.tags(skip_digestion=True):
             self._require_measurement_layer(measurement_tag).delete(skip_digestion=True)
 
+    @records_scene_history
     @signal(tags=["measurement"])
     @digest()
     def set_tag(self, tag: str, new_tag: str, skip_digestion: bool = False) -> Layer:
@@ -663,6 +671,7 @@ class MeasurementsManager:
         layer.set_tag(new_tag, skip_digestion=True)
         return layer
 
+    @records_scene_history
     @signal(tags=["measurement"])
     @digest()
     def set_layer_tag(self, tag: str, new_layer_tag: str, skip_digestion: bool = False) -> Layer:
@@ -670,6 +679,7 @@ class MeasurementsManager:
         layer.set_layer_tag(new_layer_tag, skip_digestion=True)
         return layer
 
+    @records_scene_history
     @signal(tags=["measurement"])
     @digest()
     def add_distance(
@@ -706,6 +716,7 @@ class MeasurementsManager:
             style=measurement_style,
         )
 
+    @records_scene_history
     @signal(tags=["measurement"])
     @digest()
     def add_angle(
@@ -752,6 +763,7 @@ class MeasurementsManager:
             style=measurement_style,
         )
 
+    @records_scene_history
     @signal(tags=["measurement"])
     @digest()
     def add_dihedral(

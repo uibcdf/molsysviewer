@@ -7,6 +7,7 @@ from smonitor import signal
 
 from ._private.arg_digestion import digest
 from .layers import Annotation, Layer
+from .scene_history import records_scene_history
 
 
 class AnnotationsManager:
@@ -169,6 +170,7 @@ class AnnotationsManager:
 
         raise ValueError(f"No annotation record found for tag {tag!r}.")
 
+    @records_scene_history
     @signal(tags=["annotation"])
     @digest()
     def add_annotation(
@@ -229,10 +231,12 @@ class AnnotationsManager:
         self._view._send({"op": "add_label", "tag": object_tag, "options": options})  # noqa: SLF001
         return layer
 
+    @records_scene_history
     def add(self, *args, **kwargs) -> Layer:
         """Create an annotation; canonical manager alias for :meth:`add_annotation`."""
         return self.add_annotation(*args, **kwargs)
 
+    @records_scene_history
     @signal(tags=["annotation"])
     @digest()
     def add_label(
@@ -269,6 +273,7 @@ class AnnotationsManager:
             skip_digestion=True,
         )
 
+    @records_scene_history
     @signal(tags=["annotation", "selection"])
     @digest()
     def add_label_from_active_selection(
@@ -302,6 +307,7 @@ class AnnotationsManager:
             skip_digestion=True,
         )
 
+    @records_scene_history
     @signal(tags=["annotation", "visibility"])
     @digest()
     def show(self, tag: str, skip_digestion: bool = False) -> Layer:
@@ -310,6 +316,7 @@ class AnnotationsManager:
         layer.show(skip_digestion=True)
         return layer
 
+    @records_scene_history
     @signal(tags=["annotation", "visibility"])
     @digest()
     def hide(self, tag: str, skip_digestion: bool = False) -> Layer:
@@ -318,6 +325,7 @@ class AnnotationsManager:
         layer.hide(skip_digestion=True)
         return layer
 
+    @records_scene_history
     @signal(tags=["annotation"])
     @digest()
     def delete(self, tag: str, skip_digestion: bool = False) -> None:
@@ -325,6 +333,7 @@ class AnnotationsManager:
         layer = self._require_annotation_layer(tag)
         layer.delete(skip_digestion=True)
 
+    @records_scene_history
     @signal(tags=["annotation"])
     @digest()
     def set_tag(self, tag: str, new_tag: str, skip_digestion: bool = False) -> Layer:
@@ -333,6 +342,7 @@ class AnnotationsManager:
         layer.set_tag(new_tag, skip_digestion=True)
         return layer
 
+    @records_scene_history
     @signal(tags=["annotation"])
     @digest()
     def set_layer_tag(self, tag: str, new_layer_tag: str, skip_digestion: bool = False) -> Layer:
@@ -341,6 +351,7 @@ class AnnotationsManager:
         layer.set_layer_tag(new_layer_tag, skip_digestion=True)
         return layer
 
+    @records_scene_history
     @signal(tags=["annotation"])
     @digest()
     def clear(self, tag: str | None = None, skip_digestion: bool = False) -> None:
@@ -350,6 +361,7 @@ class AnnotationsManager:
             return
         self.delete(tag, skip_digestion=True)
 
+    @records_scene_history
     @signal(tags=["annotation"])
     @digest()
     def set_text(self, tag: str, text: str, skip_digestion: bool = False) -> Layer:
@@ -376,6 +388,7 @@ class AnnotationsManager:
         )
         return layer
 
+    @records_scene_history
     @signal(tags=["annotation"])
     @digest()
     def set_style(self, tag: str, style: dict[str, Any], skip_digestion: bool = False) -> Layer:
@@ -401,6 +414,7 @@ class AnnotationsManager:
         )
         return layer
 
+    @records_scene_history
     @signal(tags=["annotation"])
     @digest()
     def set_anchor(
@@ -442,6 +456,7 @@ class AnnotationsManager:
         )
         return layer
 
+    @records_scene_history
     @signal(tags=["annotation"])
     @digest()
     def set_group_index(self, tag: str, group_index: Any, skip_digestion: bool = False) -> Layer:

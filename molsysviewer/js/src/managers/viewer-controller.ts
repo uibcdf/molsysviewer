@@ -999,6 +999,14 @@ export class MolSysViewerController {
                 emitInteractionEvent({ event: "scene_history_redo" });
                 return;
             }
+            if (action === "begin_scene_history_coalescing") {
+                emitInteractionEvent({ event: "scene_history_coalescing_begin" });
+                return;
+            }
+            if (action === "end_scene_history_coalescing") {
+                emitInteractionEvent({ event: "scene_history_coalescing_end" });
+                return;
+            }
             if (action === "selection_query_preview_request") {
                 emitInteractionEvent({
                     event: "selection_query_preview_request",

@@ -150117,6 +150117,27 @@ function makeStyleControlRow(label2, control) {
   row2.appendChild(control);
   return row2;
 }
+function bindContinuousHistory(input, onStart, onEnd) {
+  let active = false;
+  const start4 = () => {
+    if (active) return;
+    active = true;
+    onStart();
+  };
+  const end4 = () => {
+    if (!active) return;
+    active = false;
+    onEnd();
+  };
+  input.addEventListener("pointerdown", start4);
+  input.addEventListener("focus", start4);
+  input.addEventListener("pointerup", end4);
+  input.addEventListener("pointercancel", end4);
+  input.addEventListener("blur", end4);
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === "Escape") end4();
+  });
+}
 function createStyleDraftControls(options) {
   const params = options.params ?? {};
   let representationSelect;
@@ -150257,6 +150278,10 @@ var RegionsPanel = class extends BasePanel {
     this.nextRegionDetailsRequest = 1;
     this.regionBooleanAttention = false;
     this.regionBooleanComposerElement = null;
+    this.continuousHistoryEdit = false;
+  }
+  scheduleExternalRender() {
+    if (!this.continuousHistoryEdit) this.scheduleRender();
   }
   setRegions(items) {
     this.regions = [...items];
@@ -150281,7 +150306,7 @@ var RegionsPanel = class extends BasePanel {
       }
     }
     this.ctx.setBadge(String(items.length));
-    this.scheduleRender();
+    this.scheduleExternalRender();
   }
   setStyleOptions(options) {
     this.regionStyleRepresentations = [...options.representations];
@@ -150290,7 +150315,7 @@ var RegionsPanel = class extends BasePanel {
     if (!this.regionCreateRepresentation && this.wholeHidden) {
       this.regionCreateRepresentation = "inherit";
     }
-    this.scheduleRender();
+    this.scheduleExternalRender();
   }
   setSavedSelections(items) {
     this.savedSelections = [...items];
@@ -150299,7 +150324,7 @@ var RegionsPanel = class extends BasePanel {
       this.regionSavedSelectionTag = tags[0] ?? "";
     }
     if (this.regionCreateOrigin === "saved") {
-      this.scheduleRender();
+      this.scheduleExternalRender();
     }
   }
   updateDetails(details) {
@@ -150308,7 +150333,7 @@ var RegionsPanel = class extends BasePanel {
       return;
     }
     this.regionDetails.set(details.tag, details);
-    this.scheduleRender();
+    this.scheduleExternalRender();
   }
   /** Route a query preview; returns true if it belonged to this panel's composer. */
   updatePreview(preview) {
@@ -150334,7 +150359,7 @@ var RegionsPanel = class extends BasePanel {
   setCurrentSelection(selection) {
     this.currentSelection = selection;
     if (this.regionCreateOrigin === "active") {
-      this.scheduleRender();
+      this.scheduleExternalRender();
     }
   }
   /** Whether a region with this tag currently exists (used by the Selection -> Region bridge). */
@@ -151234,7 +151259,19 @@ var RegionsPanel = class extends BasePanel {
         }
       };
     };
-    opacity.addEventListener("change", () => {
+    bindContinuousHistory(
+      opacity,
+      () => {
+        this.continuousHistoryEdit = true;
+        this.ctx.onAction("begin_scene_history_coalescing");
+      },
+      () => {
+        this.ctx.onAction("end_scene_history_coalescing");
+        this.continuousHistoryEdit = false;
+        this.scheduleRender();
+      }
+    );
+    opacity.addEventListener("input", () => {
       if (!this.regionHasOwnVisual(item2)) return;
       this.ctx.onAction("set_region_representation", {
         tag,
@@ -152968,6 +153005,7 @@ var WholePanel = class {
     this.summary = null;
     this.details = null;
     this.requestId = 0;
+    this.continuousHistoryEdit = false;
   }
   mount(host) {
     this.host = host;
@@ -152980,7 +153018,7 @@ var WholePanel = class {
   setSummary(summary) {
     this.summary = summary;
     this.ctx.setBadge(summary ? summary.visible ? "Visible" : "Hidden" : "None");
-    this.render();
+    if (!this.continuousHistoryEdit) this.render();
   }
   updateDetails(details) {
     if (details.request_id !== this.requestId) return;
@@ -153070,7 +153108,19 @@ var WholePanel = class {
     const quality = controls.qualitySelect;
     section.appendChild(controls.representationRow);
     section.appendChild(controls.presetRow);
-    opacity.addEventListener("change", () => {
+    bindContinuousHistory(
+      opacity,
+      () => {
+        this.continuousHistoryEdit = true;
+        this.ctx.onAction("begin_scene_history_coalescing");
+      },
+      () => {
+        this.ctx.onAction("end_scene_history_coalescing");
+        this.continuousHistoryEdit = false;
+        this.render();
+      }
+    );
+    opacity.addEventListener("input", () => {
       this.ctx.onAction("set_whole_representation", {
         ...preset.value ? { preset: preset.value } : representation.value ? { representation: representation.value } : {},
         params: { ...params, alpha: Number(opacity.value) }
@@ -156899,6 +156949,14 @@ var MolSysViewerController = class _MolSysViewerController {
       }
       if (action === "redo_active_selection") {
         emitInteractionEvent({ event: "scene_history_redo" });
+        return;
+      }
+      if (action === "begin_scene_history_coalescing") {
+        emitInteractionEvent({ event: "scene_history_coalescing_begin" });
+        return;
+      }
+      if (action === "end_scene_history_coalescing") {
+        emitInteractionEvent({ event: "scene_history_coalescing_end" });
         return;
       }
       if (action === "selection_query_preview_request") {

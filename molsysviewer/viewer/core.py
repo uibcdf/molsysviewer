@@ -920,6 +920,12 @@ class MolSysView(
         elif event == "scene_history_redo":
             self.history.redo()
             return
+        elif event == "scene_history_coalescing_begin":
+            self.history.begin_coalescing()
+            return
+        elif event == "scene_history_coalescing_end":
+            self.history.end_coalescing()
+            return
         elif event == "interaction_context_action":
             try:
                 self._last_context_action_event = dict(content)
@@ -954,7 +960,7 @@ class MolSysView(
             )
             _selection_changed = atom_indices != _previous_selection
             if _selection_changed:
-                self.history._begin_operation()  # noqa: SLF001
+                self.history._begin_operation(("active_selection", "", "set"))  # noqa: SLF001
 
             if self._molsys is not None and len(atom_indices) > 0:
                 try:

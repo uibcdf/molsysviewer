@@ -8,6 +8,7 @@ from smonitor import signal
 
 from ._private.arg_digestion import digest
 from . import pyunitwizard as puw
+from .scene_history import records_scene_history
 
 
 _NM_TO_ANGSTROM = puw.conversion_factor("nm", "angstroms")
@@ -182,6 +183,7 @@ class LayerHandle:
     def _send_create(self) -> None:
         self._send("create_layer", kind=self.kind, meta=self.meta)
 
+    @records_scene_history
     @signal(tags=["visibility", "layer"])
     @digest()
     def show(self, skip_digestion: bool = False) -> None:
@@ -189,6 +191,7 @@ class LayerHandle:
         self._hidden = False
         self._send("show_layer")
 
+    @records_scene_history
     @signal(tags=["visibility", "layer"])
     @digest()
     def hide(self, skip_digestion: bool = False) -> None:
@@ -196,6 +199,7 @@ class LayerHandle:
         self._hidden = True
         self._send("hide_layer")
 
+    @records_scene_history
     @signal(
         tags=["layer"],
         extra_factory=lambda args, kwargs: {"new_tag": kwargs.get("new_tag", args[1] if len(args) > 1 else None)},
@@ -209,6 +213,7 @@ class LayerHandle:
         self._active = False
         self._view._unregister_layer(self.tag)  # noqa: SLF001
 
+    @records_scene_history
     @signal(tags=["layer"])
     @digest()
     def set_tag(self, new_tag: str, skip_digestion: bool = False) -> None:
@@ -252,14 +257,17 @@ class SceneObject(LayerHandle):
             payload["kind"] = self.kind
         super()._send(op, **payload)
 
+    @records_scene_history
     def show(self, skip_digestion: bool = False) -> None:
         super().show(skip_digestion=True)
         self._sync_group_layer_hidden_state()
 
+    @records_scene_history
     def hide(self, skip_digestion: bool = False) -> None:
         super().hide(skip_digestion=True)
         self._sync_group_layer_hidden_state()
 
+    @records_scene_history
     def set_tag(self, new_tag: str, skip_digestion: bool = False) -> None:
         if not self._active or new_tag == self.tag:
             return
@@ -275,12 +283,14 @@ class SceneObject(LayerHandle):
                 self._view._move_or_rename_layer_group_for_object_tag_change(old_tag, new_tag, self)  # noqa: SLF001
             self.layer_tag = new_tag
 
+    @records_scene_history
     def set_layer_tag(self, new_layer_tag: str, skip_digestion: bool = False) -> None:
         if not self._active:
             return
         if hasattr(self._view, "_set_scene_object_layer_tag"):
             self._view._set_scene_object_layer_tag(self, new_layer_tag)  # noqa: SLF001
 
+    @records_scene_history
     def delete(self, skip_digestion: bool = False) -> None:
         if not self._active:
             return
@@ -314,6 +324,7 @@ class Layer(LayerHandle):
     def _send_create(self) -> None:
         return
 
+    @records_scene_history
     def set_tag(self, new_tag: str, skip_digestion: bool = False) -> None:
         members = list(self.members.values())
         if len(members) == 1:
@@ -342,6 +353,7 @@ class Layer(LayerHandle):
         has_own_visual = getattr(member, "_has_own_visual", None)
         return callable(has_own_visual) and not has_own_visual()
 
+    @records_scene_history
     def show(self, skip_digestion: bool = False) -> None:
         self._hidden = False
         for member in list(self.members.values()):
@@ -350,6 +362,7 @@ class Layer(LayerHandle):
                 continue
             member.show(skip_digestion=True)
 
+    @records_scene_history
     def hide(self, skip_digestion: bool = False) -> None:
         self._hidden = True
         for member in list(self.members.values()):
@@ -358,6 +371,7 @@ class Layer(LayerHandle):
                 continue
             member.hide(skip_digestion=True)
 
+    @records_scene_history
     def delete(self, skip_digestion: bool = False) -> None:
         if not self._active:
             return
@@ -367,6 +381,7 @@ class Layer(LayerHandle):
         if hasattr(self._view, "_unregister_layer"):
             self._view._unregister_layer(self.tag)  # noqa: SLF001
 
+    @records_scene_history
     def attach(self, obj: "SceneObject") -> None:
         """Move *obj* into this layer (top-down membership management).
 
@@ -400,6 +415,7 @@ class Layer(LayerHandle):
             })
         return rows
 
+    @records_scene_history
     def detach(self, obj: "SceneObject") -> None:
         """Detach *obj* from this layer, making it its own independent layer.
 
@@ -427,6 +443,7 @@ class LayersManager(dict[str, Layer]):
         super().__init__()
         self._view = view
 
+    @records_scene_history
     @signal(tags=["layer"])
     @digest()
     def add(
@@ -483,12 +500,14 @@ class LayersManager(dict[str, Layer]):
             return summarize(layer)
         return [summarize(layer) for layer in self.values()]
 
+    @records_scene_history
     def delete(self, tag: str, skip_digestion: bool = False) -> None:
         layer = super().get(tag)
         if layer is None:
             raise KeyError(tag)
         layer.delete(skip_digestion=True)
 
+    @records_scene_history
     def clear(self, tag: str | None = None, skip_digestion: bool = False) -> None:
         if tag is not None:
             self.delete(tag, skip_digestion=True)
@@ -496,6 +515,7 @@ class LayersManager(dict[str, Layer]):
         for layer_tag in list(self.keys()):
             self.delete(layer_tag, skip_digestion=True)
 
+    @records_scene_history
     def set_tag(self, tag: str, new_tag: str, skip_digestion: bool = False) -> Layer:
         layer = super().get(tag)
         if layer is None:
@@ -503,6 +523,7 @@ class LayersManager(dict[str, Layer]):
         layer.set_tag(new_tag, skip_digestion=True)
         return layer
 
+    @records_scene_history
     def show(self, tag: str, skip_digestion: bool = False) -> Layer:
         layer = super().get(tag)
         if layer is None:
@@ -510,6 +531,7 @@ class LayersManager(dict[str, Layer]):
         layer.show(skip_digestion=True)
         return layer
 
+    @records_scene_history
     def hide(self, tag: str, skip_digestion: bool = False) -> Layer:
         layer = super().get(tag)
         if layer is None:
@@ -796,6 +818,7 @@ class Shape(SceneObject):
             f"get_coordinates is not implemented for shape op {op!r}."
         )
 
+    @records_scene_history
     def set_coordinates(self, coordinates) -> None:
         """Replace the geometric coordinates of this shape.
 
@@ -858,16 +881,20 @@ class Shape(SceneObject):
             f"set_coordinates is not implemented for shape op {op!r}."
         )
 
+    @records_scene_history
     def set_center(self, center, skip_digestion: bool = False) -> None:
         self._apply_sphere_update(center=list(puw.get_value(center, to_unit="angstroms")))
 
+    @records_scene_history
     def set_radius(self, radius, skip_digestion: bool = False) -> None:
         self._apply_sphere_update(radius=float(puw.get_value(radius, to_unit="angstroms")))
 
+    @records_scene_history
     def set_color(self, color, skip_digestion: bool = False) -> None:
         from .colors import normalize_color
         self._apply_sphere_update(color=normalize_color(color))
 
+    @records_scene_history
     def set_alpha(self, alpha: float, skip_digestion: bool = False) -> None:
         msg = self._require_shape_message()
         op = msg.get("op")
@@ -902,6 +929,7 @@ class Shape(SceneObject):
             return
         raise NotImplementedError(f"set_alpha is not implemented for shape op {op!r}.")
 
+    @records_scene_history
     def set_colors(self, colors, skip_digestion: bool = False) -> None:
         from .colors import normalize_color
         msg = self._require_shape_message()
@@ -949,6 +977,7 @@ class Shape(SceneObject):
             return
         raise NotImplementedError(f"set_colors is not implemented for shape op {op!r}.")
 
+    @records_scene_history
     def set_radii(self, radii, skip_digestion: bool = False) -> None:
         msg = self._require_shape_message()
         op = msg.get("op")
@@ -992,6 +1021,7 @@ class Shape(SceneObject):
             return
         raise NotImplementedError(f"set_radii is not implemented for shape op {op!r}.")
 
+    @records_scene_history
     def set_radius_scale(self, radius_scale: float, skip_digestion: bool = False) -> None:
         msg = self._require_shape_message()
         op = msg.get("op")
@@ -1003,6 +1033,7 @@ class Shape(SceneObject):
             return
         raise NotImplementedError(f"set_radius_scale is not implemented for shape op {op!r}.")
 
+    @records_scene_history
     def set_length_scale(self, length_scale: float, skip_digestion: bool = False) -> None:
         msg = self._require_shape_message()
         op = msg.get("op")

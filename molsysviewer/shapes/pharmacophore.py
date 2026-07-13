@@ -7,6 +7,7 @@ from smonitor import signal
 
 from .. import pyunitwizard as puw
 from .._private.arg_digestion import digest
+from ..scene_history import records_scene_history
 from ..colors import colors as global_colors
 from ._registry import register_shape_layer
 
@@ -130,6 +131,7 @@ class PharmacophoreShapes:
 
     @signal(tags=["shape", "pharmacophore"])
     @digest()
+    @records_scene_history
     def add_interaction_sites(
         self,
         *,
@@ -167,6 +169,7 @@ class PharmacophoreShapes:
 
     @signal(tags=["shape", "pharmacophore"])
     @digest()
+    @records_scene_history
     def add_pharmacophore_features(
         self,
         *args,

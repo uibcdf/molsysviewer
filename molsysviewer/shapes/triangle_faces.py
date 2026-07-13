@@ -8,6 +8,7 @@ from smonitor import signal
 
 from .. import pyunitwizard as puw
 from .._private.arg_digestion import digest
+from ..scene_history import records_scene_history
 from ..colors import normalize_color
 from ._registry import register_shape_layer
 
@@ -117,6 +118,7 @@ class TriangleFaces:
 
     @signal(tags=["shape", "triangle"])
     @digest()
+    @records_scene_history
     def add_triangle_faces(
         self,
         *,

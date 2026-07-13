@@ -146,7 +146,6 @@ async function run() {
         await page.locator('[data-molsysviewer-region-style="pocket"]').click();
         const opacity = page.locator('[data-molsysviewer-region-style-opacity="pocket"]');
         await opacity.fill("0.55");
-        await opacity.dispatchEvent("change");
         assert.strictEqual((await latestAction(page, "set_region_representation")).params.alpha, 0.55);
         await page.locator('[data-molsysviewer-region-style-color-attribute="pocket"]').selectOption("b_factor");
         assert.strictEqual((await latestAction(page, "color_region_by_attribute")).attribute, "b_factor");
