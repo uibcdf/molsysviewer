@@ -53,6 +53,8 @@ export type NavigateItem = {
     subtitle?: string;
     active?: boolean;
     hidden?: boolean;
+    broken?: boolean;
+    brokenReason?: string;
     onActivate?: () => void;
     onToggleVisibility?: (hidden: boolean) => void;
     onDelete?: () => void;

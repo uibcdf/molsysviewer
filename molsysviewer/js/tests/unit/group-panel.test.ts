@@ -1024,7 +1024,7 @@ test("GroupPanel region cards expose lifecycle actions and explicit collision ch
     }
 });
 
-test("GroupPanel region style composer brackets live opacity changes for history", () => {
+test("GroupPanel region style composer brackets live opacity changes for history", async () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
@@ -1129,6 +1129,15 @@ test("GroupPanel region style composer brackets live opacity changes for history
             action: "end_scene_history_coalescing",
             details: undefined,
         }]);
+        assert.strictEqual(
+            findFirstByAttribute(root, "data-molsysviewer-region-style-opacity", "binding"),
+            opacity,
+        );
+        await new Promise(resolve => setTimeout(resolve, 0));
+        assert.notStrictEqual(
+            findFirstByAttribute(root, "data-molsysviewer-region-style-opacity", "binding"),
+            opacity,
+        );
 
         const refreshedRepresentation = findFirstByAttribute(
             root,
@@ -1974,7 +1983,7 @@ test("GroupPanel Whole panel renders summary and confirms hiding base-only regio
     }
 });
 
-test("GroupPanel Whole opacity brackets live changes for history", () => {
+test("GroupPanel Whole opacity brackets live changes for history", async () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
@@ -1998,6 +2007,13 @@ test("GroupPanel Whole opacity brackets live changes for history", () => {
         const root = host.children[0];
         const opacity = findFirstByAttribute(root, "data-molsysviewer-whole-opacity", "true") as any;
         const readout = findFirstByAttribute(root, "data-molsysviewer-whole-opacity-value", "true");
+        const wholePanel = (panel as any).wholePanel;
+        const render = wholePanel.render.bind(wholePanel);
+        let renders = 0;
+        wholePanel.render = () => {
+            renders += 1;
+            render();
+        };
         assert.ok(opacity);
         opacity.value = "0.25";
         opacity.dispatch("pointerdown", { preventDefault() {}, stopPropagation() {} });
@@ -2027,6 +2043,9 @@ test("GroupPanel Whole opacity brackets live changes for history", () => {
             "end_scene_history_coalescing",
         ]);
         assert.deepStrictEqual(actions[1].details.params.alpha, 0.25);
+        assert.strictEqual(renders, 0);
+        await new Promise(resolve => setTimeout(resolve, 0));
+        assert.strictEqual(renders, 1);
     } finally {
         restore();
     }

@@ -553,8 +553,8 @@ export class MolSysViewerController {
     private readonly hoverDebounceMs = 60;
     private lastPrimaryGroupClick: { key: string; time: number } | null = null;
     private savedSelections: SavedSelectionRecord[] = [];
-    private annotationSummaries: Array<{ kind: string; tag: string; layerTag?: string; text: string; hidden: boolean; atomIndices: number[] }> = [];
-    private measurementSummaries: Array<{ kind: string; tag: string; layerTag?: string; picks: number; hidden: boolean; atomIndices: number[] }> = [];
+    private annotationSummaries: Array<{ kind: string; tag: string; layerTag?: string; text: string; hidden: boolean; atomIndices: number[]; broken: boolean; brokenReason?: string }> = [];
+    private measurementSummaries: Array<{ kind: string; tag: string; layerTag?: string; picks: number; hidden: boolean; atomIndices: number[]; value?: number; unit?: string; broken: boolean; brokenReason?: string }> = [];
     private shapeSummaries: Array<{ kind: string; tag: string; layerTag?: string; title: string; subtitle?: string; hidden: boolean; atomIndices: number[] }> = [];
     private dynamicRegionEvaluationInFlight: number | null = null;
     private dynamicRegionEvaluationPendingFrame: number | null = null;
@@ -2151,6 +2151,8 @@ export class MolSysViewerController {
                         text: typeof item.text === "string" ? item.text : item.tag,
                         hidden: !!item.hidden,
                         atomIndices: Array.isArray(item.atom_indices) ? item.atom_indices.filter((value: unknown): value is number => typeof value === "number") : [],
+                        broken: !!item.broken,
+                        brokenReason: typeof item.broken_reason === "string" ? item.broken_reason : undefined,
                     }));
                     break;
                 }
@@ -2163,6 +2165,10 @@ export class MolSysViewerController {
                         picks: typeof item.n_picks === "number" ? item.n_picks : 0,
                         hidden: !!item.hidden,
                         atomIndices: Array.isArray(item.atom_indices) ? item.atom_indices.filter((value: unknown): value is number => typeof value === "number") : [],
+                        value: typeof item.value === "number" ? item.value : undefined,
+                        unit: typeof item.unit === "string" ? item.unit : undefined,
+                        broken: !!item.broken,
+                        brokenReason: typeof item.broken_reason === "string" ? item.broken_reason : undefined,
                     }));
                     break;
                 }
@@ -2718,6 +2724,8 @@ export class MolSysViewerController {
                     title: item.text,
                     subtitle: item.layerTag && item.layerTag !== tag ? `${tag} · layer: ${item.layerTag}` : tag,
                     hidden: item.hidden,
+                    broken: item.broken,
+                    brokenReason: item.brokenReason,
                     active: this.addonsActive?.section === "annotations" && this.addonsActive.tag === tag,
                     onActivate: item.atomIndices.length > 0 ? () => {
                         this.addonsActive = { section: "annotations", tag };
@@ -2745,6 +2753,8 @@ export class MolSysViewerController {
                         ? `${tag} · ${item.picks} picks · layer: ${item.layerTag}`
                         : `${tag} · ${item.picks} picks`,
                     hidden: item.hidden,
+                    broken: item.broken,
+                    brokenReason: item.brokenReason,
                     active: this.addonsActive?.section === "measurements" && this.addonsActive.tag === tag,
                     onActivate: item.atomIndices.length > 0 ? () => {
                         this.addonsActive = { section: "measurements", tag };

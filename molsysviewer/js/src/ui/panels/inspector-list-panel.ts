@@ -54,14 +54,18 @@ export class InspectorListPanel extends BasePanel {
         if (this.items.length > 0) {
             for (const item of this.items) {
                 const row = makeRowElement(
-                    item.title,
-                    item.subtitle || this.config.subtitleFallback,
+                    item.broken ? `⚠ ${item.title}` : item.title,
+                    item.broken
+                        ? item.brokenReason || "Damaged anchor"
+                        : item.subtitle || this.config.subtitleFallback,
                     item.onActivate,
                     item.onDelete,
                     { hidden: item.hidden, onToggleVisibility: item.onToggleVisibility },
                 );
                 row.setAttribute("data-molsysviewer-scene-object-kind", this.key);
                 row.setAttribute("data-molsysviewer-scene-object-tag", item.key ?? item.title);
+                row.setAttribute("data-molsysviewer-scene-object-broken", String(!!item.broken));
+                if (item.brokenReason) row.title = item.brokenReason;
                 list.appendChild(row);
             }
         } else {

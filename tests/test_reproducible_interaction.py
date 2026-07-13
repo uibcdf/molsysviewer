@@ -1,6 +1,7 @@
 import pyunitwizard as puw
 import molsysmt as msm
 import molsysviewer._pyunitwizard  # noqa: F401
+import pytest
 
 from molsysviewer import demo
 from molsysviewer.addons import AddonLifecycleSpec, AddonSpec, addons
@@ -731,6 +732,8 @@ def test_full_reproducible_workflow_remaps_region_selection_label_and_measuremen
     assert view.selections.info("picked")["atom_indices"] == remapped_group_0_atoms
     assert view.selections.info("picked")["group_indices"] == [0]
     assert view.annotations.info("picked-label")["atom_indices"] == remapped_group_0_atoms
+    measurement_value = view.measurements.info("picked-distance")[0]["value"]
+    assert measurement_value is not None
     assert view.measurements.info("picked-distance") == [
         {
             "kind": "distance",
@@ -742,7 +745,7 @@ def test_full_reproducible_workflow_remaps_region_selection_label_and_measuremen
             "endpoint_policy": "centroid",
             "endpoint_labels": endpoint_labels,
             "endpoint_atom_indices": [[remapped_group_0_atoms[0]], [remapped_group_1_atoms[0]]],
-            "value": None,
+            "value": measurement_value,
             "visible": True,
             "active": True,
             "broken": False,
@@ -761,3 +764,6 @@ def test_full_reproducible_workflow_remaps_region_selection_label_and_measuremen
         msg for msg in messages if msg.get("op") == "add_distance_measurement" and msg.get("tag") == "picked-distance"
     )
     assert measurement_msg["options"]["picks_atom_indices"] == [[remapped_group_0_atoms[0]], [remapped_group_1_atoms[0]]]
+    assert measurement_msg["options"]["value"] == pytest.approx(float(
+        puw.get_value(measurement_value, to_unit="angstrom")
+    ))
