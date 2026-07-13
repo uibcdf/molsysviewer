@@ -1,66 +1,124 @@
-from smonitor.integrations import ensure_configured as _ensure_smonitor_configured
+from __future__ import annotations
+
+import importlib
+import sys
+from types import ModuleType
+
 from depdigest import check_dependency as _check_dependency
+from smonitor.integrations import ensure_configured as _ensure_smonitor_configured
 
 from ._private.smonitor import PACKAGE_ROOT as _SMONITOR_PACKAGE_ROOT
+from ._version import __version__
+
 
 _ensure_smonitor_configured(_SMONITOR_PACKAGE_ROOT)
-import sys
-if not getattr(sys.modules.get(__name__), '_checked_dep', False):
+if not getattr(sys.modules.get(__name__), "_checked_dep", False):
     _check_dependency(__name__)
     try:
         sys.modules[__name__]._checked_dep = True
     except AttributeError:
         pass
 
-from ._pyunitwizard import puw as pyunitwizard
-from ._version import __version__
-from . import config
-from .demo import demo
-from .systems import systems
-from .new_view import new_view
-from . import tools
-from . import addon_templates
-from .addons import (
-    addons,
-    AddonContextActionSpec,
-    AddonExportHelperSpec,
-    AddonLifecycleSpec,
-    AddonPanelSpec,
-    AddonPanelWidget,
-    AddonShapeProviderSpec,
-    AddonSpec,
-    AddonStyleHelperSpec,
-    AddonToolModeSpec,
-    AddonSectionSpec,
-    AddonWorkspaceSpec,
-    AddonWorkbenchSectionSpec,
-)
-from .styles import Style
-from .figures import FigureSpec
-from .geometry import (
-    MESH_LOCAL,
-    MOLECULAR_SYSTEM,
-    VIEWER_LOCAL,
-    EntityRef,
-    PointGeometry,
-    SphereGeometry,
-    SegmentGeometry,
-    TetrahedraGeometry,
-    IndexedTriangleGeometry,
-    IndexedEdgeGeometry,
-    entity_ref_payload,
-)
-from .viewer import MolSysView, ViewerInfo
-from .colors import (
-    ColorRegistry,
-    ContinuousPalette,
-    CategoricalColorScheme,
-    colors,
-    normalize_color,
-    normalize_colors,
-    scalar_to_color_list,
-    expand_values_to_atoms,
-)
+
+_LAZY_ATTRIBUTES = {
+    "pyunitwizard": ("._pyunitwizard", "puw"),
+    "config": ".config",
+    "demo": (".demo", "demo"),
+    "systems": (".systems", "systems"),
+    "new_view": (".new_view", "new_view"),
+    "tools": ".tools",
+    "addon_templates": ".addon_templates",
+    "shape_adapters": ".shape_adapters",
+    "Style": (".styles", "Style"),
+    "FigureSpec": (".figures", "FigureSpec"),
+    "MolSysView": (".viewer", "MolSysView"),
+    "ViewerInfo": (".viewer", "ViewerInfo"),
+}
+
+for _name in (
+    "addons",
+    "AddonContextActionSpec",
+    "AddonExportHelperSpec",
+    "AddonLifecycleSpec",
+    "AddonPanelSpec",
+    "AddonPanelWidget",
+    "AddonShapeProviderSpec",
+    "AddonSpec",
+    "AddonStyleHelperSpec",
+    "AddonToolModeSpec",
+    "AddonSectionSpec",
+    "AddonWorkspaceSpec",
+    "AddonWorkbenchSectionSpec",
+):
+    _LAZY_ATTRIBUTES[_name] = (".addons", _name)
+
+for _name in (
+    "MESH_LOCAL",
+    "MOLECULAR_SYSTEM",
+    "VIEWER_LOCAL",
+    "EntityRef",
+    "PointGeometry",
+    "SphereGeometry",
+    "SegmentGeometry",
+    "TetrahedraGeometry",
+    "IndexedTriangleGeometry",
+    "IndexedEdgeGeometry",
+    "entity_ref_payload",
+):
+    _LAZY_ATTRIBUTES[_name] = (".geometry", _name)
+
+for _name in (
+    "ColorRegistry",
+    "ContinuousPalette",
+    "CategoricalColorScheme",
+    "colors",
+    "normalize_color",
+    "normalize_colors",
+    "scalar_to_color_list",
+    "expand_values_to_atoms",
+):
+    _LAZY_ATTRIBUTES[_name] = (".colors", _name)
+
+
+def _materialize(name: str):
+    target = _LAZY_ATTRIBUTES.get(name)
+    if target is None:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    if isinstance(target, str):
+        value = importlib.import_module(target, __name__)
+    else:
+        module_name, attribute_name = target
+        module = importlib.import_module(module_name, __name__)
+        if module_name == ".addons":
+            module.addons.discover(include_known_modules=True)
+            for public_name, public_target in _LAZY_ATTRIBUTES.items():
+                if isinstance(public_target, tuple) and public_target[0] == ".addons":
+                    globals()[public_name] = getattr(module, public_target[1])
+        value = getattr(module, attribute_name)
+    if name in {"MolSysView", "demo", "new_view"}:
+        addons_module = importlib.import_module(".addons", __name__)
+        addons_module.addons.discover(include_known_modules=True)
+        globals()["addons"] = addons_module.addons
+    globals()[name] = value
+    return value
+
+
+def __getattr__(name: str):
+    return _materialize(name)
+
+
+class _LazyPackageModule(ModuleType):
+    def __getattribute__(self, name: str):
+        lazy = ModuleType.__getattribute__(self, "__dict__").get("_LAZY_ATTRIBUTES", {})
+        target = lazy.get(name)
+        current = ModuleType.__getattribute__(self, "__dict__").get(name)
+        if isinstance(current, ModuleType) and isinstance(target, tuple):
+            return _materialize(name)
+        return ModuleType.__getattribute__(self, name)
+
+
+def __dir__():
+    return sorted(set(globals()) | set(_LAZY_ATTRIBUTES))
 
 
 def __print_version__():
@@ -90,8 +148,6 @@ def launch_standalone_qt0(*args, **kwargs):
 
     return _launch_standalone_qt0(*args, **kwargs)
 
-
-addons.discover(include_known_modules=True)
 
 __all__ = [
     "MolSysView",
@@ -141,3 +197,6 @@ __all__ = [
     "config",
     "AddonWorkbenchSectionSpec",
 ]
+
+
+sys.modules[__name__].__class__ = _LazyPackageModule

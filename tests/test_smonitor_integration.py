@@ -33,7 +33,7 @@ def test_public_wrappers_emit_signal_timeline_entries(tmp_path):
     previous_buffer = manager.config.profiling_buffer_size
     manager._timeline.clear()
     manager._timings.clear()
-    manager.configure(profiling=True, profiling_sample_rate=1.0, profiling_buffer_size=2048)
+    manager.configure(profiling=True, profiling_sample_rate=1.0, profiling_buffer_size=16384)
 
     try:
         view = demo["dialanine"]

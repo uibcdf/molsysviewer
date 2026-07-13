@@ -18,15 +18,13 @@ def test_package_checks_dependencies_before_importing_heavy_modules():
     init_text = Path("molsysviewer/__init__.py").read_text(encoding="utf-8")
 
     check_pos = init_text.index('_check_dependency(__name__)')
-    pyw_pos = init_text.index("from ._pyunitwizard import puw as pyunitwizard")
-    demo_pos = init_text.index("from .demo import demo")
-    new_view_pos = init_text.index("from .new_view import new_view")
-    viewer_pos = init_text.index("from .viewer import MolSysView")
+    lazy_registry_pos = init_text.index("_LAZY_ATTRIBUTES = {")
 
-    assert check_pos < pyw_pos
-    assert check_pos < demo_pos
-    assert check_pos < new_view_pos
-    assert check_pos < viewer_pos
+    assert check_pos < lazy_registry_pos
+    assert '"pyunitwizard": ("._pyunitwizard", "puw")' in init_text
+    assert '"demo": (".demo", "demo")' in init_text
+    assert '"new_view": (".new_view", "new_view")' in init_text
+    assert '"MolSysView": (".viewer", "MolSysView")' in init_text
 
 
 def test_runtime_and_config_share_same_pyunitwizard_defaults():
