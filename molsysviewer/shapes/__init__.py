@@ -20,6 +20,24 @@ from .tetrahedra import Tetrahedra
 from .triangle_faces import TriangleFaces
 
 
+SHAPE_STYLE_CAPABILITIES: dict[str, frozenset[str]] = {
+    "add_sphere": frozenset({"set_color", "set_alpha", "set_radius"}),
+    "add_network_links": frozenset({"set_colors", "set_alpha", "set_radii"}),
+    "add_channel_tube": frozenset({"set_colors", "set_alpha", "set_radii"}),
+    "add_tetrahedra": frozenset({"set_colors", "set_alpha"}),
+    "add_triangle_faces": frozenset({"set_colors", "set_alpha"}),
+    "add_anisotropy_ellipsoids": frozenset({"set_colors", "set_alpha"}),
+    "add_pharmacophore_features": frozenset({"set_colors", "set_alpha", "set_radii"}),
+    "add_displacement_vectors": frozenset({"set_radius_scale", "set_length_scale"}),
+    "add_pocket_blob": frozenset({"set_alpha", "set_radii", "set_radius_scale"}),
+    "add_pocket_surface": frozenset({"set_alpha"}),
+    "add_alpha_sphere_set": frozenset(),
+    "add_hbonds": frozenset(),
+    "add_rings": frozenset(),
+    "add_scalar_isosurface": frozenset(),
+}
+
+
 class ShapesManager:
     """Shape manager bound to a MolSysView.
 
@@ -154,6 +172,16 @@ class ShapesManager:
         shape.hide(skip_digestion=True)
         return shape
 
+    @records_scene_history
+    def show_all(self, skip_digestion: bool = False) -> None:
+        for tag in self.tags(skip_digestion=True):
+            self.show(tag, skip_digestion=True)
+
+    @records_scene_history
+    def hide_all(self, skip_digestion: bool = False) -> None:
+        for tag in self.tags(skip_digestion=True):
+            self.hide(tag, skip_digestion=True)
+
     @signal(tags=["shape", "query"])
     @digest()
     def render_status(self, tag: str | None = None, skip_digestion: bool = False):
@@ -174,18 +202,26 @@ class ShapesManager:
     def info(self, tag: str | None = None, skip_digestion: bool = False) -> list[dict]:
         """Return a summary of all shapes (or a single shape by tag).
 
-        Each entry contains: ``kind``, ``tag``, ``layer_tag``, ``color``,
-        ``radius`` / ``width`` (when applicable), and ``visible``.
+        Each entry contains the wire ``op``, identity, editable style values,
+        geometry-derived focus indices and visibility. Lengths remain proper
+        PyUnitWizard quantities; wire-format conversion belongs to the viewer
+        summary projection.
         """
         def _hex(v: int | None) -> str | None:
             if v is None:
                 return None
             try:
-                return f"#{int(v):06X}"
+                return f"#{int(v):06x}"
             except (TypeError, ValueError):
                 return str(v)
 
         results = []
+
+        def _first(value):
+            if isinstance(value, (list, tuple)):
+                return value[0] if value else None
+            return value
+
         def _atom_indices(options: dict) -> list[int]:
             indices: set[int] = set()
             for key in ("atom_indices", "atom_pairs", "atom_triplets", "atom_quads"):
@@ -212,6 +248,8 @@ class ShapesManager:
                 "add_sphere": "sphere",
                 "add_network_links": "link",
                 "add_alpha_sphere_set": "alpha-sphere-set",
+                "add_hbonds": "hbonds",
+                "add_rings": "rings",
                 "add_pocket_surface": "pocket-surface",
                 "add_pocket_blob": "pocket-blob",
                 "add_scalar_isosurface": "scalar-isosurface",
@@ -225,12 +263,20 @@ class ShapesManager:
             }.get(op, op)
 
             entry: dict = {
+                "op": op,
                 "kind": shape_kind,
                 "tag": msg_tag,
                 "layer_tag": options.get("layer_tag"),
-                "color": _hex(options.get("color")),
+                "color": _hex(options.get("color", _first(options.get("colors")))),
+                "n_colors": len(options["colors"]) if isinstance(options.get("colors"), list) else None,
+                "n_radii": len(options["radii"]) if isinstance(options.get("radii"), list) else None,
+                "alpha": _first(options.get("alpha", options.get("alphas"))),
+                "radius_scale": options.get("radius_scale"),
+                "length_scale": options.get("length_scale"),
                 "visible": False if layer is None else not getattr(layer, "_hidden", False),
                 "atom_indices": _atom_indices(options),
+                "broken": False if layer is None else bool(getattr(layer, "broken", False)),
+                "broken_reason": None if layer is None else getattr(layer, "broken_reason", None),
             }
 
             from .. import pyunitwizard as puw
@@ -239,8 +285,9 @@ class ShapesManager:
                     return None
                 return puw.standardize(puw.quantity(val, unit))
 
-            if "radius" in options:
-                entry["radius"] = _to_standard_unit(options["radius"])
+            radius = options.get("radius", _first(options.get("radii")))
+            if radius is not None:
+                entry["radius"] = _to_standard_unit(radius)
             if "center" in options:
                 entry["center"] = _to_standard_unit(options["center"])
             if "centers" in options:
@@ -599,6 +646,7 @@ class ShapesManager:
 
 
 __all__ = [
+    "SHAPE_STYLE_CAPABILITIES",
     "ShapesManager",
     "SphereShapes",
     "PocketSurfaces",

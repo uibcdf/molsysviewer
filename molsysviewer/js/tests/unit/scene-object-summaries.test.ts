@@ -11,14 +11,15 @@ test("scene-object summaries drive panels and visibility goes through Python", a
     let annotationSettings: any = null;
     let measurementRows: any[] = [];
     let measurementSettings: any = null;
+    let shapeRows: any[] = [];
     let layerRows: any[] = [];
 
     controller.annotationSummaries = [];
     controller.measurementSummaries = [];
     controller.shapeSummaries = [];
+    controller.shapeRenderStatuses = new Map();
     controller.addonsAnnotations = new Map();
     controller.addonsMeasurements = new Map();
-    controller.addonsShapes = new Map();
     controller.addonsActive = null;
     controller.addonsContext = null;
     controller.addonsScene = null;
@@ -36,7 +37,7 @@ test("scene-object summaries drive panels and visibility goes through Python", a
         setAnnotations: (items: any[], settings: any) => { annotationRows = items; annotationSettings = settings; },
         setMeasurements: (items: any[], settings: any) => { measurementRows = items; measurementSettings = settings; },
         updateMeasurementSeries: (_payload: any) => {},
-        setShapes: (_items: any[]) => {},
+        setShapes: (items: any[]) => { shapeRows = items; },
         setLayerObjects: (items: any[]) => { layerRows = items; },
         setScene: (_summary: unknown) => {},
     };
@@ -73,6 +74,26 @@ test("scene-object summaries drive panels and visibility goes through Python", a
             }],
             active_selection_count: 2,
             system_loaded: true,
+        });
+        await controller.handleMessage({
+            op: "set_shape_summaries",
+            shapes: [{
+                op: "add_sphere",
+                kind: "sphere",
+                tag: "site",
+                layer_tag: "analysis",
+                title: "Sphere",
+                subtitle: "sphere",
+                atom_indices: [1],
+                hidden: false,
+                color: "#ABCDEF",
+                radius: { magnitude: 3, unit: "angstrom" },
+                alpha: 0.65,
+                radius_scale: null,
+                length_scale: null,
+                broken: false,
+                broken_reason: null,
+            }],
         });
         await controller.handleMessage({
             op: "set_measurement_summaries",
@@ -116,7 +137,66 @@ test("scene-object summaries drive panels and visibility goes through Python", a
     assert.strictEqual(measurementSettings.representativeAtoms.protein, "CB");
     assert.strictEqual(measurementSettings.structureIndex, 3);
     assert.strictEqual(measurementSettings.systemLoaded, true);
-    assert.deepStrictEqual(layerRows.map(item => item.tag), ["note", "distance"]);
+    assert.deepStrictEqual(shapeRows[0], {
+        op: "add_sphere",
+        kind: "sphere",
+        tag: "site",
+        layerTag: "analysis",
+        title: "Sphere",
+        subtitle: "sphere",
+        hidden: false,
+        atomIndices: [1],
+        color: "#abcdef",
+        nColors: undefined,
+        radius: { magnitude: 3, unit: "angstrom" },
+        nRadii: undefined,
+        alpha: 0.65,
+        radiusScale: undefined,
+        lengthScale: undefined,
+        broken: false,
+        brokenReason: undefined,
+    });
+    assert.deepStrictEqual(layerRows.map(item => item.tag), ["note", "distance", "site"]);
 
     assert.deepStrictEqual(notifications, []);
+});
+
+test("shape render diagnostics stay local while remaining queryable from Python", () => {
+    const controller: any = Object.create(MolSysViewerController.prototype);
+    const notifications: unknown[] = [];
+    let panelStatus: unknown = null;
+    controller.shapeRenderStatuses = new Map();
+    controller.groupPanel = { updateShapeRenderStatus: (status: unknown) => { panelStatus = status; } };
+    controller.notify = (message: unknown) => notifications.push(message);
+
+    controller.handleShapeRenderStatus({
+        tag: "site",
+        op: "add_sphere_from_atoms",
+        frame: 42,
+        status: "invalid-indices",
+        requested_atoms: 3,
+        used_atoms: 0,
+        reason: "coordinates invalid in frame 42",
+    });
+
+    assert.deepStrictEqual(controller.shapeRenderStatuses.get("site"), {
+        tag: "site",
+        op: "add_sphere_from_atoms",
+        frame: 42,
+        status: "invalid-indices",
+        requestedAtoms: 3,
+        usedAtoms: 0,
+        reason: "coordinates invalid in frame 42",
+    });
+    assert.deepStrictEqual(panelStatus, controller.shapeRenderStatuses.get("site"));
+    assert.deepStrictEqual(notifications, [{
+        event: "shape_render_status",
+        tag: "site",
+        op: "add_sphere_from_atoms",
+        frame: 42,
+        status: "invalid-indices",
+        requested_atoms: 3,
+        used_atoms: 0,
+        reason: "coordinates invalid in frame 42",
+    }]);
 });

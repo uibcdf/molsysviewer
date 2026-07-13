@@ -17,7 +17,7 @@ import { LoadedStructure } from "../plugin/structure";
 import { LoaderHandlers } from "./handlers/loader-handlers";
 import { AnnotationHandlers } from "./handlers/annotation-handlers";
 import { MeasurementHandlers } from "./handlers/measurement-handlers";
-import { ShapeHandlers } from "./handlers/shape-handlers";
+import { ShapeHandlers, type TrajectoryShapeRenderStatus } from "./handlers/shape-handlers";
 import { SceneHandlers } from "./handlers/scene-handlers";
 import { StateHandlers } from "./handlers/state-handlers";
 import { TrajectoryHandlers, TrajectoryState } from "./handlers/trajectory-handlers";
@@ -38,6 +38,7 @@ import { MsvPhysicochemicalColorThemeProvider } from "../themes/physicochemical-
 import { HoverTooltip } from "../ui/hover-tooltip";
 import type { MeasurementSeries, MeasurementSettings, MeasurementSummary } from "../ui/panels/measures-panel";
 import type { AnnotationSettings, AnnotationSummary } from "../ui/panels/annotations-panel";
+import type { ShapeRenderStatus, ShapeSummary } from "../ui/panels/shapes-panel";
 type SavedSelectionRecord = SavedSelectionSummary & { atom_indices: number[] };
 
 type InteractionKind = "hover" | "click" | "context";
@@ -564,7 +565,8 @@ export class MolSysViewerController {
         structureIndex: 0,
         systemLoaded: false,
     };
-    private shapeSummaries: Array<{ kind: string; tag: string; layerTag?: string; title: string; subtitle?: string; hidden: boolean; atomIndices: number[] }> = [];
+    private shapeSummaries: ShapeSummary[] = [];
+    private shapeRenderStatuses = new Map<string, ShapeRenderStatus>();
     private dynamicRegionEvaluationInFlight: number | null = null;
     private dynamicRegionEvaluationPendingFrame: number | null = null;
     private addonsScene: { styleTag?: string; preset?: string; figurePreset?: string; figureScale?: number; figureVariants?: string[] } | null = null;
@@ -1333,10 +1335,7 @@ export class MolSysViewerController {
                         (state) => cb(state.currentFrame),
                         { immediate: false },
                     ),
-                notifyShapeRenderStatus: (status) => this.notify?.({
-                    event: "shape_render_status",
-                    ...status,
-                }),
+                notifyShapeRenderStatus: (status) => this.handleShapeRenderStatus(status),
             },
         );
         this.annotations = new AnnotationHandlers(plugin, {
@@ -1420,6 +1419,21 @@ export class MolSysViewerController {
         this.refreshNavigatePanel();
         this.refreshAddonsPanel();
         this.updateWelcomeState(true);
+    }
+
+    private handleShapeRenderStatus(status: TrajectoryShapeRenderStatus): void {
+        const panelStatus: ShapeRenderStatus = {
+            tag: status.tag,
+            op: status.op,
+            frame: status.frame,
+            status: status.status,
+            requestedAtoms: status.requested_atoms,
+            usedAtoms: status.used_atoms,
+            reason: status.reason,
+        };
+        this.shapeRenderStatuses.set(status.tag, panelStatus);
+        this.groupPanel.updateShapeRenderStatus(panelStatus);
+        this.notify?.({ event: "shape_render_status", ...status });
     }
 
     private handleWebGLContextLost(): void {
@@ -2228,6 +2242,7 @@ export class MolSysViewerController {
                 case "set_shape_summaries": {
                     const records = Array.isArray((msg as any).shapes) ? (msg as any).shapes : [];
                     this.shapeSummaries = records.filter((item: any) => typeof item?.tag === "string").map((item: any) => ({
+                        op: typeof item.op === "string" ? item.op : "",
                         kind: typeof item.kind === "string" ? item.kind : "shape",
                         tag: item.tag,
                         layerTag: typeof item.layer_tag === "string" ? item.layer_tag : undefined,
@@ -2235,7 +2250,21 @@ export class MolSysViewerController {
                         subtitle: typeof item.subtitle === "string" ? item.subtitle : undefined,
                         hidden: !!item.hidden,
                         atomIndices: Array.isArray(item.atom_indices) ? item.atom_indices.filter((value: unknown): value is number => typeof value === "number") : [],
+                        color: typeof item.color === "string" ? item.color.toLowerCase() : undefined,
+                        nColors: typeof item.n_colors === "number" ? item.n_colors : undefined,
+                        radius: item.radius && typeof item.radius.magnitude === "number" && typeof item.radius.unit === "string"
+                            ? { magnitude: item.radius.magnitude, unit: item.radius.unit } : undefined,
+                        nRadii: typeof item.n_radii === "number" ? item.n_radii : undefined,
+                        alpha: typeof item.alpha === "number" ? item.alpha : undefined,
+                        radiusScale: typeof item.radius_scale === "number" ? item.radius_scale : undefined,
+                        lengthScale: typeof item.length_scale === "number" ? item.length_scale : undefined,
+                        broken: !!item.broken,
+                        brokenReason: typeof item.broken_reason === "string" ? item.broken_reason : undefined,
                     }));
+                    const currentTags = new Set(this.shapeSummaries.map(item => item.tag));
+                    for (const tag of this.shapeRenderStatuses.keys()) {
+                        if (!currentTags.has(tag)) this.shapeRenderStatuses.delete(tag);
+                    }
                     break;
                 }
                 case "set_dynamic_region_atoms":
@@ -2776,31 +2805,8 @@ export class MolSysViewerController {
             this.measurementSettings,
         );
         this.groupPanel.setShapes(
-            [...this.shapeSummaries]
-                .sort((left, right) => left.tag.localeCompare(right.tag))
-                .map((item) => {
-                    const tag = item.tag;
-                    return {
-                    key: tag,
-                    title: item.title,
-                    subtitle: item.layerTag && item.layerTag !== tag
-                        ? item.subtitle ? `${tag} · ${item.subtitle} · layer: ${item.layerTag}` : `${tag} · layer: ${item.layerTag}`
-                        : item.subtitle ? `${tag} · ${item.subtitle}` : tag,
-                    hidden: item.hidden,
-                    active: this.addonsActive?.section === "shapes" && this.addonsActive.tag === tag,
-                    onActivate: item.atomIndices.length > 0 ? () => {
-                        this.addonsActive = { section: "shapes", tag };
-                        this.refreshAddonsPanel();
-                        this.focusTarget({ atom_indices: item.atomIndices });
-                    } : undefined,
-                    onToggleVisibility: () => {
-                        this.notify?.({ event: "interaction_context_action", action: "toggle_shape_visibility", tag });
-                    },
-                    onDelete: () => {
-                        this.notify?.({ event: "interaction_context_action", action: "delete_shape", tag });
-                    },
-                    };
-                })
+            [...this.shapeSummaries].sort((left, right) => left.tag.localeCompare(right.tag)),
+            this.shapeRenderStatuses,
         );
         this.groupPanel.setLayerObjects([
             ...this.annotationSummaries.map((item) => ({

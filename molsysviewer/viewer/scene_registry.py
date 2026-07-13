@@ -26,6 +26,7 @@ class SceneRegistryMixin:
         "add_pharmacophore_features",
         "add_interaction_sites",
         "add_hbonds",
+        "add_rings",
         "clear_shapes_by_tag",
     }
 
@@ -124,6 +125,8 @@ class SceneRegistryMixin:
         }
 
     def _shape_summary_records(self) -> list[dict]:
+        from .. import pyunitwizard as puw
+
         display = {
             "link": ("Links", "links"),
             "triangle-faces": ("Triangle Faces", "triangle_faces"),
@@ -133,6 +136,10 @@ class SceneRegistryMixin:
             "pocket-blob": ("Pocket Blob", "pocket_blob"),
             "scalar-isosurface": ("Pocket Blob", "pocket_blob"),
             "pocket-surface": ("Pocket Surface", "pocket_surface"),
+            "alpha-sphere-set": ("Alpha Sphere Set", "alpha_sphere_set"),
+            "hbonds": ("Hydrogen Bonds", "hbonds"),
+            "rings": ("Rings", "rings"),
+            "pharmacophore": ("Interaction Sites", "interaction_sites"),
         }
 
         def labels(kind: str) -> tuple[str, str]:
@@ -145,7 +152,13 @@ class SceneRegistryMixin:
         for record in self.shapes.info(skip_digestion=True):
             kind = str(record.get("kind") or "shape")
             title, subtitle = labels(kind)
+            radius = record.get("radius")
+            radius_payload = None if radius is None else {
+                "magnitude": float(puw.get_value(radius, to_unit="angstrom")),
+                "unit": "angstrom",
+            }
             records.append({
+                "op": record.get("op"),
                 "kind": record.get("kind"),
                 "tag": record.get("tag"),
                 "layer_tag": record.get("layer_tag"),
@@ -153,6 +166,15 @@ class SceneRegistryMixin:
                 "subtitle": subtitle,
                 "atom_indices": list(record.get("atom_indices") or []),
                 "hidden": not bool(record.get("visible")),
+                "color": record.get("color"),
+                "n_colors": record.get("n_colors"),
+                "radius": radius_payload,
+                "n_radii": record.get("n_radii"),
+                "alpha": record.get("alpha"),
+                "radius_scale": record.get("radius_scale"),
+                "length_scale": record.get("length_scale"),
+                "broken": bool(record.get("broken")),
+                "broken_reason": record.get("broken_reason"),
             })
         return records
 

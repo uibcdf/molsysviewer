@@ -1,6 +1,6 @@
 # Studio subpanel — Shapes (implementation plan)
 
-**Status:** proposed (2026-07-12). Companion to
+**Status:** implemented, pending audit (2026-07-13). Companion to
 [the spec](studio_shapes_subpanel.md) and
 [the UI design](studio_shapes_subpanel_ui_design.md).
 
@@ -177,3 +177,43 @@ Every mechanism verified by **mutation**.
   reports it hidden. This is the defect that shipped, and no unit test proves both
   halves at once.
 - Changing a sphere's colour from the panel changes it in the render tree.
+
+## 8. Implementation record (2026-07-13)
+
+Implemented for audit:
+
+- `ShapesPanel` replaces the last `InspectorListPanel` user. It manages existing
+  shapes only; there is no GUI creation path.
+- The authoritative summary is projected from `shapes.info()`, carries the wire
+  `op`, real style values, explicit angstrom units and broken-anchor state, and is
+  re-sent on ready and after shape style mutations.
+- Render status remains frontend-local for the panel and runtime-only for Python.
+  It is absent from summaries, exported state and scene history.
+- Every lifecycle and style affordance crosses the closed `PanelAction` seam. The
+  backend validates the capability matrix before calling a shape mutator.
+- Continuous style controls use scene-history coalescing. Radius edits echo the
+  exact unit received from Python.
+- The real-browser E2E covers a no-mutator shape, colour, visibility, deletion and
+  undo against both Python state and the Mol* render tree.
+
+Observed validation:
+
+- Python: 738 collected, 3 skipped, exit 0.
+- JavaScript unit tests: 187 passed, 0 failed.
+- TypeScript: `npx tsc --noEmit`, exit 0.
+- Real-browser E2E: 21 suites passed, including `shapes-subpanel.e2e.ts`.
+- Runtime bundle: regenerated with `npm run build:runtime` after all source and test
+  changes.
+
+Auto-mutation record:
+
+| mechanism | temporary mutation | guarding test | observed result |
+|---|---|---|---|
+| frontend capability matrix | offer `color` for displacement vectors | `ShapesPanel derives exactly the editable controls from every wire op` | failed mutated; passed restored |
+| backend capability matrix | claim `set_colors` for `add_pocket_surface` | `test_shape_panel_capability_matrix_only_exposes_working_mutators` | failed with `NotImplementedError`; passed restored |
+| explicit radius units | emit the stored nanometer value instead of the angstrom wire quantity | `test_shape_summary_carries_real_style_values_and_explicit_angstrom_unit` | failed mutated; passed restored |
+| runtime-only diagnostics | add `shape_render_status` to exported state | `test_shape_render_status_is_runtime_only_and_queryable` | failed mutated; passed restored |
+
+Deliberately not implemented in this phase: shape creation from the GUI, custom
+shape authoring, and new mutators for the four wire ops that currently expose no
+editable style. These remain the explicit out-of-scope items from the spec.

@@ -544,6 +544,11 @@ class Shape(SceneObject):
     def __init__(self, view: Any, tag: str, *, layer_tag: str | None = None, meta: Optional[Dict[str, Any]] = None) -> None:
         super().__init__(view, tag, kind="shape", layer_tag=layer_tag, meta=meta)
 
+    def _sync_summary_runtime(self) -> None:
+        sync = getattr(self._view, "_sync_shape_summaries_runtime", None)
+        if callable(sync):
+            sync()
+
     def _replace_shape_and_refresh_runtime(self, next_msg: dict, *, runtime_msg: dict | None = None) -> None:
         if hasattr(self._view, "_replace_shape_message"):
             self._view._replace_shape_message(self.tag, next_msg)  # noqa: SLF001
@@ -561,6 +566,7 @@ class Shape(SceneObject):
             self._view._send_runtime_only(payload)  # noqa: SLF001
             if getattr(self, "_hidden", False):
                 self._view._send_runtime_only({"op": "hide_layer", "tag": self.tag, "kind": self.kind})  # noqa: SLF001
+        self._sync_summary_runtime()
 
     def _require_shape_message(self) -> dict:
         getter = getattr(self._view, "_get_shape_message", None)
@@ -589,6 +595,7 @@ class Shape(SceneObject):
             self._view._send_runtime_only({"op": "update_sphere", "tag": self.tag, "options": next_options})  # noqa: SLF001
             if getattr(self, "_hidden", False):
                 self._view._send_runtime_only({"op": "hide_layer", "tag": self.tag, "kind": self.kind})  # noqa: SLF001
+        self._sync_summary_runtime()
 
     @staticmethod
     def _normalize_to_count(values, count: int, cast) -> list[Any]:
