@@ -6,7 +6,11 @@ import molsysmt as msm
 from molsysviewer import pyunitwizard as puw
 from molsysviewer import MolSysView
 from molsysviewer.demo import demo
-from molsysviewer.viewer.panel_actions.scene_objects import create_measurement
+from molsysviewer.viewer.panel_actions.scene_objects import (
+    create_measurement,
+    reanchor_annotation,
+    set_annotation_style,
+)
 
 
 def _view():
@@ -23,6 +27,12 @@ def test_scene_object_summary_records_project_manager_info():
         atom_indices=[0, 1],
         tag="note",
         layer_tag="analysis",
+        label_style={
+            "color": "#123456",
+            "size_em": 1.25,
+            "background": True,
+            "background_opacity": 0.6,
+        },
     )
     view.measurements.add(
         "distance",
@@ -47,7 +57,15 @@ def test_scene_object_summary_records_project_manager_info():
         "tag": "note",
         "layer_tag": "analysis",
         "text": "site",
+        "style": {
+            "color": "#123456",
+            "size_em": 1.25,
+            "background": True,
+            "background_opacity": 0.6,
+        },
+        "n_atoms": 2,
         "atom_indices": [0, 1],
+        "anchor": {"type": "atoms", "indices": [0, 1]},
         "hidden": False,
         "broken": False,
         "broken_reason": None,
@@ -309,6 +327,99 @@ def test_measurement_panel_lifecycle_actions_mutate_the_python_model():
     assert view.measurements.info("distance")[0]["visible"] is False
     dispatch("clear_measurements")
     assert view.measurements.count() == 0
+
+
+def test_annotation_panel_actions_mutate_authoritative_state_and_summary():
+    view = _view()
+    view.active_selection.set(selection="group_index==0")
+
+    def dispatch(action, **details):
+        view._handle_frontend_event({  # noqa: SLF001
+            "event": "interaction_context_action",
+            "action": action,
+            **details,
+        })
+
+    dispatch(
+        "create_annotation",
+        text="Catalytic site",
+        label_style={"color": "#112233", "size_em": 1.2},
+    )
+    tag = view.annotations.tags()[0]
+    dispatch("set_annotation_text", tag=tag, text="Gate closed")
+    dispatch(
+        "set_annotation_style",
+        tag=tag,
+        style={
+            "color": "#abcdef",
+            "size_em": 1.5,
+            "background": False,
+            "background_opacity": 0.4,
+        },
+    )
+    dispatch("rename_annotation", tag=tag, new_tag="gate")
+    dispatch("set_annotation_layer", tag="gate", layer="analysis")
+
+    info = view.annotations.info("gate")
+    assert info["text"] == "Gate closed"
+    assert info["layer_tag"] == "analysis"
+    assert info["style"] == {
+        "color": "#abcdef",
+        "size_em": 1.5,
+        "background": False,
+        "background_opacity": 0.4,
+    }
+    summary = view._annotation_summary_records()[0]  # noqa: SLF001
+    assert summary["tag"] == "gate"
+    assert summary["style"] == info["style"]
+    assert summary["anchor"] == {
+        "type": "atoms",
+        "indices": info["atom_indices"],
+    }
+
+    dispatch("toggle_annotation_visibility", tag="gate")
+    assert view.annotations.info("gate")["visible"] is False
+    dispatch("show_all_annotations")
+    assert view.annotations.info("gate")["visible"] is True
+    dispatch("hide_all_annotations")
+    assert view.annotations.info("gate")["visible"] is False
+    dispatch("clear_annotations")
+    assert view.annotations.count() == 0
+
+
+def test_annotation_panel_reanchors_to_the_active_selection():
+    view = _view()
+    view.annotations.add("Anchor", selection="group_index==0", tag="note")
+    view.active_selection.set(selection="group_index==1")
+    expected = list(view.active_selection.atom_indices)
+
+    view._handle_frontend_event({  # noqa: SLF001
+        "event": "interaction_context_action",
+        "action": "reanchor_annotation",
+        "tag": "note",
+    })
+
+    assert view.annotations.info("note")["atom_indices"] == expected
+
+
+@pytest.mark.parametrize(
+    ("action", "details", "match"),
+    [
+        ("set_annotation_style", {"tag": "note", "style": []}, "style mapping"),
+        ("reanchor_annotation", {"tag": "note"}, "non-empty active selection"),
+    ],
+)
+def test_annotation_panel_actions_reject_invalid_style_or_empty_reanchor(
+    action, details, match
+):
+    view = _view()
+    view.annotations.add("Anchor", atom_indices=[0], tag="note")
+
+    with pytest.raises(ValueError, match=match):
+        if action == "set_annotation_style":
+            set_annotation_style(view, details)
+        else:
+            reanchor_annotation(view, details)
 
 
 def test_endpoint_policy_panel_action_affects_only_future_measurements_and_is_undoable():

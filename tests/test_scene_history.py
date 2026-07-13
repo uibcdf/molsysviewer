@@ -166,6 +166,24 @@ def test_a_slider_drag_does_not_wipe_the_undo_history():
     assert view.regions.tags() == []
 
 
+def test_typing_a_label_does_not_wipe_the_undo_history():
+    view = _mute(demo["dialanine"])
+    view.regions.add(atom_indices=[0, 1], tag="r1", skip_digestion=True)
+    view.regions.add(atom_indices=[2, 3], tag="r2", skip_digestion=True)
+    view.annotations.add("x", atom_indices=[0], tag="a1", skip_digestion=True)
+    assert len(view.history._undo) == 3  # noqa: SLF001
+
+    text = "catalytic triad"
+    with view.history.coalescing():
+        for index in range(1, len(text) + 1):
+            view.annotations.set_text("a1", text[:index], skip_digestion=True)
+
+    assert len(view.history._undo) == 4  # noqa: SLF001
+    assert view.annotations.info("a1")["text"] == text
+    assert view.history.undo()
+    assert view.annotations.info("a1")["text"] == "x"
+
+
 def test_coalescing_keeps_distinct_operations_as_distinct_undo_steps():
     view = _mute(demo["dialanine"])
     shape = view.shapes.add_sphere(tag="sphere1", radius="1.0 nm", alpha=0.2, skip_digestion=True)

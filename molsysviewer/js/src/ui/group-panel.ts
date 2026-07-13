@@ -21,6 +21,7 @@ import { SelectionPanel } from "./panels/selection-panel";
 import { SystemPanel } from "./panels/system-panel";
 import { WholePanel } from "./panels/whole-panel";
 import { MeasuresPanel, MeasurementSeries, MeasurementSettings, MeasurementSummary } from "./panels/measures-panel";
+import { AnnotationsPanel, AnnotationSettings, AnnotationSummary } from "./panels/annotations-panel";
 import { PanelShell } from "./panel-shell";
 import { FloatingPanelShell } from "./floating-panel-shell";
 
@@ -159,7 +160,7 @@ export class GroupPanel {
     // Migrated subpanels (panel-per-module architecture)
     private readonly shapesPanel: InspectorListPanel;
     private readonly measuresPanel: MeasuresPanel;
-    private readonly annotationsPanel: InspectorListPanel;
+    private readonly annotationsPanel: AnnotationsPanel;
     private readonly wholePanel: WholePanel;
     private readonly layersPanel: LayersPanel;
     private readonly viewportPanel: ViewportPanel;
@@ -383,11 +384,17 @@ export class GroupPanel {
         this.measuresSection = this.createSection("measures");
         this.measuresPanel = new MeasuresPanel(this.makePanelContext("measures"));
         this.annotationsSection = this.createSection("annotations");
-        this.annotationsPanel = new InspectorListPanel("annotations", this.makePanelContext("annotations"), {
-            header: "Annotations (Labels)",
-            subtitleFallback: "Annotation",
-            emptyText: "No annotations yet.",
-        });
+        this.annotationsPanel = new AnnotationsPanel(
+            this.makePanelContext("annotations"),
+            atomIndices => this.onFocus({
+                source_kind: "annotation",
+                annotation_kind: "label",
+                atom_indices: atomIndices,
+                group_indices: [],
+                chain_indices: [],
+                entity_indices: [],
+            }),
+        );
         this.shapesSection = this.createSection("shapes");
         this.shapesPanel = new InspectorListPanel("shapes", this.makePanelContext("shapes"), {
             header: "3D Shapes",
@@ -726,6 +733,7 @@ export class GroupPanel {
         this.selectionPanel.updateSelection(selection);
         this.regionsPanel.setCurrentSelection(selection);
         this.measuresPanel.setCurrentSelection(selection);
+        this.annotationsPanel.setCurrentSelection(selection);
     }
 
     updateSelectionHistoryState(state: { canUndo: boolean; canRedo: boolean }): void {
@@ -785,8 +793,8 @@ export class GroupPanel {
         };
     }
 
-    setAnnotations(items: NavigateItem[]): void {
-        this.annotationsPanel.setItems(items);
+    setAnnotations(items: AnnotationSummary[], settings: AnnotationSettings): void {
+        this.annotationsPanel.setAnnotations(items, settings);
     }
 
     setMeasurements(items: MeasurementSummary[], settings: MeasurementSettings): void {

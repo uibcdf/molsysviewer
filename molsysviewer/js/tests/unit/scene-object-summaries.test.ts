@@ -8,6 +8,7 @@ test("scene-object summaries drive panels and visibility goes through Python", a
     const controller: any = Object.create(MolSysViewerController.prototype);
     const notifications: unknown[] = [];
     let annotationRows: any[] = [];
+    let annotationSettings: any = null;
     let measurementRows: any[] = [];
     let measurementSettings: any = null;
     let layerRows: any[] = [];
@@ -32,7 +33,7 @@ test("scene-object summaries drive panels and visibility goes through Python", a
         isSwingActive: false,
     };
     controller.groupPanel = {
-        setAnnotations: (items: any[]) => { annotationRows = items; },
+        setAnnotations: (items: any[], settings: any) => { annotationRows = items; annotationSettings = settings; },
         setMeasurements: (items: any[], settings: any) => { measurementRows = items; measurementSettings = settings; },
         updateMeasurementSeries: (_payload: any) => {},
         setShapes: (_items: any[]) => {},
@@ -62,11 +63,16 @@ test("scene-object summaries drive panels and visibility goes through Python", a
                 kind: "label",
                 text: "Binding site",
                 layer_tag: "analysis",
+                style: { color: "#123456", size_em: 1.25, background: true, background_opacity: 0.6 },
+                n_atoms: 2,
                 atom_indices: [1, 2],
+                anchor: { type: "atoms", indices: [1, 2] },
                 hidden: false,
                 broken: true,
                 broken_reason: "Missing anchor atom indices: [3]",
             }],
+            active_selection_count: 2,
+            system_loaded: true,
         });
         await controller.handleMessage({
             op: "set_measurement_summaries",
@@ -93,9 +99,16 @@ test("scene-object summaries drive panels and visibility goes through Python", a
     }
 
     assert.strictEqual(annotationRows.length, 1);
-    assert.strictEqual(annotationRows[0].title, "Binding site");
+    assert.strictEqual(annotationRows[0].text, "Binding site");
+    assert.strictEqual(annotationRows[0].nAtoms, 2);
+    assert.deepStrictEqual(annotationRows[0].style, {
+        color: "#123456", size_em: 1.25, background: true, background_opacity: 0.6,
+    });
+    assert.deepStrictEqual(annotationRows[0].anchor, { type: "atoms", indices: [1, 2] });
     assert.strictEqual(annotationRows[0].broken, true);
     assert.strictEqual(annotationRows[0].brokenReason, "Missing anchor atom indices: [3]");
+    assert.strictEqual(annotationSettings.systemLoaded, true);
+    assert.strictEqual(annotationSettings.activeSelectionCount, 2);
     assert.strictEqual(measurementRows[0].broken, true);
     assert.strictEqual(measurementRows[0].brokenReason, "Anchor contains no atoms.");
     assert.deepStrictEqual(measurementRows[0].endpointLabels, ["CA (ALA 1)", "CA (ALA 2)"]);
@@ -105,14 +118,5 @@ test("scene-object summaries drive panels and visibility goes through Python", a
     assert.strictEqual(measurementSettings.systemLoaded, true);
     assert.deepStrictEqual(layerRows.map(item => item.tag), ["note", "distance"]);
 
-    let localDispatches = 0;
-    controller.handleMessage = async () => { localDispatches += 1; };
-    annotationRows[0].onToggleVisibility();
-
-    assert.strictEqual(localDispatches, 0);
-    assert.deepStrictEqual(notifications, [{
-        event: "interaction_context_action",
-        action: "toggle_annotation_visibility",
-        tag: "note",
-    }]);
+    assert.deepStrictEqual(notifications, []);
 });

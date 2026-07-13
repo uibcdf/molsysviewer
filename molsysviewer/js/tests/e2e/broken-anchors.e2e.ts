@@ -38,9 +38,10 @@ async function run() {
 
         await page.locator('[data-molsysviewer-group-panel-toggle="true"]').click();
         await page.locator('[data-molsysviewer-group-panel-tab="annotations"]').click();
-        const annotationRow = page.locator('[data-molsysviewer-scene-object-tag="broken-note"]');
-        assert.strictEqual(await annotationRow.getAttribute("data-molsysviewer-scene-object-broken"), "true");
-        assert.match(await annotationRow.innerText(), /Missing anchor atom indices/);
+        const annotationRow = page.locator('[data-molsysviewer-annotation-tag="broken-note"]');
+        assert.strictEqual(await annotationRow.getAttribute("data-molsysviewer-annotation-broken"), "true");
+        assert.match(await annotationRow.innerText(), /anchor broken/);
+        assert.match(await annotationRow.getAttribute("title") || "", /Missing anchor atom indices/);
 
         await page.locator('[data-molsysviewer-group-panel-tab="measures"]').click();
         const measurementRow = page.locator('[data-molsysviewer-measurement-tag="broken-distance"]');

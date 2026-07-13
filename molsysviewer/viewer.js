@@ -149200,8 +149200,8 @@ function makeRowElement(titleText, subtitleText, onActivate, onDelete, visibilit
   return row2;
 }
 function makeSettingsCard(titleText) {
-  const card3 = document.createElement("div");
-  Object.assign(card3.style, {
+  const card4 = document.createElement("div");
+  Object.assign(card4.style, {
     display: "flex",
     flexDirection: "column",
     gap: "8px",
@@ -149221,8 +149221,8 @@ function makeSettingsCard(titleText) {
     marginBottom: "2px"
   });
   header2.textContent = titleText;
-  card3.appendChild(header2);
-  return card3;
+  card4.appendChild(header2);
+  return card4;
 }
 function makeStyledSelect(options, selectedValue, onChange) {
   const select = document.createElement("select");
@@ -149733,7 +149733,7 @@ var LayersPanel = class extends BasePanel {
     })).sort((a8, b8) => a8.tag.localeCompare(b8.tag));
   }
   renderAssignCard() {
-    const card3 = makeSettingsCard("Assign Region");
+    const card4 = makeSettingsCard("Assign Region");
     const row2 = document.createElement("form");
     row2.setAttribute("data-molsysviewer-layer-assign-form", "true");
     Object.assign(row2.style, {
@@ -149760,7 +149760,7 @@ var LayersPanel = class extends BasePanel {
       event.preventDefault();
       button.click();
     });
-    card3.appendChild(row2);
+    card4.appendChild(row2);
     const hint = document.createElement("div");
     Object.assign(hint.style, {
       fontSize: "10px",
@@ -149768,19 +149768,19 @@ var LayersPanel = class extends BasePanel {
       lineHeight: "1.4"
     });
     hint.textContent = "Leave the layer empty to detach the region.";
-    card3.appendChild(hint);
-    return card3;
+    card4.appendChild(hint);
+    return card4;
   }
   renderLayerCard(layer) {
-    const card3 = makeSettingsCard(layer.tag);
-    card3.setAttribute("data-molsysviewer-layer-card", layer.tag);
+    const card4 = makeSettingsCard(layer.tag);
+    card4.setAttribute("data-molsysviewer-layer-card", layer.tag);
     const counts = document.createElement("div");
     Object.assign(counts.style, {
       fontSize: "10px",
       color: "rgba(244,244,245,0.56)"
     });
     counts.textContent = `${layer.regions.length} regions \xB7 ${layer.objects.length} scene objects`;
-    card3.appendChild(counts);
+    card4.appendChild(counts);
     const actions = document.createElement("div");
     Object.assign(actions.style, {
       display: "grid",
@@ -149802,11 +149802,11 @@ var LayersPanel = class extends BasePanel {
     actions.appendChild(show);
     actions.appendChild(hide);
     actions.appendChild(del);
-    card3.appendChild(actions);
+    card4.appendChild(actions);
     for (const member of [...layer.regions, ...layer.objects]) {
-      card3.appendChild(this.renderMemberRow(layer.tag, member));
+      card4.appendChild(this.renderMemberRow(layer.tag, member));
     }
-    return card3;
+    return card4;
   }
   renderMemberRow(layerTag, member) {
     const row2 = document.createElement("div");
@@ -150681,10 +150681,10 @@ var RegionsPanel = class extends BasePanel {
     return container;
   }
   renderRegionCard(item2) {
-    const card3 = document.createElement("div");
-    card3.setAttribute("data-molsysviewer-region-card", item2.tag);
-    card3.setAttribute("data-molsysviewer-region-hidden", String(item2.hidden));
-    Object.assign(card3.style, {
+    const card4 = document.createElement("div");
+    card4.setAttribute("data-molsysviewer-region-card", item2.tag);
+    card4.setAttribute("data-molsysviewer-region-hidden", String(item2.hidden));
+    Object.assign(card4.style, {
       display: "flex",
       flexDirection: "column",
       gap: "7px",
@@ -150751,7 +150751,7 @@ var RegionsPanel = class extends BasePanel {
     remove3.setAttribute("data-molsysviewer-region-delete", item2.tag);
     header2.appendChild(visibility);
     header2.appendChild(remove3);
-    card3.appendChild(header2);
+    card4.appendChild(header2);
     const actions = document.createElement("div");
     actions.setAttribute("data-molsysviewer-region-actions", item2.tag);
     Object.assign(actions.style, {
@@ -150816,7 +150816,7 @@ var RegionsPanel = class extends BasePanel {
       button.style.padding = "3px 6px";
       actions.appendChild(button);
     }
-    card3.appendChild(actions);
+    card4.appendChild(actions);
     if (this.regionRenameTag === item2.tag) {
       const form = document.createElement("div");
       form.setAttribute("data-molsysviewer-region-rename-form", item2.tag);
@@ -150860,7 +150860,7 @@ var RegionsPanel = class extends BasePanel {
       form.appendChild(input);
       form.appendChild(submit);
       form.appendChild(cancel);
-      card3.appendChild(form);
+      card4.appendChild(form);
       if (this.regionRenameCollisionTag !== null) {
         const collisionTag = this.regionRenameCollisionTag;
         const collision = document.createElement("div");
@@ -150887,16 +150887,16 @@ var RegionsPanel = class extends BasePanel {
         collision.appendChild(chooseRename);
         collision.appendChild(overwrite);
         collision.appendChild(cancelCollision);
-        card3.appendChild(collision);
+        card4.appendChild(collision);
       }
     }
     if (this.activeStyleRegionTag === item2.tag) {
-      card3.appendChild(this.renderStyleComposer(item2));
+      card4.appendChild(this.renderStyleComposer(item2));
     }
     if (this.regionInspectOpen.has(item2.tag)) {
-      card3.appendChild(this.renderRegionInspect(item2.tag));
+      card4.appendChild(this.renderRegionInspect(item2.tag));
     }
-    return card3;
+    return card4;
   }
   renderRegionBooleanComposer() {
     const container = document.createElement("div");
@@ -151776,11 +151776,11 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
     if (this.savedSelections.length > 0) {
       const sorted = [...this.savedSelections].sort((a8, b8) => a8.tag.localeCompare(b8.tag));
       for (const item2 of sorted) {
-        const card3 = document.createElement("div");
-        card3.setAttribute("data-molsysviewer-group-panel-row", "true");
-        card3.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
-        card3.setAttribute("data-molsysviewer-saved-selection-card", item2.tag);
-        Object.assign(card3.style, {
+        const card4 = document.createElement("div");
+        card4.setAttribute("data-molsysviewer-group-panel-row", "true");
+        card4.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
+        card4.setAttribute("data-molsysviewer-saved-selection-card", item2.tag);
+        Object.assign(card4.style, {
           display: "flex",
           flexDirection: "column",
           padding: "8px 10px",
@@ -151791,16 +151791,16 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           transition: "background 0.1s ease",
           cursor: "pointer"
         });
-        card3.addEventListener("mouseenter", () => {
-          card3.setAttribute("data-molsysviewer-selection-row-hover", "true");
-          card3.style.background = "rgba(255,255,255,0.09)";
+        card4.addEventListener("mouseenter", () => {
+          card4.setAttribute("data-molsysviewer-selection-row-hover", "true");
+          card4.style.background = "rgba(255,255,255,0.09)";
         });
-        card3.addEventListener("mouseleave", () => {
-          card3.setAttribute("data-molsysviewer-selection-row-hover", "false");
-          card3.style.background = "rgba(255,255,255,0.05)";
+        card4.addEventListener("mouseleave", () => {
+          card4.setAttribute("data-molsysviewer-selection-row-hover", "false");
+          card4.style.background = "rgba(255,255,255,0.05)";
         });
-        card3.addEventListener("click", (e) => {
-          if (e && e.target && e.target !== card3) {
+        card4.addEventListener("click", (e) => {
+          if (e && e.target && e.target !== card4) {
             return;
           }
           e?.preventDefault();
@@ -151834,7 +151834,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
         subtitle.textContent = `(${item2.atom_count} atoms${levelText})`;
         title.appendChild(subtitle);
         topRow.appendChild(title);
-        card3.appendChild(topRow);
+        card4.appendChild(topRow);
         const btnRow = document.createElement("div");
         btnRow.setAttribute("data-molsysviewer-saved-selection-buttons-row", item2.tag);
         Object.assign(btnRow.style, {
@@ -151861,7 +151861,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           fontSize: "11px",
           outline: "none"
         });
-        card3.appendChild(inlineForm);
+        card4.appendChild(inlineForm);
         const showForm = (mode) => {
           btnRow.style.display = "none";
           inlineForm.replaceChildren();
@@ -151970,8 +151970,8 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           btn.style.fontSize = "10px";
           btnRow.appendChild(btn);
         }
-        card3.appendChild(btnRow);
-        savedList.appendChild(card3);
+        card4.appendChild(btnRow);
+        savedList.appendChild(card4);
       }
     } else {
       const emptyLabel = document.createElement("div");
@@ -153598,6 +153598,370 @@ var MeasuresPanel = class extends BasePanel {
   }
 };
 
+// src/ui/panels/annotations-panel.ts
+var defaultStyle = () => ({
+  color: "#ffffff",
+  size_em: 1,
+  background: true,
+  background_opacity: 0.6
+});
+var emptySelection2 = () => ({
+  event: "interaction_active_selection_changed",
+  source_kind: "empty",
+  target_level: "none",
+  element_level: "none",
+  items: [],
+  atom_indices: [],
+  group_indices: [],
+  component_indices: [],
+  chain_indices: [],
+  molecule_indices: [],
+  entity_indices: [],
+  count_atoms: 0,
+  count_groups: 0,
+  count_shapes: 0,
+  count_annotations: 0
+});
+function card3() {
+  const element = document.createElement("div");
+  Object.assign(element.style, {
+    display: "flex",
+    flexDirection: "column",
+    gap: "7px",
+    padding: "10px",
+    borderRadius: "6px",
+    border: "1px solid rgba(255,255,255,0.08)",
+    background: "rgba(255,255,255,0.035)"
+  });
+  return element;
+}
+function resolvedStyle(style) {
+  return { ...defaultStyle(), ...style };
+}
+var AnnotationsPanel = class extends BasePanel {
+  constructor(ctx, onFocus) {
+    super();
+    this.ctx = ctx;
+    this.onFocus = onFocus;
+    this.key = "annotations";
+    this.annotations = [];
+    this.settings = { systemLoaded: false, activeSelectionCount: 0 };
+    this.selection = emptySelection2();
+    this.newText = "";
+    this.nextStyle = defaultStyle();
+    this.editTextTag = null;
+    this.editDetailsTag = null;
+    this.selectedTag = null;
+    this.coalescing = false;
+  }
+  setAnnotations(items, settings) {
+    this.annotations = [...items];
+    this.settings = settings;
+    if (this.selectedTag && !items.some((item2) => item2.tag === this.selectedTag)) {
+      this.selectedTag = null;
+    }
+    this.ctx.setBadge(String(items.length));
+    this.scheduleRender();
+  }
+  setCurrentSelection(selection) {
+    this.selection = selection;
+    this.scheduleRender();
+  }
+  paint() {
+    if (!this.host) return;
+    this.host.replaceChildren();
+    this.host.appendChild(makeSectionHeader("Annotations"));
+    this.host.appendChild(this.renderCreate());
+    this.host.appendChild(makeSectionHeader("Labels"));
+    const list3 = document.createElement("div");
+    Object.assign(list3.style, { display: "flex", flexDirection: "column", gap: "7px" });
+    if (this.annotations.length === 0) {
+      const empty2 = document.createElement("div");
+      empty2.textContent = "No annotations yet.";
+      Object.assign(empty2.style, { color: "rgba(244,244,245,0.52)", fontSize: "11px" });
+      list3.appendChild(empty2);
+    } else {
+      for (const item2 of this.annotations) list3.appendChild(this.renderAnnotation(item2));
+    }
+    this.host.appendChild(list3);
+    this.host.appendChild(this.renderGlobalActions());
+    this.host.appendChild(this.renderStyle());
+  }
+  selectionCount() {
+    return this.selection.count_atoms || this.selection.atom_indices.length || this.settings.activeSelectionCount;
+  }
+  renderCreate() {
+    const section = card3();
+    section.setAttribute("data-molsysviewer-annotation-create", "true");
+    const input = document.createElement("input");
+    input.value = this.newText;
+    input.placeholder = "Annotation text";
+    input.setAttribute("data-molsysviewer-annotation-create-text", "true");
+    const add = makeButton("Add", () => {
+      const text = input.value.trim();
+      if (!text) return;
+      this.newText = "";
+      this.ctx.onAction("create_annotation", { text, label_style: { ...this.nextStyle } });
+    });
+    add.setAttribute("data-molsysviewer-annotation-create-confirm", "true");
+    const updateDisabled = () => {
+      add.disabled = !this.settings.systemLoaded || this.selectionCount() === 0 || !input.value.trim();
+      add.style.opacity = add.disabled ? "0.42" : "1";
+    };
+    input.addEventListener("input", () => {
+      this.newText = input.value;
+      updateDisabled();
+    });
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !add.disabled) add.click();
+    });
+    section.appendChild(input);
+    section.appendChild(add);
+    const hint = document.createElement("div");
+    const count3 = this.selectionCount();
+    hint.textContent = !this.settings.systemLoaded ? "Load a structure first." : count3 === 0 ? "Select atoms to anchor the annotation." : `Anchored to the active selection (${count3} atom${count3 === 1 ? "" : "s"}).`;
+    Object.assign(hint.style, { fontSize: "10px", color: "rgba(244,244,245,0.58)" });
+    section.appendChild(hint);
+    updateDisabled();
+    return section;
+  }
+  renderAnnotation(item2) {
+    const row2 = card3();
+    row2.setAttribute("data-molsysviewer-annotation-tag", item2.tag);
+    row2.setAttribute("data-molsysviewer-annotation-broken", String(item2.broken));
+    row2.style.opacity = item2.hidden ? "0.42" : "1";
+    if (item2.brokenReason) row2.title = item2.brokenReason;
+    const head = document.createElement("div");
+    Object.assign(head.style, { display: "flex", alignItems: "center", gap: "6px" });
+    if (this.editTextTag === item2.tag) {
+      head.appendChild(this.renderTextEditor(item2));
+    } else {
+      const text = document.createElement("button");
+      text.type = "button";
+      text.textContent = item2.broken ? `\u26A0 ${item2.text}` : item2.text;
+      text.title = "Edit annotation text";
+      text.setAttribute("data-molsysviewer-annotation-text", item2.tag);
+      Object.assign(text.style, {
+        flex: "1 1 0",
+        minWidth: "0",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+        textAlign: "left",
+        background: "transparent",
+        border: "0",
+        padding: "0",
+        color: item2.broken ? "#fbbf24" : "#f4f4f5",
+        fontSize: "12px",
+        fontWeight: "650",
+        cursor: "text"
+      });
+      text.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        this.selectedTag = item2.tag;
+        this.editTextTag = item2.tag;
+        this.scheduleRender();
+      });
+      head.appendChild(text);
+    }
+    const focus = makeButton("\u2316", () => this.onFocus(item2.atomIndices));
+    focus.title = "Focus annotation anchor";
+    focus.disabled = item2.atomIndices.length === 0;
+    focus.setAttribute("data-molsysviewer-annotation-focus", item2.tag);
+    const eye = makeButton(
+      item2.hidden ? "\u29BB" : "\u{1F441}",
+      () => this.ctx.onAction("toggle_annotation_visibility", { tag: item2.tag })
+    );
+    eye.title = item2.hidden ? "Show annotation" : "Hide annotation";
+    eye.setAttribute("data-molsysviewer-annotation-visibility", item2.tag);
+    const more = makeButton("\u22EF", () => {
+      this.selectedTag = item2.tag;
+      this.editDetailsTag = this.editDetailsTag === item2.tag ? null : item2.tag;
+      this.scheduleRender();
+    });
+    more.title = "Rename, layer, or re-anchor";
+    more.setAttribute("data-molsysviewer-annotation-more", item2.tag);
+    const remove3 = makeButton("\xD7", () => this.ctx.onAction("delete_annotation", { tag: item2.tag }));
+    remove3.title = "Delete annotation";
+    remove3.setAttribute("data-molsysviewer-annotation-delete", item2.tag);
+    for (const button of [focus, eye, more, remove3]) {
+      button.style.flex = "0 0 auto";
+      head.appendChild(button);
+    }
+    row2.appendChild(head);
+    const identity2 = document.createElement("div");
+    identity2.textContent = item2.broken ? `${item2.tag} \xB7 anchor broken` : `${item2.tag} \xB7 ${item2.nAtoms} atom${item2.nAtoms === 1 ? "" : "s"}${item2.layerTag && item2.layerTag !== item2.tag ? ` \xB7 layer: ${item2.layerTag}` : ""}`;
+    identity2.setAttribute("data-molsysviewer-annotation-identity", item2.tag);
+    Object.assign(identity2.style, { fontSize: "10px", color: "rgba(244,244,245,0.58)" });
+    row2.appendChild(identity2);
+    if (this.editDetailsTag === item2.tag) row2.appendChild(this.renderDetails(item2));
+    return row2;
+  }
+  renderTextEditor(item2) {
+    const input = document.createElement("input");
+    input.value = item2.text;
+    input.setAttribute("data-molsysviewer-annotation-text-input", item2.tag);
+    input.addEventListener("focus", () => this.beginCoalescing());
+    input.addEventListener("input", () => {
+      const text = input.value.trim();
+      if (text) this.ctx.onAction("set_annotation_text", { tag: item2.tag, text });
+    });
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") this.finishTextEdit();
+      if (event.key === "Escape") {
+        if (input.value.trim() !== item2.text) {
+          this.ctx.onAction("set_annotation_text", { tag: item2.tag, text: item2.text });
+        }
+        this.finishTextEdit();
+      }
+    });
+    input.addEventListener("blur", () => this.finishTextEdit());
+    setTimeout(() => {
+      if (typeof input.focus === "function") input.focus();
+    }, 0);
+    return input;
+  }
+  finishTextEdit() {
+    if (this.editTextTag === null) return;
+    this.editTextTag = null;
+    this.endCoalescing();
+    this.scheduleRender();
+  }
+  renderDetails(item2) {
+    const editor = document.createElement("div");
+    Object.assign(editor.style, { display: "grid", gridTemplateColumns: "1fr auto", gap: "6px" });
+    const rename = document.createElement("input");
+    rename.value = item2.tag;
+    rename.setAttribute("data-molsysviewer-annotation-rename-input", item2.tag);
+    const renameButton = makeButton(
+      "Rename",
+      () => this.ctx.onAction("rename_annotation", { tag: item2.tag, new_tag: rename.value.trim() })
+    );
+    renameButton.setAttribute("data-molsysviewer-annotation-rename", item2.tag);
+    const layer = document.createElement("input");
+    layer.value = item2.layerTag && item2.layerTag !== item2.tag ? item2.layerTag : "";
+    layer.placeholder = "No user layer";
+    layer.setAttribute("data-molsysviewer-annotation-layer-input", item2.tag);
+    const layerButton = makeButton(
+      "Set layer",
+      () => this.ctx.onAction("set_annotation_layer", { tag: item2.tag, layer: layer.value.trim() || null })
+    );
+    layerButton.setAttribute("data-molsysviewer-annotation-layer", item2.tag);
+    const reanchor = makeButton(
+      "Use active selection",
+      () => this.ctx.onAction("reanchor_annotation", { tag: item2.tag })
+    );
+    reanchor.disabled = this.selectionCount() === 0;
+    reanchor.style.opacity = reanchor.disabled ? "0.42" : "1";
+    reanchor.setAttribute("data-molsysviewer-annotation-reanchor", item2.tag);
+    editor.appendChild(rename);
+    editor.appendChild(renameButton);
+    editor.appendChild(layer);
+    editor.appendChild(layerButton);
+    editor.appendChild(reanchor);
+    return editor;
+  }
+  renderGlobalActions() {
+    const row2 = document.createElement("div");
+    Object.assign(row2.style, { display: "flex", gap: "6px", marginTop: "8px" });
+    for (const [label2, action] of [
+      ["Show all", "show_all_annotations"],
+      ["Hide all", "hide_all_annotations"],
+      ["Clear all", "clear_annotations"]
+    ]) {
+      const button = makeButton(label2, () => {
+        if (action === "clear_annotations" && !window.confirm("Delete all annotations?")) return;
+        this.ctx.onAction(action);
+      });
+      button.setAttribute("data-molsysviewer-annotation-global", action);
+      row2.appendChild(button);
+    }
+    return row2;
+  }
+  renderStyle() {
+    const section = card3();
+    section.setAttribute("data-molsysviewer-annotation-style", this.selectedTag ?? "default");
+    section.appendChild(makeSectionHeader("Label style"));
+    const selected = this.annotations.find((item2) => item2.tag === this.selectedTag);
+    const style = selected ? resolvedStyle(selected.style) : this.nextStyle;
+    const context2 = document.createElement("div");
+    context2.textContent = selected ? selected.text : "Next annotation";
+    Object.assign(context2.style, { fontSize: "10px", color: "rgba(244,244,245,0.58)" });
+    section.appendChild(context2);
+    const color = document.createElement("input");
+    color.type = "color";
+    color.value = style.color;
+    color.setAttribute("data-molsysviewer-annotation-style-color", this.selectedTag ?? "default");
+    this.bindContinuousStyle(color, () => ({ ...style, color: color.value }));
+    section.appendChild(this.styleRow("Colour", color));
+    const size4 = document.createElement("input");
+    size4.type = "range";
+    size4.min = "0.5";
+    size4.max = "4";
+    size4.step = "0.1";
+    size4.value = String(style.size_em);
+    size4.setAttribute("data-molsysviewer-annotation-style-size", this.selectedTag ?? "default");
+    this.bindContinuousStyle(size4, () => ({ ...style, size_em: Number(size4.value) }));
+    section.appendChild(this.styleRow("Size", size4));
+    const background = document.createElement("input");
+    background.type = "checkbox";
+    background.checked = style.background;
+    background.setAttribute("data-molsysviewer-annotation-style-background", this.selectedTag ?? "default");
+    background.addEventListener("change", () => this.applyStyle({ ...style, background: background.checked }));
+    section.appendChild(this.styleRow("Background", background));
+    const opacity = document.createElement("input");
+    opacity.type = "range";
+    opacity.min = "0";
+    opacity.max = "1";
+    opacity.step = "0.05";
+    opacity.value = String(style.background_opacity);
+    opacity.disabled = !style.background;
+    opacity.setAttribute("data-molsysviewer-annotation-style-background-opacity", this.selectedTag ?? "default");
+    this.bindContinuousStyle(opacity, () => ({ ...style, background_opacity: Number(opacity.value) }));
+    section.appendChild(this.styleRow("Background opacity", opacity));
+    return section;
+  }
+  styleRow(labelText, input) {
+    const label2 = document.createElement("label");
+    label2.textContent = labelText;
+    Object.assign(label2.style, {
+      display: "grid",
+      gridTemplateColumns: "110px 1fr",
+      alignItems: "center",
+      gap: "8px",
+      fontSize: "10px",
+      color: "rgba(244,244,245,0.7)"
+    });
+    label2.appendChild(input);
+    return label2;
+  }
+  bindContinuousStyle(input, read) {
+    input.addEventListener("focus", () => this.beginCoalescing());
+    input.addEventListener("pointerdown", () => this.beginCoalescing());
+    input.addEventListener("input", () => this.applyStyle(read()));
+    input.addEventListener("change", () => this.endCoalescing());
+    input.addEventListener("blur", () => this.endCoalescing());
+  }
+  applyStyle(style) {
+    if (this.selectedTag) {
+      this.ctx.onAction("set_annotation_style", { tag: this.selectedTag, style });
+    } else {
+      this.nextStyle = style;
+    }
+  }
+  beginCoalescing() {
+    if (this.coalescing) return;
+    this.coalescing = true;
+    this.ctx.onAction("begin_scene_history_coalescing");
+  }
+  endCoalescing() {
+    if (!this.coalescing) return;
+    this.coalescing = false;
+    this.ctx.onAction("end_scene_history_coalescing");
+  }
+};
+
 // src/ui/panel-shell.ts
 var PanelShell = class {
   constructor(host, options) {
@@ -155099,11 +155463,17 @@ var GroupPanel = class {
     this.measuresSection = this.createSection("measures");
     this.measuresPanel = new MeasuresPanel(this.makePanelContext("measures"));
     this.annotationsSection = this.createSection("annotations");
-    this.annotationsPanel = new InspectorListPanel("annotations", this.makePanelContext("annotations"), {
-      header: "Annotations (Labels)",
-      subtitleFallback: "Annotation",
-      emptyText: "No annotations yet."
-    });
+    this.annotationsPanel = new AnnotationsPanel(
+      this.makePanelContext("annotations"),
+      (atomIndices) => this.onFocus({
+        source_kind: "annotation",
+        annotation_kind: "label",
+        atom_indices: atomIndices,
+        group_indices: [],
+        chain_indices: [],
+        entity_indices: []
+      })
+    );
     this.shapesSection = this.createSection("shapes");
     this.shapesPanel = new InspectorListPanel("shapes", this.makePanelContext("shapes"), {
       header: "3D Shapes",
@@ -155396,6 +155766,7 @@ var GroupPanel = class {
     this.selectionPanel.updateSelection(selection);
     this.regionsPanel.setCurrentSelection(selection);
     this.measuresPanel.setCurrentSelection(selection);
+    this.annotationsPanel.setCurrentSelection(selection);
   }
   updateSelectionHistoryState(state) {
     this.selectionPanel.updateHistory(state);
@@ -155441,8 +155812,8 @@ var GroupPanel = class {
       }
     };
   }
-  setAnnotations(items) {
-    this.annotationsPanel.setItems(items);
+  setAnnotations(items, settings) {
+    this.annotationsPanel.setAnnotations(items, settings);
   }
   setMeasurements(items, settings) {
     this.measuresPanel.setMeasurements(items, settings);
@@ -156341,9 +156712,9 @@ var AddonsPanel = class {
         this.workspaceOverviewHost.appendChild(diagHeader);
         diagnosticsRendered = true;
       }
-      const card3 = document.createElement("div");
-      card3.setAttribute("data-molsysviewer-addons-addon-discovery-failure", failure.source);
-      Object.assign(card3.style, {
+      const card4 = document.createElement("div");
+      card4.setAttribute("data-molsysviewer-addons-addon-discovery-failure", failure.source);
+      Object.assign(card4.style, {
         display: "flex",
         flexDirection: "column",
         alignItems: "stretch",
@@ -156374,11 +156745,11 @@ var AddonsPanel = class {
       badge.textContent = failure.kind === "lifecycle" ? "Lifecycle Error" : "Discovery Error";
       header3.appendChild(name);
       header3.appendChild(badge);
-      card3.appendChild(header3);
+      card4.appendChild(header3);
       const desc = document.createElement("div");
       Object.assign(desc.style, { fontSize: "10px", color: "rgba(252,165,165,0.72)" });
       desc.textContent = failure.reason || "Error loading entry point.";
-      card3.appendChild(desc);
+      card4.appendChild(desc);
       const traceBox = document.createElement("pre");
       Object.assign(traceBox.style, {
         display: "none",
@@ -156393,13 +156764,13 @@ var AddonsPanel = class {
         whiteSpace: "pre-wrap"
       });
       traceBox.textContent = failure.traceback || "No traceback detail.";
-      card3.appendChild(traceBox);
-      card3.addEventListener("click", (e) => {
+      card4.appendChild(traceBox);
+      card4.addEventListener("click", (e) => {
         e.preventDefault();
         const isVisible = traceBox.style.display === "block";
         traceBox.style.display = isVisible ? "none" : "block";
       });
-      this.workspaceOverviewHost.appendChild(card3);
+      this.workspaceOverviewHost.appendChild(card4);
     }
   }
   // ── Left Column: Workspace Navigation (Mimicking Studio layout) ──
@@ -157068,6 +157439,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.lastPrimaryGroupClick = null;
     this.savedSelections = [];
     this.annotationSummaries = [];
+    this.annotationSettings = { systemLoaded: false, activeSelectionCount: 0 };
     this.measurementSummaries = [];
     this.measurementSettings = {
       endpointPolicyDefault: "centroid",
@@ -158609,11 +158981,26 @@ var MolSysViewerController = class _MolSysViewerController {
             tag: item2.tag,
             layerTag: typeof item2.layer_tag === "string" ? item2.layer_tag : void 0,
             text: typeof item2.text === "string" ? item2.text : item2.tag,
+            style: item2.style && typeof item2.style === "object" ? {
+              ...typeof item2.style.color === "string" ? { color: item2.style.color } : {},
+              ...typeof item2.style.size_em === "number" ? { size_em: item2.style.size_em } : {},
+              ...typeof item2.style.background === "boolean" ? { background: item2.style.background } : {},
+              ...typeof item2.style.background_opacity === "number" ? { background_opacity: item2.style.background_opacity } : {}
+            } : {},
             hidden: !!item2.hidden,
+            nAtoms: typeof item2.n_atoms === "number" ? item2.n_atoms : 0,
             atomIndices: Array.isArray(item2.atom_indices) ? item2.atom_indices.filter((value) => typeof value === "number") : [],
+            anchor: {
+              type: typeof item2.anchor?.type === "string" ? item2.anchor.type : "atoms",
+              indices: Array.isArray(item2.anchor?.indices) ? item2.anchor.indices.filter((value) => typeof value === "number") : []
+            },
             broken: !!item2.broken,
             brokenReason: typeof item2.broken_reason === "string" ? item2.broken_reason : void 0
           }));
+          this.annotationSettings = {
+            systemLoaded: !!msg.system_loaded,
+            activeSelectionCount: typeof msg.active_selection_count === "number" ? msg.active_selection_count : 0
+          };
           break;
         }
         case "set_measurement_summaries": {
@@ -159184,29 +159571,8 @@ var MolSysViewerController = class _MolSysViewerController {
   }
   refreshAddonsPanel(refreshChrome = true) {
     this.groupPanel.setAnnotations(
-      [...this.annotationSummaries].sort((left, right) => left.tag.localeCompare(right.tag)).map((item2) => {
-        const tag = item2.tag;
-        return {
-          key: tag,
-          title: item2.text,
-          subtitle: item2.layerTag && item2.layerTag !== tag ? `${tag} \xB7 layer: ${item2.layerTag}` : tag,
-          hidden: item2.hidden,
-          broken: item2.broken,
-          brokenReason: item2.brokenReason,
-          active: this.addonsActive?.section === "annotations" && this.addonsActive.tag === tag,
-          onActivate: item2.atomIndices.length > 0 ? () => {
-            this.addonsActive = { section: "annotations", tag };
-            this.refreshAddonsPanel();
-            this.focusTarget({ atom_indices: item2.atomIndices });
-          } : void 0,
-          onToggleVisibility: () => {
-            this.notify?.({ event: "interaction_context_action", action: "toggle_annotation_visibility", tag });
-          },
-          onDelete: () => {
-            this.notify?.({ event: "interaction_context_action", action: "delete_annotation", tag });
-          }
-        };
-      })
+      [...this.annotationSummaries].sort((left, right) => left.tag.localeCompare(right.tag)),
+      this.annotationSettings
     );
     this.groupPanel.setMeasurements(
       [...this.measurementSummaries].sort((left, right) => left.tag.localeCompare(right.tag)),
@@ -159701,9 +160067,9 @@ var MolSysViewerController = class _MolSysViewerController {
       fontLink.href = "https://fonts.googleapis.com/css2?family=Varela+Round&display=swap";
       document.head.appendChild(fontLink);
     }
-    const card3 = document.createElement("div");
-    card3.setAttribute("data-molsysviewer-welcome-card", "true");
-    Object.assign(card3.style, {
+    const card4 = document.createElement("div");
+    card4.setAttribute("data-molsysviewer-welcome-card", "true");
+    Object.assign(card4.style, {
       position: "absolute",
       top: "50%",
       left: "50%",
@@ -159749,7 +160115,7 @@ var MolSysViewerController = class _MolSysViewerController {
           <circle cx="80" cy="30" r="24" fill="url(#rad-yellow)" />
           <circle cx="115" cy="45" r="24" fill="url(#rad-blue)" />
         </svg>`;
-    card3.appendChild(svgContainer.firstElementChild);
+    card4.appendChild(svgContainer.firstElementChild);
     const titleEl = document.createElement("div");
     Object.assign(titleEl.style, {
       fontSize: "20px",
@@ -159762,7 +160128,7 @@ var MolSysViewerController = class _MolSysViewerController {
       fontFamily: "'Varela Round', system-ui, sans-serif"
     });
     titleEl.textContent = "MolSysViewer";
-    card3.appendChild(titleEl);
+    card4.appendChild(titleEl);
     const descEl = document.createElement("div");
     Object.assign(descEl.style, {
       fontSize: "12px",
@@ -159774,7 +160140,7 @@ var MolSysViewerController = class _MolSysViewerController {
       // Clean body text
     });
     descEl.textContent = "An interactive, high-performance molecular visualization workbench integrated directly into your notebook.";
-    card3.appendChild(descEl);
+    card4.appendChild(descEl);
     const codeBox = document.createElement("div");
     Object.assign(codeBox.style, {
       background: "rgba(0, 0, 0, 0.3)",
@@ -159839,7 +160205,7 @@ var MolSysViewerController = class _MolSysViewerController {
     const line3 = document.createElement("span");
     line3.textContent = "view.show()";
     codeBox.appendChild(line3);
-    card3.appendChild(codeBox);
+    card4.appendChild(codeBox);
     const btn = document.createElement("button");
     Object.assign(btn.style, {
       background: "linear-gradient(135deg, #ce5027 0%, #ffcc00 100%)",
@@ -159870,12 +160236,12 @@ var MolSysViewerController = class _MolSysViewerController {
       btn.textContent = "Loading Crambin...";
       void this.handleMessage({ op: "load_pdb_id", pdb_id: "1CRN" });
     };
-    card3.appendChild(btn);
+    card4.appendChild(btn);
     if (!this.host.style.position || this.host.style.position === "static") {
       this.host.style.position = "relative";
     }
-    this.host.appendChild(card3);
-    this.welcomeCard = card3;
+    this.host.appendChild(card4);
+    this.welcomeCard = card4;
   }
   hideWelcomeCard() {
     if (this.welcomeCard) {
@@ -160940,8 +161306,8 @@ var HelpOverlay = class {
       zIndex: "40",
       pointerEvents: "auto"
     });
-    const card3 = document.createElement("div");
-    card3.className = "molsysviewer-help-card";
+    const card4 = document.createElement("div");
+    card4.className = "molsysviewer-help-card";
     const header2 = document.createElement("div");
     header2.className = "molsysviewer-help-header";
     const title = document.createElement("span");
@@ -160955,7 +161321,7 @@ var HelpOverlay = class {
     closeBtn.addEventListener("click", () => this.hide());
     header2.appendChild(title);
     header2.appendChild(closeBtn);
-    card3.appendChild(header2);
+    card4.appendChild(header2);
     const grid = document.createElement("div");
     grid.className = "molsysviewer-help-grid";
     grid.appendChild(makeSection("Mouse", [
@@ -160975,11 +161341,11 @@ var HelpOverlay = class {
       ["H", "Toggle this help"],
       ["Esc", "Close panel / cancel"]
     ]));
-    card3.appendChild(grid);
+    card4.appendChild(grid);
     this.root.addEventListener("pointerdown", (ev) => {
       if (ev.target === this.root) this.hide();
     });
-    this.root.appendChild(card3);
+    this.root.appendChild(card4);
     this.host.appendChild(this.root);
   }
   toggle() {

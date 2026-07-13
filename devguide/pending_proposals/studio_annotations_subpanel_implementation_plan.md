@@ -1,6 +1,6 @@
 # Studio subpanel — Annotations (implementation plan)
 
-**Status:** proposed (2026-07-12). Companion to
+**Status:** implemented; pending audit (2026-07-13). Companion to
 [the spec](studio_annotations_subpanel.md) and
 [the UI design](studio_annotations_subpanel_ui_design.md).
 
@@ -52,6 +52,10 @@ broken everywhere else.
 | `broken` | `bool` | `boolean` | Contract S7 | the ⚠ row |
 | `broken_reason` | `str \| None` | `string \| null` | Contract S7 | the tooltip |
 
+The domain-level payload also carries `active_selection_count` and
+`system_loaded`. The former is consumed as a fallback when a newly attached
+frontend receives the summary before the live active-selection event.
+
 **`style` is the field most likely to be lost.** It lives in
 `options['style']` of the creation record, not in `info()` — which means `info()`
 must be **extended** to surface it, or the panel's style card will read blanks and
@@ -70,14 +74,14 @@ with a handler in the `event == "interaction_context_action"` dispatcher in
 
 | action | payload | Python call |
 |---|---|---|
-| `create_annotation` | `{text}` | `annotations.add_annotation(text, selection=<active>)` |
+| `create_annotation` | `{text, label_style}` | `annotations.add_label_from_active_selection(...)` |
 | `set_annotation_text` | `{tag, text}` | `annotations.set_text(tag, text)` |
 | `toggle_annotation_visibility` | `{tag}` | `annotations.show(tag)` / `.hide(tag)` |
 | `rename_annotation` | `{tag, new_tag}` | `annotations.set_tag(tag, new_tag)` |
 | `set_annotation_layer` | `{tag, layer\|null}` | `annotations.set_layer_tag(...)` |
 | `reanchor_annotation` | `{tag}` | `annotations.set_anchor(tag, <active selection>)` |
-| `set_annotation_style` | `{tag\|null, style}` | `add_annotation(label_style=…)` / an updater |
-| `show_all_annotations` / `hide_all_annotations` | `—` | loop |
+| `set_annotation_style` | `{tag, style}` | `annotations.set_style(...)` |
+| `show_all_annotations` / `hide_all_annotations` | `—` | `annotations.show_all()` / `.hide_all()` |
 | `clear_annotations` | `—` | `annotations.clear()` |
 
 **Already exists, reuse:** `delete_annotation` (`core.py:1424`) already goes through
@@ -88,11 +92,8 @@ calls `handleMessage({op: "hide_layer"})` directly and leaves Python's `_hidden`
 stale. It becomes `toggle_annotation_visibility`. That deletion **is** the Contract
 S2 fix for this domain.
 
-**A gap to confirm before scoping `set_annotation_style`:** `set_text` exists, but
-there is **no public `set_style`** — style is only settable at creation. Either add
-the mutator (the honest fix, and it belongs with the Phase 0 manager work) or the
-panel restyles by recreating, which loses the tag, the layer and the history. **Do
-not let the panel recreate.**
+`annotations.set_style()` had already landed before this phase. The panel uses it
+directly; it never recreates a label to restyle it.
 
 ## 4. Text editing: coalesce, do not spam the history
 
@@ -109,11 +110,11 @@ window in the **history**, not in the panel (a Python loop must be protected too
 |---|---|
 | `molsysviewer/annotations.py` | surface `style` in `info()`; a style mutator if missing |
 | `molsysviewer/viewer/…` | `_annotation_summary_records()` + `_sync_annotation_summaries_runtime()` |
-| `molsysviewer/viewer/core.py` | the new `interaction_context_action` handlers |
+| `molsysviewer/viewer/panel_actions/scene_objects.py` | the new `interaction_context_action` handlers |
 | `js/src/ui/panels/annotations-panel.ts` | **new** — replaces `InspectorListPanel` for this tab |
 | `js/src/ui/panels/types.ts` | the new `PanelAction` members |
 | `js/src/ui/group-panel.ts` | mount it; `setAnnotationSummaries()` |
-| `js/src/managers/viewer-controller.ts` | consume the summary; **delete** `addonsAnnotations` and its population sites |
+| `js/src/managers/viewer-controller.ts` | consume the complete typed summary and route it to the panel |
 | `molsysviewer/viewer.js` | **generated** — `npm run build:runtime` as the **last** step. Never hand-edited. |
 
 ## 6. Tests
@@ -142,3 +143,34 @@ Every mechanism verified by **mutation**: revert it, its test must fail.
 - Hiding an annotation from the panel removes its label from the **Mol\* render
   tree** *and* Python reports it hidden. No unit test proves both halves at once, and
   this is exactly the defect that shipped.
+
+## 7. Implementation record (2026-07-13)
+
+- `AnnotationsPanel` replaces the generic inspector and owns creation, inline
+  text editing, lifecycle controls, re-anchoring and per-label/default style.
+- Text, color and sliders bracket continuous edits with the scene-history
+  coalescing events. Programmatic loops use the same `view.history.coalescing()`
+  mechanism.
+- The Python summary is authoritative for style, typed anchor, atom count,
+  visibility and broken state. All mutations go through panel actions; focus is
+  the only local camera operation.
+- `annotations-subpanel.e2e.ts` uses Python-generated messages and then inspects
+  Mol\*'s real `customText` and tagged render refs.
+
+Auto-mutation record:
+
+| mechanism | mutation | protecting test | observed result |
+|---|---|---|---|
+| history coalescing deduplicates repeated `set_text` | force `already_coalesced = False` | `test_typing_a_label_does_not_wipe_the_undo_history` | fails: 17 undo entries instead of 4; passes restored |
+| style action rejects a non-mapping | remove the `Mapping` guard | `test_annotation_panel_actions_reject_invalid_style_or_empty_reanchor` | style case fails; passes restored |
+| re-anchor rejects an empty active selection at the panel seam | remove the early empty-selection guard | same parametrized test | re-anchor case fails on the changed error contract; passes restored |
+| inline editing opens a history window | make `beginCoalescing()` a no-op | `GroupPanel Annotations edits labels and routes every mutation through panel actions` | JS bundle test fails; passes restored |
+
+Validation observed on the final source tree:
+
+- Python suite: exit 0, 100% collected tests completed, 3 skipped.
+- JavaScript unit suite: 183 passed, 0 failed.
+- `npx tsc --noEmit`: exit 0, no errors.
+- Browser/WebGL: 20/20 E2E suites passed, including the new annotations
+  subpanel and the migrated broken-anchor and Python round-trip checks.
+- `npm run build:runtime`: exit 0; `viewer.js` regenerated from TypeScript.

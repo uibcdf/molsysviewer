@@ -2,6 +2,7 @@ import assert from "node:assert";
 import test from "node:test";
 
 import { GroupPanel } from "../../src/ui/group-panel";
+import type { AnnotationSummary } from "../../src/ui/panels/annotations-panel";
 
 class FakeElement {
     public readonly style: Record<string, string> = {};
@@ -2173,6 +2174,154 @@ test("GroupPanel Measures renders scientific values and routes every mutation th
             details: { target: "protein", atom_name: "CB" },
         });
 
+        panel.dispose();
+    } finally {
+        (globalThis as any).window = previousWindow;
+        restore();
+    }
+});
+
+test("GroupPanel Annotations edits labels and routes every mutation through panel actions", async () => {
+    const restore = installFakeDom();
+    const previousWindow = (globalThis as any).window;
+    try {
+        (globalThis as any).window = { confirm: () => true };
+        const host = new FakeElement() as any;
+        const actions: Array<{ action: string; details?: any }> = [];
+        const focused: any[] = [];
+        const panel = new GroupPanel(
+            host,
+            () => {},
+            () => {},
+            item => focused.push(item),
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            (action, details) => actions.push({ action, details }),
+        );
+        const annotations: AnnotationSummary[] = [{
+            kind: "label",
+            tag: "note",
+            layerTag: "analysis",
+            text: "Catalytic site",
+            hidden: false,
+            nAtoms: 2,
+            atomIndices: [0, 1],
+            anchor: { type: "atoms", indices: [0, 1] },
+            style: { color: "#123456", size_em: 1.2, background: true, background_opacity: 0.7 },
+            broken: false,
+        }, {
+            kind: "label",
+            tag: "broken",
+            text: "Mutation site",
+            hidden: false,
+            nAtoms: 0,
+            atomIndices: [],
+            anchor: { type: "atoms", indices: [] },
+            style: {},
+            broken: true,
+            brokenReason: "Missing anchor atom indices: [9]",
+        }];
+        const annotationSettings = { systemLoaded: true, activeSelectionCount: 3 };
+        panel.setAnnotations(annotations, annotationSettings);
+        panel.updateSelection({
+            source_kind: "element",
+            atom_indices: [4, 5, 6],
+            group_indices: [1],
+            count_atoms: 3,
+            count_groups: 1,
+        } as any);
+        (panel as any).switchTab("annotations");
+        const root = host.children[0];
+        const clickEvent = { preventDefault() {}, stopPropagation() {} };
+
+        assert.strictEqual(
+            findFirstByAttribute(root, "data-molsysviewer-annotation-identity", "note")?.textContent,
+            "note · 2 atoms · layer: analysis",
+        );
+        assert.strictEqual(
+            findFirstByAttribute(root, "data-molsysviewer-annotation-identity", "broken")?.textContent,
+            "broken · anchor broken",
+        );
+
+        findFirstByAttribute(root, "data-molsysviewer-annotation-focus", "note")?.dispatch("click", clickEvent);
+        assert.deepStrictEqual(focused[0].atom_indices, [0, 1]);
+        findFirstByAttribute(root, "data-molsysviewer-annotation-visibility", "note")?.dispatch("click", clickEvent);
+        findFirstByAttribute(root, "data-molsysviewer-annotation-delete", "note")?.dispatch("click", clickEvent);
+        assert.deepStrictEqual(actions.slice(-2), [
+            { action: "toggle_annotation_visibility", details: { tag: "note" } },
+            { action: "delete_annotation", details: { tag: "note" } },
+        ]);
+
+        findFirstByAttribute(root, "data-molsysviewer-annotation-text", "note")?.dispatch("click", clickEvent);
+        await new Promise(resolve => setTimeout(resolve, 0));
+        const textInput = findFirstByAttribute(host.children[0], "data-molsysviewer-annotation-text-input", "note") as any;
+        textInput.dispatch("focus");
+        textInput.value = "Gate closed";
+        textInput.dispatch("input");
+        textInput.dispatch("keydown", { key: "Enter" });
+        assert.deepStrictEqual(actions.slice(-3), [
+            { action: "begin_scene_history_coalescing", details: undefined },
+            { action: "set_annotation_text", details: { tag: "note", text: "Gate closed" } },
+            { action: "end_scene_history_coalescing", details: undefined },
+        ]);
+
+        annotations[0] = { ...annotations[0], text: "Gate closed" };
+        panel.setAnnotations(annotations, annotationSettings);
+        findFirstByAttribute(host.children[0], "data-molsysviewer-annotation-text", "note")?.dispatch("click", clickEvent);
+        await new Promise(resolve => setTimeout(resolve, 0));
+        const cancelledInput = findFirstByAttribute(host.children[0], "data-molsysviewer-annotation-text-input", "note") as any;
+        cancelledInput.dispatch("focus");
+        cancelledInput.value = "Wrong text";
+        cancelledInput.dispatch("input");
+        cancelledInput.dispatch("keydown", { key: "Escape" });
+        assert.deepStrictEqual(actions.slice(-4), [
+            { action: "begin_scene_history_coalescing", details: undefined },
+            { action: "set_annotation_text", details: { tag: "note", text: "Wrong text" } },
+            { action: "set_annotation_text", details: { tag: "note", text: "Gate closed" } },
+            { action: "end_scene_history_coalescing", details: undefined },
+        ]);
+
+        findFirstByAttribute(host.children[0], "data-molsysviewer-annotation-more", "note")?.dispatch("click", clickEvent);
+        await new Promise(resolve => setTimeout(resolve, 0));
+        const rename = findFirstByAttribute(host.children[0], "data-molsysviewer-annotation-rename-input", "note") as any;
+        rename.value = "gate";
+        findFirstByAttribute(host.children[0], "data-molsysviewer-annotation-rename", "note")?.dispatch("click", clickEvent);
+        const layer = findFirstByAttribute(host.children[0], "data-molsysviewer-annotation-layer-input", "note") as any;
+        layer.value = "sites";
+        findFirstByAttribute(host.children[0], "data-molsysviewer-annotation-layer", "note")?.dispatch("click", clickEvent);
+        findFirstByAttribute(host.children[0], "data-molsysviewer-annotation-reanchor", "note")?.dispatch("click", clickEvent);
+        assert.deepStrictEqual(actions.slice(-3), [
+            { action: "rename_annotation", details: { tag: "note", new_tag: "gate" } },
+            { action: "set_annotation_layer", details: { tag: "note", layer: "sites" } },
+            { action: "reanchor_annotation", details: { tag: "note" } },
+        ]);
+
+        const color = findFirstByAttribute(host.children[0], "data-molsysviewer-annotation-style-color", "note") as any;
+        color.dispatch("focus");
+        color.value = "#abcdef";
+        color.dispatch("input");
+        color.dispatch("blur");
+        assert.deepStrictEqual(actions.slice(-3).map(item => item.action), [
+            "begin_scene_history_coalescing", "set_annotation_style", "end_scene_history_coalescing",
+        ]);
+        assert.strictEqual(actions.at(-2)?.details.style.color, "#abcdef");
+
+        const createText = findFirstByAttribute(host.children[0], "data-molsysviewer-annotation-create-text", "true") as any;
+        createText.value = "New label";
+        createText.dispatch("input");
+        findFirstByAttribute(host.children[0], "data-molsysviewer-annotation-create-confirm", "true")?.dispatch("click", clickEvent);
+        assert.strictEqual(actions.at(-1)?.action, "create_annotation");
+        assert.strictEqual(actions.at(-1)?.details.text, "New label");
+
+        for (const action of ["show_all_annotations", "hide_all_annotations", "clear_annotations"] as const) {
+            findFirstByAttribute(host.children[0], "data-molsysviewer-annotation-global", action)?.dispatch("click", clickEvent);
+        }
+        assert.deepStrictEqual(actions.slice(-3).map(item => item.action), [
+            "show_all_annotations", "hide_all_annotations", "clear_annotations",
+        ]);
         panel.dispose();
     } finally {
         (globalThis as any).window = previousWindow;
