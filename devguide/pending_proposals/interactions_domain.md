@@ -162,7 +162,7 @@ is reachable **only** because the interaction is a recipe rather than a drawing.
 
 ## 8. Rendering: native first, primitives left open (Contract V)
 
-Per Contract V (`scene_objects_contracts.md`), an `InteractionSet` **owns** its
+Per Contract V (`../scene_contracts.md` Part II), an `InteractionSet` **owns** its
 visual realisation rather than *being* it. So the realisation is **selectable**:
 
 - **`renderer="native"` — the default, and the only one in the first slice.**

@@ -135,7 +135,7 @@ To bridge the gap between API reference and real-world scientific usage, the fol
 - **Complex System Navigation**: Managing systems with multiple chains, ligands, and solvent molecules using the new hierarchical `GroupPanel` and selection tools.
 - **Structural Mutation Replay**: Demonstrating how annotations and measurements survive structural rebuilds when modifying systems from Python.
 
-## The scene rework: **done** (2026-07-11)
+## The scene reworks: **done** (2026-07-11 and 2026-07-14)
 
 A 2026-07-10 audit found that the Regions and Whole subpanels rested on unwritten contracts that
 the code silently violated, plus a ~3-second-per-message performance toll. A 15-phase rework fixed
@@ -144,7 +144,8 @@ and git has them. What survives is what future work must obey:
 
 - [`scene_contracts.md`](scene_contracts.md) — **normative.** Representation states
   (None/Inherit/Own), layered colour and ordering, regions-as-recipes, state v2, the scene
-  history. Wins over every other document.
+  history, and the identity, ownership, persistence, and visibility rules for shapes,
+  annotations, measurements, and layers. Wins over every other document.
 - [`engineering_rules.md`](engineering_rules.md) — the rules the rework was built under, and the
   defects that earned each of them.
 

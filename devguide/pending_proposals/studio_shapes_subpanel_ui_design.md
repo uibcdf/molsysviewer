@@ -1,8 +1,7 @@
 # Studio subpanel — Shapes (UI design)
 
-**Status:** proposed (2026-07-12). Companion to
-[the spec](studio_shapes_subpanel.md) and
-[the implementation plan](studio_shapes_subpanel_implementation_plan.md).
+**Status:** implemented (2026-07-14). Companion to
+[the live spec](studio_shapes_subpanel.md).
 
 Visual language: the existing Studio panels (`panels/ui-helpers.ts`). No new design
 system.

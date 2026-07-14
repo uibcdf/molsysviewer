@@ -1,7 +1,7 @@
 # Propuesta post-1.0: anotaciones avanzadas sobre la maquinaria MVS de Mol*
 
 **Estado:** post-1.0 (decisión tomada el 2026-07-12)
-**Contrato aplicable:** `../scene_objects_contracts.md` §Contract V — un objeto de
+**Contrato aplicable:** `../../scene_contracts.md` Part II, Contract V — un objeto de
 dominio *posee* su realización visual; no *es* esa realización.
 **Dependencia upstream:** ninguna. Es maquinaria que ya viene en Mol*
 (`molstar/lib/extensions/mvs/`), sin estrenar en este repositorio.

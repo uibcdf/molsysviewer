@@ -1,13 +1,10 @@
 # Studio subpanel — Measures (spec)
 
-**Status:** proposed (2026-07-12). One of three documents for this subpanel:
-this **spec** (what it is), the [UI design](studio_measures_subpanel_ui_design.md)
-(what it looks like), and the
-[implementation plan](studio_measures_subpanel_implementation_plan.md) (the seam,
-field by field).
+**Status:** implemented (2026-07-14). This spec and the
+[UI design](studio_measures_subpanel_ui_design.md) describe the live panel.
+References to "today" below describe the audited pre-implementation baseline.
 
-**Normative reference:** [`scene_objects_contracts.md`](scene_objects_contracts.md)
-and, above it, [`scene_contracts.md`](../scene_contracts.md).
+**Normative reference:** [`scene_contracts.md`](../scene_contracts.md).
 
 > **This document does not restate the contracts — it points at them.** The Whole
 > subpanel spec of the rework went stale precisely because it *copied* normative
@@ -25,7 +22,7 @@ manages the measurements that produce them.
 
 Today it reads *"Distance — d1 · 2 picks"*. The number — **which is already in
 the browser, in the creation message** — is thrown away by the controller
-(`scene_objects_contracts.md` §0.6). The single most valuable thing this panel
+(`../scene_contracts.md` Part II §0.6). The single most valuable thing this panel
 can do is show it.
 
 ## 2. What the domain already offers

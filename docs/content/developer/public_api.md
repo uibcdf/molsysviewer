@@ -146,7 +146,7 @@ edits on an existing viewer are provided by the MolSysMT addon namespace:
   - `add_selection(tag, selection, *, element, mask, syntax)` — MolSysMT-based selection
   - `add_from_active_selection(tag)`
   - `activate(tag)`
-  - `tags` (property)
+  - `view.selections.tags()` (method)
   - `count()`
   - `contains(tag)`
   - `get(tag)`
@@ -175,7 +175,7 @@ Shape methods that accept per-structure arrays are also public:
 - `view.shapes.add_triangle_faces(..., structure_vertices=[array_per_structure, ...])`
 - `view.shapes.add_links(..., structure_coordinate_pairs=[array_per_structure, ...])`
 - `view.shapes.add_channel_tube(..., structure_centers=[array_per_structure, ...])`
-- `view.shapes.add_hbonds(structures=[None | [[donor, acceptor], ...], ...])`
+- `view.shapes.links.add_hbonds(structures=[None | [[donor, acceptor], ...], ...])`
   - per-structure atom-index pairs; JS resolves coordinates from the current loaded structure
   - `None` in a slot hides the shape for that structure
   - arrays are in Angstroms (raw); `add_hbonds` uses atom indices (topology-only)
@@ -209,7 +209,7 @@ Related object wrappers are also part of the intended public surface:
 - `view.annotations.set_text(tag, text)`
 - `view.annotations.set_tag(tag, new_tag)`
 - `view.annotations.set_layer_tag(tag, new_layer_tag)`
-- `view.annotations.tags()`
+- `view.annotations.tags()` (method)
 - `view.annotations.count()`
 - `view.annotations.contains(tag)`
 - `view.annotations.get(tag)`
@@ -223,7 +223,7 @@ Related object wrappers are also part of the intended public surface:
 - `view.measurements.add_angle(atom_indices, tag=..., layer_tag=..., measurement_style=...)`
 - `view.measurements.add_dihedral(atom_indices, tag=..., layer_tag=..., measurement_style=...)`
   - `measurement_style` accepts a dict with optional keys: `color` (CSS hex), `size_em` (float), `background` (bool), `background_opacity` (float 0–1)
-- `view.measurements.tags` (property)
+- `view.measurements.tags()` (method)
 - `view.measurements.contains(tag)`
 - `view.measurements.get(tag)`
 - `view.measurements.show(tag)`
@@ -233,6 +233,15 @@ Related object wrappers are also part of the intended public surface:
 - `view.measurements.set_tag(tag, new_tag)`
 - `view.measurements.set_layer_tag(tag, new_layer_tag)`
 - `view.selections.add_from_active_selection(...)`
+
+Scene-object managers use the same callable discovery vocabulary. In
+particular, `view.shapes.tags()` (method) and `view.layers.tags()` (method)
+provide their live tags, and new logical layers are created with
+`view.layers.add(tag, ...)`.
+
+Tags are unique within a scene domain, not across the entire scene. A shape,
+annotation, measurement, region, selection, and layer may deliberately share
+the same tag; APIs resolve identity as `(domain, tag)`.
 - `view.movie`
   - `add_keyframe(time_ms, *, camera, structure_index, layer_visibility, easing)`
   - `add_visibility_transition(layer_tag, visible, *, at_time_ms)`

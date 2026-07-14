@@ -1,10 +1,10 @@
 # Studio subpanel — Shapes (spec)
 
-**Status:** proposed (2026-07-12). One of three: this **spec**, the
-[UI design](studio_shapes_subpanel_ui_design.md) and the
-[implementation plan](studio_shapes_subpanel_implementation_plan.md).
+**Status:** implemented (2026-07-14). This spec and the
+[UI design](studio_shapes_subpanel_ui_design.md) describe the live panel.
+References to "today" below describe the audited pre-implementation baseline.
 
-**Normative:** [`scene_objects_contracts.md`](scene_objects_contracts.md). This spec
+**Normative:** [`scene_contracts.md`](../scene_contracts.md). This spec
 points at the contracts; it does not restate them.
 
 ---

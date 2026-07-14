@@ -1,8 +1,7 @@
 # Studio subpanel — Annotations (UI design)
 
-**Status:** proposed (2026-07-12). Companion to
-[the spec](studio_annotations_subpanel.md) and
-[the implementation plan](studio_annotations_subpanel_implementation_plan.md).
+**Status:** implemented (2026-07-14). Companion to
+[the live spec](studio_annotations_subpanel.md).
 
 Visual language: the existing Studio panels. Reuse `makeSectionHeader`,
 `makeSettingsCard`, `makeButton`, `makeRowElement` from `panels/ui-helpers.ts`. **No
