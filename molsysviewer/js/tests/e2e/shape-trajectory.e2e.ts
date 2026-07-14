@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import process from "node:process";
-import { chromium } from "playwright";
+import { chromium } from "./e2e-browser";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
@@ -25,18 +25,12 @@ const MOLSYS_PAYLOAD = {
 
 async function run() {
     const envBin = process.env.PW_CHROMIUM_BIN || "/usr/bin/google-chrome";
-    let browser;
-    try {
-        browser = await chromium.launch({
-            headless: true,
-            executablePath: envBin,
-            chromiumSandbox: false,
-            args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
-        } as any);
-    } catch {
-        console.warn("[E2E shapes] Chromium launch failed; skipping test.");
-        process.exit(0);
-    }
+    const browser = await chromium.launch({
+        headless: true,
+        executablePath: envBin,
+        chromiumSandbox: false,
+        args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
+    } as any);
 
     const page = await browser.newPage();
     const errors: string[] = [];
@@ -240,18 +234,7 @@ async function run() {
 
     await browser.close();
 
-    // Filter known headless rendering errors that are unrelated to the data-model scenarios:
-    // - WebGL context errors (no GPU in CI/headless)
-    // - Mol* structure unit errors from topology-aware shapes on minimal test structures
-    const renderingErrorPatterns = ["WebGL rendering context", "getChainIndex", "getResidueIndex", "getAtomIndex"];
-    const hasRenderingError = errors.some(e => renderingErrorPatterns.some(p => e.includes(p)));
-    const nonRenderingErrors = errors.filter(e => !renderingErrorPatterns.some(p => e.includes(p)));
-
-    if (hasRenderingError && nonRenderingErrors.length === 0) {
-        console.warn("[E2E shapes] Rendering errors detected (headless/no-GPU environment); data-model scenarios passed.");
-        process.exit(0);
-    }
-    assert.strictEqual(nonRenderingErrors.length, 0, `Console errors: ${nonRenderingErrors.join("; ")}`);
+    assert.strictEqual(errors.length, 0, `Console errors: ${errors.join("; ")}`);
     console.log("[E2E shapes] All scenarios passed");
 }
 

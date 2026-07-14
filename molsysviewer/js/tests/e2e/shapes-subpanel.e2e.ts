@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import { execFile } from "node:child_process";
 import process from "node:process";
-import { chromium } from "playwright";
+import { chromium } from "./e2e-browser";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 

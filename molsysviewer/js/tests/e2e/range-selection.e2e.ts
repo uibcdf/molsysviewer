@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import process from "node:process";
-import { chromium } from "playwright";
+import { chromium } from "./e2e-browser";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
@@ -12,13 +12,7 @@ async function run() {
     const baseOpts = { headless: true };
     const launchOptions = { ...baseOpts, executablePath: envBin };
 
-    let browser;
-    try {
-        browser = await chromium.launch(launchOptions as any);
-    } catch (err) {
-        console.warn("[E2E] Chromium launch failed; skipping test.");
-        process.exit(0);
-    }
+    const browser = await chromium.launch(launchOptions as any);
     
     const page = await browser.newPage();
     const errors: string[] = [];

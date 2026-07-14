@@ -77,6 +77,8 @@ molsysviewer/js/tests/*.js
 molsysviewer/js/tests/unit/*.js
 molsysviewer/js/tests/e2e/*.e2e.js
 molsysviewer/js/tests/e2e/*.bundle.js
+molsysviewer/js/tests/e2e/e2e-runner.js
+molsysviewer/js/tests/e2e/*.probe.js
 molsysviewer/js/tests/perf/*.js
 
 # ==========================================================

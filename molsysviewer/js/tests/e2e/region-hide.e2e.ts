@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import process from "node:process";
-import { chromium } from "playwright";
+import { chromium } from "./e2e-browser";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
@@ -25,64 +25,7 @@ type BrowserController = {
 type BrowserWindow = Window & typeof globalThis & { __controller?: BrowserController };
 
 async function run() {
-    const envBin = process.env.PW_CHROMIUM_BIN || "/usr/bin/google-chrome";
-    const playwrightBin = process.env.PLAYWRIGHT_BROWSERS_PATH
-        ? `${process.env.PLAYWRIGHT_BROWSERS_PATH}/chromium-1200/chrome-linux64/chrome`
-        : undefined;
-    const baseOpts = {
-        headless: true,
-    } satisfies Parameters<typeof chromium.launch>[0];
-
-    const attempts: Array<{ label: string; options: Parameters<typeof chromium.launch>[0] }> = [];
-    if (envBin) {
-        attempts.push({
-            label: "env-bin",
-            options: {
-                ...baseOpts,
-                executablePath: envBin,
-            },
-        });
-    }
-    if (playwrightBin) {
-        attempts.push({
-            label: "playwright",
-            options: {
-                ...baseOpts,
-                chromiumSandbox: false,
-                executablePath: playwrightBin,
-                args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
-            },
-        });
-    }
-    if (attempts.length === 0) {
-        attempts.push({
-            label: "default",
-            options: {
-                ...baseOpts,
-                chromiumSandbox: false,
-                args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
-            },
-        });
-    }
-
-    let browser;
-    let lastErr: unknown;
-    for (const attempt of attempts) {
-        try {
-            browser = await chromium.launch(attempt.options as any);
-            break;
-        } catch (err) {
-            lastErr = err;
-        }
-    }
-    if (!browser) {
-        const msg = String(lastErr ?? "unknown");
-        if (msg.includes("crashpad") || msg.includes("sandbox_host_linux") || msg.includes("Operation not permitted")) {
-            console.warn("[E2E] Chromium launch blocked (crashpad/sandbox); skipping test.");
-            process.exit(0);
-        }
-        throw lastErr instanceof Error ? lastErr : new Error(msg);
-    }
+    const browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
     await page.setViewportSize({ width: 1280, height: 900 });
 
@@ -178,11 +121,6 @@ async function run() {
 
     await browser.close();
 
-    const hasWebglError = errors.some(e => e.includes("WebGL rendering context"));
-    if (hasWebglError) {
-        console.warn("[E2E] WebGL is not available in this environment; skipping test.");
-        process.exit(0);
-    }
     assert.strictEqual(errors.length, 0, `Console errors detected: ${errors.join("; ")}`);
     console.log("[E2E] passed");
 }

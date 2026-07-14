@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import process from "node:process";
-import { chromium } from "playwright";
+import { chromium } from "./e2e-browser";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
@@ -56,13 +56,7 @@ async function setActiveSelection(page: any, atomIndices: number[]) {
 
 async function run() {
     const executablePath = process.env.PW_CHROMIUM_BIN || "/usr/bin/google-chrome";
-    let browser;
-    try {
-        browser = await chromium.launch({ headless: true, executablePath } as any);
-    } catch {
-        console.warn("[E2E] Chromium launch failed; skipping Selection subpanel test.");
-        return;
-    }
+    const browser = await chromium.launch({ headless: true, executablePath } as any);
 
     const page = await browser.newPage();
     const errors: string[] = [];
@@ -251,11 +245,6 @@ async function run() {
         await page.waitForFunction(() =>
             ((window as any).__messages || []).some((m: any) => m.event === "scene_history_redo"));
 
-        const hasWebglError = errors.some(error => error.includes("WebGL rendering context"));
-        if (hasWebglError) {
-            console.warn("[E2E] WebGL is unavailable; skipping Selection subpanel assertions.");
-            return;
-        }
         assert.strictEqual(errors.length, 0, `Browser errors: ${errors.join("; ")}`);
         console.log("[E2E] Selection subpanel integration test passed");
     } finally {

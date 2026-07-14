@@ -72,8 +72,8 @@ it claimed to cover.
 
 An e2e that "skips" when the browser will not launch, or when WebGL is unavailable, reports success
 while looking at nothing. If a test exists to confirm something **on screen**, it must **fail** when
-it cannot see the screen, not pass. `scene-contracts.e2e.ts` asserts WebGL2 is present for exactly
-this reason.
+it cannot see the screen, not pass. The shared E2E browser adapter enforces browser and WebGL2
+availability. `E2E_ALLOW_SKIP=1` is the only explicit opt-out and must not be set for validation.
 
 Related trap: the group-panel chrome only becomes visible **after a system is loaded**. An e2e that
 forgets `load_molsys_payload` waits on an invisible element, times out, and — depending on how it
@@ -160,7 +160,7 @@ npm run build:runtime      # regenerate viewer.js (last, after the final TS edit
 And, when the change touches rendering, interaction or the scene contracts:
 
 ```bash
-npm run test:e2e:all       # 14 suites against real Mol* (PW_CHROMIUM_BIN=/usr/bin/google-chrome)
+npm run test:e2e           # all suites against real Mol* (PW_CHROMIUM_BIN=/usr/bin/google-chrome)
 npm run test:perf          # the message-toll and dynamic-region-frame harnesses
 ```
 

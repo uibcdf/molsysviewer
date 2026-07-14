@@ -113,7 +113,9 @@ cd molsysviewer/js
 npm run test:e2e
 ```
 
-E2E requires a local Chrome/Chromium with WebGL.
+E2E requires a local Chrome/Chromium with WebGL2. The default command runs the complete suite and
+fails if the browser or WebGL2 is unavailable. Use `E2E_ALLOW_SKIP=1` only when intentionally
+opting out of E2E validation.
 
 On this workstation, the verified recipe is:
 

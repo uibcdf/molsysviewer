@@ -22,5 +22,7 @@ JS/TS unit tests
 E2E tests (Playwright)
 - Location: `molsysviewer/js/tests/e2e`
 - Command: `npm run test:e2e`
+- The default command runs every E2E suite sequentially through one shared Chromium process.
 - Requires a local Chrome/Chromium with WebGL; you can set `PW_CHROMIUM_BIN=/path/to/chrome`.
+- Browser launch and WebGL2 failures fail the run. `E2E_ALLOW_SKIP=1` is an explicit opt-out for environments where E2E validation is intentionally unavailable.
 - E2E tests are currently run manually, not in CI.

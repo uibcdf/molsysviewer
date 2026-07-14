@@ -404,8 +404,8 @@ Current minimum:
 
 Notes:
 
-- `test:e2e` is environment-dependent and may skip if browser/WebGL support is not available.
-- A skip is an environment fact, not automatically a product failure.
+- `test:e2e` runs every E2E suite and fails if browser/WebGL2 support is unavailable.
+- `E2E_ALLOW_SKIP=1` is an explicit decision to omit E2E validation, never a green validation result.
 - On this workstation, the verified E2E command is:
 
 ```bash

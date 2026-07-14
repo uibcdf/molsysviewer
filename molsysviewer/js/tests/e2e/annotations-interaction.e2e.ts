@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import process from "node:process";
-import { chromium } from "playwright";
+import { chromium } from "./e2e-browser";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
@@ -17,18 +17,12 @@ END
 
 async function run() {
     const envBin = process.env.PW_CHROMIUM_BIN || "/usr/bin/google-chrome";
-    let browser;
-    try {
-        browser = await chromium.launch({
-            headless: true,
-            executablePath: envBin,
-            chromiumSandbox: false,
-            args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
-        } as any);
-    } catch {
-        console.warn("[E2E] Chromium launch failed; skipping test.");
-        process.exit(0);
-    }
+    const browser = await chromium.launch({
+        headless: true,
+        executablePath: envBin,
+        chromiumSandbox: false,
+        args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
+    } as any);
 
     const page = await browser.newPage();
     const errors: string[] = [];
@@ -177,11 +171,6 @@ async function run() {
 
     await browser.close();
 
-    const hasWebglError = errors.some(e => e.includes("WebGL rendering context"));
-    if (hasWebglError) {
-        console.warn("[E2E annotations] WebGL unavailable; skipping rendering assertions.");
-        process.exit(0);
-    }
     assert.strictEqual(errors.length, 0, `Console errors: ${errors.join("; ")}`);
     console.log("[E2E annotations] All scenarios passed");
 }

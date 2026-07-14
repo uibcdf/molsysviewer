@@ -7,7 +7,7 @@
  */
 import assert from "node:assert";
 import process from "node:process";
-import { chromium } from "playwright";
+import { chromium } from "./e2e-browser";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
@@ -58,18 +58,12 @@ const WORKFLOW_SEQUENCE = [
 
 async function run() {
     const envBin = process.env.PW_CHROMIUM_BIN || "/usr/bin/google-chrome";
-    let browser;
-    try {
-        browser = await chromium.launch({
-            headless: true,
-            executablePath: envBin,
-            chromiumSandbox: false,
-            args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
-        } as any);
-    } catch {
-        console.warn("[E2E workflow] Chromium launch failed; skipping test.");
-        process.exit(0);
-    }
+    const browser = await chromium.launch({
+        headless: true,
+        executablePath: envBin,
+        chromiumSandbox: false,
+        args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
+    } as any);
 
     const page = await browser.newPage();
     const errors: string[] = [];
@@ -170,12 +164,6 @@ async function run() {
 
     await browser.close();
 
-    const renderingErrorPatterns = ["WebGL rendering context", "getChainIndex", "getResidueIndex"];
-    const nonRenderingErrors = errors.filter(e => !renderingErrorPatterns.some(p => e.includes(p)));
-    if (nonRenderingErrors.length !== errors.length) {
-        console.warn("[E2E workflow] Rendering errors detected (headless); data-model scenarios passed.");
-        process.exit(0);
-    }
     assert.strictEqual(errors.length, 0, `Console errors: ${errors.join("; ")}`);
     console.log("[E2E workflow] All scenarios passed");
 }

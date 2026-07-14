@@ -45,6 +45,9 @@ cd molsysviewer/js
 npm run test:e2e
 ```
 
+This runs every E2E suite against one shared Chromium process. Browser launch and WebGL2 failures
+are errors by default; `E2E_ALLOW_SKIP=1` is an explicit opt-out, not the normal test mode.
+
 On this workstation, the verified command is:
 
 ```bash

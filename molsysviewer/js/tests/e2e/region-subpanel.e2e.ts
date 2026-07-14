@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import process from "node:process";
-import { chromium } from "playwright";
+import { chromium } from "./e2e-browser";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
@@ -44,13 +44,7 @@ async function latestAction(page: any, action: string) {
 
 async function run() {
     const executablePath = process.env.PW_CHROMIUM_BIN || "/usr/bin/google-chrome";
-    let browser;
-    try {
-        browser = await chromium.launch({ headless: true, executablePath } as any);
-    } catch {
-        console.warn("[E2E] Chromium launch failed; skipping Regions subpanel test.");
-        return;
-    }
+    const browser = await chromium.launch({ headless: true, executablePath } as any);
 
     const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
     const errors: string[] = [];
