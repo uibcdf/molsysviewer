@@ -237,7 +237,7 @@ the viewer, or the viewer becomes a place where science hides.
 
 **Core.** Hydrogen bonds, disulfides and stacking are universal in molecular
 visualisation — PyMOL, ChimeraX and Mol\* all ship them. This is not a specialty
-like ElasNetMT; it is table stakes.
+like ElastNetMT; it is table stakes.
 
 ## 13. What this validates
 

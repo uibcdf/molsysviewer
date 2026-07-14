@@ -103,8 +103,8 @@ That principle should guide prioritization throughout the repository.
    - Core-vs-add-on boundary for MolSysViewer, optional ecosystem panels, and the requirement that 1.0 already leave plugin entry points or a template/test in place.
 30. [**Path to 1.0.0 (Unified Release Plan)**](path_to_1_0.md)
    - Unified roadmap for the stable 1.0.0 release, integrating competitive quality gaps and strategic milestones.
-31. [**ElasNetMT Add-On Plan**](elasnetmt_addon_plan.md)
-   - Concrete integration plan for the ElasNetMT add-on, using the existing overlay primitive set (links, displacement vectors, anisotropy ellipsoids).
+31. [**ElastNetMT Add-On Plan**](elastnetmt_addon_plan.md)
+   - Concrete integration plan for the ElastNetMT add-on, using the existing overlay primitive set (links, displacement vectors, anisotropy ellipsoids).
 32. [**Course Structure**](course_structure.md)
    - Proposed 23-module curriculum for an "Introduction to MolSysViewer" course, from basic loading to advanced cinematic production.
 33. [**MolSysMovie Vision**](molsysmovie_vision.md)

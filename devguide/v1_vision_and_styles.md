@@ -102,7 +102,7 @@ for more domain-specific libraries such as:
 
 - `TopoMT`
 - `PharmacophoreMT`
-- `ElasNetMT`
+- `ElastNetMT`
 
 The preferred architectural rule is:
 

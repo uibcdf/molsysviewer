@@ -391,7 +391,7 @@ KNOWN_ADDON_MODULES: tuple[str, ...] = (
     "molsysviewer_molsysmt",
     "molsysviewer_topomt",
     "molsysviewer_pharmacophoremt",
-    "molsysviewer_elasnetmt",
+    "molsysviewer_elastnetmt",
 )
 ADDON_ENTRY_POINT_GROUP = "molsysviewer.addons"
 

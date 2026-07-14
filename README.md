@@ -68,7 +68,7 @@ workspaces, panels, context actions, and shape providers without modifying the c
 | Addon package | Ecosystem tool | What it adds |
 |---|---|---|
 | `molsysviewer-molsysmt` | MolSysMT | 10-panel workspace: inspect, select, colour, H-bonds, topology, PBC, mechanics, build |
-| `molsysviewer-elasnetmt` | ElasNetMT | GNM/ANM elastic network modes and contact network overlays |
+| `molsysviewer-elastnetmt` | ElastNetMT | GNM/ANM elastic network modes and contact network overlays |
 | `molsysviewer-topomt` | TopoMT | Pocket detection and topography visualisation |
 | `molsysviewer-pharmacophoremt` | PharmacophoresMT | Structure-based pharmacophore glyph overlays |
 
@@ -176,7 +176,7 @@ MolSysViewer is the visualisation engine for the **UIBCDF MolSys ecosystem**:
 - **MolSysMT** — molecular systems and trajectories
 - **TopoMT** — cavity and topography analysis
 - **PharmacophoresMT** — pharmacophore modelling
-- **ElasNetMT** — elastic network models
+- **ElastNetMT** — elastic network models
 
 ---
 

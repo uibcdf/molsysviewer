@@ -83,7 +83,7 @@ STYLES = {
 }
 
 ADDONS_ENABLED = ["topomt"]
-ADDONS_DISABLED = ["elasnetmt"]
+ADDONS_DISABLED = ["elastnetmt"]
 ```
 
 ## Load the file directly

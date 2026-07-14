@@ -11,7 +11,7 @@ such as:
 
 - `TopoMT`
 - `PharmacophoreMT`
-- `ElasNetMT`
+- `ElastNetMT`
 - and other MolSysSuite packages with their own scientific semantics
 
 ## Core Position
@@ -128,7 +128,7 @@ So, for example:
   panels
 - `TopoMT` could contribute a `TopoMT` workspace
 - `PharmacophoreMT` could contribute a `PharmacophoreMT` workspace
-- `ElasNetMT` could contribute an `Elastic` or `Networks` workspace
+- `ElastNetMT` could contribute an `Elastic` or `Networks` workspace
 
 This fits the panel-mode direction already established in
 `canvas_minimal_ux.md` while avoiding a single flat panel navigator for all

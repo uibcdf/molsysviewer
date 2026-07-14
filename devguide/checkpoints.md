@@ -41,7 +41,7 @@ synchronization, and release-readiness polish.
   once the local host environment is available: molecular load,
   `structure_ready`, visible render, native context menu, and movie export.
 - **Visuals and Parity**: Promote any additional curated visual schemes or custom sizes to matching public Python APIs.
-- **Downstream Hardening**: Validate other add-on integrations (e.g. `pharmacophoremt`, `elasnetmt`, `topomt`) to ensure no regression or visual bugs occur during complex analysis workflows.
+- **Downstream Hardening**: Validate other add-on integrations (e.g. `pharmacophoremt`, `elastnetmt`, `topomt`) to ensure no regression or visual bugs occur during complex analysis workflows.
 - **Dependency publication sync**: Wait for the latest sibling packages,
   especially `smonitor`, to be published for the CI matrix before treating
   GitHub CI red status as a MolSysViewer code regression.
@@ -237,9 +237,9 @@ Recently closed and implemented in this session (twentieth batch):
 - 10 new tests in `tests/test_addons.py` — all passing
 - TS build: `npm run build` — exit 0, `viewer.js` updated
 
-**ElasNetMT `ElasNetMTModelPanel` — first proof of the panel widget contract**:
+**ElastNetMT `ElastNetMTModelPanel` — first proof of the panel widget contract**:
 
-- `molsysviewer_elasnetmt/panels/model.py` — subclass of `AddonPanelWidget`
+- `molsysviewer_elastnetmt/panels/model.py` — subclass of `AddonPanelWidget`
 - `_esm`: vanilla JS panel with GNM/ANM tab toggle, cutoff input, Compute button
 - `on_mount`: pushes current runtime state to the panel
 - `handle_action`: `set_model_kind`, `set_cutoff`, `compute`
@@ -966,11 +966,11 @@ Recently closed and implemented in first operational slices:
   dedicated addon layer; current `view.convert(...)` path is the interim bridge
 - no new surface needed; the existing implementation slice satisfies the proposal
 
-**ElasNetMT addon integration** (`PROPOSAL_elasnetmt_addon_integration`):
+**ElastNetMT addon integration** (`PROPOSAL_elastnetmt_addon_integration`):
 
 - closed against the existing overlay primitive set (links, displacement vectors,
-  anisotropy ellipsoids); the addon plan lives in `devguide/elasnetmt_addon_plan.md`
-- no new primitives needed before ElasNetMT can start using the current host
+  anisotropy ellipsoids); the addon plan lives in `devguide/elastnetmt_addon_plan.md`
+- no new primitives needed before ElastNetMT can start using the current host
 
 **Headless image export** (`PROPOSAL_headless_export_support`):
 

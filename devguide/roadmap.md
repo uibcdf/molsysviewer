@@ -219,7 +219,7 @@ Immediate `0.16.x` hardening gate:
     - add-on reference runtime
     - figure export from the workbench
 
-## Active Add-On Slice: ElasNetMT
+## Active Add-On Slice: ElastNetMT
 
 Status:
 
@@ -227,14 +227,14 @@ Status:
 
 Immediate working documents:
 
-- [`elasnetmt_addon_plan.md`](/home/diego/repos@uibcdf/molsysviewer/devguide/elasnetmt_addon_plan.md)
+- [`elastnetmt_addon_plan.md`](/home/diego/repos@uibcdf/molsysviewer/devguide/elastnetmt_addon_plan.md)
 - [`addon_panel_widget_contract.md`](/home/diego/repos@uibcdf/molsysviewer/devguide/addon_panel_widget_contract.md)
 
 Reason to open this slice:
 
 - the add-on host is credible enough that the next useful pressure should come
   from one real downstream-shaped domain
-- `ElasNetMT` is a strong fit because it can already reuse existing overlay
+- `ElastNetMT` is a strong fit because it can already reuse existing overlay
   primitives:
   - links
   - displacement vectors
@@ -243,19 +243,19 @@ Reason to open this slice:
 What is done:
 
 - add-on registration, lifecycle, context actions, workbench sections: done
-- per-view runtime state (`ElasNetMTAddonRuntime`): done
+- per-view runtime state (`ElastNetMTAddonRuntime`): done
 - overlay adapters (contacts, modes, anisotropy): done
 - export helper (`build_figure_export_payload`): done
 - `AddonPanelWidget` base class + `widget_class` in `AddonPanelSpec`: done
 - TS panel host: `workspaceAddonWidgetHost`, ESM blob import, model proxy: done
 - Python panel lifecycle: `_mount_addon_panel`, `_unmount_addon_panel`: done
-- `ElasNetMTModelPanel` — first `AddonPanelWidget` in production: done
-- 12 integration tests in `molsysviewer_elasnetmt`: all passing
+- `ElastNetMTModelPanel` — first `AddonPanelWidget` in production: done
+- 12 integration tests in `molsysviewer_elastnetmt`: all passing
 
 What remains:
 
 - broader panel widget coverage in downstream add-ons
-- no structural ElasNetMT host work pending
+- no structural ElastNetMT host work pending
 
 ### Phase E. Final Standalone Push
 
@@ -777,4 +777,4 @@ To reach a successful **1.0 release**, these three pillars must be prioritized o
 ### 3. Documentation for the "Scientific Workbench"
 - The documentation must shift from API reference to case-study-driven tutorials.
 - **Priority:** Create "Workbench Tutorials" (e.g., "How to analyze pocket contacts") that showcase the library as an integrated tool for structural biochemistry and drug design.
-- **Status (Update 2026-06-25):** Postponed to post-1.0. These tutorials heavily depend on sibling packages (`elasnetmt`, `pharmacophoremt`, `molsysmt`, `topomt`). To ensure high-quality and stable integration, they will be developed once those libraries are mature and their respective addons are fully polished.
+- **Status (Update 2026-06-25):** Postponed to post-1.0. These tutorials heavily depend on sibling packages (`elastnetmt`, `pharmacophoremt`, `molsysmt`, `topomt`). To ensure high-quality and stable integration, they will be developed once those libraries are mature and their respective addons are fully polished.

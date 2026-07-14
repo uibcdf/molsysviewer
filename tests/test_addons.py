@@ -697,20 +697,20 @@ def test_addon_template_module_is_importable_and_registerable():
         addons.clear()
 
 
-def test_elasnetmt_addon_template_module_is_importable_and_registerable():
+def test_elastnetmt_addon_template_module_is_importable_and_registerable():
     addons.clear()
     try:
-        addon = addons.register_module("molsysviewer.addon_templates.minimal_elasnetmt")
-        assert addon.name == "elasnetmt-template"
-        assert addons.available() == ["elasnetmt-template"]
-        assert addons.workspace_specs()[0]["id"] == "elasnetmt"
+        addon = addons.register_module("molsysviewer.addon_templates.minimal_elastnetmt")
+        assert addon.name == "elastnetmt-template"
+        assert addons.available() == ["elastnetmt-template"]
+        assert addons.workspace_specs()[0]["id"] == "elastnetmt"
         assert [item["id"] for item in addons.panel_specs()] == ["model", "modes", "figures"]
         assert [item["id"] for item in addons.context_action_specs()] == ["show-contact-network", "show-mode-vectors"]
         assert [item["id"] for item in addons.addon_section_specs()] == ["modes", "network-overlays"]
         assert [item["id"] for item in addons.shape_provider_specs()] == ["contact-links", "mode-ellipsoids"]
         assert addons.export_helper_specs()[0]["id"] == "enm-figure"
-        assert addons.lifecycle_for("elasnetmt-template") is not None
-        assert addons.lifecycle_for("elasnetmt-template").info() == {
+        assert addons.lifecycle_for("elastnetmt-template") is not None
+        assert addons.lifecycle_for("elastnetmt-template").info() == {
             "has_on_enable": True,
             "has_on_disable": True,
             "has_on_context_action": True,
@@ -760,41 +760,41 @@ def test_addon_template_module_has_visible_runtime_lifecycle_flow():
         addons.clear()
 
 
-def test_elasnetmt_addon_template_module_has_visible_runtime_lifecycle_flow():
+def test_elastnetmt_addon_template_module_has_visible_runtime_lifecycle_flow():
     addons.clear()
     try:
-        addons.register_module("molsysviewer.addon_templates.minimal_elasnetmt")
+        addons.register_module("molsysviewer.addon_templates.minimal_elastnetmt")
         view = MolSysView(debug_js=True)
 
-        assert view._elasnetmt_template_enabled is True
-        assert ("enable", "elasnetmt-template") in view._elasnetmt_template_events
-        assert view._elasnetmt_template_runtime["enabled"] is True
-        assert view._elasnetmt_template_runtime["workspace"] == "elasnetmt"
-        assert view._elasnetmt_template_runtime["panels"] == ["model", "modes", "figures"]
-        assert view._elasnetmt_template_runtime["sections"] == ["modes", "network-overlays"]
-        assert view._elasnetmt_template_runtime["context_actions"] == ["show-contact-network", "show-mode-vectors"]
-        assert view._elasnetmt_template_runtime["export_helpers"] == ["enm-figure"]
+        assert view._elastnetmt_template_enabled is True
+        assert ("enable", "elastnetmt-template") in view._elastnetmt_template_events
+        assert view._elastnetmt_template_runtime["enabled"] is True
+        assert view._elastnetmt_template_runtime["workspace"] == "elastnetmt"
+        assert view._elastnetmt_template_runtime["panels"] == ["model", "modes", "figures"]
+        assert view._elastnetmt_template_runtime["sections"] == ["modes", "network-overlays"]
+        assert view._elastnetmt_template_runtime["context_actions"] == ["show-contact-network", "show-mode-vectors"]
+        assert view._elastnetmt_template_runtime["export_helpers"] == ["enm-figure"]
 
         view._handle_frontend_event(  # noqa: SLF001
             {
                 "event": "interaction_context_action",
                 "action": "addon_context_action",
-                "addon": "elasnetmt-template",
+                "addon": "elastnetmt-template",
                 "addon_action_id": "show-mode-vectors",
                 "addon_action_title": "Show Mode Vectors",
                 "context": {"kind": "structure", "atom_indices": [1, 2, 3]},
             }
         )
 
-        assert view._elasnetmt_template_last_context_action["action_id"] == "show-mode-vectors"
-        assert view._elasnetmt_template_last_context_action["payload"]["addon"] == "elasnetmt-template"
-        assert view._elasnetmt_template_runtime["last_context_action"]["action_id"] == "show-mode-vectors"
-        assert ("context", "show-mode-vectors") in view._elasnetmt_template_events
+        assert view._elastnetmt_template_last_context_action["action_id"] == "show-mode-vectors"
+        assert view._elastnetmt_template_last_context_action["payload"]["addon"] == "elastnetmt-template"
+        assert view._elastnetmt_template_runtime["last_context_action"]["action_id"] == "show-mode-vectors"
+        assert ("context", "show-mode-vectors") in view._elastnetmt_template_events
 
-        view.addons.disable("elasnetmt-template")
-        assert view._elasnetmt_template_enabled is False
-        assert view._elasnetmt_template_runtime["enabled"] is False
-        assert ("disable", "elasnetmt-template") in view._elasnetmt_template_events
+        view.addons.disable("elastnetmt-template")
+        assert view._elastnetmt_template_enabled is False
+        assert view._elastnetmt_template_runtime["enabled"] is False
+        assert ("disable", "elastnetmt-template") in view._elastnetmt_template_events
     finally:
         addons.clear()
 
@@ -821,9 +821,9 @@ def test_addon_template_module_syncs_richer_runtime_summary_message():
 def test_addon_templates_helper_lists_and_registers_reference_addons():
     addons.clear()
     try:
-        assert addon_templates.list_reference_addons() == ["dummy", "elasnetmt"]
-        assert addon_templates.resolve_reference_addon("elasnetmt") == "molsysviewer.addon_templates.minimal_elasnetmt"
-        assert addon_templates.resolve_reference_addon("minimal_elasnetmt") == "molsysviewer.addon_templates.minimal_elasnetmt"
+        assert addon_templates.list_reference_addons() == ["dummy", "elastnetmt"]
+        assert addon_templates.resolve_reference_addon("elastnetmt") == "molsysviewer.addon_templates.minimal_elastnetmt"
+        assert addon_templates.resolve_reference_addon("minimal_elastnetmt") == "molsysviewer.addon_templates.minimal_elastnetmt"
         assert addon_templates.resolve_reference_addon("dummy") == "molsysviewer.addon_templates.dummy_addon"
         assert addon_templates.resolve_reference_addon("minimal_dummy") == "molsysviewer.addon_templates.dummy_addon"
 
@@ -832,12 +832,12 @@ def test_addon_templates_helper_lists_and_registers_reference_addons():
         assert addons.available() == ["dummy"]
 
         addons.clear()
-        addon = addon_templates.register_reference_addon("elasnetmt")
-        assert addon.name == "elasnetmt-template"
-        assert addons.available() == ["elasnetmt-template"]
+        addon = addon_templates.register_reference_addon("elastnetmt")
+        assert addon.name == "elastnetmt-template"
+        assert addons.available() == ["elastnetmt-template"]
 
-        imported = addon_templates.import_reference_module("elasnetmt")
-        assert imported.__name__ == "molsysviewer.addon_templates.minimal_elasnetmt"
+        imported = addon_templates.import_reference_module("elastnetmt")
+        assert imported.__name__ == "molsysviewer.addon_templates.minimal_elastnetmt"
     finally:
         addons.clear()
 
@@ -846,8 +846,8 @@ def test_addon_templates_helper_can_register_all_reference_addons():
     addons.clear()
     try:
         registered = addon_templates.register_all_reference_addons()
-        assert [item.name for item in registered] == ["dummy", "elasnetmt-template"]
-        assert addons.available() == ["dummy", "elasnetmt-template"]
+        assert [item.name for item in registered] == ["dummy", "elastnetmt-template"]
+        assert addons.available() == ["dummy", "elastnetmt-template"]
     finally:
         addons.clear()
 

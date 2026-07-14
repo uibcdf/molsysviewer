@@ -1,8 +1,8 @@
-# ElasNetMT Add-On Plan
+# ElastNetMT Add-On Plan
 
 Last update: 2026-04-17
 
-This note records the current development plan for an **ElasNetMT add-on** on
+This note records the current development plan for an **ElastNetMT add-on** on
 top of the now-explicit MolSysViewer add-on platform.
 
 It is meant to be operational, not aspirational.
@@ -10,9 +10,9 @@ The goal is to define a realistic path that matches the current host/runtime
 contract instead of designing against a future plugin system that does not yet
 exist.
 
-## Why ElasNetMT Should Arrive As An Add-On
+## Why ElastNetMT Should Arrive As An Add-On
 
-`ElasNetMT` is exactly the kind of domain-specific functionality that should
+`ElastNetMT` is exactly the kind of domain-specific functionality that should
 *not* be absorbed into the MolSysViewer core.
 
 The core viewer should continue to own:
@@ -22,7 +22,7 @@ The core viewer should continue to own:
 - generic overlays and selections
 - replay/export/state behavior
 
-The `ElasNetMT` integration should own:
+The `ElastNetMT` integration should own:
 
 - elastic-network model semantics
 - network-specific overlays
@@ -35,7 +35,7 @@ visual workbench of MolSysSuite.
 
 ## Product Position
 
-The ElasNetMT add-on should be treated as a **large add-on**.
+The ElastNetMT add-on should be treated as a **large add-on**.
 
 That means the preferred visible form is:
 
@@ -49,7 +49,7 @@ That means the preferred visible form is:
 Recommended first user-facing workspace:
 
 - workspace id:
-  - `elasnetmt`
+  - `elastnetmt`
 - workspace title:
   - `Elastic Networks`
 
@@ -70,18 +70,18 @@ The parts that are real today:
   - `on_disable(view)`
   - `on_context_action(view, action_id, payload)`
 
-The parts that are *not* the right target for the first ElasNetMT slice:
+The parts that are *not* the right target for the first ElastNetMT slice:
 
 - rich arbitrary frontend panel execution
 - broad plugin marketplaces
 - unrestricted runtime hook systems
 - host-specific UI forks
 
-So the first ElasNetMT slice should be **Python-driven and overlay-first**.
+So the first ElastNetMT slice should be **Python-driven and overlay-first**.
 
 ## Visual Primitives Already Available
 
-MolSysViewer already has the primitives needed for a strong first ElasNetMT
+MolSysViewer already has the primitives needed for a strong first ElastNetMT
 prototype:
 
 - contact graphs:
@@ -99,15 +99,15 @@ infrastructure in MolSysViewer core to become useful.
 Long-term package split:
 
 - scientific/domain package:
-  - `elasnetmt`
+  - `elastnetmt`
 - MolSysViewer integration package:
-  - `molsysviewer-elasnetmt`
+  - `molsysviewer-elastnetmt`
 - recommended Python import name:
-  - `molsysviewer_elasnetmt`
+  - `molsysviewer_elastnetmt`
 
 Short-term validation path inside the MolSysViewer repo:
 
-- keep one bundled **reference ElasNetMT add-on** in `molsysviewer.addon_templates`
+- keep one bundled **reference ElastNetMT add-on** in `molsysviewer.addon_templates`
 - use it to validate:
   - workspace shape
   - runtime summary
@@ -146,12 +146,12 @@ The MVP should *not* try to be a complete ENM application inside the viewer.
 
 Goal:
 
-- prove that an ElasNetMT-shaped domain can live credibly inside the current
+- prove that an ElastNetMT-shaped domain can live credibly inside the current
   add-on host
 
 Work:
 
-- add a bundled reference add-on template shaped like ElasNetMT
+- add a bundled reference add-on template shaped like ElastNetMT
 - register it through `addon_templates`
 - add tests for:
   - registration
@@ -162,13 +162,13 @@ Work:
 Deliverable:
 
 - a stable reference module such as:
-  - `molsysviewer.addon_templates.minimal_elasnetmt`
+  - `molsysviewer.addon_templates.minimal_elastnetmt`
 
 ### Phase 2. Runtime State Model
 
 Goal:
 
-- define the minimal per-view state that a real ElasNetMT add-on needs
+- define the minimal per-view state that a real ElastNetMT add-on needs
 
 Work:
 
@@ -188,7 +188,7 @@ Deliverable:
 
 Goal:
 
-- translate ElasNetMT outputs into existing MolSysViewer shape APIs
+- translate ElastNetMT outputs into existing MolSysViewer shape APIs
 
 Work:
 
@@ -221,7 +221,7 @@ Deliverable:
 
 Goal:
 
-- make ElasNetMT output reusable in publication-oriented work
+- make ElastNetMT output reusable in publication-oriented work
 
 Work:
 
@@ -237,7 +237,7 @@ Deliverable:
 
 ## Technical Principles
 
-The ElasNetMT add-on should follow these rules:
+The ElastNetMT add-on should follow these rules:
 
 - prefer **Python-side orchestration**
 - prefer **existing MolSysViewer overlays**
@@ -266,7 +266,7 @@ The right first proof is narrower:
 
 Goal:
 
-- give each ElasNetMT panel a real interactive UI embedded in the canvas panel
+- give each ElastNetMT panel a real interactive UI embedded in the canvas panel
   host, without requiring TypeScript or MolSysViewer-internal knowledge
 
 Work:
@@ -280,7 +280,7 @@ Work:
   - `panel_navigate` → `_mount_addon_panel` ✓
   - `panel_unmount` → `_unmount_addon_panel` ✓
   - `addon_panel_action` → routes to active widget ✓
-- `ElasNetMTModelPanel` in `molsysviewer_elasnetmt/panels/model.py`:
+- `ElastNetMTModelPanel` in `molsysviewer_elastnetmt/panels/model.py`:
   - GNM/ANM tab toggle, cutoff input, Compute button ✓
   - `on_mount` pushes initial runtime state ✓
   - `handle_action` handles `set_model_kind`, `set_cutoff`, `compute` ✓
@@ -293,13 +293,13 @@ Deliverable:
 
 ## Current State
 
-Phases 1–6 are complete. All three ElasNetMT panels have interactive widgets:
+Phases 1–6 are complete. All three ElastNetMT panels have interactive widgets:
 
-- `ElasNetMTModelPanel` (`model`): GNM/ANM toggle, cutoff, Compute ✓
-- `ElasNetMTModesPanel` (`modes`): mode index selector, Show Vectors ✓
-- `ElasNetMTFiguresPanel` (`figures`): preset selector, format toggle, Export ✓
+- `ElastNetMTModelPanel` (`model`): GNM/ANM toggle, cutoff, Compute ✓
+- `ElastNetMTModesPanel` (`modes`): mode index selector, Show Vectors ✓
+- `ElastNetMTFiguresPanel` (`figures`): preset selector, format toggle, Export ✓
 
 19 integration tests in `tests/integration/test_molsysviewer_addon.py` — all passing.
 
-The ElasNetMT add-on is now a complete proof of the `AddonPanelWidget` contract.
-No structural work pending in either `molsysviewer` or `molsysviewer_elasnetmt`.
+The ElastNetMT add-on is now a complete proof of the `AddonPanelWidget` contract.
+No structural work pending in either `molsysviewer` or `molsysviewer_elastnetmt`.

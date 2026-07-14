@@ -15,7 +15,7 @@ works identically from the Python API and from the canvas panel mode?*
 - **Contract**: defined and implemented.
 - **Implementation**: complete. All three host requirements below are done and
   tested as of 2026-04-17.
-- **First proof**: `ElasNetMTModelPanel` in `molsysviewer_elasnetmt/panels/model.py`
+- **First proof**: `ElastNetMTModelPanel` in `molsysviewer_elastnetmt/panels/model.py`
   is the first `AddonPanelWidget` subclass in production. 12 integration tests pass.
 
 ## Context
@@ -23,7 +23,7 @@ works identically from the Python API and from the canvas panel mode?*
 The current add-on host (`molsyssuite_addon_direction.md`) supports workspaces,
 panel specs, context actions, workbench sections, and lifecycle hooks. Panel
 specs register a name and an `entry` string, but the host does not yet render
-their content as interactive UI. The `elasnetmt_addon_follow_up.md` already
+their content as interactive UI. The `elastnetmt_addon_follow_up.md` already
 flags "a richer parameter-editing surface" as the next open item.
 
 This document closes that gap.
@@ -204,7 +204,7 @@ The action handler calls viewer APIs and/or add-on runtime methods directly:
 ```python
 def handle_action(self, view, action_id, payload):
     if action_id == "compute-gnm":
-        from molsysviewer_elasnetmt.adapters.contacts import render_contact_network
+        from molsysviewer_elastnetmt.adapters.contacts import render_contact_network
         render_contact_network(view, cutoff=f"{payload['cutoff']} angstroms")
         
         # Synchronize new state to the frontend
@@ -254,7 +254,7 @@ Python responds with a standardized context dict:
         "n_atoms": 43,
         "target_level": "group"
     },
-    "workspace": "elasnetmt"
+    "workspace": "elastnetmt"
 }
 ```
 
@@ -290,7 +290,7 @@ widget removed from panel host
 
 Panels are instantiated per navigation, not per session. If the add-on needs to
 cache expensive computation across panel navigations, it should store that in
-the `ElasNetMTAddonRuntime` (or equivalent runtime object on the view), not
+the `ElastNetMTAddonRuntime` (or equivalent runtime object on the view), not
 inside the panel widget itself.
 
 ## Relationship with Context Actions
@@ -330,8 +330,8 @@ The existing `AddonPanelSpec` gains one new optional field:
 AddonPanelSpec(
     id="model",
     title="Model",
-    entry="molsysviewer_elasnetmt.panels.model",   # existing
-    widget_class="molsysviewer_elasnetmt.panels.ElasNetMTModelPanel",  # new
+    entry="molsysviewer_elastnetmt.panels.model",   # existing
+    widget_class="molsysviewer_elastnetmt.panels.ElastNetMTModelPanel",  # new
     description="Model parameters and node selection.",
     order=10,
 )
@@ -398,10 +398,10 @@ Once the anywidget path is stable, the host can add support for panels backed by
 AddonPanelSpec(
     id="modes",
     title="Modes",
-    entry="molsysviewer_elasnetmt.panels.modes",
-    widget_class="molsysviewer_elasnetmt.panels.ElasNetMTModesPanel",  # anywidget
+    entry="molsysviewer_elastnetmt.panels.modes",
+    widget_class="molsysviewer_elastnetmt.panels.ElastNetMTModesPanel",  # anywidget
     # future:
-    # js_bundle="molsysviewer_elasnetmt/panels/modes.js",  # JS bundle alternative
+    # js_bundle="molsysviewer_elastnetmt/panels/modes.js",  # JS bundle alternative
 )
 ```
 
@@ -430,12 +430,12 @@ The host dispatches based on which field is present. anywidget panels and JS-bun
   panels. The architectural requirement "host-agnostic panel concepts" from
   `standalone_direction.md` is satisfied by anywidget panels, which are
   host-independent by design.
-- `path_to_1_0.md` — The unified release plan requires ElasNetMT to "use the workspace
+- `path_to_1_0.md` — The unified release plan requires ElastNetMT to "use the workspace
   panel host" as a condition for the stable 1.0.0 release. This
   contract is the implementation path for that gap.
-- `elasnetmt_addon_plan.md` — ElasNetMT add-on plan. The "richer
+- `elastnetmt_addon_plan.md` — ElastNetMT add-on plan. The "richer
   parameter-editing surface" flagged there is implemented through this contract.
-- `elasnetmt_addon_follow_up.md` — explicitly names "a richer
+- `elastnetmt_addon_follow_up.md` — explicitly names "a richer
   parameter-editing surface" as the next open item. This document is the answer.
 - `standalone_direction.md` — requires "host-agnostic panel concepts". anywidget
   panels satisfy this: the panel author writes HTML/CSS/JS that runs identically

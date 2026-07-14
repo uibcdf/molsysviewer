@@ -10,7 +10,7 @@ stories, such as:
 
 - `TopoMT` panels for cavities, channels, and topographic accidents
 - `PharmacophoreMT` overlays and pharmacophore workbench flows
-- `ElasNetMT` network or elastic-model overlays
+- `ElastNetMT` network or elastic-model overlays
 
 The important product direction is already fixed:
 
