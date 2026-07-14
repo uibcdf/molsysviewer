@@ -251,6 +251,7 @@ def test_ready_resends_all_scene_object_summaries_runtime_only(monkeypatch):
     assert "set_annotation_summaries" in sent_ops
     assert "set_measurement_summaries" in sent_ops
     assert "set_shape_summaries" in sent_ops
+    assert "set_layer_summaries" in sent_ops
 
 
 def test_hiding_a_layer_resyncs_member_summaries_with_final_visibility(monkeypatch):

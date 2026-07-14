@@ -13,10 +13,12 @@ test("scene-object summaries drive panels and visibility goes through Python", a
     let measurementSettings: any = null;
     let shapeRows: any[] = [];
     let layerRows: any[] = [];
+    let layers: any[] = [];
 
     controller.annotationSummaries = [];
     controller.measurementSummaries = [];
     controller.shapeSummaries = [];
+    controller.layerSummaries = [];
     controller.shapeRenderStatuses = new Map();
     controller.addonsAnnotations = new Map();
     controller.addonsMeasurements = new Map();
@@ -39,6 +41,7 @@ test("scene-object summaries drive panels and visibility goes through Python", a
         updateMeasurementSeries: (_payload: any) => {},
         setShapes: (items: any[]) => { shapeRows = items; },
         setLayerObjects: (items: any[]) => { layerRows = items; },
+        setLayers: (items: any[]) => { layers = items; },
         setScene: (_summary: unknown) => {},
     };
     controller.addonsPanel = {
@@ -57,6 +60,13 @@ test("scene-object summaries drive panels and visibility goes through Python", a
         throw new Error(`unexpected console.error: ${String(args[0])}`);
     };
     try {
+        await controller.handleMessage({
+            op: "set_layer_summaries",
+            layers: [
+                { tag: "analysis", provenance: "user", hidden: true },
+                { tag: "site", provenance: "auto", hidden: false },
+            ],
+        });
         await controller.handleMessage({
             op: "set_annotation_summaries",
             annotations: [{
@@ -157,6 +167,10 @@ test("scene-object summaries drive panels and visibility goes through Python", a
         brokenReason: undefined,
     });
     assert.deepStrictEqual(layerRows.map(item => item.tag), ["note", "distance", "site"]);
+    assert.deepStrictEqual(layers, [
+        { tag: "analysis", provenance: "user", hidden: true },
+        { tag: "site", provenance: "auto", hidden: false },
+    ]);
 
     assert.deepStrictEqual(notifications, []);
 });

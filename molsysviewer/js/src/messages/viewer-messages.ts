@@ -492,6 +492,15 @@ export type SetRegionSummariesMessage = {
     presets?: string[];
 };
 
+export type SetLayerSummariesMessage = {
+    op: "set_layer_summaries";
+    layers?: Array<{
+        tag: string;
+        provenance: "auto" | "user";
+        hidden?: boolean;
+    }>;
+};
+
 export type SetWholeSummaryMessage = {
     op: "set_whole_summary";
     representation?: string | null;
@@ -916,6 +925,7 @@ export type KnownViewerMessage =
     HideRegionMessage |
     SetRegionsVisibilityMessage |
     SetRegionSummariesMessage |
+    SetLayerSummariesMessage |
     SetWholeSummaryMessage |
     SetAnnotationSummariesMessage |
     SetMeasurementSummariesMessage |

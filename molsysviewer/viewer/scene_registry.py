@@ -178,6 +178,16 @@ class SceneRegistryMixin:
             })
         return records
 
+    def _layer_summary_records(self) -> list[dict]:
+        return [
+            {
+                "tag": record.get("tag"),
+                "provenance": record.get("provenance"),
+                "hidden": not bool(record.get("visible")),
+            }
+            for record in self.layers.info(skip_digestion=True)
+        ]
+
     def _sync_annotation_summaries_runtime(self) -> None:
         self._send_runtime_only({
             "op": "set_annotation_summaries",
@@ -204,6 +214,12 @@ class SceneRegistryMixin:
             "shapes": self._shape_summary_records(),
         })
 
+    def _sync_layer_summaries_runtime(self) -> None:
+        self._send_runtime_only({
+            "op": "set_layer_summaries",
+            "layers": self._layer_summary_records(),
+        })
+
     def _sync_scene_object_summaries_for_message(self, msg: dict) -> None:
         op = msg.get("op")
         kind = msg.get("kind")
@@ -211,6 +227,7 @@ class SceneRegistryMixin:
             self._sync_annotation_summaries_runtime()
             self._sync_measurement_summaries_runtime()
             self._sync_shape_summaries_runtime()
+            self._sync_layer_summaries_runtime()
             return
         if kind == "annotation" or op in self._ANNOTATION_SUMMARY_OPS:
             self._sync_annotation_summaries_runtime()
@@ -233,6 +250,7 @@ class SceneRegistryMixin:
 
     def _unregister_layer(self, tag: str) -> None:
         self._layers.pop(tag, None)
+        self._sync_layer_summaries_runtime()
 
     def _reregister_layer(self, old_tag: str, new_tag: str, layer: Layer) -> None:
         if old_tag in self._layers:
@@ -265,8 +283,10 @@ class SceneRegistryMixin:
         members = getattr(layer, "members", {})
         if len(members) == 0:
             layer._hidden = False  # noqa: SLF001
+            self._sync_layer_summaries_runtime()
             return
         layer._hidden = all(getattr(item, "_hidden", False) for item in members.values())  # noqa: SLF001
+        self._sync_layer_summaries_runtime()
 
     def _update_scene_object_history_layer_tag(self, kind: str, tag: str, layer_tag: str) -> None:
         def rewrite(history: list[dict]) -> list[dict]:
@@ -336,11 +356,13 @@ class SceneRegistryMixin:
         if layer is None:
             layer = Layer(self, text, kind=kind or "layer", meta={}, provenance=provenance)
             self._layers[text] = layer
+            self._sync_layer_summaries_runtime()
         else:
             if kind is not None:
                 layer.kind = kind
             if provenance == "user":
                 layer._promote_to_user()  # noqa: SLF001
+                self._sync_layer_summaries_runtime()
         return layer
 
     def _move_or_rename_layer_group_for_object_tag_change(self, old_tag: str, new_tag: str, obj: SceneObject) -> None:

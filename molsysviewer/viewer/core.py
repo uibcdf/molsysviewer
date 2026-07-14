@@ -818,6 +818,7 @@ class MolSysView(
             self._sync_annotation_summaries_runtime()
             self._sync_measurement_summaries_runtime()
             self._sync_shape_summaries_runtime()
+            self._sync_layer_summaries_runtime()
         elif event == "request_widget_runtime_source":
             # This is the lazy-load bootstrap handshake: the frontend requests the
             # runtime source BEFORE the real runtime has loaded, so `_ready` is

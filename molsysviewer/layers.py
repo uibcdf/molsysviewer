@@ -322,7 +322,12 @@ class Layer(LayerHandle):
         self.provenance = "user"
 
     def _send_create(self) -> None:
-        return
+        self._sync_summary_runtime()
+
+    def _sync_summary_runtime(self) -> None:
+        sync = getattr(self._view, "_sync_layer_summaries_runtime", None)
+        if callable(sync):
+            sync()
 
     @records_scene_history
     def set_tag(self, new_tag: str, skip_digestion: bool = False) -> None:
@@ -340,10 +345,16 @@ class Layer(LayerHandle):
                 # A region tracks membership by the layer tag string; keep it in
                 # step with the rename so it is not orphaned.
                 member._layer = self.tag  # noqa: SLF001
-        if any(not hasattr(member, "layer_tag") for member in members):
-            sync = getattr(self._view, "_sync_region_summaries_runtime", None)
-            if callable(sync):
-                sync()
+        region_sync = getattr(self._view, "_sync_region_summaries_runtime", None)
+        if callable(region_sync):
+            region_sync()
+        scene_sync = getattr(self._view, "_sync_scene_object_summaries_for_message", None)
+        if callable(scene_sync):
+            # Renaming changes both membership channels. Republish every domain
+            # so the Layers panel's join cannot retain the old tag.
+            scene_sync({"op": "set_layer_tag", "kind": "layer"})
+        else:
+            self._sync_summary_runtime()
 
     @staticmethod
     def _member_has_nothing_to_render(member: Any) -> bool:
@@ -361,6 +372,7 @@ class Layer(LayerHandle):
                 member._hidden = False  # noqa: SLF001
                 continue
             member.show(skip_digestion=True)
+        self._sync_summary_runtime()
 
     @records_scene_history
     def hide(self, skip_digestion: bool = False) -> None:
@@ -370,6 +382,7 @@ class Layer(LayerHandle):
                 member._hidden = True  # noqa: SLF001
                 continue
             member.hide(skip_digestion=True)
+        self._sync_summary_runtime()
 
     @records_scene_history
     def delete(self, skip_digestion: bool = False) -> None:
@@ -380,6 +393,29 @@ class Layer(LayerHandle):
         self._active = False
         if hasattr(self._view, "_unregister_layer"):
             self._view._unregister_layer(self.tag)  # noqa: SLF001
+
+    @records_scene_history
+    def ungroup(self, skip_digestion: bool = False) -> None:
+        """Dissolve this user group without deleting any member."""
+        if not self._active:
+            return
+        for member in list(self.members.values()):
+            if hasattr(member, "layer_tag"):
+                if member.tag != self.tag:
+                    member.set_layer_tag(member.tag, skip_digestion=True)
+            else:
+                member.remove_from_layer(skip_digestion=True)
+
+        # A same-tag scene object cannot move to a differently named degenerate
+        # layer. Keep its backing layer, but demote it so the UI no longer treats
+        # it as a user-created group.
+        if self.members:
+            self.provenance = "auto"
+            self._hidden = all(getattr(member, "_hidden", False) for member in self.members.values())
+            self._sync_summary_runtime()
+            return
+        self._active = False
+        self._view._unregister_layer(self.tag)  # noqa: SLF001
 
     @records_scene_history
     def attach(self, obj: "SceneObject") -> None:

@@ -137,19 +137,6 @@ def hide_all_regions(view: Any, content: Mapping[str, Any]) -> None:
     view.regions.hide_all(skip_digestion=True)
 
 
-def set_region_layer(view: Any, content: Mapping[str, Any]) -> None:
-    region = _region(view, content, "set_region_layer")
-    layer = content.get("layer")
-    if isinstance(layer, str) and layer.strip():
-        region.set_layer(layer.strip(), skip_digestion=True)
-    else:
-        region.remove_from_layer(skip_digestion=True)
-
-
-def remove_region_from_layer(view: Any, content: Mapping[str, Any]) -> None:
-    _region(view, content, "remove_region_from_layer").remove_from_layer(skip_digestion=True)
-
-
 def set_layer_visibility(view: Any, content: Mapping[str, Any]) -> None:
     tag = content.get("tag")
     if not isinstance(tag, str) or tag.strip() not in view._layers:
@@ -161,11 +148,75 @@ def set_layer_visibility(view: Any, content: Mapping[str, Any]) -> None:
     (layer.hide if bool(hidden) else layer.show)(skip_digestion=True)
 
 
-def delete_layer_group(view: Any, content: Mapping[str, Any]) -> None:
+def _layer(view: Any, content: Mapping[str, Any], action: str):
     tag = content.get("tag")
     if not isinstance(tag, str) or tag.strip() not in view._layers:
         raise ValueError(f"No layer found with tag {tag!r}.")
-    view._layers[tag.strip()].delete(skip_digestion=True)
+    return view._layers[tag.strip()]
+
+
+def create_layer(view: Any, content: Mapping[str, Any]) -> None:
+    tag = content.get("tag")
+    if not isinstance(tag, str) or not tag.strip():
+        raise ValueError("create_layer requires a non-empty tag.")
+    view.layers.add(tag.strip(), skip_digestion=True)
+
+
+def rename_layer(view: Any, content: Mapping[str, Any]) -> None:
+    new_tag = content.get("new_tag")
+    if not isinstance(new_tag, str) or not new_tag.strip():
+        raise ValueError("rename_layer requires a non-empty new_tag.")
+    view.layers.set_tag(_layer(view, content, "rename_layer").tag, new_tag.strip(), skip_digestion=True)
+
+
+def _layer_member(view: Any, content: Mapping[str, Any], action: str):
+    kind = content.get("member_kind")
+    tag = content.get("member_tag")
+    if kind not in {"region", "annotation", "measurement", "shape"}:
+        raise ValueError(f"{action} requires a valid member_kind.")
+    if not isinstance(tag, str) or not tag.strip():
+        raise ValueError(f"{action} requires a non-empty member_tag.")
+    tag = tag.strip()
+    if kind == "region":
+        member = view.regions.get(tag)
+    else:
+        manager = {
+            "annotation": view.annotations,
+            "measurement": view.measurements,
+            "shape": view.shapes,
+        }[kind]
+        member = manager.get(tag, skip_digestion=True)
+    if member is None:
+        raise ValueError(f"No {kind} found with tag {tag!r}.")
+    return kind, member
+
+
+def add_member_to_layer(view: Any, content: Mapping[str, Any]) -> None:
+    layer = _layer(view, {"tag": content.get("layer")}, "add_member_to_layer")
+    kind, member = _layer_member(view, content, "add_member_to_layer")
+    if kind == "region":
+        member.set_layer(layer, skip_digestion=True)
+    else:
+        layer.attach(member)
+
+
+def remove_member_from_layer(view: Any, content: Mapping[str, Any]) -> None:
+    layer = _layer(view, {"tag": content.get("layer")}, "remove_member_from_layer")
+    kind, member = _layer_member(view, content, "remove_member_from_layer")
+    if kind == "region":
+        if member.layer != layer.tag:
+            raise ValueError(f"Region {member.tag!r} is not a member of layer {layer.tag!r}.")
+        member.remove_from_layer(skip_digestion=True)
+    else:
+        layer.detach(member)
+
+
+def ungroup_layer(view: Any, content: Mapping[str, Any]) -> None:
+    _layer(view, content, "ungroup_layer").ungroup(skip_digestion=True)
+
+
+def delete_layer_and_contents(view: Any, content: Mapping[str, Any]) -> None:
+    _layer(view, content, "delete_layer_and_contents").delete(skip_digestion=True)
 
 
 def get_region_details(view: Any, content: Mapping[str, Any]) -> None:
@@ -246,10 +297,13 @@ HANDLERS = {
     "duplicate_region": duplicate_region,
     "show_all_regions": show_all_regions,
     "hide_all_regions": hide_all_regions,
-    "set_region_layer": set_region_layer,
-    "remove_region_from_layer": remove_region_from_layer,
     "set_layer_visibility": set_layer_visibility,
-    "delete_layer_group": delete_layer_group,
+    "create_layer": create_layer,
+    "rename_layer": rename_layer,
+    "add_member_to_layer": add_member_to_layer,
+    "remove_member_from_layer": remove_member_from_layer,
+    "ungroup_layer": ungroup_layer,
+    "delete_layer_and_contents": delete_layer_and_contents,
     "get_region_details": get_region_details,
     "toggle_region_visibility": toggle_region_visibility,
     "delete_region": delete_region,

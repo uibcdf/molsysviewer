@@ -1479,7 +1479,7 @@ test("GroupPanel region inspect fetches lazily and rejects stale details", () =>
     }
 });
 
-test("GroupPanel layers panel groups region and scene-object layers and emits actions", () => {
+test("GroupPanel layers panel joins typed members into user layers and emits lifecycle actions", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
@@ -1502,53 +1502,64 @@ test("GroupPanel layers panel groups region and scene-object layers and emits ac
 
         panel.setRegions([
             { tag: "pocket", atom_count: 4, hidden: false, layer: "analysis" },
-            { tag: "surface", atom_count: 8, hidden: true, layer: "analysis" },
             { tag: "free", atom_count: 2, hidden: false, layer: null },
         ]);
         panel.setLayerObjects([
             { kind: "annotation", tag: "note1", title: "Note", layerTag: "analysis" },
-            { kind: "shape", tag: "marker", title: "Marker", layerTag: "geometry" },
+            { kind: "shape", tag: "marker", title: "Marker", layerTag: "marker" },
+        ]);
+        panel.setLayers([
+            { tag: "analysis", provenance: "user", hidden: false },
+            { tag: "empty", provenance: "user", hidden: false },
+            { tag: "marker", provenance: "auto", hidden: false },
         ]);
         layersTab.dispatch("click", { preventDefault() {}, stopPropagation() {} });
 
         assert.ok(findFirstByAttribute(root, "data-molsysviewer-layer-card", "analysis"));
-        assert.ok(findFirstByAttribute(root, "data-molsysviewer-layer-card", "geometry"));
-        assert.ok(findFirstByAttribute(root, "data-molsysviewer-layer-member", "pocket"));
-        assert.ok(findFirstByAttribute(root, "data-molsysviewer-layer-member", "note1"));
-        assert.strictEqual(findFirstByAttribute(root, "data-molsysviewer-layer-member", "free"), null);
+        assert.ok(findFirstByAttribute(root, "data-molsysviewer-layer-card", "empty"));
+        assert.strictEqual(findFirstByAttribute(root, "data-molsysviewer-layer-card", "marker"), null);
 
-        findFirstByAttribute(root, "data-molsysviewer-layer-hide", "analysis")
+        findFirstByAttribute(root, "data-molsysviewer-layer-visibility", "analysis")
             ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
         assert.deepStrictEqual(actions.at(-1), {
             action: "set_layer_visibility",
             details: { tag: "analysis", hidden: true },
         });
 
-        findFirstByAttribute(root, "data-molsysviewer-layer-remove-region", "pocket")
+        findFirstByAttribute(root, "data-molsysviewer-layer-details", "analysis")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.ok(findFirstByAttribute(root, "data-molsysviewer-layer-member", "region:pocket"));
+        assert.ok(findFirstByAttribute(root, "data-molsysviewer-layer-member", "annotation:note1"));
+
+        findFirstByAttribute(root, "data-molsysviewer-layer-remove-member", "annotation:note1")
             ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
         assert.deepStrictEqual(actions.at(-1), {
-            action: "remove_region_from_layer",
-            details: { tag: "pocket" },
+            action: "remove_member_from_layer",
+            details: { layer: "analysis", member_kind: "annotation", member_tag: "note1" },
         });
 
-        const regionInput = findFirstByAttribute(root, "data-molsysviewer-layer-assign-region", "true") as any;
-        const layerInput = findFirstByAttribute(root, "data-molsysviewer-layer-assign-layer", "true") as any;
-        regionInput.value = "free";
-        layerInput.value = "analysis";
-        findFirstByAttribute(root, "data-molsysviewer-layer-assign-form", "true")
+        const picker = findFirstByAttribute(root, "data-molsysviewer-layer-member-picker", "analysis") as any;
+        picker.value = JSON.stringify(["region", "free"]);
+        findFirstByAttribute(root, "data-molsysviewer-layer-add-member", "analysis")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "add_member_to_layer",
+            details: { layer: "analysis", member_kind: "region", member_tag: "free" },
+        });
+
+        findFirstByAttribute(root, "data-molsysviewer-layer-ungroup", "analysis")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "ungroup_layer",
+            details: { tag: "analysis" },
+        });
+
+        const createInput = findFirstByAttribute(root, "data-molsysviewer-layer-create-input", "true") as any;
+        createInput.value = "site";
+        findFirstByAttribute(root, "data-molsysviewer-layer-create-form", "true")
             ?.children.at(-1)
             ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
-        assert.deepStrictEqual(actions.at(-1), {
-            action: "set_region_layer",
-            details: { tag: "free", layer: "analysis" },
-        });
-
-        findFirstByAttribute(root, "data-molsysviewer-layer-delete", "geometry")
-            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
-        assert.deepStrictEqual(actions.at(-1), {
-            action: "delete_layer_group",
-            details: { tag: "geometry" },
-        });
+        assert.deepStrictEqual(actions.at(-1), { action: "create_layer", details: { tag: "site" } });
 
         panel.dispose();
     } finally {

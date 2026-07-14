@@ -14,7 +14,7 @@ import {
 import { PanelContext, StudioPanel } from "./panels/types";
 import { ViewportPanel } from "./panels/viewport-panel";
 import { ExportPanel } from "./panels/export-panel";
-import { LayersPanel, LayerObjectSummary } from "./panels/layers-panel";
+import { LayersPanel, LayerObjectSummary, LayerSummary } from "./panels/layers-panel";
 import { RegionsPanel } from "./panels/regions-panel";
 import { SelectionPanel } from "./panels/selection-panel";
 import { SystemPanel } from "./panels/system-panel";
@@ -780,6 +780,10 @@ export class GroupPanel {
 
     setLayerObjects(items: LayerObjectSummary[]): void {
         this.layersPanel.setObjects(items);
+    }
+
+    setLayers(items: LayerSummary[]): void {
+        this.layersPanel.setLayers(items);
     }
 
     /** Build the narrow context injected into a migrated subpanel. */

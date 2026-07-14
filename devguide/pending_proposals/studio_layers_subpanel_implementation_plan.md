@@ -1,6 +1,6 @@
 # Studio subpanel — Layers (implementation plan)
 
-**Status:** proposed (2026-07-12). Companion to
+**Status:** implemented and audited (2026-07-14). Companion to
 [the spec](studio_layers_subpanel.md) and
 [the UI design](studio_layers_subpanel_ui_design.md).
 
@@ -47,7 +47,10 @@ broken everywhere else.
 | `tag` | `str` | `string` | identity |
 | `provenance` | `"auto" \| "user"` | `"auto" \| "user"` | **the panel shows only `user`** |
 | `hidden` | `bool` | `boolean` | the group eye |
-| `member_count` | `int` | `number` | the card, and the empty state |
+
+`member_count` is deliberately **not** transported. The panel derives it from the
+same typed join that renders the members. Transporting it would create a second
+projection of membership and could disagree with the four domain summaries.
 
 Members are **not** duplicated into this record: they are joined in the frontend from
 the other four summaries, keyed by `(kind, tag)` — **not by tag alone** (Contract T:
@@ -111,7 +114,7 @@ that test passes with the branch removed, it is hollow.
 | `molsysviewer/viewer/core.py` | the new handlers; split the destructive action |
 | `js/src/ui/panels/layers-panel.ts` | rewrite: member picker, kind-aware detach, `provenance` filter |
 | `js/src/ui/panels/types.ts` | the new `PanelAction` members |
-| `js/src/managers/viewer-controller.ts` | join the five summaries; **`setLayerObjects` disappears** — it was fed by the shadow maps |
+| `js/src/managers/viewer-controller.ts` | deserialize the intrinsic layer summary and feed the panel's join from the four authoritative domain summaries |
 | `molsysviewer/viewer.js` | **generated** — rebuild last. Never hand-edited. |
 
 ## 6. Tests
@@ -137,3 +140,50 @@ Every mechanism verified by **mutation**.
 **E2E, real browser**
 - Hiding a layer hides **all** its members in the Mol\* render tree — regions **and**
   scene objects — and Python agrees on every one of them.
+
+## 7. Implementation record (2026-07-13)
+
+Implemented on `phase/scene-objects-p8-layers-panel` and independently audited:
+
+- `set_layer_summaries` carries exactly `tag`, `provenance`, and `hidden`, is
+  runtime-only, and is re-sent on `ready`;
+- the panel creates cards from that summary, filters `auto` layers, and joins members
+  from region, shape, annotation, and measurement summaries using the domain that
+  delivered each record;
+- create, rename, visibility, typed add/remove, safe ungroup, and destructive delete
+  are separate panel actions;
+- `Layer.ungroup()` preserves every member. A same-tag scene object retains its
+  necessary backing layer, demoted to `auto`, while other members return to their
+  ungrouped membership state;
+- the real-browser E2E sends captured panel actions through Python, checks Python's
+  model, and reads Mol\* render state for both a region and a shape.
+
+Auto-mutation record:
+
+| mechanism | mutation | guarding test | observed result |
+|---|---|---|---|
+| domain-specific membership | route a region through `Layer.attach()` | `test_panel_assigns_a_region_through_the_region_membership_channel` | fails with mutation; passes restored |
+| user-layer filter | render every provenance | `GroupPanel layers panel joins typed members into user layers and emits lifecycle actions` | fails with the `auto` card visible; passes restored |
+| safe ungroup | dispatch `ungroup_layer` to `Layer.delete()` | `test_ungroup_layer_preserves_mixed_members_and_dissolves_group` | fails because both members are deleted; passes restored |
+| provenance serialization | omit `provenance` from state v2 | `test_export_state_v2_captures_scene_objects_layers_and_structured_anchor` | fails on the serialized layer record; passes restored |
+| rename republishes both membership channels | omit the region-summary sync after renaming a mixed layer | `test_renaming_a_mixed_layer_republishes_both_membership_channels` | fails with a stale/missing region summary; passes restored |
+
+### Declared debt
+
+`LayersManager.info()` still exposes a single `kind` for a mixed layer. That value can
+be misleading (for example, a layer containing a region and a shape may report
+`kind="shape"`). This panel intentionally ignores it and uses the summary channel as
+the member domain. Redesigning or removing the legacy `kind` field is outside Phase 8.
+
+## 8. Audit closure (2026-07-14)
+
+Phase 8 was approved without defects. Independent validation observed:
+
+- Python: 742 passed, 3 skipped;
+- JavaScript unit: 187 passed;
+- TypeScript: 0 errors;
+- real-browser E2E: passed.
+
+The audit additionally mutated the `ready` re-send, empty-user-layer publication,
+state-v2 provenance, badge filtering, and domain-specific membership branch. Each
+guard failed under its mutation and passed restored.

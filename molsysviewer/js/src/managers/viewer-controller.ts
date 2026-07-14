@@ -39,6 +39,7 @@ import { HoverTooltip } from "../ui/hover-tooltip";
 import type { MeasurementSeries, MeasurementSettings, MeasurementSummary } from "../ui/panels/measures-panel";
 import type { AnnotationSettings, AnnotationSummary } from "../ui/panels/annotations-panel";
 import type { ShapeRenderStatus, ShapeSummary } from "../ui/panels/shapes-panel";
+import type { LayerSummary } from "../ui/panels/layers-panel";
 type SavedSelectionRecord = SavedSelectionSummary & { atom_indices: number[] };
 
 type InteractionKind = "hover" | "click" | "context";
@@ -53,6 +54,7 @@ const PANEL_REFRESH_BY_OPERATION: Partial<Record<KnownViewerMessage["op"], reado
     set_annotation_summaries: ["addons"],
     set_measurement_summaries: ["addons"],
     set_shape_summaries: ["addons"],
+    set_layer_summaries: ["addons"],
     save_selection: ["navigate"],
     set_selection_tag: ["navigate"],
     delete_selection: ["navigate"],
@@ -566,6 +568,7 @@ export class MolSysViewerController {
         systemLoaded: false,
     };
     private shapeSummaries: ShapeSummary[] = [];
+    private layerSummaries: LayerSummary[] = [];
     private shapeRenderStatuses = new Map<string, ShapeRenderStatus>();
     private dynamicRegionEvaluationInFlight: number | null = null;
     private dynamicRegionEvaluationPendingFrame: number | null = null;
@@ -2164,6 +2167,17 @@ export class MolSysViewerController {
                 case "hide_region": await this.state.hideRegion(msg); break;
                 case "set_regions_visibility": await this.state.setRegionsVisibility(msg as any); break;
                 case "set_region_summaries": this.state.setRegionSummaries(msg as any); break;
+                case "set_layer_summaries": {
+                    const records = Array.isArray((msg as any).layers) ? (msg as any).layers : [];
+                    this.layerSummaries = records
+                        .filter((item: any) => typeof item?.tag === "string" && (item.provenance === "auto" || item.provenance === "user"))
+                        .map((item: any) => ({
+                            tag: item.tag,
+                            provenance: item.provenance,
+                            hidden: !!item.hidden,
+                        }));
+                    break;
+                }
                 case "set_whole_summary": this.state.setWholeSummary(msg as any); break;
                 case "set_annotation_summaries": {
                     const records = Array.isArray((msg as any).annotations) ? (msg as any).annotations : [];
@@ -2796,6 +2810,9 @@ export class MolSysViewerController {
     }
 
     private refreshAddonsPanel(refreshChrome = true): void {
+        this.groupPanel.setLayers(
+            [...this.layerSummaries].sort((left, right) => left.tag.localeCompare(right.tag)),
+        );
         this.groupPanel.setAnnotations(
             [...this.annotationSummaries].sort((left, right) => left.tag.localeCompare(right.tag)),
             this.annotationSettings,
