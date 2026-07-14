@@ -1061,24 +1061,18 @@ This is the strongest argument in the whole block for two rules elsewhere: *neve
 stale number* (the panel designs), and *re-derive a measurement's value from its recipe
 rather than restoring the stored one* (Phase 1, spec §4).
 
-### 0.11 Sections do not serialise either — declared debt, not a clean non-goal
+### 0.11 Sections serialise as live scene objects
 
-`export_state` has **no `sections` key** (verified: zero matches for `section` in
-`viewer/state.py`), although `_section_history` exists and `Section` is a
-`SceneObject` living in `_scene_objects`.
-
-So a clipping plane the user positioned **does not survive a save/reload** — the same
-silent break as the shapes (§0.3).
-
-Sections are **out of scope** for this block (their panel is Viewport's, not one of
-the four). But out of scope is not the same as fine: this is **declared debt**, and it
-is written down here so that closing this block cannot be mistaken for closing
-`session_reproducibility.md`'s promise. Whoever owns Viewport inherits it.
+Resolved after the scene block: state v2 carries each clipping plane's tag, point,
+normal and invert flag. `import_state` reconstructs a live `Section` through
+`scene.add_section`, and `scene.sections()` exposes the restored handles for further
+editing. The round-trip is checked both in Python and against Mol*'s real
+`clipObjects` state in Chrome.
 
 ### 0.12 Add-on shapes are ordinary shapes — and the panel will let the user delete them
 
 Add-ons do not have a private channel. They create shapes by **calling the public
-API** — the live example is ElasNetMT:
+API** — the live example is ElastNetMT:
 
 ```python
 layer = view.shapes.add_displacement_vectors(...)   # adapters/modes.py:88
@@ -1098,8 +1092,8 @@ honoured rather than discovered:
 - **An add-on must tolerate its shape being deleted.** The handle it kept goes
   `_active = False`; it must check, not assume. This belongs in the add-on contract.
 - **The panel should say where an object came from.** There is no `owner` field in the
-  model today, so a shape from ElasNetMT is indistinguishable from one the user made.
-  Adding `owner` to the record (and showing `· from elasnetmt` on the row) is cheap,
+  model today, so a shape from ElastNetMT is indistinguishable from one the user made.
+  Adding `owner` to the record (and showing `· from elastnetmt` on the row) is cheap,
   genuinely useful, and **explicitly deferred** — it is API surface, and this block has
   enough. Recorded so it is a choice and not an oversight.
 
@@ -1688,6 +1682,8 @@ its **`hidden`**, and its **`layer_tag`**. In particular:
 - `annotations` and `measurements` records grow `hidden`.
 - The layer *groups* themselves (a group is more than the sum of the `layer_tag`
   of its members once it can be renamed and coloured) get a **`layers`** key.
+- Clipping planes get a **`sections`** key and restore as live `Section` handles,
+  not as message-only records.
 
 `session_reproducibility.md` §"The rule for every future change" applies in
 full: a round-trip test that asserts the **content** (the hidden flag survived,
@@ -1784,11 +1780,10 @@ damaged, destroyed — or, post-1.0, of another kind entirely
 - **No custom-shape authoring GUI** (Bloque 4, deferred long ago). Stays
   deferred.
 - **Sections** (`Section`, the clipping planes) are scene objects by class but belong
-  to the Viewport panel's world, not to these four. **Out of scope — but not fine:**
-  they do not serialise either (§0.11), so a clipping plane does not survive a
-  save/reload. That is **declared debt**, inherited by whoever owns Viewport. Closing
-  this block does **not** close `session_reproducibility.md`'s promise.
-- **An `owner` field on scene objects** (so the panel can say `· from elasnetmt`).
+  to the Viewport panel's world, not to these four. Their panel remains out of scope,
+  but their state persistence is resolved in §0.11: clipping planes survive a
+  save/reload as live `Section` handles.
+- **An `owner` field on scene objects** (so the panel can say `· from elastnetmt`).
   Cheap and useful, but it is new API surface and this block has enough (§0.12).
   Deferred on purpose.
 

@@ -10,6 +10,7 @@
  * These read the render tree.
  */
 import assert from "node:assert";
+import { execFile } from "node:child_process";
 import process from "node:process";
 import { chromium } from "./e2e-browser";
 import { fileURLToPath } from "node:url";
@@ -17,6 +18,24 @@ import { dirname, resolve } from "node:path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const sectionsBridge = resolve(__dirname, "scene-contracts-sections-bridge.py");
+
+function runSectionsBridge(): Promise<any> {
+    return new Promise((resolveBridge, rejectBridge) => {
+        execFile(
+            process.env.PYTHON || "python",
+            [sectionsBridge],
+            { encoding: "utf8", cwd: resolve(__dirname, "../../../.."), maxBuffer: 8 * 1024 * 1024 },
+            (error, stdout, stderr) => {
+                if (error) {
+                    rejectBridge(new Error(stderr || stdout || String(error)));
+                    return;
+                }
+                resolveBridge(JSON.parse(stdout));
+            },
+        );
+    });
+}
 
 // Two chains, five residues, so `chain A` is a real topological subset and the
 // per-frame trajectory scenario has somewhere to move.
@@ -62,6 +81,7 @@ async function launch() {
 }
 
 async function run() {
+    const sectionFixture = await runSectionsBridge();
     const browser = await launch();
     const page = await browser.newPage();
     await page.setViewportSize({ width: 1280, height: 900 });
@@ -100,6 +120,36 @@ async function run() {
         const n = controller.getStructureData()?.elementCount ?? 0;
         if (n <= 0) throw new Error("no structure loaded");
     }, PDB_TEXT);
+
+    // =========================================================================
+    console.log("[E2E scene-contracts] Scenario: a restored section clips the real Mol* scene");
+    {
+        assert.strictEqual(sectionFixture.document.sections[0].tag, "cut");
+        assert.deepStrictEqual(sectionFixture.restored[0].point, [0.4, 0.2, 0.3]);
+        const clipObjects = await page.evaluate(async message => {
+            const controller = (window as BrowserWindow).__controller;
+            await controller.handleMessage(message);
+            const objects = controller.plugin.managers.structure.component.state.options.clipObjects?.objects ?? [];
+            return objects.map((item: any) => ({
+                type: item.type,
+                invert: item.invert,
+                position: Array.from(item.position as ArrayLike<number>),
+            }));
+        }, sectionFixture.message);
+        assert.deepStrictEqual(clipObjects, [{
+            type: "plane",
+            invert: true,
+            position: [4, 2, 3],
+        }]);
+
+        const remaining = await page.evaluate(async () => {
+            const controller = (window as BrowserWindow).__controller;
+            await controller.handleMessage({ op: "set_sections", sections: [] });
+            return controller.plugin.managers.structure.component.state.options.clipObjects?.objects.length ?? 0;
+        });
+        assert.strictEqual(remaining, 0, "clearing the restored Section left Mol* clipping active");
+        console.log("[E2E scene-contracts]   restored plane clips at [4, 2, 3] Å and remains controllable");
+    }
 
     // =========================================================================
     console.log("[E2E scene-contracts] Scenario: alpha and quality reach Mol* typeParams");

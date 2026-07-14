@@ -41,6 +41,7 @@ requires a compatible structure already loaded). The document carries:
   measurements (recipes, visibility and broken state), saved selections and
   literal shape payloads;
 - user-created layers, including their provenance, visibility, kind and metadata;
+- clipping sections, including their tag, point, normal and inverted side;
 - **regions**: identity (`uid`, `tag`, `selection`), recipe (`provenance`,
   `mode`), ordering (`order`), visual state (`representation` incl. `inherit`,
   `preset`, `params`, `hidden`), and the region's own colour layer;
@@ -78,8 +79,6 @@ new capability:
   loaded first. Whether a session should bundle (a reference to, or a copy of)
   its structure is an open product question. Until decided, document this
   limitation wherever save/load is surfaced to users.
-- **Sections are not in the document.** Clipping planes therefore do not yet
-  survive a session round-trip. This debt belongs to the Viewport work.
 - **No v1 reader.** v2 is the only accepted version by design (no external users
   yet). The moment there *are* saved sessions in the wild, a version-migration
   policy becomes a real obligation, not an optional one.

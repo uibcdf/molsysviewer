@@ -17,9 +17,10 @@ class StateMixin:
 
         The returned dict (``version: 2``) captures annotations, measurements,
         saved selections, the **regions** with their full recipe, visual and
-        colour state, and the **whole**'s representation and colour. The loaded
-        structure is **not** included. Pass the dict to :meth:`import_state` to
-        restore it on any viewer that has the same (or a compatible) structure.
+        colour state, clipping **sections**, and the **whole**'s representation
+        and colour. The loaded structure is **not** included. Pass the dict to
+        :meth:`import_state` to restore it on any viewer that has the same (or a
+        compatible) structure.
 
         Transient overlay regions (``focus``/``orientation``/``plane``) are
         filtered out: they are not manageable regions and must not survive a
@@ -29,8 +30,9 @@ class StateMixin:
         -------
         dict
             Keys: ``version``, ``annotations``, ``measurements``,
-            ``selections``, ``regions``, ``whole``, ``order_high_water_mark``,
-            ``uid_high_water_mark``, ``tag_high_water_marks``.
+            ``selections``, ``regions``, ``sections``, ``whole``,
+            ``order_high_water_mark``, ``uid_high_water_mark``,
+            ``tag_high_water_marks``.
         """
         def _to_python(obj: Any) -> Any:
             if isinstance(obj, dict):
@@ -146,6 +148,7 @@ class StateMixin:
             "layers": layers,
             "selections": self.selections.records(),
             "regions": regions,
+            "sections": deepcopy(self._section_history),
             "whole": whole,
             "active_selection": active,
             # The high-water marks let a region created after a reload keep
@@ -242,6 +245,7 @@ class StateMixin:
                 on_conflict=on_conflict,
                 layer_tag_map=layer_tag_map,
             )
+            self._restore_sections(state.get("sections", []), on_conflict=on_conflict)
             for layer_tag in hidden_layers:
                 layer = self.layers.get(layer_tag)
                 if layer is not None:
@@ -291,6 +295,7 @@ class StateMixin:
             "annotation": tags(state.get("annotations")),
             "measurement": tags(state.get("measurements")),
             "shape": tags(state.get("shapes")),
+            "section": tags(state.get("sections")),
             "selection": tags(state.get("selections")),
         }
         for domain, incoming_tags in incoming.items():
@@ -307,6 +312,7 @@ class StateMixin:
         self.annotations.clear(skip_digestion=True)
         self.measurements.clear(skip_digestion=True)
         self.selections.clear(skip_digestion=True)
+        self.scene.clear_sections()
         for tag in list(self._regions):
             self._regions[tag].delete(skip_digestion=True)
         dict.clear(self._layers)
@@ -473,6 +479,20 @@ class StateMixin:
                 atom_indices=list(record.get("atom_indices") or []),
                 items=list(record.get("items") or []),
                 skip_digestion=True,
+            )
+
+    def _restore_sections(self, records: Any, *, on_conflict: str) -> None:
+        for record in records if isinstance(records, list) else []:
+            if not isinstance(record, dict) or not record.get("tag"):
+                continue
+            tag = self._import_tag("section", str(record["tag"]), on_conflict)
+            if tag is None:
+                continue
+            self.scene.add_section(
+                point=list(record.get("point") or []),
+                normal=list(record.get("normal") or []),
+                invert=bool(record.get("invert", False)),
+                tag=tag,
             )
 
     def _import_tag(self, domain: str, tag: str, policy: str) -> str | None:

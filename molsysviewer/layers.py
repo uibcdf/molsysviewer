@@ -1339,6 +1339,7 @@ class Section(SceneObject):
         """Return ``True`` if the clipping side is inverted."""
         return bool(self._require_record().get("invert", False))
 
+    @records_scene_history
     def set_point(self, point) -> None:
         """Move the plane anchor to *point* (puw quantity or plain ``[x,y,z]`` in nm)."""
         import numpy as _np
@@ -1350,6 +1351,7 @@ class Section(SceneObject):
         record["point"] = arr
         self._push_update()
 
+    @records_scene_history
     def set_normal(self, normal) -> None:
         """Set the plane normal direction (plain list or array, no units required)."""
         import numpy as _np
@@ -1361,6 +1363,7 @@ class Section(SceneObject):
         record["normal"] = (arr / norm).tolist()
         self._push_update()
 
+    @records_scene_history
     def set_invert(self, invert: bool) -> None:
         """Flip which side of the plane is clipped."""
         record = self._require_record()
@@ -1383,6 +1386,7 @@ class Section(SceneObject):
         """
         self._view._send({"op": "set_section_drag", "tag": self.tag, "enabled": False})  # noqa: SLF001
 
+    @records_scene_history
     def delete(self, skip_digestion: bool = False) -> None:
         """Remove this clipping plane."""
         history = getattr(self._view, "_section_history", [])

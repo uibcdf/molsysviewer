@@ -263,10 +263,10 @@ the same tag; APIs resolve identity as `(domain, tag)`.
   - callbacks receive the same payload dict as `get_last_hover_event()` etc.
   - multiple callbacks per event type are supported; `off_*` removes a specific one
 - `view.export_state()` → JSON-serializable dict
-  - captures current annotations, measurements, selections, and regions (with atom_indices)
+  - captures annotations, measurements, selections, regions, shapes, layers, clipping sections, and whole state
 - `view.import_state(state, *, clear_first=True)`
   - replays a state dict onto a viewer with compatible structure
-  - `clear_first=True` wipes existing annotations/measurements/selections/regions before replay
+  - `clear_first=True` wipes existing scene objects, clipping sections, selections, and regions before replay
 - `view.set_structure(index)`
 - `view.play(fps=..., step=...)`
 - `view.pause()`

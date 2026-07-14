@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 
 from .colors import normalize_color
+from .scene_history import records_scene_history
 
 if TYPE_CHECKING:
     from .layers import Section
@@ -214,6 +215,7 @@ class SceneManager:
 
     # ── Sectioning ────────────────────────────────────────────────────────
 
+    @records_scene_history
     def add_section(
         self,
         point: Any,
@@ -305,6 +307,17 @@ class SceneManager:
         view._send({"op": "set_sections", "sections": list(view._section_history)})  # noqa: SLF001
         return section
 
+    def sections(self) -> list["Section"]:
+        """Return active clipping planes as live handles in creation order."""
+        view = self._view
+        result = []
+        for record in view._section_history:  # noqa: SLF001
+            tag = record.get("tag")
+            section = view._scene_objects.get(("section", tag))  # noqa: SLF001
+            if section is not None:
+                result.append(section)
+        return result
+
     # ── String resolution helpers ──────────────────────────────────────────
 
     def _get_object_centroid_nm(self, tag: str) -> list:
@@ -362,6 +375,7 @@ class SceneManager:
             "Supported forms: \"toward:<tag>\", \"mouth:<tag>\"."
         )
 
+    @records_scene_history
     def remove_section(self, tag: str) -> None:
         """Remove a clipping plane by tag.
 
@@ -378,6 +392,7 @@ class SceneManager:
         view._scene_objects.pop(("section", tag), None)  # noqa: SLF001
         view._send({"op": "set_sections", "sections": new_history})  # noqa: SLF001
 
+    @records_scene_history
     def clear_sections(self) -> None:
         """Remove all active clipping planes."""
         view = self._view
