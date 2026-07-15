@@ -149007,6 +149007,24 @@ function sameItems(a8, b8) {
 }
 
 // src/ui/panels/ui-helpers.ts
+function formatUnitLabel(unit2) {
+  switch (unit2.trim().toLowerCase()) {
+    case "angstrom":
+    case "angstroms":
+      return "\xC5";
+    case "nanometer":
+    case "nanometers":
+      return "nm";
+    case "degree":
+    case "degrees":
+      return "\xB0";
+    case "radian":
+    case "radians":
+      return "rad";
+    default:
+      return unit2;
+  }
+}
 function makeSectionHeader(title) {
   const header2 = document.createElement("div");
   Object.assign(header2.style, {
@@ -149558,7 +149576,7 @@ var ViewportPanel = class extends BasePanel {
     top.appendChild(visibility);
     top.appendChild(remove3);
     card5.appendChild(top);
-    card5.appendChild(this.vectorEditor(item2, "Point (nm)", "point", item2.point));
+    card5.appendChild(this.vectorEditor(item2, `Point (${formatUnitLabel(item2.unit)})`, "point", item2.point));
     card5.appendChild(this.vectorEditor(item2, "Normal", "normal", item2.normal));
     const invert = makeCheckboxRow("Invert clipping side", item2.invert, (checked) => {
       this.ctx.onAction("set_section_invert", { tag: item2.tag, invert: checked });
@@ -149577,7 +149595,8 @@ var ViewportPanel = class extends BasePanel {
     const inputs = values2.map((value, axis) => {
       const input = document.createElement("input");
       input.type = "number";
-      input.step = kind === "point" ? "0.01" : "0.05";
+      const lengthUnit = item2.unit.trim().toLowerCase();
+      input.step = kind === "point" ? lengthUnit === "nanometer" || lengthUnit === "nanometers" || lengthUnit === "nm" ? "0.01" : "0.1" : "0.05";
       input.value = String(Number(value.toFixed(4)));
       input.setAttribute(`data-molsysviewer-section-${kind}-${axis}`, item2.tag);
       Object.assign(input.style, { width: "100%", minWidth: "0", boxSizing: "border-box", fontSize: "10px" });
@@ -149587,7 +149606,8 @@ var ViewportPanel = class extends BasePanel {
         const vector = inputs.map((control) => Number(control.value));
         if (!vector.every(Number.isFinite)) return;
         if (kind === "normal" && Math.hypot(...vector) < 1e-10) return;
-        this.ctx.onAction(kind === "point" ? "set_section_point" : "set_section_normal", kind === "point" ? { tag: item2.tag, point: { magnitude: vector, unit: "nm" } } : { tag: item2.tag, normal: vector });
+        if (kind === "point" && !item2.unit) return;
+        this.ctx.onAction(kind === "point" ? "set_section_point" : "set_section_normal", kind === "point" ? { tag: item2.tag, point: { magnitude: vector, unit: item2.unit } } : { tag: item2.tag, normal: vector });
         this.endCoalescing();
       });
       input.addEventListener("blur", () => this.endCoalescing());
@@ -153392,15 +153412,11 @@ function card2() {
   });
   return element;
 }
-function labelUnit(unit2) {
-  if (unit2 === "angstrom") return "\xC5";
-  if (unit2 === "degree" || unit2 === "degrees") return "\xB0";
-  return unit2;
-}
 function formatValue(item2) {
   if (item2.broken || item2.value === null || !Number.isFinite(item2.value)) return "\u2014";
-  const digits = item2.kind === "distance" ? 2 : 1;
-  return `${item2.value.toFixed(digits)} ${labelUnit(item2.unit)}`;
+  const unit2 = item2.unit.trim().toLowerCase();
+  const digits = unit2 === "nanometer" || unit2 === "nanometers" || unit2 === "nm" || unit2 === "radian" || unit2 === "radians" ? 3 : item2.kind === "distance" ? 2 : 1;
+  return `${item2.value.toFixed(digits)} ${formatUnitLabel(item2.unit)}`;
 }
 var MeasuresPanel = class extends BasePanel {
   constructor(ctx) {
@@ -159361,6 +159377,7 @@ var MolSysViewerController = class _MolSysViewerController {
             tag: item2.tag,
             owner: typeof item2.owner === "string" ? item2.owner : void 0,
             point: Array.isArray(item2.point) && item2.point.length === 3 ? [Number(item2.point[0]), Number(item2.point[1]), Number(item2.point[2])] : [0, 0, 0],
+            unit: typeof item2.unit === "string" ? item2.unit : "",
             normal: Array.isArray(item2.normal) && item2.normal.length === 3 ? [Number(item2.normal[0]), Number(item2.normal[1]), Number(item2.normal[2])] : [0, 0, 1],
             invert: !!item2.invert,
             hidden: !!item2.hidden

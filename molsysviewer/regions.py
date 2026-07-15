@@ -781,7 +781,7 @@ class Region:
         Returns
         -------
         puw.Quantity
-            ``[x, y, z]`` centroid in nanometres.
+            ``[x, y, z]`` centroid in the configured standard length unit.
         """
         from . import pyunitwizard as puw
 
@@ -803,7 +803,7 @@ class Region:
         arr = np.asarray(puw.get_value(center, to_unit="nm"), dtype=float)
         arr = np.squeeze(arr)
         centroid = arr.mean(axis=0) if arr.ndim == 2 else arr
-        return puw.quantity(centroid.tolist(), "nm")
+        return puw.standardize(puw.quantity(centroid.tolist(), "nm"))
 
     @signal(tags=["region", "camera"])
     @digest()

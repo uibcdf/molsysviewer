@@ -390,7 +390,7 @@ export type SetSectionsMessage = {
 
 export type SetSectionSummariesMessage = {
     op: "set_section_summaries";
-    sections?: Array<SectionEntry & { owner?: string | null }>;
+    sections?: Array<SectionEntry & { owner?: string | null; unit: string }>;
     active_selection_count?: number;
     system_loaded?: boolean;
 };

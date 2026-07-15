@@ -2195,6 +2195,7 @@ export class MolSysViewerController {
                             point: Array.isArray(item.point) && item.point.length === 3
                                 ? [Number(item.point[0]), Number(item.point[1]), Number(item.point[2])]
                                 : [0, 0, 0],
+                            unit: typeof item.unit === "string" ? item.unit : "",
                             normal: Array.isArray(item.normal) && item.normal.length === 3
                                 ? [Number(item.normal[0]), Number(item.normal[1]), Number(item.normal[2])]
                                 : [0, 0, 1],

@@ -80,6 +80,7 @@ export type SectionSummary = {
     tag: string;
     owner?: string;
     point: [number, number, number];
+    unit: string;
     normal: [number, number, number];
     invert: boolean;
     hidden: boolean;

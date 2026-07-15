@@ -222,7 +222,7 @@ def test_sphere_shape_supports_rich_mutators_and_replay_state():
         layer_tag="cluster",
     )
 
-    assert puw.get_value(layer.get_center(), to_unit="angstroms").tolist() == [10.0, 20.0, 30.0]
+    assert puw.get_value(layer.get_center(), to_unit="angstroms").tolist() == pytest.approx([10.0, 20.0, 30.0])
 
     layer.set_color(0xabcdef)
     layer.set_alpha(0.8)
@@ -234,7 +234,7 @@ def test_sphere_shape_supports_rich_mutators_and_replay_state():
     assert view._shape_history[0]["options"]["center"] == [40.0, 50.0, 60.0]  # 4 nm = 40 Å  # noqa: SLF001
     assert view._shape_history[0]["options"]["radius"] == 70.0  # 7 nm = 70 Å  # noqa: SLF001
     assert view._shape_history[0]["options"]["layer_tag"] == "cluster"  # noqa: SLF001
-    assert puw.get_value(layer.get_center(), to_unit="angstroms").tolist() == [40.0, 50.0, 60.0]  # 4 nm = 40 Å
+    assert puw.get_value(layer.get_center(), to_unit="angstroms").tolist() == pytest.approx([40.0, 50.0, 60.0])  # 4 nm = 40 Å
 
     exported = [msg for msg in view._build_export_messages() if msg.get("options", {}).get("tag") == "foo"]  # noqa: SLF001
     assert exported[0]["options"]["color"] == 0xABCDEF

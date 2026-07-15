@@ -2072,7 +2072,7 @@ test("GroupPanel Viewport manages clipping sections only through panel actions",
             actions.push({ action, details });
         });
         panel.setSections([{
-            tag: "cut", owner: "topomt", point: [0.1, 0.2, 0.3], normal: [1, 0, 0], invert: false, hidden: false,
+            tag: "cut", owner: "topomt", point: [1, 2, 3], unit: "angstrom", normal: [1, 0, 0], invert: false, hidden: false,
         }], { activeSelectionCount: 2, systemLoaded: true });
         (panel as any).switchTab("viewport");
         await new Promise(resolve => setTimeout(resolve, 0));
@@ -2101,7 +2101,7 @@ test("GroupPanel Viewport manages clipping sections only through panel actions",
             { action: "set_section_visibility", details: { tag: "cut", visible: false } },
             { action: "set_section_invert", details: { tag: "cut", invert: true } },
             { action: "begin_scene_history_coalescing", details: undefined },
-            { action: "set_section_point", details: { tag: "cut", point: { magnitude: [0.4, 0.5, 0.6], unit: "nm" } } },
+            { action: "set_section_point", details: { tag: "cut", point: { magnitude: [0.4, 0.5, 0.6], unit: "angstrom" } } },
             { action: "end_scene_history_coalescing", details: undefined },
             { action: "remove_section", details: { tag: "cut" } },
         ]);

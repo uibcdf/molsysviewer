@@ -1,7 +1,7 @@
 import type { SceneState, SectionSettings, SectionSummary } from "../group-panel";
 import { BasePanel } from "./base-panel";
 import { PanelContext } from "./types";
-import { makeButton, makeCheckboxRow, makeSectionHeader, makeSettingsCard, makeStyledSelect } from "./ui-helpers";
+import { formatUnitLabel, makeButton, makeCheckboxRow, makeSectionHeader, makeSettingsCard, makeStyledSelect } from "./ui-helpers";
 
 /**
  * Studio → Viewport subpanel: live camera and render configuration
@@ -226,7 +226,7 @@ export class ViewportPanel extends BasePanel {
         top.appendChild(remove);
         card.appendChild(top);
 
-        card.appendChild(this.vectorEditor(item, "Point (nm)", "point", item.point));
+        card.appendChild(this.vectorEditor(item, `Point (${formatUnitLabel(item.unit)})`, "point", item.point));
         card.appendChild(this.vectorEditor(item, "Normal", "normal", item.normal));
         const invert = makeCheckboxRow("Invert clipping side", item.invert, checked => {
             this.ctx.onAction("set_section_invert", { tag: item.tag, invert: checked });
@@ -252,7 +252,10 @@ export class ViewportPanel extends BasePanel {
         const inputs = values.map((value, axis) => {
             const input = document.createElement("input");
             input.type = "number";
-            input.step = kind === "point" ? "0.01" : "0.05";
+            const lengthUnit = item.unit.trim().toLowerCase();
+            input.step = kind === "point"
+                ? (lengthUnit === "nanometer" || lengthUnit === "nanometers" || lengthUnit === "nm" ? "0.01" : "0.1")
+                : "0.05";
             input.value = String(Number(value.toFixed(4)));
             input.setAttribute(`data-molsysviewer-section-${kind}-${axis}`, item.tag);
             Object.assign(input.style, { width: "100%", minWidth: "0", boxSizing: "border-box", fontSize: "10px" });
@@ -262,8 +265,9 @@ export class ViewportPanel extends BasePanel {
                 const vector = inputs.map(control => Number(control.value));
                 if (!vector.every(Number.isFinite)) return;
                 if (kind === "normal" && Math.hypot(...vector) < 1e-10) return;
+                if (kind === "point" && !item.unit) return;
                 this.ctx.onAction(kind === "point" ? "set_section_point" : "set_section_normal", kind === "point"
-                    ? { tag: item.tag, point: { magnitude: vector, unit: "nm" } }
+                    ? { tag: item.tag, point: { magnitude: vector, unit: item.unit } }
                     : { tag: item.tag, normal: vector });
                 this.endCoalescing();
             });

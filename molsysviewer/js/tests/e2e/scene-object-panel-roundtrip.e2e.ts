@@ -96,7 +96,7 @@ async function run() {
             });
             await controller.handleMessage({
                 op: "set_section_summaries",
-                sections: [{ tag: "cut", owner: "topomt", point: [0.1, 0.2, 0.3], normal: [1, 0, 0], invert: false, hidden: false }],
+                sections: [{ tag: "cut", owner: "topomt", point: [1, 2, 3], unit: "angstrom", normal: [1, 0, 0], invert: false, hidden: false }],
                 active_selection_count: 1,
                 system_loaded: true,
             });
@@ -114,7 +114,7 @@ async function run() {
                 && message.action === "set_section_point"
             )
         );
-        assert.deepStrictEqual(moveAction.point, { magnitude: [0.4, 0.5, 0.6], unit: "nm" });
+        assert.deepStrictEqual(moveAction.point, { magnitude: [0.4, 0.5, 0.6], unit: "angstrom" });
         const coalescingEvents = await page.evaluate(() =>
             ((window as any).__messages || [])
                 .filter((message: any) => message.event === "scene_history_coalescing_begin" || message.event === "scene_history_coalescing_end")
@@ -131,7 +131,12 @@ async function run() {
         );
         assert.strictEqual(movePython.status, 0, movePython.stderr || movePython.stdout);
         const movedBackend = JSON.parse(movePython.stdout);
-        assert.deepStrictEqual(movedBackend.section_point_nm, [0.4, 0.5, 0.6]);
+        assert.ok(
+            movedBackend.section_point_nm.every((value: number, index: number) =>
+                Math.abs(value - [0.04, 0.05, 0.06][index]) < 1e-12
+            ),
+            "Python did not convert the displayed angstrom point to internal nanometers",
+        );
         console.log("[E2E scene-object-panel-roundtrip] Python accepted section move");
         const movedClip = await page.evaluate(async messages => {
             const controller = (window as any).__controller;
@@ -139,7 +144,12 @@ async function run() {
             const objects = controller.plugin.managers.structure.component.state.options.clipObjects?.objects ?? [];
             return objects.map((item: any) => Array.from(item.position as ArrayLike<number>));
         }, movedBackend.messages);
-        assert.deepStrictEqual(movedClip, [[4, 5, 6]], "moving through the panel did not move Mol* clipping");
+        assert.ok(
+            movedClip.length === 1 && movedClip[0].every((value: number, index: number) =>
+                Math.abs(value - [0.4, 0.5, 0.6][index]) < 1e-6
+            ),
+            "moving through the panel did not move Mol* clipping",
+        );
 
         console.log("[E2E scene-object-panel-roundtrip] section moved in Mol*");
         await page.locator('[data-molsysviewer-section-delete="cut"]').click();

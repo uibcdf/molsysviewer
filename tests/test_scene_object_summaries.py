@@ -77,26 +77,25 @@ def test_scene_object_summary_records_project_manager_info():
         record["tag"]: record for record in view._measurement_summary_records()  # noqa: SLF001
     }
     assert measurements["distance"]["atom_indices"] == [0, 1]
-    for tag, kind, unit in (
-        ("distance", "distance", "angstrom"),
-        ("angle", "angle", "degree"),
-        ("dihedral", "dihedral", "degree"),
+    for tag, kind in (
+        ("distance", "distance"),
+        ("angle", "angle"),
+        ("dihedral", "dihedral"),
     ):
         measurement = measurements[tag]
+        expected = puw.standardize(view.measurements.info(tag)["value"])
         assert measurement["kind"] == kind
         assert measurement["value"] is not None
-        assert measurement["unit"] == unit
-        assert measurement["value"] == pytest.approx(
-            puw.get_value(view.measurements.info(tag)["value"], to_unit=unit)
-        )
+        assert measurement["unit"] == str(puw.get_unit(expected))
+        assert measurement["value"] == pytest.approx(puw.get_value(expected))
         assert measurement["endpoint_labels"]
         assert measurement["endpoint_policy"] == "centroid"
         assert "series" not in measurement
         assert "value_series" not in measurement
     shape = view._shape_summary_records()[0]  # noqa: SLF001
     radius = shape.pop("radius")
-    assert radius["unit"] == "angstrom"
-    assert radius["magnitude"] == pytest.approx(10.0)
+    assert radius["unit"] == "nanometer"
+    assert radius["magnitude"] == pytest.approx(1.0)
     assert shape == {
         "op": "add_sphere",
         "kind": "sphere",
@@ -117,7 +116,7 @@ def test_scene_object_summary_records_project_manager_info():
     }
 
 
-def test_shape_summary_carries_real_style_values_and_explicit_angstrom_unit():
+def test_shape_summary_carries_real_style_values_and_standard_length_unit():
     view = _view()
     view.shapes.add(
         "sphere",
@@ -136,7 +135,8 @@ def test_shape_summary_carries_real_style_values_and_explicit_angstrom_unit():
     assert info["color"] == "#abcdef"
     assert summary["color"] == "#abcdef"
     assert summary["alpha"] == pytest.approx(0.65)
-    assert summary["radius"] == {"magnitude": 3.0, "unit": "angstrom"}
+    assert summary["radius"]["magnitude"] == pytest.approx(0.3)
+    assert summary["radius"]["unit"] == "nanometer"
 
 
 def test_shape_panel_actions_route_plural_style_without_not_implemented():
@@ -335,7 +335,8 @@ def test_measurement_summary_reports_the_current_frame_value_in_presentation_uni
     view.widget.send = lambda _message: None  # type: ignore[method-assign]
     view.load(molsys)
     view.measurements.add_distance([0], [1], tag="d1")
-    expected = puw.get_value(view.measurements.series("d1"), to_unit="angstrom")[1]
+    expected_quantity = puw.standardize(view.measurements.series("d1"))
+    expected = puw.get_value(expected_quantity)[1]
     sent = []
     view._send_runtime_only = lambda message: sent.append(message)  # type: ignore[method-assign]
 
@@ -347,7 +348,7 @@ def test_measurement_summary_reports_the_current_frame_value_in_presentation_uni
 
     summary = sent[-1]["measurements"][0]
     assert summary["value"] == pytest.approx(expected)
-    assert summary["unit"] == "angstrom"
+    assert summary["unit"] == str(puw.get_unit(expected_quantity))
     assert "series" not in summary
     assert "value_series" not in summary
 
@@ -365,7 +366,8 @@ def test_measurement_series_is_runtime_only_and_minmax_downsampled(monkeypatch):
     assert payload["n_frames"] == 6000
     assert len(payload["sparkline"]) <= 240
     assert len(payload["sparkline"]) == len(payload["sparkline_indices"])
-    assert max(payload["sparkline"]) == 16.0
+    assert max(payload["sparkline"]) == pytest.approx(1.6)
+    assert payload["unit"] == "nanometer"
 
 
 def test_measurement_series_panel_request_uses_runtime_only_transport():

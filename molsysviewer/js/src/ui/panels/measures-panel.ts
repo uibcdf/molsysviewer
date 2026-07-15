@@ -1,7 +1,7 @@
 import type { ActiveSelectionPayload } from "../../managers/active-selection";
 import { BasePanel } from "./base-panel";
 import type { PanelContext } from "./types";
-import { makeButton, makeSectionHeader } from "./ui-helpers";
+import { formatUnitLabel, makeButton, makeSectionHeader } from "./ui-helpers";
 
 export type MeasurementSummary = {
     kind: "distance" | "angle" | "dihedral" | "measurement";
@@ -71,16 +71,13 @@ function card(): HTMLDivElement {
     return element;
 }
 
-function labelUnit(unit: string): string {
-    if (unit === "angstrom") return "Å";
-    if (unit === "degree" || unit === "degrees") return "°";
-    return unit;
-}
-
 function formatValue(item: MeasurementSummary): string {
     if (item.broken || item.value === null || !Number.isFinite(item.value)) return "—";
-    const digits = item.kind === "distance" ? 2 : 1;
-    return `${item.value.toFixed(digits)} ${labelUnit(item.unit)}`;
+    const unit = item.unit.trim().toLowerCase();
+    const digits = unit === "nanometer" || unit === "nanometers" || unit === "nm"
+        || unit === "radian" || unit === "radians" ? 3
+        : item.kind === "distance" ? 2 : 1;
+    return `${item.value.toFixed(digits)} ${formatUnitLabel(item.unit)}`;
 }
 
 export class MeasuresPanel extends BasePanel {

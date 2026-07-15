@@ -66,10 +66,10 @@ async function run() {
         await page.locator('[data-molsysviewer-group-panel-toggle="true"]').click();
         await page.locator('[data-molsysviewer-group-panel-tab="measures"]').click();
         const value = page.locator('[data-molsysviewer-measurement-value="d1"]');
-        assert.strictEqual(await value.innerText(), "1.09 Å");
+        assert.strictEqual(await value.innerText(), "0.109 nm");
 
         await applyMessages(page, initial.frame_messages);
-        assert.strictEqual(await value.innerText(), "2.18 Å", "the row kept the frame-zero value");
+        assert.strictEqual(await value.innerText(), "0.218 nm", "the row kept the frame-zero value");
 
         await page.locator('[data-molsysviewer-measurement-visibility="d1"]').click();
         await page.locator('[data-molsysviewer-measurement-delete="d1"]').click();

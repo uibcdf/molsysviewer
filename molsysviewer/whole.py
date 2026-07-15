@@ -218,7 +218,7 @@ class Whole:
         structure_indices: str | Any = "all",
         skip_digestion: bool = False,
     ):
-        """Return the geometric centroid of the whole structure as a ``puw`` quantity in nm."""
+        """Return the geometric centroid in the configured standard length unit."""
         if self._view._molsys is None:  # noqa: SLF001
             raise ValueError("No molecular system loaded.")
 
@@ -235,7 +235,7 @@ class Whole:
         arr = np.asarray(puw.get_value(center, to_unit="nm"), dtype=float)
         arr = np.squeeze(arr)
         centroid = arr.mean(axis=0) if arr.ndim == 2 else arr
-        return puw.quantity(centroid.tolist(), "nm")
+        return puw.standardize(puw.quantity(centroid.tolist(), "nm"))
 
     # --- Scalar colour mapping ---
 

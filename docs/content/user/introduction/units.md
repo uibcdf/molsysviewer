@@ -35,6 +35,11 @@ Internally, MolSysViewer configures PyUnitWizard in `molsysviewer/_pyunitwizard.
 This does not restrict what you can pass as input: you can still provide values in any compatible units.
 Standardization only defines what MolSysViewer uses internally and what it returns by default.
 
+**Public output follows these standard units.** The values shown in the Studio panels (distances,
+shape radii, clipping-plane points, …) and returned by the public geometry getters are standardized to
+the configured length unit — nanometers with the factory configuration. Change the standard unit (see
+below) and the public output follows it; nothing is hardcoded to ångströms.
+
 ## Customizing the default output quantities
 
 MolSysViewer exposes a few configuration helpers so you can decide what you want to get back by default.
@@ -50,6 +55,14 @@ viewer.config.set_default_quantities_parser("pint")
 viewer.config.set_default_standard_units(
     ["nm", "ps", "K", "mole", "amu", "e", "kJ/mol", "kJ/(mol*nm)", "kJ/(mol*nm**2)", "radians"]
 )
+```
+
+```{note}
+Use `viewer.config.set_default_standard_units(...)` to change your default units — **not**
+`pyunitwizard.configure.set_standard_units(...)` directly. MolSysViewer remembers the standard units
+set through its own `config` helper and re-applies them when a viewer is created; a change made only
+through the low-level PyUnitWizard API would be reset to the factory default the next time you build a
+view.
 ```
 
 This is also covered in the configuration section of the User Guide.

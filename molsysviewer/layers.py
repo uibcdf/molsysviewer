@@ -803,10 +803,10 @@ class Shape(SceneObject):
         center = options.get("center") if isinstance(options, dict) else None
         if not isinstance(center, list) or len(center) != 3:
             raise ValueError(f"Shape {self.tag!r} does not expose a geometric center.")
-        return puw.quantity(list(center), "angstroms")
+        return puw.standardize(puw.quantity(list(center), "angstroms"))
 
     def get_coordinates(self):
-        """Return the geometric coordinates of this shape as a ``puw`` quantity in angstroms.
+        """Return the geometric coordinates in the configured standard length unit.
 
         The return value depends on the shape type:
 
@@ -827,19 +827,19 @@ class Shape(SceneObject):
             center = options.get("center")
             if not isinstance(center, list) or len(center) != 3:
                 raise ValueError(f"Shape {self.tag!r} has no geometric center.")
-            return puw.quantity(center, "angstroms")
+            return puw.standardize(puw.quantity(center, "angstroms"))
 
         if op in ("add_channel_tube", "add_pharmacophore_features",
                   "add_displacement_vectors", "add_anisotropy_ellipsoids"):
             centers = options.get("centers")
             if not isinstance(centers, list) or len(centers) == 0:
                 raise ValueError(f"Shape {self.tag!r} has no centers data.")
-            return puw.quantity(centers, "angstroms")
+            return puw.standardize(puw.quantity(centers, "angstroms"))
 
         if op == "add_network_links":
             pairs = options.get("coordinate_pairs")
             if isinstance(pairs, list) and len(pairs) > 0:
-                return puw.quantity(pairs, "angstroms")
+                return puw.standardize(puw.quantity(pairs, "angstroms"))
             raise ValueError(
                 f"Shape {self.tag!r} is a link shape with atom-pair-only data; "
                 "no explicit coordinates are stored."
@@ -849,20 +849,20 @@ class Shape(SceneObject):
             alpha = options.get("alpha_spheres") or {}
             centers = alpha.get("centers")
             if isinstance(centers, list) and len(centers) > 0:
-                return puw.quantity(centers, "angstroms")
+                return puw.standardize(puw.quantity(centers, "angstroms"))
             raise ValueError(f"Shape {self.tag!r} has no alpha-sphere centers.")
 
         if op == "add_triangle_faces":
             vertices = options.get("vertices")
             if not isinstance(vertices, list) or len(vertices) == 0:
                 raise ValueError(f"Shape {self.tag!r} has no vertex data.")
-            return puw.quantity(vertices, "angstroms")
+            return puw.standardize(puw.quantity(vertices, "angstroms"))
 
         if op == "add_tetrahedra":
             coords = options.get("tetra_coords") or options.get("tetraCoords")
             if not isinstance(coords, list) or len(coords) == 0:
                 raise ValueError(f"Shape {self.tag!r} has no tetrahedra coordinate data.")
-            return puw.quantity(coords, "angstroms")
+            return puw.standardize(puw.quantity(coords, "angstroms"))
 
         raise NotImplementedError(
             f"get_coordinates is not implemented for shape op {op!r}."
@@ -1140,7 +1140,7 @@ class Annotation(SceneObject):
         return record
 
     def get_coordinates(self):
-        """Return the anchor position of this annotation as a ``puw`` quantity ``(3,)`` in nm.
+        """Return the anchor position in the configured standard length unit.
 
         The anchor is the centroid of the atom indices stored in the annotation
         record, evaluated at the current structure frame.
@@ -1166,7 +1166,7 @@ class Annotation(SceneObject):
         # coords shape: (1, n_atoms, 3) in nm — return centroid
         arr = _np.asarray(puw.get_value(coords, to_unit="nm"))
         centroid = arr[0].mean(axis=0).tolist()
-        return puw.quantity(centroid, "nm")
+        return puw.standardize(puw.quantity(centroid, "nm"))
 
     def set_coordinates(self, new_pos) -> None:
         """Not supported: annotation anchors are tied to atom indices.
@@ -1187,7 +1187,7 @@ class Measurement(SceneObject):
     def get_coordinates(self):
         """Return the 3D positions of the endpoint atoms as a ``puw`` quantity.
 
-        The shape is ``(n_endpoints, 3)`` in nm, where ``n_endpoints`` is 2
+        The shape is ``(n_endpoints, 3)`` in the configured standard length unit, where ``n_endpoints`` is 2
         (distance), 3 (angle), or 4 (dihedral).  Positions are resolved from
         the current structure frame.
 
@@ -1221,7 +1221,7 @@ class Measurement(SceneObject):
         )
         # coords shape: (1, n_endpoints, 3) → squeeze to (n_endpoints, 3)
         arr = _np.asarray(puw.get_value(coords, to_unit="nm"))
-        return puw.quantity(arr[0].tolist(), "nm")
+        return puw.standardize(puw.quantity(arr[0].tolist(), "nm"))
 
     def focus(self, duration_ms: int = 250, extra_radius: float = 0.5) -> None:
         """Center the camera on the atoms involved in this measurement.
@@ -1338,8 +1338,8 @@ class Section(SceneObject):
             sync()
 
     def get_point(self):
-        """Return the plane's anchor point as a puw quantity ``(3,)`` in nm."""
-        return puw.quantity(list(self._require_record()["point"]), "nm")
+        """Return the plane's anchor point in the configured standard length unit."""
+        return puw.standardize(puw.quantity(list(self._require_record()["point"]), "nm"))
 
     def get_normal(self):
         """Return the plane's normal vector as a plain list ``[nx, ny, nz]``."""

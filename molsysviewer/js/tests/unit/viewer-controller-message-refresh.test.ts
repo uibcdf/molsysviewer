@@ -45,13 +45,13 @@ test("viewer controller maps section summaries through to the Viewport panel", a
 
     await controller.handleMessage({
         op: "set_section_summaries",
-        sections: [{ tag: "cut", owner: "topomt", point: [0.1, 0.2, 0.3], normal: [1, 0, 0], invert: true, hidden: false }],
+        sections: [{ tag: "cut", owner: "topomt", point: [1, 2, 3], unit: "angstrom", normal: [1, 0, 0], invert: true, hidden: false }],
         active_selection_count: 3,
         system_loaded: true,
     });
 
     assert.deepStrictEqual(received, {
-        items: [{ tag: "cut", owner: "topomt", point: [0.1, 0.2, 0.3], normal: [1, 0, 0], invert: true, hidden: false }],
+        items: [{ tag: "cut", owner: "topomt", point: [1, 2, 3], unit: "angstrom", normal: [1, 0, 0], invert: true, hidden: false }],
         settings: { activeSelectionCount: 3, systemLoaded: true },
     });
 });

@@ -5,6 +5,25 @@
 // panels look and behave identically. Extracted from `group-panel.ts` as the
 // first step of the panel-per-module refactor.
 
+export function formatUnitLabel(unit: string): string {
+    switch (unit.trim().toLowerCase()) {
+        case "angstrom":
+        case "angstroms":
+            return "Å";
+        case "nanometer":
+        case "nanometers":
+            return "nm";
+        case "degree":
+        case "degrees":
+            return "°";
+        case "radian":
+        case "radians":
+            return "rad";
+        default:
+            return unit;
+    }
+}
+
 export function makeSectionHeader(title: string): HTMLDivElement {
     const header = document.createElement("div");
     Object.assign(header.style, {

@@ -1,6 +1,12 @@
 from __future__ import annotations
 
+from .._pyunitwizard import puw
 from ..layers import Layer, SceneObject
+
+
+def _standardized_payload(quantity) -> tuple[object, str]:
+    standardized = puw.standardize(quantity)
+    return puw.get_value(standardized), str(puw.get_unit(standardized))
 
 
 class SceneRegistryMixin:
@@ -54,13 +60,14 @@ class SceneRegistryMixin:
         ]
 
     def _measurement_summary_records(self) -> list[dict]:
-        from .. import pyunitwizard as puw
-
         records = []
         for record in self.measurements.info():
             value = record.get("value")
             kind = str(record.get("kind") or "measurement")
-            unit = "angstrom" if kind == "distance" else "degree"
+            source_unit = "angstrom" if kind == "distance" else "degree"
+            standardized_value, unit = _standardized_payload(
+                puw.quantity(0.0, source_unit) if value is None else value
+            )
             atom_indices = sorted({
                 int(index)
                 for pick in record.get("picks_atom_indices") or []
@@ -74,7 +81,7 @@ class SceneRegistryMixin:
                     "layer_tag": record.get("layer_tag"),
                     "n_picks": int(record.get("n_picks") or 0),
                     "atom_indices": atom_indices,
-                    "value": None if value is None else float(puw.get_value(value, to_unit=unit)),
+                    "value": None if value is None else float(standardized_value),
                     "unit": unit,
                     "endpoint_labels": list(record.get("endpoint_labels") or []),
                     "endpoint_policy": record.get("endpoint_policy"),
@@ -102,16 +109,15 @@ class SceneRegistryMixin:
         return [value for _, value in sampled], [index for index, _ in sampled]
 
     def _measurement_series_payload(self, tag: str, request_id: int | None = None) -> dict:
-        from .. import pyunitwizard as puw
-
         info = self.measurements.info(tag)
         record = info
         kind = str(record.get("kind") or "measurement")
-        unit = "angstrom" if kind == "distance" else "degree"
         quantity = self.measurements.series(tag)
-        values = [] if quantity is None else [
-            float(value) for value in puw.get_value(quantity, to_unit=unit)
-        ]
+        source_unit = "angstrom" if kind == "distance" else "degree"
+        standardized, unit = _standardized_payload(
+            puw.quantity([], source_unit) if quantity is None else quantity
+        )
+        values = [float(value) for value in standardized]
         sparkline, sparkline_indices = self._minmax_downsample(values)
         return {
             "op": "measurement_series",
@@ -125,8 +131,6 @@ class SceneRegistryMixin:
         }
 
     def _shape_summary_records(self) -> list[dict]:
-        from .. import pyunitwizard as puw
-
         display = {
             "link": ("Links", "links"),
             "triangle-faces": ("Triangle Faces", "triangle_faces"),
@@ -153,10 +157,12 @@ class SceneRegistryMixin:
             kind = str(record.get("kind") or "shape")
             title, subtitle = labels(kind)
             radius = record.get("radius")
-            radius_payload = None if radius is None else {
-                "magnitude": float(puw.get_value(radius, to_unit="angstrom")),
-                "unit": "angstrom",
-            }
+            if radius is None:
+                radius_payload = None
+            else:
+                quantity = radius if puw.is_quantity(radius) else puw.quantity(radius, "angstrom")
+                magnitude, unit = _standardized_payload(quantity)
+                radius_payload = {"magnitude": float(magnitude), "unit": unit}
             records.append({
                 "op": record.get("op"),
                 "kind": record.get("kind"),
@@ -191,18 +197,21 @@ class SceneRegistryMixin:
         ]
 
     def _section_summary_records(self) -> list[dict]:
-        return [
-            {
+        records = []
+        for record in self._section_history:
+            if not isinstance(record.get("tag"), str):
+                continue
+            point, unit = _standardized_payload(puw.quantity(record.get("point", []), "nm"))
+            records.append({
                 "tag": str(record["tag"]),
-                "point": [float(value) for value in record.get("point", [])],
+                "point": [float(value) for value in point],
+                "unit": unit,
                 "normal": [float(value) for value in record.get("normal", [])],
                 "invert": bool(record.get("invert", False)),
                 "hidden": bool(record.get("hidden", False)),
                 **({"owner": record["owner"]} if record.get("owner") is not None else {}),
-            }
-            for record in self._section_history
-            if isinstance(record.get("tag"), str)
-        ]
+            })
+        return records
 
     def _sync_annotation_summaries_runtime(self) -> None:
         self._send_runtime_only({
