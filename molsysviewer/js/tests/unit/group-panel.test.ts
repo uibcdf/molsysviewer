@@ -2063,6 +2063,53 @@ test("GroupPanel Whole opacity brackets live changes for history", async () => {
     }
 });
 
+test("GroupPanel Viewport manages clipping sections only through panel actions", async () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: Array<{ action: string; details?: any }> = [];
+        const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, (action, details) => {
+            actions.push({ action, details });
+        });
+        panel.setSections([{
+            tag: "cut", owner: "topomt", point: [0.1, 0.2, 0.3], normal: [1, 0, 0], invert: false, hidden: false,
+        }], { activeSelectionCount: 2, systemLoaded: true });
+        (panel as any).switchTab("viewport");
+        await new Promise(resolve => setTimeout(resolve, 0));
+
+        const root = host.children[0];
+        const click = { preventDefault() {}, stopPropagation() {} };
+        findFirstByAttribute(root, "data-molsysviewer-create-section", "true")?.dispatch("click", click);
+        findFirstByAttribute(root, "data-molsysviewer-section-visibility", "cut")?.dispatch("click", click);
+        const invertRow = findFirstByAttribute(root, "data-molsysviewer-section-invert", "cut") as any;
+        const invertCheckbox = invertRow.children[1] as any;
+        invertCheckbox.checked = true;
+        invertCheckbox.dispatch("change");
+
+        const x = findFirstByAttribute(root, "data-molsysviewer-section-point-0", "cut") as any;
+        const y = findFirstByAttribute(root, "data-molsysviewer-section-point-1", "cut") as any;
+        const z = findFirstByAttribute(root, "data-molsysviewer-section-point-2", "cut") as any;
+        x.dispatch("focus");
+        x.value = "0.4";
+        y.value = "0.5";
+        z.value = "0.6";
+        x.dispatch("change");
+        findFirstByAttribute(root, "data-molsysviewer-section-delete", "cut")?.dispatch("click", click);
+
+        assert.deepStrictEqual(actions, [
+            { action: "create_section_from_selection", details: undefined },
+            { action: "set_section_visibility", details: { tag: "cut", visible: false } },
+            { action: "set_section_invert", details: { tag: "cut", invert: true } },
+            { action: "begin_scene_history_coalescing", details: undefined },
+            { action: "set_section_point", details: { tag: "cut", point: { magnitude: [0.4, 0.5, 0.6], unit: "nm" } } },
+            { action: "end_scene_history_coalescing", details: undefined },
+            { action: "remove_section", details: { tag: "cut" } },
+        ]);
+    } finally {
+        restore();
+    }
+});
+
 test("GroupPanel Measures renders scientific values and routes every mutation through panel actions", async () => {
     const restore = installFakeDom();
     const previousWindow = (globalThis as any).window;

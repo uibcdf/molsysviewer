@@ -842,6 +842,7 @@ class MolSysView(
             self._sync_measurement_summaries_runtime()
             self._sync_shape_summaries_runtime()
             self._sync_layer_summaries_runtime()
+            self._sync_section_summaries_runtime()
         elif event == "request_widget_runtime_source":
             # This is the lazy-load bootstrap handshake: the frontend requests the
             # runtime source BEFORE the real runtime has loaded, so `_ready` is
@@ -962,14 +963,11 @@ class MolSysView(
             raw_point = content.get("point")
             raw_normal = content.get("normal")
             if isinstance(tag, str) and tag.strip():
-                tag = tag.strip()
-                for record in self._section_history:
-                    if record.get("tag") == tag:
-                        if isinstance(raw_point, (list, tuple)) and len(raw_point) == 3:
-                            record["point"] = [float(v) for v in raw_point]
-                        if isinstance(raw_normal, (list, tuple)) and len(raw_normal) == 3:
-                            record["normal"] = [float(v) for v in raw_normal]
-                        break
+                section = self._scene_objects.get(("section", tag.strip()))
+                if section is not None:
+                    point = [float(v) for v in raw_point] if isinstance(raw_point, (list, tuple)) and len(raw_point) == 3 else None
+                    normal = [float(v) for v in raw_normal] if isinstance(raw_normal, (list, tuple)) and len(raw_normal) == 3 else None
+                    section.set_geometry(point=point, normal=normal, skip_digestion=True)
         elif event == "interaction_active_selection_changed":
             enriched = dict(content)
             atom_indices = list(content.get("atom_indices") or [])
@@ -1105,6 +1103,7 @@ class MolSysView(
             else:
                 self._set_active_selection_recipe([])
             self._sync_measurement_summaries_runtime()
+            self._sync_section_summaries_runtime()
             if _selection_changed:
                 self.history._end_operation()  # noqa: SLF001
             addons = getattr(self, "addons", None)

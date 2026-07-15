@@ -76,6 +76,20 @@ export type SceneState = {
     fogIntensity?: number;
 };
 
+export type SectionSummary = {
+    tag: string;
+    owner?: string;
+    point: [number, number, number];
+    normal: [number, number, number];
+    invert: boolean;
+    hidden: boolean;
+};
+
+export type SectionSettings = {
+    activeSelectionCount: number;
+    systemLoaded: boolean;
+};
+
 export type OnSelect = (items: ActiveSelectionItem[], op: ActiveSelectionSetOperation) => void;
 export type OnInteraction = (item: ActiveSelectionItem, modifiers: { shift: boolean; alt: boolean }) => void;
 export type OnFocus = (item: ActiveSelectionItem) => void;
@@ -813,6 +827,10 @@ export class GroupPanel {
     setScene(state: SceneState): void {
         this.viewportPanel.setScene(state);
         this.exportPanel.setScene(state);
+    }
+
+    setSections(items: SectionSummary[], settings: SectionSettings): void {
+        this.viewportPanel.setSections(items, settings);
     }
 
     updateContextTarget(target: ContextMenuTarget | null): void {

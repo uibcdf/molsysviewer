@@ -513,12 +513,14 @@ class StateMixin:
             if tag is None:
                 continue
             with self._state_owner_context(record):
-                self.scene.add_section(
+                section = self.scene.add_section(
                     point=list(record.get("point") or []),
                     normal=list(record.get("normal") or []),
                     invert=bool(record.get("invert", False)),
                     tag=tag,
                 )
+                if record.get("hidden"):
+                    section.hide(skip_digestion=True)
 
     def _import_tag(self, domain: str, tag: str, policy: str) -> str | None:
         manager = self._tag_managers[domain]

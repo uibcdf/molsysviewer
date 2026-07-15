@@ -1333,6 +1333,9 @@ class Section(SceneObject):
         """Re-send the full section list after an in-place record update."""
         history = getattr(self._view, "_section_history", [])
         self._view._send({"op": "set_sections", "sections": list(history)})  # noqa: SLF001
+        sync = getattr(self._view, "_sync_section_summaries_runtime", None)
+        if callable(sync):
+            sync()
 
     def get_point(self):
         """Return the plane's anchor point as a puw quantity ``(3,)`` in nm."""
@@ -1345,6 +1348,11 @@ class Section(SceneObject):
     def is_inverted(self) -> bool:
         """Return ``True`` if the clipping side is inverted."""
         return bool(self._require_record().get("invert", False))
+
+    @property
+    def visible(self) -> bool:
+        """Whether this clipping plane currently affects the scene."""
+        return not bool(self._require_record().get("hidden", False))
 
     @records_scene_history
     def set_point(self, point) -> None:
@@ -1371,10 +1379,50 @@ class Section(SceneObject):
         self._push_update()
 
     @records_scene_history
+    def set_geometry(self, *, point=None, normal=None, skip_digestion: bool = False) -> None:
+        """Update point and normal as one undoable geometry mutation."""
+        import numpy as _np
+
+        record = self._require_record()
+        if point is not None:
+            coords_nm = puw.get_value(point, to_unit="nm") if puw.is_quantity(point) else point
+            point_arr = _np.asarray(coords_nm, dtype=float).tolist()
+            if len(point_arr) != 3:
+                raise ValueError("point must be a 3-element vector.")
+            record["point"] = point_arr
+        if normal is not None:
+            normal_arr = _np.asarray(normal, dtype=float)
+            norm = float(_np.linalg.norm(normal_arr))
+            if norm < 1e-10:
+                raise ValueError("normal must be a non-zero vector.")
+            record["normal"] = (normal_arr / norm).tolist()
+        self._push_update()
+
+    @records_scene_history
     def set_invert(self, invert: bool) -> None:
         """Flip which side of the plane is clipped."""
         record = self._require_record()
         record["invert"] = bool(invert)
+        self._push_update()
+
+    @records_scene_history
+    def show(self, skip_digestion: bool = False) -> None:
+        """Enable this clipping plane."""
+        record = self._require_record()
+        if not record.get("hidden", False):
+            return
+        record["hidden"] = False
+        self._hidden = False
+        self._push_update()
+
+    @records_scene_history
+    def hide(self, skip_digestion: bool = False) -> None:
+        """Disable this clipping plane without deleting it."""
+        record = self._require_record()
+        if record.get("hidden", False):
+            return
+        record["hidden"] = True
+        self._hidden = True
         self._push_update()
 
     def enable_drag(self) -> None:
@@ -1401,3 +1449,6 @@ class Section(SceneObject):
         self._view._section_history = new_history  # noqa: SLF001
         self._view._scene_objects.pop((self.kind, self.tag), None)  # noqa: SLF001
         self._view._send({"op": "set_sections", "sections": new_history})  # noqa: SLF001
+        sync = getattr(self._view, "_sync_section_summaries_runtime", None)
+        if callable(sync):
+            sync()

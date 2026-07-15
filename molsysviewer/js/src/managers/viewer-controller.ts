@@ -30,7 +30,7 @@ import { TrajectoryPlotOverlay } from "../ui/trajectory-plot-overlay";
 import { WebGLStatusOverlay } from "../ui/webgl-status-overlay";
 import { ActiveSelectionController, ActiveSelectionItem, buildGroupItemsFromStructure, lociToGroupItems } from "./active-selection";
 import type { ActiveSelectionPayload } from "./active-selection";
-import { GroupPanel } from "../ui/group-panel";
+import { GroupPanel, type SectionSummary, type SectionSettings } from "../ui/group-panel";
 import { AddonsPanel } from "../ui/addons-panel";
 import { FloatingPanelShell } from "../ui/floating-panel-shell";
 import { MsvPerAtomColorThemeProvider } from "../themes/per-atom-color";
@@ -55,6 +55,7 @@ const PANEL_REFRESH_BY_OPERATION: Partial<Record<KnownViewerMessage["op"], reado
     set_measurement_summaries: ["addons"],
     set_shape_summaries: ["addons"],
     set_layer_summaries: ["addons"],
+    set_section_summaries: ["navigate"],
     save_selection: ["navigate"],
     set_selection_tag: ["navigate"],
     delete_selection: ["navigate"],
@@ -569,6 +570,8 @@ export class MolSysViewerController {
     };
     private shapeSummaries: ShapeSummary[] = [];
     private layerSummaries: LayerSummary[] = [];
+    private sectionSummaries: SectionSummary[] = [];
+    private sectionSettings: SectionSettings = { activeSelectionCount: 0, systemLoaded: false };
     private shapeRenderStatuses = new Map<string, ShapeRenderStatus>();
     private dynamicRegionEvaluationInFlight: number | null = null;
     private dynamicRegionEvaluationPendingFrame: number | null = null;
@@ -1027,6 +1030,9 @@ export class MolSysViewerController {
                     ...details,
                 });
                 return;
+            }
+            if (action === "create_section_from_selection") {
+                details = { ...details, camera_forward: getCameraDirection() };
             }
             emitInteractionEvent({
                 event: "interaction_context_action",
@@ -2177,6 +2183,30 @@ export class MolSysViewerController {
                             provenance: item.provenance,
                             hidden: !!item.hidden,
                         }));
+                    break;
+                }
+                case "set_section_summaries": {
+                    const records = Array.isArray((msg as any).sections) ? (msg as any).sections : [];
+                    this.sectionSummaries = records
+                        .filter((item: any) => typeof item?.tag === "string")
+                        .map((item: any) => ({
+                            tag: item.tag,
+                            owner: typeof item.owner === "string" ? item.owner : undefined,
+                            point: Array.isArray(item.point) && item.point.length === 3
+                                ? [Number(item.point[0]), Number(item.point[1]), Number(item.point[2])]
+                                : [0, 0, 0],
+                            normal: Array.isArray(item.normal) && item.normal.length === 3
+                                ? [Number(item.normal[0]), Number(item.normal[1]), Number(item.normal[2])]
+                                : [0, 0, 1],
+                            invert: !!item.invert,
+                            hidden: !!item.hidden,
+                        }));
+                    this.sectionSettings = {
+                        activeSelectionCount: typeof (msg as any).active_selection_count === "number"
+                            ? (msg as any).active_selection_count : 0,
+                        systemLoaded: !!(msg as any).system_loaded,
+                    };
+                    this.groupPanel.setSections(this.sectionSummaries, this.sectionSettings);
                     break;
                 }
                 case "set_whole_summary": this.state.setWholeSummary(msg as any); break;

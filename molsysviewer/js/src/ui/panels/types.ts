@@ -112,6 +112,12 @@ export type PanelAction =
     | "toggle_swing"
     | "set_camera_mode"
     | "set_fog"
+    | "create_section_from_selection"
+    | "set_section_visibility"
+    | "set_section_point"
+    | "set_section_normal"
+    | "set_section_invert"
+    | "remove_section"
     | "set_figure_spec"
     | "download_image"
     | "export_html";

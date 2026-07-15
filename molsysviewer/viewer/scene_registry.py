@@ -190,6 +190,20 @@ class SceneRegistryMixin:
             for record in self.layers.info(skip_digestion=True)
         ]
 
+    def _section_summary_records(self) -> list[dict]:
+        return [
+            {
+                "tag": str(record["tag"]),
+                "point": [float(value) for value in record.get("point", [])],
+                "normal": [float(value) for value in record.get("normal", [])],
+                "invert": bool(record.get("invert", False)),
+                "hidden": bool(record.get("hidden", False)),
+                **({"owner": record["owner"]} if record.get("owner") is not None else {}),
+            }
+            for record in self._section_history
+            if isinstance(record.get("tag"), str)
+        ]
+
     def _sync_annotation_summaries_runtime(self) -> None:
         self._send_runtime_only({
             "op": "set_annotation_summaries",
@@ -222,9 +236,19 @@ class SceneRegistryMixin:
             "layers": self._layer_summary_records(),
         })
 
+    def _sync_section_summaries_runtime(self) -> None:
+        self._send_runtime_only({
+            "op": "set_section_summaries",
+            "sections": self._section_summary_records(),
+            "active_selection_count": len(self.active_selection.atom_indices),
+            "system_loaded": self._molsys is not None,
+        })
+
     def _sync_scene_object_summaries_for_message(self, msg: dict) -> None:
         op = msg.get("op")
         kind = msg.get("kind")
+        if op in {"set_active_selection", "clear_active_selection"}:
+            self._sync_section_summaries_runtime()
         if op in {"clear_all", "clear_scene"} or kind == "layer":
             self._sync_annotation_summaries_runtime()
             self._sync_measurement_summaries_runtime()

@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import Any, Mapping
 
-import numpy as np
-
 from ..._pyunitwizard import puw
 
 
@@ -264,25 +262,6 @@ def set_region_representation(view: Any, content: Mapping[str, Any]) -> None:
     )
 
 
-def create_section_from_selection(view: Any, content: Mapping[str, Any]) -> None:
-    atom_indices = list(view.active_selection.atom_indices)
-    if not atom_indices:
-        raise ValueError("create_section_from_selection requires a non-empty active selection.")
-    coords = view._molsys.structures.get_coordinates(
-        indices=atom_indices,
-        structure_indices=[0],
-        skip_digestion=True,
-    )
-    centroid = puw.get_value(coords)[0].mean(axis=0).tolist()
-    raw_forward = content.get("camera_forward")
-    normal = [float(value) for value in raw_forward] if isinstance(raw_forward, (list, tuple)) and len(raw_forward) == 3 else [0.0, 0.0, -1.0]
-    vector = np.array(normal, dtype=float)
-    length = float(np.linalg.norm(vector))
-    if length > 1e-8:
-        vector /= length
-    view.scene.add_section(point=centroid, normal=vector.tolist())
-
-
 HANDLERS = {
     "create_region_from_query": create_region_from_query,
     "make_regions_by": make_regions_by,
@@ -309,5 +288,4 @@ HANDLERS = {
     "delete_region": delete_region,
     "rename_region": rename_region,
     "set_region_representation": set_region_representation,
-    "create_section_from_selection": create_section_from_selection,
 }

@@ -3,11 +3,16 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+import numpy as np
+import pytest
+
+from molsysviewer import pyunitwizard as puw
 from molsysviewer.demo import demo
 from molsysviewer.viewer.panel_actions import (
     CONTEXT_ONLY_ACTIONS,
     FRONTEND_LOCAL_PANEL_ACTIONS,
     HANDLERS,
+    dispatch_panel_action,
 )
 
 
@@ -78,3 +83,81 @@ def test_viewport_panel_actions_use_the_public_python_scene_api():
         "set_fog",
         "set_figure_spec",
     ]
+
+
+def test_viewport_section_actions_mutate_live_sections_and_use_molsysmt_center():
+    view = demo["dialanine"]
+    view.active_selection.set([0, 1], syntax="Indices", skip_digestion=True)
+
+    view._handle_frontend_event({  # noqa: SLF001
+        "event": "interaction_context_action",
+        "action": "create_section_from_selection",
+        "camera_forward": [0.0, 1.0, 0.0],
+    })
+    section = view.scene.sections()[0]
+    expected = view.regions.add(
+        [0, 1], syntax="Indices", tag="selected", skip_digestion=True,
+    ).get_center(
+        structure_indices=[view.current_structure_index],
+        skip_digestion=True,
+    )
+    assert np.allclose(
+        puw.get_value(section.get_point(), to_unit="nm"),
+        puw.get_value(expected, to_unit="nm"),
+    )
+
+    for action, details in (
+        ("set_section_point", {"point": {"magnitude": [4.0, 5.0, 6.0], "unit": "angstroms"}}),
+        ("set_section_normal", {"normal": [0.0, 0.0, 2.0]}),
+        ("set_section_invert", {"invert": True}),
+        ("set_section_visibility", {"visible": False}),
+    ):
+        view._handle_frontend_event({  # noqa: SLF001
+            "event": "interaction_context_action", "action": action, "tag": section.tag, **details,
+        })
+
+    assert np.allclose(puw.get_value(section.get_point(), to_unit="nm"), [0.4, 0.5, 0.6])
+    assert section.get_normal() == [0.0, 0.0, 1.0]
+    assert section.is_inverted() is True
+    assert section.visible is False
+
+    view._handle_frontend_event({  # noqa: SLF001
+        "event": "interaction_context_action", "action": "remove_section", "tag": section.tag,
+    })
+    assert view.scene.sections() == []
+
+
+def test_creating_a_section_from_the_active_selection_places_it_at_the_centroid():
+    view = demo["dialanine"]
+    view.active_selection.set([0, 1], syntax="Indices", skip_digestion=True)
+    expected = view.regions.add(
+        [0, 1], syntax="Indices", tag="selected", skip_digestion=True,
+    ).get_center(
+        structure_indices=[view.current_structure_index],
+        skip_digestion=True,
+    )
+
+    dispatch_panel_action(view, {
+        "action": "create_section_from_selection",
+        "camera_forward": [0.0, 0.0, -1.0],
+    })
+    section = view.scene.sections()[-1]
+
+    assert np.allclose(
+        puw.get_value(section.get_point(), to_unit="nm"),
+        puw.get_value(expected, to_unit="nm"),
+    )
+    assert section.get_normal() == [0.0, 0.0, -1.0]
+
+    empty = demo["dialanine"]
+    with pytest.raises(ValueError, match="non-empty active selection"):
+        dispatch_panel_action(empty, {
+            "action": "create_section_from_selection",
+            "camera_forward": [0.0, 0.0, -1.0],
+        })
+
+    with pytest.raises(ValueError, match="non-zero vector"):
+        dispatch_panel_action(view, {
+            "action": "create_section_from_selection",
+            "camera_forward": [0.0, 0.0, 0.0],
+        })

@@ -258,7 +258,10 @@ class SceneManager:
             :meth:`~layers.Section.get_normal`,
             :meth:`~layers.Section.set_point`,
             :meth:`~layers.Section.set_normal`,
+            :meth:`~layers.Section.set_geometry`,
             :meth:`~layers.Section.set_invert`,
+            :meth:`~layers.Section.show`,
+            :meth:`~layers.Section.hide`,
             :meth:`~layers.Section.enable_drag`,
             :meth:`~layers.Section.disable_drag`, and
             :meth:`~layers.Section.delete`.
@@ -313,6 +316,7 @@ class SceneManager:
         view._scene_objects[("section", tag)] = section  # noqa: SLF001
 
         view._send({"op": "set_sections", "sections": list(view._section_history)})  # noqa: SLF001
+        view._sync_section_summaries_runtime()  # noqa: SLF001
         return section
 
     def sections(self) -> list["Section"]:
@@ -399,6 +403,7 @@ class SceneManager:
         view._section_history = new_history  # noqa: SLF001
         view._scene_objects.pop(("section", tag), None)  # noqa: SLF001
         view._send({"op": "set_sections", "sections": new_history})  # noqa: SLF001
+        view._sync_section_summaries_runtime()  # noqa: SLF001
 
     @records_scene_history
     def clear_sections(self) -> None:
@@ -412,6 +417,7 @@ class SceneManager:
             view._scene_objects.pop(("section", tag), None)  # noqa: SLF001
         view._section_history.clear()  # noqa: SLF001
         view._send({"op": "set_sections", "sections": []})  # noqa: SLF001
+        view._sync_section_summaries_runtime()  # noqa: SLF001
 
 
 __all__ = ["SceneManager"]

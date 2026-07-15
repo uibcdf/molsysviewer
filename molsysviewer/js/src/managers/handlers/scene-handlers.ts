@@ -217,8 +217,9 @@ export class SceneHandlers {
     // Apply only the Mol* clip plane (fast path used during drag).
     private async _applyClipFromSections(sections: SectionEntry[]) {
         const NM_TO_ANGSTROM = 10.0;
+        const visibleSections = sections.filter(section => !section.hidden);
 
-        if (sections.length === 0) {
+        if (visibleSections.length === 0) {
             const currentOptions = this.plugin.managers.structure.component.state.options;
             await this.plugin.managers.structure.component.setOptions({
                 ...currentOptions,
@@ -227,7 +228,7 @@ export class SceneHandlers {
             return;
         }
 
-        const objects: Clip.Props["objects"] = sections.map((s: SectionEntry) => {
+        const objects: Clip.Props["objects"] = visibleSections.map((s: SectionEntry) => {
             const { axis, angle } = this._normalToAxisAngle(s.normal);
             return {
                 type: "plane" as const,
@@ -298,14 +299,15 @@ export class SceneHandlers {
         }
         this._sectionGizmoTags.clear();
 
-        if (sections.length === 0) return;
+        const visibleSections = sections.filter(section => !section.hidden);
+        if (visibleSections.length === 0) return;
 
         const camera = this.plugin.canvas3d?.camera;
         const discRadius = camera
             ? Math.max(15, camera.state.radius * 0.3)
             : 20;
 
-        for (const section of sections) {
+        for (const section of visibleSections) {
             const gizmoTag = `__msv_sgizmo_${section.tag}`;
             const centerA: [number,number,number] = [
                 section.point[0] * NM_TO_A,
@@ -326,7 +328,7 @@ export class SceneHandlers {
     // ── 2D drag handles ────────────────────────────────────────────────────
 
     private _syncHandles(sections: SectionEntry[]) {
-        const activeTags = new Set(sections.map(s => s.tag));
+        const activeTags = new Set(sections.filter(section => !section.hidden).map(section => section.tag));
         // Remove handles for sections that no longer exist
         for (const [tag, el] of this._sectionHandles) {
             if (!activeTags.has(tag)) {
@@ -341,7 +343,7 @@ export class SceneHandlers {
             }
         }
         // Create handles for new sections
-        for (const section of sections) {
+        for (const section of sections.filter(item => !item.hidden)) {
             if (!this._sectionHandles.has(section.tag)) {
                 this._createSectionHandle(section.tag);
             }
@@ -398,6 +400,7 @@ export class SceneHandlers {
             lastClientY = e.clientY;
             handle.style.cursor = "grabbing";
             handle.style.background = "rgba(0, 229, 255, 1.0)";
+            this.callbacks.notify({ event: "scene_history_coalescing_begin" });
         });
 
         handle.addEventListener("pointermove", (e) => {
@@ -417,6 +420,7 @@ export class SceneHandlers {
             handle.releasePointerCapture(e.pointerId);
             handle.style.cursor = "grab";
             handle.style.background = "rgba(0, 229, 255, 0.85)";
+            this.callbacks.notify({ event: "scene_history_coalescing_end" });
             // Rebuild gizmo disc at final position
             await this._updateSectionGizmos(this._activeSections);
         };
@@ -610,6 +614,7 @@ export class SceneHandlers {
             lastClientY = e.clientY;
             handle.style.cursor = "grabbing";
             handle.style.background = "rgba(255, 200, 0, 1.0)";
+            this.callbacks.notify({ event: "scene_history_coalescing_begin" });
         });
 
         handle.addEventListener("pointermove", (e) => {
@@ -629,6 +634,7 @@ export class SceneHandlers {
             handle.releasePointerCapture(e.pointerId);
             handle.style.cursor = "ew-resize";
             handle.style.background = "rgba(255, 200, 0, 0.85)";
+            this.callbacks.notify({ event: "scene_history_coalescing_end" });
             await this._updateSectionGizmos(this._activeSections);
         };
         handle.addEventListener("pointerup", endDrag);

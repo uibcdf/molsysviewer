@@ -144612,7 +144612,8 @@ var SceneHandlers = class {
   // Apply only the Mol* clip plane (fast path used during drag).
   async _applyClipFromSections(sections) {
     const NM_TO_ANGSTROM = 10;
-    if (sections.length === 0) {
+    const visibleSections = sections.filter((section) => !section.hidden);
+    if (visibleSections.length === 0) {
       const currentOptions2 = this.plugin.managers.structure.component.state.options;
       await this.plugin.managers.structure.component.setOptions({
         ...currentOptions2,
@@ -144620,7 +144621,7 @@ var SceneHandlers = class {
       });
       return;
     }
-    const objects = sections.map((s) => {
+    const objects = visibleSections.map((s) => {
       const { axis, angle } = this._normalToAxisAngle(s.normal);
       return {
         type: "plane",
@@ -144678,10 +144679,11 @@ var SceneHandlers = class {
       await this.callbacks.clearShapesByTag(tag);
     }
     this._sectionGizmoTags.clear();
-    if (sections.length === 0) return;
+    const visibleSections = sections.filter((section) => !section.hidden);
+    if (visibleSections.length === 0) return;
     const camera = this.plugin.canvas3d?.camera;
     const discRadius = camera ? Math.max(15, camera.state.radius * 0.3) : 20;
-    for (const section of sections) {
+    for (const section of visibleSections) {
       const gizmoTag = `__msv_sgizmo_${section.tag}`;
       const centerA = [
         section.point[0] * NM_TO_A,
@@ -144700,7 +144702,7 @@ var SceneHandlers = class {
   }
   // ── 2D drag handles ────────────────────────────────────────────────────
   _syncHandles(sections) {
-    const activeTags = new Set(sections.map((s) => s.tag));
+    const activeTags = new Set(sections.filter((section) => !section.hidden).map((section) => section.tag));
     for (const [tag, el] of this._sectionHandles) {
       if (!activeTags.has(tag)) {
         el.remove();
@@ -144713,7 +144715,7 @@ var SceneHandlers = class {
         this._sectionRimHandles.delete(tag);
       }
     }
-    for (const section of sections) {
+    for (const section of sections.filter((item2) => !item2.hidden)) {
       if (!this._sectionHandles.has(section.tag)) {
         this._createSectionHandle(section.tag);
       }
@@ -144765,6 +144767,7 @@ var SceneHandlers = class {
       lastClientY = e.clientY;
       handle.style.cursor = "grabbing";
       handle.style.background = "rgba(0, 229, 255, 1.0)";
+      this.callbacks.notify({ event: "scene_history_coalescing_begin" });
     });
     handle.addEventListener("pointermove", (e) => {
       if (!isDragging) return;
@@ -144782,6 +144785,7 @@ var SceneHandlers = class {
       handle.releasePointerCapture(e.pointerId);
       handle.style.cursor = "grab";
       handle.style.background = "rgba(0, 229, 255, 0.85)";
+      this.callbacks.notify({ event: "scene_history_coalescing_end" });
       await this._updateSectionGizmos(this._activeSections);
     };
     handle.addEventListener("pointerup", endDrag);
@@ -144947,6 +144951,7 @@ var SceneHandlers = class {
       lastClientY = e.clientY;
       handle.style.cursor = "grabbing";
       handle.style.background = "rgba(255, 200, 0, 1.0)";
+      this.callbacks.notify({ event: "scene_history_coalescing_begin" });
     });
     handle.addEventListener("pointermove", (e) => {
       if (!isDragging) return;
@@ -144964,6 +144969,7 @@ var SceneHandlers = class {
       handle.releasePointerCapture(e.pointerId);
       handle.style.cursor = "ew-resize";
       handle.style.background = "rgba(255, 200, 0, 0.85)";
+      this.callbacks.notify({ event: "scene_history_coalescing_end" });
       await this._updateSectionGizmos(this._activeSections);
     };
     handle.addEventListener("pointerup", endDrag);
@@ -149364,12 +149370,24 @@ var ViewportPanel = class extends BasePanel {
     this.ctx = ctx;
     this.key = "viewport";
     this.state = {};
+    this.sections = [];
+    this.sectionSettings = { activeSelectionCount: 0, systemLoaded: false };
+    this.coalescing = false;
   }
   setScene(state) {
     this.state = { ...state };
     let badge = state.isDarkMode ? "Dark" : "Light";
     if (state.isSpinActive) badge += " \xB7 Spin";
     this.ctx.setBadge(badge);
+    this.scheduleRender();
+  }
+  setSections(items, settings) {
+    this.sections = items.map((item2) => ({
+      ...item2,
+      point: [...item2.point],
+      normal: [...item2.normal]
+    }));
+    this.sectionSettings = { ...settings };
     this.scheduleRender();
   }
   paint() {
@@ -149474,6 +149492,119 @@ var ViewportPanel = class extends BasePanel {
     fogSliderRow.appendChild(fogSliderLabel);
     fogSliderRow.appendChild(fogSlider);
     cameraCard.appendChild(fogSliderRow);
+    this.host.appendChild(this.renderSections());
+  }
+  renderSections() {
+    const section = document.createElement("div");
+    section.setAttribute("data-molsysviewer-viewport-sections", "true");
+    Object.assign(section.style, { display: "flex", flexDirection: "column", gap: "7px", paddingBottom: "10px" });
+    const heading = makeSectionHeader("Clipping Sections");
+    const create3 = makeButton("Create from selection", () => {
+      this.ctx.onAction("create_section_from_selection");
+    });
+    create3.disabled = !this.sectionSettings.systemLoaded || this.sectionSettings.activeSelectionCount === 0;
+    create3.title = create3.disabled ? "Select atoms before creating a clipping section" : "Create at the active selection center";
+    create3.setAttribute("data-molsysviewer-create-section", "true");
+    Object.assign(create3.style, { flex: "0 0 auto", padding: "4px 7px", opacity: create3.disabled ? "0.45" : "1" });
+    heading.appendChild(create3);
+    section.appendChild(heading);
+    if (this.sections.length === 0) {
+      const empty2 = document.createElement("div");
+      empty2.textContent = "No clipping sections";
+      Object.assign(empty2.style, { fontSize: "11px", color: "rgba(244,244,245,0.5)", padding: "6px 2px" });
+      section.appendChild(empty2);
+      return section;
+    }
+    for (const item2 of this.sections) section.appendChild(this.renderSectionItem(item2));
+    return section;
+  }
+  renderSectionItem(item2) {
+    const card5 = document.createElement("div");
+    card5.setAttribute("data-molsysviewer-section-row", item2.tag);
+    Object.assign(card5.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "7px",
+      padding: "8px",
+      border: "1px solid rgba(255,255,255,0.08)",
+      borderRadius: "6px",
+      background: "rgba(255,255,255,0.035)",
+      opacity: item2.hidden ? "0.62" : "1"
+    });
+    const top = document.createElement("div");
+    Object.assign(top.style, { display: "flex", alignItems: "center", gap: "6px", minWidth: "0" });
+    const identity2 = document.createElement("div");
+    Object.assign(identity2.style, { display: "flex", flexDirection: "column", flex: "1 1 auto", minWidth: "0" });
+    const tag = document.createElement("strong");
+    tag.textContent = item2.tag;
+    Object.assign(tag.style, { fontSize: "11px", overflow: "hidden", textOverflow: "ellipsis" });
+    identity2.appendChild(tag);
+    if (item2.owner) {
+      const owner = document.createElement("span");
+      owner.textContent = item2.owner;
+      Object.assign(owner.style, { fontSize: "9px", color: "rgba(244,244,245,0.48)" });
+      identity2.appendChild(owner);
+    }
+    top.appendChild(identity2);
+    const visibility = makeButton(item2.hidden ? "Show" : "Hide", () => this.ctx.onAction("set_section_visibility", {
+      tag: item2.tag,
+      visible: item2.hidden
+    }));
+    visibility.setAttribute("data-molsysviewer-section-visibility", item2.tag);
+    const remove3 = makeButton("Delete", () => this.ctx.onAction("remove_section", { tag: item2.tag }));
+    remove3.setAttribute("data-molsysviewer-section-delete", item2.tag);
+    Object.assign(visibility.style, { flex: "0 0 auto" });
+    Object.assign(remove3.style, { flex: "0 0 auto" });
+    top.appendChild(visibility);
+    top.appendChild(remove3);
+    card5.appendChild(top);
+    card5.appendChild(this.vectorEditor(item2, "Point (nm)", "point", item2.point));
+    card5.appendChild(this.vectorEditor(item2, "Normal", "normal", item2.normal));
+    const invert = makeCheckboxRow("Invert clipping side", item2.invert, (checked) => {
+      this.ctx.onAction("set_section_invert", { tag: item2.tag, invert: checked });
+    });
+    invert.setAttribute("data-molsysviewer-section-invert", item2.tag);
+    card5.appendChild(invert);
+    return card5;
+  }
+  vectorEditor(item2, labelText, kind, values2) {
+    const row2 = document.createElement("div");
+    Object.assign(row2.style, { display: "grid", gridTemplateColumns: "72px repeat(3, minmax(0, 1fr))", gap: "5px", alignItems: "center" });
+    const label2 = document.createElement("span");
+    label2.textContent = labelText;
+    Object.assign(label2.style, { fontSize: "10px", color: "rgba(244,244,245,0.62)" });
+    row2.appendChild(label2);
+    const inputs = values2.map((value, axis) => {
+      const input = document.createElement("input");
+      input.type = "number";
+      input.step = kind === "point" ? "0.01" : "0.05";
+      input.value = String(Number(value.toFixed(4)));
+      input.setAttribute(`data-molsysviewer-section-${kind}-${axis}`, item2.tag);
+      Object.assign(input.style, { width: "100%", minWidth: "0", boxSizing: "border-box", fontSize: "10px" });
+      input.addEventListener("focus", () => this.beginCoalescing());
+      input.addEventListener("pointerdown", () => this.beginCoalescing());
+      input.addEventListener("change", () => {
+        const vector = inputs.map((control) => Number(control.value));
+        if (!vector.every(Number.isFinite)) return;
+        if (kind === "normal" && Math.hypot(...vector) < 1e-10) return;
+        this.ctx.onAction(kind === "point" ? "set_section_point" : "set_section_normal", kind === "point" ? { tag: item2.tag, point: { magnitude: vector, unit: "nm" } } : { tag: item2.tag, normal: vector });
+        this.endCoalescing();
+      });
+      input.addEventListener("blur", () => this.endCoalescing());
+      row2.appendChild(input);
+      return input;
+    });
+    return row2;
+  }
+  beginCoalescing() {
+    if (this.coalescing) return;
+    this.coalescing = true;
+    this.ctx.onAction("begin_scene_history_coalescing");
+  }
+  endCoalescing() {
+    if (!this.coalescing) return;
+    this.coalescing = false;
+    this.ctx.onAction("end_scene_history_coalescing");
   }
 };
 
@@ -156045,6 +156176,9 @@ var GroupPanel = class {
     this.viewportPanel.setScene(state);
     this.exportPanel.setScene(state);
   }
+  setSections(items, settings) {
+    this.viewportPanel.setSections(items, settings);
+  }
   updateContextTarget(target) {
     this.systemPanel.updateContextTarget(target);
   }
@@ -157331,6 +157465,7 @@ var PANEL_REFRESH_BY_OPERATION = {
   set_measurement_summaries: ["addons"],
   set_shape_summaries: ["addons"],
   set_layer_summaries: ["addons"],
+  set_section_summaries: ["navigate"],
   save_selection: ["navigate"],
   set_selection_tag: ["navigate"],
   delete_selection: ["navigate"],
@@ -157670,6 +157805,8 @@ var MolSysViewerController = class _MolSysViewerController {
     };
     this.shapeSummaries = [];
     this.layerSummaries = [];
+    this.sectionSummaries = [];
+    this.sectionSettings = { activeSelectionCount: 0, systemLoaded: false };
     this.shapeRenderStatuses = /* @__PURE__ */ new Map();
     this.dynamicRegionEvaluationInFlight = null;
     this.dynamicRegionEvaluationPendingFrame = null;
@@ -157900,6 +158037,9 @@ var MolSysViewerController = class _MolSysViewerController {
           ...details
         });
         return;
+      }
+      if (action === "create_section_from_selection") {
+        details = { ...details, camera_forward: getCameraDirection() };
       }
       emitInteractionEvent({
         event: "interaction_context_action",
@@ -159213,6 +159353,23 @@ var MolSysViewerController = class _MolSysViewerController {
             provenance: item2.provenance,
             hidden: !!item2.hidden
           }));
+          break;
+        }
+        case "set_section_summaries": {
+          const records = Array.isArray(msg.sections) ? msg.sections : [];
+          this.sectionSummaries = records.filter((item2) => typeof item2?.tag === "string").map((item2) => ({
+            tag: item2.tag,
+            owner: typeof item2.owner === "string" ? item2.owner : void 0,
+            point: Array.isArray(item2.point) && item2.point.length === 3 ? [Number(item2.point[0]), Number(item2.point[1]), Number(item2.point[2])] : [0, 0, 0],
+            normal: Array.isArray(item2.normal) && item2.normal.length === 3 ? [Number(item2.normal[0]), Number(item2.normal[1]), Number(item2.normal[2])] : [0, 0, 1],
+            invert: !!item2.invert,
+            hidden: !!item2.hidden
+          }));
+          this.sectionSettings = {
+            activeSelectionCount: typeof msg.active_selection_count === "number" ? msg.active_selection_count : 0,
+            systemLoaded: !!msg.system_loaded
+          };
+          this.groupPanel.setSections(this.sectionSummaries, this.sectionSettings);
           break;
         }
         case "set_whole_summary":

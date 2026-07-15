@@ -380,11 +380,19 @@ export type SectionEntry = {
     /** Unit normal vector. */
     normal: [number, number, number];
     invert?: boolean;
+    hidden?: boolean;
 };
 
 export type SetSectionsMessage = {
     op: "set_sections";
     sections: SectionEntry[];
+};
+
+export type SetSectionSummariesMessage = {
+    op: "set_section_summaries";
+    sections?: Array<SectionEntry & { owner?: string | null }>;
+    active_selection_count?: number;
+    system_loaded?: boolean;
 };
 
 export type SetSectionDragMessage = {
@@ -880,6 +888,8 @@ export type KnownViewerMessage =
     PartialCoordinatesUpdateMessage |
     SetAtomColorsMessage |
     ClearAtomColorsMessage |
+    SetSectionsMessage |
+    SetSectionSummariesMessage |
     SetSectionDragMessage |
     AddSphereMessage |
     UpdateSphereMessage |

@@ -35,6 +35,27 @@ test("viewer controller does not rebuild System chrome for non-invalidating mess
     assert.strictEqual(stripSyncs, 2);
 });
 
+test("viewer controller maps section summaries through to the Viewport panel", async () => {
+    const controller = Object.create(MolSysViewerController.prototype) as any;
+    let received: any = null;
+    controller.groupPanel = { setSections: (items: any, settings: any) => { received = { items, settings }; } };
+    controller.refreshNavigatePanel = () => {};
+    controller.refreshPanelWorkspaceChrome = () => {};
+    controller.syncStripOverlaysForMessage = () => {};
+
+    await controller.handleMessage({
+        op: "set_section_summaries",
+        sections: [{ tag: "cut", owner: "topomt", point: [0.1, 0.2, 0.3], normal: [1, 0, 0], invert: true, hidden: false }],
+        active_selection_count: 3,
+        system_loaded: true,
+    });
+
+    assert.deepStrictEqual(received, {
+        items: [{ tag: "cut", owner: "topomt", point: [0.1, 0.2, 0.3], normal: [1, 0, 0], invert: true, hidden: false }],
+        settings: { activeSelectionCount: 3, systemLoaded: true },
+    });
+});
+
 test("viewer controller coalesces dynamic-region frame evaluation requests", () => {
     const controller = Object.create(MolSysViewerController.prototype) as MolSysViewerController & {
         state: { hasFrameDependentDynamicRegions(): boolean };

@@ -127,3 +127,32 @@ test("scene toggleBackground flips dark mode and reuses cached renderer snapshot
     const lightRenderer = setPropsCalls[1]?.renderer ?? {};
     assert.strictEqual(lightRenderer.backgroundColor, 0xffffff);
 });
+
+test("scene clipping excludes hidden sections while retaining visible sections", async () => {
+    let clipObjects: any[] = [];
+    const plugin: any = {
+        managers: { structure: { component: { state: { options: {} }, setOptions: async (options: any) => {
+            clipObjects = options.clipObjects.objects;
+        } } } },
+    };
+    const handler = new SceneHandlers(plugin, {} as any, {
+        clearShapes: async () => {}, clearLabels: async () => {}, getComponents: () => [],
+        clearShapesByTag: async () => {}, removeLoadedStructure: async () => {}, notify: () => {},
+        registerShapeRef: () => {},
+    });
+    (handler as any)._updateSectionGizmos = async () => {};
+    (handler as any)._syncHandles = () => {};
+    (handler as any)._ensureCameraSubscription = () => {};
+    (handler as any)._repositionHandles = () => {};
+
+    await handler.setSections({
+        op: "set_sections",
+        sections: [
+            { tag: "visible", point: [0.1, 0.2, 0.3], normal: [1, 0, 0], hidden: false },
+            { tag: "hidden", point: [0.4, 0.5, 0.6], normal: [0, 1, 0], hidden: true },
+        ],
+    });
+
+    assert.strictEqual(clipObjects.length, 1);
+    assert.deepStrictEqual(Array.from(clipObjects[0].position), [1, 2, 3]);
+});

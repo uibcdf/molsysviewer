@@ -52,7 +52,6 @@ CONTEXT_ONLY_ACTIONS = frozenset({
     "addon_enable",
     "addon_register_module",
     "addon_rescan",
-    "create_section_from_selection",
     "hide_measurement",
     "preview_selection_query",
     "remove_selection",

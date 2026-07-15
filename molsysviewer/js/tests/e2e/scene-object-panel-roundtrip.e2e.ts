@@ -87,6 +87,84 @@ async function run() {
         );
         assert.strictEqual(rendered.eyeTitle, "Show annotation", "panel did not consume Python's hidden summary");
 
+        console.log("[E2E scene-object-panel-roundtrip] section setup");
+        await page.evaluate(async () => {
+            const controller = (window as any).__controller;
+            await controller.handleMessage({
+                op: "set_sections",
+                sections: [{ tag: "cut", point: [0.1, 0.2, 0.3], normal: [1, 0, 0], invert: false }],
+            });
+            await controller.handleMessage({
+                op: "set_section_summaries",
+                sections: [{ tag: "cut", owner: "topomt", point: [0.1, 0.2, 0.3], normal: [1, 0, 0], invert: false, hidden: false }],
+                active_selection_count: 1,
+                system_loaded: true,
+            });
+        });
+        await page.locator('[data-molsysviewer-group-panel-tab="viewport"]').click();
+        const pointInputs = [0, 1, 2].map(axis => page.locator(`[data-molsysviewer-section-point-${axis}="cut"]`));
+        await pointInputs[0].fill("0.4");
+        await pointInputs[1].fill("0.5");
+        await pointInputs[2].fill("0.6");
+        await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+        console.log("[E2E scene-object-panel-roundtrip] section point edited");
+        const moveAction = await page.evaluate(() =>
+            [...((window as any).__messages || [])].reverse().find((message: any) =>
+                message.event === "interaction_context_action"
+                && message.action === "set_section_point"
+            )
+        );
+        assert.deepStrictEqual(moveAction.point, { magnitude: [0.4, 0.5, 0.6], unit: "nm" });
+        const coalescingEvents = await page.evaluate(() =>
+            ((window as any).__messages || [])
+                .filter((message: any) => message.event === "scene_history_coalescing_begin" || message.event === "scene_history_coalescing_end")
+                .map((message: any) => message.event)
+        );
+        assert.deepStrictEqual(coalescingEvents.slice(-2), [
+            "scene_history_coalescing_begin", "scene_history_coalescing_end",
+        ]);
+
+        const movePython = spawnSync(
+            process.env.PYTHON || "python",
+            [resolve(__dirname, "scene-object-panel-bridge.py")],
+            { input: JSON.stringify(moveAction), encoding: "utf8", cwd: resolve(__dirname, "../../../..") },
+        );
+        assert.strictEqual(movePython.status, 0, movePython.stderr || movePython.stdout);
+        const movedBackend = JSON.parse(movePython.stdout);
+        assert.deepStrictEqual(movedBackend.section_point_nm, [0.4, 0.5, 0.6]);
+        console.log("[E2E scene-object-panel-roundtrip] Python accepted section move");
+        const movedClip = await page.evaluate(async messages => {
+            const controller = (window as any).__controller;
+            for (const message of messages) await controller.handleMessage(message);
+            const objects = controller.plugin.managers.structure.component.state.options.clipObjects?.objects ?? [];
+            return objects.map((item: any) => Array.from(item.position as ArrayLike<number>));
+        }, movedBackend.messages);
+        assert.deepStrictEqual(movedClip, [[4, 5, 6]], "moving through the panel did not move Mol* clipping");
+
+        console.log("[E2E scene-object-panel-roundtrip] section moved in Mol*");
+        await page.locator('[data-molsysviewer-section-delete="cut"]').click();
+        const deleteAction = await page.evaluate(() =>
+            [...((window as any).__messages || [])].reverse().find((message: any) =>
+                message.event === "interaction_context_action"
+                && message.action === "remove_section"
+            )
+        );
+        const deletePython = spawnSync(
+            process.env.PYTHON || "python",
+            [resolve(__dirname, "scene-object-panel-bridge.py")],
+            { input: JSON.stringify(deleteAction), encoding: "utf8", cwd: resolve(__dirname, "../../../..") },
+        );
+        assert.strictEqual(deletePython.status, 0, deletePython.stderr || deletePython.stdout);
+        const deletedBackend = JSON.parse(deletePython.stdout);
+        assert.strictEqual(deletedBackend.section_count, 0);
+        console.log("[E2E scene-object-panel-roundtrip] Python deleted section");
+        const remainingClips = await page.evaluate(async messages => {
+            const controller = (window as any).__controller;
+            for (const message of messages) await controller.handleMessage(message);
+            return controller.plugin.managers.structure.component.state.options.clipObjects?.objects.length ?? 0;
+        }, deletedBackend.messages);
+        assert.strictEqual(remainingClips, 0, "deleting through the panel left Mol* clipping active");
+
         console.log("[E2E scene-object-panel-roundtrip] passed");
     } finally {
         await browser.close();
