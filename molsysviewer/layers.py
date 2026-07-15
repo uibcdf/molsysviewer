@@ -522,7 +522,6 @@ class LayersManager(dict[str, Layer]):
         def summarize(layer: Layer) -> dict[str, Any]:
             return {
                 "tag": layer.tag,
-                "kind": layer.kind,
                 "meta": dict(layer.meta),
                 "provenance": layer.provenance,
                 "visible": not layer._hidden,  # noqa: SLF001

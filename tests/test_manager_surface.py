@@ -80,7 +80,6 @@ def test_layers_manager_add_preserves_kind_and_explicit_meta():
     assert view.layers.records(skip_digestion=True) == [
         {
             "tag": "analysis",
-            "kind": "shape",
             "meta": {"owner": "test"},
             "provenance": "user",
             "visible": True,
@@ -90,6 +89,20 @@ def test_layers_manager_add_preserves_kind_and_explicit_meta():
 
     view.layers.clear("analysis", skip_digestion=True)
     assert view.layers.count(skip_digestion=True) == 0
+
+
+def test_a_mixed_layer_does_not_claim_to_be_one_kind():
+    view = demo["dialanine"]
+    region = view.regions.add(atom_indices=[0], tag="region")
+    shape = view.shapes.add_sphere(
+        center=puw.quantity([0.0, 0.0, 0.0], "nm"),
+        tag="shape",
+    )
+    region.set_layer("mix", skip_digestion=True)
+    shape.set_layer_tag("mix", skip_digestion=True)
+
+    assert "kind" not in view.layers.info("mix")
+    assert "kind" not in view.layers.records()[0]
 
 
 def test_user_layer_survives_becoming_empty_but_auto_layer_does_not():
