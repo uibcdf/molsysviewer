@@ -51,7 +51,7 @@ def lifecycle_payload(events: list[dict]) -> dict:
         states.append({
             "contains": view.measurements.contains("d1"),
             "visible": (
-                view.measurements.info("d1")[0]["visible"]
+                view.measurements.info("d1")["visible"]
                 if view.measurements.contains("d1")
                 else None
             ),
@@ -61,7 +61,7 @@ def lifecycle_payload(events: list[dict]) -> dict:
     message_batches.append(list(sent))
     states.append({
         "contains": view.measurements.contains("d1"),
-        "visible": view.measurements.info("d1")[0]["visible"],
+        "visible": view.measurements.info("d1")["visible"],
     })
     return {"message_batches": message_batches, "states": states}
 

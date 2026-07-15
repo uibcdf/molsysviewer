@@ -409,7 +409,7 @@ def test_context_action_delete_measurement_executes_python_bridge():
     )
 
     assert "dist-1" not in view.layers
-    assert view.measurements.info("dist-1") == []
+    assert view.measurements.contains("dist-1") is False
     assert [msg for msg in view._build_export_messages() if msg.get("tag") == "dist-1"] == []  # noqa: SLF001
 
 
@@ -445,24 +445,22 @@ def test_context_action_hide_measurement_executes_python_bridge():
 
     assert "dist-1" in view.layers
     assert view.layers["dist-1"]._hidden is True  # noqa: SLF001
-    assert view.measurements.info("dist-1") == [
-        {
-            "kind": "distance",
-            "tag": "dist-1",
-            "layer_tag": "dist-1",
-            "n_picks": 2,
-            "picks_atom_indices": [[0], [1]],
-            "endpoint_kinds": ["atom", "atom"],
-            "endpoint_policy": "centroid",
-            "endpoint_labels": endpoint_labels,
-            "endpoint_atom_indices": [[0], [1]],
-            "value": None,
-            "visible": False,
-            "active": True,
-            "broken": False,
-            "broken_reason": None,
-        }
-    ]
+    assert view.measurements.info("dist-1") == {
+        "kind": "distance",
+        "tag": "dist-1",
+        "layer_tag": "dist-1",
+        "n_picks": 2,
+        "picks_atom_indices": [[0], [1]],
+        "endpoint_kinds": ["atom", "atom"],
+        "endpoint_policy": "centroid",
+        "endpoint_labels": endpoint_labels,
+        "endpoint_atom_indices": [[0], [1]],
+        "value": None,
+        "visible": False,
+        "active": True,
+        "broken": False,
+        "broken_reason": None,
+    }
 
 
 def test_add_label_from_active_selection_supports_multi_group():
@@ -732,26 +730,24 @@ def test_full_reproducible_workflow_remaps_region_selection_label_and_measuremen
     assert view.selections.info("picked")["atom_indices"] == remapped_group_0_atoms
     assert view.selections.info("picked")["group_indices"] == [0]
     assert view.annotations.info("picked-label")["atom_indices"] == remapped_group_0_atoms
-    measurement_value = view.measurements.info("picked-distance")[0]["value"]
+    measurement_value = view.measurements.info("picked-distance")["value"]
     assert measurement_value is not None
-    assert view.measurements.info("picked-distance") == [
-        {
-            "kind": "distance",
-            "tag": "picked-distance",
-            "layer_tag": "picked-distance",
-            "n_picks": 2,
-            "picks_atom_indices": [[remapped_group_0_atoms[0]], [remapped_group_1_atoms[0]]],
-            "endpoint_kinds": ["atom", "atom"],
-            "endpoint_policy": "centroid",
-            "endpoint_labels": endpoint_labels,
-            "endpoint_atom_indices": [[remapped_group_0_atoms[0]], [remapped_group_1_atoms[0]]],
-            "value": measurement_value,
-            "visible": True,
-            "active": True,
-            "broken": False,
-            "broken_reason": None,
-        }
-    ]
+    assert view.measurements.info("picked-distance") == {
+        "kind": "distance",
+        "tag": "picked-distance",
+        "layer_tag": "picked-distance",
+        "n_picks": 2,
+        "picks_atom_indices": [[remapped_group_0_atoms[0]], [remapped_group_1_atoms[0]]],
+        "endpoint_kinds": ["atom", "atom"],
+        "endpoint_policy": "centroid",
+        "endpoint_labels": endpoint_labels,
+        "endpoint_atom_indices": [[remapped_group_0_atoms[0]], [remapped_group_1_atoms[0]]],
+        "value": measurement_value,
+        "visible": True,
+        "active": True,
+        "broken": False,
+        "broken_reason": None,
+    }
 
     messages = view._build_export_messages()  # noqa: SLF001
     selection_msg = next(msg for msg in messages if msg.get("op") == "save_selection" and msg.get("tag") == "picked")

@@ -103,9 +103,7 @@ class SceneRegistryMixin:
         from .. import pyunitwizard as puw
 
         info = self.measurements.info(tag)
-        if not info:
-            raise ValueError(f"No measurement found with tag {tag!r}.")
-        record = info[0]
+        record = info
         kind = str(record.get("kind") or "measurement")
         unit = "angstrom" if kind == "distance" else "degree"
         quantity = self.measurements.series(tag)

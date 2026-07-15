@@ -137,11 +137,11 @@ def test_measurement_series_preserves_all_coordinate_frames(monkeypatch):
     record = view.measurements.records()[0]
     assert record["options"]["value"] == pytest.approx(1.0)
     assert record["options"]["value_series"] == pytest.approx([1.0, 2.0])
-    assert puw.get_value(view.measurements.info("d01")[0]["value"], to_unit="angstrom") == pytest.approx(1.0)
+    assert puw.get_value(view.measurements.info("d01")["value"], to_unit="angstrom") == pytest.approx(1.0)
 
     view.player.go_to_structure(1)
 
-    assert puw.get_value(view.measurements.info("d01")[0]["value"], to_unit="angstrom") == pytest.approx(2.0)
+    assert puw.get_value(view.measurements.info("d01")["value"], to_unit="angstrom") == pytest.approx(2.0)
     assert puw.get_value(view.measurements.series("d01"), to_unit="angstrom").tolist() == pytest.approx([1.0, 2.0])
 
 def test_measurements_manager_supports_registry_access_and_duplicate_tag_guard():
@@ -185,7 +185,7 @@ def test_measurements_manager_can_move_measurement_between_layers():
     assert "dist_1" not in view.layers
     assert "geom" in view.layers
     assert view.layers["geom"].measurements == {"dist_1": layer}
-    assert view.measurements.info("dist_1")[0]["layer_tag"] == "geom"
+    assert view.measurements.info("dist_1")["layer_tag"] == "geom"
     assert view.measurements.records()[0]["options"]["layer_tag"] == "geom"
 
 

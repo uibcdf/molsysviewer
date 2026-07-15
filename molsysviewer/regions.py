@@ -1411,6 +1411,6 @@ class RegionsManager(dict):
         if tag is not None:
             region = self.get(tag)
             if region is None:
-                raise KeyError(tag)
+                raise ValueError(f"No region found for tag {tag!r}.")
             return summarize(region)
         return [summarize(r) for r in self.values()]

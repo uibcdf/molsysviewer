@@ -110,8 +110,8 @@ def test_scene_objects_and_user_layer_round_trip_as_usable_python_model():
         "background": False,
         "background_opacity": 0.35,
     }
-    assert target.measurements.info("distance1")[0]["visible"] is False
-    assert target.shapes.info("site1")[0]["visible"] is False
+    assert target.measurements.info("distance1")["visible"] is False
+    assert target.shapes.info("site1")["visible"] is False
     assert target.shapes.records()[0]["options"]["color"] == 0xFF8800
     assert target.shapes.records()[0]["options"]["radius"] == 2.0
     assert target.layers["analysis"].provenance == "user"
@@ -224,7 +224,7 @@ def test_missing_anchors_restore_as_broken_manageable_objects():
     assert target.annotations.get("note1").broken is True
     assert target.measurements.get("distance1").broken is True
     assert target.annotations.info("note1")["broken"] is True
-    assert target.measurements.info("distance1")[0]["broken"] is True
+    assert target.measurements.info("distance1")["broken"] is True
     assert "999" in target.annotations.info("note1")["broken_reason"]
     target.annotations.delete("note1", skip_digestion=True)
     target.measurements.delete("distance1", skip_digestion=True)
@@ -484,14 +484,14 @@ def test_broken_measurement_reports_no_value_not_a_stale_one():
     # number that was computed on the *other* structure.
     source = demo["181L"]
     source.measurements.add_distance([0], [1400], tag="far")
-    original = source.measurements.info("far")[0]["value"]
+    original = source.measurements.info("far")["value"]
     assert original is not None
     document = source.export_state()
 
     target = demo["dialanine"]          # 22 atoms: atom 1400 does not exist here
     target.import_state(document)
 
-    restored = target.measurements.info("far")[0]
+    restored = target.measurements.info("far")
     assert restored["broken"] is True
     assert restored["value"] is None, "the stale value from the other structure survived"
 
@@ -499,12 +499,12 @@ def test_broken_measurement_reports_no_value_not_a_stale_one():
 def test_a_restored_measurement_is_usable_not_merely_present():
     source = _mute(demo["dialanine"])
     source.measurements.add_distance([0], [10], tag="d1")
-    original = source.measurements.info("d1")[0]
+    original = source.measurements.info("d1")
     document = source.export_state()
 
     target = _mute(demo["dialanine"])
     target.import_state(document)
 
-    restored = target.measurements.info("d1")[0]
+    restored = target.measurements.info("d1")
     assert restored["broken"] is False
     assert restored["value"] == original["value"]

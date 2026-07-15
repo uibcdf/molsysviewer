@@ -34,6 +34,39 @@ def test_scene_managers_expose_canonical_callable_surface():
             assert callable(getattr(manager, name)), f"{type(manager).__name__}.{name} is not callable"
 
 
+def test_info_of_a_single_tag_returns_a_dict_in_every_domain():
+    view = demo["dialanine"]
+    view.regions.add(atom_indices=[0], tag="r")
+    view.shapes.add_sphere(center=puw.quantity([0.0, 0.0, 0.0], "nm"), tag="s")
+    view.annotations.add("site", atom_indices=[0], tag="a")
+    view.measurements.add("distance", [0], [1], tag="d")
+    view.layers.add("L", skip_digestion=True)
+
+    for manager, tag in (
+        (view.regions, "r"),
+        (view.shapes, "s"),
+        (view.annotations, "a"),
+        (view.measurements, "d"),
+        (view.layers, "L"),
+    ):
+        assert isinstance(manager.info(tag), dict)
+        assert isinstance(manager.info(), list)
+
+
+def test_info_of_a_missing_tag_raises_valueerror_in_every_domain():
+    view = MolSysView()
+
+    for manager in (
+        view.regions,
+        view.shapes,
+        view.annotations,
+        view.measurements,
+        view.layers,
+    ):
+        with pytest.raises(ValueError):
+            manager.info("does-not-exist")
+
+
 def test_layers_manager_add_preserves_kind_and_explicit_meta():
     view = MolSysView()
 

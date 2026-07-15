@@ -48,11 +48,12 @@ def lifecycle_payload(events: list[dict]) -> dict:
         view._handle_frontend_event(event)  # noqa: SLF001
         message_batches.append(list(sent))
         sent.clear()
-        info = view.shapes.info("site", skip_digestion=True)
+        shape = view.shapes.get("site", skip_digestion=True)
+        info = None if shape is None else view.shapes.info("site", skip_digestion=True)
         states.append({
-            "exists": bool(info),
-            "visible": info[0]["visible"] if info else None,
-            "color": info[0]["color"] if info else None,
+            "exists": shape is not None,
+            "visible": info["visible"] if info else None,
+            "color": info["color"] if info else None,
             "undo_depth": len(view.history._undo),  # noqa: SLF001
         })
     return {"message_batches": message_batches, "states": states}

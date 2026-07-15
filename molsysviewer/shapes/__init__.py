@@ -199,7 +199,11 @@ class ShapesManager:
 
     @signal(tags=["shape", "query"])
     @digest()
-    def info(self, tag: str | None = None, skip_digestion: bool = False) -> list[dict]:
+    def info(
+        self,
+        tag: str | None = None,
+        skip_digestion: bool = False,
+    ) -> dict[str, Any] | list[dict[str, Any]]:
         """Return a summary of all shapes (or a single shape by tag).
 
         Each entry contains the wire ``op``, identity, editable style values,
@@ -308,7 +312,11 @@ class ShapesManager:
 
             results.append(entry)
 
-        return results
+        if tag is None:
+            return results
+        if results:
+            return results[0]
+        raise ValueError(f"No shape record found for tag {tag!r}.")
 
     @records_scene_history
     @signal(tags=["shape"])

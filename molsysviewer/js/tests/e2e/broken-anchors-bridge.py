@@ -39,7 +39,7 @@ def main() -> None:
     print(json.dumps({
         "messages": sent,
         "annotation": view.annotations.info("broken-note"),
-        "measurement": view.measurements.info("broken-distance")[0],
+        "measurement": view.measurements.info("broken-distance"),
     }))
 
 

@@ -478,7 +478,7 @@ def test_remove_rebuild_drops_orphaned_regions_and_shapes_but_keeps_anchored_obj
     assert "orphan-distance" in view.measurements.tags(skip_digestion=True)
     assert ("shape", "orphan-shape") not in view._scene_objects  # noqa: SLF001
     assert view.annotations.info("orphan-label")["broken"] is True
-    assert view.measurements.info("orphan-distance")[0]["broken"] is True
+    assert view.measurements.info("orphan-distance")["broken"] is True
 
     assert not any(msg.get("tag") == "orphan-region" for msg in view._message_history)  # noqa: SLF001
     assert not any(
@@ -523,17 +523,17 @@ def test_a_partially_remapped_measurement_never_reports_the_old_number():
     view = demo["dialanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
     view.measurements.add_distance([0, 1, 2, 3, 4], [10, 11, 12], tag="c1")
-    stale_value = view.measurements.info("c1")[0]["value"]
+    stale_value = view.measurements.info("c1")["value"]
 
     apply_remove(view, selection=[3, 4])
 
-    record = view.measurements.info("c1")[0]
+    record = view.measurements.info("c1")
     assert record["broken"] is False
     assert record["value"] is not None
     assert record["value"] != stale_value
 
     view.measurements.add_distance([0, 1, 2], [8, 9, 10], tag="expected")
-    assert record["value"] == view.measurements.info("expected")[0]["value"]
+    assert record["value"] == view.measurements.info("expected")["value"]
 
 
 def test_a_destroyed_measurement_anchor_serializes_without_a_stale_value():
@@ -543,12 +543,12 @@ def test_a_destroyed_measurement_anchor_serializes_without_a_stale_value():
     view.widget.send = lambda msg: sent.append(msg)  # type: ignore[attr-defined]
     last_atom = int(view.molsys.get_n_atoms()) - 1
     view.measurements.add_distance([0], [last_atom], tag="d1")
-    stale_value = view.measurements.info("d1")[0]["value"]
+    stale_value = view.measurements.info("d1")["value"]
     assert stale_value is not None
 
     apply_remove(view, selection=[last_atom])
 
-    record = view.measurements.info("d1")[0]
+    record = view.measurements.info("d1")
     assert record["broken"] is True
     assert record["value"] is None
     document_record = next(item for item in view.export_state()["measurements"] if item["tag"] == "d1")
@@ -567,16 +567,16 @@ def test_a_broken_object_becomes_valid_again_after_undo_snapshot_restore():
     source.widget.send = lambda _msg: None  # type: ignore[attr-defined]
     last_atom = int(source.molsys.get_n_atoms()) - 1
     source.measurements.add_distance([0], [last_atom], tag="d1")
-    original_value = source.measurements.info("d1")[0]["value"]
+    original_value = source.measurements.info("d1")["value"]
     pre_edit_snapshot = source.export_state()
 
     apply_remove(source, selection=[last_atom])
-    assert source.measurements.info("d1")[0]["broken"] is True
+    assert source.measurements.info("d1")["broken"] is True
 
     restored = demo["dialanine"]
     restored.widget.send = lambda _msg: None  # type: ignore[attr-defined]
     restored.import_state(pre_edit_snapshot)
-    record = restored.measurements.info("d1")[0]
+    record = restored.measurements.info("d1")
     assert record["broken"] is False
     assert record["value"] == original_value
 

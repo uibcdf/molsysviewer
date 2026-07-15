@@ -42,7 +42,7 @@ for action in actions:
         "region_visible": view.regions["pocket"].visible if "pocket" in view.regions else None,
         "shape_exists": shape is not None,
         "shape_layer": shape.layer_tag if shape is not None else None,
-        "shape_visible": view.shapes.info("marker")[0]["visible"] if shape is not None else None,
+        "shape_visible": view.shapes.info("marker")["visible"] if shape is not None else None,
     })
 
 print(json.dumps({"batches": batches, "states": states}))

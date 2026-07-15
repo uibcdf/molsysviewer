@@ -520,7 +520,7 @@ class MeasurementsManager:
     def get(self, tag: str, skip_digestion: bool = False) -> Layer | None:
         return self._measurement_layer(tag)
 
-    def info(self, tag: str | None = None) -> list[dict]:
+    def info(self, tag: str | None = None) -> dict[str, Any] | list[dict[str, Any]]:
         items: list[dict] = []
         for record in self._view._measurement_history:  # noqa: SLF001
             layer_tag = record.get("tag")
@@ -575,7 +575,11 @@ class MeasurementsManager:
                     "broken_reason": None if layer is None else getattr(layer, "broken_reason", None),
                 }
             )
-        return items
+        if tag is None:
+            return items
+        if items:
+            return items[0]
+        raise ValueError(f"No measurement record found for tag {tag!r}.")
 
     def series(self, tag: str):
         """Return the stored or recomputed measurement time series for *tag*."""

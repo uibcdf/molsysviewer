@@ -125,7 +125,7 @@ def toggle_shape_visibility(view: Any, content: Mapping[str, Any]) -> None:
     shape = view.shapes.get(tag, skip_digestion=True)
     if shape is None:
         raise ValueError(f"No shape found with tag {tag!r}.")
-    if view.shapes.info(tag, skip_digestion=True)[0]["visible"]:
+    if view.shapes.info(tag, skip_digestion=True)["visible"]:
         view.shapes.hide(tag, skip_digestion=True)
     else:
         view.shapes.show(tag, skip_digestion=True)
@@ -134,10 +134,10 @@ def toggle_shape_visibility(view: Any, content: Mapping[str, Any]) -> None:
 def _shape_and_op(view: Any, content: Mapping[str, Any], action: str):
     tag = _tag(content, action)
     shape = view.shapes.get(tag, skip_digestion=True)
-    records = view.shapes.info(tag, skip_digestion=True)
-    if shape is None or not records:
+    record = view.shapes.info(tag, skip_digestion=True)
+    if shape is None:
         raise ValueError(f"No shape found with tag {tag!r}.")
-    return shape, str(records[0].get("op"))
+    return shape, str(record.get("op"))
 
 
 def _shape_for_capability(view: Any, content: Mapping[str, Any], action: str, capability: str):
@@ -247,7 +247,7 @@ def toggle_measurement_visibility(view: Any, content: Mapping[str, Any]) -> None
     measurement = view.measurements.get(tag, skip_digestion=True)
     if measurement is None:
         raise ValueError(f"No measurement found with tag {tag!r}.")
-    if view.measurements.info(tag)[0]["visible"]:
+    if view.measurements.info(tag)["visible"]:
         measurement.hide(skip_digestion=True)
     else:
         measurement.show(skip_digestion=True)

@@ -87,7 +87,7 @@ def test_scene_object_summary_records_project_manager_info():
         assert measurement["value"] is not None
         assert measurement["unit"] == unit
         assert measurement["value"] == pytest.approx(
-            puw.get_value(view.measurements.info(tag)[0]["value"], to_unit=unit)
+            puw.get_value(view.measurements.info(tag)["value"], to_unit=unit)
         )
         assert measurement["endpoint_labels"]
         assert measurement["endpoint_policy"] == "centroid"
@@ -129,7 +129,7 @@ def test_shape_summary_carries_real_style_values_and_explicit_angstrom_unit():
         skip_digestion=True,
     )
 
-    info = view.shapes.info("site", skip_digestion=True)[0]
+    info = view.shapes.info("site", skip_digestion=True)
     summary = view._shape_summary_records()[0]  # noqa: SLF001
 
     assert info["op"] == "add_sphere"
@@ -298,8 +298,8 @@ def test_panel_visibility_actions_mutate_the_authoritative_python_model():
         })
 
     assert view.annotations.info("note")["visible"] is False
-    assert view.measurements.info("distance")[0]["visible"] is False
-    assert view.shapes.info("site")[0]["visible"] is False
+    assert view.measurements.info("distance")["visible"] is False
+    assert view.shapes.info("site")["visible"] is False
 
 
 def test_frame_change_refreshes_measurements_without_republishing_static_domains():
@@ -453,14 +453,14 @@ def test_measurement_panel_lifecycle_actions_mutate_the_python_model():
         })
 
     dispatch("toggle_measurement_visibility", tag="d1")
-    assert view.measurements.info("d1")[0]["visible"] is False
+    assert view.measurements.info("d1")["visible"] is False
     dispatch("rename_measurement", tag="d1", new_tag="distance")
     dispatch("set_measurement_layer", tag="distance", layer="analysis")
-    assert view.measurements.info("distance")[0]["layer_tag"] == "analysis"
+    assert view.measurements.info("distance")["layer_tag"] == "analysis"
     dispatch("show_all_measurements")
-    assert view.measurements.info("distance")[0]["visible"] is True
+    assert view.measurements.info("distance")["visible"] is True
     dispatch("hide_all_measurements")
-    assert view.measurements.info("distance")[0]["visible"] is False
+    assert view.measurements.info("distance")["visible"] is False
     dispatch("clear_measurements")
     assert view.measurements.count() == 0
 
@@ -580,8 +580,8 @@ def test_endpoint_policy_panel_action_affects_only_future_measurements_and_is_un
     })
     second_tag = view.measurements.tags()[-1]
 
-    assert view.measurements.info(first_tag)[0]["endpoint_policy"] == "centroid"
-    assert view.measurements.info(second_tag)[0]["endpoint_policy"] == "representative_atom"
+    assert view.measurements.info(first_tag)["endpoint_policy"] == "centroid"
+    assert view.measurements.info(second_tag)["endpoint_policy"] == "representative_atom"
     assert view.history.can_undo() is True
 
 

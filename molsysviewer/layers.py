@@ -532,7 +532,7 @@ class LayersManager(dict[str, Layer]):
         if tag is not None:
             layer = super().get(tag)
             if layer is None:
-                raise KeyError(tag)
+                raise ValueError(f"No layer found for tag {tag!r}.")
             return summarize(layer)
         return [summarize(layer) for layer in self.values()]
 
