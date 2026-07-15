@@ -85,6 +85,7 @@ export type OnAnnotationContext = (target: ContextMenuTarget, pageX: number, pag
 export type SavedSelectionSummary = { tag: string; atom_count: number; element_level?: string };
 export type RegionSummary = {
     tag: string;
+    owner?: string;
     atom_count: number;
     hidden: boolean;
     layer?: string | null;

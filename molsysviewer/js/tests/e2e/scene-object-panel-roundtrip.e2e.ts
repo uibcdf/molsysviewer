@@ -37,7 +37,7 @@ async function run() {
             await controller.handleMessage({
                 op: "set_annotation_summaries",
                 annotations: [{
-                    kind: "label", tag: "note", text: "site", atom_indices: [0],
+                    kind: "label", tag: "note", owner: "elastnetmt", text: "site", atom_indices: [0],
                     layer_tag: "note", hidden: false,
                 }],
             });
@@ -46,6 +46,10 @@ async function run() {
         await page.locator('[data-molsysviewer-group-panel-toggle="true"]').click();
         await page.locator('[data-molsysviewer-group-panel-tab="annotations"]').click();
         const row = page.locator('[data-molsysviewer-annotation-tag="note"]');
+        assert.match(
+            await row.locator('[data-molsysviewer-annotation-identity="note"]').textContent() || "",
+            /from elastnetmt/,
+        );
         await row.locator('[data-molsysviewer-annotation-visibility="note"]').click();
         const action = await page.evaluate(() =>
             [...((window as any).__messages || [])].reverse().find((message: any) =>

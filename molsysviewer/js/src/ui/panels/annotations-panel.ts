@@ -13,6 +13,7 @@ export type AnnotationLabelStyle = {
 export type AnnotationSummary = {
     kind: string;
     tag: string;
+    owner?: string;
     layerTag?: string;
     text: string;
     hidden: boolean;
@@ -223,8 +224,8 @@ export class AnnotationsPanel extends BasePanel {
 
         const identity = document.createElement("div");
         identity.textContent = item.broken
-            ? `${item.tag} · anchor broken`
-            : `${item.tag} · ${item.nAtoms} atom${item.nAtoms === 1 ? "" : "s"}${item.layerTag && item.layerTag !== item.tag ? ` · layer: ${item.layerTag}` : ""}`;
+            ? `${item.tag} · anchor broken${item.owner ? ` · from ${item.owner}` : ""}`
+            : `${item.tag} · ${item.nAtoms} atom${item.nAtoms === 1 ? "" : "s"}${item.layerTag && item.layerTag !== item.tag ? ` · layer: ${item.layerTag}` : ""}${item.owner ? ` · from ${item.owner}` : ""}`;
         identity.setAttribute("data-molsysviewer-annotation-identity", item.tag);
         Object.assign(identity.style, { fontSize: "10px", color: "rgba(244,244,245,0.58)" });
         row.appendChild(identity);

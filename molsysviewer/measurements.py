@@ -561,6 +561,7 @@ class MeasurementsManager:
                 {
                     "kind": kind,
                     "tag": layer_tag,
+                    "owner": None if layer is None else layer.owner,
                     "layer_tag": getattr(layer, "layer_tag", layer_tag),
                     "n_picks": len(picks) if isinstance(picks, list) else 0,
                     "picks_atom_indices": [list(item) for item in picks] if isinstance(picks, list) else [],

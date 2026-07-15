@@ -76,6 +76,7 @@ def test_annotation_manager_supports_query_and_layer_operations():
     assert view.annotations.info("notes") == {
         "kind": "label",
         "tag": "notes",
+        "owner": None,
         "layer_tag": "notes",
         "text": "Group 0",
         "style": {},

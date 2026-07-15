@@ -122,10 +122,17 @@ class LayerHandle:
         self.tag = tag
         self.kind = kind
         self.meta = meta or {}
+        current_owner = getattr(view, "_current_scene_owner", None)
+        self._owner = current_owner() if callable(current_owner) else None
         self._active = True
         self._hidden = False
         self.broken = False
         self.broken_reason: str | None = None
+
+    @property
+    def owner(self) -> str | None:
+        """Creator attribution captured when this object was created."""
+        return self._owner
 
     @property
     def shapes(self) -> Dict[str, "Shape"]:
@@ -522,6 +529,7 @@ class LayersManager(dict[str, Layer]):
         def summarize(layer: Layer) -> dict[str, Any]:
             return {
                 "tag": layer.tag,
+                "owner": layer.owner,
                 "meta": dict(layer.meta),
                 "provenance": layer.provenance,
                 "visible": not layer._hidden,  # noqa: SLF001

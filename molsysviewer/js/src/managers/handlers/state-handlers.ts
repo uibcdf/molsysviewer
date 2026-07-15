@@ -74,6 +74,7 @@ interface RegionEntry {
 
 export interface RegionSummary {
     tag: string;
+    owner?: string;
     atom_indices: number[];
     atom_count: number;
     selection?: string;
@@ -1042,6 +1043,7 @@ export class StateHandlers {
             .filter(item => typeof item?.tag === "string")
             .map(item => ({
                 tag: item.tag,
+                owner: typeof item.owner === "string" ? item.owner : undefined,
                 atom_indices: Array.isArray(item.atom_indices)
                     ? item.atom_indices.filter((value): value is number => typeof value === "number")
                     : [],

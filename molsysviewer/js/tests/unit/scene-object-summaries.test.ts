@@ -63,7 +63,7 @@ test("scene-object summaries drive panels and visibility goes through Python", a
         await controller.handleMessage({
             op: "set_layer_summaries",
             layers: [
-                { tag: "analysis", provenance: "user", hidden: true },
+                { tag: "analysis", owner: "elastnetmt", provenance: "user", hidden: true },
                 { tag: "site", provenance: "auto", hidden: false },
             ],
         });
@@ -71,6 +71,7 @@ test("scene-object summaries drive panels and visibility goes through Python", a
             op: "set_annotation_summaries",
             annotations: [{
                 tag: "note",
+                owner: "elastnetmt",
                 kind: "label",
                 text: "Binding site",
                 layer_tag: "analysis",
@@ -91,6 +92,7 @@ test("scene-object summaries drive panels and visibility goes through Python", a
                 op: "add_sphere",
                 kind: "sphere",
                 tag: "site",
+                owner: "elastnetmt",
                 layer_tag: "analysis",
                 title: "Sphere",
                 subtitle: "sphere",
@@ -109,6 +111,7 @@ test("scene-object summaries drive panels and visibility goes through Python", a
             op: "set_measurement_summaries",
             measurements: [{
                 tag: "distance",
+                owner: "elastnetmt",
                 kind: "distance",
                 n_picks: 2,
                 value: null,
@@ -131,6 +134,7 @@ test("scene-object summaries drive panels and visibility goes through Python", a
 
     assert.strictEqual(annotationRows.length, 1);
     assert.strictEqual(annotationRows[0].text, "Binding site");
+    assert.strictEqual(annotationRows[0].owner, "elastnetmt");
     assert.strictEqual(annotationRows[0].nAtoms, 2);
     assert.deepStrictEqual(annotationRows[0].style, {
         color: "#123456", size_em: 1.25, background: true, background_opacity: 0.6,
@@ -141,6 +145,7 @@ test("scene-object summaries drive panels and visibility goes through Python", a
     assert.strictEqual(annotationSettings.systemLoaded, true);
     assert.strictEqual(annotationSettings.activeSelectionCount, 2);
     assert.strictEqual(measurementRows[0].broken, true);
+    assert.strictEqual(measurementRows[0].owner, "elastnetmt");
     assert.strictEqual(measurementRows[0].brokenReason, "Anchor contains no atoms.");
     assert.deepStrictEqual(measurementRows[0].endpointLabels, ["CA (ALA 1)", "CA (ALA 2)"]);
     assert.strictEqual(measurementSettings.endpointPolicyDefault, "representative_atom");
@@ -151,6 +156,7 @@ test("scene-object summaries drive panels and visibility goes through Python", a
         op: "add_sphere",
         kind: "sphere",
         tag: "site",
+        owner: "elastnetmt",
         layerTag: "analysis",
         title: "Sphere",
         subtitle: "sphere",
@@ -167,9 +173,10 @@ test("scene-object summaries drive panels and visibility goes through Python", a
         brokenReason: undefined,
     });
     assert.deepStrictEqual(layerRows.map(item => item.tag), ["note", "distance", "site"]);
+    assert.deepStrictEqual(layerRows.map(item => item.owner), ["elastnetmt", "elastnetmt", "elastnetmt"]);
     assert.deepStrictEqual(layers, [
-        { tag: "analysis", provenance: "user", hidden: true },
-        { tag: "site", provenance: "auto", hidden: false },
+        { tag: "analysis", owner: "elastnetmt", provenance: "user", hidden: true },
+        { tag: "site", owner: undefined, provenance: "auto", hidden: false },
     ]);
 
     assert.deepStrictEqual(notifications, []);

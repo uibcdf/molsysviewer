@@ -145827,6 +145827,7 @@ var StateHandlers = class {
     };
     this.backendRegionSummaries = regions.filter((item2) => typeof item2?.tag === "string").map((item2) => ({
       tag: item2.tag,
+      owner: typeof item2.owner === "string" ? item2.owner : void 0,
       atom_indices: Array.isArray(item2.atom_indices) ? item2.atom_indices.filter((value) => typeof value === "number") : [],
       atom_count: typeof item2.atom_count === "number" ? item2.atom_count : Array.isArray(item2.atom_indices) ? item2.atom_indices.length : 0,
       selection: typeof item2.selection === "string" ? item2.selection : void 0,
@@ -149644,6 +149645,7 @@ var LayersPanel = class extends BasePanel {
       ...this.regions.map((region) => ({
         kind: "region",
         tag: region.tag,
+        owner: region.owner,
         title: region.tag,
         layerTag: region.layer,
         hidden: region.hidden,
@@ -149652,6 +149654,7 @@ var LayersPanel = class extends BasePanel {
       ...this.objects.map((object) => ({
         kind: object.kind,
         tag: object.tag,
+        owner: object.owner,
         title: object.title,
         layerTag: object.layerTag,
         hidden: !!object.hidden
@@ -149690,7 +149693,7 @@ var LayersPanel = class extends BasePanel {
     const card5 = makeSettingsCard(layer.tag);
     card5.setAttribute("data-molsysviewer-layer-card", layer.tag);
     const summary = document.createElement("div");
-    summary.textContent = `${layer.members.length} member${layer.members.length === 1 ? "" : "s"}`;
+    summary.textContent = `${layer.members.length} member${layer.members.length === 1 ? "" : "s"}${layer.owner ? ` \xB7 from ${layer.owner}` : ""}`;
     Object.assign(summary.style, { fontSize: "10px", color: "rgba(244,244,245,0.56)" });
     card5.appendChild(summary);
     const actions = document.createElement("div");
@@ -149782,7 +149785,7 @@ var LayersPanel = class extends BasePanel {
       border: "1px solid rgba(255,255,255,0.05)"
     });
     const label2 = document.createElement("div");
-    label2.textContent = `${member.title} \xB7 ${member.kind}${member.atomCount === void 0 ? "" : ` \xB7 ${member.atomCount} atoms`}`;
+    label2.textContent = `${member.title} \xB7 ${member.kind}${member.atomCount === void 0 ? "" : ` \xB7 ${member.atomCount} atoms`}${member.owner ? ` \xB7 from ${member.owner}` : ""}`;
     Object.assign(label2.style, { minWidth: "0", fontSize: "11px", color: member.hidden ? "rgba(244,244,245,0.42)" : "#f4f4f5" });
     const remove3 = makeButton("Remove", () => this.ctx.onAction("remove_member_from_layer", {
       layer: layerTag,
@@ -150646,7 +150649,7 @@ var RegionsPanel = class extends BasePanel {
     focus.style.flex = "1 1 auto";
     focus.style.textAlign = "left";
     const hint = document.createElement("span");
-    hint.textContent = `${item2.atom_count} atoms \xB7 ${item2.preset ?? item2.representation ?? "base"}`;
+    hint.textContent = `${item2.atom_count} atoms \xB7 ${item2.preset ?? item2.representation ?? "base"}${item2.owner ? ` \xB7 from ${item2.owner}` : ""}`;
     Object.assign(hint.style, {
       fontSize: "10px",
       color: "rgba(244,244,245,0.58)"
@@ -153387,7 +153390,7 @@ var MeasuresPanel = class extends BasePanel {
     }
     row2.appendChild(head);
     const identity2 = document.createElement("div");
-    identity2.textContent = `${item2.kind} \xB7 ${item2.tag}${item2.layerTag && item2.layerTag !== item2.tag ? ` \xB7 layer: ${item2.layerTag}` : ""}`;
+    identity2.textContent = `${item2.kind} \xB7 ${item2.tag}${item2.layerTag && item2.layerTag !== item2.tag ? ` \xB7 layer: ${item2.layerTag}` : ""}${item2.owner ? ` \xB7 from ${item2.owner}` : ""}`;
     Object.assign(identity2.style, { fontSize: "10px", color: "rgba(244,244,245,0.58)" });
     row2.appendChild(identity2);
     const endpoints = document.createElement("div");
@@ -153731,7 +153734,7 @@ var AnnotationsPanel = class extends BasePanel {
     }
     row2.appendChild(head);
     const identity2 = document.createElement("div");
-    identity2.textContent = item2.broken ? `${item2.tag} \xB7 anchor broken` : `${item2.tag} \xB7 ${item2.nAtoms} atom${item2.nAtoms === 1 ? "" : "s"}${item2.layerTag && item2.layerTag !== item2.tag ? ` \xB7 layer: ${item2.layerTag}` : ""}`;
+    identity2.textContent = item2.broken ? `${item2.tag} \xB7 anchor broken${item2.owner ? ` \xB7 from ${item2.owner}` : ""}` : `${item2.tag} \xB7 ${item2.nAtoms} atom${item2.nAtoms === 1 ? "" : "s"}${item2.layerTag && item2.layerTag !== item2.tag ? ` \xB7 layer: ${item2.layerTag}` : ""}${item2.owner ? ` \xB7 from ${item2.owner}` : ""}`;
     identity2.setAttribute("data-molsysviewer-annotation-identity", item2.tag);
     Object.assign(identity2.style, { fontSize: "10px", color: "rgba(244,244,245,0.58)" });
     row2.appendChild(identity2);
@@ -153982,7 +153985,7 @@ var ShapesPanel = class extends BasePanel {
     const head = document.createElement("div");
     Object.assign(head.style, { display: "flex", alignItems: "center", gap: "6px" });
     const identity2 = document.createElement("div");
-    identity2.textContent = `${item2.kind} \xB7 ${item2.tag}`;
+    identity2.textContent = `${item2.kind} \xB7 ${item2.tag}${item2.owner ? ` \xB7 from ${item2.owner}` : ""}`;
     identity2.setAttribute("data-molsysviewer-shape-identity", item2.tag);
     Object.assign(identity2.style, {
       flex: "1 1 0",
@@ -159206,6 +159209,7 @@ var MolSysViewerController = class _MolSysViewerController {
           const records = Array.isArray(msg.layers) ? msg.layers : [];
           this.layerSummaries = records.filter((item2) => typeof item2?.tag === "string" && (item2.provenance === "auto" || item2.provenance === "user")).map((item2) => ({
             tag: item2.tag,
+            owner: typeof item2.owner === "string" ? item2.owner : void 0,
             provenance: item2.provenance,
             hidden: !!item2.hidden
           }));
@@ -159219,6 +159223,7 @@ var MolSysViewerController = class _MolSysViewerController {
           this.annotationSummaries = records.filter((item2) => typeof item2?.tag === "string").map((item2) => ({
             kind: typeof item2.kind === "string" ? item2.kind : "annotation",
             tag: item2.tag,
+            owner: typeof item2.owner === "string" ? item2.owner : void 0,
             layerTag: typeof item2.layer_tag === "string" ? item2.layer_tag : void 0,
             text: typeof item2.text === "string" ? item2.text : item2.tag,
             style: item2.style && typeof item2.style === "object" ? {
@@ -159248,6 +159253,7 @@ var MolSysViewerController = class _MolSysViewerController {
           this.measurementSummaries = records.filter((item2) => typeof item2?.tag === "string").map((item2) => ({
             kind: ["distance", "angle", "dihedral"].includes(item2.kind) ? item2.kind : "measurement",
             tag: item2.tag,
+            owner: typeof item2.owner === "string" ? item2.owner : void 0,
             layerTag: typeof item2.layer_tag === "string" ? item2.layer_tag : void 0,
             picks: typeof item2.n_picks === "number" ? item2.n_picks : 0,
             hidden: !!item2.hidden,
@@ -159291,6 +159297,7 @@ var MolSysViewerController = class _MolSysViewerController {
             op: typeof item2.op === "string" ? item2.op : "",
             kind: typeof item2.kind === "string" ? item2.kind : "shape",
             tag: item2.tag,
+            owner: typeof item2.owner === "string" ? item2.owner : void 0,
             layerTag: typeof item2.layer_tag === "string" ? item2.layer_tag : void 0,
             title: typeof item2.title === "string" ? item2.title : item2.tag,
             subtitle: typeof item2.subtitle === "string" ? item2.subtitle : void 0,
@@ -159843,6 +159850,7 @@ var MolSysViewerController = class _MolSysViewerController {
       ...this.annotationSummaries.map((item2) => ({
         kind: "annotation",
         tag: item2.tag,
+        owner: item2.owner,
         title: item2.text,
         layerTag: item2.layerTag,
         hidden: item2.hidden
@@ -159850,6 +159858,7 @@ var MolSysViewerController = class _MolSysViewerController {
       ...this.measurementSummaries.map((item2) => ({
         kind: "measurement",
         tag: item2.tag,
+        owner: item2.owner,
         title: `${item2.kind[0].toUpperCase()}${item2.kind.slice(1)}`,
         layerTag: item2.layerTag,
         hidden: item2.hidden
@@ -159857,6 +159866,7 @@ var MolSysViewerController = class _MolSysViewerController {
       ...this.shapeSummaries.map((item2) => ({
         kind: "shape",
         tag: item2.tag,
+        owner: item2.owner,
         title: item2.title,
         layerTag: item2.layerTag,
         hidden: item2.hidden

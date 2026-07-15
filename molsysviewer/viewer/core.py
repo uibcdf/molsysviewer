@@ -7,6 +7,7 @@ import time
 import inspect
 import warnings
 from collections import OrderedDict
+from contextlib import contextmanager
 from typing import Any, Dict, Mapping, Sequence
 
 import molsysmt as msm
@@ -240,6 +241,7 @@ class MolSysView(
         self._measurement_history: list[dict] = []
         self._section_history: list[dict] = []
         self._selection_history: list[dict] = []
+        self._scene_owner_stack: list[str] = []
         self._scene_look: dict[str, dict] = {}
         self._player_state: dict[str, Any] = {}
         self._last_label: str | None = None
@@ -363,6 +365,27 @@ class MolSysView(
 
         # Apply viewer_mode, controls_mode, and panel_mode_style presets
         self._apply_view_modes(viewer_mode=viewer_mode, controls_mode=controls_mode, panel_mode_style=panel_mode_style)
+
+    @contextmanager
+    def attributed_to(self, owner: str):
+        """Attribute scene objects created in this context to *owner*.
+
+        Attribution is informational only. It never changes what the user may
+        rename, move, hide, or delete from the scene.
+        """
+        if not isinstance(owner, str):
+            raise TypeError("Scene object owner must be a string.")
+        normalized = owner.strip()
+        if not normalized:
+            raise ValueError("Scene object owner must be a non-empty string.")
+        self._scene_owner_stack.append(normalized)
+        try:
+            yield self
+        finally:
+            self._scene_owner_stack.pop()
+
+    def _current_scene_owner(self) -> str | None:
+        return self._scene_owner_stack[-1] if self._scene_owner_stack else None
 
     def _apply_view_modes(self, viewer_mode: str | None = None, controls_mode: str | None = None, panel_mode_style: str | None = None) -> None:
 

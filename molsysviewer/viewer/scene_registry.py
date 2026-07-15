@@ -36,6 +36,7 @@ class SceneRegistryMixin:
             {
                 "kind": record.get("kind"),
                 "tag": record.get("tag"),
+                **({"owner": record["owner"]} if record.get("owner") is not None else {}),
                 "layer_tag": record.get("layer_tag"),
                 "text": record.get("text"),
                 "style": dict(record.get("style") or {}),
@@ -69,6 +70,7 @@ class SceneRegistryMixin:
                 {
                     "kind": kind,
                     "tag": record.get("tag"),
+                    **({"owner": record["owner"]} if record.get("owner") is not None else {}),
                     "layer_tag": record.get("layer_tag"),
                     "n_picks": int(record.get("n_picks") or 0),
                     "atom_indices": atom_indices,
@@ -159,6 +161,7 @@ class SceneRegistryMixin:
                 "op": record.get("op"),
                 "kind": record.get("kind"),
                 "tag": record.get("tag"),
+                **({"owner": record["owner"]} if record.get("owner") is not None else {}),
                 "layer_tag": record.get("layer_tag"),
                 "title": title,
                 "subtitle": subtitle,
@@ -180,6 +183,7 @@ class SceneRegistryMixin:
         return [
             {
                 "tag": record.get("tag"),
+                **({"owner": record["owner"]} if record.get("owner") is not None else {}),
                 "provenance": record.get("provenance"),
                 "hidden": not bool(record.get("visible")),
             }

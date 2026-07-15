@@ -231,3 +231,21 @@ test("ShapesPanel routes every lifecycle and style affordance through the closed
         restore();
     }
 });
+
+test("ShapesPanel identifies the addon that created a shape", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement();
+        const panel = new ShapesPanel({ onAction: () => {}, setBadge: () => {} });
+        panel.mount(host as any);
+        panel.setVisible(true);
+        panel.setShapes([{ ...summary("add_sphere"), owner: "elastnetmt" }]);
+
+        assert.strictEqual(
+            byAttribute(host, "data-molsysviewer-shape-identity", "shape1").textContent,
+            "sphere · shape1 · from elastnetmt",
+        );
+    } finally {
+        restore();
+    }
+});

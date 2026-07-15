@@ -32,6 +32,8 @@ class Region:
         frame_dependent: bool | None = None,
     ) -> None:
         self._view = view
+        current_owner = getattr(view, "_current_scene_owner", None)
+        self._owner = current_owner() if callable(current_owner) else None
         self.uid = uid or view._next_region_uid()  # noqa: SLF001
         self._tag = tag
         self.selection = selection
@@ -52,6 +54,11 @@ class Region:
         # Layer membership (Contract B3, Phase 9): the tag of the layer this
         # region belongs to, or None for a region that belongs to no layer.
         self._layer: str | None = None
+
+    @property
+    def owner(self) -> str | None:
+        """Creator attribution captured when this region was created."""
+        return self._owner
 
     @property
     def atom_indices(self) -> tuple[int, ...] | None:
@@ -1394,6 +1401,7 @@ class RegionsManager(dict):
             atom_indices = list(region.atom_indices) if region.atom_indices is not None else []
             return {
                 "tag": region.tag,
+                "owner": region.owner,
                 "n_atoms": len(atom_indices),
                 "atom_indices": atom_indices,
                 "representation": region.representation,

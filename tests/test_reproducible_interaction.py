@@ -448,6 +448,7 @@ def test_context_action_hide_measurement_executes_python_bridge():
     assert view.measurements.info("dist-1") == {
         "kind": "distance",
         "tag": "dist-1",
+        "owner": None,
         "layer_tag": "dist-1",
         "n_picks": 2,
         "picks_atom_indices": [[0], [1]],
@@ -735,6 +736,7 @@ def test_full_reproducible_workflow_remaps_region_selection_label_and_measuremen
     assert view.measurements.info("picked-distance") == {
         "kind": "distance",
         "tag": "picked-distance",
+        "owner": None,
         "layer_tag": "picked-distance",
         "n_picks": 2,
         "picks_atom_indices": [[remapped_group_0_atoms[0]], [remapped_group_1_atoms[0]]],

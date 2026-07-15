@@ -148,6 +148,7 @@ class AnnotationsManager:
             return {
                 "kind": "label" if record.get("op") == "add_label" else "annotation",
                 "tag": record_tag,
+                "owner": None if layer is None else layer.owner,
                 "layer_tag": None if layer is None else getattr(layer, "layer_tag", record_tag),
                 "text": options.get("text"),
                 "style": dict(options.get("style") or {}),

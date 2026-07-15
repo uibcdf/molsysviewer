@@ -79,8 +79,9 @@ def test_layers_manager_add_preserves_kind_and_explicit_meta():
     assert layer.meta == {"owner": "test"}
     assert view.layers.records(skip_digestion=True) == [
         {
-            "tag": "analysis",
-            "meta": {"owner": "test"},
+                "tag": "analysis",
+                "owner": None,
+                "meta": {"owner": "test"},
             "provenance": "user",
             "visible": True,
             "n_members": 0,

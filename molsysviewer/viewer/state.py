@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from typing import Any
 from copy import deepcopy
+from contextlib import nullcontext
 
 from .._private.smonitor_emit import emit_suppressed_exception
 from ..regions import Region
@@ -12,6 +13,12 @@ STATE_VERSION = 2
 
 
 class StateMixin:
+    def _state_owner_context(self, record: dict):
+        owner = record.get("owner")
+        if isinstance(owner, str) and owner.strip():
+            return self.attributed_to(owner)
+        return nullcontext()
+
     def export_state(self) -> dict:
         """Serialize the current viewer overlay state to a JSON-compatible dict.
 
@@ -73,6 +80,8 @@ class StateMixin:
                 # Colour layer owned by this region, keyed by atom index.
                 "color_layer": self._color_layer_record(tag),
             }
+            if region.owner is not None:
+                record["owner"] = region.owner
             if not (region.mode == "dynamic" and Region._is_reevaluable_provenance(provenance)):  # noqa: SLF001
                 # atom_indices is authoritative for static/click-born regions. For
                 # dynamic regions it is a runtime frame cache and must be re-derived.
@@ -88,6 +97,8 @@ class StateMixin:
             record["anchor"] = {"type": "atoms", "indices": atom_indices}
             annotation = self.annotations.get(str(record.get("tag")), skip_digestion=True)
             record["hidden"] = bool(getattr(annotation, "_hidden", False))
+            if getattr(annotation, "owner", None) is not None:
+                record["owner"] = annotation.owner
             record["broken"] = bool(getattr(annotation, "broken", False))
             record["broken_reason"] = getattr(annotation, "broken_reason", None)
             annotations.append(record)
@@ -97,6 +108,8 @@ class StateMixin:
             record = deepcopy(raw)
             measurement = self.measurements.get(str(record.get("tag")), skip_digestion=True)
             record["hidden"] = bool(getattr(measurement, "_hidden", False))
+            if measurement.owner is not None:
+                record["owner"] = measurement.owner
             record["broken"] = bool(getattr(measurement, "broken", False))
             record["broken_reason"] = getattr(measurement, "broken_reason", None)
             measurements.append(record)
@@ -113,20 +126,25 @@ class StateMixin:
                 continue
             record["tag"] = tag
             record["layer_tag"] = shape.layer_tag
+            if shape.owner is not None:
+                record["owner"] = shape.owner
             record["hidden"] = bool(shape._hidden)  # noqa: SLF001
             shapes.append(record)
 
-        layers = [
-            {
+        layers = []
+        for layer in self.layers.values():
+            if layer.provenance != "user":
+                continue
+            record = {
                 "tag": layer.tag,
                 "kind": layer.kind,
                 "meta": dict(layer.meta),
                 "provenance": layer.provenance,
                 "hidden": bool(layer._hidden),  # noqa: SLF001
             }
-            for layer in self.layers.values()
-            if layer.provenance == "user"
-        ]
+            if layer.owner is not None:
+                record["owner"] = layer.owner
+            layers.append(record)
 
         active = {"atom_indices": list(self.active_selection.atom_indices)}
 
@@ -328,12 +346,13 @@ class StateMixin:
             if tag is None:
                 continue
             tag_map[str(record["tag"])] = tag
-            layer = self.layers.add(
-                tag,
-                kind=record.get("kind"),
-                meta=dict(record.get("meta") or {}),
-                skip_digestion=True,
-            )
+            with self._state_owner_context(record):
+                layer = self.layers.add(
+                    tag,
+                    kind=record.get("kind"),
+                    meta=dict(record.get("meta") or {}),
+                    skip_digestion=True,
+                )
             if record.get("hidden"):
                 hidden.append(layer.tag)
         return hidden, tag_map
@@ -365,23 +384,25 @@ class StateMixin:
                 history_options = dict(history_record.get("options") or {})
                 history_options["atom_indices"] = atom_indices
                 history_record["options"] = history_options
-                annotation = self.annotations._ensure_layer(  # noqa: SLF001
-                    tag,
-                    layer_tag=layer_tag,
-                )
+                with self._state_owner_context(record):
+                    annotation = self.annotations._ensure_layer(  # noqa: SLF001
+                        tag,
+                        layer_tag=layer_tag,
+                    )
                 annotation.broken = True
                 annotation.broken_reason = self._broken_anchor_reason(missing, empty=not atom_indices)
                 annotation._hidden = bool(record.get("hidden"))  # noqa: SLF001
                 self._annotation_history.append(history_record)
                 continue
-            annotation = self.annotations.add(
-                str(options.get("text") or ""),
-                atom_indices=atom_indices,
-                tag=tag,
-                layer_tag=layer_tag,
-                label_style=dict(options.get("style") or {}),
-                skip_digestion=True,
-            )
+            with self._state_owner_context(record):
+                annotation = self.annotations.add(
+                    str(options.get("text") or ""),
+                    atom_indices=atom_indices,
+                    tag=tag,
+                    layer_tag=layer_tag,
+                    label_style=dict(options.get("style") or {}),
+                    skip_digestion=True,
+                )
             if record.get("hidden"):
                 annotation.hide(skip_digestion=True)
 
@@ -408,10 +429,11 @@ class StateMixin:
             picks = [list(item) for item in options.get("picks_atom_indices", [])]
             missing = self._missing_anchor_indices([index for pick in picks for index in pick])
             if not picks or any(not pick for pick in picks) or missing:
-                measurement = self.measurements._ensure_layer(  # noqa: SLF001
-                    tag,
-                    layer_tag=layer_tag,
-                )
+                with self._state_owner_context(record):
+                    measurement = self.measurements._ensure_layer(  # noqa: SLF001
+                        tag,
+                        layer_tag=layer_tag,
+                    )
                 measurement.broken = True
                 measurement.broken_reason = self._broken_anchor_reason(
                     missing,
@@ -420,15 +442,16 @@ class StateMixin:
                 measurement._hidden = bool(record.get("hidden"))  # noqa: SLF001
                 self._measurement_history.append(deepcopy(record))
                 continue
-            measurement = self.measurements.add(
-                kinds[str(record["op"])],
-                *picks,
-                tag=tag,
-                layer_tag=layer_tag,
-                endpoint_policy=options.get("endpoint_policy"),
-                measurement_style=dict(options.get("style") or {}),
-                skip_digestion=True,
-            )
+            with self._state_owner_context(record):
+                measurement = self.measurements.add(
+                    kinds[str(record["op"])],
+                    *picks,
+                    tag=tag,
+                    layer_tag=layer_tag,
+                    endpoint_policy=options.get("endpoint_policy"),
+                    measurement_style=dict(options.get("style") or {}),
+                    skip_digestion=True,
+                )
             if record.get("hidden"):
                 measurement.hide(skip_digestion=True)
 
@@ -457,12 +480,13 @@ class StateMixin:
                 options["layer_tag"] = resolved_layer_tag
             msg["tag"] = tag
             msg["options"] = options
-            shape = register_shape_layer(
-                self,
-                tag,
-                layer_tag=resolved_layer_tag,
-                meta=options.get("meta"),
-            )
+            with self._state_owner_context(record):
+                shape = register_shape_layer(
+                    self,
+                    tag,
+                    layer_tag=resolved_layer_tag,
+                    meta=options.get("meta"),
+                )
             self._send(msg)
             if record.get("hidden"):
                 shape.hide(skip_digestion=True)
@@ -488,12 +512,13 @@ class StateMixin:
             tag = self._import_tag("section", str(record["tag"]), on_conflict)
             if tag is None:
                 continue
-            self.scene.add_section(
-                point=list(record.get("point") or []),
-                normal=list(record.get("normal") or []),
-                invert=bool(record.get("invert", False)),
-                tag=tag,
-            )
+            with self._state_owner_context(record):
+                self.scene.add_section(
+                    point=list(record.get("point") or []),
+                    normal=list(record.get("normal") or []),
+                    invert=bool(record.get("invert", False)),
+                    tag=tag,
+                )
 
     def _import_tag(self, domain: str, tag: str, policy: str) -> str | None:
         manager = self._tag_managers[domain]
@@ -604,27 +629,29 @@ class StateMixin:
         provenance = dict(record.get("provenance") or {"kind": "imported", "state_version": 1})
         if not isinstance(atom_indices, list):
             if Region._is_reevaluable_provenance(provenance):  # noqa: SLF001
-                probe = Region(
-                    self,
-                    str(tag),
-                    record.get("selection") if isinstance(record.get("selection"), str) else "all",
-                    atom_indices=[],
-                    uid=str(record["uid"]) if record.get("uid") is not None else None,
-                    provenance=provenance,
-                )
+                with self._state_owner_context(record):
+                    probe = Region(
+                        self,
+                        str(tag),
+                        record.get("selection") if isinstance(record.get("selection"), str) else "all",
+                        atom_indices=[],
+                        uid=str(record["uid"]) if record.get("uid") is not None else None,
+                        provenance=provenance,
+                    )
                 atom_indices = self._evaluate_region_provenance(probe) or []
             else:
                 return
         if len(atom_indices) == 0:
             return
-        region = Region(
-            self,
-            tag,
-            record.get("selection") if isinstance(record.get("selection"), str) else "all",
-            atom_indices=[int(i) for i in atom_indices],
-            uid=str(record["uid"]) if record.get("uid") is not None else None,
-            provenance=provenance,
-        )
+        with self._state_owner_context(record):
+            region = Region(
+                self,
+                tag,
+                record.get("selection") if isinstance(record.get("selection"), str) else "all",
+                atom_indices=[int(i) for i in atom_indices],
+                uid=str(record["uid"]) if record.get("uid") is not None else None,
+                provenance=provenance,
+            )
         self._regions[tag] = region
 
         representation = record.get("representation")

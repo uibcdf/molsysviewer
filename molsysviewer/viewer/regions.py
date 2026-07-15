@@ -547,6 +547,7 @@ class RegionsMixin:
             records.append(
                 {
                     "tag": tag,
+                    **({"owner": region.owner} if region.owner is not None else {}),
                     "atom_indices": atom_indices,
                     "atom_count": len(atom_indices),
                     "selection": region.selection if isinstance(region.selection, str) else None,

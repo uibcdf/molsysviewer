@@ -61,6 +61,7 @@ def test_measurements_info_and_records_report_persisted_measurements():
         {
             "kind": "distance",
             "tag": "measurement1",
+            "owner": None,
             "layer_tag": "measurement1",
             "n_picks": 2,
             "picks_atom_indices": [[0], [1]],
@@ -91,6 +92,7 @@ def test_measurements_info_reports_centroid_endpoint_policy_for_multi_atom_picks
         {
             "kind": "distance",
             "tag": "measurement1",
+            "owner": None,
             "layer_tag": "measurement1",
             "n_picks": 2,
             "picks_atom_indices": [[0], [1, 2, 3]],

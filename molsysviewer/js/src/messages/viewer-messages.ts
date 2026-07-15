@@ -474,6 +474,7 @@ export type SetRegionSummariesMessage = {
     op: "set_region_summaries";
     regions?: Array<{
         tag: string;
+        owner?: string | null;
         atom_indices?: number[];
         atom_count?: number;
         selection?: string;
@@ -496,6 +497,7 @@ export type SetLayerSummariesMessage = {
     op: "set_layer_summaries";
     layers?: Array<{
         tag: string;
+        owner?: string | null;
         provenance: "auto" | "user";
         hidden?: boolean;
     }>;
@@ -521,6 +523,7 @@ export type SetAnnotationSummariesMessage = {
     annotations?: Array<{
         kind?: string;
         tag: string;
+        owner?: string | null;
         layer_tag?: string | null;
         text?: string | null;
         style?: LabelStyle | null;
@@ -540,6 +543,7 @@ export type SetMeasurementSummariesMessage = {
     measurements?: Array<{
         kind?: string;
         tag: string;
+        owner?: string | null;
         layer_tag?: string | null;
         n_picks?: number;
         atom_indices?: number[];
@@ -575,6 +579,7 @@ export type SetShapeSummariesMessage = {
         op?: string;
         kind?: string;
         tag: string;
+        owner?: string | null;
         layer_tag?: string | null;
         title?: string;
         subtitle?: string | null;

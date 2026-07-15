@@ -6,6 +6,7 @@ import { makeButton, makeSectionHeader } from "./ui-helpers";
 export type MeasurementSummary = {
     kind: "distance" | "angle" | "dihedral" | "measurement";
     tag: string;
+    owner?: string;
     layerTag?: string;
     picks: number;
     hidden: boolean;
@@ -202,7 +203,7 @@ export class MeasuresPanel extends BasePanel {
         row.appendChild(head);
 
         const identity = document.createElement("div");
-        identity.textContent = `${item.kind} · ${item.tag}${item.layerTag && item.layerTag !== item.tag ? ` · layer: ${item.layerTag}` : ""}`;
+        identity.textContent = `${item.kind} · ${item.tag}${item.layerTag && item.layerTag !== item.tag ? ` · layer: ${item.layerTag}` : ""}${item.owner ? ` · from ${item.owner}` : ""}`;
         Object.assign(identity.style, { fontSize: "10px", color: "rgba(244,244,245,0.58)" });
         row.appendChild(identity);
         const endpoints = document.createElement("div");

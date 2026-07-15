@@ -270,6 +270,7 @@ class ShapesManager:
                 "op": op,
                 "kind": shape_kind,
                 "tag": msg_tag,
+                "owner": None if layer is None else layer.owner,
                 "layer_tag": options.get("layer_tag"),
                 "color": _hex(options.get("color", _first(options.get("colors")))),
                 "n_colors": len(options["colors"]) if isinstance(options.get("colors"), list) else None,

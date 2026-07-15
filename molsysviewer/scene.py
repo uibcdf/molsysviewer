@@ -298,7 +298,15 @@ class SceneManager:
         else:
             tag = view._tag_managers["section"].validate(tag)  # noqa: SLF001
 
-        record = {"tag": tag, "point": point_nm, "normal": normal_unit, "invert": bool(invert)}
+        record = {
+            "tag": tag,
+            "point": point_nm,
+            "normal": normal_unit,
+            "invert": bool(invert),
+        }
+        owner = view._current_scene_owner()  # noqa: SLF001
+        if owner is not None:
+            record["owner"] = owner
         view._section_history.append(record)  # noqa: SLF001
 
         section = _Section(view, tag)

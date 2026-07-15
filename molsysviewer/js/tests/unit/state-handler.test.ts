@@ -176,6 +176,7 @@ test("state handler accepts authoritative enriched region summaries", () => {
         presets: ["auto"],
         regions: [{
             tag: "site",
+            owner: "elastnetmt",
             atom_indices: [0, 1],
             atom_count: 2,
             hidden: false,
@@ -190,6 +191,7 @@ test("state handler accepts authoritative enriched region summaries", () => {
 
     assert.deepStrictEqual(handler.getRegionSummaries(), [{
         tag: "site",
+        owner: "elastnetmt",
         atom_indices: [0, 1],
         atom_count: 2,
         hidden: false,

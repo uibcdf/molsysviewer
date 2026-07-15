@@ -8,6 +8,7 @@ export type ShapeSummary = {
     op: string;
     kind: string;
     tag: string;
+    owner?: string;
     layerTag?: string;
     title: string;
     subtitle?: string;
@@ -118,7 +119,7 @@ export class ShapesPanel extends BasePanel {
         const head = document.createElement("div");
         Object.assign(head.style, { display: "flex", alignItems: "center", gap: "6px" });
         const identity = document.createElement("div");
-        identity.textContent = `${item.kind} · ${item.tag}`;
+        identity.textContent = `${item.kind} · ${item.tag}${item.owner ? ` · from ${item.owner}` : ""}`;
         identity.setAttribute("data-molsysviewer-shape-identity", item.tag);
         Object.assign(identity.style, {
             flex: "1 1 0", minWidth: "0", overflow: "hidden", textOverflow: "ellipsis",

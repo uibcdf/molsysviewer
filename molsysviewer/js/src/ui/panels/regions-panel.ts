@@ -533,7 +533,7 @@ export class RegionsPanel extends BasePanel {
         focus.style.flex = "1 1 auto";
         focus.style.textAlign = "left";
         const hint = document.createElement("span");
-        hint.textContent = `${item.atom_count} atoms · ${item.preset ?? item.representation ?? "base"}`;
+        hint.textContent = `${item.atom_count} atoms · ${item.preset ?? item.representation ?? "base"}${item.owner ? ` · from ${item.owner}` : ""}`;
         Object.assign(hint.style, {
             fontSize: "10px",
             color: "rgba(244,244,245,0.58)",

@@ -5,6 +5,7 @@ import { makeButton, makeSectionHeader, makeSettingsCard } from "./ui-helpers";
 
 export type LayerSummary = {
     tag: string;
+    owner?: string;
     provenance: "auto" | "user";
     hidden: boolean;
 };
@@ -12,6 +13,7 @@ export type LayerSummary = {
 export type LayerObjectSummary = {
     kind: "annotation" | "measurement" | "shape";
     tag: string;
+    owner?: string;
     title: string;
     layerTag?: string;
     hidden?: boolean;
@@ -21,6 +23,7 @@ type MemberKind = "region" | LayerObjectSummary["kind"];
 type LayerMember = {
     kind: MemberKind;
     tag: string;
+    owner?: string;
     title: string;
     layerTag?: string | null;
     hidden: boolean;
@@ -91,6 +94,7 @@ export class LayersPanel extends BasePanel {
             ...this.regions.map(region => ({
                 kind: "region" as const,
                 tag: region.tag,
+                owner: region.owner,
                 title: region.tag,
                 layerTag: region.layer,
                 hidden: region.hidden,
@@ -99,6 +103,7 @@ export class LayersPanel extends BasePanel {
             ...this.objects.map(object => ({
                 kind: object.kind,
                 tag: object.tag,
+                owner: object.owner,
                 title: object.title,
                 layerTag: object.layerTag,
                 hidden: !!object.hidden,
@@ -145,7 +150,7 @@ export class LayersPanel extends BasePanel {
         card.setAttribute("data-molsysviewer-layer-card", layer.tag);
 
         const summary = document.createElement("div");
-        summary.textContent = `${layer.members.length} member${layer.members.length === 1 ? "" : "s"}`;
+        summary.textContent = `${layer.members.length} member${layer.members.length === 1 ? "" : "s"}${layer.owner ? ` · from ${layer.owner}` : ""}`;
         Object.assign(summary.style, { fontSize: "10px", color: "rgba(244,244,245,0.56)" });
         card.appendChild(summary);
 
@@ -239,7 +244,7 @@ export class LayersPanel extends BasePanel {
             background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.05)",
         });
         const label = document.createElement("div");
-        label.textContent = `${member.title} · ${member.kind}${member.atomCount === undefined ? "" : ` · ${member.atomCount} atoms`}`;
+        label.textContent = `${member.title} · ${member.kind}${member.atomCount === undefined ? "" : ` · ${member.atomCount} atoms`}${member.owner ? ` · from ${member.owner}` : ""}`;
         Object.assign(label.style, { minWidth: "0", fontSize: "11px", color: member.hidden ? "rgba(244,244,245,0.42)" : "#f4f4f5" });
         const remove = makeButton("Remove", () => this.ctx.onAction("remove_member_from_layer", {
             layer: layerTag,

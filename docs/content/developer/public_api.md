@@ -55,6 +55,10 @@ edits on an existing viewer are provided by the MolSysMT addon namespace:
 
 `MolSysView` is also explicitly growing an inspection-oriented object API beyond the minimal viewer shell. Public user-facing methods now include:
 
+- `attributed_to(owner)`
+  - context manager for add-ons creating scene objects through the public API
+  - objects created inside expose the immutable informational property `owner`
+  - attribution does not grant ownership rights or prevent user operations
 - `load(..., mode="add" | "replace" | "append_structures" | "auto", ...)`
   - current default is `mode="add"`
   - first load initializes `whole` without creating an automatic region

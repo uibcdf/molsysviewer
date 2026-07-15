@@ -2173,6 +2173,7 @@ export class MolSysViewerController {
                         .filter((item: any) => typeof item?.tag === "string" && (item.provenance === "auto" || item.provenance === "user"))
                         .map((item: any) => ({
                             tag: item.tag,
+                            owner: typeof item.owner === "string" ? item.owner : undefined,
                             provenance: item.provenance,
                             hidden: !!item.hidden,
                         }));
@@ -2184,6 +2185,7 @@ export class MolSysViewerController {
                     this.annotationSummaries = records.filter((item: any) => typeof item?.tag === "string").map((item: any) => ({
                         kind: typeof item.kind === "string" ? item.kind : "annotation",
                         tag: item.tag,
+                        owner: typeof item.owner === "string" ? item.owner : undefined,
                         layerTag: typeof item.layer_tag === "string" ? item.layer_tag : undefined,
                         text: typeof item.text === "string" ? item.text : item.tag,
                         style: item.style && typeof item.style === "object" ? {
@@ -2215,6 +2217,7 @@ export class MolSysViewerController {
                     this.measurementSummaries = records.filter((item: any) => typeof item?.tag === "string").map((item: any) => ({
                         kind: ["distance", "angle", "dihedral"].includes(item.kind) ? item.kind : "measurement",
                         tag: item.tag,
+                        owner: typeof item.owner === "string" ? item.owner : undefined,
                         layerTag: typeof item.layer_tag === "string" ? item.layer_tag : undefined,
                         picks: typeof item.n_picks === "number" ? item.n_picks : 0,
                         hidden: !!item.hidden,
@@ -2259,6 +2262,7 @@ export class MolSysViewerController {
                         op: typeof item.op === "string" ? item.op : "",
                         kind: typeof item.kind === "string" ? item.kind : "shape",
                         tag: item.tag,
+                        owner: typeof item.owner === "string" ? item.owner : undefined,
                         layerTag: typeof item.layer_tag === "string" ? item.layer_tag : undefined,
                         title: typeof item.title === "string" ? item.title : item.tag,
                         subtitle: typeof item.subtitle === "string" ? item.subtitle : undefined,
@@ -2829,6 +2833,7 @@ export class MolSysViewerController {
             ...this.annotationSummaries.map((item) => ({
                 kind: "annotation" as const,
                 tag: item.tag,
+                owner: item.owner,
                 title: item.text,
                 layerTag: item.layerTag,
                 hidden: item.hidden,
@@ -2836,6 +2841,7 @@ export class MolSysViewerController {
             ...this.measurementSummaries.map((item) => ({
                 kind: "measurement" as const,
                 tag: item.tag,
+                owner: item.owner,
                 title: `${item.kind[0].toUpperCase()}${item.kind.slice(1)}`,
                 layerTag: item.layerTag,
                 hidden: item.hidden,
@@ -2843,6 +2849,7 @@ export class MolSysViewerController {
             ...this.shapeSummaries.map((item) => ({
                 kind: "shape" as const,
                 tag: item.tag,
+                owner: item.owner,
                 title: item.title,
                 layerTag: item.layerTag,
                 hidden: item.hidden,
