@@ -55,6 +55,9 @@ edits on an existing viewer are provided by the MolSysMT addon namespace:
 
 `MolSysView` is also explicitly growing an inspection-oriented object API beyond the minimal viewer shell. Public user-facing methods now include:
 
+- `close()`
+  - explicitly releases the frontend widget and its owned resources
+  - views can also be used as context managers to close them on block exit
 - `attributed_to(owner)`
   - context manager for add-ons creating scene objects through the public API
   - objects created inside expose the immutable informational property `owner`

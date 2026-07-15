@@ -6,6 +6,7 @@ import re
 import time
 import inspect
 import warnings
+import weakref
 from collections import OrderedDict
 from contextlib import contextmanager
 from typing import Any, Dict, Mapping, Sequence
@@ -175,6 +176,46 @@ class MolSysView(
         """IPython/Jupyter display hook (delegates to the underlying widget)."""
         return self.widget._repr_mimebundle_(include=include, exclude=exclude)
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
+        return False
+
+    def close(self) -> None:
+        """Release the frontend transport and widgets owned by this view.
+
+        Closing is explicit because widget registries retain open views even
+        after user code drops its last reference. The operation is idempotent.
+        """
+        self._unmount_addon_panel()
+        self.addons._close_runtime()  # noqa: SLF001
+
+        widget = self.widget
+        layout = getattr(widget, "layout", None)
+        callback = getattr(self, "_widget_message_callback", None)
+        on_msg = getattr(widget, "on_msg", None)
+        if callback is not None and callable(on_msg):
+            try:
+                on_msg(callback, remove=True)
+            except TypeError:
+                # Non-Jupyter transports own their callback cleanup in close().
+                pass
+        self._widget_message_callback = None
+        if isinstance(widget, MolSysViewerWidget):
+            widget._molsysviewer_view_ref = None
+
+        close_widget = getattr(widget, "close", None)
+        if callable(close_widget):
+            close_widget()
+
+        # ipywidgets registers Layout independently and Widget.close() does not
+        # close it. MolSysView owns its widget layout, so release it as well.
+        close_layout = getattr(layout, "close", None)
+        if layout is not widget and callable(close_layout):
+            close_layout()
+
     @signal(tags=["viewer", "init"])
     @dep_digest('anywidget')
     @dep_digest('molsysmt')
@@ -193,6 +234,8 @@ class MolSysView(
         # implement the small surface the view uses: send/on_msg, config attrs and
         # a `layout`. Defaults to the AnyWidget for Jupyter.
         self.widget = transport if transport is not None else MolSysViewerWidget()
+        if isinstance(self.widget, MolSysViewerWidget):
+            self.widget._molsysviewer_view_ref = weakref.ref(self)
         self._debug_js = bool(debug_js) if debug_js is not None else False
         self.widget.debug_js = self._debug_js
         self._js_logs: list[dict[str, str]] = []
@@ -326,7 +369,8 @@ class MolSysView(
         def _handle_msg(widget, content, buffers):  # type: ignore[override]
             self._handle_frontend_event(content)
 
-        self.widget.on_msg(_handle_msg)
+        self._widget_message_callback = _handle_msg
+        self.widget.on_msg(self._widget_message_callback)
 
         self.molecular_system = None
         self.selection = None

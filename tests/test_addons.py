@@ -932,11 +932,38 @@ def test_view_addons_run_lifecycle_hooks_on_init_toggle_and_reset():
     view.addons.reset()
     assert events == ["enable", "disable", "enable"]
 
+    view.close()
+    assert events == ["enable", "disable", "enable", "disable"]
+    assert view._addon_marker == "disabled"
+
     addons.disable("lifecycle-addon")
     another_view = MolSysView()
-    assert events == ["enable", "disable", "enable"]
+    assert events == ["enable", "disable", "enable", "disable"]
     assert another_view.addons.enabled() == []
     addons.clear()
+
+
+def test_widget_teardown_deactivates_the_view_addon_runtime():
+    import conftest
+
+    events: list[str] = []
+    addons.register(
+        AddonSpec(name="teardown-addon"),
+        lifecycle=addons_module.AddonLifecycleSpec(
+            on_enable=lambda view: events.append("enable"),
+            on_disable=lambda view: events.append("disable"),
+        ),
+    )
+    fixture = conftest._close_molsysviewer_widgets_after_each_test.__wrapped__
+    teardown = fixture()
+    next(teardown)
+    view = MolSysView()
+
+    with pytest.raises(StopIteration):
+        next(teardown)
+
+    assert events == ["enable", "disable"]
+    view.close()
 
 
 
@@ -1433,6 +1460,23 @@ def test_addon_panel_widget_lifecycle_hooks():
 
     assert panel.mounted_views == ["view-a"]
     assert panel.unmounted_views == ["view-a"]
+
+
+def test_unmounting_an_addon_panel_closes_its_widget_and_layout():
+    from ipywidgets.widgets.widget import _instances
+
+    view = MolSysView()
+    panel = _EchoPanel(view=view)
+    panel_id = panel.model_id
+    layout_id = panel.layout.model_id
+    view._active_panel_widget = ("addon", "panel", panel)  # noqa: SLF001
+
+    view._unmount_addon_panel()  # noqa: SLF001
+
+    assert panel.unmounted_views == [view]
+    assert panel._view is None  # noqa: SLF001
+    assert panel_id not in _instances
+    assert layout_id not in _instances
 
 
 def test_addon_panel_spec_widget_class_field():

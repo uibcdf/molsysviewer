@@ -423,6 +423,14 @@ class PanelModeMixin:
             widget.on_unmount(self)
         except Exception:
             pass
+        finally:
+            layout = getattr(widget, "layout", None)
+            widget.close()
+            if layout is not widget:
+                close_layout = getattr(layout, "close", None)
+                if callable(close_layout):
+                    close_layout()
+            widget._view = None
 
 
 PanelModeMixin.__module__ = "molsysviewer.viewer"
@@ -432,4 +440,3 @@ for _name, _value in PanelModeMixin.__dict__.items():
             _value.__module__ = "molsysviewer.viewer"
         except Exception:
             pass
-

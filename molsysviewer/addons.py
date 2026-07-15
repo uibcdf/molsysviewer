@@ -1109,6 +1109,12 @@ class ViewAddonsManager(_AddonAggregationMixin):
         self._notify_view_runtime = True
         self._notify_runtime_summary()
 
+    def _close_runtime(self) -> None:
+        """Deactivate every add-on bound to a closing view."""
+        for name in sorted(self._active_runtime):
+            self._deactivate_addon(name)
+        self._notify_view_runtime = False
+
     def _effective_enabled(self) -> list[str]:
         names = []
         for name in self._host.available(skip_digestion=True):

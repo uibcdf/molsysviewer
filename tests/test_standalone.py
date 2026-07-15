@@ -926,6 +926,17 @@ def test_qt_view_channel_delivers_bridge_events_to_on_msg():
     assert received == [{"event": "interaction_click", "kind": "structure"}]
 
 
+def test_qt_view_channel_close_only_detaches_its_own_event_sink():
+    bridge = _FakeBridge()
+    channel = QtViewChannel(bridge)
+    replacement_sink = lambda event: event
+    bridge.event_sink = replacement_sink
+
+    channel.close()
+
+    assert bridge.event_sink is replacement_sink
+
+
 def test_molsysview_accepts_qt_transport_and_routes_events():
     from molsysviewer import MolSysView
 

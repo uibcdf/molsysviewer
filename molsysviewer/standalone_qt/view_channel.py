@@ -52,7 +52,8 @@ class QtViewChannel:
         self._model_module_version = ""
 
         # Deliver the bridge's product events to on_msg subscribers.
-        bridge.event_sink = self._dispatch_event
+        self._event_sink = self._dispatch_event
+        bridge.event_sink = self._event_sink
 
     # -- outgoing (Python -> JS) ---------------------------------------------
 
@@ -78,6 +79,12 @@ class QtViewChannel:
 
     def on_msg(self, callback: Callable[..., Any]) -> None:
         self._msg_callbacks.append(callback)
+
+    def close(self) -> None:
+        """Detach callbacks and the bridge event sink owned by this channel."""
+        self._msg_callbacks.clear()
+        if getattr(self._bridge, "event_sink", None) is self._event_sink:
+            self._bridge.event_sink = None
 
     def _dispatch_event(self, event: dict) -> None:
         # AnyWidget's on_msg signature is (widget, content, buffers).
