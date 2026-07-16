@@ -129,6 +129,7 @@ def create_standalone_qt0_window(
             reset_action.triggered.connect(lambda *_: view.camera.reset())
             menu.exec(QCursor.pos())
         except Exception:
+            # The optional native menu must not break interaction dispatch; Q5 tracks diagnostics.
             pass
 
     view.on_context(_qt_context_menu)

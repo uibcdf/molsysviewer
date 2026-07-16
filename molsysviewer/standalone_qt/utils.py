@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 from pathlib import Path
 import shutil
@@ -12,6 +13,9 @@ from urllib.parse import parse_qs, urlparse
 
 from ..demo import demo
 from ..standalone import _resolve_view, build_standalone0_html
+
+
+logger = logging.getLogger(__name__)
 
 QT_IMPORT_ERROR = (
     "PySide6_uibcdf with Qt WebEngine is required for the standalone Qt prototype. "
@@ -103,6 +107,7 @@ def _load_qt_shell_state() -> dict[str, Any]:
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except Exception:
+        # Shell state is optional; malformed or unreadable state starts a clean shell.
         return {"recent_sources": [], "last_source": None, "window_size": None}
     if not isinstance(data, dict):
         return {"recent_sources": [], "last_source": None, "window_size": None}
@@ -140,11 +145,13 @@ def _capture_window_size(window) -> dict[str, int] | None:
         try:
             width = int(window.width())
         except Exception:
+            # Some Qt/fake windows expose a failing getter; the tuple fallback below remains available.
             width = None
     if hasattr(window, "height") and callable(window.height):
         try:
             height = int(window.height())
         except Exception:
+            # Some Qt/fake windows expose a failing getter; the tuple fallback below remains available.
             height = None
     size = getattr(window, "size", None)
     if (width is None or height is None) and isinstance(size, tuple) and len(size) == 2:
@@ -285,6 +292,7 @@ def _persist_shell_state(current_state: dict[str, Any], window=None) -> None:
     try:
         _get_helper("_save_qt_shell_state")(current_state)
     except Exception:
+        # Persistence is best-effort and must not interrupt closing or loading the viewer.
         return
 
 
@@ -367,7 +375,7 @@ class QtMessageBridge:
             try:
                 self.event_sink(event)
             except Exception:
-                pass
+                logger.exception("Qt view event failed: %r", event)
 
     def _make_entry(self, message: dict[str, Any]) -> dict[str, Any]:
         self.next_id += 1
@@ -595,6 +603,7 @@ def _decode_qt_bridge_event(url: str) -> dict[str, Any] | None:
     try:
         event = json.loads(payload_values[0])
     except Exception:
+        # Invalid custom-scheme input is rejected at this untrusted transport boundary.
         return None
     if not isinstance(event, dict) or not isinstance(event.get("event"), str):
         return None

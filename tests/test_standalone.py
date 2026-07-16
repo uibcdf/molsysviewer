@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import pytest
 import sys
@@ -997,6 +998,32 @@ def test_qt_bridge_forwards_product_events_but_not_transport():
     assert "interaction_hover" in names
     assert "message_ack" not in names
     assert "structure_ready" not in names
+
+
+def test_qt_bridge_reports_view_event_failure_without_raising(caplog):
+    class FakeQTimer:
+        @staticmethod
+        def singleShot(_t, _cb):
+            pass
+
+    def failing_sink(_event):
+        raise RuntimeError("boom")
+
+    bridge = standalone_qt.QtMessageBridge(
+        object(), FakeQTimer, event_sink=failing_sink
+    )
+    event = {"event": "interaction_click", "kind": "structure"}
+
+    with caplog.at_level(logging.ERROR, logger="molsysviewer.standalone_qt.utils"):
+        bridge.handle_frontend_event(event)
+
+    record = next(
+        record for record in caplog.records if "Qt view event failed" in record.message
+    )
+    assert record.exc_info is not None
+    assert record.exc_info[0] is RuntimeError
+    assert str(record.exc_info[1]) == "boom"
+    assert repr(event) in record.message
 
 
 # Tier-1 CI smoke: the real Qt JS->Python event transport WITHOUT Mol*/WebGL.
