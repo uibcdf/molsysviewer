@@ -638,6 +638,62 @@ def test_qt_message_bridge_materializes_large_payload_refs(tmp_path, monkeypatch
     assert payload_id not in bridge.payloads
 
 
+@pytest.mark.parametrize("failure_mode", ["missing_page", "rejected"])
+def test_qt_bridge_does_not_hang_or_spin_when_delivery_keeps_failing(failure_mode):
+    class FakeQTimer:
+        callbacks = []
+
+        @classmethod
+        def singleShot(cls, _timeout_ms, callback):
+            cls.callbacks.append(callback)
+
+    class RejectingPage:
+        def runJavaScript(self, _script, callback=None):
+            if callback is not None:
+                callback({"accepted": False})
+
+    class FakeWebView:
+        def page(self):
+            if failure_mode == "missing_page":
+                return None
+            return RejectingPage()
+
+    statuses = []
+    bridge = standalone_qt.QtMessageBridge(
+        FakeWebView(), FakeQTimer, status_callback=statuses.append
+    )
+    bridge.ready = True
+
+    bridge.send({"op": "set_panel_mode", "mode": "studio"})
+
+    max_callbacks = bridge.MAX_DELIVERY_ATTEMPTS * 3
+    for _ in range(max_callbacks):
+        if not FakeQTimer.callbacks:
+            break
+        FakeQTimer.callbacks.pop(0)()
+    else:
+        pytest.fail("the Qt delivery retry pump did not reach a terminal state")
+
+    assert FakeQTimer.callbacks == []
+    assert bridge.queue == []
+    assert bridge.inflight is None
+    assert bridge.failed_deliveries == [
+        {
+            "id": "qt-1",
+            "generation": 0,
+            "op": "set_panel_mode",
+            "attempts": bridge.MAX_DELIVERY_ATTEMPTS,
+            "reason": (
+                "web view page is unavailable"
+                if failure_mode == "missing_page"
+                else "frontend message handler is not ready"
+            ),
+        }
+    ]
+    assert any("delivery delayed" in status for status in statuses)
+    assert "delivery failed after 5 attempts" in statuses[-1]
+
+
 def test_qt_startup_status_for_empty_host(monkeypatch):
     messages = []
     standalone_qt._show_startup_status(type("FakeWindow", (), {

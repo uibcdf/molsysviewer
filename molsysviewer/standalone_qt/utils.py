@@ -299,6 +299,10 @@ def _persist_shell_state(current_state: dict[str, Any], window=None) -> None:
 class QtMessageBridge:
     """Runtime-only queue for Qt -> JS viewer messages."""
 
+    MAX_DELIVERY_ATTEMPTS = 5
+    RETRY_BASE_DELAY_MS = 50
+    RETRY_MAX_DELAY_MS = 1000
+
     def __init__(self, webview, QTimer, *, status_callback=None, event_sink=None) -> None:
         self.webview = webview
         self.QTimer = QTimer
@@ -313,6 +317,7 @@ class QtMessageBridge:
         self.inflight: dict[str, Any] | None = None
         self.next_id = 0
         self.generation = 0
+        self.failed_deliveries: list[dict[str, Any]] = []
         self.payload_ref_threshold_bytes = int(os.environ.get("MOLSYSVIEWER_QT_PAYLOAD_REF_THRESHOLD", "1000000"))
         # Large payloads are served in-memory over a custom URL scheme (see
         # MolSysViewerPayloadSchemeHandler) instead of a temp file + fetch(file://),
@@ -394,6 +399,7 @@ class QtMessageBridge:
             "wait_event": wait_event,
             "timeout_s": timeout_s,
             "coalesce_key": self._coalesce_key(msg),
+            "delivery_attempts": 0,
         }
 
     def _materialize_payload_ref(self, message: dict[str, Any]) -> str | None:
@@ -436,10 +442,10 @@ class QtMessageBridge:
         self._run_javascript(entry)
 
     def _run_javascript(self, entry: dict[str, Any]) -> None:
+        entry["delivery_attempts"] = int(entry.get("delivery_attempts", 0)) + 1
         page = self.webview.page() if hasattr(self.webview, "page") else None
         if page is None or not hasattr(page, "runJavaScript"):
-            self.inflight = None
-            self.queue.insert(0, entry)
+            self._retry_or_fail(entry, "web view page is unavailable")
             return
         payload = json.dumps(entry["message"], separators=(",", ":"))
         script = (
@@ -459,20 +465,46 @@ class QtMessageBridge:
             if accepted:
                 return
             if self.inflight is entry:
-                self.inflight = None
-                self.ready = False
-                self.queue.insert(0, entry)
-                self._retry_later()
+                self._retry_or_fail(entry, "frontend message handler is not ready")
 
         try:
-            page.runJavaScript(script, _callback)
-        except TypeError:
-            page.runJavaScript(script)
+            try:
+                page.runJavaScript(script, _callback)
+            except TypeError:
+                page.runJavaScript(script)
         except Exception as exc:
+            self._retry_or_fail(entry, f"runJavaScript failed: {exc}")
+
+    def _retry_or_fail(self, entry: dict[str, Any], reason: str) -> None:
+        if self.inflight is entry:
             self.inflight = None
-            self.queue.insert(0, entry)
-            self._show_status(f"Could not send viewer message: {exc}")
-            self._retry_later()
+        attempts = int(entry.get("delivery_attempts", 0))
+        op = str(entry["message"].get("op", "unknown"))
+        if attempts >= self.MAX_DELIVERY_ATTEMPTS:
+            self._cleanup_entry(entry)
+            failure = {
+                "id": entry.get("id"),
+                "generation": entry.get("generation"),
+                "op": op,
+                "attempts": attempts,
+                "reason": reason,
+            }
+            self.failed_deliveries.append(failure)
+            self._show_status(
+                f"Viewer message delivery failed after {attempts} attempts: {op} ({reason})"
+            )
+            self._flush()
+            return
+        self.queue.insert(0, entry)
+        self._show_status(
+            f"Viewer message delivery delayed (attempt {attempts}/{self.MAX_DELIVERY_ATTEMPTS}): "
+            f"{op} ({reason})"
+        )
+        delay_ms = min(
+            self.RETRY_MAX_DELAY_MS,
+            self.RETRY_BASE_DELAY_MS * (2 ** max(0, attempts - 1)),
+        )
+        self._retry_later(delay_ms)
 
     def _handle_message_event(self, event: dict[str, Any]) -> None:
         entry = self.inflight
@@ -509,8 +541,8 @@ class QtMessageBridge:
 
         self.QTimer.singleShot(timeout_ms, _check_timeout)
 
-    def _retry_later(self) -> None:
-        self.QTimer.singleShot(50, self._flush)
+    def _retry_later(self, delay_ms: int = RETRY_BASE_DELAY_MS) -> None:
+        self.QTimer.singleShot(delay_ms, self._flush)
 
     def _show_status(self, message: str) -> None:
         if callable(self.status_callback):
