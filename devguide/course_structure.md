@@ -90,7 +90,7 @@ This document outlines a 23-module comprehensive curriculum designed to take a u
 ### Module 14: Add-ons & Extensibility
 - **Objective:** Expand the viewer's capabilities with specialized tools.
 - **Topics:** Discovering and enabling add-ons, Add-on Workspaces.
-- **Exercise:** Enable the `elasnetmt` add-on and explore its specialized panel.
+- **Exercise:** Enable the `elastnetmt` add-on and explore its specialized panel.
 
 ### Module 15: Professional Export
 - **Objective:** Generate high-quality outputs for papers and web.
