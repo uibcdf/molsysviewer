@@ -62,6 +62,47 @@ Current CI note:
 
 ---
 
+## Post-`0.19.0` — Saneamiento y endurecimiento hacia `1.0.0` (2026-07)
+
+Work done after the `0.19.0` checkpoint, executing the "bug resolution" gate (#15) as a
+systematic audit rather than only through dogfooding. Each item was verified by mutation testing.
+
+### Core runtime and contracts — the scene-objects block (9 phases)
+Closed the conceptual confusion the Fase D gate warned about. Established normative contracts
+(`devguide/scene_contracts.md`): identity is `(domain, tag)` not `tag` (T); every scene domain has
+one canonical manager surface (S0); Python is the single source of truth (S1); the GUI acts only
+through the public API (S2); restore rebuilds the live model, not a zombie (S5); undo with coalescing
+(S6); a damaged anchor is a *state*, never a silent deletion nor a stale number (S7). The four Studio
+subpanels (Measures, Annotations, Shapes, Layers) were built on that base. **This resolved the core
+runtime's "conceptual confusion", which the roadmap Fase D required for `1.0.0`.**
+
+### Product tightening — real defects removed before dogfooding could hit them
+- **Public output follows the configured default unit** (PyUnitWizard `standardize`), instead of
+  hardcoding ångströms — factory default is nm; a user-selected standard is respected end to end.
+- **Clipping-plane sections persist** end to end and are managed from Studio → Viewport.
+- **Widget/view lifecycle leak fixed** — a discarded `MolSysView` no longer leaks through the global
+  ipywidgets registry; `MolSysView.close()` and context-manager cleanup added.
+- **Scene-object `owner`** records add-on provenance (Fase B credibility).
+- **E2E reliability**: the browser E2E suites now fail loudly when the browser cannot start, instead
+  of passing in false green.
+
+### Fase E closed for real — standalone Qt audit + Q1–Q5
+The roadmap already marked *"host-side error handling no longer silent ✓"*. A full audit
+(`devguide/standalone_qt_audit_2026_07.md`) found it was **not** true and closed the five gaps:
+Q1 swallowed view-event exceptions, Q2 a bridge that could stall or retry forever, Q3 unvalidated
+malformed events, Q4 a delivery guarantee the docs promised but the code did not keep, Q5 silent
+persistence failures. **That ✓ is now genuinely true.** The only Fase E item still open is the
+real-window Qt/WebGL validation, which requires a real display/GPU.
+
+### Ecosystem
+The **ElasNetMT add-on was renamed to ElastNetMT** across both repositories.
+
+**Reading:** development toward `1.0.0` is essentially complete. What remains is not feature work —
+it is the real-window Qt/WebGL validation, scientific dogfooding (#14), and the end-user distribution
+story, all of which are Diego's gate, plus the onboarding README (#12).
+
+---
+
 ## → Tag 1.0.0
 Released when the `0.19.0` dogfooding and validation produce no new surprises.
 

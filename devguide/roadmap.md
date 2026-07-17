@@ -304,6 +304,12 @@ What remains open:
 
 Current reading:
 
+- a full standalone Qt audit (2026-07, `devguide/standalone_qt_audit_2026_07.md`)
+  verified the host error paths and closed five gaps (Q1–Q5): swallowed view-event
+  exceptions, a bridge that could stall or retry without bound, unvalidated malformed
+  events, a delivery guarantee the docs did not keep, and silent persistence failures.
+  The "host-side error handling no longer silent ✓" line above was aspirational when
+  written; after Q1–Q5 it is genuinely true.
 - Phase E's backend implementation is materially complete, but the host cannot
   be called closed until the real Qt/WebGL validation passes
 - the remaining standalone uncertainty is now QA/distribution, not the basic
@@ -357,6 +363,14 @@ should grow over time as additional project-level principles become clear.
     `view.pause()`, `view.set_play_speed(fps)`, `view.current_structure_id`.
   - Workspace switch toast notification in TS (`ViewerController.showToast`):
     shown when `selectWorkspace` changes the active workspace.
+  - **Scene-objects contracts formalized** (2026-07, `devguide/scene_contracts.md`),
+    verified by mutation testing: identity is `(domain, tag)` (T); one canonical
+    manager surface across the five scene domains (S0); Python is the single source
+    of truth pushed to the frontend (S1); the GUI acts only through the public API
+    (S2); restore rebuilds the live model, never a zombie (S5); undo with coalescing
+    (S6); a damaged anchor is a state, never a silent deletion nor a stale number
+    (S7); a scene object owns its visual realisation (V). The four Studio subpanels
+    (Measures, Annotations, Shapes, Layers) are built on this base.
 
 - `Ongoing maintenance` (no feature gaps)
   - `argdigest` covers main public wrappers; broader shape/detail coverage partial.
