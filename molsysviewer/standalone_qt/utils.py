@@ -107,7 +107,11 @@ def _load_qt_shell_state() -> dict[str, Any]:
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except Exception:
-        # Shell state is optional; malformed or unreadable state starts a clean shell.
+        logger.warning(
+            "Could not load Qt shell state from %s; starting with a clean shell",
+            path,
+            exc_info=True,
+        )
         return {"recent_sources": [], "last_source": None, "window_size": None}
     if not isinstance(data, dict):
         return {"recent_sources": [], "last_source": None, "window_size": None}
@@ -292,7 +296,10 @@ def _persist_shell_state(current_state: dict[str, Any], window=None) -> None:
     try:
         _get_helper("_save_qt_shell_state")(current_state)
     except Exception:
-        # Persistence is best-effort and must not interrupt closing or loading the viewer.
+        logger.warning(
+            "Could not save Qt shell state; session metadata was not persisted",
+            exc_info=True,
+        )
         return
 
 

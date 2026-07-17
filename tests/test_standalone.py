@@ -577,6 +577,54 @@ def test_load_qt_shell_state_restores_recent_sources(tmp_path, monkeypatch):
     assert state["last_source"]["loaded_label"] == "1crn"
 
 
+def test_load_qt_shell_state_warns_for_corrupt_file_but_not_missing_file(
+    tmp_path, monkeypatch, caplog
+):
+    state_path = tmp_path / "standalone_qt0_state.json"
+    monkeypatch.setattr(
+        "molsysviewer.standalone_qt._qt_shell_state_path", lambda: state_path
+    )
+    clean_state = {
+        "recent_sources": [],
+        "last_source": None,
+        "window_size": None,
+    }
+
+    with caplog.at_level(logging.WARNING, logger="molsysviewer.standalone_qt.utils"):
+        assert standalone_qt._load_qt_shell_state() == clean_state
+    assert caplog.records == []
+
+    state_path.write_text("not json", encoding="utf-8")
+    with caplog.at_level(logging.WARNING, logger="molsysviewer.standalone_qt.utils"):
+        assert standalone_qt._load_qt_shell_state() == clean_state
+
+    record = next(
+        record for record in caplog.records if "Could not load Qt shell state" in record.message
+    )
+    assert str(state_path) in record.message
+    assert record.exc_info is not None
+    assert record.exc_info[0] is json.JSONDecodeError
+
+
+def test_persist_qt_shell_state_reports_save_failure(monkeypatch, caplog):
+    def fail_to_save(_state):
+        raise PermissionError("read-only state directory")
+
+    monkeypatch.setattr(
+        "molsysviewer.standalone_qt._save_qt_shell_state", fail_to_save
+    )
+
+    with caplog.at_level(logging.WARNING, logger="molsysviewer.standalone_qt.utils"):
+        standalone_qt._persist_shell_state({})
+
+    record = next(
+        record for record in caplog.records if "Could not save Qt shell state" in record.message
+    )
+    assert record.exc_info is not None
+    assert record.exc_info[0] is PermissionError
+    assert str(record.exc_info[1]) == "read-only state directory"
+
+
 def test_qt_message_bridge_materializes_large_payload_refs(tmp_path, monkeypatch):
     monkeypatch.setenv("MOLSYSVIEWER_QT_PAYLOAD_REF_THRESHOLD", "1")
 
