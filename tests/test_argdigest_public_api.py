@@ -139,6 +139,30 @@ def test_core_public_api_does_not_emit_missing_digester_warnings(tmp_path):
     assert _missing_digester_warnings(records) == []
 
 
+def test_color_operations_do_not_emit_missing_digester_warnings():
+    # 181L is a crystal structure, so b_factor is present for the attribute path.
+    view = demo["181L"]
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+    view._handle_frontend_event({"event": "ready"})  # noqa: SLF001
+
+    n_atoms = int(view.molsys.get_n_atoms())
+    region = view.regions.add(atom_indices=[0, 1, 2], tag="frag", skip_digestion=True)
+
+    with warnings.catch_warnings(record=True) as records:
+        warnings.simplefilter("always")
+        # explicit range + inferred range, both replace flags, all four surfaces
+        view.whole.set_color_by_attribute("b_factor", value_range=[0.0, 50.0], replace=True)
+        view.whole.set_color_by_attribute("b_factor", value_range=None, replace=False)
+        view.whole.set_color_by_values(
+            [i / n_atoms for i in range(n_atoms)], value_range=[0.0, 1.0], replace=True
+        )
+        region.set_color_by_attribute("b_factor", value_range=[0.0, 50.0], replace=True)
+        region.set_color_by_attribute("b_factor", value_range=None, replace=False)
+        region.set_color_by_values([0.1, 0.5, 0.9], value_range=[0.0, 1.0], replace=False)
+
+    assert _missing_digester_warnings(records) == []
+
+
 def test_shape_helpers_do_not_emit_missing_digester_warnings():
     view = demo["dialanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
