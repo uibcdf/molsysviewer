@@ -296,6 +296,14 @@ def _persist_shell_state(current_state: dict[str, Any], window=None) -> None:
         return
 
 
+def _frontend_event_validation_error(event: Any) -> str | None:
+    if not isinstance(event, dict):
+        return "expected an object"
+    if not isinstance(event.get("event"), str) or not event["event"]:
+        return "expected a non-empty string 'event' field"
+    return None
+
+
 class QtMessageBridge:
     """Runtime-only queue for Qt -> JS viewer messages."""
 
@@ -350,13 +358,20 @@ class QtMessageBridge:
         self.queue.append(entry)
         self._flush()
 
-    def handle_frontend_event(self, event: dict[str, Any]) -> None:
+    def handle_frontend_event(self, event: Any) -> bool:
+        validation_error = _frontend_event_validation_error(event)
+        if validation_error is not None:
+            return self.reject_frontend_event(
+                event,
+                source="Qt bridge",
+                reason=validation_error,
+            )
         name = event.get("event")
         if name == "ready":
             self.ready = True
             self._flush()
             self._forward_to_view(event)  # the view also needs "ready"
-            return
+            return True
         if name in {"message_ack", "message_error", "structure_ready", "render_ready"}:
             # Pure-transport events: handled here, not forwarded to the view.
             # Progress feedback for the current generation, so the user is never
@@ -367,13 +382,26 @@ class QtMessageBridge:
                 elif name == "render_ready":
                     self._show_status("Ready.")
             self._handle_message_event(event)
-            return
+            return True
         if name == "frontend_error":
             self._show_status(f"Frontend error: {event.get('error', 'unknown error')}")
-            return
+            return True
         # Any other frontend event (interaction_*, movie_*, region_ack, ...) is a
         # product event for the persistent MolSysView.
         self._forward_to_view(event)
+        return True
+
+    def reject_frontend_event(
+        self,
+        event: Any,
+        *,
+        source: str,
+        reason: str,
+    ) -> bool:
+        message = f"Rejected malformed frontend event from {source}: {reason}"
+        logger.warning("%s; payload=%r", message, event)
+        self._show_status(message)
+        return False
 
     def _forward_to_view(self, event: dict[str, Any]) -> None:
         if callable(self.event_sink):
@@ -613,12 +641,28 @@ def _make_event_scheme_handler(QWebEngineUrlSchemeHandler, QBuffer, QByteArray, 
         def requestStarted(self, job):  # noqa: N802
             url = job.requestUrl()
             event = _decode_qt_bridge_event(url.toString() if hasattr(url, "toString") else str(url))
-            if event is not None:
-                bridge = getattr(webview, "_molsysviewer_qt_bridge", None)
-                if bridge is not None:
-                    bridge.handle_frontend_event(event)
+            bridge = getattr(webview, "_molsysviewer_qt_bridge", None)
+            accepted = False
+            error = "invalid_event"
+            if event is None:
+                if bridge is not None and hasattr(bridge, "reject_frontend_event"):
+                    bridge.reject_frontend_event(
+                        None,
+                        source="Qt event scheme",
+                        reason="URL payload is not a valid frontend event",
+                    )
+                else:
+                    logger.warning("Rejected malformed Qt event scheme payload")
+            elif bridge is None:
+                error = "bridge_unavailable"
+                logger.warning("Rejected Qt frontend event because the bridge is unavailable")
+            else:
+                accepted = bridge.handle_frontend_event(event) is not False
             buffer = QBuffer(job)
-            buffer.setData(QByteArray(b'{"ok":true}'))
+            response = {"ok": accepted}
+            if not accepted:
+                response["error"] = error
+            buffer.setData(QByteArray(json.dumps(response, separators=(",", ":")).encode("utf-8")))
             buffer.open(QBuffer.OpenModeFlag.ReadOnly if hasattr(QBuffer, "OpenModeFlag") else QBuffer.ReadOnly)
             job.reply(QByteArray(b"application/json"), buffer)
 
@@ -637,7 +681,7 @@ def _decode_qt_bridge_event(url: str) -> dict[str, Any] | None:
     except Exception:
         # Invalid custom-scheme input is rejected at this untrusted transport boundary.
         return None
-    if not isinstance(event, dict) or not isinstance(event.get("event"), str):
+    if _frontend_event_validation_error(event) is not None:
         return None
     return event
 

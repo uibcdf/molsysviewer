@@ -25,8 +25,10 @@ format**. The Qt shell must never be driven by regenerating HTML and reloading
 - The frontend initializes and emits `ready` over the event scheme.
 - `QtMessageBridge` (runtime-only) queues messages with ids, a rebuild
   `generation`, ack/error/`structure_ready`/`render_ready`, per-op timeouts,
-  coalescing and retry — so no message is silently dropped and stale-generation
-  acks are ignored.
+  coalescing and bounded retry. Once the frontend is ready, delivery failures
+  are retried up to five times with backoff; exhausting that budget discards the
+  message with a status-bar report and a compact runtime record. An ack timeout
+  is terminal and reported but is not retried. Stale-generation acks are ignored.
 - A load runs `clear_all` + the reproducible scene messages under a new
   generation; the shell and its WebGL context stay alive.
 - `_message_history` remains the single reproducible source of truth; ids,

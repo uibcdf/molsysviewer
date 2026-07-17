@@ -14,7 +14,13 @@ so loads, rebuilds, interactions and movie export all work like in Jupyter.
 
 from __future__ import annotations
 
+import logging
 from typing import Any, Callable
+
+from .utils import _frontend_event_validation_error
+
+
+logger = logging.getLogger(__name__)
 
 
 class _Layout:
@@ -86,10 +92,27 @@ class QtViewChannel:
         if getattr(self._bridge, "event_sink", None) is self._event_sink:
             self._bridge.event_sink = None
 
-    def _dispatch_event(self, event: dict) -> None:
+    def _dispatch_event(self, event: Any) -> bool:
+        validation_error = _frontend_event_validation_error(event)
+        if validation_error is not None:
+            reject = getattr(self._bridge, "reject_frontend_event", None)
+            if callable(reject):
+                reject(
+                    event,
+                    source="Qt view channel",
+                    reason=validation_error,
+                )
+            else:
+                logger.warning(
+                    "Rejected malformed Qt view-channel event: %s; payload=%r",
+                    validation_error,
+                    event,
+                )
+            return False
         # AnyWidget's on_msg signature is (widget, content, buffers).
         for callback in list(self._msg_callbacks):
             callback(self, event, [])
+        return True
 
     # -- Jupyter display protocol (unused in Qt; benign stubs) ---------------
 

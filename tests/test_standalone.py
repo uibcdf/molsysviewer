@@ -888,6 +888,7 @@ def test_event_scheme_handler_delivers_event_to_bridge():
 
         def handle_frontend_event(self, event):
             self.events.append(event)
+            return True
 
     class FakeWebView:
         pass
@@ -907,6 +908,99 @@ def test_event_scheme_handler_delivers_event_to_bridge():
     assert content_type.data == b"application/json"
     assert buffer._data.data == b'{"ok":true}'
     assert buffer.opened is True
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        "%22not%20a%20dict%22",
+        "%7B%7D",
+    ],
+)
+def test_malformed_qt_bridge_event_is_rejected_without_false_ok(payload, caplog):
+    class FakeByteArray:
+        def __init__(self, data=b""):
+            self.data = bytes(data)
+
+    class FakeBuffer:
+        class OpenModeFlag:
+            ReadOnly = 1
+
+        def __init__(self, parent=None):
+            self._data = None
+
+        def setData(self, value):  # noqa: N802
+            self._data = value
+
+        def open(self, _mode):
+            pass
+
+    class FakeHandlerBase:
+        pass
+
+    class FakeJob:
+        def __init__(self):
+            self.replied = None
+
+        def requestUrl(self):  # noqa: N802
+            return type(
+                "FakeUrl",
+                (),
+                {"toString": lambda _self: f"molsysviewer://event?payload={payload}"},
+            )()
+
+        def reply(self, content_type, buffer):
+            self.replied = (content_type, buffer)
+
+    class FakeQTimer:
+        @staticmethod
+        def singleShot(_timeout_ms, _callback):
+            pass
+
+    statuses = []
+    bridge = standalone_qt.QtMessageBridge(
+        object(), FakeQTimer, status_callback=statuses.append
+    )
+    webview = type("FakeWebView", (), {})()
+    webview._molsysviewer_qt_bridge = bridge
+    handler = standalone_qt._make_event_scheme_handler(
+        FakeHandlerBase, FakeBuffer, FakeByteArray, webview
+    )
+
+    with caplog.at_level(logging.WARNING, logger="molsysviewer.standalone_qt.utils"):
+        assert bridge.handle_frontend_event(json.loads(
+            '"not a dict"' if payload.startswith("%22") else "{}"
+        )) is False
+        job = FakeJob()
+        handler.requestStarted(job)
+
+    content_type, buffer = job.replied
+    assert content_type.data == b"application/json"
+    assert buffer._data.data == b'{"ok":false,"error":"invalid_event"}'
+    assert any("Rejected malformed frontend event" in status for status in statuses)
+    assert any(record.levelno == logging.WARNING for record in caplog.records)
+
+
+def test_qt_view_channel_rejects_malformed_event_before_callbacks():
+    class RecordingBridge(_FakeBridge):
+        def __init__(self):
+            super().__init__()
+            self.rejections = []
+
+        def reject_frontend_event(self, event, *, source, reason):
+            self.rejections.append((event, source, reason))
+            return False
+
+    bridge = RecordingBridge()
+    channel = QtViewChannel(bridge)
+    received = []
+    channel.on_msg(lambda _widget, content, _buffers: received.append(content))
+
+    assert channel._dispatch_event({}) is False  # noqa: SLF001
+    assert received == []
+    assert bridge.rejections == [
+        ({}, "Qt view channel", "expected a non-empty string 'event' field")
+    ]
 
 
 def test_qt_bridge_reports_load_progress():
