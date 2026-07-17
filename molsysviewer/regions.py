@@ -971,7 +971,13 @@ class Region:
         if requested == "charge":
             resolved = "partial_charge" if "partial_charge" in available else "formal_charge"
         if resolved not in available:
-            raise ValueError(f"Attribute {attribute!r} is not available in the loaded molecular system.")
+            recognized = set(msm.get_attributes(molsys, include_none=True, output_type="list", skip_digestion=True))
+            if resolved in recognized:
+                raise ValueError(
+                    f"Attribute {attribute!r} has no values in the loaded system "
+                    "(it may not have been loaded with this data)."
+                )
+            raise ValueError(f"Attribute {attribute!r} is not a recognized atom attribute.")
 
         scoped_indices = self._scoped_indices_for_element(element)
         if scoped_indices is None:

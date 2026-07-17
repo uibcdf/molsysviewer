@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .viewer.core import MolSysView
 from dataclasses import dataclass
-from importlib.resources import files
 
 from .new_view import new_view
 
@@ -14,6 +13,7 @@ from .new_view import new_view
 @dataclass(frozen=True)
 class _DemoSpec:
     key: str
+    system_name: str
     resource_filename: str
 
 
@@ -28,7 +28,12 @@ class DemoCatalog(Mapping[str, "MolSysView"]):
     Notes
     -----
     - Each access returns a **fresh** `MolSysView` instance (no shared state).
-    - Demo systems are shipped inside the package under `molsysviewer.data.h5msm`.
+    - Demo systems are sourced from MolSysMT's own system registry
+      (``molsysmt.systems``), the ecosystem's single source of truth for
+      molecular data. MolSysViewer does not vendor its own copies, so the
+      demos never drift out of sync with MolSysMT (e.g. crystal structures
+      keep their per-atom ``b_factor`` / ``occupancy``). If a demo needs a
+      system MolSysMT does not provide, request it from the MolSysMT team.
     """
 
     def __init__(self, specs: list[_DemoSpec]):
@@ -36,7 +41,9 @@ class DemoCatalog(Mapping[str, "MolSysView"]):
 
     def __getitem__(self, key: str):
         spec = self._specs[key]
-        demo_system = files("molsysviewer.data.h5msm").joinpath(spec.resource_filename)
+        import molsysmt as msm
+
+        demo_system = msm.systems[spec.system_name][spec.resource_filename]
         return new_view(demo_system)
 
     def __iter__(self) -> Iterator[str]:
@@ -52,14 +59,17 @@ class DemoCatalog(Mapping[str, "MolSysView"]):
 
 demo = DemoCatalog(
     [
-        _DemoSpec("dialanine", "alanine_dipeptide.h5msm"),
-        _DemoSpec("1TCD", "1TCD.h5msm"),
-        _DemoSpec("181L", "181L.h5msm"),
-        _DemoSpec("pentalanine", "traj_pentalanine.h5msm"),
-        _DemoSpec("chicken_villin_HP35", "traj_chicken_villin_HP35_solvated.h5msm"),
+        _DemoSpec("dialanine", "alanine dipeptide", "alanine_dipeptide.h5msm"),
+        _DemoSpec("1TCD", "TcTIM", "1tcd.pdb"),
+        _DemoSpec("181L", "T4 lysozyme L99A", "181l.pdb"),
+        _DemoSpec("pentalanine", "pentalanine", "traj_pentalanine.h5msm"),
+        _DemoSpec(
+            "chicken_villin_HP35",
+            "chicken villin HP35",
+            "traj_chicken_villin_HP35_solvated.h5msm",
+        ),
     ]
 )
 
 
 __all__ = ["DemoCatalog", "demo"]
-

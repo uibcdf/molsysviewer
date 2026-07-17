@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from importlib.resources import files
 import warnings
 
 import pytest
@@ -15,7 +14,7 @@ from molsysviewer.loaders.load_molsysmt import load_from_molsysmt
 def test_demo_region_hide():
     """Smoke-test: create a region and hide it without errors."""
 
-    demo_system = files("molsysviewer.data.h5msm").joinpath("1TCD.h5msm")
+    demo_system = viewer.systems.TCD_1.path
     view = viewer.new_view(demo_system, debug_js=True)
     # Avoid real frontend traffic; we only need the calls to not fail.
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
@@ -374,7 +373,7 @@ def test_region_set_color_by_attribute_rejects_missing_attribute():
     view = demo["dialanine"]
     region = view.regions.add(atom_indices=[0, 1, 2], tag="missing", skip_digestion=True)
 
-    with pytest.raises(ValueError, match="not available"):
+    with pytest.raises(ValueError, match="has no values"):
         region.set_color_by_attribute("b_factor", skip_digestion=True)
 
 

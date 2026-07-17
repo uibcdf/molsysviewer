@@ -1,22 +1,28 @@
 from __future__ import annotations
 
-from importlib.resources import files
 from pathlib import Path
 
 
 class _SystemEntry:
-    """Provides path access to a built-in demo system file."""
+    """Provides path access to a built-in demo system file.
 
-    def __init__(self, resource_filename: str) -> None:
+    The file is resolved from MolSysMT's own system registry
+    (``molsysmt.systems``), so MolSysViewer does not vendor its own copy.
+    """
+
+    def __init__(self, system_name: str, resource_filename: str) -> None:
+        self._system_name = system_name
         self._resource_filename = resource_filename
 
     @property
     def path(self) -> Path:
-        """Absolute path to the system file."""
-        return Path(str(files("molsysviewer.data.h5msm").joinpath(self._resource_filename)))
+        """Absolute path to the system file inside MolSysMT."""
+        import molsysmt as msm
+
+        return Path(str(msm.systems[self._system_name][self._resource_filename]))
 
     def __repr__(self) -> str:
-        return f"_SystemEntry({self._resource_filename!r})"
+        return f"_SystemEntry({self._system_name!r}, {self._resource_filename!r})"
 
 
 class _SystemsCatalog:
@@ -30,11 +36,13 @@ class _SystemsCatalog:
     >>> view.load(path)
     """
 
-    dialanine = _SystemEntry("alanine_dipeptide.h5msm")
-    pentalanine = _SystemEntry("traj_pentalanine.h5msm")
-    chicken_villin_HP35 = _SystemEntry("traj_chicken_villin_HP35_solvated.h5msm")
-    TCD_1 = _SystemEntry("1TCD.h5msm")
-    L_181 = _SystemEntry("181L.h5msm")
+    dialanine = _SystemEntry("alanine dipeptide", "alanine_dipeptide.h5msm")
+    pentalanine = _SystemEntry("pentalanine", "traj_pentalanine.h5msm")
+    chicken_villin_HP35 = _SystemEntry(
+        "chicken villin HP35", "traj_chicken_villin_HP35_solvated.h5msm"
+    )
+    TCD_1 = _SystemEntry("TcTIM", "1tcd.pdb")
+    L_181 = _SystemEntry("T4 lysozyme L99A", "181l.pdb")
 
     def __repr__(self) -> str:
         names = [k for k in dir(self) if not k.startswith("_")]

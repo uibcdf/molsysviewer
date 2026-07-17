@@ -283,7 +283,13 @@ class Whole:
         requested = str(attribute).strip()
         resolved = requested if requested in available else requested.lower()
         if resolved not in available:
-            raise ValueError(f"Attribute {attribute!r} is not available in the loaded molecular system.")
+            recognized = set(msm.get_attributes(molsys, include_none=True, output_type="list", skip_digestion=True))
+            if resolved in recognized:
+                raise ValueError(
+                    f"Attribute {attribute!r} has no values in the loaded system "
+                    "(it may not have been loaded with this data)."
+                )
+            raise ValueError(f"Attribute {attribute!r} is not a recognized atom attribute.")
 
         effective_structure_indices = (
             [int(self._view.current_structure_index)]  # noqa: SLF001

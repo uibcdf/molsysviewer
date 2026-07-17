@@ -9,7 +9,7 @@ from smonitor import get_manager
 from molsysviewer.demo import demo
 
 def benchmark_loading(iterations: int = 5) -> dict[str, dict[str, float]]:
-    """Measure structure and topology loading speed from demo h5msm files."""
+    """Measure structure and topology loading speed from demo systems."""
     results = {}
     keys = ["dialanine", "1TCD", "chicken_villin_HP35"]
     
@@ -17,7 +17,7 @@ def benchmark_loading(iterations: int = 5) -> dict[str, dict[str, float]]:
         timings = []
         for _ in range(iterations):
             start = time.perf_counter()
-            # demo access always returns a fresh view loaded from h5msm file
+            # demo access always returns a fresh view loaded from a MolSysMT system
             view = demo[key]
             # Ensure it actually loaded
             assert view._molsys is not None

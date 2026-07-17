@@ -76,7 +76,6 @@ include = ["molsysviewer", "molsysviewer.*"]
 
 [tool.setuptools.package-data]
 "molsysviewer" = ["viewer.js"]
-"molsysviewer.data" = ["**"]
 
 [tool.ruff]
 line-length = 120
