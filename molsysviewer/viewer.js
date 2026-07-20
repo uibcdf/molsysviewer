@@ -146611,6 +146611,26 @@ var StateHandlers = class {
 };
 
 // src/managers/handlers/trajectory-handlers.ts
+function normalizePlaybackMode(mode) {
+  if (mode === "once") return "once";
+  if (mode === "palindrome" || mode === "ping-pong") return "palindrome";
+  return "loop";
+}
+function nextPlaybackStep(current2, delta2, frameCount, mode) {
+  if (frameCount < 1) return { index: 0, delta: delta2, stop: true };
+  const raw = current2 + delta2;
+  if (raw >= 0 && raw < frameCount) return { index: raw, delta: delta2, stop: false };
+  if (mode === "once") {
+    return { index: delta2 > 0 ? frameCount - 1 : 0, delta: delta2, stop: true };
+  }
+  if (mode === "palindrome") {
+    const bounced = -delta2;
+    const index = Math.min(frameCount - 1, Math.max(0, current2 + bounced));
+    return { index, delta: bounced, stop: false };
+  }
+  const wrapped = (raw % frameCount + frameCount) % frameCount;
+  return { index: wrapped, delta: delta2, stop: false };
+}
 var TrajectoryHandlers = class {
   constructor(plugin, context2) {
     this.plugin = plugin;
@@ -146714,11 +146734,15 @@ var TrajectoryHandlers = class {
     const fps = options.fps ?? 30;
     const step = Math.max(1, Math.floor(options.step ?? 1));
     const direction = options.direction ?? "forward";
+    const mode = normalizePlaybackMode(options.mode);
     await this.stopTrajectoryPlayback();
     const intervalMs = Math.max(1, Math.floor(1e3 / Math.max(fps, 1)));
-    const delta2 = direction === "backward" ? -step : step;
+    let delta2 = direction === "backward" ? -step : step;
     this.playbackTimer = setInterval(() => {
-      void this.stepTrajectory(delta2);
+      const next = nextPlaybackStep(this.getCurrentFrameIndex(), delta2, frameCount, mode);
+      delta2 = next.delta;
+      void this.setTrajectoryFrame(next.index);
+      if (next.stop) void this.stopTrajectoryPlayback();
     }, intervalMs);
     if (this.trajectoryPoll) clearInterval(this.trajectoryPoll);
     this.trajectoryPoll = setInterval(() => {

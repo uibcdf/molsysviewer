@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from typing import Any
 
+import numpy as np
 from smonitor import signal
 
 from molsysviewer.colors import colors as _color_registry
@@ -10,6 +11,11 @@ from molsysviewer.colors import normalize_color
 
 
 def _is_sequence(value: Any) -> bool:
+    # NumPy arrays are not `collections.abc.Sequence`, but per-frame data in this
+    # ecosystem (RMSD, radius of gyration, an energy term, coordinates out of
+    # MolSysMT) arrives as arrays, so rejecting them forced a manual `.tolist()`.
+    if isinstance(value, np.ndarray):
+        return value.ndim >= 1
     return isinstance(value, Sequence) and not isinstance(value, (str, bytes))
 
 

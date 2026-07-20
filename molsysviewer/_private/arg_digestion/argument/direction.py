@@ -1,17 +1,30 @@
 import numpy as np
 from molsysviewer._pyunitwizard import puw
 from ...exceptions import ArgumentError
+from ..helpers import normalize_viewer_caller
+
+# Playback entry points, where `direction` is a travel sense along the
+# structures rather than a 3D vector. `MolSysView.play()` normalizes to
+# `molsysviewer.viewer.play`, which the player-only prefix did not cover, so the
+# public call fell through to the vector branch and was rejected.
+_PLAYBACK_CALLERS = {
+    "molsysviewer.viewer.play",
+    "molsysviewer.viewer.MolSysView.play",
+}
+
 
 def digest_direction(direction, caller=None):
 
-    if caller is not None and caller.startswith("molsysviewer.player."):
+    caller = normalize_viewer_caller(caller)
+
+    if caller is not None and (caller.startswith("molsysviewer.player.") or caller in _PLAYBACK_CALLERS):
         if direction is None:
             return None
         if isinstance(direction, str) and direction in ("forward", "backward"):
             return direction
         raise ArgumentError('direction', value=direction, caller=caller, message=None)
 
-    if caller.endswith('move_away'):
+    if isinstance(caller, str) and caller.endswith('move_away'):
         if direction is None:
             return direction
 

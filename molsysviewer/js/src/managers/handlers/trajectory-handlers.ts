@@ -27,6 +27,45 @@ export interface TrajectoryState {
     expectedFrameCount?: number;
 }
 
+/** Playback modes. Python's public API says "ping-pong"; the frontend has always
+ * called it "palindrome", and the mismatch meant the mode was silently dropped. */
+export type PlaybackMode = "loop" | "palindrome" | "once";
+
+export function normalizePlaybackMode(mode: string | undefined | null): PlaybackMode {
+    if (mode === "once") return "once";
+    if (mode === "palindrome" || mode === "ping-pong") return "palindrome";
+    return "loop";
+}
+
+/**
+ * Next frame and travel delta for one playback tick.
+ *
+ * - `loop` wraps around, which is what Mol*'s `advance` did on its own.
+ * - `once` clamps to the end frame and reports that playback should stop.
+ * - `palindrome` reverses direction when it reaches either end.
+ */
+export function nextPlaybackStep(
+    current: number,
+    delta: number,
+    frameCount: number,
+    mode: PlaybackMode,
+): { index: number; delta: number; stop: boolean } {
+    if (frameCount < 1) return { index: 0, delta, stop: true };
+    const raw = current + delta;
+    if (raw >= 0 && raw < frameCount) return { index: raw, delta, stop: false };
+
+    if (mode === "once") {
+        return { index: delta > 0 ? frameCount - 1 : 0, delta, stop: true };
+    }
+    if (mode === "palindrome") {
+        const bounced = -delta;
+        const index = Math.min(frameCount - 1, Math.max(0, current + bounced));
+        return { index, delta: bounced, stop: false };
+    }
+    const wrapped = ((raw % frameCount) + frameCount) % frameCount;
+    return { index: wrapped, delta, stop: false };
+}
+
 export class TrajectoryHandlers {
     private playbackTimer?: ReturnType<typeof setInterval>;
     private trajectoryPoll?: ReturnType<typeof setInterval>;
@@ -131,7 +170,7 @@ export class TrajectoryHandlers {
         }
     }
 
-    async playTrajectory(options: { fps?: number; mode?: "loop" | "palindrome" | "once"; direction?: "forward" | "backward"; step?: number } = {}) {
+    async playTrajectory(options: { fps?: number; mode?: PlaybackMode; direction?: "forward" | "backward"; step?: number } = {}) {
         const frameCount = this.getFrameCount();
         if (frameCount < 2) {
             console.warn("[MolSysViewer] playTrajectory ignored: trajectory has less than 2 frames");
@@ -141,15 +180,22 @@ export class TrajectoryHandlers {
         const fps = options.fps ?? 30;
         const step = Math.max(1, Math.floor(options.step ?? 1));
         const direction = options.direction ?? "forward";
+        const mode = normalizePlaybackMode(options.mode);
 
         // Stop any existing animation/timer first
         await this.stopTrajectoryPlayback();
 
         const intervalMs = Math.max(1, Math.floor(1000 / Math.max(fps, 1)));
-        const delta = direction === "backward" ? -step : step;
+        let delta = direction === "backward" ? -step : step;
 
+        // `mode` used to be accepted and then ignored: playback always advanced
+        // with Mol*'s wrap-around, so "loop" worked by accident while "once"
+        // never stopped and "palindrome" never bounced.
         this.playbackTimer = setInterval(() => {
-            void this.stepTrajectory(delta);
+            const next = nextPlaybackStep(this.getCurrentFrameIndex(), delta, frameCount, mode);
+            delta = next.delta;
+            void this.setTrajectoryFrame(next.index);
+            if (next.stop) void this.stopTrajectoryPlayback();
         }, intervalMs);
 
         if (this.trajectoryPoll) clearInterval(this.trajectoryPoll);
