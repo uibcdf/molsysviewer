@@ -176,10 +176,10 @@ def test_styles_structural_scheme_catalogs_expose_curated_public_options():
         "chain_default",
         "element_cpk",
         "entity_default",
+        "group_name",
         "illustrative_default",
         "molecule_type",
         "physicochemical",
-        "residue_name",
         "secondary_structure_default",
     ]
     assert view.styles.structural_size_schemes() == [
@@ -189,7 +189,7 @@ def test_styles_structural_scheme_catalogs_expose_curated_public_options():
     ]
     color_records = view.styles.structural_color_scheme_records()
     size_records = view.styles.structural_size_scheme_records()
-    assert any(record["tag"] == "residue_name" for record in color_records)
+    assert any(record["tag"] == "group_name" for record in color_records)
     assert any(record["tag"] == "physical" for record in size_records)
 
 

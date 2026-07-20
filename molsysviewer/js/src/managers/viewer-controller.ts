@@ -2027,6 +2027,12 @@ export class MolSysViewerController {
             return;
         }
 
+        // Start watching camera input as early as possible. Establishing it lazily
+        // inside a representation change was too late: a viewpoint the user set
+        // before that first change went unnoticed and was discarded on the next
+        // rebuild. This is idempotent and returns immediately once tracking is on.
+        this.state?.ensureCameraInputTracking?.();
+
         try {
             const isLoaderOp = msg.op === "load_structure_from_string" ||
                                msg.op === "load_pdb_string" ||
@@ -2386,7 +2392,12 @@ export class MolSysViewerController {
                     break;
                 case "zoom": await this.state.zoom(msg); break;
                 case "zoom_to_position": await this.scene.zoomToPosition(msg as any); break;
-                case "set_camera_snapshot": await this.setCameraSnapshot((msg as any).snapshot, (msg as any).duration_ms); break;
+                case "set_camera_snapshot":
+                    // An explicitly applied snapshot is a deliberate viewpoint and
+                    // must survive a later representation rebuild.
+                    this.state.markIntentionalViewpoint();
+                    await this.setCameraSnapshot((msg as any).snapshot, (msg as any).duration_ms);
+                    break;
                 case "clear_active_selection":
                     this.activeSelection.clear();
                     break;

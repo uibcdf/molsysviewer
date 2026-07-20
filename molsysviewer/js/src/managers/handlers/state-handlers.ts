@@ -117,6 +117,15 @@ export class StateHandlers {
     private readonly regionIndex = new Map<string, RegionEntry>();
     private backendRegionSummaries: RegionSummary[] | null = null;
     private wholeSummary: WholeSummary | null = null;
+    /** Last applied global representation, used to detect color-only changes. */
+    private lastWholeRepresentation: SetWholeRepresentationMessage | null = null;
+    /**
+     * True once a deliberate viewpoint exists: the user orbited/zoomed/panned,
+     * a camera snapshot was applied, or the view was focused on a selection.
+     * Only then is there something worth preserving across a rebuild.
+     */
+    private intentionalViewpoint = false;
+    private cameraInputTracked = false;
     private readonly layerMeta = new Map<string, { kind?: string; meta?: Record<string, unknown> }>();
     private readonly tagIndex = new Map<string, Set<StateTransform.Ref>>();
     private readonly globalReprs = new Set<StateTransform.Ref>();
@@ -178,6 +187,9 @@ export class StateHandlers {
                 element_cpk: "element-symbol",
                 secondary_structure_default: "secondary-structure",
                 chain_default: "chain-id",
+                group_name: "residue-name",
+                // tolerated spelling; Python resolves to group_name, this keeps
+                // older stored configs working
                 residue_name: "residue-name",
                 molecule_type: "molecule-type",
                 entity_default: "entity-id",
@@ -1226,13 +1238,126 @@ export class StateHandlers {
         }
     }
 
+    /**
+     * Start tracking whether the user has adjusted the camera. Lazy because
+     * `canvas3d` does not exist yet when the handlers are constructed; it is
+     * retried until the canvas is available.
+     */
+    /**
+     * Record that a deliberate viewpoint now exists (camera snapshot applied,
+     * view focused on a selection, …), so it survives a representation rebuild.
+     */
+    markIntentionalViewpoint(): void {
+        this.intentionalViewpoint = true;
+    }
+
+    ensureCameraInputTracking(): void {
+        if (this.cameraInputTracked) return;
+        const input = (this.plugin as any).canvas3d?.input;
+        if (!input) return;
+        this.cameraInputTracked = true;
+        const mark = () => { this.intentionalViewpoint = true; };
+        input.drag?.subscribe?.(mark);
+        input.wheel?.subscribe?.(mark);
+        input.pinch?.subscribe?.(mark);
+    }
+
+    /**
+     * Whether a captured camera snapshot is worth restoring after a
+     * representation swap.
+     *
+     * Mol*'s `createDefaultSnapshot()` uses `radius: 0`, and any real focus sets
+     * `radius = max(r, 0.01)`, so a zero radius means the camera has never framed
+     * anything. Restoring that pins the camera to a meaningless view: the
+     * structure renders but stays out of sight. It happens when representations
+     * are applied before the widget is displayed (replayed through
+     * `initial_messages`), where there is no user view to preserve anyway — Mol*
+     * should frame the structure instead.
+     */
+    private shouldRestoreCameraSnapshot(snapshot: { radius?: number } | undefined): boolean {
+        return !!snapshot && typeof snapshot.radius === "number" && snapshot.radius > 0;
+    }
+
+    /** Params compared to decide whether only the color changed. */
+    private representationParamsFingerprint(params?: Record<string, unknown>): string {
+        const rest: Record<string, unknown> = {};
+        for (const [key, value] of Object.entries(params ?? {})) {
+            if (key === "color_scheme" || key === "molstar_color_theme") continue;
+            rest[key] = value;
+        }
+        return JSON.stringify(Object.keys(rest).sort().map(key => [key, rest[key]]));
+    }
+
+    /**
+     * True when this message keeps the same representation, preset and params,
+     * and differs only in the color scheme. Rebuilding the representation for a
+     * pure recolor is what made the camera jump and toggled the visibility of
+     * atoms the representation cannot draw (e.g. waters under a cartoon).
+     */
+    private isColorOnlyRepresentationChange(msg: SetWholeRepresentationMessage): boolean {
+        const last = this.lastWholeRepresentation;
+        if (!last) return false;
+        if (msg.user_preset || last.user_preset) return false;
+        if ((msg.representation ?? null) !== (last.representation ?? null)) return false;
+        if ((msg.preset ?? null) !== (last.preset ?? null)) return false;
+        return (
+            this.representationParamsFingerprint(msg.params) ===
+            this.representationParamsFingerprint(last.params)
+        );
+    }
+
+    /**
+     * Update the color theme of the existing global representations in place.
+     * Returns false when it cannot be done, so the caller falls back to the full
+     * rebuild.
+     */
+    private async applyStructuralColorInPlace(msg: SetWholeRepresentationMessage): Promise<boolean> {
+        const refs = this.currentGlobalRepresentationRefs();
+        if (refs.length === 0) return false;
+
+        const structuralColor = this.getStructuralColorThemeFromParams(
+            msg.representation ?? undefined,
+            msg.params,
+        );
+        if (!structuralColor.color) return false;
+
+        const nextTheme = {
+            name: structuralColor.color,
+            params: structuralColor.colorParams ?? {},
+        };
+
+        const update = this.plugin.state.data.build();
+        for (const ref of refs) {
+            update.to(ref).update(
+                StateTransforms.Representation.StructureRepresentation3D,
+                (params: any) => {
+                    // With per-atom colors active the theme is msv-per-atom; the
+                    // structural scheme is its base, so replace the base and keep
+                    // the per-atom overlay.
+                    params.colorTheme = params.colorTheme?.name === MsvPerAtomColorThemeName
+                        ? { name: MsvPerAtomColorThemeName, params: { base: nextTheme } }
+                        : nextTheme;
+                },
+            );
+        }
+        await update.commit({ doNotUpdateCurrent: true });
+        await this.repaintInheritedRegions();
+        return true;
+    }
+
     async setWholeRepresentation(msg: SetWholeRepresentationMessage) {
         const structureRef = this.callbacks.getLoadedStructure()?.structure;
         if (!structureRef) return;
 
+        if (this.isColorOnlyRepresentationChange(msg) && await this.applyStructuralColorInPlace(msg)) {
+            this.lastWholeRepresentation = { ...msg };
+            return;
+        }
+
         // Preserve camera state: removing then re-adding representations can trigger
         // Mol*-internal camera adjustments that leave the orbit minRadius too small,
         // preventing the user from zooming back out.
+        this.ensureCameraInputTracking();
         const cameraSnap = this.plugin.canvas3d?.camera.getSnapshot?.();
 
         const structure = this.callbacks.getStructure();
@@ -1352,8 +1477,19 @@ export class StateHandlers {
         }
         await this.handleShowHideGlobal(false);
 
-        // Restore camera position after the representation swap.
-        if (cameraSnap) {
+        // Restore the camera after the representation swap, but only if the user
+        // actually has a viewpoint worth preserving.
+        //
+        // Restoring unconditionally was wrong: when operations arrive before Mol*
+        // has framed the freshly loaded structure (configuring before displaying
+        // the widget, or simply running notebook cells faster than the render),
+        // the snapshot taken here predates that framing, and writing it back
+        // overwrites it — the structure renders but stays out of view, and only a
+        // manual "Reset view" recovers it.
+        //
+        // If the user has not touched the camera there is nothing to preserve, so
+        // Mol* is left free to frame the structure.
+        if (cameraSnap && this.intentionalViewpoint && this.shouldRestoreCameraSnapshot(cameraSnap)) {
             try {
                 await PluginCommands.Camera.SetSnapshot(this.plugin, {
                     snapshot: cameraSnap,
@@ -1366,6 +1502,7 @@ export class StateHandlers {
         await this.repaintInheritedRegions();
         this.transparencyInitialized = false;
         await this.applyComposedTransparency();
+        this.lastWholeRepresentation = { ...msg };
     }
 
     async showWhole(msg: ShowWholeMessage) {
@@ -1395,6 +1532,7 @@ export class StateHandlers {
         if (!selection) return;
 
         const loci = StructureSelection.toLociWithSourceUnits(selection);
+        this.intentionalViewpoint = true;
         this.plugin.managers.camera.focusLoci(loci, {
             durationMs: msg.options?.duration_ms,
             extraRadius: msg.options?.extra_radius,

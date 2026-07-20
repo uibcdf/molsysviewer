@@ -145095,6 +145095,15 @@ var StateHandlers = class {
     this.regionIndex = /* @__PURE__ */ new Map();
     this.backendRegionSummaries = null;
     this.wholeSummary = null;
+    /** Last applied global representation, used to detect color-only changes. */
+    this.lastWholeRepresentation = null;
+    /**
+     * True once a deliberate viewpoint exists: the user orbited/zoomed/panned,
+     * a camera snapshot was applied, or the view was focused on a selection.
+     * Only then is there something worth preserving across a rebuild.
+     */
+    this.intentionalViewpoint = false;
+    this.cameraInputTracked = false;
     this.layerMeta = /* @__PURE__ */ new Map();
     this.tagIndex = /* @__PURE__ */ new Map();
     this.globalReprs = /* @__PURE__ */ new Set();
@@ -145140,6 +145149,9 @@ var StateHandlers = class {
         element_cpk: "element-symbol",
         secondary_structure_default: "secondary-structure",
         chain_default: "chain-id",
+        group_name: "residue-name",
+        // tolerated spelling; Python resolves to group_name, this keeps
+        // older stored configs working
         residue_name: "residue-name",
         molecule_type: "molecule-type",
         entity_default: "entity-id",
@@ -145992,9 +146004,106 @@ var StateHandlers = class {
       this.layerMeta.set(newKey, meta);
     }
   }
+  /**
+   * Start tracking whether the user has adjusted the camera. Lazy because
+   * `canvas3d` does not exist yet when the handlers are constructed; it is
+   * retried until the canvas is available.
+   */
+  /**
+   * Record that a deliberate viewpoint now exists (camera snapshot applied,
+   * view focused on a selection, …), so it survives a representation rebuild.
+   */
+  markIntentionalViewpoint() {
+    this.intentionalViewpoint = true;
+  }
+  ensureCameraInputTracking() {
+    if (this.cameraInputTracked) return;
+    const input = this.plugin.canvas3d?.input;
+    if (!input) return;
+    this.cameraInputTracked = true;
+    const mark = () => {
+      this.intentionalViewpoint = true;
+    };
+    input.drag?.subscribe?.(mark);
+    input.wheel?.subscribe?.(mark);
+    input.pinch?.subscribe?.(mark);
+  }
+  /**
+   * Whether a captured camera snapshot is worth restoring after a
+   * representation swap.
+   *
+   * Mol*'s `createDefaultSnapshot()` uses `radius: 0`, and any real focus sets
+   * `radius = max(r, 0.01)`, so a zero radius means the camera has never framed
+   * anything. Restoring that pins the camera to a meaningless view: the
+   * structure renders but stays out of sight. It happens when representations
+   * are applied before the widget is displayed (replayed through
+   * `initial_messages`), where there is no user view to preserve anyway — Mol*
+   * should frame the structure instead.
+   */
+  shouldRestoreCameraSnapshot(snapshot) {
+    return !!snapshot && typeof snapshot.radius === "number" && snapshot.radius > 0;
+  }
+  /** Params compared to decide whether only the color changed. */
+  representationParamsFingerprint(params) {
+    const rest2 = {};
+    for (const [key2, value] of Object.entries(params ?? {})) {
+      if (key2 === "color_scheme" || key2 === "molstar_color_theme") continue;
+      rest2[key2] = value;
+    }
+    return JSON.stringify(Object.keys(rest2).sort().map((key2) => [key2, rest2[key2]]));
+  }
+  /**
+   * True when this message keeps the same representation, preset and params,
+   * and differs only in the color scheme. Rebuilding the representation for a
+   * pure recolor is what made the camera jump and toggled the visibility of
+   * atoms the representation cannot draw (e.g. waters under a cartoon).
+   */
+  isColorOnlyRepresentationChange(msg) {
+    const last4 = this.lastWholeRepresentation;
+    if (!last4) return false;
+    if (msg.user_preset || last4.user_preset) return false;
+    if ((msg.representation ?? null) !== (last4.representation ?? null)) return false;
+    if ((msg.preset ?? null) !== (last4.preset ?? null)) return false;
+    return this.representationParamsFingerprint(msg.params) === this.representationParamsFingerprint(last4.params);
+  }
+  /**
+   * Update the color theme of the existing global representations in place.
+   * Returns false when it cannot be done, so the caller falls back to the full
+   * rebuild.
+   */
+  async applyStructuralColorInPlace(msg) {
+    const refs = this.currentGlobalRepresentationRefs();
+    if (refs.length === 0) return false;
+    const structuralColor = this.getStructuralColorThemeFromParams(
+      msg.representation ?? void 0,
+      msg.params
+    );
+    if (!structuralColor.color) return false;
+    const nextTheme = {
+      name: structuralColor.color,
+      params: structuralColor.colorParams ?? {}
+    };
+    const update10 = this.plugin.state.data.build();
+    for (const ref of refs) {
+      update10.to(ref).update(
+        StateTransforms.Representation.StructureRepresentation3D,
+        (params) => {
+          params.colorTheme = params.colorTheme?.name === MsvPerAtomColorThemeName ? { name: MsvPerAtomColorThemeName, params: { base: nextTheme } } : nextTheme;
+        }
+      );
+    }
+    await update10.commit({ doNotUpdateCurrent: true });
+    await this.repaintInheritedRegions();
+    return true;
+  }
   async setWholeRepresentation(msg) {
     const structureRef = this.callbacks.getLoadedStructure()?.structure;
     if (!structureRef) return;
+    if (this.isColorOnlyRepresentationChange(msg) && await this.applyStructuralColorInPlace(msg)) {
+      this.lastWholeRepresentation = { ...msg };
+      return;
+    }
+    this.ensureCameraInputTracking();
     const cameraSnap = this.plugin.canvas3d?.camera.getSnapshot?.();
     const structure = this.callbacks.getStructure();
     const structuralColor = this.getStructuralColorThemeFromParams(
@@ -146105,7 +146214,7 @@ var StateHandlers = class {
       if (reprRef) this.globalReprs.add(reprRef);
     }
     await this.handleShowHideGlobal(false);
-    if (cameraSnap) {
+    if (cameraSnap && this.intentionalViewpoint && this.shouldRestoreCameraSnapshot(cameraSnap)) {
       try {
         await PluginCommands.Camera.SetSnapshot(this.plugin, {
           snapshot: cameraSnap,
@@ -146117,6 +146226,7 @@ var StateHandlers = class {
     await this.repaintInheritedRegions();
     this.transparencyInitialized = false;
     await this.applyComposedTransparency();
+    this.lastWholeRepresentation = { ...msg };
   }
   async showWhole(msg) {
     await this.handleShowHideGlobal(false, msg.target ?? "whole");
@@ -146138,6 +146248,7 @@ var StateHandlers = class {
     const selection = this.buildSelectionFromAtomIndices(structure, atomIndices);
     if (!selection) return;
     const loci = StructureSelection.toLociWithSourceUnits(selection);
+    this.intentionalViewpoint = true;
     this.plugin.managers.camera.focusLoci(loci, {
       durationMs: msg.options?.duration_ms,
       extraRadius: msg.options?.extra_radius,
@@ -159140,6 +159251,7 @@ var MolSysViewerController = class _MolSysViewerController {
       console.warn("[MolSysViewer] message missing 'op'", msg);
       return;
     }
+    this.state?.ensureCameraInputTracking?.();
     try {
       const isLoaderOp = msg.op === "load_structure_from_string" || msg.op === "load_pdb_string" || msg.op === "load_molsys_payload" || msg.op === "load_molsys_payload_ref" || msg.op === "load_structure_from_url" || msg.op === "load_pdb_id";
       if (isLoaderOp) {
@@ -159581,6 +159693,7 @@ var MolSysViewerController = class _MolSysViewerController {
           await this.scene.zoomToPosition(msg);
           break;
         case "set_camera_snapshot":
+          this.state.markIntentionalViewpoint();
           await this.setCameraSnapshot(msg.snapshot, msg.duration_ms);
           break;
         case "clear_active_selection":

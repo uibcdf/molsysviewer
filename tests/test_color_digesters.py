@@ -81,15 +81,16 @@ def test_replace_rejects_non_bool(given):
         ("chain_default", "chain_default"),
         ("element_cpk", "element_cpk"),
         ("molecule_type", "molecule_type"),
+        ("group_name", "group_name"),  # MolSysSuite term, canonical
         # Mol* theme names (derived from the registry's molstar_theme field)
         ("chain-id", "chain_default"),
         ("element-symbol", "element_cpk"),
-        ("residue-name", "residue_name"),
+        ("residue-name", "group_name"),
         ("secondary-structure", "secondary_structure_default"),
         ("entity-id", "entity_default"),
         # MolSysMT attribute vocabulary
         ("chain_id", "chain_default"),
-        ("group_name", "residue_name"),
+        ("residue_name", "group_name"),  # tolerated spelling
         ("entity_id", "entity_default"),
         ("element", "element_cpk"),
         # whitespace tolerated
@@ -116,7 +117,7 @@ def test_scheme_error_lists_valid_options():
 def test_color_scheme_param_resolves_structural_synonyms():
     assert digest_color_scheme(None) is None
     assert digest_color_scheme("chain-id") == "chain_default"
-    assert digest_color_scheme("group_name") == "residue_name"
+    assert digest_color_scheme("residue_name") == "group_name"
 
 
 def test_color_scheme_param_passes_through_non_structural_schemes():

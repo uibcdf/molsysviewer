@@ -27,9 +27,9 @@ STRUCTURAL_COLOR_SCHEMES: dict[str, dict[str, Any]] = {
         "molstar_theme": "msv-physicochemical",
         "description": "Color by residue physicochemical properties.",
     },
-    "residue_name": {
+    "group_name": {
         "molstar_theme": "residue-name",
-        "description": "Color by residue or group name.",
+        "description": "Color by group name (amino-acid residue, water, ion, ligand, …).",
     },
     "molecule_type": {
         "molstar_theme": "molecule-type",
@@ -46,15 +46,21 @@ STRUCTURAL_COLOR_SCHEMES: dict[str, dict[str, Any]] = {
 }
 
 
-# Scheme names coming from MolSysMT's attribute vocabulary. Users of the
-# ecosystem naturally write `chain_id` rather than `chain_default`, so those
-# names are accepted as synonyms. Mol* theme names (`chain-id`, `element-symbol`,
-# …) are *not* listed here: they are derived from the `molstar_theme` field of
-# STRUCTURAL_COLOR_SCHEMES itself, so the two never drift apart.
+# Alternative spellings accepted for convenience. Two sources:
+#
+# - MolSysMT attribute names, since users of the ecosystem naturally write
+#   `chain_id` rather than `chain_default`.
+# - `residue_name`, tolerated for people used to the PDB/Mol* wording. The
+#   MolSysSuite term is `group_name`, which is the canonical tag: `residue_name`
+#   must not be used in examples, docs or the cookbook.
+#
+# Mol* theme names (`chain-id`, `element-symbol`, …) are *not* listed here: they
+# are derived from the `molstar_theme` field of STRUCTURAL_COLOR_SCHEMES itself,
+# so the two never drift apart.
 MOLSYSMT_COLOR_SCHEME_ALIASES: dict[str, str] = {
     "chain_id": "chain_default",
     "chain_name": "chain_default",
-    "group_name": "residue_name",
+    "residue_name": "group_name",
     "entity_id": "entity_default",
     "entity_name": "entity_default",
     "element": "element_cpk",
