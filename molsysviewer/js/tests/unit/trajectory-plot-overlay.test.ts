@@ -62,13 +62,12 @@ test("TrajectoryPlotOverlay stays hidden without series data", () => {
     withFakeDom(() => {
         const host = new FakeElement();
         const overlay = new TrajectoryPlotOverlay(host as unknown as HTMLElement, () => {});
-        const root = host.children[0];
 
-        assert.strictEqual(root.style.display, "none");
+        assert.strictEqual(host.children.length, 0);
         overlay.set({ visible: false });
-        assert.strictEqual(root.style.display, "none");
+        assert.strictEqual(host.children.length, 0);
         overlay.set({ visible: true, series: [] });
-        assert.strictEqual(root.style.display, "none");
+        assert.strictEqual(host.children.length, 0);
     });
 });
 
@@ -76,7 +75,6 @@ test("TrajectoryPlotOverlay renders series and moves the playhead", () => {
     withFakeDom(() => {
         const host = new FakeElement();
         const overlay = new TrajectoryPlotOverlay(host as unknown as HTMLElement, () => {});
-        const root = host.children[0];
 
         overlay.set({
             visible: true,
@@ -85,8 +83,9 @@ test("TrajectoryPlotOverlay renders series and moves the playhead", () => {
             events: [{ frame: 2 }],
         });
 
-        assert.strictEqual(root.style.display, "block");
-        const svg = root.find("svg");
+        assert.strictEqual(host.children.length, 1);
+        const card = host.children[0];
+        const svg = card.find("svg");
         assert.ok(svg, "an svg is rendered");
         assert.ok(svg!.find("polyline"), "the series polyline is rendered");
 
@@ -106,14 +105,40 @@ test("TrajectoryPlotOverlay seeks to the clicked frame", () => {
         const host = new FakeElement();
         const seeks: number[] = [];
         const overlay = new TrajectoryPlotOverlay(host as unknown as HTMLElement, (f) => seeks.push(f));
-        const root = host.children[0];
 
         overlay.set({ visible: true, n_frames: 5, series: [{ label: "s", values: [0, 1, 2, 3, 4] }] });
-        const svg = root.find("svg")!;
+        const card = host.children[0];
+        const svg = card.find("svg")!;
 
-        // Middle of the plot area (x≈234 with left margin 40, width 388) → frame 2 of 0..4.
+        // Middle of the plot area (x≈234 with left margin 40, width 398) → frame 2 of 0..4.
         svg.dispatch("click", { clientX: 234, clientY: 80 });
         assert.deepStrictEqual(seeks, [2]);
+    });
+});
+
+test("TrajectoryPlotOverlay handles multiple plot cards simultaneously", () => {
+    withFakeDom(() => {
+        const host = new FakeElement();
+        const overlay = new TrajectoryPlotOverlay(host as unknown as HTMLElement, () => {});
+
+        overlay.set({ tag: "e2e", visible: true, n_frames: 5, series: [{ label: "e2e", values: [1, 2, 3, 4, 5] }] });
+        overlay.set({ tag: "rg", visible: true, n_frames: 5, series: [{ label: "rg", values: [0.5, 0.6, 0.7, 0.8, 0.9] }] });
+
+        assert.strictEqual(host.children.length, 2, "two plot cards are open");
+
+        overlay.setFrame(3);
+        const card1Svg = host.children[0].find("svg")!;
+        const card2Svg = host.children[1].find("svg")!;
+        assert.ok(card1Svg.find("polyline"));
+        assert.ok(card2Svg.find("polyline"));
+
+        // Hide one card
+        overlay.hide("e2e");
+        assert.strictEqual(host.children.length, 1);
+
+        // Hide all cards
+        overlay.hide();
+        assert.strictEqual(host.children.length, 0);
     });
 });
 
@@ -121,11 +146,9 @@ test("TrajectoryPlotOverlay hides on clear", () => {
     withFakeDom(() => {
         const host = new FakeElement();
         const overlay = new TrajectoryPlotOverlay(host as unknown as HTMLElement, () => {});
-        const root = host.children[0];
         overlay.set({ visible: true, n_frames: 3, series: [{ label: "s", values: [0, 1, 2] }] });
-        assert.strictEqual(root.style.display, "block");
+        assert.strictEqual(host.children.length, 1);
         overlay.hide();
-        assert.strictEqual(root.style.display, "none");
-        assert.strictEqual(root.children.length, 0);
+        assert.strictEqual(host.children.length, 0);
     });
 });

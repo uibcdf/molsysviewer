@@ -11,26 +11,21 @@ from molsysviewer.colors import normalize_color
 
 
 def _is_sequence(value: Any) -> bool:
-    # NumPy arrays are not `collections.abc.Sequence`, but per-frame data in this
-    # ecosystem (RMSD, radius of gyration, an energy term, coordinates out of
-    # MolSysMT) arrives as arrays, so rejecting them forced a manual `.tolist()`.
     if isinstance(value, np.ndarray):
         return value.ndim >= 1
     return isinstance(value, Sequence) and not isinstance(value, (str, bytes))
 
 
 class TrajectoryPlotManager:
-    """Synchronized 2D trajectory plot linked to the 3D molecular frame.
+    """Synchronized 2D trajectory plot cards linked to the 3D molecular frame.
 
-    A generic viewer primitive with no addon dependency: push one or more
-    per-frame scalar series (RMSD, radius of gyration, a channel bottleneck
-    radius, an energy term, ...) and the viewer renders a 2D plot overlay whose
-    playhead marker stays synced to the current trajectory frame. Clicking or
-    hovering a point in the plot sets the corresponding molecular frame.
+    A generic viewer primitive: push one or more per-frame scalar series (RMSD,
+    radius of gyration, a channel bottleneck radius, an energy term, ...) and the
+    viewer renders resizable, draggable 2D Data Card overlays whose playhead markers
+    stay synced to the current trajectory frame. Clicking or hovering a point in
+    a plot seeks the corresponding molecular frame.
 
-    The last plot state is recorded as part of the scene "look", so it is
-    reproduced on rebuild and preserved on export, exactly like the legend and
-    focus-fade overlays.
+    Supports multiple simultaneous cards keyed by tag (defaults to "default").
     """
 
     def __init__(self, view: Any) -> None:
@@ -88,7 +83,7 @@ class TrajectoryPlotManager:
             return
         if _is_sequence(colors):
             if len(colors) != len(series):
-                raise ValueError(f"expected {len(series)} colors, got {len(colors)}")
+                raise ValueError(f"expected {len(series)} colors, got {len(series)}")
             for s, c in zip(series, colors):
                 s["color"] = normalize_color(c)
             return
@@ -128,8 +123,11 @@ class TrajectoryPlotManager:
         x_label: str | None = None,
         y_label: str | None = None,
         title: str | None = None,
+        tag: str = "default",
+        width: int | None = None,
+        height: int | None = None,
     ) -> None:
-        """Show (or replace) the synchronized 2D trajectory plot.
+        """Show (or replace) a synchronized 2D trajectory plot card.
 
         Parameters
         ----------
@@ -147,6 +145,11 @@ class TrajectoryPlotManager:
             "color"?}`` mappings.
         x_label, y_label, title
             Optional axis and plot labels.
+        tag
+            Unique tag identifying the plot card (defaults to ``"default"``).
+            Multiple plot cards can be open simultaneously under different tags.
+        width, height
+            Optional initial width and height in pixels.
         """
         normalized = self._normalize_series(series)
         n_frames = len(normalized[0]["values"])
@@ -161,6 +164,7 @@ class TrajectoryPlotManager:
                 raise ValueError(f"x must have {n_frames} values, got {len(x_values)}")
 
         options: dict[str, Any] = {
+            "tag": str(tag),
             "visible": True,
             "series": normalized,
             "n_frames": n_frames,
@@ -174,6 +178,10 @@ class TrajectoryPlotManager:
             options["y_label"] = str(y_label)
         if title is not None:
             options["title"] = str(title)
+        if width is not None:
+            options["width"] = int(width)
+        if height is not None:
+            options["height"] = int(height)
 
         self._view._send({"op": "set_trajectory_plot", "options": options})
 
@@ -181,11 +189,19 @@ class TrajectoryPlotManager:
     update = show
 
     @signal(tags=["trajectory", "plot"])
-    def clear(self) -> None:
-        """Hide and clear the trajectory plot overlay."""
-        self._view._send({"op": "set_trajectory_plot", "options": {"visible": False}})
+    def clear(self, tag: str | None = None) -> None:
+        """Hide and clear trajectory plot cards.
 
-    hide = clear
+        If ``tag`` is provided, clears that specific card; if ``None``, clears all cards.
+        """
+        options: dict[str, Any] = {"visible": False}
+        if tag is not None:
+            options["tag"] = str(tag)
+        self._view._send({"op": "set_trajectory_plot", "options": options})
+
+    def hide(self, tag: str | None = None) -> None:
+        """Alias for ``clear()``."""
+        self.clear(tag=tag)
 
 
 __all__ = ["TrajectoryPlotManager"]

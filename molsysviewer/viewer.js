@@ -148481,87 +148481,557 @@ var LegendOverlay = class {
   }
 };
 
+// src/ui/floating-data-card.ts
+var FloatingDataCard = class {
+  constructor(host, options) {
+    this.host = host;
+    this.options = options;
+    this.minimized = false;
+    this.isDragging = false;
+    this.isResizing = false;
+    this.storedHeight = "";
+    this.popoutWindow = null;
+    this.card = document.createElement("div");
+    this.card.setAttribute("data-molsysviewer-datacard", options.tag);
+    this.card.style.opacity = "0.90";
+    Object.assign(this.card.style, {
+      position: "absolute",
+      zIndex: "15",
+      pointerEvents: "auto",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "stretch",
+      boxSizing: "border-box",
+      overflow: "hidden",
+      background: "rgba(18, 18, 22, 0.88)",
+      backdropFilter: "blur(12px)",
+      webkitBackdropFilter: "blur(12px)",
+      border: "1px solid rgba(255, 255, 255, 0.12)",
+      borderRadius: "12px",
+      boxShadow: "0 12px 32px rgba(0, 0, 0, 0.4)",
+      color: "#f4f4f5",
+      fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
+      fontSize: "12px",
+      userSelect: "none",
+      minWidth: "240px",
+      minHeight: "42px",
+      width: `${options.width ?? 450}px`,
+      height: `${options.height ?? 210}px`
+    });
+    if (options.left !== void 0 && options.top !== void 0) {
+      this.card.style.left = `${options.left}px`;
+      this.card.style.top = `${options.top}px`;
+    } else {
+      this.card.style.bottom = "16px";
+      this.card.style.left = "50%";
+      this.card.style.transform = "translateX(-50%)";
+    }
+    this.header = document.createElement("div");
+    this.header.setAttribute("data-molsysviewer-datacard-header", options.tag);
+    Object.assign(this.header.style, {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: "8px",
+      padding: "6px 10px",
+      background: "rgba(255, 255, 255, 0.04)",
+      borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+      cursor: "grab",
+      flexShrink: "0"
+    });
+    const titleBox = document.createElement("div");
+    Object.assign(titleBox.style, {
+      display: "flex",
+      alignItems: "center",
+      minWidth: "0",
+      flex: "1 1 auto",
+      overflow: "hidden"
+    });
+    this.titleElement = document.createElement("div");
+    this.titleElement.textContent = options.title;
+    Object.assign(this.titleElement.style, {
+      fontSize: "11px",
+      fontWeight: "700",
+      letterSpacing: "0.06em",
+      textTransform: "uppercase",
+      color: "rgba(244, 244, 245, 0.9)",
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+      textOverflow: "ellipsis"
+    });
+    titleBox.appendChild(this.titleElement);
+    this.header.appendChild(titleBox);
+    const buttonGroup = document.createElement("div");
+    Object.assign(buttonGroup.style, {
+      display: "flex",
+      alignItems: "center",
+      gap: "2px",
+      flexShrink: "0"
+    });
+    const styleHeaderButton = (btn, title, iconSvg) => {
+      btn.type = "button";
+      btn.title = title;
+      btn.innerHTML = iconSvg;
+      Object.assign(btn.style, {
+        background: "transparent",
+        border: "none",
+        color: "rgba(255, 255, 255, 0.45)",
+        cursor: "pointer",
+        padding: "3px",
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: "4px",
+        flexShrink: "0"
+      });
+      btn.addEventListener("mouseenter", () => {
+        btn.style.color = "rgba(255, 255, 255, 0.9)";
+      });
+      btn.addEventListener("mouseleave", () => {
+        btn.style.color = "rgba(255, 255, 255, 0.45)";
+      });
+    };
+    this.opacityButton = document.createElement("button");
+    styleHeaderButton(
+      this.opacityButton,
+      "Toggle opacity",
+      `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 2v12a6 6 0 0 0 0-12z" fill="currentColor"/></svg>`
+    );
+    this.opacityButton.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const states = [0.9, 0.7, 0.45];
+      const currentOpacity = parseFloat(this.card.style.opacity) || states[0];
+      let idx = states.indexOf(currentOpacity);
+      if (idx === -1) {
+        let minDiff = Infinity;
+        idx = 0;
+        for (let i = 0; i < states.length; i++) {
+          const diff = Math.abs(states[i] - currentOpacity);
+          if (diff < minDiff) {
+            minDiff = diff;
+            idx = i;
+          }
+        }
+      }
+      const nextIdx = (idx + 1) % states.length;
+      this.card.style.opacity = String(states[nextIdx]);
+    });
+    buttonGroup.appendChild(this.opacityButton);
+    this.popoutButton = document.createElement("button");
+    styleHeaderButton(
+      this.popoutButton,
+      "Popout card to external window",
+      `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="7" height="7" rx="1"/><path d="M12 3h1v1M13 3L8 8"/></svg>`
+    );
+    this.popoutButton.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (options.onPopout) {
+        options.onPopout();
+      } else {
+        this.openPopoutWindow();
+      }
+    });
+    buttonGroup.appendChild(this.popoutButton);
+    this.minimizeButton = document.createElement("button");
+    styleHeaderButton(
+      this.minimizeButton,
+      "Minimize",
+      `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>`
+    );
+    this.minimizeButton.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      this.toggleMinimize();
+    });
+    buttonGroup.appendChild(this.minimizeButton);
+    this.closeButton = document.createElement("button");
+    styleHeaderButton(
+      this.closeButton,
+      "Close",
+      `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="3" x2="13" y2="13"/><line x1="13" y1="3" x2="3" y2="13"/></svg>`
+    );
+    this.closeButton.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (options.onClose) {
+        options.onClose();
+      } else {
+        this.hide();
+      }
+    });
+    buttonGroup.appendChild(this.closeButton);
+    this.header.appendChild(buttonGroup);
+    this.body = document.createElement("div");
+    this.body.setAttribute("data-molsysviewer-datacard-body", options.tag);
+    Object.assign(this.body.style, {
+      position: "relative",
+      flex: "1 1 auto",
+      width: "100%",
+      height: "100%",
+      minHeight: "0",
+      overflow: "hidden",
+      boxSizing: "border-box"
+    });
+    this.resizeHandle = document.createElement("div");
+    this.resizeHandle.setAttribute("data-molsysviewer-datacard-resize", options.tag);
+    this.resizeHandle.title = "Resize card";
+    this.resizeHandle.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M8 2L2 8M8 5L5 8M8 8L8 8" stroke="rgba(255,255,255,0.4)" stroke-width="1.2" stroke-linecap="round"/></svg>`;
+    Object.assign(this.resizeHandle.style, {
+      position: "absolute",
+      right: "2px",
+      bottom: "2px",
+      width: "14px",
+      height: "14px",
+      cursor: "se-resize",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: "10",
+      opacity: "0.6"
+    });
+    this.resizeHandle.addEventListener("mouseenter", () => {
+      this.resizeHandle.style.opacity = "1";
+    });
+    this.resizeHandle.addEventListener("mouseleave", () => {
+      this.resizeHandle.style.opacity = "0.6";
+    });
+    this.card.appendChild(this.header);
+    this.card.appendChild(this.body);
+    this.card.appendChild(this.resizeHandle);
+    this.setupDragging();
+    this.setupResizing();
+    this.setupResizeObserver();
+    this.host.appendChild(this.card);
+  }
+  setupDragging() {
+    let startX = 0;
+    let startY = 0;
+    let startLeft = 0;
+    let startTop = 0;
+    const onStart = (clientX, clientY) => {
+      this.isDragging = true;
+      this.header.style.cursor = "grabbing";
+      if (this.card.style.transform.includes("translateX")) {
+        const rect = this.card.getBoundingClientRect();
+        const hostRect = this.host.getBoundingClientRect();
+        const currentLeft = rect.left - hostRect.left;
+        const currentTop = rect.top - hostRect.top;
+        this.card.style.bottom = "auto";
+        this.card.style.transform = "none";
+        this.card.style.left = `${currentLeft}px`;
+        this.card.style.top = `${currentTop}px`;
+      }
+      startLeft = this.card.offsetLeft;
+      startTop = this.card.offsetTop;
+      startX = clientX;
+      startY = clientY;
+      this.card.style.zIndex = "25";
+    };
+    const onMove = (clientX, clientY) => {
+      if (!this.isDragging) return;
+      const deltaX = clientX - startX;
+      const deltaY = clientY - startY;
+      const hostW = this.host.clientWidth || 800;
+      const hostH = this.host.clientHeight || 600;
+      const cardW = this.card.offsetWidth;
+      const cardH = this.card.offsetHeight;
+      const left = Math.max(4, Math.min(startLeft + deltaX, hostW - cardW - 4));
+      const top = Math.max(4, Math.min(startTop + deltaY, hostH - cardH - 4));
+      this.card.style.left = `${left}px`;
+      this.card.style.top = `${top}px`;
+    };
+    const onEnd = () => {
+      if (!this.isDragging) return;
+      this.isDragging = false;
+      this.header.style.cursor = "grab";
+      this.card.style.zIndex = "15";
+    };
+    this.header.addEventListener("mousedown", (e) => {
+      if (e.target.closest("button, input, select")) return;
+      e.preventDefault();
+      onStart(e.clientX, e.clientY);
+      const mouseMove = (me) => onMove(me.clientX, me.clientY);
+      const mouseUp = () => {
+        onEnd();
+        window.removeEventListener("mousemove", mouseMove);
+        window.removeEventListener("mouseup", mouseUp);
+      };
+      window.addEventListener("mousemove", mouseMove);
+      window.addEventListener("mouseup", mouseUp);
+    });
+  }
+  setupResizing() {
+    let startX = 0;
+    let startY = 0;
+    let startWidth = 0;
+    let startHeight = 0;
+    const onStart = (clientX, clientY) => {
+      this.isResizing = true;
+      startWidth = this.card.offsetWidth;
+      startHeight = this.card.offsetHeight;
+      startX = clientX;
+      startY = clientY;
+    };
+    const onMove = (clientX, clientY) => {
+      if (!this.isResizing || this.minimized) return;
+      const deltaX = clientX - startX;
+      const deltaY = clientY - startY;
+      const newW = Math.max(240, startWidth + deltaX);
+      const newH = Math.max(140, startHeight + deltaY);
+      this.card.style.width = `${newW}px`;
+      this.card.style.height = `${newH}px`;
+    };
+    const onEnd = () => {
+      this.isResizing = false;
+    };
+    this.resizeHandle.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onStart(e.clientX, e.clientY);
+      const mouseMove = (me) => onMove(me.clientX, me.clientY);
+      const mouseUp = () => {
+        onEnd();
+        window.removeEventListener("mousemove", mouseMove);
+        window.removeEventListener("mouseup", mouseUp);
+      };
+      window.addEventListener("mousemove", mouseMove);
+      window.addEventListener("mouseup", mouseUp);
+    });
+  }
+  setupResizeObserver() {
+    if (typeof ResizeObserver === "undefined") return;
+    this.resizeObserver = new ResizeObserver(() => {
+      if (this.minimized) return;
+      const w = this.body.clientWidth;
+      const h = this.body.clientHeight;
+      if (w > 0 && h > 0) {
+        this.options.onResize?.(w, h);
+      }
+    });
+    this.resizeObserver.observe(this.card);
+  }
+  openPopoutWindow() {
+    if (this.popoutWindow && !this.popoutWindow.closed) {
+      this.popoutWindow.focus();
+      return;
+    }
+    const win = window.open("", "_blank", "width=520,height=280");
+    if (!win) return;
+    this.popoutWindow = win;
+    const doc = win.document;
+    doc.open();
+    doc.write(`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>${this.options.title || "MolSysViewer Data Card"}</title>
+  <style>
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #121216; color: #f4f4f5; font-family: "IBM Plex Sans", system-ui, sans-serif; }
+    #card-pop-host { width: 100%; height: 100%; display: flex; flex-direction: column; }
+    #card-pop-header { padding: 8px 12px; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.08); color: rgba(244,244,245,0.9); }
+    #card-pop-body { flex: 1 1 auto; position: relative; width: 100%; height: 100%; overflow: hidden; }
+  </style>
+</head>
+<body>
+  <div id="card-pop-host">
+    <div id="card-pop-header">${this.options.title}</div>
+    <div id="card-pop-body"></div>
+  </div>
+</body>
+</html>
+        `);
+    doc.close();
+    const popBody = doc.getElementById("card-pop-body");
+    if (popBody) {
+      popBody.appendChild(this.body);
+    }
+    this.card.style.display = "none";
+    const interval = window.setInterval(() => {
+      if (!this.popoutWindow || this.popoutWindow.closed) {
+        window.clearInterval(interval);
+        this.popoutWindow = null;
+        this.card.appendChild(this.body);
+        this.card.style.display = "flex";
+        const w = this.body.clientWidth;
+        const h = this.body.clientHeight;
+        if (w > 0 && h > 0) this.options.onResize?.(w, h);
+      }
+    }, 800);
+  }
+  toggleMinimize() {
+    this.minimized = !this.minimized;
+    if (this.minimized) {
+      this.storedHeight = this.card.style.height;
+      this.card.style.height = "auto";
+      this.body.style.display = "none";
+      this.resizeHandle.style.display = "none";
+      this.minimizeButton.title = "Restore";
+      this.minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="10" height="10" rx="1"/></svg>`;
+    } else {
+      this.card.style.height = this.storedHeight || `${this.options.height ?? 210}px`;
+      this.body.style.display = "block";
+      this.resizeHandle.style.display = "flex";
+      this.minimizeButton.title = "Minimize";
+      this.minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>`;
+    }
+  }
+  show() {
+    this.card.style.display = "flex";
+  }
+  hide() {
+    this.card.style.display = "none";
+  }
+  dispose() {
+    if (this.popoutWindow && !this.popoutWindow.closed) {
+      this.popoutWindow.close();
+    }
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+    }
+    this.card.remove();
+  }
+};
+
 // src/ui/trajectory-plot-overlay.ts
 var SVG_NS = "http://www.w3.org/2000/svg";
-var WIDTH = 440;
-var HEIGHT = 168;
-var M5 = { top: 22, right: 12, bottom: 26, left: 40 };
 var DEFAULT_COLORS = [4487082, 15623799, 2263091, 13417284, 6737134, 11154295];
 function hex(color, fallback) {
   if (color === void 0 || color === null) return fallback;
   return "#" + (color >>> 0 & 16777215).toString(16).padStart(6, "0");
 }
+function formatValue(v4) {
+  if (Number.isInteger(v4)) return String(v4);
+  return v4.toFixed(2);
+}
 var TrajectoryPlotOverlay = class {
-  constructor(host, onSeek) {
+  constructor(host, onSeek, onPopout) {
     this.host = host;
     this.onSeek = onSeek;
-    this.nFrames = 0;
+    this.onPopout = onPopout;
+    this.entries = /* @__PURE__ */ new Map();
     this.currentFrame = 0;
-    this.root = document.createElement("div");
-    this.root.setAttribute("data-molsysviewer-trajectory-plot", "true");
-    Object.assign(this.root.style, {
-      position: "absolute",
-      bottom: "12px",
-      left: "50%",
-      transform: "translateX(-50%)",
-      display: "none",
-      background: "rgba(20, 20, 20, 0.78)",
-      borderRadius: "8px",
-      padding: "6px",
-      zIndex: "10",
-      cursor: "pointer",
-      userSelect: "none"
-    });
-    this.host.appendChild(this.root);
   }
   set(options) {
+    const tag = options?.tag || "default";
     if (!options || options.visible === false || !options.series || options.series.length === 0) {
-      this.hide();
+      this.hide(tag);
       return;
     }
-    this.options = options;
-    const first4 = options.series[0];
-    this.nFrames = options.n_frames ?? first4.values.length;
-    this.render();
-    this.root.style.display = "block";
+    let entry = this.entries.get(tag);
+    const firstSeries = options.series[0];
+    const nFrames = options.n_frames ?? firstSeries.values.length;
+    const resolvedTitle = options.title || options.y_label || "Trajectory Plot";
+    if (!entry) {
+      const width = options.width || 450;
+      const height = options.height || 210;
+      const offset3 = this.entries.size % 4 * 24;
+      const left = Math.max(10, (this.host.clientWidth || 800) / 2 - width / 2 + offset3);
+      const top = Math.max(10, (this.host.clientHeight || 600) - height - 30 - offset3);
+      const card5 = new FloatingDataCard(this.host, {
+        tag,
+        title: resolvedTitle,
+        width,
+        height,
+        left,
+        top,
+        onClose: () => this.hide(tag),
+        onPopout: this.onPopout ? () => this.onPopout(tag) : void 0,
+        onResize: (w, h) => {
+          if (entry) {
+            entry.width = w;
+            entry.height = h;
+            this.renderEntry(entry);
+          }
+        }
+      });
+      entry = {
+        tag,
+        card: card5,
+        options,
+        nFrames,
+        width,
+        height
+      };
+      this.entries.set(tag, entry);
+    } else {
+      entry.options = options;
+      entry.nFrames = nFrames;
+      entry.card.titleElement.textContent = resolvedTitle;
+    }
+    entry.card.show();
+    this.renderEntry(entry);
     this.setFrame(this.currentFrame);
   }
-  hide() {
-    this.options = void 0;
-    this.root.style.display = "none";
-    this.root.replaceChildren();
-    this.svg = void 0;
-    this.playhead = void 0;
+  hide(tag) {
+    if (!tag) {
+      for (const t5 of Array.from(this.entries.keys())) {
+        this.hide(t5);
+      }
+      return;
+    }
+    const entry = this.entries.get(tag);
+    if (entry) {
+      entry.card.dispose();
+      this.entries.delete(tag);
+    }
   }
-  /** Move the playhead marker to `frame`; called on every trajectory frame change. */
+  /** Move playhead marker and update live X/Y value readouts on all active cards. */
   setFrame(frame) {
     this.currentFrame = frame;
-    if (!this.playhead || this.nFrames <= 1) return;
-    const x = this.frameToX(frame);
-    this.playhead.setAttribute("x1", String(x));
-    this.playhead.setAttribute("x2", String(x));
+    for (const entry of this.entries.values()) {
+      if (!entry.playhead || entry.nFrames <= 0) continue;
+      const clamped = Math.max(0, Math.min(entry.nFrames - 1, frame));
+      const x = this.frameToX(clamped, entry);
+      entry.playhead.setAttribute("x1", String(x));
+      entry.playhead.setAttribute("x2", String(x));
+      if (entry.readoutText && entry.options.series) {
+        const opts = entry.options;
+        const xValStr = opts.x && opts.x.length > clamped ? formatValue(opts.x[clamped]) : `frame: ${clamped}`;
+        if (opts.series.length === 1) {
+          const val = opts.series[0].values[clamped];
+          const valStr = val !== void 0 ? formatValue(val) : "\u2014";
+          entry.readoutText.textContent = opts.x ? `x: ${xValStr} \xB7 y: ${valStr}` : `${xValStr} \xB7 y: ${valStr}`;
+        } else {
+          const seriesStr = opts.series.map((s) => `${s.label}: ${s.values[clamped] !== void 0 ? formatValue(s.values[clamped]) : "\u2014"}`).join(" \xB7 ");
+          entry.readoutText.textContent = `${xValStr} \xB7 ${seriesStr}`;
+        }
+      }
+    }
   }
-  plotWidth() {
-    return WIDTH - M5.left - M5.right;
+  frameToX(frame, entry) {
+    const leftMargin = 40;
+    const rightMargin = 12;
+    const plotW = Math.max(10, entry.width - leftMargin - rightMargin);
+    const denom = Math.max(entry.nFrames - 1, 1);
+    const clamped = Math.max(0, Math.min(entry.nFrames - 1, frame));
+    return leftMargin + clamped / denom * plotW;
   }
-  frameToX(frame) {
-    const denom = Math.max(this.nFrames - 1, 1);
-    const clamped = Math.max(0, Math.min(this.nFrames - 1, frame));
-    return M5.left + clamped / denom * this.plotWidth();
+  xToFrame(px, entry) {
+    const leftMargin = 40;
+    const rightMargin = 12;
+    const plotW = Math.max(10, entry.width - leftMargin - rightMargin);
+    const denom = Math.max(entry.nFrames - 1, 1);
+    const ratio = (px - leftMargin) / plotW;
+    return Math.max(0, Math.min(entry.nFrames - 1, Math.round(ratio * denom)));
   }
-  xToFrame(px) {
-    const denom = Math.max(this.nFrames - 1, 1);
-    const ratio = (px - M5.left) / this.plotWidth();
-    return Math.max(0, Math.min(this.nFrames - 1, Math.round(ratio * denom)));
-  }
-  render() {
-    const opts = this.options;
-    this.root.replaceChildren();
+  renderEntry(entry) {
+    const opts = entry.options;
+    const body = entry.card.body;
+    body.replaceChildren();
+    const width = Math.max(200, entry.width || body.clientWidth || 440);
+    const height = Math.max(120, entry.height || body.clientHeight || 168);
+    const M5 = { top: 24, right: 14, bottom: opts.x_label ? 28 : 20, left: 40 };
+    const plotWidth = Math.max(10, width - M5.left - M5.right);
+    const plotHeight = Math.max(10, height - M5.top - M5.bottom);
     const svg = document.createElementNS(SVG_NS, "svg");
-    svg.setAttribute("width", String(WIDTH));
-    svg.setAttribute("height", String(HEIGHT));
-    svg.setAttribute("viewBox", `0 0 ${WIDTH} ${HEIGHT}`);
-    this.svg = svg;
+    svg.setAttribute("width", "100%");
+    svg.setAttribute("height", "100%");
+    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    Object.assign(svg.style, { display: "block", cursor: "pointer", userSelect: "none" });
+    entry.svg = svg;
     let min5 = Infinity;
     let max5 = -Infinity;
     for (const s of opts.series) {
@@ -148578,23 +149048,24 @@ var TrajectoryPlotOverlay = class {
       min5 -= 1;
       max5 += 1;
     }
-    const yOf = (v4) => M5.top + (1 - (v4 - min5) / (max5 - min5)) * (HEIGHT - M5.top - M5.bottom);
+    const yOf = (v4) => M5.top + (1 - (v4 - min5) / (max5 - min5)) * plotHeight;
     const axis = document.createElementNS(SVG_NS, "path");
-    axis.setAttribute(
-      "d",
-      `M${M5.left},${M5.top} L${M5.left},${HEIGHT - M5.bottom} L${WIDTH - M5.right},${HEIGHT - M5.bottom}`
-    );
+    axis.setAttribute("d", `M${M5.left},${M5.top} L${M5.left},${height - M5.bottom} L${width - M5.right},${height - M5.bottom}`);
     axis.setAttribute("fill", "none");
-    axis.setAttribute("stroke", "rgba(242,242,242,0.5)");
+    axis.setAttribute("stroke", "rgba(242,242,242,0.4)");
     axis.setAttribute("stroke-width", "1");
     svg.appendChild(axis);
+    const readoutText = this.text(width - M5.right, 14, "", "end", "rgba(244, 244, 245, 0.9)", 10);
+    readoutText.setAttribute("font-weight", "600");
+    svg.appendChild(readoutText);
+    entry.readoutText = readoutText;
     for (const ev of opts.events ?? []) {
-      const x = this.frameToX(ev.frame);
+      const x = M5.left + Math.max(0, Math.min(entry.nFrames - 1, ev.frame)) / Math.max(entry.nFrames - 1, 1) * plotWidth;
       const line = document.createElementNS(SVG_NS, "line");
       line.setAttribute("x1", String(x));
       line.setAttribute("x2", String(x));
       line.setAttribute("y1", String(M5.top));
-      line.setAttribute("y2", String(HEIGHT - M5.bottom));
+      line.setAttribute("y2", String(height - M5.bottom));
       line.setAttribute("stroke", hex(ev.color, "#f59e0b"));
       line.setAttribute("stroke-width", "1");
       line.setAttribute("stroke-dasharray", "3,2");
@@ -148602,7 +149073,7 @@ var TrajectoryPlotOverlay = class {
     }
     opts.series.forEach((s, i) => {
       const denom = Math.max(s.values.length - 1, 1);
-      const pts = s.values.map((v4, idx) => `${M5.left + idx / denom * this.plotWidth()},${yOf(v4)}`).join(" ");
+      const pts = s.values.map((v4, idx) => `${M5.left + idx / denom * plotWidth},${yOf(v4)}`).join(" ");
       const poly = document.createElementNS(SVG_NS, "polyline");
       poly.setAttribute("points", pts);
       poly.setAttribute("fill", "none");
@@ -148612,40 +149083,42 @@ var TrajectoryPlotOverlay = class {
     });
     const playhead = document.createElementNS(SVG_NS, "line");
     playhead.setAttribute("y1", String(M5.top));
-    playhead.setAttribute("y2", String(HEIGHT - M5.bottom));
+    playhead.setAttribute("y2", String(height - M5.bottom));
     playhead.setAttribute("stroke", "#ffffff");
     playhead.setAttribute("stroke-width", "1.5");
     playhead.setAttribute("pointer-events", "none");
     svg.appendChild(playhead);
-    this.playhead = playhead;
-    if (opts.title) svg.appendChild(this.text(WIDTH / 2, 14, opts.title, "middle", "#f2f2f2", 12));
-    if (opts.x_label) svg.appendChild(this.text(WIDTH / 2, HEIGHT - 6, opts.x_label, "middle", "rgba(242,242,242,0.7)", 10));
+    entry.playhead = playhead;
+    if (opts.x_label) {
+      svg.appendChild(this.text(width / 2, height - 4, opts.x_label, "middle", "rgba(242,242,242,0.7)", 10));
+    }
     if (opts.y_label) {
-      const t5 = this.text(12, HEIGHT / 2, opts.y_label, "middle", "rgba(242,242,242,0.7)", 10);
-      t5.setAttribute("transform", `rotate(-90 12 ${HEIGHT / 2})`);
+      const t5 = this.text(12, height / 2, opts.y_label, "middle", "rgba(242,242,242,0.7)", 10);
+      t5.setAttribute("transform", `rotate(-90 12 ${height / 2})`);
       svg.appendChild(t5);
     }
-    svg.appendChild(this.text(M5.left, HEIGHT - M5.bottom + 12, "0", "middle", "rgba(242,242,242,0.6)", 9));
-    svg.appendChild(this.text(WIDTH - M5.right, HEIGHT - M5.bottom + 12, String(Math.max(this.nFrames - 1, 0)), "middle", "rgba(242,242,242,0.6)", 9));
+    svg.appendChild(this.text(M5.left, height - M5.bottom + 11, "0", "middle", "rgba(242,242,242,0.5)", 9));
+    svg.appendChild(this.text(width - M5.right, height - M5.bottom + 11, String(Math.max(entry.nFrames - 1, 0)), "middle", "rgba(242,242,242,0.5)", 9));
     if (opts.series.length > 1) {
       opts.series.forEach((s, i) => {
         const ly = M5.top + 2 + i * 13;
         const chip = document.createElementNS(SVG_NS, "rect");
-        chip.setAttribute("x", String(WIDTH - M5.right - 90));
+        chip.setAttribute("x", String(M5.left + 8));
         chip.setAttribute("y", String(ly));
         chip.setAttribute("width", "9");
         chip.setAttribute("height", "9");
         chip.setAttribute("fill", hex(s.color, hex(DEFAULT_COLORS[i % DEFAULT_COLORS.length], "#4477aa")));
         svg.appendChild(chip);
-        svg.appendChild(this.text(WIDTH - M5.right - 77, ly + 8, s.label, "start", "#e8e8e8", 10));
+        svg.appendChild(this.text(M5.left + 21, ly + 8, s.label, "start", "#e8e8e8", 10));
       });
     }
     svg.addEventListener("click", (e) => {
       const rect = svg.getBoundingClientRect();
-      const px = (e.clientX - rect.left) * (WIDTH / rect.width);
-      this.onSeek(this.xToFrame(px));
+      const px = (e.clientX - rect.left) * (width / rect.width);
+      this.onSeek(this.xToFrame(px, entry));
     });
-    this.root.appendChild(svg);
+    body.appendChild(svg);
+    this.setFrame(this.currentFrame);
   }
   text(x, y, content, anchor, fill, size4) {
     const t5 = document.createElementNS(SVG_NS, "text");
@@ -148659,7 +149132,7 @@ var TrajectoryPlotOverlay = class {
     return t5;
   }
   dispose() {
-    this.root.remove();
+    this.hide();
   }
 };
 
@@ -153554,7 +154027,7 @@ function card2() {
   });
   return element;
 }
-function formatValue(item2) {
+function formatValue2(item2) {
   if (item2.broken || item2.value === null || !Number.isFinite(item2.value)) return "\u2014";
   const unit2 = item2.unit.trim().toLowerCase();
   const digits = unit2 === "nanometer" || unit2 === "nanometers" || unit2 === "nm" || unit2 === "radian" || unit2 === "radians" ? 3 : item2.kind === "distance" ? 2 : 1;
@@ -153649,7 +154122,7 @@ var MeasuresPanel = class extends BasePanel {
     const head = document.createElement("div");
     Object.assign(head.style, { display: "flex", alignItems: "center", gap: "8px" });
     const value = document.createElement("div");
-    value.textContent = formatValue(item2);
+    value.textContent = formatValue2(item2);
     value.setAttribute("data-molsysviewer-measurement-value", item2.tag);
     Object.assign(value.style, {
       flex: "1 1 0",
