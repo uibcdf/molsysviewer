@@ -121,40 +121,14 @@ BUILTIN_FOCUS_STYLES: dict[str, Style] = {
 }
 
 
-STRUCTURAL_COLOR_SCHEMES: dict[str, dict[str, Any]] = {
-    "element_cpk": {
-        "molstar_theme": "element-symbol",
-        "description": "Color by element using a CPK-like palette.",
-    },
-    "secondary_structure_default": {
-        "molstar_theme": "secondary-structure",
-        "description": "Color polymers by secondary-structure class.",
-    },
-    "chain_default": {
-        "molstar_theme": "chain-id",
-        "description": "Color polymers by chain identifier.",
-    },
-    "physicochemical": {
-        "molstar_theme": "msv-physicochemical",
-        "description": "Color by residue physicochemical properties.",
-    },
-    "residue_name": {
-        "molstar_theme": "residue-name",
-        "description": "Color by residue or group name.",
-    },
-    "molecule_type": {
-        "molstar_theme": "molecule-type",
-        "description": "Color by molecule class such as protein, RNA, DNA, ion, or water.",
-    },
-    "entity_default": {
-        "molstar_theme": "entity-id",
-        "description": "Color by entity identifier.",
-    },
-    "illustrative_default": {
-        "molstar_theme": "illustrative",
-        "description": "Use Mol* illustrative coloring.",
-    },
-}
+# The structural color-scheme registry and its name resolution live in a
+# dependency-free module so that argument digesters can import them without
+# pulling in this module's viewer imports (which would be circular).
+from ._private.color_schemes import (  # noqa: E402
+    MOLSYSMT_COLOR_SCHEME_ALIASES,
+    STRUCTURAL_COLOR_SCHEMES,
+    resolve_structural_color_scheme,
+)
 
 
 STRUCTURAL_SIZE_SCHEMES: dict[str, dict[str, Any]] = {

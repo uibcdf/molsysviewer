@@ -10,6 +10,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
+from molsysviewer._private.arg_digestion.argument.color_scheme import digest_color_scheme
 from molsysviewer._private.arg_digestion.argument.replace import digest_replace
 from molsysviewer._private.arg_digestion.argument.scheme import digest_scheme
 from molsysviewer._private.arg_digestion.argument.value_range import digest_value_range
@@ -71,21 +72,61 @@ def test_replace_rejects_non_bool(given):
         digest_replace(given)
 
 
-# --- scheme ----------------------------------------------------------------
+# --- scheme / color_scheme -------------------------------------------------
 
 @pytest.mark.parametrize(
     "given, expected",
     [
-        ("chain-id", "chain-id"),
-        ("  residue-name  ", "residue-name"),  # stripped
-        ("element-symbol", "element-symbol"),
+        # canonical tags resolve to themselves
+        ("chain_default", "chain_default"),
+        ("element_cpk", "element_cpk"),
+        ("molecule_type", "molecule_type"),
+        # Mol* theme names (derived from the registry's molstar_theme field)
+        ("chain-id", "chain_default"),
+        ("element-symbol", "element_cpk"),
+        ("residue-name", "residue_name"),
+        ("secondary-structure", "secondary_structure_default"),
+        ("entity-id", "entity_default"),
+        # MolSysMT attribute vocabulary
+        ("chain_id", "chain_default"),
+        ("group_name", "residue_name"),
+        ("entity_id", "entity_default"),
+        ("element", "element_cpk"),
+        # whitespace tolerated
+        ("  chain-id  ", "chain_default"),
     ],
 )
-def test_scheme_accepts_non_empty_string_stripped(given, expected):
+def test_scheme_resolves_synonyms_to_canonical_tag(given, expected):
     assert digest_scheme(given) == expected
 
 
-@pytest.mark.parametrize("given", [None, "", "   ", 5, ["chain-id"]])
-def test_scheme_rejects_empty_or_non_string(given):
+@pytest.mark.parametrize("given", [None, "", "   ", 5, ["chain-id"], "nope", "chainid"])
+def test_scheme_rejects_unknown_or_non_string(given):
+    # Previously any non-empty string was accepted and then silently ignored by
+    # the frontend, so an unrecognized scheme did nothing at all.
     with pytest.raises(ArgumentError):
         digest_scheme(given)
+
+
+def test_scheme_error_lists_valid_options():
+    with pytest.raises(ArgumentError, match="Valid color schemes"):
+        digest_scheme("definitely-not-a-scheme")
+
+
+def test_color_scheme_param_resolves_structural_synonyms():
+    assert digest_color_scheme(None) is None
+    assert digest_color_scheme("chain-id") == "chain_default"
+    assert digest_color_scheme("group_name") == "residue_name"
+
+
+def test_color_scheme_param_passes_through_non_structural_schemes():
+    # `color_scheme` is shared with shape/pharmacophore visuals, which use their
+    # own vocabulary, so unknown names must not be rejected here (only `scheme`,
+    # which is structural-only, validates strictly).
+    assert digest_color_scheme("pharmacophore_default") == "pharmacophore_default"
+    assert digest_color_scheme("pocket_default") == "pocket_default"
+
+
+def test_color_scheme_rejects_non_string():
+    with pytest.raises(ArgumentError):
+        digest_color_scheme(5)
