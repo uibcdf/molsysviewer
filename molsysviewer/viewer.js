@@ -150305,7 +150305,7 @@ var STRUCTURAL_COLOR_OPTIONS = [
   { value: "chain_default", label: "Chain" },
   { value: "secondary_structure_default", label: "Secondary structure" },
   { value: "physicochemical", label: "Physicochemical" },
-  { value: "residue_name", label: "Residue name" },
+  { value: "group_name", label: "Group name" },
   { value: "molecule_type", label: "Molecule type" },
   { value: "entity_default", label: "Entity" },
   { value: "illustrative_default", label: "Illustrative" },
@@ -157907,6 +157907,7 @@ function createMolSysViewerPluginSpec() {
     behaviors
   };
 }
+var CONTEXT_MENU_DRAG_THRESHOLD_PX = 5;
 var MolSysViewerController = class _MolSysViewerController {
   constructor(plugin, host, notify, canvasHost, initOptions) {
     this.plugin = plugin;
@@ -158384,11 +158385,30 @@ var MolSysViewerController = class _MolSysViewerController {
             isCanvasVisible: this.canvasHost.style.display !== "none"
           }
         );
+        armContextMenuDragDismiss(event.clientX, event.clientY);
+      };
+      let contextMenuAnchor = null;
+      const disarmContextMenuDragDismiss = () => {
+        contextMenuAnchor = null;
+        window.removeEventListener("pointermove", onPointerMoveWhileMenuOpen, true);
+        window.removeEventListener("pointerup", disarmContextMenuDragDismiss, true);
+      };
+      const onPointerMoveWhileMenuOpen = (ev) => {
+        if (!contextMenuAnchor) return;
+        if (!this.exceedsContextMenuDragThreshold(contextMenuAnchor, ev.clientX, ev.clientY)) return;
+        disarmContextMenuDragDismiss();
+        this.contextMenu.close();
+      };
+      const armContextMenuDragDismiss = (x, y) => {
+        contextMenuAnchor = { x, y };
+        window.addEventListener("pointermove", onPointerMoveWhileMenuOpen, true);
+        window.addEventListener("pointerup", disarmContextMenuDragDismiss, true);
       };
       this.canvasHost.addEventListener("contextmenu", handleCanvasContextMenu, true);
       const previousRelease = this.releaseContextMenuSuppression;
       this.releaseContextMenuSuppression = () => {
         previousRelease?.();
+        disarmContextMenuDragDismiss();
         this.canvasHost.removeEventListener("contextmenu", handleCanvasContextMenu, true);
       };
     }
@@ -159245,6 +159265,14 @@ var MolSysViewerController = class _MolSysViewerController {
     }
   }
   // Message Dispatcher
+  /**
+   * Whether the pointer has travelled far enough from where the context menu
+   * was opened to count as a drag rather than a right-click. The small
+   * tolerance keeps a plain right-click working even if the hand shakes.
+   */
+  exceedsContextMenuDragThreshold(anchor, x, y) {
+    return Math.hypot(x - anchor.x, y - anchor.y) > CONTEXT_MENU_DRAG_THRESHOLD_PX;
+  }
   async handleMessage(msg) {
     if (!msg || typeof msg !== "object") return;
     if (!("op" in msg)) {

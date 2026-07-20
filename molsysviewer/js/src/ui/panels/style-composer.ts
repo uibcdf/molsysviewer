@@ -30,7 +30,7 @@ export const STRUCTURAL_COLOR_OPTIONS = [
     { value: "chain_default", label: "Chain" },
     { value: "secondary_structure_default", label: "Secondary structure" },
     { value: "physicochemical", label: "Physicochemical" },
-    { value: "residue_name", label: "Residue name" },
+    { value: "group_name", label: "Group name" },
     { value: "molecule_type", label: "Molecule type" },
     { value: "entity_default", label: "Entity" },
     { value: "illustrative_default", label: "Illustrative" },

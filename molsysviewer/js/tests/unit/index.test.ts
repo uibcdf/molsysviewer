@@ -18,6 +18,7 @@ import "./annotation-handler.test";
 import "./group-strip.test";
 import "./group-panel.test";
 import "./context-menu.test";
+import "./context-menu-drag-dismiss.test";
 import "./addons-panel.test";
 import "./addon-panel-lifecycle.test";
 import "./webgl-status-overlay.test";

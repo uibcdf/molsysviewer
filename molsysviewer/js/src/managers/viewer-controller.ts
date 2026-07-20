@@ -528,6 +528,9 @@ export function createMolSysViewerPluginSpec() {
  * Controller that translates Python messages into Mol* actions and manages state refs.
  * Refactored to use specialized handlers for better maintainability.
  */
+/** Pointer travel (px) past which a right-press counts as a drag, not a click. */
+const CONTEXT_MENU_DRAG_THRESHOLD_PX = 5;
+
 export class MolSysViewerController {
     private readonly contextMenu: ViewerContextMenu;
     private readonly measurementTools: MeasurementToolController;
@@ -1258,12 +1261,38 @@ export class MolSysViewerController {
                         isCanvasVisible: this.canvasHost.style.display !== "none",
                     }
                 );
+
+                // Right-dragging pans the structure, but the browser fires
+                // `contextmenu` on button press, so the menu is already open before
+                // a click can be told apart from a drag. Watch the pointer and
+                // dismiss the menu as soon as the gesture turns into a drag,
+                // leaving a plain right-click working as before.
+                armContextMenuDragDismiss(event.clientX, event.clientY);
+            };
+
+            let contextMenuAnchor: { x: number; y: number } | null = null;
+            const disarmContextMenuDragDismiss = () => {
+                contextMenuAnchor = null;
+                window.removeEventListener("pointermove", onPointerMoveWhileMenuOpen, true);
+                window.removeEventListener("pointerup", disarmContextMenuDragDismiss, true);
+            };
+            const onPointerMoveWhileMenuOpen = (ev: PointerEvent) => {
+                if (!contextMenuAnchor) return;
+                if (!this.exceedsContextMenuDragThreshold(contextMenuAnchor, ev.clientX, ev.clientY)) return;
+                disarmContextMenuDragDismiss();
+                this.contextMenu.close();
+            };
+            const armContextMenuDragDismiss = (x: number, y: number) => {
+                contextMenuAnchor = { x, y };
+                window.addEventListener("pointermove", onPointerMoveWhileMenuOpen, true);
+                window.addEventListener("pointerup", disarmContextMenuDragDismiss, true);
             };
 
             this.canvasHost.addEventListener("contextmenu", handleCanvasContextMenu as any, true);
             const previousRelease = this.releaseContextMenuSuppression;
             this.releaseContextMenuSuppression = () => {
                 previousRelease?.();
+                disarmContextMenuDragDismiss();
                 this.canvasHost.removeEventListener("contextmenu", handleCanvasContextMenu as any, true);
             };
         }
@@ -2020,6 +2049,15 @@ export class MolSysViewerController {
     }
 
     // Message Dispatcher
+    /**
+     * Whether the pointer has travelled far enough from where the context menu
+     * was opened to count as a drag rather than a right-click. The small
+     * tolerance keeps a plain right-click working even if the hand shakes.
+     */
+    exceedsContextMenuDragThreshold(anchor: { x: number; y: number }, x: number, y: number): boolean {
+        return Math.hypot(x - anchor.x, y - anchor.y) > CONTEXT_MENU_DRAG_THRESHOLD_PX;
+    }
+
     async handleMessage(msg: ViewerMessage) {
         if (!msg || typeof msg !== "object") return;
         if (!("op" in msg)) {
