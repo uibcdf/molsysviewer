@@ -153834,12 +153834,13 @@ var WholePanel = class {
     actions.appendChild(resetBtn);
     header2.appendChild(actions);
     section.appendChild(header2);
-    if (this.details) {
-      const composition = this.details.composition ?? {};
+    const composition = summary.composition ?? this.details?.composition;
+    const contains = summary.contains ?? this.details?.contains;
+    if (composition && (composition.atoms || composition.groups || composition.chains || composition.molecules)) {
       const infoLine = document.createElement("div");
       infoLine.setAttribute("data-molsysviewer-whole-inspect-details", "true");
       infoLine.textContent = [
-        `${composition.atoms ?? this.details.atom_count} atoms`,
+        `${composition.atoms ?? 0} atoms`,
         `${composition.groups ?? 0} groups`,
         `${composition.chains ?? 0} chains`,
         `${composition.molecules ?? 0} molecules`
@@ -153847,10 +153848,11 @@ var WholePanel = class {
       Object.assign(infoLine.style, {
         fontSize: "11px",
         color: "rgba(244,244,245,0.75)",
-        marginTop: "2px"
+        marginTop: "4px"
       });
       section.appendChild(infoLine);
-      const contains = this.details.contains ?? {};
+    }
+    if (contains) {
       const presentItems = [];
       for (const [key2, val] of Object.entries(contains)) {
         if (val === true) {
@@ -153866,7 +153868,8 @@ var WholePanel = class {
         Object.assign(containsLine.style, {
           fontSize: "11px",
           color: "#38bdf8",
-          fontWeight: "500"
+          fontWeight: "500",
+          marginTop: "2px"
         });
         section.appendChild(containsLine);
       }

@@ -192,13 +192,15 @@ export class WholePanel implements StudioPanel {
         header.appendChild(actions);
         section.appendChild(header);
 
-        // System information summary (integrated from inspect section)
-        if (this.details) {
-            const composition = this.details.composition ?? {};
+        // System information summary (integrated into Card 1)
+        const composition = summary.composition ?? this.details?.composition;
+        const contains = summary.contains ?? this.details?.contains;
+
+        if (composition && (composition.atoms || composition.groups || composition.chains || composition.molecules)) {
             const infoLine = document.createElement("div");
             infoLine.setAttribute("data-molsysviewer-whole-inspect-details", "true");
             infoLine.textContent = [
-                `${composition.atoms ?? this.details.atom_count} atoms`,
+                `${composition.atoms ?? 0} atoms`,
                 `${composition.groups ?? 0} groups`,
                 `${composition.chains ?? 0} chains`,
                 `${composition.molecules ?? 0} molecules`,
@@ -206,12 +208,12 @@ export class WholePanel implements StudioPanel {
             Object.assign(infoLine.style, {
                 fontSize: "11px",
                 color: "rgba(244,244,245,0.75)",
-                marginTop: "2px",
+                marginTop: "4px",
             });
             section.appendChild(infoLine);
+        }
 
-            // Positive & quantitative Contains line (only items present)
-            const contains = this.details.contains ?? {};
+        if (contains) {
             const presentItems: string[] = [];
             for (const [key, val] of Object.entries(contains)) {
                 if (val === true) {
@@ -228,6 +230,7 @@ export class WholePanel implements StudioPanel {
                     fontSize: "11px",
                     color: "#38bdf8",
                     fontWeight: "500",
+                    marginTop: "2px",
                 });
                 section.appendChild(containsLine);
             }

@@ -137,6 +137,8 @@ export type WholeSummary = {
     inheriting_region_count: number;
     none_state_region_count: number;
     covering_layer_count: number;
+    composition?: Record<string, number>;
+    contains?: Record<string, boolean>;
 };
 export type WholeDetails = {
     request_id?: number;

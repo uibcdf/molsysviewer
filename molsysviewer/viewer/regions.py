@@ -595,6 +595,31 @@ class RegionsMixin:
             for owner, layer in getattr(self, "_atom_color_layers", {}).items()
             if owner != "whole" and bool(layer)
         )
+        composition: dict[str, int] = {}
+        if self._molsys is not None:
+            for key, flag in (
+                ("atoms", "n_atoms"),
+                ("groups", "n_groups"),
+                ("chains", "n_chains"),
+                ("molecules", "n_molecules"),
+                ("entities", "n_entities"),
+            ):
+                try:
+                    composition[key] = int(msm.get(
+                        self._molsys,
+                        element="system",
+                        output_type="values",
+                        skip_digestion=True,
+                        **{flag: True},
+                    ))
+                except Exception:
+                    composition[key] = 0
+        contains: dict[str, bool] = {}
+        for token, attribute in self._WHOLE_COMPOSITION_PROBES:
+            try:
+                contains[token] = bool(self.whole.contains(skip_digestion=True, **{attribute: True}))
+            except Exception:
+                pass
         return {
             "representation": self.whole.representation,
             "preset": self.whole.preset,
@@ -607,6 +632,8 @@ class RegionsMixin:
             "inheriting_region_count": inheriting_count,
             "none_state_region_count": none_state_count,
             "covering_layer_count": covering_layer_count,
+            "composition": composition,
+            "contains": contains,
         }
 
     def _sync_whole_summary_runtime(self) -> None:
