@@ -49,7 +49,7 @@ def test_all_demos_resolve_with_expected_atom_counts():
 def test_crystal_demos_expose_b_factor():
     # 181L and 1TCD are crystal structures; b_factor must be present. This is the
     # root fix: the previously bundled copies (and even MolSysMT's 1tcd.h5msm) had
-    # dropped it, so the demos are resolved from the .pdb form that carries it.
+    # dropped it, so the demos are resolved from a form that carries it.
     for key in ("181L", "1TCD"):
         assert "b_factor" in _attributes(demo[key]), key
 
@@ -57,3 +57,16 @@ def test_crystal_demos_expose_b_factor():
 def test_non_crystal_demo_has_no_b_factor():
     # dialanine is a minimal capped peptide with no experimental b-factors.
     assert "b_factor" not in _attributes(demo["dialanine"])
+
+
+# Chain counts pin the .bcif.gz form: the older .pdb form collapses the crystal
+# chains (waters land on the protein chain), which is wrong. bcif matches what a
+# user gets from msm.convert('1TCD') / msm.convert('181L').
+EXPECTED_N_CHAINS = {"1TCD": 4, "181L": 6}
+
+
+def test_crystal_demos_use_correct_chain_topology():
+    import molsysmt as msm
+
+    for key, n_chains in EXPECTED_N_CHAINS.items():
+        assert int(msm.get(demo[key].molsys, n_chains=True)) == n_chains, key

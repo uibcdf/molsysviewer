@@ -11,6 +11,7 @@ import numpy as np
 import pytest
 
 from molsysviewer._private.arg_digestion.argument.replace import digest_replace
+from molsysviewer._private.arg_digestion.argument.scheme import digest_scheme
 from molsysviewer._private.arg_digestion.argument.value_range import digest_value_range
 from molsysviewer._private.exceptions import ArgumentError
 
@@ -68,3 +69,23 @@ def test_replace_accepts_bool_unchanged(given):
 def test_replace_rejects_non_bool(given):
     with pytest.raises(ArgumentError):
         digest_replace(given)
+
+
+# --- scheme ----------------------------------------------------------------
+
+@pytest.mark.parametrize(
+    "given, expected",
+    [
+        ("chain-id", "chain-id"),
+        ("  residue-name  ", "residue-name"),  # stripped
+        ("element-symbol", "element-symbol"),
+    ],
+)
+def test_scheme_accepts_non_empty_string_stripped(given, expected):
+    assert digest_scheme(given) == expected
+
+
+@pytest.mark.parametrize("given", [None, "", "   ", 5, ["chain-id"]])
+def test_scheme_rejects_empty_or_non_string(given):
+    with pytest.raises(ArgumentError):
+        digest_scheme(given)

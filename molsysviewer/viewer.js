@@ -144419,14 +144419,21 @@ function baseColor(baseTheme, location2, isSecondary) {
 }
 function factory2(ctx, props) {
   const baseTheme = createBaseTheme(ctx, props.base);
+  const colorFor = (atomIndex, location2) => {
+    const c8 = _perAtomColorMap.get(atomIndex);
+    return c8 !== void 0 ? Color(c8) : baseColor(baseTheme, location2, false);
+  };
   return {
     factory: factory2,
     granularity: "groupInstance",
     color: (location2) => {
-      if (!element_exports.Location.is(location2)) return baseColor(baseTheme, location2, false);
-      const atomIndex = OrderedSet2.getAt(location2.unit.elements, location2.element);
-      const c8 = _perAtomColorMap.get(atomIndex);
-      return c8 !== void 0 ? Color(c8) : baseColor(baseTheme, location2, false);
+      if (element_exports.Location.is(location2)) {
+        return colorFor(location2.element, location2);
+      }
+      if (Bond.isLocation(location2)) {
+        return colorFor(location2.aUnit.elements[location2.aIndex], location2);
+      }
+      return baseColor(baseTheme, location2, false);
     },
     props
   };

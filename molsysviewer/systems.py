@@ -41,8 +41,8 @@ class _SystemsCatalog:
     chicken_villin_HP35 = _SystemEntry(
         "chicken villin HP35", "traj_chicken_villin_HP35_solvated.h5msm"
     )
-    TCD_1 = _SystemEntry("TcTIM", "1tcd.pdb")
-    L_181 = _SystemEntry("T4 lysozyme L99A", "181l.pdb")
+    TCD_1 = _SystemEntry("TcTIM", "1tcd.bcif.gz")
+    L_181 = _SystemEntry("T4 lysozyme L99A", "181l.bcif.gz")
 
     def __repr__(self) -> str:
         names = [k for k in dir(self) if not k.startswith("_")]

@@ -159,6 +159,11 @@ def test_color_operations_do_not_emit_missing_digester_warnings():
         region.set_color_by_attribute("b_factor", value_range=[0.0, 50.0], replace=True)
         region.set_color_by_attribute("b_factor", value_range=None, replace=False)
         region.set_color_by_values([0.1, 0.5, 0.9], value_range=[0.0, 1.0], replace=False)
+        # structural color scheme (the `scheme` argument)
+        view.whole.set_representation("cartoon")
+        view.whole.set_color_scheme("chain-id")
+        region.set_representation("cartoon")
+        region.set_color_scheme("residue-name")
 
     assert _missing_digester_warnings(records) == []
 

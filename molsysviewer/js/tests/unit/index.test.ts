@@ -4,6 +4,7 @@ import "./scene-object-summaries.test";
 import "./state-handler.test";
 import "./loader-handler.test";
 import "./scene-handler.test";
+import "./per-atom-color-theme.test";
 import "./shape-handler.test";
 import "./shapes-panel.test";
 import "./viewer-interaction.test";

@@ -60,8 +60,8 @@ class DemoCatalog(Mapping[str, "MolSysView"]):
 demo = DemoCatalog(
     [
         _DemoSpec("dialanine", "alanine dipeptide", "alanine_dipeptide.h5msm"),
-        _DemoSpec("1TCD", "TcTIM", "1tcd.pdb"),
-        _DemoSpec("181L", "T4 lysozyme L99A", "181l.pdb"),
+        _DemoSpec("1TCD", "TcTIM", "1tcd.bcif.gz"),
+        _DemoSpec("181L", "T4 lysozyme L99A", "181l.bcif.gz"),
         _DemoSpec("pentalanine", "pentalanine", "traj_pentalanine.h5msm"),
         _DemoSpec(
             "chicken_villin_HP35",
