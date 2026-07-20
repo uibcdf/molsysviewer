@@ -153733,7 +153733,9 @@ var WholePanel = class {
   }
   setVisible(visible) {
     this.visible = visible;
-    if (visible) this.render();
+    if (visible) {
+      this.render();
+    }
   }
   setSummary(summary) {
     this.summary = summary;
@@ -153745,7 +153747,6 @@ var WholePanel = class {
     }
   }
   updateDetails(details) {
-    if (details.request_id !== this.requestId) return;
     this.details = details;
     this.render();
   }
@@ -153766,19 +153767,31 @@ var WholePanel = class {
       this.host.appendChild(empty2);
       return;
     }
-    this.host.appendChild(this.renderPresence());
+    this.host.appendChild(this.renderPresenceHero());
     this.host.appendChild(this.renderRepresentation());
     this.host.appendChild(this.renderColour());
-    this.host.appendChild(this.renderInspect());
   }
-  renderPresence() {
+  renderPresenceHero() {
     const summary = this.summary;
     const section = card();
     section.setAttribute("data-molsysviewer-whole-presence", "true");
     const header2 = document.createElement("div");
-    Object.assign(header2.style, { display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" });
+    Object.assign(header2.style, {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: "8px",
+      flexWrap: "wrap"
+    });
     const title = document.createElement("div");
-    Object.assign(title.style, { display: "flex", alignItems: "center", gap: "6px", color: "#f4f4f5", fontWeight: "700", fontSize: "12px" });
+    Object.assign(title.style, {
+      display: "flex",
+      alignItems: "center",
+      gap: "6px",
+      color: "#f4f4f5",
+      fontWeight: "700",
+      fontSize: "12px"
+    });
     const dot = document.createElement("span");
     dot.setAttribute("data-molsysviewer-whole-visible-dot", String(summary.visible));
     Object.assign(dot.style, {
@@ -153786,14 +153799,19 @@ var WholePanel = class {
       height: "7px",
       borderRadius: "999px",
       background: summary.visible ? "#34d399" : "rgba(244,244,245,0.28)",
-      boxShadow: summary.visible ? "0 0 8px rgba(52,211,153,0.5)" : "none"
+      boxShadow: summary.visible ? "0 0 8px rgba(52,211,153,0.5)" : "none",
+      flexShrink: "0"
     });
     title.appendChild(dot);
-    title.appendChild(document.createTextNode(`Whole structure \xB7 ${summary.visible ? "visible" : "hidden"}`));
+    title.appendChild(document.createTextNode("Whole Structure"));
     header2.appendChild(title);
-    section.appendChild(header2);
     const actions = document.createElement("div");
-    Object.assign(actions.style, { display: "flex", gap: "6px" });
+    Object.assign(actions.style, {
+      display: "flex",
+      alignItems: "center",
+      gap: "4px",
+      flexWrap: "nowrap"
+    });
     const toggle = makeButton(summary.visible ? "Hide" : "Show", () => {
       if (summary.visible && summary.none_state_region_count > 0) {
         const ok = window.confirm(`${summary.none_state_region_count} region(s) have no own representation and will disappear while the whole is hidden.`);
@@ -153803,7 +153821,56 @@ var WholePanel = class {
     });
     toggle.setAttribute("data-molsysviewer-whole-visibility", summary.visible ? "hide" : "show");
     actions.appendChild(toggle);
-    section.appendChild(actions);
+    const undoBtn = makeButton("Undo", () => {
+      this.ctx.onAction("undo_active_selection");
+    });
+    undoBtn.title = "Undo last action";
+    actions.appendChild(undoBtn);
+    const resetBtn = makeButton("Reset", () => {
+      this.ctx.onAction("reset_whole_representation");
+      this.ctx.onAction("reset_whole_colors");
+    });
+    resetBtn.title = "Reset whole representation and colors to base";
+    actions.appendChild(resetBtn);
+    header2.appendChild(actions);
+    section.appendChild(header2);
+    if (this.details) {
+      const composition = this.details.composition ?? {};
+      const infoLine = document.createElement("div");
+      infoLine.setAttribute("data-molsysviewer-whole-inspect-details", "true");
+      infoLine.textContent = [
+        `${composition.atoms ?? this.details.atom_count} atoms`,
+        `${composition.groups ?? 0} groups`,
+        `${composition.chains ?? 0} chains`,
+        `${composition.molecules ?? 0} molecules`
+      ].join(" \xB7 ");
+      Object.assign(infoLine.style, {
+        fontSize: "11px",
+        color: "rgba(244,244,245,0.75)",
+        marginTop: "2px"
+      });
+      section.appendChild(infoLine);
+      const contains = this.details.contains ?? {};
+      const presentItems = [];
+      for (const [key2, val] of Object.entries(contains)) {
+        if (val === true) {
+          presentItems.push(`1 ${key2}`);
+        } else if (typeof val === "number" && val > 0) {
+          const label2 = val === 1 ? key2 : `${key2}s`;
+          presentItems.push(`${val} ${label2}`);
+        }
+      }
+      if (presentItems.length > 0) {
+        const containsLine = document.createElement("div");
+        containsLine.textContent = `Contains: ${presentItems.join(" \xB7 ")}`;
+        Object.assign(containsLine.style, {
+          fontSize: "11px",
+          color: "#38bdf8",
+          fontWeight: "500"
+        });
+        section.appendChild(containsLine);
+      }
+    }
     if (summary.none_state_region_count > 0) {
       section.appendChild(note(`${summary.none_state_region_count} region(s) have no representation of their own and will disappear.`, true));
     }
@@ -153814,6 +153881,16 @@ var WholePanel = class {
     const params = summary.params ?? {};
     const section = card();
     section.setAttribute("data-molsysviewer-whole-representation", "true");
+    const cardTitle = document.createElement("div");
+    cardTitle.textContent = "Representation";
+    Object.assign(cardTitle.style, {
+      fontSize: "11px",
+      fontWeight: "700",
+      letterSpacing: "0.04em",
+      color: "rgba(244,244,245,0.85)",
+      marginBottom: "2px"
+    });
+    section.appendChild(cardTitle);
     if (summary.scene_style_name) {
       section.appendChild(note(`Scene style: ${summary.scene_style_name}. Editing below clears this name.`));
     }
@@ -153830,6 +153907,15 @@ var WholePanel = class {
     const preset = controls.presetSelect;
     const opacity = controls.opacityInput;
     const quality = controls.qualitySelect;
+    const triggerLiveUpdate = () => {
+      this.ctx.onAction("set_whole_representation", {
+        ...preset.value ? { preset: preset.value } : representation.value ? { representation: representation.value } : {},
+        params: { ...params, alpha: Number(opacity.value), quality: quality.value }
+      });
+    };
+    representation.addEventListener("change", triggerLiveUpdate);
+    preset.addEventListener("change", triggerLiveUpdate);
+    quality.addEventListener("change", triggerLiveUpdate);
     section.appendChild(controls.representationRow);
     section.appendChild(controls.presetRow);
     bindContinuousHistory(
@@ -153849,25 +153935,11 @@ var WholePanel = class {
     opacity.addEventListener("input", () => {
       this.ctx.onAction("set_whole_representation", {
         ...preset.value ? { preset: preset.value } : representation.value ? { representation: representation.value } : {},
-        params: { ...params, alpha: Number(opacity.value) }
+        params: { ...params, alpha: Number(opacity.value), quality: quality.value }
       });
     });
     section.appendChild(controls.opacityRow);
     section.appendChild(controls.qualityRow);
-    const actions = document.createElement("div");
-    Object.assign(actions.style, { display: "flex", gap: "6px" });
-    const reset = makeButton("Reset representation", () => this.ctx.onAction("reset_whole_representation"));
-    reset.setAttribute("data-molsysviewer-whole-reset-representation", "true");
-    const apply = makeButton("Apply", () => {
-      this.ctx.onAction("set_whole_representation", {
-        ...preset.value ? { preset: preset.value } : representation.value ? { representation: representation.value } : {},
-        params: { ...params, alpha: Number(opacity.value), quality: quality.value }
-      });
-    });
-    apply.setAttribute("data-molsysviewer-whole-apply-representation", "true");
-    actions.appendChild(reset);
-    actions.appendChild(apply);
-    section.appendChild(actions);
     if (summary.inheriting_region_count > 0) {
       section.appendChild(note(`${summary.inheriting_region_count} region(s) inherit this representation and will follow it.`));
     }
@@ -153877,6 +153949,16 @@ var WholePanel = class {
     const summary = this.summary;
     const section = card();
     section.setAttribute("data-molsysviewer-whole-colour", "true");
+    const cardTitle = document.createElement("div");
+    cardTitle.textContent = "Color Scheme";
+    Object.assign(cardTitle.style, {
+      fontSize: "11px",
+      fontWeight: "700",
+      letterSpacing: "0.04em",
+      color: "rgba(244,244,245,0.85)",
+      marginBottom: "2px"
+    });
+    section.appendChild(cardTitle);
     const scheme = makeStyledSelect(
       summary.color_schemes.length ? summary.color_schemes.map((value) => ({ value, label: labelFromToken(value) })) : [{ value: "", label: "No schemes available" }],
       summary.color_scheme ?? "",
@@ -153936,56 +154018,7 @@ var WholePanel = class {
     attrWrap.appendChild(range2);
     attrWrap.appendChild(commit);
     section.appendChild(row("Colour by", attrWrap));
-    const reset = makeButton("Reset colours", () => this.ctx.onAction("reset_whole_colors"));
-    reset.setAttribute("data-molsysviewer-whole-reset-colors", "base");
-    const resetAll = makeButton("Reset ALL colours", () => {
-      if (window.confirm("Clear every whole and region colour layer?")) {
-        this.ctx.onAction("reset_all_colors");
-      }
-    });
-    resetAll.setAttribute("data-molsysviewer-whole-reset-colors", "all");
-    Object.assign(resetAll.style, {
-      color: "#fbbf24",
-      border: "1px solid rgba(251,191,36,0.35)",
-      background: "rgba(251,191,36,0.06)"
-    });
-    const actions = document.createElement("div");
-    Object.assign(actions.style, { display: "flex", gap: "6px" });
-    actions.appendChild(reset);
-    actions.appendChild(resetAll);
-    section.appendChild(actions);
     section.appendChild(note(`Base layer \xB7 covered by ${summary.covering_layer_count} region layer(s).`));
-    return section;
-  }
-  renderInspect() {
-    const section = card();
-    section.setAttribute("data-molsysviewer-whole-inspect", "true");
-    const refresh = makeButton("Refresh", () => {
-      this.requestId += 1;
-      this.ctx.onAction("get_whole_details", { request_id: this.requestId });
-    });
-    refresh.setAttribute("data-molsysviewer-whole-inspect-refresh", "true");
-    section.appendChild(refresh);
-    if (!this.details) return section;
-    const composition = this.details.composition ?? {};
-    const line = document.createElement("div");
-    line.setAttribute("data-molsysviewer-whole-inspect-details", "true");
-    line.textContent = [
-      `${composition.atoms ?? this.details.atom_count} atoms`,
-      `${composition.groups ?? 0} groups`,
-      `${composition.chains ?? 0} chains`,
-      `${composition.molecules ?? 0} molecules`,
-      `${composition.entities ?? 0} entities`,
-      `center [${this.details.center_nm.map((value) => value.toFixed(2)).join(", ")}] nm`,
-      `frame ${this.details.structure_index}`
-    ].join(" \xB7 ");
-    Object.assign(line.style, { fontSize: "11px", color: "rgba(244,244,245,0.72)", lineHeight: "1.45" });
-    section.appendChild(line);
-    const contains = this.details.contains ?? {};
-    const containsLine = document.createElement("div");
-    containsLine.textContent = `contains: ${Object.entries(contains).map(([key2, value]) => `${key2} ${value ? "yes" : "no"}`).join(" \xB7 ")}`;
-    Object.assign(containsLine.style, { fontSize: "10px", color: "rgba(244,244,245,0.56)" });
-    section.appendChild(containsLine);
     return section;
   }
 };
