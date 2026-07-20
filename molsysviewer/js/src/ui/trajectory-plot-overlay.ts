@@ -154,8 +154,10 @@ export class TrajectoryPlotOverlay {
             entry.playhead.setAttribute("x1", String(x));
             entry.playhead.setAttribute("x2", String(x));
 
-            if (entry.readoutText && entry.options.series) {
-                const opts = entry.options;
+            const opts = entry.options;
+            // Narrow through `opts`, not `entry.options`: TypeScript does not carry
+            // the check across the alias, so `opts.series` read as possibly undefined.
+            if (entry.readoutText && opts.series) {
                 const xValStr = opts.x && opts.x.length > clamped ? formatValue(opts.x[clamped]) : `frame: ${clamped}`;
                 
                 if (opts.series.length === 1) {

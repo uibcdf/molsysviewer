@@ -76,18 +76,25 @@ hit; it is worth re-running when a new enum-like argument is added.
 them: dead code in the opposite direction. A reverse sweep (digesters with no
 consumer) would find more.
 
-## Status
+## Status: closed
 
-The six non-shape digesters are **done** (`region`, `fade`, `meta`, `layer`,
-`target`, `transaction_id`), each mutation-verified. Re-running sweep 1 now
-reports 20 missing arguments instead of 26, all of them in `shapes`.
+All three findings are resolved.
 
-## Recommendation
+- **26 missing digesters → 0.** The six non-shape ones came first (`region`,
+  `fade`, `meta`, `layer`, `target`, `transaction_id`), then the twenty in
+  `shapes`. Contracts follow their call sites, and booleans are rejected wherever
+  they would masquerade as a number or an index.
+- **The orphan op now has a handler.** `dynamic_region_evaluation_warning` is
+  surfaced as a canvas toast naming the region and the timing that blew the
+  budget. The first attempt was to stop emitting it, on the grounds that the
+  freeze already reaches the user through the message catalog — but the suite
+  rejected that: `test_over_budget_dynamic_region_freezes_to_static_and_reports_runtime`
+  asserts the message is sent. The emission was deliberate and tested; what was
+  missing was the other half. Worth remembering when this sweep flags an orphan:
+  check for a test asserting the emission before assuming it is dead weight.
+- **Sweeps 1 and 2 now run in CI** as `tests/test_python_js_boundary.py`. Both
+  are mutation-verified: removing a digester or adding an unread op fails them.
 
-1. Fill the remaining 20 digesters, all in `shapes`. The group is homogeneous and
-   can be done in one pass.
-2. Decide on `dynamic_region_evaluation_warning`: surface it in the frontend, or
-   stop emitting it. A performance warning that reaches nobody is worse than no
-   warning, because the region silently degrades.
-3. Re-run sweeps 1 and 2 in CI. Both are cheap and deterministic, and would have
-   caught every instance of this pattern found during dogfooding.
+Sweep 3 (values Python accepts that the frontend does not know) is **not**
+automated: its signal-to-noise ratio is poor and every hit needs manual reading.
+Re-run it by hand when adding an enum-like argument that crosses the boundary.

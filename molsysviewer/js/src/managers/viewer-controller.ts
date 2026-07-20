@@ -2364,6 +2364,20 @@ export class MolSysViewerController {
                     await this.state.setDynamicRegionAtoms(msg as any);
                     this.handleDynamicRegionEvaluationResponse((msg as any).frame);
                     break;
+                case "dynamic_region_evaluation_warning": {
+                    // Python freezes a dynamic region to static when evaluating it
+                    // blows the per-frame budget. It has always sent this warning,
+                    // but no handler existed, so the region just stopped following
+                    // the trajectory with nothing said on screen.
+                    const tag = typeof (msg as any).tag === "string" ? (msg as any).tag : "region";
+                    const elapsed = Number((msg as any).elapsed_ms);
+                    const budget = Number((msg as any).budget_ms);
+                    const timing = Number.isFinite(elapsed) && Number.isFinite(budget)
+                        ? ` (${elapsed.toFixed(0)}ms > ${budget.toFixed(0)}ms budget)`
+                        : "";
+                    this.showToast(`Region '${tag}' frozen to static: too slow to follow frames${timing}`);
+                    break;
+                }
                 case "set_history_state":
                     this.groupPanel?.updateSelectionHistoryState({
                         canUndo: Boolean((msg as any).can_undo),

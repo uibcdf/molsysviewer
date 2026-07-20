@@ -148987,8 +148987,8 @@ var TrajectoryPlotOverlay = class {
       const x = this.frameToX(clamped, entry);
       entry.playhead.setAttribute("x1", String(x));
       entry.playhead.setAttribute("x2", String(x));
-      if (entry.readoutText && entry.options.series) {
-        const opts = entry.options;
+      const opts = entry.options;
+      if (entry.readoutText && opts.series) {
         const xValStr = opts.x && opts.x.length > clamped ? formatValue(opts.x[clamped]) : `frame: ${clamped}`;
         if (opts.series.length === 1) {
           const val = opts.series[0].values[clamped];
@@ -160141,6 +160141,14 @@ var MolSysViewerController = class _MolSysViewerController {
           await this.state.setDynamicRegionAtoms(msg);
           this.handleDynamicRegionEvaluationResponse(msg.frame);
           break;
+        case "dynamic_region_evaluation_warning": {
+          const tag = typeof msg.tag === "string" ? msg.tag : "region";
+          const elapsed = Number(msg.elapsed_ms);
+          const budget = Number(msg.budget_ms);
+          const timing = Number.isFinite(elapsed) && Number.isFinite(budget) ? ` (${elapsed.toFixed(0)}ms > ${budget.toFixed(0)}ms budget)` : "";
+          this.showToast(`Region '${tag}' frozen to static: too slow to follow frames${timing}`);
+          break;
+        }
         case "set_history_state":
           this.groupPanel?.updateSelectionHistoryState({
             canUndo: Boolean(msg.can_undo),
