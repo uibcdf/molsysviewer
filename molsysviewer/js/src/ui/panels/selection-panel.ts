@@ -107,9 +107,7 @@ export class SelectionPanel extends BasePanel {
     --text-muted: rgba(244, 244, 245, 0.48);
 }
 
-[data-molsysviewer-group-panel-section="selection"] {
-    background: var(--bg-sidebar);
-}
+
 
 [data-molsysviewer-selection-active-card],
 [data-molsysviewer-selection-query-composer="true"] {
@@ -177,9 +175,7 @@ export class SelectionPanel extends BasePanel {
     text-shadow: 0 0 10px rgba(252, 165, 165, 0.16);
 }
 
-[data-molsysviewer-group-panel-section="regions"] {
-    background: var(--bg-sidebar);
-}
+
 
 [data-molsysviewer-region-create],
 [data-molsysviewer-region-boolean-composer],
@@ -521,21 +517,6 @@ export class SelectionPanel extends BasePanel {
                 });
                 activateBtn.setAttribute("data-molsysviewer-saved-selection-activate", item.tag);
 
-                const unionBtn = makeButton("+Union", () => this.ctx.onAction("compose_saved_selection", { tag: item.tag, op: "add" }));
-                unionBtn.setAttribute("data-molsysviewer-saved-selection-compose-add", item.tag);
-
-                const subBtn = makeButton("-Sub", () => this.ctx.onAction("compose_saved_selection", { tag: item.tag, op: "subtract" }));
-                subBtn.setAttribute("data-molsysviewer-saved-selection-compose-subtract", item.tag);
-
-                const intBtn = makeButton("∩Int", () => this.ctx.onAction("compose_saved_selection", { tag: item.tag, op: "intersect" }));
-                intBtn.setAttribute("data-molsysviewer-saved-selection-compose-intersect", item.tag);
-
-                const invertBtn = makeButton("Invert", () => {
-                    this.onActivateSavedSelection(item.tag);
-                    this.ctx.onAction("set_active_selection_operation", { operation: "invert" });
-                });
-                invertBtn.setAttribute("data-molsysviewer-saved-selection-invert", item.tag);
-
                 const renameBtn = makeButton("Rename", () => showForm("rename"));
                 renameBtn.setAttribute("data-molsysviewer-saved-selection-rename", item.tag);
                 const regionBtn = makeButton("Region", () => showForm("region"));
@@ -546,7 +527,7 @@ export class SelectionPanel extends BasePanel {
                 const deleteBtn = makeButton("🗑", () => this.ctx.onAction("delete_selection", { tag: item.tag }));
                 deleteBtn.setAttribute("data-molsysviewer-saved-selection-delete", item.tag);
 
-                for (const btn of [activateBtn, unionBtn, subBtn, intBtn, invertBtn, renameBtn, regionBtn, labelBtn, deleteBtn]) {
+                for (const btn of [activateBtn, renameBtn, regionBtn, labelBtn, deleteBtn]) {
                     btn.style.flex = "0 1 auto";
                     btn.style.padding = "3px 6px";
                     btn.style.fontSize = "10px";

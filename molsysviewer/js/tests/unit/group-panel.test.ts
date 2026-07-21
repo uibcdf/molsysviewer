@@ -283,43 +283,7 @@ test("GroupPanel selection query composer emits apply actions and accepts curren
     }
 });
 
-test("GroupPanel saved selections card supports Invert action", () => {
-    const restore = installFakeDom();
-    try {
-        const host = new FakeElement() as any;
-        const actions: any[] = [];
-        let activatedTag: string | null = null;
-        const panel = new GroupPanel(
-            host,
-            () => {},
-            () => {},
-            () => {},
-            () => {},
-            () => {},
-            () => {},
-            (tag) => { activatedTag = tag; },
-            () => {},
-            (action, details) => { actions.push({ action, details }); },
-        );
-        panel.setSavedSelections([{ tag: "site_a", atom_count: 2 }]);
 
-        (panel as any).switchTab("selection");
-        const root = host.children[0];
-        const invertBtn = findFirstByAttribute(root, "data-molsysviewer-saved-selection-invert", "site_a");
-        assert.ok(invertBtn);
-
-        invertBtn?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
-        assert.strictEqual(activatedTag, "site_a");
-        assert.deepStrictEqual(actions.at(-1), {
-            action: "set_active_selection_operation",
-            details: { operation: "invert" }
-        });
-
-        panel.dispose();
-    } finally {
-        restore();
-    }
-});
 
 test("GroupPanel selection query preview shows pending and error states", () => {
     const restore = installFakeDom();
@@ -1639,12 +1603,7 @@ test("GroupPanel saved selections card actions and inline forms", () => {
         assert.strictEqual(lastAction, "set_active_selection_operation");
         assert.deepEqual(lastParams, { operation: "none" });
 
-        // 2. Compose Union
-        const unionBtn = findFirstByAttribute(root, "data-molsysviewer-saved-selection-compose-add", "site_a");
-        assert.ok(unionBtn);
-        unionBtn?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
-        assert.strictEqual(lastAction, "compose_saved_selection");
-        assert.deepEqual(lastParams, { tag: "site_a", op: "add" });
+
 
         // 3. Rename inline form triggering
         const renameBtn = findFirstByAttribute(root, "data-molsysviewer-saved-selection-rename", "site_a");
