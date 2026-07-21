@@ -1595,16 +1595,49 @@ test("GroupPanel saved selections card actions and inline forms", () => {
         }}] } as any;
 
         panel.setStructure(structure);
-        panel.setSavedSelections([{ tag: "site_a", atom_count: 2, element_level: "group" }]);
+        panel.setSavedSelections([{ tag: "site_a", atom_count: 2, element_level: "group", atom_indices: [0, 1] }]);
 
         (panel as any).switchTab("selection");
         const root = host.children[0];
 
-        // 1. Activate
-        const activateBtn = findFirstByAttribute(root, "data-molsysviewer-saved-selection-activate", "site_a");
+        // 1. Activate & Toggle Deactivate
+        const dot = findFirstByAttribute(root, "data-molsysviewer-saved-selection-active-dot", "site_a");
+        let activateBtn = findFirstByAttribute(root, "data-molsysviewer-saved-selection-activate", "site_a");
         assert.ok(activateBtn);
+        assert.strictEqual(firstText(activateBtn), "Activate");
+
         activateBtn?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
         assert.strictEqual(restoredTag, "site_a");
+
+        // Now mock changing the selection to match site_a
+        panel.updateSelection({
+            event: "interaction_active_selection_changed",
+            source_kind: "element",
+            target_level: "group",
+            element_level: "atom",
+            items: [],
+            atom_indices: [0, 1],
+            group_indices: [0],
+            component_indices: [0],
+            chain_indices: [0],
+            molecule_indices: [0],
+            entity_indices: [0],
+            count_atoms: 2,
+            count_groups: 1,
+            count_shapes: 0,
+            count_annotations: 0,
+        });
+
+        // The button text and dot should update
+        const updatedDot = findFirstByAttribute(root, "data-molsysviewer-saved-selection-active-dot", "true");
+        assert.ok(updatedDot);
+        activateBtn = findFirstByAttribute(root, "data-molsysviewer-saved-selection-activate", "site_a");
+        assert.strictEqual(firstText(activateBtn), "Deactivate");
+
+        // Click Deactivate to clear selection
+        activateBtn?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.strictEqual(lastAction, "set_active_selection_operation");
+        assert.deepEqual(lastParams, { operation: "none" });
 
         // 2. Compose Union
         const unionBtn = findFirstByAttribute(root, "data-molsysviewer-saved-selection-compose-add", "site_a");

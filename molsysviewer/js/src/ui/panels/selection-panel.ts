@@ -269,9 +269,23 @@ export class SelectionPanel extends BasePanel {
         return tagName === "input" || tagName === "textarea" || tagName === "select" || node.isContentEditable === true;
     }
 
+    private isSavedSelectionActive(item: SavedSelectionSummary): boolean {
+        const activeIndices = this.currentSelection?.atom_indices;
+        if (!activeIndices || !item.atom_indices) return false;
+        if (activeIndices.length === 0 || item.atom_indices.length === 0) return false;
+        if (activeIndices.length !== item.atom_indices.length) return false;
+        for (let i = 0; i < activeIndices.length; i++) {
+            if (activeIndices[i] !== item.atom_indices[i]) return false;
+        }
+        return true;
+    }
+
     protected paint(): void {
         if (!this.host) return;
         this.host.replaceChildren();
+
+        // Title and line separator
+        this.host.appendChild(makeSectionHeader("Selections"));
 
         // A. Query Composer
         this.host.appendChild(this.renderSelectionQueryComposer());
@@ -313,13 +327,19 @@ export class SelectionPanel extends BasePanel {
                     card.setAttribute("data-molsysviewer-selection-row-hover", "false");
                     card.style.background = "rgba(255,255,255,0.05)";
                 });
+                const isActive = this.isSavedSelectionActive(item);
+
                 card.addEventListener("click", (e) => {
                     if (e && e.target && e.target !== card) {
                         return;
                     }
                     e?.preventDefault();
                     e?.stopPropagation();
-                    this.onActivateSavedSelection(item.tag);
+                    if (isActive) {
+                        this.ctx.onAction("set_active_selection_operation", { operation: "none" });
+                    } else {
+                        this.onActivateSavedSelection(item.tag);
+                    }
                 });
 
                 // Top row (Title & Meta)
@@ -337,8 +357,23 @@ export class SelectionPanel extends BasePanel {
                     overflow: "hidden",
                     textOverflow: "ellipsis",
                     whiteSpace: "nowrap",
+                    display: "flex",
+                    alignItems: "center",
                 });
-                title.textContent = item.tag;
+
+                const dot = document.createElement("span");
+                dot.setAttribute("data-molsysviewer-saved-selection-active-dot", String(isActive));
+                Object.assign(dot.style, {
+                    width: "7px",
+                    height: "7px",
+                    borderRadius: "999px",
+                    background: isActive ? "#34d399" : "rgba(244,244,245,0.28)",
+                    boxShadow: isActive ? "0 0 8px rgba(52,211,153,0.5)" : "none",
+                    flexShrink: "0",
+                    marginRight: "6px",
+                });
+                title.appendChild(dot);
+                title.appendChild(document.createTextNode(item.tag));
 
                 const subtitle = document.createElement("span");
                 Object.assign(subtitle.style, {
@@ -477,7 +512,13 @@ export class SelectionPanel extends BasePanel {
                     inlineInput.focus?.();
                 };
 
-                const activateBtn = makeButton("Activate", () => this.onActivateSavedSelection(item.tag));
+                const activateBtn = makeButton(isActive ? "Deactivate" : "Activate", () => {
+                    if (isActive) {
+                        this.ctx.onAction("set_active_selection_operation", { operation: "none" });
+                    } else {
+                        this.onActivateSavedSelection(item.tag);
+                    }
+                });
                 activateBtn.setAttribute("data-molsysviewer-saved-selection-activate", item.tag);
 
                 const unionBtn = makeButton("+Union", () => this.ctx.onAction("compose_saved_selection", { tag: item.tag, op: "add" }));
@@ -497,9 +538,9 @@ export class SelectionPanel extends BasePanel {
 
                 const renameBtn = makeButton("Rename", () => showForm("rename"));
                 renameBtn.setAttribute("data-molsysviewer-saved-selection-rename", item.tag);
-                const regionBtn = makeButton("→Region", () => showForm("region"));
+                const regionBtn = makeButton("Region", () => showForm("region"));
                 regionBtn.setAttribute("data-molsysviewer-saved-selection-to-region", item.tag);
-                const labelBtn = makeButton("→Label", () => showForm("label"));
+                const labelBtn = makeButton("Annotation", () => showForm("label"));
                 labelBtn.setAttribute("data-molsysviewer-saved-selection-to-label", item.tag);
 
                 const deleteBtn = makeButton("🗑", () => this.ctx.onAction("delete_selection", { tag: item.tag }));

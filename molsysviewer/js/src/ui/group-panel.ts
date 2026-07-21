@@ -97,7 +97,7 @@ export type OnFocus = (item: ActiveSelectionItem) => void;
 export type OnHover = (item: ActiveSelectionItem | null) => void;
 export type OnContext = (item: ActiveSelectionItem, pageX: number, pageY: number) => void;
 export type OnAnnotationContext = (target: ContextMenuTarget, pageX: number, pageY: number) => void;
-export type SavedSelectionSummary = { tag: string; atom_count: number; element_level?: string };
+export type SavedSelectionSummary = { tag: string; atom_count: number; element_level?: string; atom_indices?: number[] };
 export type RegionSummary = {
     tag: string;
     owner?: string;

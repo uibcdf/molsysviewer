@@ -152307,9 +152307,20 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
     const tagName = node.tagName?.toLowerCase();
     return tagName === "input" || tagName === "textarea" || tagName === "select" || node.isContentEditable === true;
   }
+  isSavedSelectionActive(item2) {
+    const activeIndices = this.currentSelection?.atom_indices;
+    if (!activeIndices || !item2.atom_indices) return false;
+    if (activeIndices.length === 0 || item2.atom_indices.length === 0) return false;
+    if (activeIndices.length !== item2.atom_indices.length) return false;
+    for (let i = 0; i < activeIndices.length; i++) {
+      if (activeIndices[i] !== item2.atom_indices[i]) return false;
+    }
+    return true;
+  }
   paint() {
     if (!this.host) return;
     this.host.replaceChildren();
+    this.host.appendChild(makeSectionHeader("Selections"));
     this.host.appendChild(this.renderSelectionQueryComposer());
     this.host.appendChild(makeSectionHeader("Saved Selections"));
     const savedList = document.createElement("div");
@@ -152346,13 +152357,18 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           card5.setAttribute("data-molsysviewer-selection-row-hover", "false");
           card5.style.background = "rgba(255,255,255,0.05)";
         });
+        const isActive = this.isSavedSelectionActive(item2);
         card5.addEventListener("click", (e) => {
           if (e && e.target && e.target !== card5) {
             return;
           }
           e?.preventDefault();
           e?.stopPropagation();
-          this.onActivateSavedSelection(item2.tag);
+          if (isActive) {
+            this.ctx.onAction("set_active_selection_operation", { operation: "none" });
+          } else {
+            this.onActivateSavedSelection(item2.tag);
+          }
         });
         const topRow = document.createElement("div");
         Object.assign(topRow.style, {
@@ -152367,9 +152383,23 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           color: "#f4f4f5",
           overflow: "hidden",
           textOverflow: "ellipsis",
-          whiteSpace: "nowrap"
+          whiteSpace: "nowrap",
+          display: "flex",
+          alignItems: "center"
         });
-        title.textContent = item2.tag;
+        const dot = document.createElement("span");
+        dot.setAttribute("data-molsysviewer-saved-selection-active-dot", String(isActive));
+        Object.assign(dot.style, {
+          width: "7px",
+          height: "7px",
+          borderRadius: "999px",
+          background: isActive ? "#34d399" : "rgba(244,244,245,0.28)",
+          boxShadow: isActive ? "0 0 8px rgba(52,211,153,0.5)" : "none",
+          flexShrink: "0",
+          marginRight: "6px"
+        });
+        title.appendChild(dot);
+        title.appendChild(document.createTextNode(item2.tag));
         const subtitle = document.createElement("span");
         Object.assign(subtitle.style, {
           fontSize: "10px",
@@ -152495,7 +152525,13 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           inlineForm.style.display = "flex";
           inlineInput.focus?.();
         };
-        const activateBtn = makeButton("Activate", () => this.onActivateSavedSelection(item2.tag));
+        const activateBtn = makeButton(isActive ? "Deactivate" : "Activate", () => {
+          if (isActive) {
+            this.ctx.onAction("set_active_selection_operation", { operation: "none" });
+          } else {
+            this.onActivateSavedSelection(item2.tag);
+          }
+        });
         activateBtn.setAttribute("data-molsysviewer-saved-selection-activate", item2.tag);
         const unionBtn = makeButton("+Union", () => this.ctx.onAction("compose_saved_selection", { tag: item2.tag, op: "add" }));
         unionBtn.setAttribute("data-molsysviewer-saved-selection-compose-add", item2.tag);
@@ -152510,9 +152546,9 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
         invertBtn.setAttribute("data-molsysviewer-saved-selection-invert", item2.tag);
         const renameBtn = makeButton("Rename", () => showForm("rename"));
         renameBtn.setAttribute("data-molsysviewer-saved-selection-rename", item2.tag);
-        const regionBtn = makeButton("\u2192Region", () => showForm("region"));
+        const regionBtn = makeButton("Region", () => showForm("region"));
         regionBtn.setAttribute("data-molsysviewer-saved-selection-to-region", item2.tag);
-        const labelBtn = makeButton("\u2192Label", () => showForm("label"));
+        const labelBtn = makeButton("Annotation", () => showForm("label"));
         labelBtn.setAttribute("data-molsysviewer-saved-selection-to-label", item2.tag);
         const deleteBtn = makeButton("\u{1F5D1}", () => this.ctx.onAction("delete_selection", { tag: item2.tag }));
         deleteBtn.setAttribute("data-molsysviewer-saved-selection-delete", item2.tag);
