@@ -153767,7 +153767,6 @@ var WholePanel = class {
     if (!this.host) return;
     this.host.innerHTML = "";
     Object.assign(this.host.style, {
-      display: "flex",
       flexDirection: "column",
       gap: "12px",
       minHeight: "0"
