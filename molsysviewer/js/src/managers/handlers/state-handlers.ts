@@ -1115,16 +1115,29 @@ export class StateHandlers {
             none_state_region_count: typeof msg.none_state_region_count === "number" ? msg.none_state_region_count : 0,
             covering_layer_count: typeof msg.covering_layer_count === "number" ? msg.covering_layer_count : 0,
         };
+        if (msg.composition && typeof msg.composition === "object") {
+            this.wholeSummary.composition = { ...(msg.composition as Record<string, number>) };
+        }
+        if (msg.contains && typeof msg.contains === "object") {
+            this.wholeSummary.contains = { ...(msg.contains as Record<string, boolean>) };
+        }
     }
 
     getWholeSummary(): WholeSummary | null {
         if (this.wholeSummary === null) return null;
-        return {
+        const res: WholeSummary = {
             ...this.wholeSummary,
             params: { ...this.wholeSummary.params },
             available_attributes: [...this.wholeSummary.available_attributes],
             color_schemes: [...this.wholeSummary.color_schemes],
         };
+        if (this.wholeSummary.composition !== undefined) {
+            res.composition = { ...this.wholeSummary.composition };
+        }
+        if (this.wholeSummary.contains !== undefined) {
+            res.contains = { ...this.wholeSummary.contains };
+        }
+        return res;
     }
 
     isWholeHidden(): boolean {

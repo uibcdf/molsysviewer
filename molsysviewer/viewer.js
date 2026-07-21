@@ -145894,15 +145894,28 @@ var StateHandlers = class {
       none_state_region_count: typeof msg.none_state_region_count === "number" ? msg.none_state_region_count : 0,
       covering_layer_count: typeof msg.covering_layer_count === "number" ? msg.covering_layer_count : 0
     };
+    if (msg.composition && typeof msg.composition === "object") {
+      this.wholeSummary.composition = { ...msg.composition };
+    }
+    if (msg.contains && typeof msg.contains === "object") {
+      this.wholeSummary.contains = { ...msg.contains };
+    }
   }
   getWholeSummary() {
     if (this.wholeSummary === null) return null;
-    return {
+    const res = {
       ...this.wholeSummary,
       params: { ...this.wholeSummary.params },
       available_attributes: [...this.wholeSummary.available_attributes],
       color_schemes: [...this.wholeSummary.color_schemes]
     };
+    if (this.wholeSummary.composition !== void 0) {
+      res.composition = { ...this.wholeSummary.composition };
+    }
+    if (this.wholeSummary.contains !== void 0) {
+      res.contains = { ...this.wholeSummary.contains };
+    }
+    return res;
   }
   isWholeHidden() {
     return this.requestedGlobalHidden === true;
@@ -160071,6 +160084,7 @@ var MolSysViewerController = class _MolSysViewerController {
         }
         case "set_whole_summary":
           this.state.setWholeSummary(msg);
+          this.refreshNavigatePanel(false);
           break;
         case "set_annotation_summaries": {
           const records = Array.isArray(msg.annotations) ? msg.annotations : [];

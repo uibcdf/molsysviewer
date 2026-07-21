@@ -2254,7 +2254,10 @@ export class MolSysViewerController {
                     this.groupPanel.setSections(this.sectionSummaries, this.sectionSettings);
                     break;
                 }
-                case "set_whole_summary": this.state.setWholeSummary(msg as any); break;
+                case "set_whole_summary":
+                    this.state.setWholeSummary(msg as any);
+                    this.refreshNavigatePanel(false);
+                    break;
                 case "set_annotation_summaries": {
                     const records = Array.isArray((msg as any).annotations) ? (msg as any).annotations : [];
                     this.annotationSummaries = records.filter((item: any) => typeof item?.tag === "string").map((item: any) => ({
