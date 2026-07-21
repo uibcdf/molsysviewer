@@ -127,10 +127,10 @@ export class ManualQueryComposer {
         });
 
         row.appendChild(this.input);
+        row.appendChild(this.checkButton);
         if (options?.middleElement) {
             row.appendChild(options.middleElement);
         }
-        row.appendChild(this.checkButton);
         if (!options?.hideSyntax) {
             row.appendChild(this.syntaxSelect);
         }

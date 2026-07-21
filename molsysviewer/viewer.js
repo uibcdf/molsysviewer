@@ -150696,10 +150696,10 @@ var ManualQueryComposer = class _ManualQueryComposer {
       this.onChange?.();
     });
     row2.appendChild(this.input);
+    row2.appendChild(this.checkButton);
     if (options?.middleElement) {
       row2.appendChild(options.middleElement);
     }
-    row2.appendChild(this.checkButton);
     if (!options?.hideSyntax) {
       row2.appendChild(this.syntaxSelect);
     }
@@ -152561,29 +152561,31 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
       this.helpBtn.title = this.selectionCheatSheetOpen ? "Hide selection query examples" : "Show selection query examples";
     }
     container.appendChild(composer.element());
-    this.querySaveForm = document.createElement("div");
-    this.querySaveForm.setAttribute("data-molsysviewer-selection-inline-form", "true");
-    Object.assign(this.querySaveForm.style, {
-      display: "none",
-      flexDirection: "row",
-      gap: "6px",
-      marginTop: "6px"
-    });
-    this.querySaveInput = document.createElement("input");
-    this.querySaveInput.type = "text";
-    this.querySaveInput.placeholder = "Selection name...";
-    this.querySaveInput.setAttribute("data-molsysviewer-selection-inline-input", "true");
-    Object.assign(this.querySaveInput.style, {
-      flex: "1 1 0",
-      background: "rgba(0,0,0,0.2)",
-      border: "1px solid rgba(255,255,255,0.12)",
-      borderRadius: "6px",
-      padding: "6px 8px",
-      color: "#fff",
-      fontSize: "11px",
-      outline: "none"
-    });
-    this.querySaveForm.appendChild(this.querySaveInput);
+    if (this.querySaveForm === null) {
+      this.querySaveForm = document.createElement("div");
+      this.querySaveForm.setAttribute("data-molsysviewer-selection-inline-form", "true");
+      Object.assign(this.querySaveForm.style, {
+        display: "none",
+        flexDirection: "row",
+        gap: "6px",
+        marginTop: "6px"
+      });
+      this.querySaveInput = document.createElement("input");
+      this.querySaveInput.type = "text";
+      this.querySaveInput.placeholder = "Selection name...";
+      this.querySaveInput.setAttribute("data-molsysviewer-selection-inline-input", "true");
+      Object.assign(this.querySaveInput.style, {
+        flex: "1 1 0",
+        background: "rgba(0,0,0,0.2)",
+        border: "1px solid rgba(255,255,255,0.12)",
+        borderRadius: "6px",
+        padding: "6px 8px",
+        color: "#fff",
+        fontSize: "11px",
+        outline: "none"
+      });
+      this.querySaveForm.appendChild(this.querySaveInput);
+    }
     container.appendChild(this.querySaveForm);
     const presetRow = document.createElement("div");
     presetRow.setAttribute("data-molsysviewer-selection-query-presets", "true");
@@ -153710,7 +153712,7 @@ var WholePanel = class {
     });
     toggle.setAttribute("data-molsysviewer-whole-visibility", summary.visible ? "hide" : "show");
     actions.appendChild(toggle);
-    const undoBtn = makeButton("\u21B6 Undo", () => {
+    const undoBtn = makeButton("Undo", () => {
       this.ctx.onAction("undo_active_selection");
     });
     undoBtn.setAttribute("data-molsysviewer-whole-undo", "true");
@@ -153721,7 +153723,7 @@ var WholePanel = class {
       undoBtn.style.cursor = "not-allowed";
     }
     actions.appendChild(undoBtn);
-    const redoBtn = makeButton("\u21B7 Redo", () => {
+    const redoBtn = makeButton("Redo", () => {
       this.ctx.onAction("redo_active_selection");
     });
     redoBtn.setAttribute("data-molsysviewer-whole-redo", "true");

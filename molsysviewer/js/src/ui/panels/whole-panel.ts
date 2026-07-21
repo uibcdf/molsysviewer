@@ -180,7 +180,7 @@ export class WholePanel implements StudioPanel {
         toggle.setAttribute("data-molsysviewer-whole-visibility", summary.visible ? "hide" : "show");
         actions.appendChild(toggle);
 
-        const undoBtn = makeButton("↶ Undo", () => {
+        const undoBtn = makeButton("Undo", () => {
             this.ctx.onAction("undo_active_selection");
         });
         undoBtn.setAttribute("data-molsysviewer-whole-undo", "true");
@@ -192,7 +192,7 @@ export class WholePanel implements StudioPanel {
         }
         actions.appendChild(undoBtn);
 
-        const redoBtn = makeButton("↷ Redo", () => {
+        const redoBtn = makeButton("Redo", () => {
             this.ctx.onAction("redo_active_selection");
         });
         redoBtn.setAttribute("data-molsysviewer-whole-redo", "true");

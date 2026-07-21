@@ -556,31 +556,33 @@ export class SelectionPanel extends BasePanel {
         container.appendChild(composer.element());
 
         // Inline query save form
-        this.querySaveForm = document.createElement("div");
-        this.querySaveForm.setAttribute("data-molsysviewer-selection-inline-form", "true");
-        Object.assign(this.querySaveForm.style, {
-            display: "none",
-            flexDirection: "row",
-            gap: "6px",
-            marginTop: "6px",
-        });
+        if (this.querySaveForm === null) {
+            this.querySaveForm = document.createElement("div");
+            this.querySaveForm.setAttribute("data-molsysviewer-selection-inline-form", "true");
+            Object.assign(this.querySaveForm.style, {
+                display: "none",
+                flexDirection: "row",
+                gap: "6px",
+                marginTop: "6px",
+            });
 
-        this.querySaveInput = document.createElement("input");
-        this.querySaveInput.type = "text";
-        this.querySaveInput.placeholder = "Selection name...";
-        this.querySaveInput.setAttribute("data-molsysviewer-selection-inline-input", "true");
-        Object.assign(this.querySaveInput.style, {
-            flex: "1 1 0",
-            background: "rgba(0,0,0,0.2)",
-            border: "1px solid rgba(255,255,255,0.12)",
-            borderRadius: "6px",
-            padding: "6px 8px",
-            color: "#fff",
-            fontSize: "11px",
-            outline: "none",
-        });
+            this.querySaveInput = document.createElement("input");
+            this.querySaveInput.type = "text";
+            this.querySaveInput.placeholder = "Selection name...";
+            this.querySaveInput.setAttribute("data-molsysviewer-selection-inline-input", "true");
+            Object.assign(this.querySaveInput.style, {
+                flex: "1 1 0",
+                background: "rgba(0,0,0,0.2)",
+                border: "1px solid rgba(255,255,255,0.12)",
+                borderRadius: "6px",
+                padding: "6px 8px",
+                color: "#fff",
+                fontSize: "11px",
+                outline: "none",
+            });
 
-        this.querySaveForm.appendChild(this.querySaveInput);
+            this.querySaveForm.appendChild(this.querySaveInput);
+        }
         container.appendChild(this.querySaveForm);
 
         // Shortcuts Row
