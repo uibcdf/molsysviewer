@@ -28,6 +28,11 @@ export class ManualQueryComposer {
             syntax: QuerySyntax;
         }) => void,
         private readonly onChange?: () => void,
+        options?: {
+            buttonLabel?: string;
+            hideSyntax?: boolean;
+            middleElement?: HTMLElement;
+        }
     ) {
         this.root = document.createElement("div");
         this.root.setAttribute("data-molsysviewer-query-composer", scope);
@@ -75,7 +80,7 @@ export class ManualQueryComposer {
 
         this.checkButton = document.createElement("button");
         this.checkButton.type = "button";
-        this.checkButton.textContent = "Check";
+        this.checkButton.textContent = options?.buttonLabel ?? "Check";
         this.checkButton.setAttribute("data-molsysviewer-query-check", scope);
         Object.assign(this.checkButton.style, {
             flex: "0 0 auto",
@@ -122,8 +127,13 @@ export class ManualQueryComposer {
         });
 
         row.appendChild(this.input);
+        if (options?.middleElement) {
+            row.appendChild(options.middleElement);
+        }
         row.appendChild(this.checkButton);
-        row.appendChild(this.syntaxSelect);
+        if (!options?.hideSyntax) {
+            row.appendChild(this.syntaxSelect);
+        }
         this.root.appendChild(row);
 
         this.status = document.createElement("div");

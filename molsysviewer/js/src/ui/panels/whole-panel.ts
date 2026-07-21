@@ -66,6 +66,7 @@ export class WholePanel implements StudioPanel {
     private requestId = 0;
     private continuousHistoryEdit = false;
     private continuousHistoryRenderPending = false;
+    private historyState = { canUndo: false, canRedo: false };
 
     constructor(private readonly ctx: PanelContext) {}
 
@@ -96,9 +97,13 @@ export class WholePanel implements StudioPanel {
         this.render();
     }
 
+    updateHistory(state: { canUndo: boolean; canRedo: boolean }): void {
+        this.historyState = state;
+        this.render();
+    }
     private render(): void {
         if (!this.host) return;
-        this.host.innerHTML = "";
+        this.host.replaceChildren();
         Object.assign(this.host.style, {
             flexDirection: "column",
             gap: "12px",
@@ -175,11 +180,29 @@ export class WholePanel implements StudioPanel {
         toggle.setAttribute("data-molsysviewer-whole-visibility", summary.visible ? "hide" : "show");
         actions.appendChild(toggle);
 
-        const undoBtn = makeButton("Undo", () => {
+        const undoBtn = makeButton("↶ Undo", () => {
             this.ctx.onAction("undo_active_selection");
         });
+        undoBtn.setAttribute("data-molsysviewer-whole-undo", "true");
         undoBtn.title = "Undo last action";
+        undoBtn.disabled = !this.historyState.canUndo;
+        if (undoBtn.disabled) {
+            undoBtn.style.opacity = "0.42";
+            undoBtn.style.cursor = "not-allowed";
+        }
         actions.appendChild(undoBtn);
+
+        const redoBtn = makeButton("↷ Redo", () => {
+            this.ctx.onAction("redo_active_selection");
+        });
+        redoBtn.setAttribute("data-molsysviewer-whole-redo", "true");
+        redoBtn.title = "Redo last action";
+        redoBtn.disabled = !this.historyState.canRedo;
+        if (redoBtn.disabled) {
+            redoBtn.style.opacity = "0.42";
+            redoBtn.style.cursor = "not-allowed";
+        }
+        actions.appendChild(redoBtn);
 
         const resetBtn = makeButton("Reset", () => {
             this.ctx.onAction("reset_whole_representation");
@@ -344,7 +367,7 @@ export class WholePanel implements StudioPanel {
         section.appendChild(cardTitle);
 
         const scheme = makeStyledSelect(
-            summary.color_schemes.length
+            (summary.color_schemes || []).length
                 ? summary.color_schemes.map(value => ({ value, label: labelFromToken(value) }))
                 : [{ value: "", label: "No schemes available" }],
             summary.color_scheme ?? "",
@@ -370,7 +393,7 @@ export class WholePanel implements StudioPanel {
 
         const attrWrap = document.createElement("div");
         Object.assign(attrWrap.style, { display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" });
-        const attr = makeStyledSelect([{ value: "", label: "None" }, ...summary.available_attributes], "", () => {});
+        const attr = makeStyledSelect([{ value: "", label: "None" }, ...(summary.available_attributes || [])], "", () => {});
         attr.setAttribute("data-molsysviewer-whole-color-attribute", "true");
         const palette = makeStyledSelect(["viridis", "plasma", "magma", "inferno", "cividis", "turbo"], "viridis", () => {});
         palette.setAttribute("data-molsysviewer-whole-color-attribute-palette", "true");

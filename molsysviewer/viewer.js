@@ -150600,7 +150600,7 @@ var LayersPanel = class extends BasePanel {
 
 // src/ui/query-composer.ts
 var ManualQueryComposer = class _ManualQueryComposer {
-  constructor(scope, onRequest, onChange) {
+  constructor(scope, onRequest, onChange, options) {
     this.scope = scope;
     this.onRequest = onRequest;
     this.onChange = onChange;
@@ -150651,7 +150651,7 @@ var ManualQueryComposer = class _ManualQueryComposer {
     });
     this.checkButton = document.createElement("button");
     this.checkButton.type = "button";
-    this.checkButton.textContent = "Check";
+    this.checkButton.textContent = options?.buttonLabel ?? "Check";
     this.checkButton.setAttribute("data-molsysviewer-query-check", scope);
     Object.assign(this.checkButton.style, {
       flex: "0 0 auto",
@@ -150696,8 +150696,13 @@ var ManualQueryComposer = class _ManualQueryComposer {
       this.onChange?.();
     });
     row2.appendChild(this.input);
+    if (options?.middleElement) {
+      row2.appendChild(options.middleElement);
+    }
     row2.appendChild(this.checkButton);
-    row2.appendChild(this.syntaxSelect);
+    if (!options?.hideSyntax) {
+      row2.appendChild(this.syntaxSelect);
+    }
     this.root.appendChild(row2);
     this.status = document.createElement("div");
     this.status.setAttribute("data-molsysviewer-query-status", scope);
@@ -152075,11 +152080,12 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
     this.savedSelections = [];
     // View state
     this.selectionQueryComposer = null;
-    /** Live refs to the query operation buttons, so typing updates only them. */
-    this.queryOpButtons = [];
+    this.helpBtn = null;
     this.selectionCheatSheetOpen = false;
     this.selectionCanUndo = false;
     this.selectionCanRedo = false;
+    this.querySaveForm = null;
+    this.querySaveInput = null;
   }
   static {
     this.SELECTION_STYLE_ID = "molsysviewer-selection-panel-design-system";
@@ -152107,7 +152113,19 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
   }
   /** Route a query preview belonging to this panel's manual composer. */
   updatePreview(preview) {
-    this.selectionQueryComposer?.updatePreview(preview);
+    const composer = this.getSelectionQueryComposer();
+    const updated = composer.updatePreview(preview);
+    if (updated && preview.ok === true) {
+      const { expression, syntax } = composer.value();
+      if (expression) {
+        this.ctx.onAction("apply_selection_query", {
+          expression,
+          syntax,
+          op: "replace"
+        });
+        this.showSaveFormForQuery(expression);
+      }
+    }
   }
   static ensureDesignSystemStyles() {
     if (typeof document === "undefined") return;
@@ -152292,199 +152310,6 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
   paint() {
     if (!this.host) return;
     this.host.replaceChildren();
-    this.host.appendChild(makeSectionHeader("Active Selection"));
-    const activeContainer = document.createElement("div");
-    activeContainer.setAttribute("data-molsysviewer-selection-active-card", "true");
-    Object.assign(activeContainer.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "8px",
-      padding: "10px",
-      borderRadius: "8px",
-      background: "rgba(255,255,255,0.03)",
-      border: "1px solid rgba(255,255,255,0.05)"
-    });
-    this.host.appendChild(activeContainer);
-    const historyRow = document.createElement("div");
-    Object.assign(historyRow.style, {
-      display: "flex",
-      gap: "6px",
-      alignItems: "center"
-    });
-    const undoBtn = makeButton("\u21B6 Undo", () => this.ctx.onAction("undo_active_selection"));
-    undoBtn.setAttribute("data-molsysviewer-selection-undo", "true");
-    undoBtn.disabled = !this.selectionCanUndo;
-    const redoBtn = makeButton("\u21B7 Redo", () => this.ctx.onAction("redo_active_selection"));
-    redoBtn.setAttribute("data-molsysviewer-selection-redo", "true");
-    redoBtn.disabled = !this.selectionCanRedo;
-    for (const btn of [undoBtn, redoBtn]) {
-      btn.style.flex = "0 0 auto";
-      if (btn.disabled) {
-        btn.style.opacity = "0.42";
-        btn.style.cursor = "not-allowed";
-      }
-      historyRow.appendChild(btn);
-    }
-    activeContainer.appendChild(historyRow);
-    const quickRow = document.createElement("div");
-    Object.assign(quickRow.style, {
-      display: "grid",
-      gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-      gap: "6px"
-    });
-    const allBtn = makeButton(
-      "All",
-      () => this.ctx.onAction("set_active_selection_operation", { operation: "all" })
-    );
-    allBtn.setAttribute("data-molsysviewer-selection-all", "true");
-    const noneBtn = makeButton(
-      "None",
-      () => this.ctx.onAction("set_active_selection_operation", { operation: "none" })
-    );
-    noneBtn.setAttribute("data-molsysviewer-selection-none", "true");
-    const invertBtn = makeButton(
-      "Invert",
-      () => this.ctx.onAction("set_active_selection_operation", { operation: "invert" })
-    );
-    invertBtn.setAttribute("data-molsysviewer-selection-invert", "true");
-    quickRow.appendChild(allBtn);
-    quickRow.appendChild(noneBtn);
-    quickRow.appendChild(invertBtn);
-    activeContainer.appendChild(quickRow);
-    if (this.currentSelection.count_atoms > 0) {
-      const countLabel2 = document.createElement("div");
-      countLabel2.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
-      Object.assign(countLabel2.style, {
-        fontSize: "12px",
-        color: "#e4e4e7",
-        fontWeight: "500"
-      });
-      countLabel2.textContent = `${this.currentSelection.count_atoms} atoms selected (${this.currentSelection.source_kind} level)`;
-      activeContainer.appendChild(countLabel2);
-      const btnRow = document.createElement("div");
-      Object.assign(btnRow.style, {
-        display: "flex",
-        gap: "8px"
-      });
-      activeContainer.appendChild(btnRow);
-      const inlineForm = document.createElement("div");
-      Object.assign(inlineForm.style, {
-        display: "none",
-        flexDirection: "row",
-        gap: "6px",
-        marginTop: "6px"
-      });
-      const inlineInput = document.createElement("input");
-      inlineInput.type = "text";
-      Object.assign(inlineInput.style, {
-        flex: "1 1 0",
-        background: "rgba(0,0,0,0.2)",
-        border: "1px solid rgba(255,255,255,0.12)",
-        borderRadius: "6px",
-        padding: "6px 8px",
-        color: "#fff",
-        fontSize: "11px",
-        outline: "none"
-      });
-      const inlineConfirm = document.createElement("button");
-      Object.assign(inlineConfirm.style, {
-        background: "#6366f1",
-        border: "0",
-        borderRadius: "6px",
-        padding: "6px 10px",
-        color: "#fff",
-        fontSize: "11px",
-        fontWeight: "600",
-        cursor: "pointer"
-      });
-      const inlineCancel = document.createElement("button");
-      inlineCancel.textContent = "Cancel";
-      Object.assign(inlineCancel.style, {
-        background: "rgba(255,255,255,0.08)",
-        border: "0",
-        borderRadius: "6px",
-        padding: "6px 10px",
-        color: "#e4e4e7",
-        fontSize: "11px",
-        cursor: "pointer"
-      });
-      inlineForm.appendChild(inlineInput);
-      inlineForm.appendChild(inlineConfirm);
-      inlineForm.appendChild(inlineCancel);
-      activeContainer.appendChild(inlineForm);
-      const showForm = (mode) => {
-        inlineForm.style.display = "flex";
-        inlineInput.value = "";
-        inlineInput.placeholder = mode === "save" ? "Selection name..." : mode === "region" ? "Region name..." : "Label text...";
-        inlineConfirm.textContent = mode === "save" ? "Save" : mode === "region" ? "Create" : "Add Label";
-        const newConfirm = inlineConfirm.cloneNode(true);
-        const newCancel = inlineCancel.cloneNode(true);
-        inlineConfirm.replaceWith(newConfirm);
-        inlineCancel.replaceWith(newCancel);
-        newConfirm.addEventListener("click", () => {
-          const tag = inlineInput.value.trim();
-          if (!tag) return;
-          if (mode === "save") {
-            const exists = this.savedSelections.some((s) => s.tag === tag);
-            if (exists) {
-              const doOverwrite = typeof confirm === "function" ? confirm(`A saved selection named "${tag}" already exists. Overwrite?`) : true;
-              if (doOverwrite) {
-                this.ctx.onAction("delete_selection", { tag });
-                this.ctx.onAction("save_selection", { tag });
-              } else {
-                return;
-              }
-            } else {
-              this.ctx.onAction("save_selection", { tag });
-            }
-          } else if (mode === "region") {
-            const exists = this.regionExists(tag);
-            if (exists) {
-              const doOverwrite = typeof confirm === "function" ? confirm(`A region named "${tag}" already exists. Overwrite?`) : true;
-              if (doOverwrite) {
-                this.ctx.onAction("delete_region", { tag });
-                this.ctx.onAction("create_region_from_selection", { tag });
-              } else {
-                return;
-              }
-            } else {
-              this.ctx.onAction("create_region_from_selection", { tag });
-            }
-          } else {
-            this.ctx.onAction("add_label_from_selection", { text: tag });
-          }
-          inlineForm.style.display = "none";
-        });
-        newCancel.addEventListener("click", () => {
-          inlineForm.style.display = "none";
-        });
-        inlineInput.focus?.();
-      };
-      const clearBtn = makeButton("Clear", () => this.onSelect([], "replace"));
-      const saveBtn = makeButton("Save", () => showForm("save"));
-      const regionBtn = makeButton("Create Region", () => showForm("region"));
-      const labelBtn = makeButton("Add Label", () => showForm("label"));
-      clearBtn.setAttribute("data-molsysviewer-selection-clear", "true");
-      saveBtn.setAttribute("data-molsysviewer-selection-save", "true");
-      regionBtn.setAttribute("data-molsysviewer-selection-to-region", "true");
-      labelBtn.setAttribute("data-molsysviewer-selection-to-label", "true");
-      inlineForm.setAttribute("data-molsysviewer-selection-inline-form", "true");
-      inlineInput.setAttribute("data-molsysviewer-selection-inline-input", "true");
-      btnRow.appendChild(clearBtn);
-      btnRow.appendChild(saveBtn);
-      btnRow.appendChild(regionBtn);
-      btnRow.appendChild(labelBtn);
-    } else {
-      const emptyLabel = document.createElement("div");
-      Object.assign(emptyLabel.style, {
-        fontSize: "11px",
-        color: "rgba(244,244,245,0.48)",
-        textAlign: "center",
-        padding: "6px 0"
-      });
-      emptyLabel.textContent = "No active selection.";
-      activeContainer.appendChild(emptyLabel);
-    }
     this.host.appendChild(this.renderSelectionQueryComposer());
     this.host.appendChild(makeSectionHeader("Saved Selections"));
     const savedList = document.createElement("div");
@@ -152678,6 +152503,11 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
         subBtn.setAttribute("data-molsysviewer-saved-selection-compose-subtract", item2.tag);
         const intBtn = makeButton("\u2229Int", () => this.ctx.onAction("compose_saved_selection", { tag: item2.tag, op: "intersect" }));
         intBtn.setAttribute("data-molsysviewer-saved-selection-compose-intersect", item2.tag);
+        const invertBtn = makeButton("Invert", () => {
+          this.onActivateSavedSelection(item2.tag);
+          this.ctx.onAction("set_active_selection_operation", { operation: "invert" });
+        });
+        invertBtn.setAttribute("data-molsysviewer-saved-selection-invert", item2.tag);
         const renameBtn = makeButton("Rename", () => showForm("rename"));
         renameBtn.setAttribute("data-molsysviewer-saved-selection-rename", item2.tag);
         const regionBtn = makeButton("\u2192Region", () => showForm("region"));
@@ -152686,7 +152516,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
         labelBtn.setAttribute("data-molsysviewer-saved-selection-to-label", item2.tag);
         const deleteBtn = makeButton("\u{1F5D1}", () => this.ctx.onAction("delete_selection", { tag: item2.tag }));
         deleteBtn.setAttribute("data-molsysviewer-saved-selection-delete", item2.tag);
-        for (const btn of [activateBtn, unionBtn, subBtn, intBtn, renameBtn, regionBtn, labelBtn, deleteBtn]) {
+        for (const btn of [activateBtn, unionBtn, subBtn, intBtn, invertBtn, renameBtn, regionBtn, labelBtn, deleteBtn]) {
           btn.style.flex = "0 1 auto";
           btn.style.padding = "3px 6px";
           btn.style.fontSize = "10px";
@@ -152727,27 +152557,34 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
     title.textContent = "Select by Query";
     container.appendChild(title);
     const composer = this.getSelectionQueryComposer();
+    if (this.helpBtn) {
+      this.helpBtn.title = this.selectionCheatSheetOpen ? "Hide selection query examples" : "Show selection query examples";
+    }
     container.appendChild(composer.element());
-    const inputRow = document.createElement("div");
-    Object.assign(inputRow.style, {
-      display: "flex",
+    this.querySaveForm = document.createElement("div");
+    this.querySaveForm.setAttribute("data-molsysviewer-selection-inline-form", "true");
+    Object.assign(this.querySaveForm.style, {
+      display: "none",
+      flexDirection: "row",
       gap: "6px",
-      alignItems: "center"
+      marginTop: "6px"
     });
-    const helpBtn = makeButton("?", () => {
-      this.selectionCheatSheetOpen = !this.selectionCheatSheetOpen;
-      this.scheduleRender();
+    this.querySaveInput = document.createElement("input");
+    this.querySaveInput.type = "text";
+    this.querySaveInput.placeholder = "Selection name...";
+    this.querySaveInput.setAttribute("data-molsysviewer-selection-inline-input", "true");
+    Object.assign(this.querySaveInput.style, {
+      flex: "1 1 0",
+      background: "rgba(0,0,0,0.2)",
+      border: "1px solid rgba(255,255,255,0.12)",
+      borderRadius: "6px",
+      padding: "6px 8px",
+      color: "#fff",
+      fontSize: "11px",
+      outline: "none"
     });
-    helpBtn.title = this.selectionCheatSheetOpen ? "Hide selection query examples" : "Show selection query examples";
-    helpBtn.setAttribute("data-molsysviewer-selection-cheatsheet-toggle", "true");
-    Object.assign(helpBtn.style, {
-      flex: "0 0 30px",
-      width: "30px",
-      padding: "6px 0",
-      fontWeight: "700"
-    });
-    inputRow.appendChild(helpBtn);
-    container.appendChild(inputRow);
+    this.querySaveForm.appendChild(this.querySaveInput);
+    container.appendChild(this.querySaveForm);
     const presetRow = document.createElement("div");
     presetRow.setAttribute("data-molsysviewer-selection-query-presets", "true");
     Object.assign(presetRow.style, {
@@ -152762,7 +152599,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
       color: "rgba(244,244,245,0.52)",
       marginRight: "2px"
     });
-    presetLabel.textContent = "Presets";
+    presetLabel.textContent = "shortcuts";
     presetRow.appendChild(presetLabel);
     const presets = [
       { label: "protein", expression: 'molecule_type=="protein"' },
@@ -152855,57 +152692,92 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
       }
       container.appendChild(cheatSheet);
     }
-    const buttonRow = document.createElement("div");
-    Object.assign(buttonRow.style, {
-      display: "grid",
-      gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-      gap: "6px"
-    });
-    const apply = (op4) => {
-      const { expression, syntax } = composer.value();
-      if (!expression) return;
-      this.ctx.onAction("apply_selection_query", {
-        expression,
-        syntax,
-        op: op4
-      });
-    };
-    const selectBtn = makeButton("Select", () => apply("replace"));
-    selectBtn.setAttribute("data-molsysviewer-selection-query-apply", "replace");
-    const unionBtn = makeButton("+Union", () => apply("add"));
-    unionBtn.setAttribute("data-molsysviewer-selection-query-apply", "add");
-    const subtractBtn = makeButton("-Subtract", () => apply("subtract"));
-    subtractBtn.setAttribute("data-molsysviewer-selection-query-apply", "subtract");
-    const intersectBtn = makeButton("Intersect", () => apply("intersect"));
-    intersectBtn.setAttribute("data-molsysviewer-selection-query-apply", "intersect");
-    this.queryOpButtons = [selectBtn, unionBtn, subtractBtn, intersectBtn];
-    for (const btn of this.queryOpButtons) {
-      buttonRow.appendChild(btn);
-    }
-    this.syncQueryOpButtons();
-    container.appendChild(buttonRow);
     return container;
   }
-  /**
-   * Enable/disable the query operation buttons from the composer's current text.
-   *
-   * Typing must not repaint the panel: the composer owns its own input and status
-   * line, and the only thing that depends on the typed text is these four buttons.
-   * So we mutate them in place instead of scheduling a full render.
-   */
-  syncQueryOpButtons() {
-    const hasExpression = (this.selectionQueryComposer?.value().expression.length ?? 0) > 0;
-    for (const btn of this.queryOpButtons) {
-      btn.disabled = !hasExpression;
-      btn.style.opacity = hasExpression ? "1" : "0.42";
-      btn.style.cursor = hasExpression ? "pointer" : "not-allowed";
-    }
+  showSaveFormForQuery(expression) {
+    if (!this.querySaveForm || !this.querySaveInput) return;
+    this.querySaveForm.style.display = "flex";
+    this.querySaveInput.value = "";
+    this.querySaveInput.focus?.();
+    this.querySaveForm.replaceChildren();
+    this.querySaveForm.appendChild(this.querySaveInput);
+    const confirmBtn = document.createElement("button");
+    confirmBtn.textContent = "Save";
+    confirmBtn.setAttribute("data-molsysviewer-selection-inline-confirm-btn", "true");
+    Object.assign(confirmBtn.style, {
+      background: "#6366f1",
+      border: "0",
+      borderRadius: "6px",
+      padding: "6px 10px",
+      color: "#fff",
+      fontSize: "11px",
+      fontWeight: "600",
+      cursor: "pointer"
+    });
+    confirmBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const tag = this.querySaveInput.value.trim();
+      if (!tag) return;
+      const exists = this.savedSelections.some((s) => s.tag === tag);
+      if (exists) {
+        const doOverwrite = typeof confirm === "function" ? confirm(`A saved selection named "${tag}" already exists. Overwrite?`) : true;
+        if (doOverwrite) {
+          this.ctx.onAction("delete_selection", { tag });
+          this.ctx.onAction("save_selection", { tag });
+        } else {
+          return;
+        }
+      } else {
+        this.ctx.onAction("save_selection", { tag });
+      }
+      this.querySaveForm.style.display = "none";
+    });
+    this.querySaveForm.appendChild(confirmBtn);
+    const cancelBtn = document.createElement("button");
+    cancelBtn.textContent = "Cancel";
+    Object.assign(cancelBtn.style, {
+      background: "rgba(255,255,255,0.08)",
+      border: "0",
+      borderRadius: "6px",
+      padding: "6px 10px",
+      color: "#e4e4e7",
+      fontSize: "11px",
+      cursor: "pointer"
+    });
+    cancelBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      this.querySaveForm.style.display = "none";
+    });
+    this.querySaveForm.appendChild(cancelBtn);
   }
   getSelectionQueryComposer() {
     if (this.selectionQueryComposer === null) {
-      this.selectionQueryComposer = new ManualQueryComposer("selection", (details) => {
-        this.ctx.onAction("selection_query_preview_request", details);
-      }, () => this.syncQueryOpButtons());
+      this.helpBtn = makeButton("?", () => {
+        this.selectionCheatSheetOpen = !this.selectionCheatSheetOpen;
+        this.scheduleRender();
+      });
+      this.helpBtn.setAttribute("data-molsysviewer-selection-cheatsheet-toggle", "true");
+      Object.assign(this.helpBtn.style, {
+        flex: "0 0 30px",
+        width: "30px",
+        padding: "6px 0",
+        fontWeight: "700"
+      });
+      this.selectionQueryComposer = new ManualQueryComposer(
+        "selection",
+        (details) => {
+          this.ctx.onAction("selection_query_preview_request", details);
+        },
+        () => {
+        },
+        {
+          buttonLabel: "Select",
+          hideSyntax: true,
+          middleElement: this.helpBtn
+        }
+      );
     }
     return this.selectionQueryComposer;
   }
@@ -153739,6 +153611,7 @@ var WholePanel = class {
     this.requestId = 0;
     this.continuousHistoryEdit = false;
     this.continuousHistoryRenderPending = false;
+    this.historyState = { canUndo: false, canRedo: false };
   }
   mount(host) {
     this.host = host;
@@ -153763,9 +153636,13 @@ var WholePanel = class {
     this.details = details;
     this.render();
   }
+  updateHistory(state) {
+    this.historyState = state;
+    this.render();
+  }
   render() {
     if (!this.host) return;
-    this.host.innerHTML = "";
+    this.host.replaceChildren();
     Object.assign(this.host.style, {
       flexDirection: "column",
       gap: "12px",
@@ -153833,11 +153710,28 @@ var WholePanel = class {
     });
     toggle.setAttribute("data-molsysviewer-whole-visibility", summary.visible ? "hide" : "show");
     actions.appendChild(toggle);
-    const undoBtn = makeButton("Undo", () => {
+    const undoBtn = makeButton("\u21B6 Undo", () => {
       this.ctx.onAction("undo_active_selection");
     });
+    undoBtn.setAttribute("data-molsysviewer-whole-undo", "true");
     undoBtn.title = "Undo last action";
+    undoBtn.disabled = !this.historyState.canUndo;
+    if (undoBtn.disabled) {
+      undoBtn.style.opacity = "0.42";
+      undoBtn.style.cursor = "not-allowed";
+    }
     actions.appendChild(undoBtn);
+    const redoBtn = makeButton("\u21B7 Redo", () => {
+      this.ctx.onAction("redo_active_selection");
+    });
+    redoBtn.setAttribute("data-molsysviewer-whole-redo", "true");
+    redoBtn.title = "Redo last action";
+    redoBtn.disabled = !this.historyState.canRedo;
+    if (redoBtn.disabled) {
+      redoBtn.style.opacity = "0.42";
+      redoBtn.style.cursor = "not-allowed";
+    }
+    actions.appendChild(redoBtn);
     const resetBtn = makeButton("Reset", () => {
       this.ctx.onAction("reset_whole_representation");
       this.ctx.onAction("reset_whole_colors");
@@ -153975,7 +153869,7 @@ var WholePanel = class {
     });
     section.appendChild(cardTitle);
     const scheme = makeStyledSelect(
-      summary.color_schemes.length ? summary.color_schemes.map((value) => ({ value, label: labelFromToken(value) })) : [{ value: "", label: "No schemes available" }],
+      (summary.color_schemes || []).length ? summary.color_schemes.map((value) => ({ value, label: labelFromToken(value) })) : [{ value: "", label: "No schemes available" }],
       summary.color_scheme ?? "",
       (value) => {
         if (value) this.ctx.onAction("set_whole_color_scheme", { scheme: value });
@@ -153997,7 +153891,7 @@ var WholePanel = class {
     section.appendChild(row("Uniform", uniform));
     const attrWrap = document.createElement("div");
     Object.assign(attrWrap.style, { display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" });
-    const attr = makeStyledSelect([{ value: "", label: "None" }, ...summary.available_attributes], "", () => {
+    const attr = makeStyledSelect([{ value: "", label: "None" }, ...summary.available_attributes || []], "", () => {
     });
     attr.setAttribute("data-molsysviewer-whole-color-attribute", "true");
     const palette = makeStyledSelect(["viridis", "plasma", "magma", "inferno", "cividis", "turbo"], "viridis", () => {
@@ -156794,6 +156688,7 @@ var GroupPanel = class {
   }
   updateSelectionHistoryState(state) {
     this.selectionPanel.updateHistory(state);
+    this.wholePanel.updateHistory(state);
   }
   setSavedSelections(items) {
     this.selectionPanel.setSavedSelections(items);

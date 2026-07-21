@@ -752,6 +752,7 @@ export class GroupPanel {
 
     updateSelectionHistoryState(state: { canUndo: boolean; canRedo: boolean }): void {
         this.selectionPanel.updateHistory(state);
+        this.wholePanel.updateHistory(state);
     }
 
     setSavedSelections(items: SavedSelectionSummary[]): void {
