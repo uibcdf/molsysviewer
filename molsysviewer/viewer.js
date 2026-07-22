@@ -150807,6 +150807,199 @@ function createStyleDraftControls(options) {
   };
 }
 
+// src/ui/query-composer.ts
+var ManualQueryComposer = class _ManualQueryComposer {
+  constructor(scope, onRequest, onChange, options) {
+    this.scope = scope;
+    this.onRequest = onRequest;
+    this.onChange = onChange;
+    this.expression = "";
+    this.syntax = "MolSysMT";
+    this.preview = null;
+    this.activeRequestId = null;
+    this.root = document.createElement("div");
+    this.root.setAttribute("data-molsysviewer-query-composer", scope);
+    Object.assign(this.root.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "6px"
+    });
+    const row2 = document.createElement("div");
+    Object.assign(row2.style, {
+      display: "flex",
+      gap: "6px",
+      alignItems: "center"
+    });
+    this.input = document.createElement("input");
+    this.input.type = "text";
+    this.input.placeholder = 'molecule_type=="protein"';
+    this.input.setAttribute("data-molsysviewer-query-input", scope);
+    Object.assign(this.input.style, {
+      flex: "1 1 0",
+      minWidth: "0",
+      background: "rgba(0,0,0,0.2)",
+      border: "1px solid rgba(255,255,255,0.12)",
+      borderRadius: "6px",
+      padding: "6px 8px",
+      color: "#fff",
+      fontSize: "11px",
+      outline: "none"
+    });
+    this.input.addEventListener("input", () => {
+      this.expression = this.input.value;
+      this.preview = null;
+      this.activeRequestId = null;
+      this.renderStatus();
+      this.onChange?.();
+    });
+    this.input.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") return;
+      event.preventDefault();
+      event.stopPropagation();
+      this.check();
+    });
+    this.checkButton = document.createElement("button");
+    this.checkButton.type = "button";
+    this.checkButton.textContent = options?.buttonLabel ?? "Check";
+    this.checkButton.setAttribute("data-molsysviewer-query-check", scope);
+    Object.assign(this.checkButton.style, {
+      flex: "0 0 auto",
+      background: "rgba(255,255,255,0.06)",
+      border: "1px solid rgba(255,255,255,0.12)",
+      borderRadius: "6px",
+      padding: "6px 9px",
+      color: "#f4f4f5",
+      fontSize: "11px",
+      fontWeight: "600",
+      cursor: "pointer"
+    });
+    this.checkButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      this.check();
+    });
+    this.syntaxSelect = document.createElement("select");
+    this.syntaxSelect.setAttribute("data-molsysviewer-query-syntax", scope);
+    Object.assign(this.syntaxSelect.style, {
+      flex: "0 0 auto",
+      background: "rgba(0,0,0,0.2)",
+      border: "1px solid rgba(255,255,255,0.12)",
+      borderRadius: "6px",
+      padding: "6px 8px",
+      color: "#f4f4f5",
+      fontSize: "11px",
+      outline: "none"
+    });
+    for (const value of ["MolSysMT", "Indices"]) {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = value;
+      this.syntaxSelect.appendChild(option);
+    }
+    this.syntaxSelect.addEventListener("change", () => {
+      this.syntax = this.syntaxSelect.value === "Indices" ? "Indices" : "MolSysMT";
+      this.input.placeholder = this.syntax === "Indices" ? "0, 1, 2" : 'molecule_type=="protein"';
+      this.preview = null;
+      this.activeRequestId = null;
+      this.renderStatus();
+      this.onChange?.();
+    });
+    row2.appendChild(this.input);
+    row2.appendChild(this.checkButton);
+    if (options?.middleElement) {
+      row2.appendChild(options.middleElement);
+    }
+    if (!options?.hideSyntax) {
+      row2.appendChild(this.syntaxSelect);
+    }
+    this.root.appendChild(row2);
+    this.status = document.createElement("div");
+    this.status.setAttribute("data-molsysviewer-query-status", scope);
+    Object.assign(this.status.style, {
+      minHeight: "14px",
+      fontSize: "10px",
+      color: "rgba(244,244,245,0.56)"
+    });
+    this.root.appendChild(this.status);
+    this.renderStatus();
+  }
+  static {
+    this.nextRequestId = 1e6;
+  }
+  element() {
+    return this.root;
+  }
+  value() {
+    return { expression: this.expression.trim(), syntax: this.syntax };
+  }
+  setExpression(expression, syntax) {
+    this.expression = expression;
+    this.input.value = expression;
+    if (syntax) {
+      this.syntax = syntax;
+      this.syntaxSelect.value = syntax;
+      this.input.placeholder = syntax === "Indices" ? "0, 1, 2" : 'molecule_type=="protein"';
+    }
+    this.preview = null;
+    this.activeRequestId = null;
+    this.renderStatus();
+    this.onChange?.();
+  }
+  isVerifiedNonEmpty() {
+    return this.preview?.ok === true && Number(this.preview.count ?? 0) > 0;
+  }
+  updatePreview(preview) {
+    if (this.activeRequestId === null || preview.request_id !== this.activeRequestId) {
+      return false;
+    }
+    this.preview = preview;
+    this.renderStatus();
+    return true;
+  }
+  check() {
+    const expression = this.expression.trim();
+    if (!expression) {
+      this.preview = null;
+      this.activeRequestId = null;
+      this.renderStatus();
+      return;
+    }
+    const requestId = _ManualQueryComposer.nextRequestId++;
+    this.activeRequestId = requestId;
+    this.preview = { request_id: requestId, status: "pending" };
+    this.renderStatus();
+    this.onRequest({
+      request_id: requestId,
+      expression,
+      syntax: this.syntax
+    });
+  }
+  renderStatus() {
+    if (!this.expression.trim()) {
+      this.status.textContent = "Enter a query, then press Enter or Check.";
+      this.status.setAttribute("data-molsysviewer-query-status-value", "idle");
+      this.status.style.color = "rgba(244,244,245,0.56)";
+    } else if (this.preview?.status === "pending") {
+      this.status.textContent = "Checking query...";
+      this.status.setAttribute("data-molsysviewer-query-status-value", "pending");
+      this.status.style.color = "rgba(244,244,245,0.72)";
+    } else if (this.preview?.ok === true) {
+      const count3 = Number(this.preview.count ?? 0);
+      this.status.textContent = count3 === 1 ? "\u2713 1 atom" : `\u2713 ${count3} atoms`;
+      this.status.setAttribute("data-molsysviewer-query-status-value", count3 > 0 ? "ok" : "empty");
+      this.status.style.color = count3 > 0 ? "#86efac" : "#facc15";
+    } else if (this.preview?.ok === false) {
+      this.status.textContent = `\u2717 ${this.preview.error_message ?? "invalid syntax"}`;
+      this.status.setAttribute("data-molsysviewer-query-status-value", "error");
+      this.status.style.color = "#fca5a5";
+    } else {
+      this.status.textContent = "Press Enter or Check to verify.";
+      this.status.setAttribute("data-molsysviewer-query-status-value", "idle");
+      this.status.style.color = "rgba(244,244,245,0.56)";
+    }
+  }
+};
+
 // src/ui/panels/regions-panel.ts
 var RegionsPanel = class extends BasePanel {
   constructor(ctx, onFocusRegion) {
@@ -150833,6 +151026,11 @@ var RegionsPanel = class extends BasePanel {
     this.continuousHistoryRenderPending = false;
     this.historyState = { canUndo: false, canRedo: false };
     this.regionStyleBackups = /* @__PURE__ */ new Map();
+    // Region creation components
+    this.regionsQueryComposer = null;
+    this.regionsCheatSheetOpen = false;
+    this.showRegionCreateForm = false;
+    this.regionCreateInput = null;
   }
   scheduleExternalRender() {
     if (this.continuousHistoryEdit) {
@@ -150858,11 +151056,10 @@ var RegionsPanel = class extends BasePanel {
         this.regionDetailsRequests.delete(tag);
       }
     }
+    if (this.activeStyleRegionTag && !tags.includes(this.activeStyleRegionTag)) {
+      this.activeStyleRegionTag = null;
+    }
     this.ctx.setBadge(String(items.length));
-    this.scheduleExternalRender();
-  }
-  updateHistory(state) {
-    this.historyState = state;
     this.scheduleExternalRender();
   }
   setStyleOptions(options) {
@@ -150871,8 +151068,9 @@ var RegionsPanel = class extends BasePanel {
     this.wholeHidden = options.wholeHidden === true;
     this.scheduleExternalRender();
   }
-  setSavedSelections(items) {
-    this.savedSelections = [...items];
+  updateHistory(state) {
+    this.historyState = state;
+    this.scheduleExternalRender();
   }
   updateDetails(details) {
     const expectedRequest = this.regionDetailsRequests.get(details.tag);
@@ -150882,12 +151080,29 @@ var RegionsPanel = class extends BasePanel {
     this.regionDetails.set(details.tag, details);
     this.scheduleExternalRender();
   }
-  /** Query composer previews are no longer owned by the Regions panel. */
+  /** Query composer previews for regions. */
   updatePreview(preview) {
-    return false;
+    if (!this.regionsQueryComposer) return false;
+    const updated = this.regionsQueryComposer.updatePreview(preview);
+    if (updated && preview.ok === true) {
+      const { expression, syntax } = this.regionsQueryComposer.value();
+      if (expression) {
+        this.ctx.onAction("apply_selection_query", {
+          expression,
+          syntax,
+          op: "replace"
+        });
+      }
+    }
+    return updated;
   }
   setCurrentSelection(selection) {
     this.currentSelection = selection;
+    this.scheduleRender();
+  }
+  setSavedSelections(items) {
+    this.savedSelections = [...items];
+    this.scheduleRender();
   }
   /** Whether a region with this tag currently exists (used by the Selection -> Region bridge). */
   hasRegion(tag) {
@@ -150898,6 +151113,7 @@ var RegionsPanel = class extends BasePanel {
     this.host.replaceChildren();
     this.host.appendChild(makeSectionHeader("Regions"));
     const summaryCard = document.createElement("div");
+    summaryCard.setAttribute("data-molsysviewer-region-summary-card", "true");
     Object.assign(summaryCard.style, {
       display: "flex",
       flexDirection: "column",
@@ -150908,8 +151124,8 @@ var RegionsPanel = class extends BasePanel {
       border: "1px solid rgba(255,255,255,0.08)",
       marginBottom: "10px"
     });
-    const visibleRegionsCount = this.regions.filter((r) => !r.hidden).length;
     const totalRegions = this.regions.length;
+    const visibleRegionsCount = this.regions.filter((region) => region.visible).length;
     const row1 = document.createElement("div");
     Object.assign(row1.style, {
       display: "flex",
@@ -150989,6 +151205,7 @@ var RegionsPanel = class extends BasePanel {
     row2.appendChild(wholeInfo);
     summaryCard.appendChild(row2);
     this.host.appendChild(summaryCard);
+    this.host.appendChild(this.renderNewRegionCard());
     const list3 = document.createElement("div");
     list3.setAttribute("data-molsysviewer-region-list", "true");
     Object.assign(list3.style, {
@@ -151566,198 +151783,343 @@ var RegionsPanel = class extends BasePanel {
     });
     return container;
   }
-};
-
-// src/ui/query-composer.ts
-var ManualQueryComposer = class _ManualQueryComposer {
-  constructor(scope, onRequest, onChange, options) {
-    this.scope = scope;
-    this.onRequest = onRequest;
-    this.onChange = onChange;
-    this.expression = "";
-    this.syntax = "MolSysMT";
-    this.preview = null;
-    this.activeRequestId = null;
-    this.root = document.createElement("div");
-    this.root.setAttribute("data-molsysviewer-query-composer", scope);
-    Object.assign(this.root.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "6px"
-    });
-    const row2 = document.createElement("div");
-    Object.assign(row2.style, {
-      display: "flex",
-      gap: "6px",
-      alignItems: "center"
-    });
-    this.input = document.createElement("input");
-    this.input.type = "text";
-    this.input.placeholder = 'molecule_type=="protein"';
-    this.input.setAttribute("data-molsysviewer-query-input", scope);
-    Object.assign(this.input.style, {
-      flex: "1 1 0",
-      minWidth: "0",
+  renderNewRegionCard() {
+    const INPUT_STYLE2 = {
       background: "rgba(0,0,0,0.2)",
       border: "1px solid rgba(255,255,255,0.12)",
       borderRadius: "6px",
-      padding: "6px 8px",
+      padding: "4px 8px",
       color: "#fff",
       fontSize: "11px",
       outline: "none"
+    };
+    const container = document.createElement("div");
+    container.setAttribute("data-molsysviewer-region-create-card", "true");
+    Object.assign(container.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "8px",
+      padding: "10px",
+      borderRadius: "8px",
+      background: "rgba(255,255,255,0.035)",
+      border: "1px solid rgba(255,255,255,0.08)",
+      marginBottom: "10px"
     });
-    this.input.addEventListener("input", () => {
-      this.expression = this.input.value;
-      this.preview = null;
-      this.activeRequestId = null;
-      this.renderStatus();
-      this.onChange?.();
-    });
-    this.input.addEventListener("keydown", (event) => {
-      if (event.key !== "Enter") return;
-      event.preventDefault();
-      event.stopPropagation();
-      this.check();
-    });
-    this.checkButton = document.createElement("button");
-    this.checkButton.type = "button";
-    this.checkButton.textContent = options?.buttonLabel ?? "Check";
-    this.checkButton.setAttribute("data-molsysviewer-query-check", scope);
-    Object.assign(this.checkButton.style, {
-      flex: "0 0 auto",
-      background: "rgba(255,255,255,0.06)",
-      border: "1px solid rgba(255,255,255,0.12)",
-      borderRadius: "6px",
-      padding: "6px 9px",
+    const title = document.createElement("strong");
+    title.textContent = "New Region";
+    Object.assign(title.style, {
+      fontSize: "12px",
       color: "#f4f4f5",
-      fontSize: "11px",
-      fontWeight: "600",
-      cursor: "pointer"
+      fontWeight: "700"
     });
-    this.checkButton.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      this.check();
-    });
-    this.syntaxSelect = document.createElement("select");
-    this.syntaxSelect.setAttribute("data-molsysviewer-query-syntax", scope);
-    Object.assign(this.syntaxSelect.style, {
-      flex: "0 0 auto",
-      background: "rgba(0,0,0,0.2)",
-      border: "1px solid rgba(255,255,255,0.12)",
-      borderRadius: "6px",
-      padding: "6px 8px",
-      color: "#f4f4f5",
-      fontSize: "11px",
-      outline: "none"
-    });
-    for (const value of ["MolSysMT", "Indices"]) {
-      const option = document.createElement("option");
-      option.value = value;
-      option.textContent = value;
-      this.syntaxSelect.appendChild(option);
-    }
-    this.syntaxSelect.addEventListener("change", () => {
-      this.syntax = this.syntaxSelect.value === "Indices" ? "Indices" : "MolSysMT";
-      this.input.placeholder = this.syntax === "Indices" ? "0, 1, 2" : 'molecule_type=="protein"';
-      this.preview = null;
-      this.activeRequestId = null;
-      this.renderStatus();
-      this.onChange?.();
-    });
-    row2.appendChild(this.input);
-    row2.appendChild(this.checkButton);
-    if (options?.middleElement) {
-      row2.appendChild(options.middleElement);
-    }
-    if (!options?.hideSyntax) {
-      row2.appendChild(this.syntaxSelect);
-    }
-    this.root.appendChild(row2);
-    this.status = document.createElement("div");
-    this.status.setAttribute("data-molsysviewer-query-status", scope);
-    Object.assign(this.status.style, {
-      minHeight: "14px",
+    container.appendChild(title);
+    const activeSectionTitle = document.createElement("div");
+    activeSectionTitle.textContent = "Active Selection";
+    Object.assign(activeSectionTitle.style, {
       fontSize: "10px",
-      color: "rgba(244,244,245,0.56)"
+      fontWeight: "600",
+      color: "rgba(244,244,245,0.52)",
+      textTransform: "uppercase",
+      marginTop: "4px",
+      letterSpacing: "0.5px"
     });
-    this.root.appendChild(this.status);
-    this.renderStatus();
-  }
-  static {
-    this.nextRequestId = 1e6;
-  }
-  element() {
-    return this.root;
-  }
-  value() {
-    return { expression: this.expression.trim(), syntax: this.syntax };
-  }
-  setExpression(expression, syntax) {
-    this.expression = expression;
-    this.input.value = expression;
-    if (syntax) {
-      this.syntax = syntax;
-      this.syntaxSelect.value = syntax;
-      this.input.placeholder = syntax === "Indices" ? "0, 1, 2" : 'molecule_type=="protein"';
-    }
-    this.preview = null;
-    this.activeRequestId = null;
-    this.renderStatus();
-    this.onChange?.();
-  }
-  isVerifiedNonEmpty() {
-    return this.preview?.ok === true && Number(this.preview.count ?? 0) > 0;
-  }
-  updatePreview(preview) {
-    if (this.activeRequestId === null || preview.request_id !== this.activeRequestId) {
-      return false;
-    }
-    this.preview = preview;
-    this.renderStatus();
-    return true;
-  }
-  check() {
-    const expression = this.expression.trim();
-    if (!expression) {
-      this.preview = null;
-      this.activeRequestId = null;
-      this.renderStatus();
-      return;
-    }
-    const requestId = _ManualQueryComposer.nextRequestId++;
-    this.activeRequestId = requestId;
-    this.preview = { request_id: requestId, status: "pending" };
-    this.renderStatus();
-    this.onRequest({
-      request_id: requestId,
-      expression,
-      syntax: this.syntax
+    container.appendChild(activeSectionTitle);
+    const activeCount = this.currentSelection?.count_atoms ?? 0;
+    const hasActive = activeCount > 0;
+    const activeSummaryRow = document.createElement("div");
+    Object.assign(activeSummaryRow.style, {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      fontSize: "11px",
+      color: "rgba(244,244,245,0.75)",
+      gap: "8px"
     });
-  }
-  renderStatus() {
-    if (!this.expression.trim()) {
-      this.status.textContent = "Enter a query, then press Enter or Check.";
-      this.status.setAttribute("data-molsysviewer-query-status-value", "idle");
-      this.status.style.color = "rgba(244,244,245,0.56)";
-    } else if (this.preview?.status === "pending") {
-      this.status.textContent = "Checking query...";
-      this.status.setAttribute("data-molsysviewer-query-status-value", "pending");
-      this.status.style.color = "rgba(244,244,245,0.72)";
-    } else if (this.preview?.ok === true) {
-      const count3 = Number(this.preview.count ?? 0);
-      this.status.textContent = count3 === 1 ? "\u2713 1 atom" : `\u2713 ${count3} atoms`;
-      this.status.setAttribute("data-molsysviewer-query-status-value", count3 > 0 ? "ok" : "empty");
-      this.status.style.color = count3 > 0 ? "#86efac" : "#facc15";
-    } else if (this.preview?.ok === false) {
-      this.status.textContent = `\u2717 ${this.preview.error_message ?? "invalid syntax"}`;
-      this.status.setAttribute("data-molsysviewer-query-status-value", "error");
-      this.status.style.color = "#fca5a5";
+    const activeSummaryText = document.createElement("span");
+    if (hasActive) {
+      const groupCount = this.currentSelection?.count_groups ?? 0;
+      activeSummaryText.textContent = `${activeCount} atom${activeCount === 1 ? "" : "s"} in ${groupCount} group${groupCount === 1 ? "" : "s"}`;
     } else {
-      this.status.textContent = "Press Enter or Check to verify.";
-      this.status.setAttribute("data-molsysviewer-query-status-value", "idle");
-      this.status.style.color = "rgba(244,244,245,0.56)";
+      activeSummaryText.textContent = "No selection";
     }
+    activeSummaryRow.appendChild(activeSummaryText);
+    const activeBtnRow = document.createElement("div");
+    Object.assign(activeBtnRow.style, { display: "flex", gap: "6px" });
+    const newRegionBtn = makeButton("New region", () => {
+      this.showRegionCreateForm = !this.showRegionCreateForm;
+      this.scheduleRender();
+      if (this.showRegionCreateForm) {
+        setTimeout(() => this.regionCreateInput?.focus?.(), 0);
+      }
+    });
+    newRegionBtn.setAttribute("data-molsysviewer-region-create-btn", "true");
+    newRegionBtn.disabled = !hasActive;
+    newRegionBtn.style.opacity = hasActive ? "1" : "0.42";
+    newRegionBtn.style.padding = "3px 6px";
+    newRegionBtn.style.fontSize = "10px";
+    activeBtnRow.appendChild(newRegionBtn);
+    const deselectBtn = makeButton("Deselect", () => {
+      this.ctx.onAction("set_active_selection_operation", { operation: "none" });
+      this.showRegionCreateForm = false;
+      this.scheduleRender();
+    });
+    deselectBtn.setAttribute("data-molsysviewer-region-deselect-btn", "true");
+    deselectBtn.disabled = !hasActive;
+    deselectBtn.style.opacity = hasActive ? "1" : "0.42";
+    deselectBtn.style.padding = "3px 6px";
+    deselectBtn.style.fontSize = "10px";
+    activeBtnRow.appendChild(deselectBtn);
+    activeSummaryRow.appendChild(activeBtnRow);
+    container.appendChild(activeSummaryRow);
+    if (this.showRegionCreateForm && hasActive) {
+      const form = document.createElement("div");
+      form.setAttribute("data-molsysviewer-region-create-form", "true");
+      Object.assign(form.style, {
+        display: "flex",
+        gap: "6px",
+        marginTop: "4px",
+        width: "100%"
+      });
+      const input = document.createElement("input");
+      input.type = "text";
+      input.placeholder = "Region name...";
+      input.setAttribute("data-molsysviewer-region-create-input", "true");
+      this.regionCreateInput = input;
+      Object.assign(input.style, {
+        flex: "1 1 auto",
+        ...INPUT_STYLE2
+      });
+      const confirmCreate = () => {
+        const val = input.value.trim();
+        if (!val) return;
+        const exists = this.regions.some((r) => r.tag === val);
+        if (exists) {
+          const doOverwrite = typeof confirm === "function" ? confirm(`A region named "${val}" already exists. Overwrite?`) : true;
+          if (doOverwrite) {
+            this.ctx.onAction("delete_region", { tag: val });
+            this.ctx.onAction("create_region_from_selection", { tag: val });
+          } else {
+            return;
+          }
+        } else {
+          this.ctx.onAction("create_region_from_selection", { tag: val });
+        }
+        this.showRegionCreateForm = false;
+        this.scheduleRender();
+      };
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          confirmCreate();
+        } else if (e.key === "Escape") {
+          e.preventDefault();
+          this.showRegionCreateForm = false;
+          this.scheduleRender();
+        }
+      });
+      const confirmBtn = makeButton("Create", confirmCreate);
+      confirmBtn.style.padding = "4px 8px";
+      confirmBtn.style.fontSize = "11px";
+      const cancelBtn = makeButton("Cancel", () => {
+        this.showRegionCreateForm = false;
+        this.scheduleRender();
+      });
+      cancelBtn.style.padding = "4px 8px";
+      cancelBtn.style.fontSize = "11px";
+      form.appendChild(input);
+      form.appendChild(confirmBtn);
+      form.appendChild(cancelBtn);
+      container.appendChild(form);
+    }
+    const div1 = document.createElement("div");
+    Object.assign(div1.style, { borderTop: "1px solid rgba(255,255,255,0.06)", margin: "4px 0" });
+    container.appendChild(div1);
+    const querySectionTitle = document.createElement("div");
+    querySectionTitle.textContent = "Select by Query";
+    Object.assign(querySectionTitle.style, {
+      fontSize: "10px",
+      fontWeight: "600",
+      color: "rgba(244,244,245,0.52)",
+      textTransform: "uppercase",
+      marginBottom: "4px",
+      letterSpacing: "0.5px"
+    });
+    container.appendChild(querySectionTitle);
+    const composer = this.getRegionsQueryComposer();
+    container.appendChild(composer.element());
+    const presetRow = document.createElement("div");
+    presetRow.setAttribute("data-molsysviewer-regions-query-presets", "true");
+    Object.assign(presetRow.style, {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: "5px",
+      alignItems: "center",
+      marginTop: "4px"
+    });
+    const presetLabel = document.createElement("span");
+    Object.assign(presetLabel.style, {
+      fontSize: "10px",
+      color: "rgba(244,244,245,0.52)",
+      marginRight: "2px"
+    });
+    presetLabel.textContent = "shortcuts";
+    presetRow.appendChild(presetLabel);
+    const presets = [
+      { label: "protein", expression: 'molecule_type=="protein"' },
+      { label: "water", expression: 'molecule_type=="water"' },
+      { label: "backbone", expression: 'atom_name in ["N", "CA", "C", "O"]' },
+      { label: "sidechain", expression: 'atom_name not in ["N", "CA", "C", "O"]' },
+      { label: "ligand", expression: 'molecule_type=="small molecule"' }
+    ];
+    for (const preset of presets) {
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.textContent = preset.label;
+      chip.setAttribute("data-molsysviewer-regions-query-preset", preset.label);
+      Object.assign(chip.style, {
+        background: "rgba(99, 102, 241, 0.16)",
+        border: "1px solid rgba(129, 140, 248, 0.34)",
+        borderRadius: "9999px",
+        padding: "2px 6px",
+        color: "#c7d2fe",
+        fontSize: "9px",
+        fontWeight: "500",
+        cursor: "pointer"
+      });
+      chip.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        composer.setExpression(preset.expression, "MolSysMT");
+      });
+      presetRow.appendChild(chip);
+    }
+    container.appendChild(presetRow);
+    if (this.regionsCheatSheetOpen) {
+      const cheatSheet = document.createElement("div");
+      cheatSheet.setAttribute("data-molsysviewer-regions-cheatsheet", "true");
+      Object.assign(cheatSheet.style, {
+        display: "grid",
+        gridTemplateColumns: "1fr",
+        gap: "4px",
+        padding: "8px",
+        borderRadius: "6px",
+        background: "rgba(0,0,0,0.18)",
+        border: "1px solid rgba(255,255,255,0.08)",
+        marginTop: "4px"
+      });
+      const examples = [
+        ["Atom name", 'atom_name=="CA"'],
+        ["Group index", "group_index in [10, 15]"],
+        ["Chain", 'chain_id=="A"'],
+        ["Protein", 'molecule_type=="protein"'],
+        ["Nearby", "all within 5 angstroms of atom_index in [0]"],
+        ["Bonded", "bonded to atom_index in [0]"]
+      ];
+      for (const [label2, expression] of examples) {
+        const row2 = document.createElement("button");
+        row2.type = "button";
+        row2.setAttribute("data-molsysviewer-regions-cheatsheet-example", label2);
+        Object.assign(row2.style, {
+          display: "flex",
+          justifyContent: "space-between",
+          gap: "8px",
+          width: "100%",
+          background: "transparent",
+          border: "0",
+          padding: "3px 2px",
+          color: "#e4e4e7",
+          fontSize: "10px",
+          textAlign: "left",
+          cursor: "pointer"
+        });
+        const name = document.createElement("span");
+        name.textContent = label2;
+        name.style.color = "rgba(244,244,245,0.62)";
+        const code = document.createElement("code");
+        code.textContent = expression;
+        Object.assign(code.style, {
+          color: "#c7d2fe",
+          fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap"
+        });
+        row2.appendChild(name);
+        row2.appendChild(code);
+        row2.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          composer.setExpression(expression, "MolSysMT");
+        });
+        cheatSheet.appendChild(row2);
+      }
+      container.appendChild(cheatSheet);
+    }
+    const div2 = document.createElement("div");
+    Object.assign(div2.style, { borderTop: "1px solid rgba(255,255,255,0.06)", margin: "4px 0" });
+    container.appendChild(div2);
+    const savedSectionTitle = document.createElement("div");
+    savedSectionTitle.textContent = "Activate saved selection";
+    Object.assign(savedSectionTitle.style, {
+      fontSize: "10px",
+      fontWeight: "600",
+      color: "rgba(244,244,245,0.52)",
+      textTransform: "uppercase",
+      marginBottom: "4px",
+      letterSpacing: "0.5px"
+    });
+    container.appendChild(savedSectionTitle);
+    const savedOptions = [
+      { value: "", label: "Select saved selection..." },
+      ...this.savedSelections.map((s) => ({ value: s.tag, label: `${s.tag} (${s.atom_count} atoms)` }))
+    ];
+    const savedSelect = makeStyledSelect(
+      savedOptions,
+      "",
+      (val) => {
+        if (val) {
+          this.ctx.onAction("activate_selection", { tag: val });
+        }
+        setTimeout(() => {
+          if (savedSelect) savedSelect.value = "";
+        }, 0);
+      }
+    );
+    container.appendChild(savedSelect);
+    return container;
+  }
+  getRegionsQueryComposer() {
+    if (!this.regionsQueryComposer) {
+      const helpBtn = document.createElement("button");
+      helpBtn.type = "button";
+      helpBtn.textContent = "?";
+      helpBtn.className = "molsysviewer-button";
+      helpBtn.addEventListener("click", () => {
+        this.regionsCheatSheetOpen = !this.regionsCheatSheetOpen;
+        this.scheduleRender();
+      });
+      helpBtn.setAttribute("data-molsysviewer-regions-cheatsheet-toggle", "true");
+      Object.assign(helpBtn.style, {
+        flex: "0 0 30px",
+        width: "30px",
+        padding: "6px 0",
+        fontWeight: "700"
+      });
+      this.regionsQueryComposer = new ManualQueryComposer(
+        "regions",
+        (details) => {
+          this.ctx.onAction("selection_query_preview_request", details);
+        },
+        () => {
+        },
+        {
+          buttonLabel: "Select",
+          hideSyntax: true,
+          middleElement: helpBtn
+        }
+      );
+    }
+    return this.regionsQueryComposer;
   }
 };
 
