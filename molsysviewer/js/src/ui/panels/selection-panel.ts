@@ -570,22 +570,25 @@ export class SelectionPanel extends BasePanel {
             borderRadius: "8px",
             background: "rgba(255,255,255,0.035)",
             border: "1px solid rgba(255,255,255,0.08)",
-            gap: "6px",
             marginBottom: "10px",
         });
 
         const activeCount = this.currentSelection?.count_atoms ?? 0;
+        const hasActive = activeCount > 0;
 
-        // Top Row: Title, Dot, and count status
-        const topRow = document.createElement("div");
-        Object.assign(topRow.style, {
+        // Row 1: Single line container (Dot, Title, Count, and Buttons)
+        const row1 = document.createElement("div");
+        Object.assign(row1.style, {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
+            width: "100%",
+            gap: "10px",
         });
 
-        const title = document.createElement("div");
-        Object.assign(title.style, {
+        // Left: Dot and Title
+        const leftWrap = document.createElement("div");
+        Object.assign(leftWrap.style, {
             display: "flex",
             alignItems: "center",
             gap: "6px",
@@ -595,7 +598,6 @@ export class SelectionPanel extends BasePanel {
         });
 
         const dot = document.createElement("span");
-        const hasActive = activeCount > 0;
         Object.assign(dot.style, {
             width: "6px",
             height: "6px",
@@ -604,25 +606,28 @@ export class SelectionPanel extends BasePanel {
             boxShadow: hasActive ? "0 0 6px rgba(52,211,153,0.4)" : "none",
             flexShrink: "0",
         });
-        title.appendChild(dot);
-        title.appendChild(document.createTextNode("Active Selection"));
-        topRow.appendChild(title);
+        leftWrap.appendChild(dot);
+        leftWrap.appendChild(document.createTextNode("Active Selection"));
+        row1.appendChild(leftWrap);
 
+        // Middle/Right-ish: Count text
         const countText = document.createElement("span");
         Object.assign(countText.style, {
             fontSize: "11px",
             color: "rgba(244,244,245,0.6)",
+            marginLeft: "auto",
+            marginRight: "4px",
         });
         countText.textContent = hasActive ? `${activeCount} atom${activeCount === 1 ? "" : "s"} selected` : "No selection";
-        topRow.appendChild(countText);
-        card.appendChild(topRow);
+        row1.appendChild(countText);
 
-        // Buttons row
+        // Right: Action Buttons
         const btnRow = document.createElement("div");
         Object.assign(btnRow.style, {
             display: "flex",
             gap: "4px",
-            marginTop: "2px",
+            alignItems: "center",
+            flexShrink: "0",
         });
 
         const deselectBtn = makeButton("Deselect", () => {
@@ -651,22 +656,23 @@ export class SelectionPanel extends BasePanel {
             saveBtn.style.cursor = "not-allowed";
         }
 
-        for (const btn of [deselectBtn, saveBtn]) {
-            btn.style.flex = "0 1 auto";
+        for (const btn of [saveBtn, deselectBtn]) {
             btn.style.padding = "3px 6px";
             btn.style.fontSize = "10px";
             btnRow.appendChild(btn);
         }
-        card.appendChild(btnRow);
+        row1.appendChild(btnRow);
+        card.appendChild(row1);
 
-        // Save Input Form (expanded if showActiveSelectionSaveForm is true)
+        // Save Input Form (expanded below row1 if showActiveSelectionSaveForm is true)
         if (this.showActiveSelectionSaveForm && hasActive) {
             const form = document.createElement("div");
             form.setAttribute("data-molsysviewer-active-selection-save-form", "true");
             Object.assign(form.style, {
                 display: "flex",
                 gap: "6px",
-                marginTop: "4px",
+                marginTop: "6px",
+                width: "100%",
             });
 
             const input = document.createElement("input");
@@ -690,7 +696,7 @@ export class SelectionPanel extends BasePanel {
                 e.stopPropagation();
             });
 
-            const confirmBtn = makeButton("Save Selection", () => {
+            const confirmBtn = makeButton("Save", () => {
                 const tag = input.value.trim();
                 if (!tag) return;
                 const exists = this.savedSelections.some(s => s.tag === tag);
@@ -719,23 +725,8 @@ export class SelectionPanel extends BasePanel {
                 fontWeight: "600",
             });
 
-            const cancelBtn = makeButton("Cancel", () => {
-                this.showActiveSelectionSaveForm = false;
-                this.scheduleRender();
-            });
-            cancelBtn.setAttribute("data-molsysviewer-active-selection-save-cancel", "true");
-            Object.assign(cancelBtn.style, {
-                background: "rgba(255,255,255,0.08)",
-                border: "0",
-                borderRadius: "6px",
-                padding: "4px 8px",
-                color: "#e4e4e7",
-                fontSize: "11px",
-            });
-
             form.appendChild(input);
             form.appendChild(confirmBtn);
-            form.appendChild(cancelBtn);
             card.appendChild(form);
         }
 
