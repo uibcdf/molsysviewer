@@ -939,7 +939,7 @@ test("GroupPanel region style composer brackets live opacity changes for history
             action: "set_region_representation",
             details: {
                 tag: "binding",
-                representation: "line",
+                representation: "cartoon",
                 params: { alpha: 0.65, quality: "high", sizeFactor: 0.8 },
             },
         }, {
@@ -950,7 +950,7 @@ test("GroupPanel region style composer brackets live opacity changes for history
             findFirstByAttribute(root, "data-molsysviewer-region-style-opacity", "binding"),
             opacity,
         );
-        await new Promise(resolve => setTimeout(resolve, 0));
+        await new Promise(resolve => setTimeout(resolve, 15));
         assert.notStrictEqual(
             findFirstByAttribute(root, "data-molsysviewer-region-style-opacity", "binding"),
             opacity,
@@ -979,9 +979,9 @@ test("GroupPanel region style composer brackets live opacity changes for history
         refreshedColorScheme.value = "uniform";
         refreshedColorScheme.dispatch("change");
         refreshedUniformColor.value = "#112233";
+        refreshedUniformColor.dispatch("change");
         refreshedQuality.value = "highest";
-        findFirstByAttribute(root, "data-molsysviewer-region-style-apply", "binding")
-            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        refreshedQuality.dispatch("change");
         assert.deepStrictEqual(actions.at(-1), {
             action: "set_region_representation",
             details: {
@@ -996,8 +996,6 @@ test("GroupPanel region style composer brackets live opacity changes for history
             },
         });
 
-        findFirstByAttribute(root, "data-molsysviewer-region-style", "binding")
-            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
         const nextAttribute = findFirstByAttribute(
             root,
             "data-molsysviewer-region-style-color-attribute",
@@ -1022,13 +1020,14 @@ test("GroupPanel region style composer brackets live opacity changes for history
             details: { tag: "binding" },
         });
 
+        await new Promise(resolve => setTimeout(resolve, 15));
         panel.dispose();
     } finally {
         restore();
     }
 });
 
-test("GroupPanel region style composer disables base opacity and preserves current visual on empty apply", () => {
+test("GroupPanel region style composer disables base opacity and preserves current visual on empty apply", async () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
@@ -1060,8 +1059,13 @@ test("GroupPanel region style composer disables base opacity and preserves curre
         baseOpacity.dispatch("change");
         assert.strictEqual(actions.length, 0);
 
-        findFirstByAttribute(root, "data-molsysviewer-region-style-apply", "base")
-            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        const representationSelect = findFirstByAttribute(
+            root,
+            "data-molsysviewer-region-style-representation",
+            "base",
+        ) as any;
+        representationSelect.value = "inherit";
+        representationSelect.dispatch("change");
         assert.deepStrictEqual(actions.at(-1), {
             action: "set_region_representation",
             details: {
@@ -1092,8 +1096,7 @@ test("GroupPanel region style composer disables base opacity and preserves curre
         preset.value = "";
         opacity.value = "0.7";
         quality.value = "medium";
-        findFirstByAttribute(root, "data-molsysviewer-region-style-apply", "line")
-            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        quality.dispatch("change");
         assert.deepStrictEqual(actions.at(-1), {
             action: "set_region_representation",
             details: {
@@ -1103,6 +1106,7 @@ test("GroupPanel region style composer disables base opacity and preserves curre
             },
         });
 
+        await new Promise(resolve => setTimeout(resolve, 15));
         panel.dispose();
     } finally {
         restore();

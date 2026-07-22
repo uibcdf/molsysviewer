@@ -672,6 +672,18 @@ export class RegionsPanel extends BasePanel {
                 },
             };
         };
+
+        const triggerLiveUpdate = () => {
+            const next = buildStyleAction();
+            this.ctx.onAction(next.action, next.details);
+        };
+
+        representationSelect.addEventListener("change", triggerLiveUpdate);
+        presetSelect.addEventListener("change", triggerLiveUpdate);
+        quality.addEventListener("change", triggerLiveUpdate);
+        colorScheme.addEventListener("change", triggerLiveUpdate);
+        customColorInput.addEventListener("change", triggerLiveUpdate);
+
         bindContinuousHistory(
             opacity,
             () => {
@@ -682,64 +694,9 @@ export class RegionsPanel extends BasePanel {
         );
         opacity.addEventListener("input", () => {
             if (!this.regionHasOwnVisual(item)) return;
-            this.ctx.onAction("set_region_representation", {
-                tag,
-                ...(item.preset
-                    ? { preset: item.preset }
-                    : { representation: item.representation }),
-                params: {
-                    ...params,
-                    alpha: Number(opacity.value),
-                },
-            });
-        });
-
-        const actionsRow = document.createElement("div");
-        Object.assign(actionsRow.style, {
-            display: "flex",
-            justifyContent: "flex-end",
-            gap: "6px",
-            width: "100%",
-            marginTop: "4px",
-        });
-
-        const cancelBtn = makeButton("Cancel", () => {
-            this.activeStyleRegionTag = null;
-            this.scheduleRender();
-        });
-        cancelBtn.setAttribute("data-molsysviewer-region-style-cancel", tag);
-        Object.assign(cancelBtn.style, {
-            flex: "0 0 auto",
-            fontSize: "10px",
-            padding: "3px 8px",
-        });
-
-        const applyBtn = makeButton("Apply Style", () => {
             const next = buildStyleAction();
             this.ctx.onAction(next.action, next.details);
-            this.activeStyleRegionTag = null;
-            this.scheduleRender();
         });
-        applyBtn.setAttribute("data-molsysviewer-region-style-apply", tag);
-        Object.assign(applyBtn.style, {
-            flex: "0 0 auto",
-            fontSize: "10px",
-            padding: "3px 8px",
-            background: "rgba(16,185,129,0.15)",
-            border: "1px solid rgba(16,185,129,0.3)",
-        });
-        applyBtn.addEventListener("mouseenter", () => {
-            applyBtn.style.background = "rgba(16,185,129,0.25)";
-            applyBtn.style.border = "1px solid rgba(16,185,129,0.5)";
-        });
-        applyBtn.addEventListener("mouseleave", () => {
-            applyBtn.style.background = "rgba(16,185,129,0.15)";
-            applyBtn.style.border = "1px solid rgba(16,185,129,0.3)";
-        });
-
-        actionsRow.appendChild(cancelBtn);
-        actionsRow.appendChild(applyBtn);
-        container.appendChild(actionsRow);
 
         return container;
     }
