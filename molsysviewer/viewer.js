@@ -150598,199 +150598,6 @@ var LayersPanel = class extends BasePanel {
   }
 };
 
-// src/ui/query-composer.ts
-var ManualQueryComposer = class _ManualQueryComposer {
-  constructor(scope, onRequest, onChange, options) {
-    this.scope = scope;
-    this.onRequest = onRequest;
-    this.onChange = onChange;
-    this.expression = "";
-    this.syntax = "MolSysMT";
-    this.preview = null;
-    this.activeRequestId = null;
-    this.root = document.createElement("div");
-    this.root.setAttribute("data-molsysviewer-query-composer", scope);
-    Object.assign(this.root.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "6px"
-    });
-    const row2 = document.createElement("div");
-    Object.assign(row2.style, {
-      display: "flex",
-      gap: "6px",
-      alignItems: "center"
-    });
-    this.input = document.createElement("input");
-    this.input.type = "text";
-    this.input.placeholder = 'molecule_type=="protein"';
-    this.input.setAttribute("data-molsysviewer-query-input", scope);
-    Object.assign(this.input.style, {
-      flex: "1 1 0",
-      minWidth: "0",
-      background: "rgba(0,0,0,0.2)",
-      border: "1px solid rgba(255,255,255,0.12)",
-      borderRadius: "6px",
-      padding: "6px 8px",
-      color: "#fff",
-      fontSize: "11px",
-      outline: "none"
-    });
-    this.input.addEventListener("input", () => {
-      this.expression = this.input.value;
-      this.preview = null;
-      this.activeRequestId = null;
-      this.renderStatus();
-      this.onChange?.();
-    });
-    this.input.addEventListener("keydown", (event) => {
-      if (event.key !== "Enter") return;
-      event.preventDefault();
-      event.stopPropagation();
-      this.check();
-    });
-    this.checkButton = document.createElement("button");
-    this.checkButton.type = "button";
-    this.checkButton.textContent = options?.buttonLabel ?? "Check";
-    this.checkButton.setAttribute("data-molsysviewer-query-check", scope);
-    Object.assign(this.checkButton.style, {
-      flex: "0 0 auto",
-      background: "rgba(255,255,255,0.06)",
-      border: "1px solid rgba(255,255,255,0.12)",
-      borderRadius: "6px",
-      padding: "6px 9px",
-      color: "#f4f4f5",
-      fontSize: "11px",
-      fontWeight: "600",
-      cursor: "pointer"
-    });
-    this.checkButton.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      this.check();
-    });
-    this.syntaxSelect = document.createElement("select");
-    this.syntaxSelect.setAttribute("data-molsysviewer-query-syntax", scope);
-    Object.assign(this.syntaxSelect.style, {
-      flex: "0 0 auto",
-      background: "rgba(0,0,0,0.2)",
-      border: "1px solid rgba(255,255,255,0.12)",
-      borderRadius: "6px",
-      padding: "6px 8px",
-      color: "#f4f4f5",
-      fontSize: "11px",
-      outline: "none"
-    });
-    for (const value of ["MolSysMT", "Indices"]) {
-      const option = document.createElement("option");
-      option.value = value;
-      option.textContent = value;
-      this.syntaxSelect.appendChild(option);
-    }
-    this.syntaxSelect.addEventListener("change", () => {
-      this.syntax = this.syntaxSelect.value === "Indices" ? "Indices" : "MolSysMT";
-      this.input.placeholder = this.syntax === "Indices" ? "0, 1, 2" : 'molecule_type=="protein"';
-      this.preview = null;
-      this.activeRequestId = null;
-      this.renderStatus();
-      this.onChange?.();
-    });
-    row2.appendChild(this.input);
-    row2.appendChild(this.checkButton);
-    if (options?.middleElement) {
-      row2.appendChild(options.middleElement);
-    }
-    if (!options?.hideSyntax) {
-      row2.appendChild(this.syntaxSelect);
-    }
-    this.root.appendChild(row2);
-    this.status = document.createElement("div");
-    this.status.setAttribute("data-molsysviewer-query-status", scope);
-    Object.assign(this.status.style, {
-      minHeight: "14px",
-      fontSize: "10px",
-      color: "rgba(244,244,245,0.56)"
-    });
-    this.root.appendChild(this.status);
-    this.renderStatus();
-  }
-  static {
-    this.nextRequestId = 1e6;
-  }
-  element() {
-    return this.root;
-  }
-  value() {
-    return { expression: this.expression.trim(), syntax: this.syntax };
-  }
-  setExpression(expression, syntax) {
-    this.expression = expression;
-    this.input.value = expression;
-    if (syntax) {
-      this.syntax = syntax;
-      this.syntaxSelect.value = syntax;
-      this.input.placeholder = syntax === "Indices" ? "0, 1, 2" : 'molecule_type=="protein"';
-    }
-    this.preview = null;
-    this.activeRequestId = null;
-    this.renderStatus();
-    this.onChange?.();
-  }
-  isVerifiedNonEmpty() {
-    return this.preview?.ok === true && Number(this.preview.count ?? 0) > 0;
-  }
-  updatePreview(preview) {
-    if (this.activeRequestId === null || preview.request_id !== this.activeRequestId) {
-      return false;
-    }
-    this.preview = preview;
-    this.renderStatus();
-    return true;
-  }
-  check() {
-    const expression = this.expression.trim();
-    if (!expression) {
-      this.preview = null;
-      this.activeRequestId = null;
-      this.renderStatus();
-      return;
-    }
-    const requestId = _ManualQueryComposer.nextRequestId++;
-    this.activeRequestId = requestId;
-    this.preview = { request_id: requestId, status: "pending" };
-    this.renderStatus();
-    this.onRequest({
-      request_id: requestId,
-      expression,
-      syntax: this.syntax
-    });
-  }
-  renderStatus() {
-    if (!this.expression.trim()) {
-      this.status.textContent = "Enter a query, then press Enter or Check.";
-      this.status.setAttribute("data-molsysviewer-query-status-value", "idle");
-      this.status.style.color = "rgba(244,244,245,0.56)";
-    } else if (this.preview?.status === "pending") {
-      this.status.textContent = "Checking query...";
-      this.status.setAttribute("data-molsysviewer-query-status-value", "pending");
-      this.status.style.color = "rgba(244,244,245,0.72)";
-    } else if (this.preview?.ok === true) {
-      const count3 = Number(this.preview.count ?? 0);
-      this.status.textContent = count3 === 1 ? "\u2713 1 atom" : `\u2713 ${count3} atoms`;
-      this.status.setAttribute("data-molsysviewer-query-status-value", count3 > 0 ? "ok" : "empty");
-      this.status.style.color = count3 > 0 ? "#86efac" : "#facc15";
-    } else if (this.preview?.ok === false) {
-      this.status.textContent = `\u2717 ${this.preview.error_message ?? "invalid syntax"}`;
-      this.status.setAttribute("data-molsysviewer-query-status-value", "error");
-      this.status.style.color = "#fca5a5";
-    } else {
-      this.status.textContent = "Press Enter or Check to verify.";
-      this.status.setAttribute("data-molsysviewer-query-status-value", "idle");
-      this.status.style.color = "rgba(244,244,245,0.56)";
-    }
-  }
-};
-
 // src/ui/panels/style-composer.ts
 var FALLBACK_REPRESENTATIONS = [
   "backbone",
@@ -150984,29 +150791,12 @@ var RegionsPanel = class extends BasePanel {
     this.wholeHidden = false;
     // View state (owned locally)
     this.activeStyleRegionTag = null;
-    this.regionQueryComposer = null;
-    /** Live ref to the create-from-query button, so typing updates only it. */
-    this.queryCreateButton = null;
-    this.regionCreateOrigin = "active";
-    this.regionCreateTag = "";
-    this.regionCreateRepresentation = "";
-    this.regionSplitLevel = "chain";
-    this.regionSplitScope = "all";
-    this.regionSavedSelectionTag = "";
     this.regionRenameTag = null;
-    this.regionCreateCollision = null;
     this.regionRenameCollisionTag = null;
-    this.regionBooleanA = "";
-    this.regionBooleanTargets = /* @__PURE__ */ new Set();
-    this.regionBooleanOperation = "union";
-    this.regionBooleanOutput = "";
-    this.regionComposeCollision = null;
     this.regionInspectOpen = /* @__PURE__ */ new Set();
     this.regionDetails = /* @__PURE__ */ new Map();
     this.regionDetailsRequests = /* @__PURE__ */ new Map();
     this.nextRegionDetailsRequest = 1;
-    this.regionBooleanAttention = false;
-    this.regionBooleanComposerElement = null;
     this.continuousHistoryEdit = false;
     this.continuousHistoryRenderPending = false;
   }
@@ -151027,18 +150817,6 @@ var RegionsPanel = class extends BasePanel {
   setRegions(items) {
     this.regions = [...items];
     const tags = this.regions.map((item2) => item2.tag);
-    if (!tags.includes(this.regionBooleanA)) {
-      this.regionBooleanA = tags[0] ?? "";
-    }
-    for (const tag of [...this.regionBooleanTargets]) {
-      if (!tags.includes(tag) || tag === this.regionBooleanA) {
-        this.regionBooleanTargets.delete(tag);
-      }
-    }
-    if (this.regionBooleanTargets.size === 0) {
-      const fallback = tags.find((tag) => tag !== this.regionBooleanA);
-      if (fallback) this.regionBooleanTargets.add(fallback);
-    }
     for (const tag of [...this.regionInspectOpen]) {
       if (!tags.includes(tag)) {
         this.regionInspectOpen.delete(tag);
@@ -151053,20 +150831,10 @@ var RegionsPanel = class extends BasePanel {
     this.regionStyleRepresentations = [...options.representations];
     this.regionStylePresets = [...options.presets];
     this.wholeHidden = options.wholeHidden === true;
-    if (!this.regionCreateRepresentation && this.wholeHidden) {
-      this.regionCreateRepresentation = "inherit";
-    }
     this.scheduleExternalRender();
   }
   setSavedSelections(items) {
     this.savedSelections = [...items];
-    const tags = this.savedSelections.map((item2) => item2.tag);
-    if (!tags.includes(this.regionSavedSelectionTag)) {
-      this.regionSavedSelectionTag = tags[0] ?? "";
-    }
-    if (this.regionCreateOrigin === "saved") {
-      this.scheduleExternalRender();
-    }
   }
   updateDetails(details) {
     const expectedRequest = this.regionDetailsRequests.get(details.tag);
@@ -151076,32 +150844,12 @@ var RegionsPanel = class extends BasePanel {
     this.regionDetails.set(details.tag, details);
     this.scheduleExternalRender();
   }
-  /** Route a query preview; returns true if it belonged to this panel's composer. */
+  /** Query composer previews are no longer owned by the Regions panel. */
   updatePreview(preview) {
-    if (this.regionQueryComposer?.updatePreview(preview)) {
-      this.syncQueryCreateButton();
-      return true;
-    }
     return false;
-  }
-  /**
-   * Enable/disable the create-from-query button from the composer's verification
-   * state. Typing invalidates the preview, so this must run on every composer
-   * change — in place, without repainting the panel.
-   */
-  syncQueryCreateButton() {
-    const button = this.queryCreateButton;
-    if (!button) return;
-    const verified = this.regionQueryComposer?.isVerifiedNonEmpty() ?? false;
-    button.disabled = !verified;
-    button.style.opacity = verified ? "1" : "0.42";
-    button.style.cursor = verified ? "pointer" : "not-allowed";
   }
   setCurrentSelection(selection) {
     this.currentSelection = selection;
-    if (this.regionCreateOrigin === "active") {
-      this.scheduleExternalRender();
-    }
   }
   /** Whether a region with this tag currently exists (used by the Selection -> Region bridge). */
   hasRegion(tag) {
@@ -151110,9 +150858,21 @@ var RegionsPanel = class extends BasePanel {
   paint() {
     if (!this.host) return;
     this.host.replaceChildren();
-    this.host.appendChild(makeSectionHeader("Create & Global Actions"));
-    this.host.appendChild(this.renderRegionCreateSection());
     this.host.appendChild(makeSectionHeader("Regions"));
+    const globalRow = document.createElement("div");
+    Object.assign(globalRow.style, {
+      display: "grid",
+      gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+      gap: "6px",
+      marginBottom: "10px"
+    });
+    const showAll = makeButton("Show all", () => this.ctx.onAction("show_all_regions"));
+    showAll.setAttribute("data-molsysviewer-region-show-all", "true");
+    const hideAll = makeButton("Hide all", () => this.ctx.onAction("hide_all_regions"));
+    hideAll.setAttribute("data-molsysviewer-region-hide-all", "true");
+    globalRow.appendChild(showAll);
+    globalRow.appendChild(hideAll);
+    this.host.appendChild(globalRow);
     const list3 = document.createElement("div");
     list3.setAttribute("data-molsysviewer-region-list", "true");
     Object.assign(list3.style, {
@@ -151126,7 +150886,7 @@ var RegionsPanel = class extends BasePanel {
       for (const item2 of sorted) {
         list3.appendChild(this.renderRegionCard(item2));
       }
-    } else if (this.regionCreateOrigin === "split") {
+    } else {
       const emptyLabel = document.createElement("div");
       Object.assign(emptyLabel.style, {
         fontSize: "11px",
@@ -151136,16 +150896,6 @@ var RegionsPanel = class extends BasePanel {
       emptyLabel.textContent = "No regions yet.";
       list3.appendChild(emptyLabel);
     }
-    this.host.appendChild(makeSectionHeader("Boolean Composition"));
-    this.host.appendChild(this.renderRegionBooleanComposer());
-  }
-  getRegionQueryComposer() {
-    if (this.regionQueryComposer === null) {
-      this.regionQueryComposer = new ManualQueryComposer("region", (details) => {
-        this.ctx.onAction("selection_query_preview_request", details);
-      }, () => this.syncQueryCreateButton());
-    }
-    return this.regionQueryComposer;
   }
   getRepresentationOptions(includeBase = true) {
     const fallbackRepresentations = [
@@ -151174,239 +150924,6 @@ var RegionsPanel = class extends BasePanel {
   regionHasOwnVisual(item2) {
     return Boolean(item2.representation || item2.preset);
   }
-  renderRegionCreateSection() {
-    this.queryCreateButton = null;
-    const container = document.createElement("div");
-    container.setAttribute("data-molsysviewer-region-create", "true");
-    Object.assign(container.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "8px",
-      padding: "10px",
-      border: "1px solid rgba(255,255,255,0.08)",
-      borderRadius: "8px",
-      background: "rgba(255,255,255,0.03)"
-    });
-    const originRow = document.createElement("div");
-    Object.assign(originRow.style, {
-      display: "grid",
-      gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-      gap: "6px"
-    });
-    for (const [origin, label2] of [
-      ["active", "Active"],
-      ["query", "Query"],
-      ["split", "Split"],
-      ["saved", "Saved"]
-    ]) {
-      const button = makeButton(label2, () => {
-        this.regionCreateOrigin = origin;
-        this.scheduleRender();
-      });
-      button.setAttribute("data-molsysviewer-region-create-origin", origin);
-      if (this.regionCreateOrigin === origin) {
-        button.style.borderColor = "rgba(99,102,241,0.7)";
-        button.style.background = "rgba(99,102,241,0.18)";
-      }
-      originRow.appendChild(button);
-    }
-    container.appendChild(originRow);
-    const optionsRow = document.createElement("div");
-    Object.assign(optionsRow.style, {
-      display: "grid",
-      gridTemplateColumns: this.regionCreateOrigin === "split" ? "minmax(110px, 1fr)" : "minmax(0, 1fr) minmax(110px, 0.7fr)",
-      gap: "6px"
-    });
-    const tagInput = document.createElement("input");
-    tagInput.type = "text";
-    tagInput.value = this.regionCreateTag;
-    tagInput.placeholder = "Name (optional)";
-    tagInput.setAttribute("data-molsysviewer-region-create-tag", "true");
-    tagInput.addEventListener("input", () => {
-      this.regionCreateTag = tagInput.value;
-    });
-    const representation = makeStyledSelect(
-      this.getRepresentationOptions(true),
-      this.regionCreateRepresentation,
-      (value) => {
-        this.regionCreateRepresentation = value;
-      }
-    );
-    representation.setAttribute("data-molsysviewer-region-create-representation", "true");
-    if (this.regionCreateOrigin !== "split") {
-      optionsRow.appendChild(tagInput);
-    }
-    optionsRow.appendChild(representation);
-    container.appendChild(optionsRow);
-    const createWithCollision = (action, details) => {
-      const tag = this.regionCreateTag.trim();
-      const initialVisual = this.regionCreateRepresentation.startsWith("preset:") ? { preset: this.regionCreateRepresentation.slice("preset:".length) } : this.regionCreateRepresentation ? { representation: this.regionCreateRepresentation } : {};
-      const emit = () => {
-        this.ctx.onAction(action, {
-          ...details,
-          ...tag ? { tag } : {},
-          ...initialVisual
-        });
-        this.regionCreateTag = "";
-        this.regionCreateCollision = null;
-      };
-      if (tag && this.regions.some((region) => region.tag === tag)) {
-        this.regionCreateCollision = { action, details, tag };
-        this.scheduleRender();
-        return;
-      }
-      emit();
-    };
-    if (this.regionCreateOrigin === "active") {
-      const create3 = makeButton("Create from active selection", () => {
-        createWithCollision("create_region_from_selection", {});
-      });
-      create3.setAttribute("data-molsysviewer-region-create-active", "true");
-      create3.disabled = this.currentSelection.count_atoms <= 0;
-      if (create3.disabled) {
-        create3.style.opacity = "0.42";
-        create3.style.cursor = "not-allowed";
-        create3.title = "Select atoms before creating a region.";
-      }
-      container.appendChild(create3);
-    } else if (this.regionCreateOrigin === "query") {
-      const composer = this.getRegionQueryComposer();
-      container.appendChild(composer.element());
-      const create3 = makeButton("Create from query", () => {
-        const query2 = composer.value();
-        if (!query2.expression || !composer.isVerifiedNonEmpty()) return;
-        createWithCollision("create_region_from_query", query2);
-      });
-      create3.setAttribute("data-molsysviewer-region-create-query", "true");
-      this.queryCreateButton = create3;
-      this.syncQueryCreateButton();
-      container.appendChild(create3);
-    } else {
-      const splitRow = document.createElement("div");
-      Object.assign(splitRow.style, {
-        display: "flex",
-        gap: "6px"
-      });
-      const level = makeStyledSelect(
-        ["chain", "molecule", "entity"],
-        this.regionSplitLevel,
-        (value) => {
-          this.regionSplitLevel = value === "molecule" ? "molecule" : value === "entity" ? "entity" : "chain";
-        }
-      );
-      level.setAttribute("data-molsysviewer-region-split-level", "true");
-      const scope = makeStyledSelect(
-        [
-          { value: "all", label: "All atoms" },
-          { value: "active", label: "Active selection" }
-        ],
-        this.regionSplitScope,
-        (value) => {
-          this.regionSplitScope = value === "active" ? "active" : "all";
-          this.scheduleRender();
-        }
-      );
-      scope.setAttribute("data-molsysviewer-region-split-scope", "true");
-      const split = makeButton("Split", () => {
-        if (this.regionSplitScope === "active" && this.currentSelection.count_atoms <= 0) return;
-        if (this.currentSelection.count_atoms > 250 && typeof window !== "undefined" && typeof window.confirm === "function") {
-          const ok = window.confirm(`Split may create many regions from ${this.currentSelection.count_atoms} selected atoms. Continue?`);
-          if (!ok) return;
-        }
-        this.ctx.onAction("make_regions_by", {
-          element: this.regionSplitLevel,
-          ...this.regionSplitScope === "active" ? { selection: "active" } : {},
-          ...this.regionCreateRepresentation.startsWith("preset:") ? { preset: this.regionCreateRepresentation.slice("preset:".length) } : this.regionCreateRepresentation ? { representation: this.regionCreateRepresentation } : {}
-        });
-      });
-      split.setAttribute("data-molsysviewer-region-split", "true");
-      split.disabled = this.regionSplitScope === "active" && this.currentSelection.count_atoms <= 0;
-      if (split.disabled) {
-        split.style.opacity = "0.42";
-        split.style.cursor = "not-allowed";
-        split.title = "Select atoms before splitting over the active selection.";
-      }
-      splitRow.appendChild(level);
-      splitRow.appendChild(scope);
-      splitRow.appendChild(split);
-      container.appendChild(splitRow);
-    }
-    if (this.regionCreateOrigin === "saved") {
-      const savedRow = document.createElement("div");
-      Object.assign(savedRow.style, {
-        display: "flex",
-        gap: "6px"
-      });
-      const savedTags = this.savedSelections.map((item2) => item2.tag);
-      const saved = makeStyledSelect(savedTags, this.regionSavedSelectionTag, (value) => {
-        this.regionSavedSelectionTag = value;
-      });
-      saved.setAttribute("data-molsysviewer-region-create-saved-select", "true");
-      const createSaved = makeButton("Create from saved selection", () => {
-        if (!this.regionSavedSelectionTag) return;
-        createWithCollision("create_region_from_saved_selection", {
-          selection_tag: this.regionSavedSelectionTag
-        });
-      });
-      createSaved.setAttribute("data-molsysviewer-region-create-saved", "true");
-      createSaved.disabled = savedTags.length === 0;
-      if (createSaved.disabled) {
-        createSaved.style.opacity = "0.42";
-        createSaved.style.cursor = "not-allowed";
-        createSaved.title = "Save a selection before creating a region from it.";
-      }
-      savedRow.appendChild(saved);
-      savedRow.appendChild(createSaved);
-      container.appendChild(savedRow);
-    }
-    if (this.regionCreateCollision !== null) {
-      const collision = document.createElement("div");
-      collision.setAttribute("data-molsysviewer-region-create-collision", this.regionCreateCollision.tag);
-      collision.textContent = `"${this.regionCreateCollision.tag}" already exists.`;
-      const rename = makeButton("Rename", () => {
-        this.regionCreateCollision = null;
-        this.scheduleRender();
-      });
-      rename.setAttribute("data-molsysviewer-region-collision-rename", "create");
-      const overwrite = makeButton("Overwrite", () => {
-        const pending = this.regionCreateCollision;
-        if (pending === null) return;
-        this.ctx.onAction("delete_region", { tag: pending.tag });
-        this.ctx.onAction(pending.action, {
-          ...pending.details,
-          tag: pending.tag,
-          ...this.regionCreateRepresentation.startsWith("preset:") ? { preset: this.regionCreateRepresentation.slice("preset:".length) } : this.regionCreateRepresentation ? { representation: this.regionCreateRepresentation } : {}
-        });
-        this.regionCreateTag = "";
-        this.regionCreateCollision = null;
-      });
-      overwrite.setAttribute("data-molsysviewer-region-collision-overwrite", "create");
-      const cancel = makeButton("Cancel", () => {
-        this.regionCreateCollision = null;
-        this.scheduleRender();
-      });
-      cancel.setAttribute("data-molsysviewer-region-collision-cancel", "create");
-      collision.appendChild(rename);
-      collision.appendChild(overwrite);
-      collision.appendChild(cancel);
-      container.appendChild(collision);
-    }
-    const globalRow = document.createElement("div");
-    Object.assign(globalRow.style, {
-      display: "grid",
-      gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-      gap: "6px",
-      paddingTop: "2px"
-    });
-    const showAll = makeButton("Show all", () => this.ctx.onAction("show_all_regions"));
-    showAll.setAttribute("data-molsysviewer-region-show-all", "true");
-    const hideAll = makeButton("Hide all", () => this.ctx.onAction("hide_all_regions"));
-    hideAll.setAttribute("data-molsysviewer-region-hide-all", "true");
-    globalRow.appendChild(showAll);
-    globalRow.appendChild(hideAll);
-    container.appendChild(globalRow);
-    return container;
-  }
   renderRegionCard(item2) {
     const card5 = document.createElement("div");
     card5.setAttribute("data-molsysviewer-region-card", item2.tag);
@@ -151419,114 +150936,109 @@ var RegionsPanel = class extends BasePanel {
       border: "1px solid rgba(255,255,255,0.08)",
       borderRadius: "8px",
       background: "rgba(255,255,255,0.035)",
-      opacity: item2.hidden ? "0.58" : "1"
+      opacity: item2.hidden ? "0.58" : "1",
+      transition: "background 0.1s ease",
+      cursor: "pointer"
     });
-    const header2 = document.createElement("div");
-    Object.assign(header2.style, {
+    card5.addEventListener("mouseenter", () => {
+      card5.style.background = "rgba(255,255,255,0.06)";
+    });
+    card5.addEventListener("mouseleave", () => {
+      card5.style.background = "rgba(255,255,255,0.035)";
+    });
+    const isVisible = !item2.hidden;
+    const hasVisual = this.regionHasOwnVisual(item2);
+    const dot = document.createElement("span");
+    dot.setAttribute("data-molsysviewer-region-visibility", item2.tag);
+    Object.assign(dot.style, {
+      width: "7px",
+      height: "7px",
+      borderRadius: "999px",
+      background: isVisible && hasVisual ? "#34d399" : "rgba(244,244,245,0.28)",
+      boxShadow: isVisible && hasVisual ? "0 0 8px rgba(52,211,153,0.5)" : "none",
+      flexShrink: "0",
+      marginRight: "6px",
+      cursor: hasVisual ? "pointer" : "not-allowed"
+    });
+    if (!hasVisual) {
+      dot.title = "This base region has no visual representation to toggle.";
+    }
+    const toggleVisibility = () => {
+      if (hasVisual) {
+        this.ctx.onAction("toggle_region_visibility", { tag: item2.tag });
+      }
+    };
+    dot.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleVisibility();
+    });
+    card5.addEventListener("click", (e) => {
+      if (e && e.target && e.target !== card5 && e.target !== topRow && e.target !== title && e.target !== dot) {
+        return;
+      }
+      e?.preventDefault();
+      e?.stopPropagation();
+      toggleVisibility();
+    });
+    const topRow = document.createElement("div");
+    Object.assign(topRow.style, {
       display: "flex",
-      alignItems: "center",
-      gap: "6px"
+      justifyContent: "space-between",
+      alignItems: "center"
     });
-    const focus = makeButton(item2.tag, () => this.onFocusRegion(item2.tag));
-    focus.setAttribute("data-molsysviewer-region-focus", item2.tag);
-    focus.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
-    focus.style.flex = "1 1 auto";
-    focus.style.textAlign = "left";
-    const hint = document.createElement("span");
-    hint.textContent = `${item2.atom_count} atoms \xB7 ${item2.preset ?? item2.representation ?? "base"}${item2.owner ? ` \xB7 from ${item2.owner}` : ""}`;
-    Object.assign(hint.style, {
+    const title = document.createElement("div");
+    Object.assign(title.style, {
+      fontSize: "12px",
+      fontWeight: "600",
+      color: "#f4f4f5",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
+      display: "flex",
+      alignItems: "center"
+    });
+    title.appendChild(dot);
+    const label2 = document.createElement("span");
+    label2.textContent = item2.tag;
+    label2.setAttribute("data-molsysviewer-region-focus", item2.tag);
+    label2.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
+    label2.style.cursor = "pointer";
+    label2.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      this.onFocusRegion(item2.tag);
+    });
+    title.appendChild(label2);
+    const subtitle = document.createElement("span");
+    Object.assign(subtitle.style, {
       fontSize: "10px",
-      color: "rgba(244,244,245,0.58)"
+      color: "rgba(244,244,245,0.56)",
+      marginLeft: "6px",
+      fontWeight: "normal"
     });
-    focus.appendChild(hint);
-    header2.appendChild(focus);
-    if ((item2.overlap_tags?.length ?? 0) > 0 && !item2.hidden) {
-      const overlap = makeButton("\u26A0", () => {
-        this.regionBooleanA = item2.tag;
-        this.regionBooleanTargets = new Set(
-          (item2.overlap_tags ?? []).filter((tag) => tag !== item2.tag)
-        );
-        this.regionBooleanOperation = "difference";
-        this.regionComposeCollision = null;
-        this.regionBooleanAttention = true;
-        this.scheduleRender();
-        this.regionBooleanComposerElement?.scrollIntoView?.({
-          behavior: "smooth",
-          block: "nearest"
-        });
-      });
-      overlap.setAttribute("data-molsysviewer-region-overlap", item2.tag);
-      overlap.title = `Overlaps: ${item2.overlap_tags.join(", ")}`;
-      overlap.setAttribute("aria-label", overlap.title);
-      header2.appendChild(overlap);
-    }
-    const visibility = makeButton(
-      item2.hidden ? "Show" : "Hide",
-      () => this.ctx.onAction("toggle_region_visibility", { tag: item2.tag })
-    );
-    visibility.setAttribute("data-molsysviewer-region-visibility", item2.tag);
-    if (!this.regionHasOwnVisual(item2)) {
-      visibility.disabled = true;
-      visibility.style.opacity = "0.42";
-      visibility.style.cursor = "not-allowed";
-      visibility.title = "This base region has no visual representation to hide.";
-    }
-    const remove3 = makeButton(
-      "Delete",
-      () => this.ctx.onAction("delete_region", { tag: item2.tag })
-    );
-    remove3.setAttribute("data-molsysviewer-region-delete", item2.tag);
-    header2.appendChild(visibility);
-    header2.appendChild(remove3);
-    card5.appendChild(header2);
-    const actions = document.createElement("div");
-    actions.setAttribute("data-molsysviewer-region-actions", item2.tag);
-    Object.assign(actions.style, {
+    subtitle.textContent = `(${item2.atom_count} atoms \xB7 ${item2.preset ?? item2.representation ?? "base"}${item2.owner ? ` \xB7 from ${item2.owner}` : ""})`;
+    title.appendChild(subtitle);
+    topRow.appendChild(title);
+    card5.appendChild(topRow);
+    const btnRow = document.createElement("div");
+    btnRow.setAttribute("data-molsysviewer-region-buttons-row", item2.tag);
+    Object.assign(btnRow.style, {
       display: "flex",
       flexWrap: "wrap",
       gap: "4px"
     });
-    const isolate = makeButton(
-      "Isolate",
-      () => this.ctx.onAction("show_only_region", { tag: item2.tag })
-    );
-    isolate.setAttribute("data-molsysviewer-region-isolate", item2.tag);
-    const complement2 = makeButton(
-      "Complement",
-      () => this.ctx.onAction("create_complementary_region", { tag: item2.tag })
-    );
-    complement2.setAttribute("data-molsysviewer-region-complement", item2.tag);
-    const duplicate = makeButton(
-      "Duplicate",
-      () => this.ctx.onAction("duplicate_region", { tag: item2.tag })
-    );
-    duplicate.setAttribute("data-molsysviewer-region-duplicate", item2.tag);
-    const reset = makeButton(
-      "Reset repr",
-      () => this.ctx.onAction("reset_region_representation", { tag: item2.tag })
-    );
-    reset.setAttribute("data-molsysviewer-region-reset", item2.tag);
-    const raise = makeButton(
-      "Raise",
-      () => this.ctx.onAction("raise_region_to_front", { tag: item2.tag })
-    );
-    raise.setAttribute("data-molsysviewer-region-raise", item2.tag);
-    const lower = makeButton(
-      "Lower",
-      () => this.ctx.onAction("send_region_to_back", { tag: item2.tag })
-    );
-    lower.setAttribute("data-molsysviewer-region-lower", item2.tag);
-    const rename = makeButton("Rename", () => {
+    const renameBtn = makeButton("Rename", () => {
       this.regionRenameTag = item2.tag;
       this.scheduleRender();
     });
-    rename.setAttribute("data-molsysviewer-region-rename", item2.tag);
-    const style = makeButton("Style", () => {
+    renameBtn.setAttribute("data-molsysviewer-region-rename", item2.tag);
+    const styleBtn = makeButton("Style", () => {
       this.activeStyleRegionTag = this.activeStyleRegionTag === item2.tag ? null : item2.tag;
       this.scheduleRender();
     });
-    style.setAttribute("data-molsysviewer-region-style", item2.tag);
-    const inspect = makeButton("Inspect", () => {
+    styleBtn.setAttribute("data-molsysviewer-region-style", item2.tag);
+    const inspectBtn = makeButton("Inspect", () => {
       if (this.regionInspectOpen.has(item2.tag)) {
         this.regionInspectOpen.delete(item2.tag);
         this.regionDetailsRequests.delete(item2.tag);
@@ -151537,25 +151049,38 @@ var RegionsPanel = class extends BasePanel {
       this.requestRegionDetails(item2.tag);
       this.scheduleRender();
     });
-    inspect.setAttribute("data-molsysviewer-region-inspect", item2.tag);
-    for (const button of [isolate, complement2, rename, duplicate, reset, raise, lower, style, inspect]) {
-      button.style.fontSize = "10px";
-      button.style.padding = "3px 6px";
-      actions.appendChild(button);
+    inspectBtn.setAttribute("data-molsysviewer-region-inspect", item2.tag);
+    const deleteBtn = makeButton("\u{1F5D1}", () => this.ctx.onAction("delete_region", { tag: item2.tag }));
+    deleteBtn.setAttribute("data-molsysviewer-region-delete", item2.tag);
+    for (const btn of [renameBtn, styleBtn, inspectBtn, deleteBtn]) {
+      btn.style.flex = "0 1 auto";
+      btn.style.padding = "3px 6px";
+      btn.style.fontSize = "10px";
+      btnRow.appendChild(btn);
     }
-    card5.appendChild(actions);
+    card5.appendChild(btnRow);
     if (this.regionRenameTag === item2.tag) {
       const form = document.createElement("div");
       form.setAttribute("data-molsysviewer-region-rename-form", item2.tag);
       Object.assign(form.style, {
         display: "flex",
-        gap: "6px"
+        gap: "6px",
+        marginTop: "4px"
       });
       const input = document.createElement("input");
       input.type = "text";
       input.value = item2.tag;
       input.setAttribute("data-molsysviewer-region-rename-input", item2.tag);
-      input.style.flex = "1 1 0";
+      Object.assign(input.style, {
+        flex: "1 1 0",
+        background: "rgba(0,0,0,0.2)",
+        border: "1px solid rgba(255,255,255,0.12)",
+        borderRadius: "6px",
+        padding: "4px 6px",
+        color: "#fff",
+        fontSize: "11px",
+        outline: "none"
+      });
       const confirmRename = () => {
         const newTag = input.value.trim();
         if (!newTag || newTag === item2.tag) {
@@ -151625,176 +151150,6 @@ var RegionsPanel = class extends BasePanel {
     }
     return card5;
   }
-  renderRegionBooleanComposer() {
-    const container = document.createElement("div");
-    this.regionBooleanComposerElement = container;
-    container.setAttribute("data-molsysviewer-region-boolean-composer", "true");
-    container.setAttribute(
-      "data-molsysviewer-region-boolean-attention",
-      String(this.regionBooleanAttention)
-    );
-    if (this.regionBooleanAttention) {
-      this.regionBooleanAttention = false;
-    }
-    container.setAttribute("data-molsysviewer-region-boolean-current-a", this.regionBooleanA);
-    container.setAttribute(
-      "data-molsysviewer-region-boolean-current-b",
-      Array.from(this.regionBooleanTargets).join(",")
-    );
-    container.setAttribute(
-      "data-molsysviewer-region-boolean-current-operation",
-      this.regionBooleanOperation
-    );
-    Object.assign(container.style, {
-      display: "grid",
-      gridTemplateColumns: "minmax(0, 1fr) minmax(120px, 0.8fr) minmax(0, 1fr)",
-      gap: "6px",
-      padding: "10px",
-      border: "1px solid rgba(255,255,255,0.08)",
-      borderRadius: "8px"
-    });
-    const tags = this.regions.map((item2) => item2.tag);
-    const left = makeStyledSelect(tags, this.regionBooleanA, (value) => {
-      this.regionBooleanA = value;
-      this.regionBooleanTargets.delete(value);
-      if (this.regionBooleanTargets.size === 0) {
-        const fallback = tags.find((tag) => tag !== value);
-        if (fallback) this.regionBooleanTargets.add(fallback);
-        this.scheduleRender();
-      }
-    });
-    left.setAttribute("data-molsysviewer-region-boolean-a", "true");
-    const operation = makeStyledSelect(
-      [
-        { value: "union", label: "Union (A \u222A B)" },
-        { value: "intersection", label: "Intersection (A \u2229 B)" },
-        { value: "difference", label: "Difference (A \u2212 B)" }
-      ],
-      this.regionBooleanOperation,
-      (value) => {
-        this.regionBooleanOperation = value === "intersection" ? "intersection" : value === "difference" ? "difference" : "union";
-        if (this.regionBooleanOperation === "intersection" && this.regionBooleanTargets.size > 1) {
-          this.regionBooleanTargets = /* @__PURE__ */ new Set([Array.from(this.regionBooleanTargets)[0]]);
-        }
-        this.scheduleRender();
-      }
-    );
-    operation.setAttribute("data-molsysviewer-region-boolean-operation", "true");
-    container.appendChild(left);
-    container.appendChild(operation);
-    const targetContainer = document.createElement("div");
-    targetContainer.setAttribute("data-molsysviewer-region-boolean-targets", "true");
-    Object.assign(targetContainer.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "3px"
-    });
-    const candidateTags = tags.filter((tag) => tag !== this.regionBooleanA);
-    if (this.regionBooleanOperation === "intersection") {
-      const current2 = Array.from(this.regionBooleanTargets).find((tag) => candidateTags.includes(tag)) ?? candidateTags[0] ?? "";
-      if (current2 && (this.regionBooleanTargets.size !== 1 || !this.regionBooleanTargets.has(current2))) {
-        this.regionBooleanTargets = /* @__PURE__ */ new Set([current2]);
-      }
-      const right = makeStyledSelect(candidateTags, current2, (value) => {
-        this.regionBooleanTargets = new Set(value ? [value] : []);
-      });
-      right.setAttribute("data-molsysviewer-region-boolean-b", "true");
-      targetContainer.appendChild(right);
-    } else {
-      for (const tag of candidateTags) {
-        const row2 = document.createElement("label");
-        Object.assign(row2.style, {
-          display: "flex",
-          alignItems: "center",
-          gap: "5px",
-          fontSize: "11px",
-          color: "rgba(244,244,245,0.72)"
-        });
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.checked = this.regionBooleanTargets.has(tag);
-        checkbox.setAttribute("data-molsysviewer-region-boolean-target", tag);
-        checkbox.addEventListener("change", () => {
-          if (checkbox.checked) {
-            this.regionBooleanTargets.add(tag);
-          } else {
-            this.regionBooleanTargets.delete(tag);
-          }
-        });
-        const label2 = document.createElement("span");
-        label2.textContent = tag;
-        row2.appendChild(checkbox);
-        row2.appendChild(label2);
-        targetContainer.appendChild(row2);
-      }
-    }
-    container.appendChild(targetContainer);
-    const output = document.createElement("input");
-    output.type = "text";
-    output.placeholder = "Output name (optional)";
-    output.value = this.regionBooleanOutput;
-    output.setAttribute("data-molsysviewer-region-boolean-output", "true");
-    output.addEventListener("input", () => {
-      this.regionBooleanOutput = output.value;
-    });
-    const create3 = makeButton("Create", () => {
-      const operandTags = Array.from(this.regionBooleanTargets).filter((tag2) => tag2 && tag2 !== this.regionBooleanA && tags.includes(tag2));
-      if (!this.regionBooleanA || operandTags.length === 0) {
-        return;
-      }
-      const tag = this.regionBooleanOutput.trim();
-      const details = {
-        tag_a: this.regionBooleanA,
-        operand_tags: operandTags,
-        op: this.regionBooleanOperation,
-        ...tag ? { new_tag: tag } : {}
-      };
-      if (tag && tags.includes(tag)) {
-        this.regionComposeCollision = { tag, details };
-        this.scheduleRender();
-        return;
-      }
-      this.ctx.onAction("compose_regions", details);
-      this.regionBooleanOutput = "";
-      this.regionBooleanAttention = false;
-    });
-    create3.disabled = tags.length < 2 || !this.regionBooleanA || this.regionBooleanTargets.size === 0;
-    create3.setAttribute("data-molsysviewer-region-boolean-create", "true");
-    container.appendChild(output);
-    container.appendChild(create3);
-    if (this.regionComposeCollision !== null) {
-      const collision = document.createElement("div");
-      collision.setAttribute(
-        "data-molsysviewer-region-boolean-collision",
-        this.regionComposeCollision.tag
-      );
-      collision.textContent = `"${this.regionComposeCollision.tag}" already exists.`;
-      const rename = makeButton("Rename", () => {
-        this.regionComposeCollision = null;
-        this.scheduleRender();
-      });
-      const overwrite = makeButton("Overwrite", () => {
-        const pending = this.regionComposeCollision;
-        if (pending === null) return;
-        this.ctx.onAction("compose_regions", {
-          ...pending.details,
-          overwrite: true
-        });
-        this.regionBooleanOutput = "";
-        this.regionComposeCollision = null;
-      });
-      overwrite.setAttribute("data-molsysviewer-region-boolean-overwrite", "true");
-      const cancel = makeButton("Cancel", () => {
-        this.regionComposeCollision = null;
-        this.scheduleRender();
-      });
-      collision.appendChild(rename);
-      collision.appendChild(overwrite);
-      collision.appendChild(cancel);
-      container.appendChild(collision);
-    }
-    return container;
-  }
   requestRegionDetails(tag) {
     this.regionDetails.delete(tag);
     const requestId = this.nextRegionDetailsRequest++;
@@ -151848,7 +151203,6 @@ var RegionsPanel = class extends BasePanel {
     panel.appendChild(refresh);
     return panel;
   }
-  // ── 3. Overlays Section Rendering ────────────────────────
   renderStyleComposer(item2) {
     const tag = item2.tag;
     const container = document.createElement("div");
@@ -152063,6 +151417,199 @@ var RegionsPanel = class extends BasePanel {
     actionsRow.appendChild(applyBtn);
     container.appendChild(actionsRow);
     return container;
+  }
+};
+
+// src/ui/query-composer.ts
+var ManualQueryComposer = class _ManualQueryComposer {
+  constructor(scope, onRequest, onChange, options) {
+    this.scope = scope;
+    this.onRequest = onRequest;
+    this.onChange = onChange;
+    this.expression = "";
+    this.syntax = "MolSysMT";
+    this.preview = null;
+    this.activeRequestId = null;
+    this.root = document.createElement("div");
+    this.root.setAttribute("data-molsysviewer-query-composer", scope);
+    Object.assign(this.root.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "6px"
+    });
+    const row2 = document.createElement("div");
+    Object.assign(row2.style, {
+      display: "flex",
+      gap: "6px",
+      alignItems: "center"
+    });
+    this.input = document.createElement("input");
+    this.input.type = "text";
+    this.input.placeholder = 'molecule_type=="protein"';
+    this.input.setAttribute("data-molsysviewer-query-input", scope);
+    Object.assign(this.input.style, {
+      flex: "1 1 0",
+      minWidth: "0",
+      background: "rgba(0,0,0,0.2)",
+      border: "1px solid rgba(255,255,255,0.12)",
+      borderRadius: "6px",
+      padding: "6px 8px",
+      color: "#fff",
+      fontSize: "11px",
+      outline: "none"
+    });
+    this.input.addEventListener("input", () => {
+      this.expression = this.input.value;
+      this.preview = null;
+      this.activeRequestId = null;
+      this.renderStatus();
+      this.onChange?.();
+    });
+    this.input.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") return;
+      event.preventDefault();
+      event.stopPropagation();
+      this.check();
+    });
+    this.checkButton = document.createElement("button");
+    this.checkButton.type = "button";
+    this.checkButton.textContent = options?.buttonLabel ?? "Check";
+    this.checkButton.setAttribute("data-molsysviewer-query-check", scope);
+    Object.assign(this.checkButton.style, {
+      flex: "0 0 auto",
+      background: "rgba(255,255,255,0.06)",
+      border: "1px solid rgba(255,255,255,0.12)",
+      borderRadius: "6px",
+      padding: "6px 9px",
+      color: "#f4f4f5",
+      fontSize: "11px",
+      fontWeight: "600",
+      cursor: "pointer"
+    });
+    this.checkButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      this.check();
+    });
+    this.syntaxSelect = document.createElement("select");
+    this.syntaxSelect.setAttribute("data-molsysviewer-query-syntax", scope);
+    Object.assign(this.syntaxSelect.style, {
+      flex: "0 0 auto",
+      background: "rgba(0,0,0,0.2)",
+      border: "1px solid rgba(255,255,255,0.12)",
+      borderRadius: "6px",
+      padding: "6px 8px",
+      color: "#f4f4f5",
+      fontSize: "11px",
+      outline: "none"
+    });
+    for (const value of ["MolSysMT", "Indices"]) {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = value;
+      this.syntaxSelect.appendChild(option);
+    }
+    this.syntaxSelect.addEventListener("change", () => {
+      this.syntax = this.syntaxSelect.value === "Indices" ? "Indices" : "MolSysMT";
+      this.input.placeholder = this.syntax === "Indices" ? "0, 1, 2" : 'molecule_type=="protein"';
+      this.preview = null;
+      this.activeRequestId = null;
+      this.renderStatus();
+      this.onChange?.();
+    });
+    row2.appendChild(this.input);
+    row2.appendChild(this.checkButton);
+    if (options?.middleElement) {
+      row2.appendChild(options.middleElement);
+    }
+    if (!options?.hideSyntax) {
+      row2.appendChild(this.syntaxSelect);
+    }
+    this.root.appendChild(row2);
+    this.status = document.createElement("div");
+    this.status.setAttribute("data-molsysviewer-query-status", scope);
+    Object.assign(this.status.style, {
+      minHeight: "14px",
+      fontSize: "10px",
+      color: "rgba(244,244,245,0.56)"
+    });
+    this.root.appendChild(this.status);
+    this.renderStatus();
+  }
+  static {
+    this.nextRequestId = 1e6;
+  }
+  element() {
+    return this.root;
+  }
+  value() {
+    return { expression: this.expression.trim(), syntax: this.syntax };
+  }
+  setExpression(expression, syntax) {
+    this.expression = expression;
+    this.input.value = expression;
+    if (syntax) {
+      this.syntax = syntax;
+      this.syntaxSelect.value = syntax;
+      this.input.placeholder = syntax === "Indices" ? "0, 1, 2" : 'molecule_type=="protein"';
+    }
+    this.preview = null;
+    this.activeRequestId = null;
+    this.renderStatus();
+    this.onChange?.();
+  }
+  isVerifiedNonEmpty() {
+    return this.preview?.ok === true && Number(this.preview.count ?? 0) > 0;
+  }
+  updatePreview(preview) {
+    if (this.activeRequestId === null || preview.request_id !== this.activeRequestId) {
+      return false;
+    }
+    this.preview = preview;
+    this.renderStatus();
+    return true;
+  }
+  check() {
+    const expression = this.expression.trim();
+    if (!expression) {
+      this.preview = null;
+      this.activeRequestId = null;
+      this.renderStatus();
+      return;
+    }
+    const requestId = _ManualQueryComposer.nextRequestId++;
+    this.activeRequestId = requestId;
+    this.preview = { request_id: requestId, status: "pending" };
+    this.renderStatus();
+    this.onRequest({
+      request_id: requestId,
+      expression,
+      syntax: this.syntax
+    });
+  }
+  renderStatus() {
+    if (!this.expression.trim()) {
+      this.status.textContent = "Enter a query, then press Enter or Check.";
+      this.status.setAttribute("data-molsysviewer-query-status-value", "idle");
+      this.status.style.color = "rgba(244,244,245,0.56)";
+    } else if (this.preview?.status === "pending") {
+      this.status.textContent = "Checking query...";
+      this.status.setAttribute("data-molsysviewer-query-status-value", "pending");
+      this.status.style.color = "rgba(244,244,245,0.72)";
+    } else if (this.preview?.ok === true) {
+      const count3 = Number(this.preview.count ?? 0);
+      this.status.textContent = count3 === 1 ? "\u2713 1 atom" : `\u2713 ${count3} atoms`;
+      this.status.setAttribute("data-molsysviewer-query-status-value", count3 > 0 ? "ok" : "empty");
+      this.status.style.color = count3 > 0 ? "#86efac" : "#facc15";
+    } else if (this.preview?.ok === false) {
+      this.status.textContent = `\u2717 ${this.preview.error_message ?? "invalid syntax"}`;
+      this.status.setAttribute("data-molsysviewer-query-status-value", "error");
+      this.status.style.color = "#fca5a5";
+    } else {
+      this.status.textContent = "Press Enter or Check to verify.";
+      this.status.setAttribute("data-molsysviewer-query-status-value", "idle");
+      this.status.style.color = "rgba(244,244,245,0.56)";
+    }
   }
 };
 
