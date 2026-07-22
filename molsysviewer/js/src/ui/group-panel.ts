@@ -759,6 +759,7 @@ export class GroupPanel {
     setSavedSelections(items: SavedSelectionSummary[]): void {
         this.selectionPanel.setSavedSelections(items);
         this.regionsPanel.setSavedSelections(items);
+        this.measuresPanel.setSavedSelections(items);
     }
 
     updateSelectionQueryPreview(preview: SelectionQueryPreview): void {

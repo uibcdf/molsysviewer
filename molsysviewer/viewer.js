@@ -153785,6 +153785,15 @@ var emptySelection = () => ({
   count_shapes: 0,
   count_annotations: 0
 });
+var INPUT_STYLE = {
+  background: "rgba(0,0,0,0.2)",
+  border: "1px solid rgba(255,255,255,0.12)",
+  borderRadius: "6px",
+  padding: "4px 8px",
+  color: "#fff",
+  fontSize: "11px",
+  outline: "none"
+};
 function card2() {
   const element = document.createElement("div");
   Object.assign(element.style, {
@@ -153812,11 +153821,18 @@ var MeasuresPanel = class extends BasePanel {
     this.measurements = [];
     this.settings = defaultSettings();
     this.selection = emptySelection();
+    this.savedSelections = [];
     this.expandedSeries = /* @__PURE__ */ new Set();
     this.seriesByTag = /* @__PURE__ */ new Map();
     this.expectedSeriesRequest = /* @__PURE__ */ new Map();
     this.nextSeriesRequest = 1;
     this.editTag = null;
+    // Creation tabs
+    this.activeCreateTab = "active";
+    this.endpointSettingsExpanded = false;
+    // Saved selections creation parameters
+    this.selectedSavedKind = "distance";
+    this.selectedSavedEndpoints = ["", "", "", ""];
   }
   setMeasurements(measurements, settings) {
     this.measurements = [...measurements];
@@ -153826,6 +153842,10 @@ var MeasuresPanel = class extends BasePanel {
   }
   setCurrentSelection(selection) {
     this.selection = selection;
+    this.scheduleRender();
+  }
+  setSavedSelections(items) {
+    this.savedSelections = [...items];
     this.scheduleRender();
   }
   updateSeries(payload) {
@@ -153838,7 +153858,8 @@ var MeasuresPanel = class extends BasePanel {
     if (!this.host) return;
     this.host.replaceChildren();
     this.host.appendChild(makeSectionHeader("Measures"));
-    this.host.appendChild(this.renderCreate());
+    this.host.appendChild(this.renderHeaderSummaryRow());
+    this.host.appendChild(this.renderCreateCard());
     this.host.appendChild(makeSectionHeader("Measurements"));
     const list3 = document.createElement("div");
     Object.assign(list3.style, { display: "flex", flexDirection: "column", gap: "7px" });
@@ -153851,20 +153872,120 @@ var MeasuresPanel = class extends BasePanel {
       for (const item2 of this.measurements) list3.appendChild(this.renderMeasurement(item2));
     }
     this.host.appendChild(list3);
-    this.host.appendChild(this.renderGlobalActions());
-    this.host.appendChild(this.renderSettings());
   }
-  endpointCount() {
-    return this.selection.group_indices.length || this.selection.count_groups;
+  renderHeaderSummaryRow() {
+    const row2 = document.createElement("div");
+    Object.assign(row2.style, {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: "8px",
+      fontSize: "11px",
+      color: "rgba(244,244,245,0.6)"
+    });
+    const visibleCount = this.measurements.filter((m) => !m.hidden).length;
+    const totalCount = this.measurements.length;
+    const summaryText = document.createElement("span");
+    summaryText.textContent = `${visibleCount} of ${totalCount} measurement${totalCount === 1 ? "" : "s"} visible`;
+    row2.appendChild(summaryText);
+    const actions = document.createElement("div");
+    Object.assign(actions.style, { display: "flex", gap: "6px" });
+    for (const [label2, action] of [
+      ["Show all", "show_all_measurements"],
+      ["Hide all", "hide_all_measurements"],
+      ["Clear all", "clear_measurements"]
+    ]) {
+      const button = makeButton(label2, () => {
+        if (action === "clear_measurements" && !window.confirm("Delete all measurements?")) return;
+        this.ctx.onAction(action);
+      });
+      button.setAttribute("data-molsysviewer-measurement-global", action);
+      actions.appendChild(button);
+    }
+    row2.appendChild(actions);
+    return row2;
   }
-  renderCreate() {
-    const section = card2();
-    section.setAttribute("data-molsysviewer-measurement-create", "true");
-    const count3 = this.endpointCount();
+  renderCreateCard() {
+    const container = card2();
+    container.setAttribute("data-molsysviewer-measurement-create-card", "true");
+    const tabHeader = document.createElement("div");
+    Object.assign(tabHeader.style, {
+      display: "flex",
+      gap: "8px",
+      borderBottom: "1px solid rgba(255,255,255,0.08)",
+      paddingBottom: "6px",
+      marginBottom: "8px"
+    });
+    const activeTab = document.createElement("div");
+    activeTab.textContent = "Active Selection";
+    Object.assign(activeTab.style, {
+      fontSize: "11px",
+      fontWeight: "700",
+      cursor: "pointer",
+      color: this.activeCreateTab === "active" ? "#6366f1" : "rgba(244,244,245,0.6)",
+      borderBottom: this.activeCreateTab === "active" ? "2px solid #6366f1" : "none",
+      paddingBottom: "4px"
+    });
+    activeTab.addEventListener("click", () => {
+      this.activeCreateTab = "active";
+      this.scheduleRender();
+    });
+    const savedTab = document.createElement("div");
+    savedTab.textContent = "Saved Selections";
+    Object.assign(savedTab.style, {
+      fontSize: "11px",
+      fontWeight: "700",
+      cursor: "pointer",
+      color: this.activeCreateTab === "saved" ? "#6366f1" : "rgba(244,244,245,0.6)",
+      borderBottom: this.activeCreateTab === "saved" ? "2px solid #6366f1" : "none",
+      paddingBottom: "4px"
+    });
+    savedTab.addEventListener("click", () => {
+      this.activeCreateTab = "saved";
+      this.scheduleRender();
+    });
+    tabHeader.appendChild(activeTab);
+    tabHeader.appendChild(savedTab);
+    container.appendChild(tabHeader);
+    if (this.activeCreateTab === "active") {
+      container.appendChild(this.renderActiveCreateBody());
+    } else {
+      container.appendChild(this.renderSavedCreateBody());
+    }
+    const divider = document.createElement("div");
+    Object.assign(divider.style, {
+      borderTop: "1px solid rgba(255,255,255,0.08)",
+      margin: "8px 0 4px 0"
+    });
+    container.appendChild(divider);
+    const settingsToggle = document.createElement("div");
+    settingsToggle.textContent = this.endpointSettingsExpanded ? "\u25BC Hide Endpoint Settings" : "\u25B6 Show Endpoint Settings";
+    Object.assign(settingsToggle.style, {
+      fontSize: "11px",
+      color: "rgba(244,244,245,0.6)",
+      cursor: "pointer",
+      fontWeight: "600",
+      padding: "4px 0",
+      userSelect: "none"
+    });
+    settingsToggle.addEventListener("click", () => {
+      this.endpointSettingsExpanded = !this.endpointSettingsExpanded;
+      this.scheduleRender();
+    });
+    container.appendChild(settingsToggle);
+    if (this.endpointSettingsExpanded) {
+      container.appendChild(this.renderEndpointSettings());
+    }
+    return container;
+  }
+  renderActiveCreateBody() {
+    const body = document.createElement("div");
+    Object.assign(body.style, { display: "flex", flexDirection: "column", gap: "6px" });
+    const count3 = this.selection.group_indices.length || this.selection.count_groups;
     const title = document.createElement("strong");
     title.textContent = `From active selection (${count3} endpoint${count3 === 1 ? "" : "s"})`;
-    Object.assign(title.style, { fontSize: "12px", color: "#f4f4f5" });
-    section.appendChild(title);
+    Object.assign(title.style, { fontSize: "11px", color: "rgba(244,244,245,0.85)" });
+    body.appendChild(title);
     const row2 = document.createElement("div");
     Object.assign(row2.style, { display: "flex", gap: "6px" });
     for (const [kind, required] of [["distance", 2], ["angle", 3], ["dihedral", 4]]) {
@@ -153877,12 +153998,160 @@ var MeasuresPanel = class extends BasePanel {
       button.setAttribute("data-molsysviewer-measurement-create-kind", kind);
       row2.appendChild(button);
     }
-    section.appendChild(row2);
+    body.appendChild(row2);
     const hint = document.createElement("div");
     hint.textContent = !this.settings.systemLoaded ? "Load a structure first." : count3 >= 2 && count3 <= 4 ? `${count3} endpoints can create a ${count3 === 2 ? "distance" : count3 === 3 ? "angle" : "dihedral"}.` : `Distance needs 2, angle 3, and dihedral 4 endpoints; you have ${count3}.`;
     Object.assign(hint.style, { fontSize: "10px", color: "rgba(244,244,245,0.58)" });
-    section.appendChild(hint);
-    return section;
+    body.appendChild(hint);
+    return body;
+  }
+  renderSavedCreateBody() {
+    const body = document.createElement("div");
+    Object.assign(body.style, { display: "flex", flexDirection: "column", gap: "6px" });
+    const kindRow = document.createElement("div");
+    Object.assign(kindRow.style, {
+      display: "grid",
+      gridTemplateColumns: "100px 1fr",
+      alignItems: "center",
+      gap: "8px",
+      fontSize: "11px",
+      color: "rgba(244,244,245,0.85)"
+    });
+    const kindLabel = document.createElement("span");
+    kindLabel.textContent = "Measurement kind:";
+    kindRow.appendChild(kindLabel);
+    const kindSelect = makeStyledSelect(
+      [
+        { value: "distance", label: "Distance (2 endpoints)" },
+        { value: "angle", label: "Angle (3 endpoints)" },
+        { value: "dihedral", label: "Dihedral (4 endpoints)" }
+      ],
+      this.selectedSavedKind,
+      (val) => {
+        this.selectedSavedKind = val;
+        this.scheduleRender();
+      }
+    );
+    kindRow.appendChild(kindSelect);
+    body.appendChild(kindRow);
+    const requiredCount = this.selectedSavedKind === "distance" ? 2 : this.selectedSavedKind === "angle" ? 3 : 4;
+    const savedOptions = [
+      { value: "", label: "Select..." },
+      ...this.savedSelections.map((s) => ({ value: s.tag, label: `${s.tag} (${s.atom_count} atoms)` }))
+    ];
+    for (let i = 0; i < requiredCount; i++) {
+      const epRow = document.createElement("div");
+      Object.assign(epRow.style, {
+        display: "grid",
+        gridTemplateColumns: "100px 1fr",
+        alignItems: "center",
+        gap: "8px",
+        fontSize: "11px",
+        color: "rgba(244,244,245,0.85)"
+      });
+      const epLabel = document.createElement("span");
+      epLabel.textContent = `Endpoint ${i + 1}:`;
+      epRow.appendChild(epLabel);
+      const epSelect = makeStyledSelect(
+        savedOptions,
+        this.selectedSavedEndpoints[i] || "",
+        (val) => {
+          this.selectedSavedEndpoints[i] = val;
+          this.scheduleRender();
+        }
+      );
+      epRow.appendChild(epSelect);
+      body.appendChild(epRow);
+    }
+    const canCreate = this.settings.systemLoaded && Array.from({ length: requiredCount }).every(
+      (_, i) => this.selectedSavedEndpoints[i] && this.savedSelections.some((s) => s.tag === this.selectedSavedEndpoints[i])
+    );
+    const createButton = makeButton("Create Measurement", () => {
+      const kind = this.selectedSavedKind;
+      const picks = Array.from({ length: requiredCount }).map((_, i) => {
+        const tag = this.selectedSavedEndpoints[i];
+        const selection = this.savedSelections.find((s) => s.tag === tag);
+        return selection?.atom_indices ?? [];
+      });
+      this.ctx.onAction("create_measurement", { kind, picks });
+    });
+    createButton.disabled = !canCreate;
+    createButton.style.opacity = createButton.disabled ? "0.42" : "1";
+    Object.assign(createButton.style, { marginTop: "4px" });
+    body.appendChild(createButton);
+    return body;
+  }
+  renderEndpointSettings() {
+    const body = document.createElement("div");
+    Object.assign(body.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "8px",
+      marginTop: "6px",
+      padding: "8px",
+      background: "rgba(0,0,0,0.15)",
+      borderRadius: "6px"
+    });
+    const policyTitle = document.createElement("strong");
+    policyTitle.textContent = "Endpoint Policy";
+    Object.assign(policyTitle.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
+    body.appendChild(policyTitle);
+    for (const policy of ["atom", "centroid", "representative_atom"]) {
+      const label2 = document.createElement("label");
+      Object.assign(label2.style, {
+        display: "flex",
+        alignItems: "center",
+        gap: "6px",
+        fontSize: "11px",
+        color: "rgba(244,244,245,0.78)",
+        cursor: "pointer"
+      });
+      const input = document.createElement("input");
+      input.type = "radio";
+      input.name = "molsysviewer-measurement-policy-create";
+      input.value = policy;
+      input.checked = this.settings.endpointPolicyDefault === policy;
+      input.setAttribute("data-molsysviewer-measurement-policy", policy);
+      input.addEventListener("change", () => this.ctx.onAction("set_measurement_endpoint_policy", { policy }));
+      label2.appendChild(input);
+      label2.appendChild(document.createTextNode(policy.replace(/_/g, " ")));
+      body.appendChild(label2);
+    }
+    const reprTitle = document.createElement("strong");
+    reprTitle.textContent = "Representative Atoms";
+    Object.assign(reprTitle.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)", marginTop: "4px" });
+    body.appendChild(reprTitle);
+    for (const target of ["protein", "nucleic", "lipid", "other"]) {
+      const row2 = document.createElement("div");
+      Object.assign(row2.style, {
+        display: "grid",
+        gridTemplateColumns: "80px 1fr",
+        alignItems: "center",
+        gap: "6px",
+        fontSize: "10px",
+        color: "rgba(244,244,245,0.62)"
+      });
+      const label2 = document.createElement("span");
+      label2.textContent = target;
+      row2.appendChild(label2);
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = this.settings.representativeAtoms[target];
+      input.disabled = this.settings.endpointPolicyDefault !== "representative_atom";
+      input.setAttribute("data-molsysviewer-measurement-representative", target);
+      Object.assign(input.style, {
+        ...INPUT_STYLE,
+        opacity: input.disabled ? "0.4" : "1"
+      });
+      input.addEventListener("change", () => this.ctx.onAction("set_measurement_representative_atom", { target, atom_name: input.value }));
+      row2.appendChild(input);
+      body.appendChild(row2);
+    }
+    const note2 = document.createElement("div");
+    note2.textContent = "The policy applies to future measurements only.";
+    Object.assign(note2.style, { fontSize: "9px", color: "rgba(244,244,245,0.48)", marginTop: "2px" });
+    body.appendChild(note2);
+    return body;
   }
   renderMeasurement(item2) {
     const row2 = card2();
@@ -153967,6 +154236,20 @@ var MeasuresPanel = class extends BasePanel {
     if (context2 && values2.length > 1) {
       const min5 = Math.min(...values2);
       const span = Math.max(1e-12, Math.max(...values2) - min5);
+      const fill = context2.createLinearGradient(0, 0, 0, canvas.height);
+      fill.addColorStop(0, "rgba(96, 165, 250, 0.22)");
+      fill.addColorStop(1, "rgba(96, 165, 250, 0)");
+      context2.fillStyle = fill;
+      context2.beginPath();
+      context2.moveTo(0, canvas.height);
+      values2.forEach((point, index) => {
+        const x = index * (canvas.width - 1) / (values2.length - 1);
+        const y = canvas.height - 3 - (point - min5) * (canvas.height - 6) / span;
+        context2.lineTo(x, y);
+      });
+      context2.lineTo(canvas.width, canvas.height);
+      context2.closePath();
+      context2.fill();
       context2.strokeStyle = "#60a5fa";
       context2.lineWidth = 1.5;
       context2.beginPath();
@@ -154002,10 +154285,11 @@ var MeasuresPanel = class extends BasePanel {
   }
   renderEdit(item2) {
     const editor = document.createElement("div");
-    Object.assign(editor.style, { display: "grid", gridTemplateColumns: "1fr auto", gap: "6px" });
+    Object.assign(editor.style, { display: "grid", gridTemplateColumns: "1fr auto", gap: "6px", marginTop: "6px" });
     const rename = document.createElement("input");
     rename.value = item2.tag;
     rename.setAttribute("data-molsysviewer-measurement-rename-input", item2.tag);
+    Object.assign(rename.style, INPUT_STYLE);
     const renameButton = makeButton("Rename", () => this.ctx.onAction("rename_measurement", { tag: item2.tag, new_tag: rename.value }));
     renameButton.setAttribute("data-molsysviewer-measurement-rename", item2.tag);
     rename.addEventListener("keydown", (e) => {
@@ -154018,6 +154302,7 @@ var MeasuresPanel = class extends BasePanel {
     layer.value = item2.layerTag && item2.layerTag !== item2.tag ? item2.layerTag : "";
     layer.placeholder = "No user layer";
     layer.setAttribute("data-molsysviewer-measurement-layer-input", item2.tag);
+    Object.assign(layer.style, INPUT_STYLE);
     const layerButton = makeButton("Set layer", () => this.ctx.onAction("set_measurement_layer", { tag: item2.tag, layer: layer.value || null }));
     layerButton.setAttribute("data-molsysviewer-measurement-layer", item2.tag);
     layer.addEventListener("keydown", (e) => {
@@ -154031,58 +154316,6 @@ var MeasuresPanel = class extends BasePanel {
     editor.appendChild(layer);
     editor.appendChild(layerButton);
     return editor;
-  }
-  renderGlobalActions() {
-    const row2 = document.createElement("div");
-    Object.assign(row2.style, { display: "flex", gap: "6px", marginTop: "8px" });
-    for (const [label2, action] of [
-      ["Show all", "show_all_measurements"],
-      ["Hide all", "hide_all_measurements"],
-      ["Clear all", "clear_measurements"]
-    ]) {
-      const button = makeButton(label2, () => {
-        if (action === "clear_measurements" && !window.confirm("Delete all measurements?")) return;
-        this.ctx.onAction(action);
-      });
-      button.setAttribute("data-molsysviewer-measurement-global", action);
-      row2.appendChild(button);
-    }
-    return row2;
-  }
-  renderSettings() {
-    const section = card2();
-    section.appendChild(makeSectionHeader("Endpoint policy"));
-    for (const policy of ["atom", "centroid", "representative_atom"]) {
-      const label2 = document.createElement("label");
-      const input = document.createElement("input");
-      input.type = "radio";
-      input.name = "molsysviewer-measurement-policy";
-      input.value = policy;
-      input.checked = this.settings.endpointPolicyDefault === policy;
-      input.setAttribute("data-molsysviewer-measurement-policy", policy);
-      input.addEventListener("change", () => this.ctx.onAction("set_measurement_endpoint_policy", { policy }));
-      label2.appendChild(input);
-      label2.appendChild(document.createTextNode(` ${policy.replace(/_/g, " ")}`));
-      Object.assign(label2.style, { fontSize: "11px", color: "rgba(244,244,245,0.78)" });
-      section.appendChild(label2);
-    }
-    for (const target of ["protein", "nucleic", "lipid", "other"]) {
-      const row2 = document.createElement("label");
-      row2.textContent = `${target} `;
-      const input = document.createElement("input");
-      input.value = this.settings.representativeAtoms[target];
-      input.disabled = this.settings.endpointPolicyDefault !== "representative_atom";
-      input.setAttribute("data-molsysviewer-measurement-representative", target);
-      input.addEventListener("change", () => this.ctx.onAction("set_measurement_representative_atom", { target, atom_name: input.value }));
-      row2.appendChild(input);
-      Object.assign(row2.style, { fontSize: "10px", color: "rgba(244,244,245,0.62)" });
-      section.appendChild(row2);
-    }
-    const note2 = document.createElement("div");
-    note2.textContent = "The policy applies to future measurements only.";
-    Object.assign(note2.style, { fontSize: "9px", color: "rgba(244,244,245,0.48)" });
-    section.appendChild(note2);
-    return section;
   }
 };
 
@@ -156547,6 +156780,7 @@ var GroupPanel = class {
   setSavedSelections(items) {
     this.selectionPanel.setSavedSelections(items);
     this.regionsPanel.setSavedSelections(items);
+    this.measuresPanel.setSavedSelections(items);
   }
   updateSelectionQueryPreview(preview) {
     if (this.regionsPanel.updatePreview(preview)) return;

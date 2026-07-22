@@ -276,7 +276,9 @@ def create_measurement(view: Any, content: Mapping[str, Any]) -> None:
     required = {"distance": 2, "angle": 3, "dihedral": 4}
     if kind not in required:
         raise ValueError("create_measurement requires kind distance, angle, or dihedral.")
-    picks = _active_measurement_picks(view)
+    picks = content.get("picks")
+    if picks is None:
+        picks = _active_measurement_picks(view)
     if len(picks) != required[kind]:
         raise ValueError(
             f"{kind} requires {required[kind]} selected endpoints; received {len(picks)}."

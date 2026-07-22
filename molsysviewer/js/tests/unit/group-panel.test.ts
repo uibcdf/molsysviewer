@@ -1955,6 +1955,7 @@ test("GroupPanel Measures renders scientific values and routes every mutation th
             count_atoms: 2,
             count_groups: 2,
         } as any);
+        (panel as any).measuresPanel.endpointSettingsExpanded = true;
         (panel as any).switchTab("measures");
         const root = host.children[0];
 
