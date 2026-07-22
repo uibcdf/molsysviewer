@@ -215,7 +215,7 @@ test("GroupPanel renders active, saved, and region summaries", () => {
         assert.ok(savedList);
         const selectionTabBtn = findFirstByAttribute(root, "data-molsysviewer-group-panel-tab", "selection");
         assert.ok(selectionTabBtn);
-        assert.strictEqual(firstText(selectionTabBtn.children[1]), "2 atoms");
+        assert.strictEqual(firstText(selectionTabBtn.children[1]), "2 atoms active · 1 saved");
         assert.ok(summaryItems.includes("site_a"));
         assert.ok(summaryItems.includes("binding"));
 

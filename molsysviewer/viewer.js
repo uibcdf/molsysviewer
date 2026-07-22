@@ -150868,23 +150868,24 @@ var RegionsPanel = class extends BasePanel {
     const summaryCard = document.createElement("div");
     Object.assign(summaryCard.style, {
       display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
+      flexDirection: "column",
+      gap: "6px",
       padding: "8px 10px",
       borderRadius: "6px",
       background: "rgba(255,255,255,0.035)",
       border: "1px solid rgba(255,255,255,0.08)",
-      marginBottom: "10px",
-      gap: "10px"
-    });
-    const infoCol = document.createElement("div");
-    Object.assign(infoCol.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "4px"
+      marginBottom: "10px"
     });
     const visibleRegionsCount = this.regions.filter((r) => !r.hidden).length;
     const totalRegions = this.regions.length;
+    const row1 = document.createElement("div");
+    Object.assign(row1.style, {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      width: "100%",
+      gap: "10px"
+    });
     const regionsInfo = document.createElement("div");
     Object.assign(regionsInfo.style, {
       display: "flex",
@@ -150905,7 +150906,32 @@ var RegionsPanel = class extends BasePanel {
     });
     regionsInfo.appendChild(regionsDot);
     regionsInfo.appendChild(document.createTextNode(`${visibleRegionsCount} of ${totalRegions} region${totalRegions === 1 ? "" : "s"} visible`));
-    infoCol.appendChild(regionsInfo);
+    row1.appendChild(regionsInfo);
+    const actionsCol = document.createElement("div");
+    Object.assign(actionsCol.style, {
+      display: "flex",
+      gap: "4px",
+      alignItems: "center",
+      flexShrink: "0"
+    });
+    const showAll = makeButton("Show all", () => this.ctx.onAction("show_all_regions"));
+    showAll.setAttribute("data-molsysviewer-region-show-all", "true");
+    const hideAll = makeButton("Hide all", () => this.ctx.onAction("hide_all_regions"));
+    hideAll.setAttribute("data-molsysviewer-region-hide-all", "true");
+    for (const btn of [showAll, hideAll]) {
+      btn.style.padding = "3px 6px";
+      btn.style.fontSize = "10px";
+      actionsCol.appendChild(btn);
+    }
+    row1.appendChild(actionsCol);
+    summaryCard.appendChild(row1);
+    const row2 = document.createElement("div");
+    Object.assign(row2.style, {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      width: "100%"
+    });
     const wholeInfo = document.createElement("div");
     Object.assign(wholeInfo.style, {
       display: "flex",
@@ -150926,27 +150952,8 @@ var RegionsPanel = class extends BasePanel {
     });
     wholeInfo.appendChild(wholeDot);
     wholeInfo.appendChild(document.createTextNode(`Whole Structure: ${wholeVisible ? "Visible" : "Hidden"}`));
-    infoCol.appendChild(wholeInfo);
-    summaryCard.appendChild(infoCol);
-    const actionsCol = document.createElement("div");
-    Object.assign(actionsCol.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "4px",
-      alignItems: "flex-end",
-      flexShrink: "0"
-    });
-    const showAll = makeButton("Show all", () => this.ctx.onAction("show_all_regions"));
-    showAll.setAttribute("data-molsysviewer-region-show-all", "true");
-    const hideAll = makeButton("Hide all", () => this.ctx.onAction("hide_all_regions"));
-    hideAll.setAttribute("data-molsysviewer-region-hide-all", "true");
-    for (const btn of [showAll, hideAll]) {
-      btn.style.width = "72px";
-      btn.style.padding = "3px 6px";
-      btn.style.fontSize = "10px";
-      actionsCol.appendChild(btn);
-    }
-    summaryCard.appendChild(actionsCol);
+    row2.appendChild(wholeInfo);
+    summaryCard.appendChild(row2);
     this.host.appendChild(summaryCard);
     const list3 = document.createElement("div");
     list3.setAttribute("data-molsysviewer-region-list", "true");
@@ -151746,9 +151753,14 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
     host.addEventListener("keydown", (event) => this.handleSelectionPanelKeydown(event));
     _SelectionPanel.ensureDesignSystemStyles();
   }
+  updateBadge() {
+    const activeCount = this.currentSelection?.count_atoms ?? 0;
+    const savedCount = this.savedSelections.length;
+    this.ctx.setBadge(`${activeCount} atom${activeCount === 1 ? "" : "s"} active \xB7 ${savedCount} saved`);
+  }
   updateSelection(selection) {
     this.currentSelection = selection;
-    this.ctx.setBadge(selection.count_atoms > 0 ? `${selection.count_atoms} atoms` : "None");
+    this.updateBadge();
     this.scheduleRender();
   }
   updateHistory(state) {
@@ -151758,6 +151770,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
   }
   setSavedSelections(items) {
     this.savedSelections = [...items];
+    this.updateBadge();
     this.scheduleRender();
   }
   /** Route a query preview belonging to this panel's manual composer. */
@@ -153128,7 +153141,7 @@ var SystemPanel = class {
     }
     const naturalVisible = Boolean(this.structure) && grouped.size > 0;
     this.ctx.setBadge(
-      naturalVisible ? `Hierarchy: ${grouped.size} chain${grouped.size === 1 ? "" : "s"}, ${items.length} groups` : "Molecular Hierarchy & Sequence"
+      naturalVisible ? `${grouped.size} chain${grouped.size === 1 ? "" : "s"}, ${items.length} groups` : "Molecular Hierarchy & Sequence"
     );
     if (this.structure && grouped.size > 0) {
       for (const [chain2, chainItems] of grouped.entries()) {

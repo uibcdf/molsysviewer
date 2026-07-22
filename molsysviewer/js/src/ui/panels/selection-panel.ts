@@ -49,9 +49,15 @@ export class SelectionPanel extends BasePanel {
         SelectionPanel.ensureDesignSystemStyles();
     }
 
+    private updateBadge(): void {
+        const activeCount = this.currentSelection?.count_atoms ?? 0;
+        const savedCount = this.savedSelections.length;
+        this.ctx.setBadge(`${activeCount} atom${activeCount === 1 ? "" : "s"} active · ${savedCount} saved`);
+    }
+
     updateSelection(selection: ActiveSelectionPayload): void {
         this.currentSelection = selection;
-        this.ctx.setBadge(selection.count_atoms > 0 ? `${selection.count_atoms} atoms` : "None");
+        this.updateBadge();
         this.scheduleRender();
     }
 
@@ -63,6 +69,7 @@ export class SelectionPanel extends BasePanel {
 
     setSavedSelections(items: SavedSelectionSummary[]): void {
         this.savedSelections = [...items];
+        this.updateBadge();
         this.scheduleRender();
     }
 
