@@ -214,6 +214,12 @@ export class LayersPanel extends BasePanel {
             if (newTag && newTag !== layer.tag) this.ctx.onAction("rename_layer", { tag: layer.tag, new_tag: newTag });
         });
         renameButton.setAttribute("data-molsysviewer-layer-rename", layer.tag);
+        renameInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                renameButton.click();
+            }
+        });
         rename.appendChild(renameInput);
         rename.appendChild(renameButton);
         card.appendChild(rename);

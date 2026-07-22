@@ -275,6 +275,12 @@ export class AnnotationsPanel extends BasePanel {
             this.ctx.onAction("rename_annotation", { tag: item.tag, new_tag: rename.value.trim() })
         );
         renameButton.setAttribute("data-molsysviewer-annotation-rename", item.tag);
+        rename.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                renameButton.click();
+            }
+        });
         const layer = document.createElement("input");
         layer.value = item.layerTag && item.layerTag !== item.tag ? item.layerTag : "";
         layer.placeholder = "No user layer";
@@ -283,6 +289,12 @@ export class AnnotationsPanel extends BasePanel {
             this.ctx.onAction("set_annotation_layer", { tag: item.tag, layer: layer.value.trim() || null })
         );
         layerButton.setAttribute("data-molsysviewer-annotation-layer", item.tag);
+        layer.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                layerButton.click();
+            }
+        });
         const reanchor = makeButton("Use active selection", () =>
             this.ctx.onAction("reanchor_annotation", { tag: item.tag })
         );

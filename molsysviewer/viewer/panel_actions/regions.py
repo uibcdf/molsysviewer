@@ -241,7 +241,7 @@ def get_region_details(view: Any, content: Mapping[str, Any]) -> None:
 
 def toggle_region_visibility(view: Any, content: Mapping[str, Any]) -> None:
     region = _region(view, content, "toggle_region_visibility")
-    (region.show if region.hidden else region.hide)(skip_digestion=True)
+    (region.show if not region.visible else region.hide)(skip_digestion=True)
 
 
 def delete_region(view: Any, content: Mapping[str, Any]) -> None:

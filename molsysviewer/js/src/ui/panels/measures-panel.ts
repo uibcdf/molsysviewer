@@ -288,12 +288,24 @@ export class MeasuresPanel extends BasePanel {
         rename.setAttribute("data-molsysviewer-measurement-rename-input", item.tag);
         const renameButton = makeButton("Rename", () => this.ctx.onAction("rename_measurement", { tag: item.tag, new_tag: rename.value }));
         renameButton.setAttribute("data-molsysviewer-measurement-rename", item.tag);
+        rename.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                renameButton.click();
+            }
+        });
         const layer = document.createElement("input");
         layer.value = item.layerTag && item.layerTag !== item.tag ? item.layerTag : "";
         layer.placeholder = "No user layer";
         layer.setAttribute("data-molsysviewer-measurement-layer-input", item.tag);
         const layerButton = makeButton("Set layer", () => this.ctx.onAction("set_measurement_layer", { tag: item.tag, layer: layer.value || null }));
         layerButton.setAttribute("data-molsysviewer-measurement-layer", item.tag);
+        layer.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                layerButton.click();
+            }
+        });
         editor.appendChild(rename);
         editor.appendChild(renameButton);
         editor.appendChild(layer);

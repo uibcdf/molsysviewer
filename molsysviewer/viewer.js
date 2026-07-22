@@ -150557,6 +150557,12 @@ var LayersPanel = class extends BasePanel {
       if (newTag && newTag !== layer.tag) this.ctx.onAction("rename_layer", { tag: layer.tag, new_tag: newTag });
     });
     renameButton.setAttribute("data-molsysviewer-layer-rename", layer.tag);
+    renameInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        renameButton.click();
+      }
+    });
     rename.appendChild(renameInput);
     rename.appendChild(renameButton);
     card5.appendChild(rename);
@@ -151227,9 +151233,14 @@ var RegionsPanel = class extends BasePanel {
         this.regionRenameCollisionTag = null;
       };
       input.addEventListener("keydown", (event) => {
-        if (event.key !== "Enter") return;
-        event.preventDefault();
-        confirmRename();
+        if (event.key === "Enter") {
+          event.preventDefault();
+          confirmRename();
+        } else if (event.key === "Escape") {
+          event.preventDefault();
+          this.regionRenameTag = null;
+          this.scheduleRender();
+        }
       });
       const submit = makeButton("Rename", confirmRename);
       submit.setAttribute("data-molsysviewer-region-rename-confirm", item2.tag);
@@ -152208,6 +152219,16 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
             inlineForm.style.display = "none";
             btnRow.style.display = "flex";
           });
+          inlineInput.onkeydown = (e) => {
+            e.stopPropagation();
+            if (e.key === "Enter") {
+              e.preventDefault();
+              inlineConfirm.click();
+            } else if (e.key === "Escape") {
+              e.preventDefault();
+              inlineCancel.click();
+            }
+          };
           inlineForm.appendChild(inlineInput);
           inlineForm.appendChild(inlineConfirm);
           inlineForm.appendChild(inlineCancel);
@@ -152376,10 +152397,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
         fontSize: "11px",
         outline: "none"
       });
-      input.addEventListener("keydown", (e) => {
-        e.stopPropagation();
-      });
-      const confirmBtn = makeButton("Create", () => {
+      const submitForm = () => {
         const tag = input.value.trim();
         if (!tag) return;
         const exists = this.savedSelections.some((s) => s.tag === tag);
@@ -152396,7 +152414,22 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
         }
         this.showActiveSelectionSaveForm = false;
         this.scheduleRender();
+      };
+      const cancelForm = () => {
+        this.showActiveSelectionSaveForm = false;
+        this.scheduleRender();
+      };
+      input.addEventListener("keydown", (e) => {
+        e.stopPropagation();
+        if (e.key === "Enter") {
+          e.preventDefault();
+          submitForm();
+        } else if (e.key === "Escape") {
+          e.preventDefault();
+          cancelForm();
+        }
       });
+      const confirmBtn = makeButton("Create", submitForm);
       confirmBtn.setAttribute("data-molsysviewer-active-selection-save-confirm", "true");
       Object.assign(confirmBtn.style, {
         background: "#6366f1",
@@ -153975,12 +154008,24 @@ var MeasuresPanel = class extends BasePanel {
     rename.setAttribute("data-molsysviewer-measurement-rename-input", item2.tag);
     const renameButton = makeButton("Rename", () => this.ctx.onAction("rename_measurement", { tag: item2.tag, new_tag: rename.value }));
     renameButton.setAttribute("data-molsysviewer-measurement-rename", item2.tag);
+    rename.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        renameButton.click();
+      }
+    });
     const layer = document.createElement("input");
     layer.value = item2.layerTag && item2.layerTag !== item2.tag ? item2.layerTag : "";
     layer.placeholder = "No user layer";
     layer.setAttribute("data-molsysviewer-measurement-layer-input", item2.tag);
     const layerButton = makeButton("Set layer", () => this.ctx.onAction("set_measurement_layer", { tag: item2.tag, layer: layer.value || null }));
     layerButton.setAttribute("data-molsysviewer-measurement-layer", item2.tag);
+    layer.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        layerButton.click();
+      }
+    });
     editor.appendChild(rename);
     editor.appendChild(renameButton);
     editor.appendChild(layer);
@@ -154282,6 +154327,12 @@ var AnnotationsPanel = class extends BasePanel {
       () => this.ctx.onAction("rename_annotation", { tag: item2.tag, new_tag: rename.value.trim() })
     );
     renameButton.setAttribute("data-molsysviewer-annotation-rename", item2.tag);
+    rename.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        renameButton.click();
+      }
+    });
     const layer = document.createElement("input");
     layer.value = item2.layerTag && item2.layerTag !== item2.tag ? item2.layerTag : "";
     layer.placeholder = "No user layer";
@@ -154291,6 +154342,12 @@ var AnnotationsPanel = class extends BasePanel {
       () => this.ctx.onAction("set_annotation_layer", { tag: item2.tag, layer: layer.value.trim() || null })
     );
     layerButton.setAttribute("data-molsysviewer-annotation-layer", item2.tag);
+    layer.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        layerButton.click();
+      }
+    });
     const reanchor = makeButton(
       "Use active selection",
       () => this.ctx.onAction("reanchor_annotation", { tag: item2.tag })

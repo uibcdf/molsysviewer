@@ -511,6 +511,17 @@ export class SelectionPanel extends BasePanel {
                         btnRow.style.display = "flex";
                     });
 
+                    inlineInput.onkeydown = (e) => {
+                        e.stopPropagation();
+                        if (e.key === "Enter") {
+                            e.preventDefault();
+                            inlineConfirm.click();
+                        } else if (e.key === "Escape") {
+                            e.preventDefault();
+                            inlineCancel.click();
+                        }
+                    };
+
                     inlineForm.appendChild(inlineInput);
                     inlineForm.appendChild(inlineConfirm);
                     inlineForm.appendChild(inlineCancel);
@@ -703,12 +714,7 @@ export class SelectionPanel extends BasePanel {
                 outline: "none",
             });
 
-            // Prevent panel keydowns from firing while typing inside input
-            input.addEventListener("keydown", (e) => {
-                e.stopPropagation();
-            });
-
-            const confirmBtn = makeButton("Create", () => {
+            const submitForm = () => {
                 const tag = input.value.trim();
                 if (!tag) return;
                 const exists = this.savedSelections.some(s => s.tag === tag);
@@ -725,7 +731,26 @@ export class SelectionPanel extends BasePanel {
                 }
                 this.showActiveSelectionSaveForm = false;
                 this.scheduleRender();
+            };
+
+            const cancelForm = () => {
+                this.showActiveSelectionSaveForm = false;
+                this.scheduleRender();
+            };
+
+            // Prevent panel keydowns from firing while typing inside input
+            input.addEventListener("keydown", (e) => {
+                e.stopPropagation();
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    submitForm();
+                } else if (e.key === "Escape") {
+                    e.preventDefault();
+                    cancelForm();
+                }
             });
+
+            const confirmBtn = makeButton("Create", submitForm);
             confirmBtn.setAttribute("data-molsysviewer-active-selection-save-confirm", "true");
             Object.assign(confirmBtn.style, {
                 background: "#6366f1",

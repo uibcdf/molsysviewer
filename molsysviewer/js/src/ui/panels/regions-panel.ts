@@ -503,9 +503,14 @@ export class RegionsPanel extends BasePanel {
                 this.regionRenameCollisionTag = null;
             };
             input.addEventListener("keydown", (event) => {
-                if (event.key !== "Enter") return;
-                event.preventDefault();
-                confirmRename();
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    confirmRename();
+                } else if (event.key === "Escape") {
+                    event.preventDefault();
+                    this.regionRenameTag = null;
+                    this.scheduleRender();
+                }
             });
             const submit = makeButton("Rename", confirmRename);
             submit.setAttribute("data-molsysviewer-region-rename-confirm", item.tag);
