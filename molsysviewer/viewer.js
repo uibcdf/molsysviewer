@@ -150800,6 +150800,7 @@ var RegionsPanel = class extends BasePanel {
     this.continuousHistoryEdit = false;
     this.continuousHistoryRenderPending = false;
     this.historyState = { canUndo: false, canRedo: false };
+    this.regionStyleBackups = /* @__PURE__ */ new Map();
   }
   scheduleExternalRender() {
     if (this.continuousHistoryEdit) {
@@ -151047,7 +151048,17 @@ var RegionsPanel = class extends BasePanel {
     });
     renameBtn.setAttribute("data-molsysviewer-region-rename", item2.tag);
     const styleBtn = makeButton("Style", () => {
-      this.activeStyleRegionTag = this.activeStyleRegionTag === item2.tag ? null : item2.tag;
+      if (this.activeStyleRegionTag === item2.tag) {
+        this.activeStyleRegionTag = null;
+        this.regionStyleBackups.delete(item2.tag);
+      } else {
+        this.activeStyleRegionTag = item2.tag;
+        this.regionStyleBackups.set(item2.tag, {
+          representation: item2.representation,
+          preset: item2.preset,
+          params: item2.representation_params ? JSON.parse(JSON.stringify(item2.representation_params)) : {}
+        });
+      }
       this.scheduleRender();
     });
     styleBtn.setAttribute("data-molsysviewer-region-style", item2.tag);
@@ -151282,14 +151293,20 @@ var RegionsPanel = class extends BasePanel {
       redoBtn.style.cursor = "not-allowed";
     }
     actions.appendChild(redoBtn);
-    const resetBtn = makeButton("Reset", () => {
-      this.ctx.onAction("reset_region_representation", { tag });
-      this.ctx.onAction("reset_region_colors", { tag });
+    const revertBtn = makeButton("Revert", () => {
+      const backup = this.regionStyleBackups.get(tag);
+      if (backup) {
+        this.ctx.onAction("set_region_representation", {
+          tag,
+          ...backup.preset ? { preset: backup.preset } : { representation: backup.representation ?? "inherit" },
+          params: backup.params
+        });
+      }
     });
-    resetBtn.setAttribute("data-molsysviewer-region-style-reset", tag);
-    resetBtn.title = "Reset region representation and colors to base";
-    actions.appendChild(resetBtn);
-    for (const btn of [undoBtn, redoBtn, resetBtn]) {
+    revertBtn.setAttribute("data-molsysviewer-region-style-revert", tag);
+    revertBtn.title = "Revert region representation and colors to session start";
+    actions.appendChild(revertBtn);
+    for (const btn of [undoBtn, redoBtn, revertBtn]) {
       btn.style.flex = "0 1 auto";
       btn.style.padding = "2px 5px";
       btn.style.fontSize = "9px";

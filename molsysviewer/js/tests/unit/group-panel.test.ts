@@ -1035,12 +1035,16 @@ test("GroupPanel region style composer brackets live opacity changes for history
             details: undefined,
         });
 
-        findFirstByAttribute(root, "data-molsysviewer-region-style-reset", "binding")
+        findFirstByAttribute(root, "data-molsysviewer-region-style-revert", "binding")
             ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
-        assert.deepStrictEqual(actions.slice(-2), [
-            { action: "reset_region_representation", details: { tag: "binding" } },
-            { action: "reset_region_colors", details: { tag: "binding" } },
-        ]);
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "set_region_representation",
+            details: {
+                tag: "binding",
+                representation: "line",
+                params: { alpha: 0.4, quality: "high", sizeFactor: 0.8 },
+            },
+        });
 
         await new Promise(resolve => setTimeout(resolve, 15));
         panel.dispose();

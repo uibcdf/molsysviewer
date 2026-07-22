@@ -35,6 +35,7 @@ export class RegionsPanel extends BasePanel {
     private continuousHistoryEdit = false;
     private continuousHistoryRenderPending = false;
     private historyState = { canUndo: false, canRedo: false };
+    private readonly regionStyleBackups = new Map<string, { representation: string | undefined; preset: string | undefined; params: any }>();
 
     constructor(
         private readonly ctx: PanelContext,
@@ -332,7 +333,17 @@ export class RegionsPanel extends BasePanel {
         renameBtn.setAttribute("data-molsysviewer-region-rename", item.tag);
 
         const styleBtn = makeButton("Style", () => {
-            this.activeStyleRegionTag = this.activeStyleRegionTag === item.tag ? null : item.tag;
+            if (this.activeStyleRegionTag === item.tag) {
+                this.activeStyleRegionTag = null;
+                this.regionStyleBackups.delete(item.tag);
+            } else {
+                this.activeStyleRegionTag = item.tag;
+                this.regionStyleBackups.set(item.tag, {
+                    representation: item.representation,
+                    preset: item.preset,
+                    params: item.representation_params ? JSON.parse(JSON.stringify(item.representation_params)) : {},
+                });
+            }
             this.scheduleRender();
         });
         styleBtn.setAttribute("data-molsysviewer-region-style", item.tag);
@@ -586,15 +597,23 @@ export class RegionsPanel extends BasePanel {
         }
         actions.appendChild(redoBtn);
 
-        const resetBtn = makeButton("Reset", () => {
-            this.ctx.onAction("reset_region_representation", { tag });
-            this.ctx.onAction("reset_region_colors", { tag });
+        const revertBtn = makeButton("Revert", () => {
+            const backup = this.regionStyleBackups.get(tag);
+            if (backup) {
+                this.ctx.onAction("set_region_representation", {
+                    tag,
+                    ...(backup.preset
+                        ? { preset: backup.preset }
+                        : { representation: backup.representation ?? "inherit" }),
+                    params: backup.params,
+                });
+            }
         });
-        resetBtn.setAttribute("data-molsysviewer-region-style-reset", tag);
-        resetBtn.title = "Reset region representation and colors to base";
-        actions.appendChild(resetBtn);
+        revertBtn.setAttribute("data-molsysviewer-region-style-revert", tag);
+        revertBtn.title = "Revert region representation and colors to session start";
+        actions.appendChild(revertBtn);
 
-        for (const btn of [undoBtn, redoBtn, resetBtn]) {
+        for (const btn of [undoBtn, redoBtn, revertBtn]) {
             btn.style.flex = "0 1 auto";
             btn.style.padding = "2px 5px";
             btn.style.fontSize = "9px";
