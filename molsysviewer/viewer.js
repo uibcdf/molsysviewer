@@ -153059,7 +153059,7 @@ var SystemPanel = class {
     }
     const naturalVisible = Boolean(this.structure) && grouped.size > 0;
     this.ctx.setBadge(
-      naturalVisible ? `Hierarchy: ${grouped.size} chain${grouped.size === 1 ? "" : "s"}, ${items.length} res` : "Molecular Hierarchy & Sequence"
+      naturalVisible ? `Hierarchy: ${grouped.size} chain${grouped.size === 1 ? "" : "s"}, ${items.length} groups` : "Molecular Hierarchy & Sequence"
     );
     if (this.structure && grouped.size > 0) {
       for (const [chain2, chainItems] of grouped.entries()) {

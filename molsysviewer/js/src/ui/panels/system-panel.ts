@@ -226,7 +226,7 @@ export class SystemPanel implements StudioPanel {
 
         this.ctx.setBadge(
             naturalVisible
-                ? `Hierarchy: ${grouped.size} chain${grouped.size === 1 ? "" : "s"}, ${items.length} res`
+                ? `Hierarchy: ${grouped.size} chain${grouped.size === 1 ? "" : "s"}, ${items.length} groups`
                 : "Molecular Hierarchy & Sequence",
         );
 
