@@ -151028,6 +151028,14 @@ var RegionsPanel = class extends BasePanel {
       flexWrap: "wrap",
       gap: "4px"
     });
+    const visibilityBtn = makeButton(item2.hidden ? "Show" : "Hide", () => toggleVisibility());
+    visibilityBtn.setAttribute("data-molsysviewer-region-visibility", item2.tag);
+    if (!hasVisual) {
+      visibilityBtn.disabled = true;
+      visibilityBtn.style.opacity = "0.42";
+      visibilityBtn.style.cursor = "not-allowed";
+      visibilityBtn.title = "This base region has no visual representation to hide.";
+    }
     const renameBtn = makeButton("Rename", () => {
       this.regionRenameTag = item2.tag;
       this.scheduleRender();
@@ -151052,7 +151060,7 @@ var RegionsPanel = class extends BasePanel {
     inspectBtn.setAttribute("data-molsysviewer-region-inspect", item2.tag);
     const deleteBtn = makeButton("\u{1F5D1}", () => this.ctx.onAction("delete_region", { tag: item2.tag }));
     deleteBtn.setAttribute("data-molsysviewer-region-delete", item2.tag);
-    for (const btn of [renameBtn, styleBtn, inspectBtn, deleteBtn]) {
+    for (const btn of [visibilityBtn, renameBtn, styleBtn, inspectBtn, deleteBtn]) {
       btn.style.flex = "0 1 auto";
       btn.style.padding = "3px 6px";
       btn.style.fontSize = "10px";
@@ -151354,6 +151362,15 @@ var RegionsPanel = class extends BasePanel {
         }
       };
     };
+    const triggerLiveUpdate = () => {
+      const next = buildStyleAction();
+      this.ctx.onAction(next.action, next.details);
+    };
+    representationSelect.addEventListener("change", triggerLiveUpdate);
+    presetSelect.addEventListener("change", triggerLiveUpdate);
+    quality.addEventListener("change", triggerLiveUpdate);
+    colorScheme.addEventListener("change", triggerLiveUpdate);
+    customColorInput.addEventListener("change", triggerLiveUpdate);
     bindContinuousHistory(
       opacity,
       () => {
@@ -151364,58 +151381,9 @@ var RegionsPanel = class extends BasePanel {
     );
     opacity.addEventListener("input", () => {
       if (!this.regionHasOwnVisual(item2)) return;
-      this.ctx.onAction("set_region_representation", {
-        tag,
-        ...item2.preset ? { preset: item2.preset } : { representation: item2.representation },
-        params: {
-          ...params,
-          alpha: Number(opacity.value)
-        }
-      });
-    });
-    const actionsRow = document.createElement("div");
-    Object.assign(actionsRow.style, {
-      display: "flex",
-      justifyContent: "flex-end",
-      gap: "6px",
-      width: "100%",
-      marginTop: "4px"
-    });
-    const cancelBtn = makeButton("Cancel", () => {
-      this.activeStyleRegionTag = null;
-      this.scheduleRender();
-    });
-    cancelBtn.setAttribute("data-molsysviewer-region-style-cancel", tag);
-    Object.assign(cancelBtn.style, {
-      flex: "0 0 auto",
-      fontSize: "10px",
-      padding: "3px 8px"
-    });
-    const applyBtn = makeButton("Apply Style", () => {
       const next = buildStyleAction();
       this.ctx.onAction(next.action, next.details);
-      this.activeStyleRegionTag = null;
-      this.scheduleRender();
     });
-    applyBtn.setAttribute("data-molsysviewer-region-style-apply", tag);
-    Object.assign(applyBtn.style, {
-      flex: "0 0 auto",
-      fontSize: "10px",
-      padding: "3px 8px",
-      background: "rgba(16,185,129,0.15)",
-      border: "1px solid rgba(16,185,129,0.3)"
-    });
-    applyBtn.addEventListener("mouseenter", () => {
-      applyBtn.style.background = "rgba(16,185,129,0.25)";
-      applyBtn.style.border = "1px solid rgba(16,185,129,0.5)";
-    });
-    applyBtn.addEventListener("mouseleave", () => {
-      applyBtn.style.background = "rgba(16,185,129,0.15)";
-      applyBtn.style.border = "1px solid rgba(16,185,129,0.3)";
-    });
-    actionsRow.appendChild(cancelBtn);
-    actionsRow.appendChild(applyBtn);
-    container.appendChild(actionsRow);
     return container;
   }
 };
