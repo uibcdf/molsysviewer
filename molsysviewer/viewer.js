@@ -151740,8 +151740,8 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
     this.selectionCheatSheetOpen = false;
     this.selectionCanUndo = false;
     this.selectionCanRedo = false;
-    this.querySaveForm = null;
-    this.querySaveInput = null;
+    this.showActiveSelectionSaveForm = false;
+    this.activeSelectionSaveInput = null;
   }
   static {
     this.SELECTION_STYLE_ID = "molsysviewer-selection-panel-design-system";
@@ -151760,6 +151760,9 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
   }
   updateSelection(selection) {
     this.currentSelection = selection;
+    if (selection.count_atoms === 0) {
+      this.showActiveSelectionSaveForm = false;
+    }
     this.updateBadge();
     this.scheduleRender();
   }
@@ -151785,7 +151788,6 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           syntax,
           op: "replace"
         });
-        this.showSaveFormForQuery(expression);
       }
     }
   }
@@ -151979,6 +151981,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
     if (!this.host) return;
     this.host.replaceChildren();
     this.host.appendChild(makeSectionHeader("Selections"));
+    this.host.appendChild(this.renderActiveSelectionCard());
     this.host.appendChild(this.renderSelectionQueryComposer());
     this.host.appendChild(makeSectionHeader("Saved Selections"));
     const savedList = document.createElement("div");
@@ -152219,6 +152222,167 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
       savedList.appendChild(emptyLabel);
     }
   }
+  renderActiveSelectionCard() {
+    const card5 = document.createElement("div");
+    card5.setAttribute("data-molsysviewer-active-selection-card", "true");
+    Object.assign(card5.style, {
+      display: "flex",
+      flexDirection: "column",
+      padding: "8px 10px",
+      borderRadius: "8px",
+      background: "rgba(255,255,255,0.035)",
+      border: "1px solid rgba(255,255,255,0.08)",
+      gap: "6px",
+      marginBottom: "10px"
+    });
+    const activeCount = this.currentSelection?.count_atoms ?? 0;
+    const topRow = document.createElement("div");
+    Object.assign(topRow.style, {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between"
+    });
+    const title = document.createElement("div");
+    Object.assign(title.style, {
+      display: "flex",
+      alignItems: "center",
+      gap: "6px",
+      fontSize: "12px",
+      fontWeight: "700",
+      color: "#f4f4f5"
+    });
+    const dot = document.createElement("span");
+    const hasActive = activeCount > 0;
+    Object.assign(dot.style, {
+      width: "6px",
+      height: "6px",
+      borderRadius: "999px",
+      background: hasActive ? "#34d399" : "rgba(244,244,245,0.28)",
+      boxShadow: hasActive ? "0 0 6px rgba(52,211,153,0.4)" : "none",
+      flexShrink: "0"
+    });
+    title.appendChild(dot);
+    title.appendChild(document.createTextNode("Active Selection"));
+    topRow.appendChild(title);
+    const countText = document.createElement("span");
+    Object.assign(countText.style, {
+      fontSize: "11px",
+      color: "rgba(244,244,245,0.6)"
+    });
+    countText.textContent = hasActive ? `${activeCount} atom${activeCount === 1 ? "" : "s"} selected` : "No selection";
+    topRow.appendChild(countText);
+    card5.appendChild(topRow);
+    const btnRow = document.createElement("div");
+    Object.assign(btnRow.style, {
+      display: "flex",
+      gap: "4px",
+      marginTop: "2px"
+    });
+    const deselectBtn = makeButton("Deselect", () => {
+      this.ctx.onAction("set_active_selection_operation", { operation: "none" });
+      this.showActiveSelectionSaveForm = false;
+      this.scheduleRender();
+    });
+    deselectBtn.setAttribute("data-molsysviewer-active-selection-deselect", "true");
+    if (!hasActive) {
+      deselectBtn.disabled = true;
+      deselectBtn.style.opacity = "0.42";
+      deselectBtn.style.cursor = "not-allowed";
+    }
+    const saveBtn = makeButton("Save", () => {
+      this.showActiveSelectionSaveForm = !this.showActiveSelectionSaveForm;
+      this.scheduleRender();
+      if (this.showActiveSelectionSaveForm) {
+        setTimeout(() => this.activeSelectionSaveInput?.focus?.(), 0);
+      }
+    });
+    saveBtn.setAttribute("data-molsysviewer-active-selection-save-toggle", "true");
+    if (!hasActive) {
+      saveBtn.disabled = true;
+      saveBtn.style.opacity = "0.42";
+      saveBtn.style.cursor = "not-allowed";
+    }
+    for (const btn of [deselectBtn, saveBtn]) {
+      btn.style.flex = "0 1 auto";
+      btn.style.padding = "3px 6px";
+      btn.style.fontSize = "10px";
+      btnRow.appendChild(btn);
+    }
+    card5.appendChild(btnRow);
+    if (this.showActiveSelectionSaveForm && hasActive) {
+      const form = document.createElement("div");
+      form.setAttribute("data-molsysviewer-active-selection-save-form", "true");
+      Object.assign(form.style, {
+        display: "flex",
+        gap: "6px",
+        marginTop: "4px"
+      });
+      const input = document.createElement("input");
+      input.type = "text";
+      input.placeholder = "Selection name...";
+      input.setAttribute("data-molsysviewer-active-selection-save-input", "true");
+      this.activeSelectionSaveInput = input;
+      Object.assign(input.style, {
+        flex: "1 1 0",
+        background: "rgba(0,0,0,0.2)",
+        border: "1px solid rgba(255,255,255,0.12)",
+        borderRadius: "6px",
+        padding: "4px 8px",
+        color: "#fff",
+        fontSize: "11px",
+        outline: "none"
+      });
+      input.addEventListener("keydown", (e) => {
+        e.stopPropagation();
+      });
+      const confirmBtn = makeButton("Save Selection", () => {
+        const tag = input.value.trim();
+        if (!tag) return;
+        const exists = this.savedSelections.some((s) => s.tag === tag);
+        if (exists) {
+          const doOverwrite = typeof confirm === "function" ? confirm(`A saved selection named "${tag}" already exists. Overwrite?`) : true;
+          if (doOverwrite) {
+            this.ctx.onAction("delete_selection", { tag });
+            this.ctx.onAction("save_selection", { tag });
+          } else {
+            return;
+          }
+        } else {
+          this.ctx.onAction("save_selection", { tag });
+        }
+        this.showActiveSelectionSaveForm = false;
+        this.scheduleRender();
+      });
+      confirmBtn.setAttribute("data-molsysviewer-active-selection-save-confirm", "true");
+      Object.assign(confirmBtn.style, {
+        background: "#6366f1",
+        border: "0",
+        borderRadius: "6px",
+        padding: "4px 8px",
+        color: "#fff",
+        fontSize: "11px",
+        fontWeight: "600"
+      });
+      const cancelBtn = makeButton("Cancel", () => {
+        this.showActiveSelectionSaveForm = false;
+        this.scheduleRender();
+      });
+      cancelBtn.setAttribute("data-molsysviewer-active-selection-save-cancel", "true");
+      Object.assign(cancelBtn.style, {
+        background: "rgba(255,255,255,0.08)",
+        border: "0",
+        borderRadius: "6px",
+        padding: "4px 8px",
+        color: "#e4e4e7",
+        fontSize: "11px"
+      });
+      form.appendChild(input);
+      form.appendChild(confirmBtn);
+      form.appendChild(cancelBtn);
+      card5.appendChild(form);
+    }
+    return card5;
+  }
   renderSelectionQueryComposer() {
     const container = document.createElement("div");
     container.setAttribute("data-molsysviewer-selection-query-composer", "true");
@@ -152244,32 +152408,6 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
       this.helpBtn.title = this.selectionCheatSheetOpen ? "Hide selection query examples" : "Show selection query examples";
     }
     container.appendChild(composer.element());
-    if (this.querySaveForm === null) {
-      this.querySaveForm = document.createElement("div");
-      this.querySaveForm.setAttribute("data-molsysviewer-selection-inline-form", "true");
-      Object.assign(this.querySaveForm.style, {
-        display: "none",
-        flexDirection: "row",
-        gap: "6px",
-        marginTop: "6px"
-      });
-      this.querySaveInput = document.createElement("input");
-      this.querySaveInput.type = "text";
-      this.querySaveInput.placeholder = "Selection name...";
-      this.querySaveInput.setAttribute("data-molsysviewer-selection-inline-input", "true");
-      Object.assign(this.querySaveInput.style, {
-        flex: "1 1 0",
-        background: "rgba(0,0,0,0.2)",
-        border: "1px solid rgba(255,255,255,0.12)",
-        borderRadius: "6px",
-        padding: "6px 8px",
-        color: "#fff",
-        fontSize: "11px",
-        outline: "none"
-      });
-      this.querySaveForm.appendChild(this.querySaveInput);
-    }
-    container.appendChild(this.querySaveForm);
     const presetRow = document.createElement("div");
     presetRow.setAttribute("data-molsysviewer-selection-query-presets", "true");
     Object.assign(presetRow.style, {
@@ -152378,64 +152516,6 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
       container.appendChild(cheatSheet);
     }
     return container;
-  }
-  showSaveFormForQuery(expression) {
-    if (!this.querySaveForm || !this.querySaveInput) return;
-    this.querySaveForm.style.display = "flex";
-    this.querySaveInput.value = "";
-    this.querySaveInput.focus?.();
-    this.querySaveForm.replaceChildren();
-    this.querySaveForm.appendChild(this.querySaveInput);
-    const confirmBtn = document.createElement("button");
-    confirmBtn.textContent = "Save";
-    confirmBtn.setAttribute("data-molsysviewer-selection-inline-confirm-btn", "true");
-    Object.assign(confirmBtn.style, {
-      background: "#6366f1",
-      border: "0",
-      borderRadius: "6px",
-      padding: "6px 10px",
-      color: "#fff",
-      fontSize: "11px",
-      fontWeight: "600",
-      cursor: "pointer"
-    });
-    confirmBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const tag = this.querySaveInput.value.trim();
-      if (!tag) return;
-      const exists = this.savedSelections.some((s) => s.tag === tag);
-      if (exists) {
-        const doOverwrite = typeof confirm === "function" ? confirm(`A saved selection named "${tag}" already exists. Overwrite?`) : true;
-        if (doOverwrite) {
-          this.ctx.onAction("delete_selection", { tag });
-          this.ctx.onAction("save_selection", { tag });
-        } else {
-          return;
-        }
-      } else {
-        this.ctx.onAction("save_selection", { tag });
-      }
-      this.querySaveForm.style.display = "none";
-    });
-    this.querySaveForm.appendChild(confirmBtn);
-    const cancelBtn = document.createElement("button");
-    cancelBtn.textContent = "Cancel";
-    Object.assign(cancelBtn.style, {
-      background: "rgba(255,255,255,0.08)",
-      border: "0",
-      borderRadius: "6px",
-      padding: "6px 10px",
-      color: "#e4e4e7",
-      fontSize: "11px",
-      cursor: "pointer"
-    });
-    cancelBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      this.querySaveForm.style.display = "none";
-    });
-    this.querySaveForm.appendChild(cancelBtn);
   }
   getSelectionQueryComposer() {
     if (this.selectionQueryComposer === null) {

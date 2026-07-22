@@ -274,8 +274,36 @@ test("GroupPanel selection query composer emits apply actions and accepts curren
         assert.strictEqual(firstText(status), "✓ 2 atoms");
         assert.strictEqual(status?.getAttribute("data-molsysviewer-query-status-value"), "ok");
 
-        const inlineForm = findFirstByAttribute(root, "data-molsysviewer-selection-inline-form", "true");
-        assert.ok(inlineForm);
+        // Simulate backend updating the active selection state
+        panel.updateSelection({ count_atoms: 2, atom_indices: [0, 1] });
+
+        const activeCard = findFirstByAttribute(root, "data-molsysviewer-active-selection-card", "true");
+        assert.ok(activeCard);
+
+        const deselectBtn = findFirstByAttribute(root, "data-molsysviewer-active-selection-deselect", "true");
+        assert.ok(deselectBtn);
+
+        const saveToggleBtn = findFirstByAttribute(root, "data-molsysviewer-active-selection-save-toggle", "true");
+        assert.ok(saveToggleBtn);
+
+        // Click Save to toggle open the save form
+        saveToggleBtn.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        
+        const saveForm = findFirstByAttribute(root, "data-molsysviewer-active-selection-save-form", "true");
+        assert.ok(saveForm);
+
+        const saveInput = findFirstByAttribute(root, "data-molsysviewer-active-selection-save-input", "true") as any;
+        assert.ok(saveInput);
+        saveInput.value = "my_query_selection";
+
+        const saveConfirm = findFirstByAttribute(root, "data-molsysviewer-active-selection-save-confirm", "true");
+        assert.ok(saveConfirm);
+        saveConfirm.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "save_selection",
+            details: { tag: "my_query_selection" },
+        });
 
         panel.dispose();
     } finally {
