@@ -150923,6 +150923,8 @@ var RegionsPanel = class extends BasePanel {
     for (const btn of [showAll, hideAll]) {
       btn.style.padding = "3px 6px";
       btn.style.fontSize = "10px";
+      btn.style.whiteSpace = "nowrap";
+      btn.style.flex = "0 0 auto";
       actionsCol.appendChild(btn);
     }
     row1.appendChild(actionsCol);
