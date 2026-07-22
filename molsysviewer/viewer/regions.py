@@ -614,12 +614,18 @@ class RegionsMixin:
                     ))
                 except Exception:
                     composition[key] = 0
-        contains: dict[str, bool] = {}
+        contains: dict[str, int] = {}
         for token, attribute in self._WHOLE_COMPOSITION_PROBES:
             try:
-                contains[token] = bool(self.whole.contains(skip_digestion=True, **{attribute: True}))
+                contains[token] = int(msm.get(
+                    self._molsys,
+                    element="system",
+                    output_type="values",
+                    skip_digestion=True,
+                    **{attribute: True},
+                ))
             except Exception:
-                pass
+                contains[token] = 0
         return {
             "representation": self.whole.representation,
             "preset": self.whole.preset,

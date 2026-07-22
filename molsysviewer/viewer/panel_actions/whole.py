@@ -89,10 +89,19 @@ def get_whole_details(view: Any, content: Mapping[str, Any]) -> None:
                 ))
             except Exception:
                 composition[key] = 0
-    contains: dict[str, bool] = {}
+    contains: dict[str, int] = {}
     composed_of: dict[str, bool] = {}
     for token, attribute in view._WHOLE_COMPOSITION_PROBES:
-        contains[token] = bool(view.whole.contains(skip_digestion=True, **{attribute: True}))
+        try:
+            contains[token] = int(msm.get(
+                view._molsys,
+                element="system",
+                output_type="values",
+                skip_digestion=True,
+                **{attribute: True},
+            ))
+        except Exception:
+            contains[token] = 0
         composed_of[token] = bool(view.whole.is_composed_of(skip_digestion=True, **{attribute: True}))
     view._send_runtime_only({
         "op": "whole_details",

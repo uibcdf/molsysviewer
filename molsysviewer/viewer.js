@@ -145613,11 +145613,21 @@ var StateHandlers = class {
    * `StructureComponentRef.representations`, so that path reads empty; `globalReprs`
    * is the authoritative source.)
    */
-  wholeRepresentationTypes() {
+  wholeRepresentationTypes(atomIndices) {
     const seen = /* @__PURE__ */ new Set();
     const types2 = [];
+    const regionAtomSet = atomIndices ? new Set(atomIndices) : null;
     for (const ref of this.globalReprs) {
-      const type3 = this.plugin.state.data.cells.get(ref)?.transform?.params?.type;
+      const cell = this.plugin.state.data.cells.get(ref);
+      if (!cell) continue;
+      if (regionAtomSet) {
+        const parentCell = this.plugin.state.data.cells.get(cell.transform.parent);
+        const compStructure = parentCell?.obj?.data;
+        if (compStructure && !structureOverlapsWithAtomIndices(compStructure, regionAtomSet)) {
+          continue;
+        }
+      }
+      const type3 = cell.transform?.params?.type;
       const name = type3?.name;
       if (typeof name !== "string" || name === "" || seen.has(name)) continue;
       seen.add(name);
@@ -145625,8 +145635,8 @@ var StateHandlers = class {
     }
     return types2;
   }
-  async addInheritedRegionRepresentations(componentRef, tag, params) {
-    const inheritedTypes = this.wholeRepresentationTypes();
+  async addInheritedRegionRepresentations(componentRef, tag, params, atomIndices) {
+    const inheritedTypes = this.wholeRepresentationTypes(atomIndices);
     const resolved = inheritedTypes.length > 0 ? inheritedTypes : [{ name: DEFAULT_GLOBAL_REPRESENTATION, typeParams: {} }];
     const refs = [];
     for (const { name, typeParams } of resolved) {
@@ -145671,7 +145681,7 @@ var StateHandlers = class {
       const representationState = this.regionStateFromMessage(msg);
       const representations = [];
       if (representationState === "inherit") {
-        representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag, msg.params));
+        representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag, msg.params, atomIndices));
       } else if (representationState === "own") {
         representations.push(...await this.addOwnRegionRepresentations(componentRef, tag, msg));
       }
@@ -145732,7 +145742,7 @@ var StateHandlers = class {
     entry.params = { ...msg.params ?? {} };
     if (typeof msg.order === "number") entry.order = msg.order;
     if (entry.representationState === "inherit") {
-      entry.representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag, msg.params));
+      entry.representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag, msg.params, entry.atomIndices));
     } else if (entry.representationState === "own") {
       entry.representations.push(...await this.addOwnRegionRepresentations(componentRef, tag, msg));
     }
@@ -145750,7 +145760,7 @@ var StateHandlers = class {
   async addRepresentationsForRegionEntry(entry, tag, componentRef) {
     entry.representations = [];
     if (entry.representationState === "inherit") {
-      entry.representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag, entry.params));
+      entry.representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag, entry.params, entry.atomIndices));
     } else if (entry.representationState === "own") {
       entry.representations.push(...await this.addOwnRegionRepresentations(componentRef, tag, {
         op: "set_region_representation",
@@ -146622,6 +146632,20 @@ var StateHandlers = class {
     await this.updateManagedRepresentationColorThemes(hasColors);
   }
 };
+function structureOverlapsWithAtomIndices(structure, regionAtomSet) {
+  if (!structure || !structure.units) return false;
+  for (const unit2 of structure.units) {
+    if (unit2.kind !== 0) continue;
+    const elements = unit2.elements;
+    const count3 = OrderedSet2.size(elements);
+    for (let i = 0; i < count3; i++) {
+      if (regionAtomSet.has(OrderedSet2.getAt(elements, i))) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
 
 // src/managers/handlers/trajectory-handlers.ts
 function normalizePlaybackMode(mode) {

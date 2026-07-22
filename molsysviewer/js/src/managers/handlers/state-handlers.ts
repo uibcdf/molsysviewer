@@ -759,11 +759,21 @@ export class StateHandlers {
      * `StructureComponentRef.representations`, so that path reads empty; `globalReprs`
      * is the authoritative source.)
      */
-    private wholeRepresentationTypes(): Array<{ name: string; typeParams: Record<string, unknown> }> {
+    private wholeRepresentationTypes(atomIndices?: number[]): Array<{ name: string; typeParams: Record<string, unknown> }> {
         const seen = new Set<string>();
         const types: Array<{ name: string; typeParams: Record<string, unknown> }> = [];
+        const regionAtomSet = atomIndices ? new Set(atomIndices) : null;
         for (const ref of this.globalReprs) {
-            const type = (this.plugin.state.data.cells.get(ref)?.transform?.params as any)?.type;
+            const cell = this.plugin.state.data.cells.get(ref);
+            if (!cell) continue;
+            if (regionAtomSet) {
+                const parentCell = this.plugin.state.data.cells.get(cell.transform.parent);
+                const compStructure = parentCell?.obj?.data;
+                if (compStructure && !structureOverlapsWithAtomIndices(compStructure, regionAtomSet)) {
+                    continue;
+                }
+            }
+            const type = (cell.transform?.params as any)?.type;
             const name = type?.name;
             if (typeof name !== "string" || name === "" || seen.has(name)) continue;
             seen.add(name);
@@ -776,13 +786,14 @@ export class StateHandlers {
         componentRef: StateObjectRef,
         tag: string,
         params: Record<string, unknown> | undefined,
+        atomIndices?: number[],
     ): Promise<StateTransform.Ref[]> {
         // Inherit mirrors the whole's *rendered* representation types via
         // component-level addRepresentation. A structure-level preset (built-in or
         // user) cannot be applied to a region component — Mol* rejects it with
         // "Applying structure repr. provider to bad cell", leaving the region with no
         // representation while ownership still masks the whole, i.e. an invisible hole.
-        const inheritedTypes = this.wholeRepresentationTypes();
+        const inheritedTypes = this.wholeRepresentationTypes(atomIndices);
         const resolved = inheritedTypes.length > 0
             ? inheritedTypes
             : [{ name: DEFAULT_GLOBAL_REPRESENTATION, typeParams: {} }];
@@ -836,7 +847,7 @@ export class StateHandlers {
             const representationState = this.regionStateFromMessage(msg);
             const representations: StateTransform.Ref[] = [];
             if (representationState === "inherit") {
-                representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag, msg.params));
+                representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag, msg.params, atomIndices));
             } else if (representationState === "own") {
                 representations.push(...await this.addOwnRegionRepresentations(componentRef, tag, msg));
             }
@@ -912,7 +923,7 @@ export class StateHandlers {
         if (typeof msg.order === "number") entry.order = msg.order;
 
         if (entry.representationState === "inherit") {
-            entry.representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag, msg.params));
+            entry.representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag, msg.params, entry.atomIndices));
         } else if (entry.representationState === "own") {
             entry.representations.push(...await this.addOwnRegionRepresentations(componentRef, tag, msg));
         }
@@ -934,7 +945,7 @@ export class StateHandlers {
     private async addRepresentationsForRegionEntry(entry: RegionEntry, tag: string, componentRef: StateObjectRef) {
         entry.representations = [];
         if (entry.representationState === "inherit") {
-            entry.representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag, entry.params));
+            entry.representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag, entry.params, entry.atomIndices));
         } else if (entry.representationState === "own") {
             entry.representations.push(...await this.addOwnRegionRepresentations(componentRef, tag, {
                 op: "set_region_representation",
@@ -1948,4 +1959,19 @@ export class StateHandlers {
         const hasColors = hasPerAtomColors();
         await this.updateManagedRepresentationColorThemes(hasColors);
     }
+}
+
+function structureOverlapsWithAtomIndices(structure: any, regionAtomSet: Set<number>): boolean {
+    if (!structure || !structure.units) return false;
+    for (const unit of structure.units) {
+        if (unit.kind !== 0) continue; // atomic unit
+        const elements = unit.elements;
+        const count = OrderedSet.size(elements);
+        for (let i = 0; i < count; i++) {
+            if (regionAtomSet.has(OrderedSet.getAt(elements, i))) {
+                return true;
+            }
+        }
+    }
+    return false;
 }

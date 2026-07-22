@@ -91,9 +91,9 @@ def test_whole_details_payload_includes_composition_contains_and_frame_centroid(
     # `contains` must carry real answers, not an empty dict: pentalanine is a peptide
     # and has no water. Asserting only `isinstance(..., dict)` lets a swallowed
     # exception ship as an empty panel.
-    assert details["contains"]["peptide"] is True
-    assert details["contains"]["protein"] is False
-    assert details["contains"]["water"] is False
+    assert details["contains"]["peptide"] > 0
+    assert details["contains"]["protein"] == 0
+    assert details["contains"]["water"] == 0
     assert details["is_composed_of"]["peptide"] is True
     assert details["is_composed_of"]["water"] is False
 
@@ -113,11 +113,11 @@ def test_whole_details_contains_detects_every_component_of_a_solvated_system():
     )
 
     contains = next(msg for msg in sent if msg.get("op") == "whole_details")["contains"]
-    assert contains["protein"] is True
-    assert contains["water"] is True
-    assert contains["ion"] is True
-    assert contains["small_molecule"] is True
-    assert contains["lipid"] is False
+    assert contains["protein"] > 0
+    assert contains["water"] > 0
+    assert contains["ion"] > 0
+    assert contains["small_molecule"] > 0
+    assert contains["lipid"] == 0
 
 
 def test_reset_all_colors_is_undoable_for_whole_and_region_layers():
