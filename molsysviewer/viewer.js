@@ -151040,7 +151040,7 @@ var RegionsPanel = class extends BasePanel {
       width: "7px",
       height: "7px",
       borderRadius: "999px",
-      background: isVisible && hasVisual ? "#34d399" : "rgba(244,244,245,0.28)",
+      background: isVisible ? "#34d399" : "rgba(244,244,245,0.28)",
       boxShadow: isVisible && hasVisual ? "0 0 8px rgba(52,211,153,0.5)" : "none",
       flexShrink: "0",
       marginRight: "6px",

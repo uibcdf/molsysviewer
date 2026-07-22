@@ -15,9 +15,12 @@ def _required_text(content: Mapping[str, Any], key: str, action: str) -> str:
 def create_region_from_selection(view: Any, content: Mapping[str, Any]) -> None:
     raw_tag = content.get("tag")
     tag = raw_tag.strip() if isinstance(raw_tag, str) and raw_tag.strip() else None
+    representation = content.get("representation")
+    if representation is None:
+        representation = "inherit"
     region = view.new_region_from_active_selection(
         tag=tag,
-        representation=content.get("representation"),
+        representation=representation,
         skip_digestion=True,
     )
     preset = content.get("preset")
@@ -65,9 +68,12 @@ def create_region_from_saved_selection(view: Any, content: Mapping[str, Any]) ->
     if saved is None:
         raise ValueError(f"No saved selection found with tag {selection_tag!r}.")
     raw_tag = content.get("tag")
+    representation = content.get("representation")
+    if representation is None:
+        representation = "inherit"
     region = saved.new_region(
         tag=raw_tag.strip() if isinstance(raw_tag, str) and raw_tag.strip() else None,
-        representation=content.get("representation"),
+        representation=representation,
         skip_digestion=True,
     )
     preset = content.get("preset")

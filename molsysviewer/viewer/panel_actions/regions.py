@@ -17,11 +17,14 @@ def create_region_from_query(view: Any, content: Mapping[str, Any]) -> None:
     if expression is None or (isinstance(expression, str) and not expression.strip()):
         raise ValueError("create_region_from_query requires a non-empty expression.")
     raw_tag = content.get("tag")
+    representation = content.get("representation")
+    if representation is None:
+        representation = "inherit"
     region = view._new_region_impl(
         selection=expression,
         syntax=str(content.get("syntax") or "MolSysMT"),
         tag=raw_tag.strip() if isinstance(raw_tag, str) and raw_tag.strip() else None,
-        representation=content.get("representation"),
+        representation=representation,
         skip_digestion=True,
     )
     preset = content.get("preset")
