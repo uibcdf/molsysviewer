@@ -654,7 +654,7 @@ export class SelectionPanel extends BasePanel {
             deselectBtn.style.cursor = "not-allowed";
         }
 
-        const saveBtn = makeButton("Save", () => {
+        const saveBtn = makeButton("Save...", () => {
             this.showActiveSelectionSaveForm = !this.showActiveSelectionSaveForm;
             this.scheduleRender();
             if (this.showActiveSelectionSaveForm) {
@@ -693,7 +693,7 @@ export class SelectionPanel extends BasePanel {
             input.setAttribute("data-molsysviewer-active-selection-save-input", "true");
             this.activeSelectionSaveInput = input;
             Object.assign(input.style, {
-                flex: "1 1 0",
+                flex: "1 1 auto",
                 background: "rgba(0,0,0,0.2)",
                 border: "1px solid rgba(255,255,255,0.12)",
                 borderRadius: "6px",
@@ -708,7 +708,7 @@ export class SelectionPanel extends BasePanel {
                 e.stopPropagation();
             });
 
-            const confirmBtn = makeButton("Save", () => {
+            const confirmBtn = makeButton("Create", () => {
                 const tag = input.value.trim();
                 if (!tag) return;
                 const exists = this.savedSelections.some(s => s.tag === tag);
@@ -735,6 +735,7 @@ export class SelectionPanel extends BasePanel {
                 color: "#fff",
                 fontSize: "11px",
                 fontWeight: "600",
+                flex: "0 0 auto",
             });
 
             form.appendChild(input);

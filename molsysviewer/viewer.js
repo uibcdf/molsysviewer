@@ -152306,7 +152306,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
       deselectBtn.style.opacity = "0.42";
       deselectBtn.style.cursor = "not-allowed";
     }
-    const saveBtn = makeButton("Save", () => {
+    const saveBtn = makeButton("Save...", () => {
       this.showActiveSelectionSaveForm = !this.showActiveSelectionSaveForm;
       this.scheduleRender();
       if (this.showActiveSelectionSaveForm) {
@@ -152341,7 +152341,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
       input.setAttribute("data-molsysviewer-active-selection-save-input", "true");
       this.activeSelectionSaveInput = input;
       Object.assign(input.style, {
-        flex: "1 1 0",
+        flex: "1 1 auto",
         background: "rgba(0,0,0,0.2)",
         border: "1px solid rgba(255,255,255,0.12)",
         borderRadius: "6px",
@@ -152353,7 +152353,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
       input.addEventListener("keydown", (e) => {
         e.stopPropagation();
       });
-      const confirmBtn = makeButton("Save", () => {
+      const confirmBtn = makeButton("Create", () => {
         const tag = input.value.trim();
         if (!tag) return;
         const exists = this.savedSelections.some((s) => s.tag === tag);
@@ -152379,7 +152379,8 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
         padding: "4px 8px",
         color: "#fff",
         fontSize: "11px",
-        fontWeight: "600"
+        fontWeight: "600",
+        flex: "0 0 auto"
       });
       form.appendChild(input);
       form.appendChild(confirmBtn);
