@@ -583,7 +583,8 @@ export class SelectionPanel extends BasePanel {
             alignItems: "center",
             justifyContent: "space-between",
             width: "100%",
-            gap: "10px",
+            gap: "6px 10px",
+            flexWrap: "wrap",
         });
 
         // Left: Dot and Title
@@ -618,7 +619,18 @@ export class SelectionPanel extends BasePanel {
             marginLeft: "auto",
             marginRight: "4px",
         });
-        countText.textContent = hasActive ? `${activeCount} atom${activeCount === 1 ? "" : "s"} selected` : "No selection";
+        if (hasActive) {
+            const groupCount = this.currentSelection?.count_groups ?? 0;
+            const molCount = this.currentSelection?.molecule_indices?.length ?? 0;
+            const entCount = this.currentSelection?.entity_indices?.length ?? 0;
+            const atomsStr = `${activeCount} atom${activeCount === 1 ? "" : "s"}`;
+            const groupsStr = `${groupCount} group${groupCount === 1 ? "" : "s"}`;
+            const molsStr = `${molCount} molecule${molCount === 1 ? "" : "s"}`;
+            const entsStr = `${entCount} entit${entCount === 1 ? "y" : "ies"}`;
+            countText.textContent = `${atomsStr} in ${groupsStr}, ${molsStr} and ${entsStr}`;
+        } else {
+            countText.textContent = "No selection";
+        }
         row1.appendChild(countText);
 
         // Right: Action Buttons
@@ -657,8 +669,8 @@ export class SelectionPanel extends BasePanel {
         }
 
         for (const btn of [saveBtn, deselectBtn]) {
-            btn.style.padding = "3px 6px";
-            btn.style.fontSize = "10px";
+            btn.style.padding = "4px 8px";
+            btn.style.fontSize = "11px";
             btnRow.appendChild(btn);
         }
         row1.appendChild(btnRow);

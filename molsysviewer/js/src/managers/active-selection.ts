@@ -174,7 +174,7 @@ function normalizeToElementLoci(rawLoci: any): any {
     }
 }
 
-export function lociToGroupItems(rawLoci: any): GroupSelectionItem[] {
+export function lociToGroupItems(rawLoci: any, restrictToAtomIndices?: Set<number>): GroupSelectionItem[] {
     const loci = normalizeToElementLoci(rawLoci);
     if (!StructureElement.Loci.is(loci)) return [];
 
@@ -222,7 +222,9 @@ export function lociToGroupItems(rawLoci: any): GroupSelectionItem[] {
 
             const atomIndices: number[] = [];
             for (let j = residueOffsets[groupIndex], jl = residueOffsets[groupIndex + 1]; j < jl; j++) {
-                atomIndices.push(j);
+                if (!restrictToAtomIndices || restrictToAtomIndices.has(j)) {
+                    atomIndices.push(j);
+                }
             }
 
             const firstAtom = residueOffsets[groupIndex];
@@ -575,7 +577,7 @@ export class ActiveSelectionController {
             return;
         }
         const loci = StructureElement.Loci(structure, lociElements as any);
-        const items = lociToGroupItems(loci);
+        const items = lociToGroupItems(loci, target);
         this.setItems(items, "replace");
     }
 

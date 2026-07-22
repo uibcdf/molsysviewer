@@ -275,7 +275,13 @@ test("GroupPanel selection query composer emits apply actions and accepts curren
         assert.strictEqual(status?.getAttribute("data-molsysviewer-query-status-value"), "ok");
 
         // Simulate backend updating the active selection state
-        panel.updateSelection({ count_atoms: 2, atom_indices: [0, 1] });
+        panel.updateSelection({
+            count_atoms: 2,
+            atom_indices: [0, 1],
+            count_groups: 1,
+            molecule_indices: [0],
+            entity_indices: [0],
+        } as any);
 
         const activeCard = findFirstByAttribute(root, "data-molsysviewer-active-selection-card", "true");
         assert.ok(activeCard);
