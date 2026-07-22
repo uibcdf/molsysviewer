@@ -124,21 +124,104 @@ export class RegionsPanel extends BasePanel {
         // Header Regions
         this.host.appendChild(makeSectionHeader("Regions"));
 
-        // Global Actions: Show all, Hide all
-        const globalRow = document.createElement("div");
-        Object.assign(globalRow.style, {
-            display: "grid",
-            gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-            gap: "6px",
+        // Summary & Actions Card
+        const summaryCard = document.createElement("div");
+        Object.assign(summaryCard.style, {
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "8px 10px",
+            borderRadius: "6px",
+            background: "rgba(255,255,255,0.035)",
+            border: "1px solid rgba(255,255,255,0.08)",
             marginBottom: "10px",
+            gap: "10px",
         });
+
+        // Left column: status indicators
+        const infoCol = document.createElement("div");
+        Object.assign(infoCol.style, {
+            display: "flex",
+            flexDirection: "column",
+            gap: "4px",
+        });
+
+        const visibleRegionsCount = this.regions.filter(r => !r.hidden).length;
+        const totalRegions = this.regions.length;
+
+        // Regions count info
+        const regionsInfo = document.createElement("div");
+        Object.assign(regionsInfo.style, {
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            fontSize: "11px",
+            color: "rgba(244,244,245,0.75)",
+        });
+
+        const regionsDot = document.createElement("span");
+        const anyVisible = totalRegions > 0 && visibleRegionsCount > 0;
+        Object.assign(regionsDot.style, {
+            width: "6px",
+            height: "6px",
+            borderRadius: "999px",
+            background: anyVisible ? "#34d399" : "rgba(244,244,245,0.28)",
+            boxShadow: anyVisible ? "0 0 6px rgba(52,211,153,0.4)" : "none",
+            flexShrink: "0",
+        });
+        regionsInfo.appendChild(regionsDot);
+        regionsInfo.appendChild(document.createTextNode(`${visibleRegionsCount} of ${totalRegions} region${totalRegions === 1 ? "" : "s"} visible`));
+        infoCol.appendChild(regionsInfo);
+
+        // Whole visibility info
+        const wholeInfo = document.createElement("div");
+        Object.assign(wholeInfo.style, {
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            fontSize: "11px",
+            color: "rgba(244,244,245,0.75)",
+        });
+
+        const wholeDot = document.createElement("span");
+        const wholeVisible = !this.wholeHidden;
+        Object.assign(wholeDot.style, {
+            width: "6px",
+            height: "6px",
+            borderRadius: "999px",
+            background: wholeVisible ? "#34d399" : "rgba(244,244,245,0.28)",
+            boxShadow: wholeVisible ? "0 0 6px rgba(52,211,153,0.4)" : "none",
+            flexShrink: "0",
+        });
+        wholeInfo.appendChild(wholeDot);
+        wholeInfo.appendChild(document.createTextNode(`Whole Structure: ${wholeVisible ? "Visible" : "Hidden"}`));
+        infoCol.appendChild(wholeInfo);
+
+        summaryCard.appendChild(infoCol);
+
+        // Right column: compact actions
+        const actionsCol = document.createElement("div");
+        Object.assign(actionsCol.style, {
+            display: "flex",
+            flexDirection: "column",
+            gap: "4px",
+            alignItems: "flex-end",
+            flexShrink: "0",
+        });
+
         const showAll = makeButton("Show all", () => this.ctx.onAction("show_all_regions"));
         showAll.setAttribute("data-molsysviewer-region-show-all", "true");
         const hideAll = makeButton("Hide all", () => this.ctx.onAction("hide_all_regions"));
         hideAll.setAttribute("data-molsysviewer-region-hide-all", "true");
-        globalRow.appendChild(showAll);
-        globalRow.appendChild(hideAll);
-        this.host.appendChild(globalRow);
+
+        for (const btn of [showAll, hideAll]) {
+            btn.style.width = "72px";
+            btn.style.padding = "3px 6px";
+            btn.style.fontSize = "10px";
+            actionsCol.appendChild(btn);
+        }
+        summaryCard.appendChild(actionsCol);
+        this.host.appendChild(summaryCard);
 
         const list = document.createElement("div");
         list.setAttribute("data-molsysviewer-region-list", "true");
