@@ -150799,6 +150799,7 @@ var RegionsPanel = class extends BasePanel {
     this.nextRegionDetailsRequest = 1;
     this.continuousHistoryEdit = false;
     this.continuousHistoryRenderPending = false;
+    this.historyState = { canUndo: false, canRedo: false };
   }
   scheduleExternalRender() {
     if (this.continuousHistoryEdit) {
@@ -150825,6 +150826,10 @@ var RegionsPanel = class extends BasePanel {
       }
     }
     this.ctx.setBadge(String(items.length));
+    this.scheduleExternalRender();
+  }
+  updateHistory(state) {
+    this.historyState = state;
     this.scheduleExternalRender();
   }
   setStyleOptions(options) {
@@ -151229,15 +151234,68 @@ var RegionsPanel = class extends BasePanel {
     const representations = this.getRepresentationOptions(true).filter((option) => typeof option === "string" || !option.value.startsWith("preset:"));
     const presets = this.regionStylePresets.length > 0 ? this.regionStylePresets : FALLBACK_PRESETS;
     const params = item2.representation_params ?? {};
-    const draftHeading = document.createElement("div");
-    draftHeading.textContent = "Style draft";
-    draftHeading.setAttribute("data-molsysviewer-region-style-draft-heading", tag);
-    Object.assign(draftHeading.style, {
-      fontSize: "10px",
-      fontWeight: "600",
-      color: "rgba(244,244,245,0.55)"
+    const header2 = document.createElement("div");
+    Object.assign(header2.style, {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: "8px",
+      flexWrap: "nowrap",
+      marginBottom: "4px"
     });
-    container.appendChild(draftHeading);
+    const title = document.createElement("div");
+    title.textContent = "Style Options";
+    title.setAttribute("data-molsysviewer-region-style-options-title", tag);
+    Object.assign(title.style, {
+      fontSize: "10px",
+      fontWeight: "700",
+      letterSpacing: "0.04em",
+      color: "rgba(244,244,245,0.85)"
+    });
+    header2.appendChild(title);
+    const actions = document.createElement("div");
+    Object.assign(actions.style, {
+      display: "flex",
+      alignItems: "center",
+      gap: "4px",
+      flexWrap: "nowrap"
+    });
+    const undoBtn = makeButton("Undo", () => {
+      this.ctx.onAction("undo_active_selection");
+    });
+    undoBtn.setAttribute("data-molsysviewer-region-style-undo", tag);
+    undoBtn.title = "Undo last action";
+    undoBtn.disabled = !this.historyState.canUndo;
+    if (undoBtn.disabled) {
+      undoBtn.style.opacity = "0.42";
+      undoBtn.style.cursor = "not-allowed";
+    }
+    actions.appendChild(undoBtn);
+    const redoBtn = makeButton("Redo", () => {
+      this.ctx.onAction("redo_active_selection");
+    });
+    redoBtn.setAttribute("data-molsysviewer-region-style-redo", tag);
+    redoBtn.title = "Redo last action";
+    redoBtn.disabled = !this.historyState.canRedo;
+    if (redoBtn.disabled) {
+      redoBtn.style.opacity = "0.42";
+      redoBtn.style.cursor = "not-allowed";
+    }
+    actions.appendChild(redoBtn);
+    const resetBtn = makeButton("Reset", () => {
+      this.ctx.onAction("reset_region_representation", { tag });
+      this.ctx.onAction("reset_region_colors", { tag });
+    });
+    resetBtn.setAttribute("data-molsysviewer-region-style-reset", tag);
+    resetBtn.title = "Reset region representation and colors to base";
+    actions.appendChild(resetBtn);
+    for (const btn of [undoBtn, redoBtn, resetBtn]) {
+      btn.style.flex = "0 1 auto";
+      btn.style.padding = "2px 5px";
+      btn.style.fontSize = "9px";
+    }
+    header2.appendChild(actions);
+    container.appendChild(header2);
     const controls = createStyleDraftControls({
       id: tag,
       dataPrefix: "region-style",
@@ -151257,18 +151315,8 @@ var RegionsPanel = class extends BasePanel {
     const colorScheme = controls.colorSchemeSelect;
     container.appendChild(controls.representationRow);
     container.appendChild(controls.presetRow);
-    const immediateHeading = document.createElement("div");
-    immediateHeading.textContent = "Immediate adjustments";
-    immediateHeading.setAttribute("data-molsysviewer-region-style-immediate-heading", tag);
-    Object.assign(immediateHeading.style, {
-      fontSize: "10px",
-      fontWeight: "600",
-      color: "rgba(244,244,245,0.55)",
-      paddingTop: "2px"
-    });
     container.appendChild(controls.qualityRow);
     container.appendChild(controls.colorRow);
-    container.appendChild(immediateHeading);
     container.appendChild(controls.opacityRow);
     const attributeRow = document.createElement("div");
     Object.assign(attributeRow.style, {
@@ -156227,6 +156275,7 @@ var GroupPanel = class {
   updateSelectionHistoryState(state) {
     this.selectionPanel.updateHistory(state);
     this.wholePanel.updateHistory(state);
+    this.regionsPanel.updateHistory(state);
   }
   setSavedSelections(items) {
     this.selectionPanel.setSavedSelections(items);

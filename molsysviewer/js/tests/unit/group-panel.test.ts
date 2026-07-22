@@ -1020,6 +1020,28 @@ test("GroupPanel region style composer brackets live opacity changes for history
             details: { tag: "binding" },
         });
 
+        panel.updateSelectionHistoryState({ canUndo: true, canRedo: true });
+        findFirstByAttribute(root, "data-molsysviewer-region-style-undo", "binding")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "undo_active_selection",
+            details: undefined,
+        });
+
+        findFirstByAttribute(root, "data-molsysviewer-region-style-redo", "binding")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "redo_active_selection",
+            details: undefined,
+        });
+
+        findFirstByAttribute(root, "data-molsysviewer-region-style-reset", "binding")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.slice(-2), [
+            { action: "reset_region_representation", details: { tag: "binding" } },
+            { action: "reset_region_colors", details: { tag: "binding" } },
+        ]);
+
         await new Promise(resolve => setTimeout(resolve, 15));
         panel.dispose();
     } finally {
