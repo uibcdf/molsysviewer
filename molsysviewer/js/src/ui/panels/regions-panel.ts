@@ -310,6 +310,15 @@ export class RegionsPanel extends BasePanel {
             gap: "4px",
         });
 
+        const visibilityBtn = makeButton(item.hidden ? "Show" : "Hide", () => toggleVisibility());
+        visibilityBtn.setAttribute("data-molsysviewer-region-visibility", item.tag);
+        if (!hasVisual) {
+            visibilityBtn.disabled = true;
+            visibilityBtn.style.opacity = "0.42";
+            visibilityBtn.style.cursor = "not-allowed";
+            visibilityBtn.title = "This base region has no visual representation to hide.";
+        }
+
         const renameBtn = makeButton("Rename", () => {
             this.regionRenameTag = item.tag;
             this.scheduleRender();
@@ -338,7 +347,7 @@ export class RegionsPanel extends BasePanel {
         const deleteBtn = makeButton("🗑", () => this.ctx.onAction("delete_region", { tag: item.tag }));
         deleteBtn.setAttribute("data-molsysviewer-region-delete", item.tag);
 
-        for (const btn of [renameBtn, styleBtn, inspectBtn, deleteBtn]) {
+        for (const btn of [visibilityBtn, renameBtn, styleBtn, inspectBtn, deleteBtn]) {
             btn.style.flex = "0 1 auto";
             btn.style.padding = "3px 6px";
             btn.style.fontSize = "10px";
