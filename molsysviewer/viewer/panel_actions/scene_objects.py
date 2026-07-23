@@ -284,9 +284,12 @@ def create_measurement(view: Any, content: Mapping[str, Any]) -> None:
             f"{kind} requires {required[kind]} selected endpoints; received {len(picks)}."
         )
     endpoint_policy = content.get("endpoint_policy")
+    tag = content.get("tag")
     kwargs = {"skip_digestion": True}
     if endpoint_policy is not None:
         kwargs["endpoint_policy"] = endpoint_policy
+    if tag is not None:
+        kwargs["tag"] = tag
     getattr(view.measurements, f"add_{kind}")(*picks, **kwargs)
 
 

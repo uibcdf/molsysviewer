@@ -154472,15 +154472,6 @@ var MeasuresPanel = class extends BasePanel {
       border: "1px solid rgba(255,255,255,0.08)",
       marginBottom: "10px"
     });
-    const slotsHeader = document.createElement("div");
-    slotsHeader.textContent = "Staging Slots";
-    Object.assign(slotsHeader.style, {
-      fontSize: "12px",
-      fontWeight: "700",
-      color: "#fff",
-      marginBottom: "4px"
-    });
-    slotsCard.appendChild(slotsHeader);
     for (let i = 0; i < requiredCount; i++) {
       const slot2 = this.stagedSlots[i];
       const row2 = document.createElement("div");
@@ -154527,16 +154518,8 @@ var MeasuresPanel = class extends BasePanel {
       const setBtn = makeButton("Set active selection", () => {
         const activeCount = this.selection.atom_indices.length;
         if (activeCount === 0) return;
-        let activeSavedTag2 = "";
-        for (const s of this.savedSelections) {
-          if (this.isSavedSelectionActive(s)) {
-            activeSavedTag2 = s.tag;
-            break;
-          }
-        }
-        const summaryPrefix = activeSavedTag2 ? `Saved: "${activeSavedTag2}"` : `Active selection`;
         const endpointType = activeCount === 1 ? "Atom" : "Centroid";
-        const summaryText = `${summaryPrefix} \xB7 ${activeCount} atom${activeCount === 1 ? "" : "s"} \xB7 ${endpointType}`;
+        const summaryText = `${activeCount} atom${activeCount === 1 ? "" : "s"} \xB7 ${endpointType}`;
         this.stagedSlots[i] = {
           atom_indices: [...this.selection.atom_indices],
           summary: summaryText,
@@ -154552,20 +154535,77 @@ var MeasuresPanel = class extends BasePanel {
       setBtn.style.whiteSpace = "nowrap";
       setBtn.setAttribute("data-molsysviewer-measurement-slot-set", String(i));
       actions.appendChild(setBtn);
-      const clearBtn2 = makeButton("Clear", () => {
+      const clearBtn = makeButton("Clear", () => {
         this.stagedSlots[i] = null;
         this.scheduleRender();
       });
-      clearBtn2.disabled = !slot2;
-      clearBtn2.style.opacity = clearBtn2.disabled ? "0.42" : "1";
-      clearBtn2.style.padding = "2px 6px";
-      clearBtn2.style.fontSize = "10px";
-      clearBtn2.style.whiteSpace = "nowrap";
-      clearBtn2.setAttribute("data-molsysviewer-measurement-slot-clear", String(i));
-      actions.appendChild(clearBtn2);
+      clearBtn.disabled = !slot2;
+      clearBtn.style.opacity = clearBtn.disabled ? "0.42" : "1";
+      clearBtn.style.padding = "2px 6px";
+      clearBtn.style.fontSize = "10px";
+      clearBtn.style.whiteSpace = "nowrap";
+      clearBtn.setAttribute("data-molsysviewer-measurement-slot-clear", String(i));
+      actions.appendChild(clearBtn);
       row2.appendChild(actions);
       slotsCard.appendChild(row2);
     }
+    const divider = document.createElement("div");
+    Object.assign(divider.style, {
+      borderTop: "1px solid rgba(255,255,255,0.06)",
+      marginTop: "8px",
+      paddingTop: "8px"
+    });
+    slotsCard.appendChild(divider);
+    const formRow = document.createElement("div");
+    Object.assign(formRow.style, {
+      display: "flex",
+      gap: "6px",
+      width: "100%"
+    });
+    const nameInput = document.createElement("input");
+    nameInput.type = "text";
+    nameInput.placeholder = "Measurement name (optional)...";
+    Object.assign(nameInput.style, {
+      flex: "1 1 auto",
+      ...INPUT_STYLE
+    });
+    nameInput.setAttribute("data-molsysviewer-measurement-name-input", "true");
+    formRow.appendChild(nameInput);
+    const requiredSlots = this.stagedSlots.slice(0, requiredCount);
+    const canCreate = this.settings.systemLoaded && requiredSlots.every((slot2) => slot2 !== null);
+    const createButton = makeButton("Create", () => {
+      const picks = requiredSlots.map((slot2) => slot2.atom_indices);
+      const endpoint_policy = requiredSlots[0]?.policy;
+      const details = {
+        kind: this.selectedSavedKind,
+        picks,
+        endpoint_policy
+      };
+      const tag = (nameInput.value || "").trim();
+      if (tag) {
+        details.tag = tag;
+      }
+      this.ctx.onAction("create_measurement", details);
+      nameInput.value = "";
+      this.stagedSlots = [null, null, null, null];
+      this.scheduleRender();
+    });
+    createButton.disabled = !canCreate;
+    createButton.style.opacity = createButton.disabled ? "0.42" : "1";
+    Object.assign(createButton.style, {
+      flex: "0 0 auto",
+      background: "#6366f1",
+      border: "0",
+      borderRadius: "6px",
+      padding: "4px 10px",
+      color: "#fff",
+      fontSize: "11px",
+      fontWeight: "600",
+      cursor: "pointer"
+    });
+    createButton.setAttribute("data-molsysviewer-measurement-create-kind", this.selectedSavedKind);
+    formRow.appendChild(createButton);
+    slotsCard.appendChild(formRow);
     parent.appendChild(slotsCard);
     const activeCard = document.createElement("div");
     activeCard.setAttribute("data-molsysviewer-measurement-active-selection-card", "true");
@@ -154627,8 +154667,8 @@ var MeasuresPanel = class extends BasePanel {
     });
     deselectBtn.disabled = !hasActive;
     deselectBtn.style.opacity = hasActive ? "1" : "0.42";
-    deselectBtn.style.padding = "4px 8px";
-    deselectBtn.style.fontSize = "11px";
+    deselectBtn.style.padding = "2px 6px";
+    deselectBtn.style.fontSize = "10px";
     deselectBtn.style.whiteSpace = "nowrap";
     deselectBtn.setAttribute("data-molsysviewer-measurement-active-deselect", "true");
     activeRow.appendChild(deselectBtn);
@@ -154807,55 +154847,6 @@ var MeasuresPanel = class extends BasePanel {
     );
     savedCard.appendChild(savedSelect);
     parent.appendChild(savedCard);
-    const actionsRow = document.createElement("div");
-    Object.assign(actionsRow.style, {
-      display: "flex",
-      gap: "8px",
-      marginTop: "12px",
-      width: "100%"
-    });
-    const requiredSlots = this.stagedSlots.slice(0, requiredCount);
-    const canCreate = this.settings.systemLoaded && requiredSlots.every((slot2) => slot2 !== null);
-    const createButton = makeButton("Create Measurement", () => {
-      const picks = requiredSlots.map((slot2) => slot2.atom_indices);
-      const endpoint_policy = requiredSlots[0]?.policy;
-      this.ctx.onAction("create_measurement", {
-        kind: this.selectedSavedKind,
-        picks,
-        endpoint_policy
-      });
-    });
-    createButton.disabled = !canCreate;
-    createButton.style.opacity = createButton.disabled ? "0.42" : "1";
-    Object.assign(createButton.style, {
-      flex: "1 1 0",
-      background: "#6366f1",
-      border: "0",
-      borderRadius: "6px",
-      padding: "8px 12px",
-      color: "#fff",
-      fontSize: "12px",
-      fontWeight: "700",
-      cursor: "pointer"
-    });
-    createButton.setAttribute("data-molsysviewer-measurement-create-kind", this.selectedSavedKind);
-    actionsRow.appendChild(createButton);
-    const anySlotsFilled = requiredSlots.some((slot2) => slot2 !== null);
-    const clearBtn = makeButton("Clear", () => {
-      this.stagedSlots = [null, null, null, null];
-      this.scheduleRender();
-    });
-    clearBtn.disabled = !anySlotsFilled;
-    clearBtn.style.opacity = clearBtn.disabled ? "0.42" : "1";
-    Object.assign(clearBtn.style, {
-      flex: "0 0 auto",
-      padding: "8px 12px",
-      fontSize: "12px",
-      fontWeight: "600"
-    });
-    clearBtn.setAttribute("data-molsysviewer-measurement-clear-slots-btn", "true");
-    actionsRow.appendChild(clearBtn);
-    parent.appendChild(actionsRow);
   }
   renderMeasurement(item2) {
     const row2 = card2();

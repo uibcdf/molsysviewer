@@ -338,7 +338,7 @@ export class MeasuresPanel extends BasePanel {
 
         const requiredCount = this.selectedSavedKind === "distance" ? 2 : this.selectedSavedKind === "angle" ? 3 : 4;
 
-        // 1. Staged Slots Card
+        // 1. Staged Slots Card (holds Selection rows and Creation Form)
         const slotsCard = document.createElement("div");
         slotsCard.setAttribute("data-molsysviewer-measurement-slots-card", "true");
         Object.assign(slotsCard.style, {
@@ -351,16 +351,6 @@ export class MeasuresPanel extends BasePanel {
             border: "1px solid rgba(255,255,255,0.08)",
             marginBottom: "10px",
         });
-
-        const slotsHeader = document.createElement("div");
-        slotsHeader.textContent = "Staging Slots";
-        Object.assign(slotsHeader.style, {
-            fontSize: "12px",
-            fontWeight: "700",
-            color: "#fff",
-            marginBottom: "4px",
-        });
-        slotsCard.appendChild(slotsHeader);
 
         for (let i = 0; i < requiredCount; i++) {
             const slot = this.stagedSlots[i];
@@ -416,20 +406,8 @@ export class MeasuresPanel extends BasePanel {
                 const activeCount = this.selection.atom_indices.length;
                 if (activeCount === 0) return;
 
-                let activeSavedTag = "";
-                for (const s of this.savedSelections) {
-                    if (this.isSavedSelectionActive(s)) {
-                        activeSavedTag = s.tag;
-                        break;
-                    }
-                }
-
-                const summaryPrefix = activeSavedTag 
-                    ? `Saved: "${activeSavedTag}"`
-                    : `Active selection`;
-
                 const endpointType = activeCount === 1 ? "Atom" : "Centroid";
-                const summaryText = `${summaryPrefix} · ${activeCount} atom${activeCount === 1 ? "" : "s"} · ${endpointType}`;
+                const summaryText = `${activeCount} atom${activeCount === 1 ? "" : "s"} · ${endpointType}`;
 
                 this.stagedSlots[i] = {
                     atom_indices: [...this.selection.atom_indices],
@@ -463,6 +441,71 @@ export class MeasuresPanel extends BasePanel {
             row.appendChild(actions);
             slotsCard.appendChild(row);
         }
+
+        // Divider
+        const divider = document.createElement("div");
+        Object.assign(divider.style, {
+            borderTop: "1px solid rgba(255,255,255,0.06)",
+            marginTop: "8px",
+            paddingTop: "8px",
+        });
+        slotsCard.appendChild(divider);
+
+        // Name input & Create row
+        const formRow = document.createElement("div");
+        Object.assign(formRow.style, {
+            display: "flex",
+            gap: "6px",
+            width: "100%",
+        });
+
+        const nameInput = document.createElement("input");
+        nameInput.type = "text";
+        nameInput.placeholder = "Measurement name (optional)...";
+        Object.assign(nameInput.style, {
+            flex: "1 1 auto",
+            ...INPUT_STYLE,
+        });
+        nameInput.setAttribute("data-molsysviewer-measurement-name-input", "true");
+        formRow.appendChild(nameInput);
+
+        const requiredSlots = this.stagedSlots.slice(0, requiredCount);
+        const canCreate = this.settings.systemLoaded && requiredSlots.every(slot => slot !== null);
+
+        const createButton = makeButton("Create", () => {
+            const picks = requiredSlots.map(slot => slot!.atom_indices);
+            const endpoint_policy = requiredSlots[0]?.policy;
+            const details: Record<string, any> = {
+                kind: this.selectedSavedKind,
+                picks,
+                endpoint_policy,
+            };
+            const tag = (nameInput.value || "").trim();
+            if (tag) {
+                details.tag = tag;
+            }
+            this.ctx.onAction("create_measurement", details);
+            nameInput.value = "";
+            this.stagedSlots = [null, null, null, null]; // Clear slots after creation
+            this.scheduleRender();
+        });
+        createButton.disabled = !canCreate;
+        createButton.style.opacity = createButton.disabled ? "0.42" : "1";
+        Object.assign(createButton.style, {
+            flex: "0 0 auto",
+            background: "#6366f1",
+            border: "0",
+            borderRadius: "6px",
+            padding: "4px 10px",
+            color: "#fff",
+            fontSize: "11px",
+            fontWeight: "600",
+            cursor: "pointer",
+        });
+        createButton.setAttribute("data-molsysviewer-measurement-create-kind", this.selectedSavedKind);
+        formRow.appendChild(createButton);
+
+        slotsCard.appendChild(formRow);
         parent.appendChild(slotsCard);
 
         // 2. Active Selection Card
@@ -530,8 +573,8 @@ export class MeasuresPanel extends BasePanel {
         });
         deselectBtn.disabled = !hasActive;
         deselectBtn.style.opacity = hasActive ? "1" : "0.42";
-        deselectBtn.style.padding = "4px 8px";
-        deselectBtn.style.fontSize = "11px";
+        deselectBtn.style.padding = "2px 6px";
+        deselectBtn.style.fontSize = "10px";
         deselectBtn.style.whiteSpace = "nowrap";
         deselectBtn.setAttribute("data-molsysviewer-measurement-active-deselect", "true");
         activeRow.appendChild(deselectBtn);
@@ -725,61 +768,6 @@ export class MeasuresPanel extends BasePanel {
         );
         savedCard.appendChild(savedSelect);
         parent.appendChild(savedCard);
-
-        // 5. Action buttons row (Create and Clear slots)
-        const actionsRow = document.createElement("div");
-        Object.assign(actionsRow.style, {
-            display: "flex",
-            gap: "8px",
-            marginTop: "12px",
-            width: "100%",
-        });
-
-        const requiredSlots = this.stagedSlots.slice(0, requiredCount);
-        const canCreate = this.settings.systemLoaded && requiredSlots.every(slot => slot !== null);
-
-        const createButton = makeButton("Create Measurement", () => {
-            const picks = requiredSlots.map(slot => slot!.atom_indices);
-            const endpoint_policy = requiredSlots[0]?.policy;
-            this.ctx.onAction("create_measurement", {
-                kind: this.selectedSavedKind,
-                picks,
-                endpoint_policy,
-            });
-        });
-        createButton.disabled = !canCreate;
-        createButton.style.opacity = createButton.disabled ? "0.42" : "1";
-        Object.assign(createButton.style, {
-            flex: "1 1 0",
-            background: "#6366f1",
-            border: "0",
-            borderRadius: "6px",
-            padding: "8px 12px",
-            color: "#fff",
-            fontSize: "12px",
-            fontWeight: "700",
-            cursor: "pointer",
-        });
-        createButton.setAttribute("data-molsysviewer-measurement-create-kind", this.selectedSavedKind);
-        actionsRow.appendChild(createButton);
-
-        const anySlotsFilled = requiredSlots.some(slot => slot !== null);
-        const clearBtn = makeButton("Clear", () => {
-            this.stagedSlots = [null, null, null, null];
-            this.scheduleRender();
-        });
-        clearBtn.disabled = !anySlotsFilled;
-        clearBtn.style.opacity = clearBtn.disabled ? "0.42" : "1";
-        Object.assign(clearBtn.style, {
-            flex: "0 0 auto",
-            padding: "8px 12px",
-            fontSize: "12px",
-            fontWeight: "600",
-        });
-        clearBtn.setAttribute("data-molsysviewer-measurement-clear-slots-btn", "true");
-        actionsRow.appendChild(clearBtn);
-
-        parent.appendChild(actionsRow);
     }
 
     private renderMeasurement(item: MeasurementSummary): HTMLDivElement {
