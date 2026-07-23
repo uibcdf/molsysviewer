@@ -606,7 +606,7 @@ export class SelectionPanel extends BasePanel {
             gap: "6px",
             fontSize: "12px",
             fontWeight: "700",
-            color: "#f4f4f5",
+            color: "#fff",
         });
 
         const dot = document.createElement("span");
@@ -619,7 +619,7 @@ export class SelectionPanel extends BasePanel {
             flexShrink: "0",
         });
         leftWrap.appendChild(dot);
-        leftWrap.appendChild(document.createTextNode("Active Selection"));
+        leftWrap.appendChild(document.createTextNode("Active selection"));
         row1.appendChild(leftWrap);
 
         // Middle/Right-ish: Count text
@@ -788,9 +788,9 @@ export class SelectionPanel extends BasePanel {
         Object.assign(title.style, {
             fontSize: "12px",
             fontWeight: "700",
-            color: "#f4f4f5",
+            color: "#fff",
         });
-        title.textContent = "Select by Query";
+        title.textContent = "Select by query";
         container.appendChild(title);
 
         const composer = this.getSelectionQueryComposer();

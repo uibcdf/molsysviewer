@@ -948,11 +948,9 @@ export class RegionsPanel extends BasePanel {
             display: "flex",
             alignItems: "center",
             gap: "6px",
-            fontSize: "11px",
-            fontWeight: "600",
-            color: "rgba(244,244,245,0.52)",
-            textTransform: "uppercase",
-            letterSpacing: "0.5px",
+            fontSize: "12px",
+            fontWeight: "700",
+            color: "#fff",
         });
         const dot = document.createElement("span");
         Object.assign(dot.style, {
@@ -964,7 +962,7 @@ export class RegionsPanel extends BasePanel {
             flexShrink: "0",
         });
         leftWrap.appendChild(dot);
-        leftWrap.appendChild(document.createTextNode("Active Selection"));
+        leftWrap.appendChild(document.createTextNode("Active selection"));
         row1.appendChild(leftWrap);
 
         // Middle/Right-ish: Count text
@@ -1087,6 +1085,7 @@ export class RegionsPanel extends BasePanel {
                 fontSize: "11px",
                 fontWeight: "600",
                 cursor: "pointer",
+                flex: "0 0 auto",
             });
 
             form.appendChild(input);
@@ -1111,13 +1110,11 @@ export class RegionsPanel extends BasePanel {
         });
 
         const qHeader = document.createElement("div");
-        qHeader.textContent = "Select by Query";
+        qHeader.textContent = "Select by query";
         Object.assign(qHeader.style, {
-            fontSize: "11px",
-            fontWeight: "600",
-            color: "rgba(244,244,245,0.52)",
-            textTransform: "uppercase",
-            letterSpacing: "0.5px",
+            fontSize: "12px",
+            fontWeight: "700",
+            color: "#fff",
         });
         queryCard.appendChild(qHeader);
 
@@ -1254,11 +1251,9 @@ export class RegionsPanel extends BasePanel {
         const sHeader = document.createElement("div");
         sHeader.textContent = "Activate saved selection";
         Object.assign(sHeader.style, {
-            fontSize: "11px",
-            fontWeight: "600",
-            color: "rgba(244,244,245,0.52)",
-            textTransform: "uppercase",
-            letterSpacing: "0.5px",
+            fontSize: "12px",
+            fontWeight: "700",
+            color: "#fff",
         });
         savedCard.appendChild(sHeader);
 

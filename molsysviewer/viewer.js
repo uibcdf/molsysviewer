@@ -150878,6 +150878,26 @@ var ManualQueryComposer = class _ManualQueryComposer {
       event.stopPropagation();
       this.check();
     });
+    const clearButton = document.createElement("button");
+    clearButton.type = "button";
+    clearButton.textContent = "Clear";
+    clearButton.setAttribute("data-molsysviewer-query-clear", scope);
+    Object.assign(clearButton.style, {
+      flex: "0 0 auto",
+      background: "rgba(255,255,255,0.06)",
+      border: "1px solid rgba(255,255,255,0.12)",
+      borderRadius: "6px",
+      padding: "6px 9px",
+      color: "#f4f4f5",
+      fontSize: "11px",
+      fontWeight: "600",
+      cursor: "pointer"
+    });
+    clearButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      this.clear();
+    });
     this.syntaxSelect = document.createElement("select");
     this.syntaxSelect.setAttribute("data-molsysviewer-query-syntax", scope);
     Object.assign(this.syntaxSelect.style, {
@@ -150906,6 +150926,7 @@ var ManualQueryComposer = class _ManualQueryComposer {
     });
     row2.appendChild(this.input);
     row2.appendChild(this.checkButton);
+    row2.appendChild(clearButton);
     if (options?.middleElement) {
       row2.appendChild(options.middleElement);
     }
@@ -150931,6 +150952,14 @@ var ManualQueryComposer = class _ManualQueryComposer {
   }
   value() {
     return { expression: this.expression.trim(), syntax: this.syntax };
+  }
+  clear() {
+    this.input.value = "";
+    this.expression = "";
+    this.preview = null;
+    this.activeRequestId = null;
+    this.renderStatus();
+    this.onChange?.();
   }
   setExpression(expression, syntax) {
     this.expression = expression;
@@ -151823,11 +151852,9 @@ var RegionsPanel = class extends BasePanel {
       display: "flex",
       alignItems: "center",
       gap: "6px",
-      fontSize: "11px",
-      fontWeight: "600",
-      color: "rgba(244,244,245,0.52)",
-      textTransform: "uppercase",
-      letterSpacing: "0.5px"
+      fontSize: "12px",
+      fontWeight: "700",
+      color: "#fff"
     });
     const dot = document.createElement("span");
     Object.assign(dot.style, {
@@ -151839,7 +151866,7 @@ var RegionsPanel = class extends BasePanel {
       flexShrink: "0"
     });
     leftWrap.appendChild(dot);
-    leftWrap.appendChild(document.createTextNode("Active Selection"));
+    leftWrap.appendChild(document.createTextNode("Active selection"));
     row1.appendChild(leftWrap);
     const countText = document.createElement("span");
     Object.assign(countText.style, {
@@ -151947,7 +151974,8 @@ var RegionsPanel = class extends BasePanel {
         color: "#fff",
         fontSize: "11px",
         fontWeight: "600",
-        cursor: "pointer"
+        cursor: "pointer",
+        flex: "0 0 auto"
       });
       form.appendChild(input);
       form.appendChild(confirmBtn);
@@ -151967,13 +151995,11 @@ var RegionsPanel = class extends BasePanel {
       marginBottom: "10px"
     });
     const qHeader = document.createElement("div");
-    qHeader.textContent = "Select by Query";
+    qHeader.textContent = "Select by query";
     Object.assign(qHeader.style, {
-      fontSize: "11px",
-      fontWeight: "600",
-      color: "rgba(244,244,245,0.52)",
-      textTransform: "uppercase",
-      letterSpacing: "0.5px"
+      fontSize: "12px",
+      fontWeight: "700",
+      color: "#fff"
     });
     queryCard.appendChild(qHeader);
     const composer = this.getRegionsQueryComposer();
@@ -152100,11 +152126,9 @@ var RegionsPanel = class extends BasePanel {
     const sHeader = document.createElement("div");
     sHeader.textContent = "Activate saved selection";
     Object.assign(sHeader.style, {
-      fontSize: "11px",
-      fontWeight: "600",
-      color: "rgba(244,244,245,0.52)",
-      textTransform: "uppercase",
-      letterSpacing: "0.5px"
+      fontSize: "12px",
+      fontWeight: "700",
+      color: "#fff"
     });
     savedCard.appendChild(sHeader);
     let activeSavedTag = "";
@@ -152713,7 +152737,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
       gap: "6px",
       fontSize: "12px",
       fontWeight: "700",
-      color: "#f4f4f5"
+      color: "#fff"
     });
     const dot = document.createElement("span");
     Object.assign(dot.style, {
@@ -152725,7 +152749,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
       flexShrink: "0"
     });
     leftWrap.appendChild(dot);
-    leftWrap.appendChild(document.createTextNode("Active Selection"));
+    leftWrap.appendChild(document.createTextNode("Active selection"));
     row1.appendChild(leftWrap);
     const countText = document.createElement("span");
     Object.assign(countText.style, {
@@ -152875,9 +152899,9 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
     Object.assign(title.style, {
       fontSize: "12px",
       fontWeight: "700",
-      color: "#f4f4f5"
+      color: "#fff"
     });
-    title.textContent = "Select by Query";
+    title.textContent = "Select by query";
     container.appendChild(title);
     const composer = this.getSelectionQueryComposer();
     if (this.helpBtn) {

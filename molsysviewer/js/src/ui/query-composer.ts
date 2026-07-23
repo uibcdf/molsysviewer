@@ -98,6 +98,26 @@ export class ManualQueryComposer {
             event.stopPropagation();
             this.check();
         });
+        const clearButton = document.createElement("button");
+        clearButton.type = "button";
+        clearButton.textContent = "Clear";
+        clearButton.setAttribute("data-molsysviewer-query-clear", scope);
+        Object.assign(clearButton.style, {
+            flex: "0 0 auto",
+            background: "rgba(255,255,255,0.06)",
+            border: "1px solid rgba(255,255,255,0.12)",
+            borderRadius: "6px",
+            padding: "6px 9px",
+            color: "#f4f4f5",
+            fontSize: "11px",
+            fontWeight: "600",
+            cursor: "pointer",
+        });
+        clearButton.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            this.clear();
+        });
 
         this.syntaxSelect = document.createElement("select");
         this.syntaxSelect.setAttribute("data-molsysviewer-query-syntax", scope);
@@ -128,6 +148,7 @@ export class ManualQueryComposer {
 
         row.appendChild(this.input);
         row.appendChild(this.checkButton);
+        row.appendChild(clearButton);
         if (options?.middleElement) {
             row.appendChild(options.middleElement);
         }
@@ -153,6 +174,15 @@ export class ManualQueryComposer {
 
     value(): { expression: string; syntax: QuerySyntax } {
         return { expression: this.expression.trim(), syntax: this.syntax };
+    }
+
+    clear(): void {
+        this.input.value = "";
+        this.expression = "";
+        this.preview = null;
+        this.activeRequestId = null;
+        this.renderStatus();
+        this.onChange?.();
     }
 
     setExpression(expression: string, syntax?: QuerySyntax): void {
