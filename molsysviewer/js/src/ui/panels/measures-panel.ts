@@ -141,16 +141,20 @@ export class MeasuresPanel extends BasePanel {
         if (!this.host) return;
         this.host.replaceChildren();
 
-        // 1. Title and visible summary header (unified like Regions)
+        // Header Measures
         this.host.appendChild(makeSectionHeader("Measures"));
-        this.host.appendChild(this.renderHeaderSummaryRow());
 
-        // 2. Creation and settings card
-        this.host.appendChild(this.renderCreateCard());
+        // 1. Global Visibility summary card (unified like Regions)
+        this.host.appendChild(this.renderGlobalVisibilityCard());
 
-        // 3. Measurements list
-        this.host.appendChild(makeSectionHeader("Measurements"));
+        // 2. Sección "New measurement"
+        this.host.appendChild(makeSectionHeader("New measurement"));
+        this.renderNewMeasurementElements(this.host);
+
+        // 3. Sección "Saved measurements"
+        this.host.appendChild(makeSectionHeader("Saved measurements"));
         const list = document.createElement("div");
+        list.setAttribute("data-molsysviewer-measurement-list", "true");
         Object.assign(list.style, { display: "flex", flexDirection: "column", gap: "7px" });
         if (this.measurements.length === 0) {
             const empty = document.createElement("div");
@@ -163,25 +167,63 @@ export class MeasuresPanel extends BasePanel {
         this.host.appendChild(list);
     }
 
-    private renderHeaderSummaryRow(): HTMLDivElement {
+    private renderGlobalVisibilityCard(): HTMLDivElement {
+        const summaryCard = document.createElement("div");
+        summaryCard.setAttribute("data-molsysviewer-measurement-summary-card", "true");
+        Object.assign(summaryCard.style, {
+            display: "flex",
+            flexDirection: "column",
+            gap: "6px",
+            padding: "8px 10px",
+            borderRadius: "6px",
+            background: "rgba(255,255,255,0.035)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            marginBottom: "10px",
+        });
+
+        const totalCount = this.measurements.length;
+        const visibleCount = this.measurements.filter(m => !m.hidden).length;
+
+        // Row 1: Visibility count and Actions
         const row = document.createElement("div");
         Object.assign(row.style, {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            marginBottom: "8px",
-            fontSize: "11px",
-            color: "rgba(244,244,245,0.6)",
+            width: "100%",
+            gap: "10px",
         });
 
-        const visibleCount = this.measurements.filter(m => !m.hidden).length;
-        const totalCount = this.measurements.length;
-        const summaryText = document.createElement("span");
-        summaryText.textContent = `${visibleCount} of ${totalCount} measurement${totalCount === 1 ? "" : "s"} visible`;
-        row.appendChild(summaryText);
+        const info = document.createElement("div");
+        Object.assign(info.style, {
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            fontSize: "11px",
+            color: "rgba(244,244,245,0.75)",
+        });
+
+        const dot = document.createElement("span");
+        const anyVisible = totalCount > 0 && visibleCount > 0;
+        Object.assign(dot.style, {
+            width: "6px",
+            height: "6px",
+            borderRadius: "999px",
+            background: anyVisible ? "#34d399" : "rgba(244,244,245,0.28)",
+            boxShadow: anyVisible ? "0 0 6px rgba(52,211,153,0.4)" : "none",
+            flexShrink: "0",
+        });
+        info.appendChild(dot);
+        info.appendChild(document.createTextNode(`${visibleCount} of ${totalCount} measurement${totalCount === 1 ? "" : "s"} visible`));
+        row.appendChild(info);
 
         const actions = document.createElement("div");
-        Object.assign(actions.style, { display: "flex", gap: "6px" });
+        Object.assign(actions.style, {
+            display: "flex",
+            gap: "4px",
+            alignItems: "center",
+            flexShrink: "0",
+        });
         for (const [label, action] of [
             ["Show all", "show_all_measurements"],
             ["Hide all", "hide_all_measurements"],
@@ -191,122 +233,121 @@ export class MeasuresPanel extends BasePanel {
                 if (action === "clear_measurements" && !window.confirm("Delete all measurements?")) return;
                 this.ctx.onAction(action);
             });
+            button.style.padding = "3px 6px";
+            button.style.fontSize = "10px";
+            button.style.whiteSpace = "nowrap";
             button.setAttribute("data-molsysviewer-measurement-global", action);
             actions.appendChild(button);
         }
         row.appendChild(actions);
-        return row;
+        row.appendChild(actions);
+        summaryCard.appendChild(row);
+
+        return summaryCard;
     }
 
-    private renderCreateCard(): HTMLDivElement {
-        const container = card();
-        container.setAttribute("data-molsysviewer-measurement-create-card", "true");
+    private renderNewMeasurementElements(parent: HTMLElement): void {
+        const count = this.selection.group_indices.length || this.selection.count_groups;
+        const hasActive = count > 0;
 
-        // Tab selection headers
-        const tabHeader = document.createElement("div");
-        Object.assign(tabHeader.style, {
+        // 1. Active Selection Card
+        const activeCard = document.createElement("div");
+        activeCard.setAttribute("data-molsysviewer-measurement-active-selection-card", "true");
+        Object.assign(activeCard.style, {
             display: "flex",
+            flexDirection: "column",
             gap: "8px",
-            borderBottom: "1px solid rgba(255,255,255,0.08)",
-            paddingBottom: "6px",
-            marginBottom: "8px",
+            padding: "8px 10px",
+            borderRadius: "8px",
+            background: "rgba(255,255,255,0.035)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            marginBottom: "10px",
         });
 
-        const activeTab = document.createElement("div");
-        activeTab.textContent = "Active Selection";
-        Object.assign(activeTab.style, {
-            fontSize: "11px",
+        // Row 1: Single line container (Dot, Title, Count, and Buttons)
+        const row1 = document.createElement("div");
+        Object.assign(row1.style, {
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+            gap: "6px 10px",
+            flexWrap: "wrap",
+        });
+
+        // Left: Dot and Title
+        const leftWrap = document.createElement("div");
+        Object.assign(leftWrap.style, {
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            fontSize: "12px",
             fontWeight: "700",
-            cursor: "pointer",
-            color: this.activeCreateTab === "active" ? "#6366f1" : "rgba(244,244,245,0.6)",
-            borderBottom: this.activeCreateTab === "active" ? "2px solid #6366f1" : "none",
-            paddingBottom: "4px",
+            color: "#fff",
         });
-        activeTab.addEventListener("click", () => {
-            this.activeCreateTab = "active";
-            this.scheduleRender();
+        const dot = document.createElement("span");
+        Object.assign(dot.style, {
+            width: "5px",
+            height: "5px",
+            borderRadius: "999px",
+            background: hasActive ? "#34d399" : "rgba(244,244,245,0.28)",
+            boxShadow: hasActive ? "0 0 6px rgba(52,211,153,0.4)" : "none",
+            flexShrink: "0",
         });
+        leftWrap.appendChild(dot);
+        leftWrap.appendChild(document.createTextNode("Active selection"));
+        row1.appendChild(leftWrap);
 
-        const savedTab = document.createElement("div");
-        savedTab.textContent = "Saved Selections";
-        Object.assign(savedTab.style, {
-            fontSize: "11px",
-            fontWeight: "700",
-            cursor: "pointer",
-            color: this.activeCreateTab === "saved" ? "#6366f1" : "rgba(244,244,245,0.6)",
-            borderBottom: this.activeCreateTab === "saved" ? "2px solid #6366f1" : "none",
-            paddingBottom: "4px",
-        });
-        savedTab.addEventListener("click", () => {
-            this.activeCreateTab = "saved";
-            this.scheduleRender();
-        });
-
-        tabHeader.appendChild(activeTab);
-        tabHeader.appendChild(savedTab);
-        container.appendChild(tabHeader);
-
-        // Body depends on selected tab
-        if (this.activeCreateTab === "active") {
-            container.appendChild(this.renderActiveCreateBody());
-        } else {
-            container.appendChild(this.renderSavedCreateBody());
-        }
-
-        // Divider
-        const divider = document.createElement("div");
-        Object.assign(divider.style, {
-            borderTop: "1px solid rgba(255,255,255,0.08)",
-            margin: "8px 0 4px 0",
-        });
-        container.appendChild(divider);
-
-        // Collapsible Endpoint settings
-        const settingsToggle = document.createElement("div");
-        settingsToggle.textContent = this.endpointSettingsExpanded ? "▼ Hide Endpoint Settings" : "▶ Show Endpoint Settings";
-        Object.assign(settingsToggle.style, {
+        // Middle/Right-ish: Count text
+        const countText = document.createElement("span");
+        Object.assign(countText.style, {
             fontSize: "11px",
             color: "rgba(244,244,245,0.6)",
-            cursor: "pointer",
-            fontWeight: "600",
-            padding: "4px 0",
-            userSelect: "none",
+            marginLeft: "auto",
+            marginRight: "4px",
         });
-        settingsToggle.addEventListener("click", () => {
-            this.endpointSettingsExpanded = !this.endpointSettingsExpanded;
-            this.scheduleRender();
-        });
-        container.appendChild(settingsToggle);
-
-        if (this.endpointSettingsExpanded) {
-            container.appendChild(this.renderEndpointSettings());
+        if (hasActive) {
+            countText.textContent = `${count} endpoint${count === 1 ? "" : "s"}`;
+        } else {
+            countText.textContent = "No selection";
         }
+        row1.appendChild(countText);
 
-        return container;
-    }
+        // Right: Action Buttons
+        const btnRow = document.createElement("div");
+        Object.assign(btnRow.style, {
+            display: "flex",
+            gap: "4px",
+            alignItems: "center",
+            flexShrink: "0",
+        });
 
-    private renderActiveCreateBody(): HTMLDivElement {
-        const body = document.createElement("div");
-        Object.assign(body.style, { display: "flex", flexDirection: "column", gap: "6px" });
-
-        const count = this.selection.group_indices.length || this.selection.count_groups;
-        const title = document.createElement("strong");
-        title.textContent = `From active selection (${count} endpoint${count === 1 ? "" : "s"})`;
-        Object.assign(title.style, { fontSize: "11px", color: "rgba(244,244,245,0.85)" });
-        body.appendChild(title);
-
-        const row = document.createElement("div");
-        Object.assign(row.style, { display: "flex", gap: "6px" });
         for (const [kind, required] of [["distance", 2], ["angle", 3], ["dihedral", 4]] as const) {
             const button = makeButton(kind[0].toUpperCase() + kind.slice(1), () =>
                 this.ctx.onAction("create_measurement", { kind })
             );
             button.disabled = !this.settings.systemLoaded || count !== required;
             button.style.opacity = button.disabled ? "0.42" : "1";
+            button.style.padding = "4px 8px";
+            button.style.fontSize = "11px";
+            button.style.whiteSpace = "nowrap";
             button.setAttribute("data-molsysviewer-measurement-create-kind", kind);
-            row.appendChild(button);
+            btnRow.appendChild(button);
         }
-        body.appendChild(row);
+
+        const deselectBtn = makeButton("Deselect", () => {
+            this.ctx.onAction("set_active_selection_operation", { operation: "none" });
+            this.scheduleRender();
+        });
+        deselectBtn.disabled = !hasActive;
+        deselectBtn.style.opacity = hasActive ? "1" : "0.42";
+        deselectBtn.style.padding = "4px 8px";
+        deselectBtn.style.fontSize = "11px";
+        deselectBtn.style.whiteSpace = "nowrap";
+        btnRow.appendChild(deselectBtn);
+
+        row1.appendChild(btnRow);
+        activeCard.appendChild(row1);
 
         const hint = document.createElement("div");
         hint.textContent = !this.settings.systemLoaded
@@ -314,21 +355,39 @@ export class MeasuresPanel extends BasePanel {
             : count >= 2 && count <= 4
                 ? `${count} endpoints can create a ${count === 2 ? "distance" : count === 3 ? "angle" : "dihedral"}.`
                 : `Distance needs 2, angle 3, and dihedral 4 endpoints; you have ${count}.`;
-        Object.assign(hint.style, { fontSize: "10px", color: "rgba(244,244,245,0.58)" });
-        body.appendChild(hint);
+        Object.assign(hint.style, { fontSize: "10px", color: "rgba(244,244,245,0.58)", marginTop: "4px" });
+        activeCard.appendChild(hint);
 
-        return body;
-    }
+        parent.appendChild(activeCard);
 
-    private renderSavedCreateBody(): HTMLDivElement {
-        const body = document.createElement("div");
-        Object.assign(body.style, { display: "flex", flexDirection: "column", gap: "6px" });
+        // 2. From Saved Selections Card
+        const savedCard = document.createElement("div");
+        savedCard.setAttribute("data-molsysviewer-measurement-saved-card", "true");
+        Object.assign(savedCard.style, {
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+            padding: "10px",
+            borderRadius: "8px",
+            background: "rgba(255,255,255,0.03)",
+            border: "1px solid rgba(255,255,255,0.05)",
+            marginBottom: "10px",
+        });
+
+        const sHeader = document.createElement("div");
+        sHeader.textContent = "From saved selections";
+        Object.assign(sHeader.style, {
+            fontSize: "12px",
+            fontWeight: "700",
+            color: "#fff",
+        });
+        savedCard.appendChild(sHeader);
 
         // Kind selector
         const kindRow = document.createElement("div");
         Object.assign(kindRow.style, {
             display: "grid",
-            gridTemplateColumns: "100px 1fr",
+            gridTemplateColumns: "110px 1fr",
             alignItems: "center",
             gap: "8px",
             fontSize: "11px",
@@ -351,7 +410,7 @@ export class MeasuresPanel extends BasePanel {
             }
         );
         kindRow.appendChild(kindSelect);
-        body.appendChild(kindRow);
+        savedCard.appendChild(kindRow);
 
         // Render endpoints selectors
         const requiredCount = this.selectedSavedKind === "distance" ? 2 : this.selectedSavedKind === "angle" ? 3 : 4;
@@ -364,7 +423,7 @@ export class MeasuresPanel extends BasePanel {
             const epRow = document.createElement("div");
             Object.assign(epRow.style, {
                 display: "grid",
-                gridTemplateColumns: "100px 1fr",
+                gridTemplateColumns: "110px 1fr",
                 alignItems: "center",
                 gap: "8px",
                 fontSize: "11px",
@@ -383,7 +442,7 @@ export class MeasuresPanel extends BasePanel {
                 }
             );
             epRow.appendChild(epSelect);
-            body.appendChild(epRow);
+            savedCard.appendChild(epRow);
         }
 
         // Create button
@@ -402,10 +461,73 @@ export class MeasuresPanel extends BasePanel {
         });
         createButton.disabled = !canCreate;
         createButton.style.opacity = createButton.disabled ? "0.42" : "1";
-        Object.assign(createButton.style, { marginTop: "4px" });
-        body.appendChild(createButton);
+        Object.assign(createButton.style, {
+            background: "#6366f1",
+            border: "0",
+            borderRadius: "6px",
+            padding: "4px 8px",
+            color: "#fff",
+            fontSize: "11px",
+            fontWeight: "600",
+            cursor: "pointer",
+            flex: "0 0 auto",
+            marginTop: "4px",
+            alignSelf: "flex-start",
+        });
+        savedCard.appendChild(createButton);
 
-        return body;
+        parent.appendChild(savedCard);
+
+        // 3. Endpoint Settings Card
+        const settingsCard = document.createElement("div");
+        settingsCard.setAttribute("data-molsysviewer-measurement-settings-card", "true");
+        Object.assign(settingsCard.style, {
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+            padding: "8px 10px",
+            borderRadius: "8px",
+            background: "rgba(255,255,255,0.035)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            marginBottom: "10px",
+        });
+
+        const toggleHeader = document.createElement("div");
+        Object.assign(toggleHeader.style, {
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            cursor: "pointer",
+            userSelect: "none",
+        });
+        toggleHeader.addEventListener("click", () => {
+            this.endpointSettingsExpanded = !this.endpointSettingsExpanded;
+            this.scheduleRender();
+        });
+
+        const toggleTitle = document.createElement("span");
+        toggleTitle.textContent = "Endpoint settings";
+        Object.assign(toggleTitle.style, {
+            fontSize: "12px",
+            fontWeight: "700",
+            color: "#fff",
+        });
+        toggleHeader.appendChild(toggleTitle);
+
+        const arrow = document.createElement("span");
+        arrow.textContent = this.endpointSettingsExpanded ? "▼" : "▶";
+        Object.assign(arrow.style, {
+            fontSize: "11px",
+            color: "rgba(244,244,245,0.6)",
+        });
+        toggleHeader.appendChild(arrow);
+        settingsCard.appendChild(toggleHeader);
+
+        if (this.endpointSettingsExpanded) {
+            settingsCard.appendChild(this.renderEndpointSettings());
+        }
+
+        parent.appendChild(settingsCard);
     }
 
     private renderEndpointSettings(): HTMLDivElement {
