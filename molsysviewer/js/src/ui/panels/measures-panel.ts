@@ -1,5 +1,5 @@
 import type { ActiveSelectionPayload } from "../../managers/active-selection";
-import type { SavedSelectionSummary } from "../group-panel";
+import type { SavedSelectionSummary, SelectionQueryPreview } from "../group-panel";
 import { BasePanel } from "./base-panel";
 import type { PanelContext } from "./types";
 import { formatUnitLabel, makeButton, makeSectionHeader, makeStyledSelect } from "./ui-helpers";
@@ -140,6 +140,23 @@ export class MeasuresPanel extends BasePanel {
         if (expected === undefined || payload.requestId !== expected) return;
         this.seriesByTag.set(payload.tag, payload);
         this.scheduleRender();
+    }
+
+    /** Query composer previews for measures. */
+    updatePreview(preview: SelectionQueryPreview): boolean {
+        if (!this.measuresQueryComposer) return false;
+        const updated = this.measuresQueryComposer.updatePreview(preview);
+        if (updated && preview.ok === true) {
+            const { expression, syntax } = this.measuresQueryComposer.value();
+            if (expression) {
+                this.ctx.onAction("apply_selection_query", {
+                    expression,
+                    syntax,
+                    op: "replace",
+                });
+            }
+        }
+        return updated;
     }
 
     protected paint(): void {

@@ -764,6 +764,7 @@ export class GroupPanel {
 
     updateSelectionQueryPreview(preview: SelectionQueryPreview): void {
         if (this.regionsPanel.updatePreview(preview)) return;
+        if (this.measuresPanel.updatePreview(preview)) return;
         this.selectionPanel.updatePreview(preview);
     }
 

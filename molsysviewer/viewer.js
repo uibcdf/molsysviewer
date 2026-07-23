@@ -154289,6 +154289,22 @@ var MeasuresPanel = class extends BasePanel {
     this.seriesByTag.set(payload.tag, payload);
     this.scheduleRender();
   }
+  /** Query composer previews for measures. */
+  updatePreview(preview) {
+    if (!this.measuresQueryComposer) return false;
+    const updated = this.measuresQueryComposer.updatePreview(preview);
+    if (updated && preview.ok === true) {
+      const { expression, syntax } = this.measuresQueryComposer.value();
+      if (expression) {
+        this.ctx.onAction("apply_selection_query", {
+          expression,
+          syntax,
+          op: "replace"
+        });
+      }
+    }
+    return updated;
+  }
   paint() {
     if (!this.host) return;
     this.host.replaceChildren();
@@ -157578,6 +157594,7 @@ var GroupPanel = class {
   }
   updateSelectionQueryPreview(preview) {
     if (this.regionsPanel.updatePreview(preview)) return;
+    if (this.measuresPanel.updatePreview(preview)) return;
     this.selectionPanel.updatePreview(preview);
   }
   setRegions(items) {
