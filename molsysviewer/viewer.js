@@ -154364,11 +154364,9 @@ var MeasuresPanel = class extends BasePanel {
     });
     for (const [label2, action] of [
       ["Show all", "show_all_measurements"],
-      ["Hide all", "hide_all_measurements"],
-      ["Clear all", "clear_measurements"]
+      ["Hide all", "hide_all_measurements"]
     ]) {
       const button = makeButton(label2, () => {
-        if (action === "clear_measurements" && !window.confirm("Delete all measurements?")) return;
         this.ctx.onAction(action);
       });
       button.style.padding = "3px 6px";
@@ -154378,13 +154376,39 @@ var MeasuresPanel = class extends BasePanel {
       actions.appendChild(button);
     }
     row2.appendChild(actions);
-    row2.appendChild(actions);
     summaryCard.appendChild(row2);
     return summaryCard;
   }
   renderNewMeasurementElements(parent) {
     const count3 = this.selection.group_indices.length || this.selection.count_groups;
     const hasActive = count3 > 0;
+    const modeRow = document.createElement("div");
+    Object.assign(modeRow.style, {
+      display: "flex",
+      gap: "6px",
+      marginBottom: "10px"
+    });
+    for (const kind of ["distance", "angle", "dihedral"]) {
+      const isActive = this.selectedSavedKind === kind;
+      const btn = makeButton(kind[0].toUpperCase() + kind.slice(1), () => {
+        this.selectedSavedKind = kind;
+        this.scheduleRender();
+      });
+      Object.assign(btn.style, {
+        flex: "1 1 0",
+        padding: "6px 0",
+        fontSize: "11px",
+        fontWeight: "600",
+        textAlign: "center",
+        background: isActive ? "#6366f1" : "rgba(255,255,255,0.06)",
+        border: "1px solid " + (isActive ? "#6366f1" : "rgba(255,255,255,0.12)"),
+        color: isActive ? "#fff" : "#f4f4f5"
+      });
+      btn.setAttribute("data-molsysviewer-measurement-mode-btn", kind);
+      modeRow.appendChild(btn);
+    }
+    parent.appendChild(modeRow);
+    const requiredCount = this.selectedSavedKind === "distance" ? 2 : this.selectedSavedKind === "angle" ? 3 : 4;
     const activeCard = document.createElement("div");
     activeCard.setAttribute("data-molsysviewer-measurement-active-selection-card", "true");
     Object.assign(activeCard.style, {
@@ -154447,19 +154471,16 @@ var MeasuresPanel = class extends BasePanel {
       alignItems: "center",
       flexShrink: "0"
     });
-    for (const [kind, required] of [["distance", 2], ["angle", 3], ["dihedral", 4]]) {
-      const button = makeButton(
-        kind[0].toUpperCase() + kind.slice(1),
-        () => this.ctx.onAction("create_measurement", { kind })
-      );
-      button.disabled = !this.settings.systemLoaded || count3 !== required;
-      button.style.opacity = button.disabled ? "0.42" : "1";
-      button.style.padding = "4px 8px";
-      button.style.fontSize = "11px";
-      button.style.whiteSpace = "nowrap";
-      button.setAttribute("data-molsysviewer-measurement-create-kind", kind);
-      btnRow.appendChild(button);
-    }
+    const createBtn = makeButton("Create", () => {
+      this.ctx.onAction("create_measurement", { kind: this.selectedSavedKind });
+    });
+    createBtn.disabled = !this.settings.systemLoaded || count3 !== requiredCount;
+    createBtn.style.opacity = createBtn.disabled ? "0.42" : "1";
+    createBtn.style.padding = "4px 8px";
+    createBtn.style.fontSize = "11px";
+    createBtn.style.whiteSpace = "nowrap";
+    createBtn.setAttribute("data-molsysviewer-measurement-create-kind", this.selectedSavedKind);
+    btnRow.appendChild(createBtn);
     const deselectBtn = makeButton("Deselect", () => {
       this.ctx.onAction("set_active_selection_operation", { operation: "none" });
       this.scheduleRender();
@@ -154473,8 +154494,8 @@ var MeasuresPanel = class extends BasePanel {
     row1.appendChild(btnRow);
     activeCard.appendChild(row1);
     const hint = document.createElement("div");
-    hint.textContent = !this.settings.systemLoaded ? "Load a structure first." : count3 >= 2 && count3 <= 4 ? `${count3} endpoints can create a ${count3 === 2 ? "distance" : count3 === 3 ? "angle" : "dihedral"}.` : `Distance needs 2, angle 3, and dihedral 4 endpoints; you have ${count3}.`;
-    Object.assign(hint.style, { fontSize: "10px", color: "rgba(244,244,245,0.58)", marginTop: "4px" });
+    hint.textContent = !this.settings.systemLoaded ? "Load a structure first." : count3 === requiredCount ? `Ready to create ${this.selectedSavedKind}.` : `Select exactly ${requiredCount} endpoints in the viewer (currently selected: ${count3}).`;
+    Object.assign(hint.style, { fontSize: "10px", color: count3 === requiredCount ? "#86efac" : "rgba(244,244,245,0.58)", marginTop: "4px" });
     activeCard.appendChild(hint);
     parent.appendChild(activeCard);
     const savedCard = document.createElement("div");
@@ -154497,33 +154518,6 @@ var MeasuresPanel = class extends BasePanel {
       color: "#fff"
     });
     savedCard.appendChild(sHeader);
-    const kindRow = document.createElement("div");
-    Object.assign(kindRow.style, {
-      display: "grid",
-      gridTemplateColumns: "110px 1fr",
-      alignItems: "center",
-      gap: "8px",
-      fontSize: "11px",
-      color: "rgba(244,244,245,0.85)"
-    });
-    const kindLabel = document.createElement("span");
-    kindLabel.textContent = "Measurement kind:";
-    kindRow.appendChild(kindLabel);
-    const kindSelect = makeStyledSelect(
-      [
-        { value: "distance", label: "Distance (2 endpoints)" },
-        { value: "angle", label: "Angle (3 endpoints)" },
-        { value: "dihedral", label: "Dihedral (4 endpoints)" }
-      ],
-      this.selectedSavedKind,
-      (val) => {
-        this.selectedSavedKind = val;
-        this.scheduleRender();
-      }
-    );
-    kindRow.appendChild(kindSelect);
-    savedCard.appendChild(kindRow);
-    const requiredCount = this.selectedSavedKind === "distance" ? 2 : this.selectedSavedKind === "angle" ? 3 : 4;
     const savedOptions = [
       { value: "", label: "Select..." },
       ...this.savedSelections.map((s) => ({ value: s.tag, label: `${s.tag} (${s.atom_count} atoms)` }))

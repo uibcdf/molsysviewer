@@ -2010,11 +2010,11 @@ test("GroupPanel Measures renders scientific values and routes every mutation th
             { action: "set_measurement_layer", details: { tag: "d1", layer: "analysis-2" } },
         ]);
 
-        for (const action of ["show_all_measurements", "hide_all_measurements", "clear_measurements"] as const) {
+        for (const action of ["show_all_measurements", "hide_all_measurements"] as const) {
             findFirstByAttribute(host.children[0], "data-molsysviewer-measurement-global", action)?.dispatch("click", clickEvent);
         }
-        assert.deepStrictEqual(actions.slice(-3).map(item => item.action), [
-            "show_all_measurements", "hide_all_measurements", "clear_measurements",
+        assert.deepStrictEqual(actions.slice(-2).map(item => item.action), [
+            "show_all_measurements", "hide_all_measurements",
         ]);
 
         findFirstByAttribute(host.children[0], "data-molsysviewer-measurement-policy", "centroid")?.dispatch("change");
