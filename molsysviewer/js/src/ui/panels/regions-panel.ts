@@ -163,7 +163,7 @@ export class RegionsPanel extends BasePanel {
         });
 
         const totalRegions = this.regions.length;
-        const visibleRegionsCount = this.regions.filter(region => region.visible).length;
+        const visibleRegionsCount = this.regions.filter(region => !region.hidden).length;
 
         // Row 1: Visibility summary count and Show all/Hide all buttons
         const row1 = document.createElement("div");
@@ -931,8 +931,20 @@ export class RegionsPanel extends BasePanel {
             marginBottom: "10px",
         });
 
-        const activeHeader = document.createElement("div");
-        Object.assign(activeHeader.style, {
+        // Row 1: Single line container (Dot, Title, Count, and Buttons)
+        const row1 = document.createElement("div");
+        Object.assign(row1.style, {
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+            gap: "6px 10px",
+            flexWrap: "wrap",
+        });
+
+        // Left: Dot and Title
+        const leftWrap = document.createElement("div");
+        Object.assign(leftWrap.style, {
             display: "flex",
             alignItems: "center",
             gap: "6px",
@@ -951,31 +963,34 @@ export class RegionsPanel extends BasePanel {
             boxShadow: hasActive ? "0 0 6px rgba(52,211,153,0.4)" : "none",
             flexShrink: "0",
         });
-        activeHeader.appendChild(dot);
-        activeHeader.appendChild(document.createTextNode("Active Selection"));
-        activeCard.appendChild(activeHeader);
+        leftWrap.appendChild(dot);
+        leftWrap.appendChild(document.createTextNode("Active Selection"));
+        row1.appendChild(leftWrap);
 
-        const activeSummaryRow = document.createElement("div");
-        Object.assign(activeSummaryRow.style, {
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
+        // Middle/Right-ish: Count text
+        const countText = document.createElement("span");
+        Object.assign(countText.style, {
             fontSize: "11px",
-            color: "rgba(244,244,245,0.75)",
-            gap: "8px",
+            color: "rgba(244,244,245,0.6)",
+            marginLeft: "auto",
+            marginRight: "4px",
         });
-
-        const activeSummaryText = document.createElement("span");
         if (hasActive) {
             const groupCount = this.currentSelection?.count_groups ?? 0;
-            activeSummaryText.textContent = `${activeCount} atom${activeCount === 1 ? "" : "s"} in ${groupCount} group${groupCount === 1 ? "" : "s"}`;
+            countText.textContent = `${activeCount} atom${activeCount === 1 ? "" : "s"} in ${groupCount} group${groupCount === 1 ? "" : "s"}`;
         } else {
-            activeSummaryText.textContent = "No selection";
+            countText.textContent = "No selection";
         }
-        activeSummaryRow.appendChild(activeSummaryText);
+        row1.appendChild(countText);
 
-        const activeBtnRow = document.createElement("div");
-        Object.assign(activeBtnRow.style, { display: "flex", gap: "6px" });
+        // Right: Action Buttons
+        const btnRow = document.createElement("div");
+        Object.assign(btnRow.style, {
+            display: "flex",
+            gap: "4px",
+            alignItems: "center",
+            flexShrink: "0",
+        });
 
         const newRegionBtn = makeButton("New region", () => {
             this.showRegionCreateForm = !this.showRegionCreateForm;
@@ -987,9 +1002,9 @@ export class RegionsPanel extends BasePanel {
         newRegionBtn.setAttribute("data-molsysviewer-region-create-btn", "true");
         newRegionBtn.disabled = !hasActive;
         newRegionBtn.style.opacity = hasActive ? "1" : "0.42";
-        newRegionBtn.style.padding = "3px 6px";
-        newRegionBtn.style.fontSize = "10px";
-        activeBtnRow.appendChild(newRegionBtn);
+        newRegionBtn.style.padding = "4px 8px";
+        newRegionBtn.style.fontSize = "11px";
+        newRegionBtn.style.whiteSpace = "nowrap";
 
         const deselectBtn = makeButton("Deselect", () => {
             this.ctx.onAction("set_active_selection_operation", { operation: "none" });
@@ -999,21 +1014,24 @@ export class RegionsPanel extends BasePanel {
         deselectBtn.setAttribute("data-molsysviewer-region-deselect-btn", "true");
         deselectBtn.disabled = !hasActive;
         deselectBtn.style.opacity = hasActive ? "1" : "0.42";
-        deselectBtn.style.padding = "3px 6px";
-        deselectBtn.style.fontSize = "10px";
-        activeBtnRow.appendChild(deselectBtn);
+        deselectBtn.style.padding = "4px 8px";
+        deselectBtn.style.fontSize = "11px";
+        deselectBtn.style.whiteSpace = "nowrap";
 
-        activeSummaryRow.appendChild(activeBtnRow);
-        activeCard.appendChild(activeSummaryRow);
+        btnRow.appendChild(newRegionBtn);
+        btnRow.appendChild(deselectBtn);
+        row1.appendChild(btnRow);
 
-        // Region name input form
+        activeCard.appendChild(row1);
+
+        // Region name input form (without Cancel button)
         if (this.showRegionCreateForm && hasActive) {
             const form = document.createElement("div");
             form.setAttribute("data-molsysviewer-region-create-form", "true");
             Object.assign(form.style, {
                 display: "flex",
                 gap: "6px",
-                marginTop: "4px",
+                marginTop: "6px",
                 width: "100%",
             });
 
@@ -1047,6 +1065,7 @@ export class RegionsPanel extends BasePanel {
             };
 
             input.addEventListener("keydown", (e) => {
+                e.stopPropagation();
                 if (e.key === "Enter") {
                     e.preventDefault();
                     confirmCreate();
@@ -1058,19 +1077,20 @@ export class RegionsPanel extends BasePanel {
             });
 
             const confirmBtn = makeButton("Create", confirmCreate);
-            confirmBtn.style.padding = "4px 8px";
-            confirmBtn.style.fontSize = "11px";
-
-            const cancelBtn = makeButton("Cancel", () => {
-                this.showRegionCreateForm = false;
-                this.scheduleRender();
+            confirmBtn.setAttribute("data-molsysviewer-region-create-confirm", "true");
+            Object.assign(confirmBtn.style, {
+                background: "#6366f1",
+                border: "0",
+                borderRadius: "6px",
+                padding: "4px 8px",
+                color: "#fff",
+                fontSize: "11px",
+                fontWeight: "600",
+                cursor: "pointer",
             });
-            cancelBtn.style.padding = "4px 8px";
-            cancelBtn.style.fontSize = "11px";
 
             form.appendChild(input);
             form.appendChild(confirmBtn);
-            form.appendChild(cancelBtn);
             activeCard.appendChild(form);
         }
 
@@ -1242,20 +1262,27 @@ export class RegionsPanel extends BasePanel {
         });
         savedCard.appendChild(sHeader);
 
+        let activeSavedTag = "";
+        for (const s of this.savedSelections) {
+            if (this.isSavedSelectionActive(s)) {
+                activeSavedTag = s.tag;
+                break;
+            }
+        }
+
         const savedOptions = [
             { value: "", label: "Select saved selection..." },
             ...this.savedSelections.map(s => ({ value: s.tag, label: `${s.tag} (${s.atom_count} atoms)` })),
         ];
         const savedSelect = makeStyledSelect(
             savedOptions,
-            "",
+            activeSavedTag,
             (val) => {
                 if (val) {
                     this.ctx.onAction("activate_selection", { tag: val });
+                } else {
+                    this.ctx.onAction("set_active_selection_operation", { operation: "none" });
                 }
-                setTimeout(() => {
-                    if (savedSelect) savedSelect.value = "";
-                }, 0);
             }
         );
         savedCard.appendChild(savedSelect);
@@ -1263,13 +1290,20 @@ export class RegionsPanel extends BasePanel {
         parent.appendChild(savedCard);
     }
 
+    private isSavedSelectionActive(item: SavedSelectionSummary): boolean {
+        const activeIndices = this.currentSelection?.atom_indices;
+        if (!activeIndices || !item.atom_indices) return false;
+        if (activeIndices.length === 0 || item.atom_indices.length === 0) return false;
+        if (activeIndices.length !== item.atom_indices.length) return false;
+        for (let i = 0; i < activeIndices.length; i++) {
+            if (activeIndices[i] !== item.atom_indices[i]) return false;
+        }
+        return true;
+    }
+
     private getRegionsQueryComposer(): ManualQueryComposer {
         if (!this.regionsQueryComposer) {
-            const helpBtn = document.createElement("button");
-            helpBtn.type = "button";
-            helpBtn.textContent = "?";
-            helpBtn.className = "molsysviewer-button";
-            helpBtn.addEventListener("click", () => {
+            const helpBtn = makeButton("?", () => {
                 this.regionsCheatSheetOpen = !this.regionsCheatSheetOpen;
                 this.scheduleRender();
             });
