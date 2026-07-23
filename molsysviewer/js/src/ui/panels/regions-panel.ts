@@ -256,10 +256,12 @@ export class RegionsPanel extends BasePanel {
 
         this.host.appendChild(summaryCard);
 
-        // 2. Sección de Creación: "New Region" card
-        this.host.appendChild(this.renderNewRegionCard());
+        // 2. Sección de Creación: "New Region"
+        this.host.appendChild(makeSectionHeader("New Region"));
+        this.renderNewRegionElements(this.host);
 
-        // 3. Lista de regiones creadas
+        // 3. Lista de regiones creadas: "Saved Regions"
+        this.host.appendChild(makeSectionHeader("Saved Regions"));
         const list = document.createElement("div");
         list.setAttribute("data-molsysviewer-region-list", "true");
         Object.assign(list.style, {
@@ -901,7 +903,7 @@ export class RegionsPanel extends BasePanel {
         return container;
     }
 
-    private renderNewRegionCard(): HTMLDivElement {
+    private renderNewRegionElements(parent: HTMLElement): void {
         const INPUT_STYLE = {
             background: "rgba(0,0,0,0.2)",
             border: "1px solid rgba(255,255,255,0.12)",
@@ -912,43 +914,46 @@ export class RegionsPanel extends BasePanel {
             outline: "none",
         };
 
-        const container = document.createElement("div");
-        container.setAttribute("data-molsysviewer-region-create-card", "true");
-        Object.assign(container.style, {
+        const activeCount = this.currentSelection?.count_atoms ?? 0;
+        const hasActive = activeCount > 0;
+
+        // 1. Active Selection Card
+        const activeCard = document.createElement("div");
+        activeCard.setAttribute("data-molsysviewer-region-active-selection-card", "true");
+        Object.assign(activeCard.style, {
             display: "flex",
             flexDirection: "column",
             gap: "8px",
-            padding: "10px",
+            padding: "8px 10px",
             borderRadius: "8px",
             background: "rgba(255,255,255,0.035)",
             border: "1px solid rgba(255,255,255,0.08)",
             marginBottom: "10px",
         });
 
-        const title = document.createElement("strong");
-        title.textContent = "New Region";
-        Object.assign(title.style, {
-            fontSize: "12px",
-            color: "#f4f4f5",
-            fontWeight: "700",
-        });
-        container.appendChild(title);
-
-        // 1. Active Selection section
-        const activeSectionTitle = document.createElement("div");
-        activeSectionTitle.textContent = "Active Selection";
-        Object.assign(activeSectionTitle.style, {
-            fontSize: "10px",
+        const activeHeader = document.createElement("div");
+        Object.assign(activeHeader.style, {
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            fontSize: "11px",
             fontWeight: "600",
             color: "rgba(244,244,245,0.52)",
             textTransform: "uppercase",
-            marginTop: "4px",
             letterSpacing: "0.5px",
         });
-        container.appendChild(activeSectionTitle);
-
-        const activeCount = this.currentSelection?.count_atoms ?? 0;
-        const hasActive = activeCount > 0;
+        const dot = document.createElement("span");
+        Object.assign(dot.style, {
+            width: "5px",
+            height: "5px",
+            borderRadius: "999px",
+            background: hasActive ? "#34d399" : "rgba(244,244,245,0.28)",
+            boxShadow: hasActive ? "0 0 6px rgba(52,211,153,0.4)" : "none",
+            flexShrink: "0",
+        });
+        activeHeader.appendChild(dot);
+        activeHeader.appendChild(document.createTextNode("Active Selection"));
+        activeCard.appendChild(activeHeader);
 
         const activeSummaryRow = document.createElement("div");
         Object.assign(activeSummaryRow.style, {
@@ -999,7 +1004,7 @@ export class RegionsPanel extends BasePanel {
         activeBtnRow.appendChild(deselectBtn);
 
         activeSummaryRow.appendChild(activeBtnRow);
-        container.appendChild(activeSummaryRow);
+        activeCard.appendChild(activeSummaryRow);
 
         // Region name input form
         if (this.showRegionCreateForm && hasActive) {
@@ -1066,29 +1071,38 @@ export class RegionsPanel extends BasePanel {
             form.appendChild(input);
             form.appendChild(confirmBtn);
             form.appendChild(cancelBtn);
-            container.appendChild(form);
+            activeCard.appendChild(form);
         }
 
-        // Divider 1
-        const div1 = document.createElement("div");
-        Object.assign(div1.style, { borderTop: "1px solid rgba(255,255,255,0.06)", margin: "4px 0" });
-        container.appendChild(div1);
+        parent.appendChild(activeCard);
 
-        // 2. Select by Query section
-        const querySectionTitle = document.createElement("div");
-        querySectionTitle.textContent = "Select by Query";
-        Object.assign(querySectionTitle.style, {
-            fontSize: "10px",
+        // 2. Select by Query Card
+        const queryCard = document.createElement("div");
+        queryCard.setAttribute("data-molsysviewer-region-query-card", "true");
+        Object.assign(queryCard.style, {
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+            padding: "10px",
+            borderRadius: "8px",
+            background: "rgba(255,255,255,0.03)",
+            border: "1px solid rgba(255,255,255,0.05)",
+            marginBottom: "10px",
+        });
+
+        const qHeader = document.createElement("div");
+        qHeader.textContent = "Select by Query";
+        Object.assign(qHeader.style, {
+            fontSize: "11px",
             fontWeight: "600",
             color: "rgba(244,244,245,0.52)",
             textTransform: "uppercase",
-            marginBottom: "4px",
             letterSpacing: "0.5px",
         });
-        container.appendChild(querySectionTitle);
+        queryCard.appendChild(qHeader);
 
         const composer = this.getRegionsQueryComposer();
-        container.appendChild(composer.element());
+        queryCard.appendChild(composer.element());
 
         // Shortcuts Row
         const presetRow = document.createElement("div");
@@ -1098,7 +1112,6 @@ export class RegionsPanel extends BasePanel {
             flexWrap: "wrap",
             gap: "5px",
             alignItems: "center",
-            marginTop: "4px",
         });
         const presetLabel = document.createElement("span");
         Object.assign(presetLabel.style, {
@@ -1138,7 +1151,7 @@ export class RegionsPanel extends BasePanel {
             });
             presetRow.appendChild(chip);
         }
-        container.appendChild(presetRow);
+        queryCard.appendChild(presetRow);
 
         // Query Cheat Sheet
         if (this.regionsCheatSheetOpen) {
@@ -1152,7 +1165,6 @@ export class RegionsPanel extends BasePanel {
                 borderRadius: "6px",
                 background: "rgba(0,0,0,0.18)",
                 border: "1px solid rgba(255,255,255,0.08)",
-                marginTop: "4px",
             });
             const examples = [
                 ["Atom name", 'atom_name=="CA"'],
@@ -1200,26 +1212,35 @@ export class RegionsPanel extends BasePanel {
                 });
                 cheatSheet.appendChild(row);
             }
-            container.appendChild(cheatSheet);
+            queryCard.appendChild(cheatSheet);
         }
 
-        // Divider 2
-        const div2 = document.createElement("div");
-        Object.assign(div2.style, { borderTop: "1px solid rgba(255,255,255,0.06)", margin: "4px 0" });
-        container.appendChild(div2);
+        parent.appendChild(queryCard);
 
-        // 3. Activate saved selection section
-        const savedSectionTitle = document.createElement("div");
-        savedSectionTitle.textContent = "Activate saved selection";
-        Object.assign(savedSectionTitle.style, {
-            fontSize: "10px",
+        // 3. Activate Saved Selection Card
+        const savedCard = document.createElement("div");
+        savedCard.setAttribute("data-molsysviewer-region-activate-saved-card", "true");
+        Object.assign(savedCard.style, {
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+            padding: "8px 10px",
+            borderRadius: "8px",
+            background: "rgba(255,255,255,0.035)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            marginBottom: "10px",
+        });
+
+        const sHeader = document.createElement("div");
+        sHeader.textContent = "Activate saved selection";
+        Object.assign(sHeader.style, {
+            fontSize: "11px",
             fontWeight: "600",
             color: "rgba(244,244,245,0.52)",
             textTransform: "uppercase",
-            marginBottom: "4px",
             letterSpacing: "0.5px",
         });
-        container.appendChild(savedSectionTitle);
+        savedCard.appendChild(sHeader);
 
         const savedOptions = [
             { value: "", label: "Select saved selection..." },
@@ -1237,9 +1258,9 @@ export class RegionsPanel extends BasePanel {
                 }, 0);
             }
         );
-        container.appendChild(savedSelect);
+        savedCard.appendChild(savedSelect);
 
-        return container;
+        parent.appendChild(savedCard);
     }
 
     private getRegionsQueryComposer(): ManualQueryComposer {
