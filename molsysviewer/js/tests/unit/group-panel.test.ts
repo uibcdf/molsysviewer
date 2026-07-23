@@ -1955,7 +1955,6 @@ test("GroupPanel Measures renders scientific values and routes every mutation th
             count_atoms: 2,
             count_groups: 2,
         } as any);
-        (panel as any).measuresPanel.endpointSettingsExpanded = true;
         (panel as any).measuresPanel.stagedSlots[0] = {
             atom_indices: [0],
             summary: "Active selection (1 atom)",
@@ -2029,19 +2028,7 @@ test("GroupPanel Measures renders scientific values and routes every mutation th
             "show_all_measurements", "hide_all_measurements",
         ]);
 
-        findFirstByAttribute(host.children[0], "data-molsysviewer-measurement-policy", "centroid")?.dispatch("change");
-        assert.deepStrictEqual(actions.at(-1), {
-            action: "set_measurement_endpoint_policy",
-            details: { policy: "centroid" },
-        });
 
-        const representative = findFirstByAttribute(host.children[0], "data-molsysviewer-measurement-representative", "protein") as any;
-        representative.value = "CB";
-        representative.dispatch("change");
-        assert.deepStrictEqual(actions.at(-1), {
-            action: "set_measurement_representative_atom",
-            details: { target: "protein", atom_name: "CB" },
-        });
 
         panel.dispose();
     } finally {

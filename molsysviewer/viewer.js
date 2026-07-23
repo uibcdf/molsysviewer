@@ -154263,7 +154263,6 @@ var MeasuresPanel = class extends BasePanel {
     this.expectedSeriesRequest = /* @__PURE__ */ new Map();
     this.nextSeriesRequest = 1;
     this.editTag = null;
-    this.endpointSettingsExpanded = false;
     this.selectedSavedKind = "distance";
     this.stagedSlots = [null, null, null, null];
     this.measuresQueryComposer = null;
@@ -154431,7 +154430,7 @@ var MeasuresPanel = class extends BasePanel {
     return this.measuresQueryComposer;
   }
   renderNewMeasurementElements(parent) {
-    const count3 = this.selection.group_indices.length || this.selection.count_groups;
+    const count3 = this.selection.atom_indices.length;
     const hasActive = count3 > 0;
     const modeRow = document.createElement("div");
     Object.assign(modeRow.style, {
@@ -154486,37 +154485,48 @@ var MeasuresPanel = class extends BasePanel {
       const slot2 = this.stagedSlots[i];
       const row2 = document.createElement("div");
       Object.assign(row2.style, {
-        display: "grid",
-        gridTemplateColumns: "100px 1fr auto",
+        display: "flex",
         alignItems: "center",
-        gap: "8px",
+        justifyContent: "space-between",
+        gap: "10px",
         padding: "6px 8px",
         background: "rgba(0,0,0,0.15)",
         borderRadius: "6px",
         fontSize: "11px"
       });
+      const leftPart = document.createElement("div");
+      Object.assign(leftPart.style, {
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+        flex: "1 1 0",
+        minWidth: "0"
+      });
       const label2 = document.createElement("strong");
       label2.textContent = `Selection ${i + 1}:`;
       label2.style.color = "#fff";
-      row2.appendChild(label2);
+      label2.style.flexShrink = "0";
+      leftPart.appendChild(label2);
       const summary = document.createElement("span");
-      if (slot2) {
-        summary.textContent = `${slot2.summary} \xB7 ${slot2.endpointType}`;
-        summary.style.color = "rgba(244,244,245,0.85)";
-      } else {
-        summary.textContent = "Empty";
-        summary.style.color = "rgba(244,244,245,0.4)";
-      }
-      row2.appendChild(summary);
+      Object.assign(summary.style, {
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+        color: slot2 ? "rgba(244,244,245,0.85)" : "rgba(244,244,245,0.4)"
+      });
+      summary.textContent = slot2 ? slot2.summary : "Empty";
+      leftPart.appendChild(summary);
+      row2.appendChild(leftPart);
       const actions = document.createElement("div");
       Object.assign(actions.style, {
         display: "flex",
         gap: "4px",
-        alignItems: "center"
+        alignItems: "center",
+        flexShrink: "0"
       });
-      const setBtn = makeButton("Set", () => {
-        const count4 = this.selection.group_indices.length || this.selection.count_groups;
-        if (count4 === 0) return;
+      const setBtn = makeButton("Set active selection", () => {
+        const activeCount = this.selection.atom_indices.length;
+        if (activeCount === 0) return;
         let activeSavedTag2 = "";
         for (const s of this.savedSelections) {
           if (this.isSavedSelectionActive(s)) {
@@ -154524,14 +154534,14 @@ var MeasuresPanel = class extends BasePanel {
             break;
           }
         }
-        const summaryText = activeSavedTag2 ? `Saved: "${activeSavedTag2}" (${count4} atoms)` : `Active selection (${count4} atoms)`;
-        const policy = this.settings.endpointPolicyDefault;
-        const endpointType = policy === "centroid" ? "Centroid" : policy === "representative_atom" ? "Representative" : "Atom";
+        const summaryPrefix = activeSavedTag2 ? `Saved: "${activeSavedTag2}"` : `Active selection`;
+        const endpointType = activeCount === 1 ? "Atom" : "Centroid";
+        const summaryText = `${summaryPrefix} \xB7 ${activeCount} atom${activeCount === 1 ? "" : "s"} \xB7 ${endpointType}`;
         this.stagedSlots[i] = {
           atom_indices: [...this.selection.atom_indices],
           summary: summaryText,
           endpointType,
-          policy
+          policy: "centroid"
         };
         this.scheduleRender();
       });
@@ -154606,7 +154616,7 @@ var MeasuresPanel = class extends BasePanel {
       marginRight: "4px"
     });
     if (hasActive) {
-      countText.textContent = `${count3} endpoint${count3 === 1 ? "" : "s"}`;
+      countText.textContent = `${count3} atom${count3 === 1 ? "" : "s"}`;
     } else {
       countText.textContent = "No selection";
     }
@@ -154797,50 +154807,6 @@ var MeasuresPanel = class extends BasePanel {
     );
     savedCard.appendChild(savedSelect);
     parent.appendChild(savedCard);
-    const settingsCard = document.createElement("div");
-    settingsCard.setAttribute("data-molsysviewer-measurement-settings-card", "true");
-    Object.assign(settingsCard.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "8px",
-      padding: "8px 10px",
-      borderRadius: "8px",
-      background: "rgba(255,255,255,0.035)",
-      border: "1px solid rgba(255,255,255,0.08)",
-      marginBottom: "10px"
-    });
-    const toggleHeader = document.createElement("div");
-    Object.assign(toggleHeader.style, {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      cursor: "pointer",
-      userSelect: "none"
-    });
-    toggleHeader.addEventListener("click", () => {
-      this.endpointSettingsExpanded = !this.endpointSettingsExpanded;
-      this.scheduleRender();
-    });
-    const toggleTitle = document.createElement("span");
-    toggleTitle.textContent = "Endpoint settings";
-    Object.assign(toggleTitle.style, {
-      fontSize: "12px",
-      fontWeight: "700",
-      color: "#fff"
-    });
-    toggleHeader.appendChild(toggleTitle);
-    const arrow = document.createElement("span");
-    arrow.textContent = this.endpointSettingsExpanded ? "\u25BC" : "\u25B6";
-    Object.assign(arrow.style, {
-      fontSize: "11px",
-      color: "rgba(244,244,245,0.6)"
-    });
-    toggleHeader.appendChild(arrow);
-    settingsCard.appendChild(toggleHeader);
-    if (this.endpointSettingsExpanded) {
-      settingsCard.appendChild(this.renderEndpointSettings());
-    }
-    parent.appendChild(settingsCard);
     const actionsRow = document.createElement("div");
     Object.assign(actionsRow.style, {
       display: "flex",
@@ -154890,78 +154856,6 @@ var MeasuresPanel = class extends BasePanel {
     clearBtn.setAttribute("data-molsysviewer-measurement-clear-slots-btn", "true");
     actionsRow.appendChild(clearBtn);
     parent.appendChild(actionsRow);
-  }
-  renderEndpointSettings() {
-    const body = document.createElement("div");
-    Object.assign(body.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "8px",
-      marginTop: "6px",
-      padding: "8px",
-      background: "rgba(0,0,0,0.15)",
-      borderRadius: "6px"
-    });
-    const policyTitle = document.createElement("strong");
-    policyTitle.textContent = "Endpoint Policy";
-    Object.assign(policyTitle.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
-    body.appendChild(policyTitle);
-    for (const policy of ["atom", "centroid", "representative_atom"]) {
-      const label2 = document.createElement("label");
-      Object.assign(label2.style, {
-        display: "flex",
-        alignItems: "center",
-        gap: "6px",
-        fontSize: "11px",
-        color: "rgba(244,244,245,0.78)",
-        cursor: "pointer"
-      });
-      const input = document.createElement("input");
-      input.type = "radio";
-      input.name = "molsysviewer-measurement-policy-create";
-      input.value = policy;
-      input.checked = this.settings.endpointPolicyDefault === policy;
-      input.setAttribute("data-molsysviewer-measurement-policy", policy);
-      input.addEventListener("change", () => this.ctx.onAction("set_measurement_endpoint_policy", { policy }));
-      label2.appendChild(input);
-      label2.appendChild(document.createTextNode(policy.replace(/_/g, " ")));
-      body.appendChild(label2);
-    }
-    const reprTitle = document.createElement("strong");
-    reprTitle.textContent = "Representative Atoms";
-    Object.assign(reprTitle.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)", marginTop: "4px" });
-    body.appendChild(reprTitle);
-    for (const target of ["protein", "nucleic", "lipid", "other"]) {
-      const row2 = document.createElement("div");
-      Object.assign(row2.style, {
-        display: "grid",
-        gridTemplateColumns: "80px 1fr",
-        alignItems: "center",
-        gap: "6px",
-        fontSize: "10px",
-        color: "rgba(244,244,245,0.62)"
-      });
-      const label2 = document.createElement("span");
-      label2.textContent = target;
-      row2.appendChild(label2);
-      const input = document.createElement("input");
-      input.type = "text";
-      input.value = this.settings.representativeAtoms[target];
-      input.disabled = this.settings.endpointPolicyDefault !== "representative_atom";
-      input.setAttribute("data-molsysviewer-measurement-representative", target);
-      Object.assign(input.style, {
-        ...INPUT_STYLE,
-        opacity: input.disabled ? "0.4" : "1"
-      });
-      input.addEventListener("change", () => this.ctx.onAction("set_measurement_representative_atom", { target, atom_name: input.value }));
-      row2.appendChild(input);
-      body.appendChild(row2);
-    }
-    const note2 = document.createElement("div");
-    note2.textContent = "The policy applies to future measurements only.";
-    Object.assign(note2.style, { fontSize: "9px", color: "rgba(244,244,245,0.48)", marginTop: "2px" });
-    body.appendChild(note2);
-    return body;
   }
   renderMeasurement(item2) {
     const row2 = card2();
