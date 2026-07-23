@@ -1956,6 +1956,18 @@ test("GroupPanel Measures renders scientific values and routes every mutation th
             count_groups: 2,
         } as any);
         (panel as any).measuresPanel.endpointSettingsExpanded = true;
+        (panel as any).measuresPanel.stagedSlots[0] = {
+            atom_indices: [0],
+            summary: "Active selection (1 atom)",
+            endpointType: "Atom",
+            policy: "atom"
+        };
+        (panel as any).measuresPanel.stagedSlots[1] = {
+            atom_indices: [1],
+            summary: "Active selection (1 atom)",
+            endpointType: "Atom",
+            policy: "atom"
+        };
         (panel as any).switchTab("measures");
         const root = host.children[0];
 
@@ -1970,7 +1982,7 @@ test("GroupPanel Measures renders scientific values and routes every mutation th
         findFirstByAttribute(root, "data-molsysviewer-measurement-visibility", "d1")?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
         findFirstByAttribute(root, "data-molsysviewer-measurement-delete", "d1")?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
         assert.deepStrictEqual(actions.slice(-3), [
-            { action: "create_measurement", details: { kind: "distance" } },
+            { action: "create_measurement", details: { kind: "distance", picks: [[0], [1]], endpoint_policy: "atom" } },
             { action: "toggle_measurement_visibility", details: { tag: "d1" } },
             { action: "delete_measurement", details: { tag: "d1" } },
         ]);

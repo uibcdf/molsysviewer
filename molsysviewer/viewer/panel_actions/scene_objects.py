@@ -283,7 +283,11 @@ def create_measurement(view: Any, content: Mapping[str, Any]) -> None:
         raise ValueError(
             f"{kind} requires {required[kind]} selected endpoints; received {len(picks)}."
         )
-    getattr(view.measurements, f"add_{kind}")(*picks, skip_digestion=True)
+    endpoint_policy = content.get("endpoint_policy")
+    kwargs = {"skip_digestion": True}
+    if endpoint_policy is not None:
+        kwargs["endpoint_policy"] = endpoint_policy
+    getattr(view.measurements, f"add_{kind}")(*picks, **kwargs)
 
 
 def rename_measurement(view: Any, content: Mapping[str, Any]) -> None:
