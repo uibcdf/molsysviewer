@@ -567,17 +567,27 @@ export class MeasuresPanel extends BasePanel {
         }
         activeRow.appendChild(countText);
 
+        // Right: Action Buttons
+        const btnRow = document.createElement("div");
+        Object.assign(btnRow.style, {
+            display: "flex",
+            gap: "4px",
+            alignItems: "center",
+            flexShrink: "0",
+        });
+
         const deselectBtn = makeButton("Deselect", () => {
             this.ctx.onAction("set_active_selection_operation", { operation: "none" });
             this.scheduleRender();
         });
         deselectBtn.disabled = !hasActive;
         deselectBtn.style.opacity = hasActive ? "1" : "0.42";
-        deselectBtn.style.padding = "2px 6px";
-        deselectBtn.style.fontSize = "10px";
+        deselectBtn.style.padding = "4px 8px";
+        deselectBtn.style.fontSize = "11px";
         deselectBtn.style.whiteSpace = "nowrap";
         deselectBtn.setAttribute("data-molsysviewer-measurement-active-deselect", "true");
-        activeRow.appendChild(deselectBtn);
+        btnRow.appendChild(deselectBtn);
+        activeRow.appendChild(btnRow);
 
         activeCard.appendChild(activeRow);
         parent.appendChild(activeCard);
