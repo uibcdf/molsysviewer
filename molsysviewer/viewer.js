@@ -155249,7 +155249,8 @@ var AnnotationsPanel = class extends BasePanel {
     Object.assign(styleRow.style, {
       display: "flex",
       alignItems: "center",
-      gap: "12px",
+      flexWrap: "wrap",
+      gap: "8px 12px",
       fontSize: "11px",
       color: "rgba(244,244,245,0.7)"
     });
@@ -155285,6 +155286,7 @@ var AnnotationsPanel = class extends BasePanel {
       alignItems: "center",
       gap: "6px",
       flex: "1 1 0",
+      minWidth: "60px",
       cursor: "pointer"
     });
     sizeLabel.appendChild(document.createTextNode("Size"));
@@ -155323,13 +155325,50 @@ var AnnotationsPanel = class extends BasePanel {
     Object.assign(bgInput.style, {
       cursor: "pointer"
     });
-    bgInput.addEventListener("change", () => {
-      this.nextStyle.background = bgInput.checked;
+    bgLabel.appendChild(bgInput);
+    bgLabel.appendChild(document.createTextNode("Bg"));
+    styleRow.appendChild(bgLabel);
+    const opacityLabel = document.createElement("label");
+    Object.assign(opacityLabel.style, {
+      display: "flex",
+      alignItems: "center",
+      gap: "6px",
+      cursor: "pointer"
+    });
+    opacityLabel.appendChild(document.createTextNode("Bg Opacity"));
+    const opacityInput = document.createElement("input");
+    opacityInput.type = "range";
+    opacityInput.min = "0";
+    opacityInput.max = "1";
+    opacityInput.step = "0.05";
+    opacityInput.value = String(this.nextStyle.background_opacity ?? 0.9);
+    Object.assign(opacityInput.style, {
+      width: "50px",
+      height: "4px",
+      borderRadius: "2px",
+      background: "rgba(255,255,255,0.2)",
+      outline: "none",
+      cursor: "pointer"
+    });
+    opacityInput.addEventListener("input", () => {
+      this.nextStyle.background_opacity = Number(opacityInput.value);
+    });
+    opacityInput.addEventListener("change", () => {
       this.scheduleRender();
     });
-    bgLabel.appendChild(bgInput);
-    bgLabel.appendChild(document.createTextNode("Background"));
-    styleRow.appendChild(bgLabel);
+    opacityLabel.appendChild(opacityInput);
+    styleRow.appendChild(opacityLabel);
+    const updateOpacityState = () => {
+      const hasBg = bgInput.checked;
+      opacityInput.disabled = !hasBg;
+      opacityLabel.style.opacity = hasBg ? "1" : "0.35";
+    };
+    updateOpacityState();
+    bgInput.addEventListener("change", () => {
+      this.nextStyle.background = bgInput.checked;
+      updateOpacityState();
+      this.scheduleRender();
+    });
     createCard.appendChild(styleRow);
     const hint = document.createElement("div");
     hint.textContent = !this.settings.systemLoaded ? "Load a structure first." : !hasActive ? "Select atoms to anchor the annotation." : `Anchored to the active selection (${activeCount} atom${activeCount === 1 ? "" : "s"}).`;
