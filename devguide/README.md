@@ -126,6 +126,8 @@ That principle should guide prioritization throughout the repository.
    - Architectural roadmap for transitioning to a zero-configuration, lightweight desktop app for non-programmers.
 41. [**pytest-receptor**](pytest_receptor.md)
    - Compact, agent-oriented output for the Python test suite; that it is pre-1.0, and where to report anomalies and proposals.
+42. [**Studio Interactions Subpanel UI Specification**](pending_proposals/studio_interactions_subpanel_ui_design.md)
+   - UX/UI design specification for the upcoming Interactions subpanel (InteractionsPanel), covering Mode A/B/C creation forms, contact persistence sparklines, and unified Studio card semantics.
 
 
 

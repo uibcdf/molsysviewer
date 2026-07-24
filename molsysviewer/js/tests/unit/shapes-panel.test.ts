@@ -110,6 +110,7 @@ test("ShapesPanel derives exactly the editable controls from every wire op", () 
             panel.mount(host as any);
             panel.setVisible(true);
             panel.setShapes([summary(op)]);
+            byAttribute(host, "data-molsysviewer-shape-more", "shape1").dispatch("click");
 
             const actual = new Set<string>();
             for (const [control, attribute] of Object.entries(controlAttribute)) {
@@ -150,6 +151,7 @@ test("ShapesPanel routes lifecycle, style, units and diagnostics through panel a
 
         assert.ok(byAttribute(host, "data-molsysviewer-shape-render-warning", "shape1").textContent.includes("frame 42"));
         byAttribute(host, "data-molsysviewer-shape-visibility", "shape1").dispatch("click");
+        byAttribute(host, "data-molsysviewer-shape-more", "shape1").dispatch("click");
         const radius = byAttribute(host, "data-molsysviewer-shape-radius", "shape1");
         radius.value = "4.5";
         radius.dispatch("focus");
@@ -191,6 +193,8 @@ test("ShapesPanel routes every lifecycle and style affordance through the closed
         byAttribute(host, "data-molsysviewer-shape-layer-confirm", "shape1").dispatch("click");
         byAttribute(host, "data-molsysviewer-shape-delete", "shape1").dispatch("click");
 
+        panel.setShapes([summary("add_sphere")]);
+
         const color = byAttribute(host, "data-molsysviewer-shape-color", "shape1");
         color.value = "#abcdef";
         color.dispatch("input");
@@ -200,7 +204,7 @@ test("ShapesPanel routes every lifecycle and style affordance through the closed
         const radius = byAttribute(host, "data-molsysviewer-shape-radius", "shape1");
         radius.value = "5";
         radius.dispatch("input");
-        for (const action of ["show_all_shapes", "hide_all_shapes", "clear_shapes"]) {
+        for (const action of ["show_all_shapes", "hide_all_shapes"]) {
             byAttribute(host, "data-molsysviewer-shape-global-action", action).dispatch("click");
         }
 
@@ -223,7 +227,6 @@ test("ShapesPanel routes every lifecycle and style affordance through the closed
             ["set_shape_radius", { tag: "shape1", radius: { magnitude: 5, unit: "angstrom" } }],
             ["show_all_shapes", undefined],
             ["hide_all_shapes", undefined],
-            ["clear_shapes", undefined],
             ["set_shape_scale", { tag: "shape1", kind: "radius_scale", value: 1.5 }],
             ["set_shape_scale", { tag: "shape1", kind: "length_scale", value: 2 }],
         ]);

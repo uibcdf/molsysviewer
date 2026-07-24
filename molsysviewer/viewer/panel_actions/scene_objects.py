@@ -378,6 +378,129 @@ def request_measurement_series(view: Any, content: Mapping[str, Any]) -> None:
     )
 
 
+def create_shape(view: Any, content: Mapping[str, Any]) -> None:
+    shape_type = str(content.get("shape_type", "add_sphere")).strip()
+    raw_tag = content.get("tag")
+    tag = str(raw_tag).strip() if isinstance(raw_tag, str) and raw_tag.strip() else None
+
+    raw_color = content.get("color", "#3b82f6")
+    color = str(raw_color).strip() if isinstance(raw_color, str) and raw_color.strip() else "#3b82f6"
+
+    alpha = float(content.get("alpha", 0.8)) if content.get("alpha") is not None else 0.8
+    radius_val = float(content.get("radius", 0.15)) if content.get("radius") is not None else 0.15
+    radius_q = puw.quantity(radius_val, "nm")
+
+    atom_indices = content.get("atom_indices")
+    atom_indices_2 = content.get("atom_indices_2")
+    coordinates = content.get("coordinates")
+    coordinates_2 = content.get("coordinates_2")
+
+    if shape_type in ("add_sphere", "sphere"):
+        if atom_indices is not None and len(atom_indices) > 0:
+            view.shapes.add_sphere(
+                atom_indices=atom_indices,
+                radius=radius_q,
+                color=color,
+                alpha=alpha,
+                tag=tag,
+                skip_digestion=True,
+            )
+        elif coordinates is not None and len(coordinates) == 3:
+            center_q = [puw.quantity(float(c), "nm") for c in coordinates]
+            view.shapes.add_sphere(
+                center=center_q,
+                radius=radius_q,
+                color=color,
+                alpha=alpha,
+                tag=tag,
+                skip_digestion=True,
+            )
+        else:
+            view.shapes.add_sphere(
+                radius=radius_q,
+                color=color,
+                alpha=alpha,
+                tag=tag,
+                skip_digestion=True,
+            )
+    elif shape_type in ("add_links", "add_network_links", "link"):
+        if atom_indices is not None and atom_indices_2 is not None:
+            idx1 = atom_indices[0] if len(atom_indices) > 0 else 0
+            idx2 = atom_indices_2[0] if len(atom_indices_2) > 0 else 0
+            view.shapes.add_links(
+                atom_pairs=[[idx1, idx2]],
+                radius=radius_q,
+                color=color,
+                alpha=alpha,
+                tag=tag,
+                skip_digestion=True,
+            )
+        elif coordinates is not None and coordinates_2 is not None:
+            p1 = [float(c) for c in coordinates]
+            p2 = [float(c) for c in coordinates_2]
+            view.shapes.add_links(
+                coordinate_pairs=[[p1, p2]],
+                radius=radius_q,
+                color=color,
+                alpha=alpha,
+                tag=tag,
+                skip_digestion=True,
+            )
+    elif shape_type in ("add_displacement_vectors", "displacement_vectors"):
+        if atom_indices is not None and atom_indices_2 is not None:
+            idx1 = atom_indices[0] if len(atom_indices) > 0 else 0
+            idx2 = atom_indices_2[0] if len(atom_indices_2) > 0 else 0
+            pos1 = msm.get(view._msm, element="atom", selection=[idx1], coordinates=True, structure_indices=0)[0][0]  # noqa: SLF001
+            pos2 = msm.get(view._msm, element="atom", selection=[idx2], coordinates=True, structure_indices=0)[0][0]  # noqa: SLF001
+            pos1_nm = puw.get_value(pos1, to_unit="nm") if puw.is_quantity(pos1) else pos1 / 10.0
+            pos2_nm = puw.get_value(pos2, to_unit="nm") if puw.is_quantity(pos2) else pos2 / 10.0
+            vec = [pos2_nm[i] - pos1_nm[i] for i in range(3)]
+            view.shapes.add_displacement_vectors(
+                origins=[pos1_nm],
+                vectors=[vec],
+                radius_scale=radius_val,
+                tag=tag,
+                skip_digestion=True,
+            )
+        elif coordinates is not None and coordinates_2 is not None:
+            p1 = [float(c) for c in coordinates]
+            p2 = [float(c) for c in coordinates_2]
+            vec = [p2[i] - p1[i] for i in range(3)]
+            view.shapes.add_displacement_vectors(
+                origins=[p1],
+                vectors=[vec],
+                radius_scale=radius_val,
+                tag=tag,
+                skip_digestion=True,
+            )
+    elif shape_type in ("add_pocket_surface", "pocket_surface"):
+        if atom_indices is not None and len(atom_indices) > 0:
+            view.shapes.add_pocket_surface(
+                atom_indices=atom_indices,
+                color=color,
+                alpha=alpha,
+                tag=tag,
+                skip_digestion=True,
+            )
+        else:
+            view.shapes.add_pocket_surface(
+                color=color,
+                alpha=alpha,
+                tag=tag,
+                skip_digestion=True,
+            )
+    elif shape_type in ("add_hbonds", "hbonds"):
+        view.shapes.links.add_hbonds(
+            tag=tag,
+            skip_digestion=True,
+        )
+    elif shape_type in ("add_rings", "rings"):
+        view.shapes.rings.add_rings(
+            tag=tag,
+            skip_digestion=True,
+        )
+
+
 HANDLERS = {
     "add_label_from_selection": add_label_from_selection,
     "create_annotation": create_annotation,
@@ -391,6 +514,7 @@ HANDLERS = {
     "show_all_annotations": show_all_annotations,
     "hide_all_annotations": hide_all_annotations,
     "clear_annotations": clear_annotations,
+    "create_shape": create_shape,
     "delete_shape": delete_shape,
     "toggle_shape_visibility": toggle_shape_visibility,
     "rename_shape": rename_shape,
