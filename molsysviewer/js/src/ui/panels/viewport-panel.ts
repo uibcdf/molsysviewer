@@ -1,12 +1,21 @@
 import type { SceneState, SectionSettings, SectionSummary } from "../group-panel";
 import { BasePanel } from "./base-panel";
 import { PanelContext } from "./types";
-import { formatUnitLabel, makeButton, makeCheckboxRow, makeSectionHeader, makeSettingsCard, makeStyledSelect } from "./ui-helpers";
+import { formatUnitLabel, makeButton, makeCheckboxRow, makeSectionHeader, makeStyledSelect } from "./ui-helpers";
+
+function card(): HTMLDivElement {
+    const element = document.createElement("div");
+    Object.assign(element.style, {
+        display: "flex", flexDirection: "column", gap: "7px", padding: "10px",
+        borderRadius: "6px", border: "1px solid rgba(255,255,255,0.08)",
+        background: "rgba(255,255,255,0.035)",
+    });
+    return element;
+}
 
 /**
- * Studio → Viewport subpanel: live camera and render configuration
- * (background, spin/swing, projection mode, fog). Reads the current
- * `SceneState` pushed from the controller and emits scene actions.
+ * Studio → Viewport subpanel: live camera, render environment configuration
+ * (background, lighting, fog, spin/swing, projection mode) and world clipping planes.
  */
 export class ViewportPanel extends BasePanel {
     readonly key = "viewport";
@@ -40,63 +49,86 @@ export class ViewportPanel extends BasePanel {
     protected paint(): void {
         if (!this.host) return;
         this.host.replaceChildren();
-        this.host.appendChild(makeSectionHeader("Viewport Settings"));
 
-        const grid = document.createElement("div");
-        Object.assign(grid.style, {
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-            gap: "10px",
-            paddingBottom: "10px",
-        });
-        this.host.appendChild(grid);
+        // 1. Section Header & Global Status Card
+        this.host.appendChild(makeSectionHeader("Viewport"));
+        this.host.appendChild(this.renderGlobalStatusCard());
 
-        // A. Viewport Card
-        const viewportCard = makeSettingsCard("Viewport Settings");
-        grid.appendChild(viewportCard);
+        // 2. Camera & Environment Section
+        this.host.appendChild(makeSectionHeader("Camera & Environment"));
+        this.host.appendChild(this.renderEnvironmentCard());
 
-        // A1. Background toggle
-        const bgRow = document.createElement("div");
-        Object.assign(bgRow.style, {
+        // 3. Clipping Sections Section
+        this.host.appendChild(this.renderSectionsSection());
+    }
+
+    private renderGlobalStatusCard(): HTMLDivElement {
+        const globalCard = card();
+        Object.assign(globalCard.style, { marginBottom: "10px" });
+
+        const isDark = !!this.state.isDarkMode;
+        const modeLabel = this.state.cameraMode === "orthographic" ? "Orthographic" : "Perspective";
+        const bgLabel = isDark ? "Dark Mode" : "Light Mode";
+        const spinText = this.state.isSpinActive ? " · Spin" : "";
+        const swingText = this.state.isSwingActive ? " · Swing" : "";
+        const clipText = this.sections.length > 0 ? ` · ${this.sections.length} Section${this.sections.length === 1 ? "" : "s"}` : "";
+
+        const row = document.createElement("div");
+        Object.assign(row.style, {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
             width: "100%",
+            gap: "8px",
         });
-        const bgLabel = document.createElement("span");
-        bgLabel.textContent = "Background";
-        Object.assign(bgLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
-        const bgSelect = makeStyledSelect(["Dark", "Light"], this.state.isDarkMode ? "Dark" : "Light", (val) => {
-            this.ctx.onAction("toggle_background", { mode: val.toLowerCase() });
+
+        const info = document.createElement("div");
+        Object.assign(info.style, {
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            fontSize: "11px",
+            color: "rgba(244,244,245,0.75)",
         });
-        bgRow.appendChild(bgLabel);
-        bgRow.appendChild(bgSelect);
-        viewportCard.appendChild(bgRow);
 
-        // A2. Spin toggle
-        viewportCard.appendChild(makeCheckboxRow("Auto-Rotate (Spin)", !!this.state.isSpinActive, (checked) => {
-            this.ctx.onAction("toggle_spin", { enabled: checked });
-        }));
+        const dot = document.createElement("span");
+        const activeState = isDark || !!this.state.isSpinActive || !!this.state.isSwingActive;
+        Object.assign(dot.style, {
+            width: "6px",
+            height: "6px",
+            borderRadius: "999px",
+            background: activeState ? "#34d399" : "rgba(244,244,245,0.28)",
+            boxShadow: activeState ? "0 0 6px rgba(52,211,153,0.4)" : "none",
+            flexShrink: "0",
+        });
+        info.appendChild(dot);
+        const textSpan = document.createElement("span");
+        textSpan.textContent = `${modeLabel} · ${bgLabel}${spinText}${swingText}${clipText}`;
+        info.appendChild(textSpan);
+        row.appendChild(info);
 
-        // A3. Swing toggle
-        viewportCard.appendChild(makeCheckboxRow("Oscillate (Swing)", !!this.state.isSwingActive, (checked) => {
-            this.ctx.onAction("toggle_swing", { enabled: checked });
-        }));
+        // Fast Camera Reset
+        const resetBtn = makeButton("Reset View", () => {
+            this.ctx.onAction("reset_view");
+        });
+        resetBtn.style.padding = "3px 6px";
+        resetBtn.style.fontSize = "10px";
+        resetBtn.title = "Reset camera position to default bounds";
+        row.appendChild(resetBtn);
 
-        // B. Camera Card
-        const cameraCard = makeSettingsCard("Camera Projection");
-        grid.appendChild(cameraCard);
+        globalCard.appendChild(row);
+        return globalCard;
+    }
 
-        // B1. Projection Mode
+    private renderEnvironmentCard(): HTMLDivElement {
+        const envCard = card();
+        Object.assign(envCard.style, { marginBottom: "10px", gap: "8px" });
+
+        // Projection mode
         const projRow = document.createElement("div");
-        Object.assign(projRow.style, {
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "100%",
-        });
+        Object.assign(projRow.style, { display: "flex", justifyContent: "space-between", alignItems: "center" });
         const projLabel = document.createElement("span");
-        projLabel.textContent = "Projection";
+        projLabel.textContent = "Projection Mode";
         Object.assign(projLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
         const projSelect = makeStyledSelect(["Perspective", "Orthographic"],
             this.state.cameraMode === "orthographic" ? "Orthographic" : "Perspective", (val) => {
@@ -105,32 +137,45 @@ export class ViewportPanel extends BasePanel {
         );
         projRow.appendChild(projLabel);
         projRow.appendChild(projSelect);
-        cameraCard.appendChild(projRow);
+        envCard.appendChild(projRow);
 
-        // B2. Fog enabled
-        const fogEnabled = !!this.state.fogEnabled;
-        const fogIntensity = typeof this.state.fogIntensity === "number" ? this.state.fogIntensity : 0.5;
+        // Background preset
+        const bgRow = document.createElement("div");
+        Object.assign(bgRow.style, { display: "flex", justifyContent: "space-between", alignItems: "center" });
+        const bgLabel = document.createElement("span");
+        bgLabel.textContent = "Background Color";
+        Object.assign(bgLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
+        const bgSelect = makeStyledSelect(["Dark", "Light"], this.state.isDarkMode ? "Dark" : "Light", (val) => {
+            this.ctx.onAction("toggle_background", { mode: val.toLowerCase() });
+        });
+        bgRow.appendChild(bgLabel);
+        bgRow.appendChild(bgSelect);
+        envCard.appendChild(bgRow);
 
-        cameraCard.appendChild(makeCheckboxRow("Fog Enabled", fogEnabled, (checked) => {
-            this.ctx.onAction("set_fog", { enable: checked, intensity: fogIntensity });
+        // Animations (Spin & Swing)
+        const animRow = document.createElement("div");
+        Object.assign(animRow.style, { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" });
+        animRow.appendChild(makeCheckboxRow("Auto-Rotate (Spin)", !!this.state.isSpinActive, (checked) => {
+            this.ctx.onAction("toggle_spin", { enabled: checked });
         }));
+        animRow.appendChild(makeCheckboxRow("Oscillate (Swing)", !!this.state.isSwingActive, (checked) => {
+            this.ctx.onAction("toggle_swing", { enabled: checked });
+        }));
+        envCard.appendChild(animRow);
 
-        // B3. Fog intensity slider
+        // Fog enabled & slider
+        const fogEnabled = !!this.state.fogEnabled;
+        const fogIntensity = typeof this.state.fogIntensity === "number" ? this.state.fogIntensity : 0.15;
+
+        const fogHeaderRow = makeCheckboxRow("Depth Fog", fogEnabled, (checked) => {
+            this.ctx.onAction("set_fog", { enable: checked, intensity: fogIntensity });
+        });
+        envCard.appendChild(fogHeaderRow);
+
         const fogSliderRow = document.createElement("div");
-        Object.assign(fogSliderRow.style, {
-            display: "flex",
-            flexDirection: "column",
-            gap: "4px",
-            width: "100%",
-            marginTop: "2px",
-        });
+        Object.assign(fogSliderRow.style, { display: "flex", flexDirection: "column", gap: "2px" });
         const fogSliderLabel = document.createElement("div");
-        Object.assign(fogSliderLabel.style, {
-            display: "flex",
-            justifyContent: "space-between",
-            fontSize: "10px",
-            color: "rgba(244,244,245,0.56)",
-        });
+        Object.assign(fogSliderLabel.style, { display: "flex", justifyContent: "space-between", fontSize: "10px", color: "rgba(244,244,245,0.56)" });
         fogSliderLabel.innerHTML = `<span>Fog Intensity</span><span>${Math.round(fogIntensity * 100)}%</span>`;
 
         const fogSlider = document.createElement("input");
@@ -141,27 +186,22 @@ export class ViewportPanel extends BasePanel {
         fogSlider.value = String(fogIntensity);
         fogSlider.disabled = !fogEnabled;
         Object.assign(fogSlider.style, {
-            width: "100%",
-            height: "4px",
-            borderRadius: "2px",
-            background: "rgba(255,255,255,0.12)",
-            outline: "none",
-            cursor: fogEnabled ? "pointer" : "not-allowed",
-            opacity: fogEnabled ? "1" : "0.5",
+            width: "100%", height: "4px", borderRadius: "2px",
+            background: "rgba(255,255,255,0.12)", outline: "none",
+            cursor: fogEnabled ? "pointer" : "not-allowed", opacity: fogEnabled ? "1" : "0.5",
         });
         fogSlider.addEventListener("change", () => {
             const intensity = parseFloat(fogSlider.value);
             this.ctx.onAction("set_fog", { enable: fogEnabled, intensity });
         });
-
         fogSliderRow.appendChild(fogSliderLabel);
         fogSliderRow.appendChild(fogSlider);
-        cameraCard.appendChild(fogSliderRow);
+        envCard.appendChild(fogSliderRow);
 
-        this.host.appendChild(this.renderSections());
+        return envCard;
     }
 
-    private renderSections(): HTMLDivElement {
+    private renderSectionsSection(): HTMLDivElement {
         const section = document.createElement("div");
         section.setAttribute("data-molsysviewer-viewport-sections", "true");
         Object.assign(section.style, { display: "flex", flexDirection: "column", gap: "7px", paddingBottom: "10px" });
@@ -180,7 +220,7 @@ export class ViewportPanel extends BasePanel {
         if (this.sections.length === 0) {
             const empty = document.createElement("div");
             empty.textContent = "No clipping sections";
-            Object.assign(empty.style, { fontSize: "11px", color: "rgba(244,244,245,0.5)", padding: "6px 2px" });
+            Object.assign(empty.style, { fontSize: "11px", color: "rgba(244,244,245,0.5)", padding: "4px 2px" });
             section.appendChild(empty);
             return section;
         }
@@ -190,13 +230,9 @@ export class ViewportPanel extends BasePanel {
     }
 
     private renderSectionItem(item: SectionSummary): HTMLDivElement {
-        const card = document.createElement("div");
-        card.setAttribute("data-molsysviewer-section-row", item.tag);
-        Object.assign(card.style, {
-            display: "flex", flexDirection: "column", gap: "7px", padding: "8px",
-            border: "1px solid rgba(255,255,255,0.08)", borderRadius: "6px",
-            background: "rgba(255,255,255,0.035)", opacity: item.hidden ? "0.62" : "1",
-        });
+        const cardItem = card();
+        cardItem.setAttribute("data-molsysviewer-section-row", item.tag);
+        if (item.hidden) cardItem.style.opacity = "0.62";
 
         const top = document.createElement("div");
         Object.assign(top.style, { display: "flex", alignItems: "center", gap: "6px", minWidth: "0" });
@@ -204,7 +240,7 @@ export class ViewportPanel extends BasePanel {
         Object.assign(identity.style, { display: "flex", flexDirection: "column", flex: "1 1 auto", minWidth: "0" });
         const tag = document.createElement("strong");
         tag.textContent = item.tag;
-        Object.assign(tag.style, { fontSize: "11px", overflow: "hidden", textOverflow: "ellipsis" });
+        Object.assign(tag.style, { fontSize: "11px", overflow: "hidden", textOverflow: "ellipsis", color: "#f4f4f5" });
         identity.appendChild(tag);
         if (item.owner) {
             const owner = document.createElement("span");
@@ -218,22 +254,43 @@ export class ViewportPanel extends BasePanel {
             tag: item.tag, visible: item.hidden,
         }));
         visibility.setAttribute("data-molsysviewer-section-visibility", item.tag);
+
         const remove = makeButton("Delete", () => this.ctx.onAction("remove_section", { tag: item.tag }));
         remove.setAttribute("data-molsysviewer-section-delete", item.tag);
-        Object.assign(visibility.style, { flex: "0 0 auto" });
-        Object.assign(remove.style, { flex: "0 0 auto" });
+
+        for (const btn of [visibility, remove]) {
+            btn.style.flex = "0 0 auto";
+            btn.style.padding = "3px 6px";
+            btn.style.fontSize = "10px";
+        }
         top.appendChild(visibility);
         top.appendChild(remove);
-        card.appendChild(top);
+        cardItem.appendChild(top);
 
-        card.appendChild(this.vectorEditor(item, `Point (${formatUnitLabel(item.unit)})`, "point", item.point));
-        card.appendChild(this.vectorEditor(item, "Normal", "normal", item.normal));
-        const invert = makeCheckboxRow("Invert clipping side", item.invert, checked => {
+        cardItem.appendChild(this.vectorEditor(item, `Point (${formatUnitLabel(item.unit)})`, "point", item.point));
+        cardItem.appendChild(this.vectorEditor(item, "Normal", "normal", item.normal));
+
+        const invertRow = makeCheckboxRow("Invert clipping side", item.invert, checked => {
             this.ctx.onAction("set_section_invert", { tag: item.tag, invert: checked });
         });
-        invert.setAttribute("data-molsysviewer-section-invert", item.tag);
-        card.appendChild(invert);
-        return card;
+        invertRow.setAttribute("data-molsysviewer-section-invert", item.tag);
+
+        // Flip Normal button
+        const flipBtn = makeButton("Flip Normal", () => {
+            const flippedNormal = item.normal.map(v => -v) as [number, number, number];
+            this.ctx.onAction("set_section_normal", { tag: item.tag, normal: flippedNormal });
+        });
+        flipBtn.style.padding = "2px 6px";
+        flipBtn.style.fontSize = "9px";
+        flipBtn.style.marginLeft = "auto";
+
+        const bottomRow = document.createElement("div");
+        Object.assign(bottomRow.style, { display: "flex", alignItems: "center", justifyContent: "space-between" });
+        bottomRow.appendChild(invertRow);
+        bottomRow.appendChild(flipBtn);
+        cardItem.appendChild(bottomRow);
+
+        return cardItem;
     }
 
     private vectorEditor(
@@ -258,7 +315,11 @@ export class ViewportPanel extends BasePanel {
                 : "0.05";
             input.value = String(Number(value.toFixed(4)));
             input.setAttribute(`data-molsysviewer-section-${kind}-${axis}`, item.tag);
-            Object.assign(input.style, { width: "100%", minWidth: "0", boxSizing: "border-box", fontSize: "10px" });
+            Object.assign(input.style, {
+                width: "100%", minWidth: "0", boxSizing: "border-box", fontSize: "10px",
+                background: "rgba(0,0,0,0.28)", border: "1px solid rgba(255,255,255,0.12)",
+                borderRadius: "4px", padding: "3px 5px", color: "#f4f4f5", outline: "none",
+            });
             input.addEventListener("focus", () => this.beginCoalescing());
             input.addEventListener("pointerdown", () => this.beginCoalescing());
             input.addEventListener("change", () => {
