@@ -1004,7 +1004,7 @@ export class RegionsPanel extends BasePanel {
         newRegionBtn.style.fontSize = "11px";
         newRegionBtn.style.whiteSpace = "nowrap";
 
-        const deselectBtn = makeButton("Deselect", () => {
+        const deselectBtn = makeButton("Deactivate", () => {
             this.ctx.onAction("set_active_selection_operation", { operation: "none" });
             this.showRegionCreateForm = false;
             this.scheduleRender();

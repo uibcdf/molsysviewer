@@ -653,7 +653,7 @@ export class SelectionPanel extends BasePanel {
             flexShrink: "0",
         });
 
-        const deselectBtn = makeButton("Deselect", () => {
+        const deselectBtn = makeButton("Deactivate", () => {
             this.ctx.onAction("set_active_selection_operation", { operation: "none" });
             this.showActiveSelectionSaveForm = false;
             this.scheduleRender();

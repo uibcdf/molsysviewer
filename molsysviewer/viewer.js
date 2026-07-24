@@ -151902,7 +151902,7 @@ var RegionsPanel = class extends BasePanel {
     newRegionBtn.style.padding = "4px 8px";
     newRegionBtn.style.fontSize = "11px";
     newRegionBtn.style.whiteSpace = "nowrap";
-    const deselectBtn = makeButton("Deselect", () => {
+    const deselectBtn = makeButton("Deactivate", () => {
       this.ctx.onAction("set_active_selection_operation", { operation: "none" });
       this.showRegionCreateForm = false;
       this.scheduleRender();
@@ -152778,7 +152778,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
       alignItems: "center",
       flexShrink: "0"
     });
-    const deselectBtn = makeButton("Deselect", () => {
+    const deselectBtn = makeButton("Deactivate", () => {
       this.ctx.onAction("set_active_selection_operation", { operation: "none" });
       this.showActiveSelectionSaveForm = false;
       this.scheduleRender();
@@ -154668,7 +154668,7 @@ var MeasuresPanel = class extends BasePanel {
       alignItems: "center",
       flexShrink: "0"
     });
-    const deselectBtn = makeButton("Deselect", () => {
+    const deselectBtn = makeButton("Deactivate", () => {
       this.ctx.onAction("set_active_selection_operation", { operation: "none" });
       this.scheduleRender();
     });
