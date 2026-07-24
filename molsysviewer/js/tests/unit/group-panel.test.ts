@@ -2172,11 +2172,11 @@ test("GroupPanel Annotations edits labels and routes every mutation through pane
         assert.strictEqual(actions.at(-1)?.action, "create_annotation");
         assert.strictEqual(actions.at(-1)?.details.text, "New label");
 
-        for (const action of ["show_all_annotations", "hide_all_annotations", "clear_annotations"] as const) {
+        for (const action of ["show_all_annotations", "hide_all_annotations"] as const) {
             findFirstByAttribute(host.children[0], "data-molsysviewer-annotation-global", action)?.dispatch("click", clickEvent);
         }
-        assert.deepStrictEqual(actions.slice(-3).map(item => item.action), [
-            "show_all_annotations", "hide_all_annotations", "clear_annotations",
+        assert.deepStrictEqual(actions.slice(-2).map(item => item.action), [
+            "show_all_annotations", "hide_all_annotations",
         ]);
         panel.dispose();
     } finally {

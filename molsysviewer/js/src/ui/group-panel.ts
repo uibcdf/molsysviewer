@@ -760,11 +760,13 @@ export class GroupPanel {
         this.selectionPanel.setSavedSelections(items);
         this.regionsPanel.setSavedSelections(items);
         this.measuresPanel.setSavedSelections(items);
+        this.annotationsPanel.setSavedSelections(items);
     }
 
     updateSelectionQueryPreview(preview: SelectionQueryPreview): void {
         if (this.regionsPanel.updatePreview(preview)) return;
         if (this.measuresPanel.updatePreview(preview)) return;
+        if (this.annotationsPanel.updatePreview(preview)) return;
         this.selectionPanel.updatePreview(preview);
     }
 
