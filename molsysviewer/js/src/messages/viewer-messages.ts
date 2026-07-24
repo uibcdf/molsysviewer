@@ -143,6 +143,11 @@ export type AddLabelMessage = {
     options?: {
         text?: string;
         atom_indices?: number[];
+        position?: number[];
+        offset_mode?: "camera" | "world";
+        offset?: number[];
+        leader_line?: boolean;
+        leader_line_style?: "solid" | "dashed" | "dotted";
         tag?: string;
         layer_tag?: string;
         style?: LabelStyle;
@@ -155,6 +160,11 @@ export type UpdateLabelMessage = {
     options?: {
         text?: string;
         atom_indices?: number[];
+        position?: number[];
+        offset_mode?: "camera" | "world";
+        offset?: number[];
+        leader_line?: boolean;
+        leader_line_style?: "solid" | "dashed" | "dotted";
         tag?: string;
         layer_tag?: string;
         style?: LabelStyle;

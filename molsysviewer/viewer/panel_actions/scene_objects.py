@@ -34,11 +34,35 @@ def create_annotation(view: Any, content: Mapping[str, Any]) -> None:
     if not isinstance(text, str) or not text.strip():
         raise ValueError("create_annotation requires non-empty text.")
     raw_style = content.get("label_style")
-    view.annotations.add_label_from_active_selection(
-        text=text.strip(),
-        label_style=dict(raw_style) if isinstance(raw_style, dict) else None,
-        skip_digestion=True,
-    )
+    position = content.get("position")
+    offset_mode = content.get("offset_mode", "camera")
+    offset = content.get("offset", (0.0, 0.0, 0.0))
+    leader_line = content.get("leader_line", False)
+    leader_line_style = content.get("leader_line_style", "dashed")
+    atom_indices = content.get("atom_indices")
+
+    if atom_indices is not None or position is not None:
+        view.annotations.add_annotation(
+            text=text.strip(),
+            atom_indices=atom_indices,
+            position=position,
+            offset_mode=offset_mode,
+            offset=offset,
+            leader_line=leader_line,
+            leader_line_style=leader_line_style,
+            label_style=dict(raw_style) if isinstance(raw_style, dict) else None,
+            skip_digestion=True,
+        )
+    else:
+        view.annotations.add_label_from_active_selection(
+            text=text.strip(),
+            label_style=dict(raw_style) if isinstance(raw_style, dict) else None,
+            offset_mode=offset_mode,
+            offset=offset,
+            leader_line=leader_line,
+            leader_line_style=leader_line_style,
+            skip_digestion=True,
+        )
 
 
 def delete_annotation(view: Any, content: Mapping[str, Any]) -> None:

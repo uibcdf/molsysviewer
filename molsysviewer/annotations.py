@@ -145,7 +145,7 @@ class AnnotationsManager:
             if not isinstance(record_tag, str):
                 record_tag = options.get("tag") if isinstance(options.get("tag"), str) else None
             layer = self._annotation_layer(record_tag) if record_tag is not None else None
-            return {
+            res = {
                 "kind": "label" if record.get("op") == "add_label" else "annotation",
                 "tag": record_tag,
                 "owner": None if layer is None else layer.owner,
@@ -159,6 +159,23 @@ class AnnotationsManager:
                 "broken": False if layer is None else bool(getattr(layer, "broken", False)),
                 "broken_reason": None if layer is None else getattr(layer, "broken_reason", None),
             }
+            if "position" in options:
+                res["position"] = options["position"]
+            if "offset_mode" in options:
+                res["offset_mode"] = options["offset_mode"]
+            if "offset" in options:
+                if options.get("offset_mode") == "world":
+                    from ._pyunitwizard import puw
+                    offset_q = puw.quantity(options["offset"], "angstrom")
+                    offset_std = puw.get_value(puw.standardize(offset_q))
+                    res["offset"] = [float(x) for x in offset_std]
+                else:
+                    res["offset"] = options["offset"]
+            if "leader_line" in options:
+                res["leader_line"] = options["leader_line"]
+            if "leader_line_style" in options:
+                res["leader_line_style"] = options["leader_line_style"]
+            return res
 
         records = self.records(skip_digestion=True)
         if tag is None:
@@ -181,26 +198,39 @@ class AnnotationsManager:
         selection: Any = None,
         *,
         atom_indices: Any = None,
+        position: tuple[float, float, float] | None = None,
+        offset_mode: str = "camera",
+        offset: tuple[float, float, float] = (0.0, 0.0, 0.0),
+        leader_line: bool = False,
+        leader_line_style: str = "dashed",
         tag: str | None = None,
         layer_tag: str | None = None,
         syntax: str = "MolSysMT",
         label_style: dict[str, Any] | None = None,
         skip_digestion: bool = False,
     ) -> Layer:
-        """Add a persistent annotation anchored to a set of atoms.
-
-        The anchor position is the geometric centroid of the resolved atoms.
+        """Add a persistent annotation anchored to a set of atoms or position.
 
         Parameters
         ----------
         text
             Annotation text to display.
         kind
-            Annotation kind.  Currently only ``"label"`` is supported.
+            Annotation kind. Currently only ``"label"`` is supported.
         selection
             MolSysMT selection string or expression (e.g. ``'group_index==5'``).
         atom_indices
             Explicit list of atom indices. Takes priority over *selection*.
+        position
+            Explicit absolute coordinate tuple (x, y, z). Takes priority over selection/atom_indices.
+        offset_mode
+            Offset coordinate space: `"camera"` or `"world"`.
+        offset
+            Relative offset displacement vector.
+        leader_line
+            If True, draws a connection line from the anchor to the offset label.
+        leader_line_style
+            Style of the connection line: `"solid"`, `"dashed"`, or `"dotted"`.
         tag
             Unique identifier for this annotation object.
         layer_tag
@@ -208,13 +238,21 @@ class AnnotationsManager:
         syntax
             Selection syntax (default ``"MolSysMT"``).
         label_style
-            Optional visual style dict with keys: ``color`` (CSS hex string),
-            ``size_em`` (float), ``background`` (bool),
-            ``background_opacity`` (float 0–1).
+            Optional visual style dict.
         """
-        resolved_atom_indices = self._resolve_anchor_atom_indices(
-            selection, atom_indices=atom_indices
-        )
+        if position is not None:
+            if not isinstance(position, (list, tuple)) or len(position) != 3:
+                raise ValueError("position must be a 3-element tuple or list of floats.")
+            from ._pyunitwizard import puw
+            pos_q = position if puw.is_quantity(position) else puw.quantity(position, "nm")
+            pos_ang = puw.get_value(pos_q, to_unit="angstrom")
+            resolved_position = [float(x) for x in pos_ang]
+            resolved_atom_indices = None
+        else:
+            resolved_position = None
+            resolved_atom_indices = self._resolve_anchor_atom_indices(
+                selection, atom_indices=atom_indices
+            )
 
         object_tag = tag or self._view._next_annotation_tag()  # noqa: SLF001
         resolved_layer_tag = layer_tag if layer_tag is not None else object_tag
@@ -226,6 +264,23 @@ class AnnotationsManager:
             "layer_tag": resolved_layer_tag,
             "atom_indices": resolved_atom_indices,
         }
+        if resolved_position is not None:
+            options["position"] = resolved_position
+        if offset_mode != "camera":
+            options["offset_mode"] = offset_mode
+        offset_list = list(offset) if isinstance(offset, (list, tuple)) else [0.0, 0.0, 0.0]
+        if offset_list != [0.0, 0.0, 0.0]:
+            if offset_mode == "world":
+                from ._pyunitwizard import puw
+                offset_q = offset_list if puw.is_quantity(offset_list) else puw.quantity(offset_list, "nm")
+                offset_ang = puw.get_value(offset_q, to_unit="angstrom")
+                options["offset"] = [float(x) for x in offset_ang]
+            else:
+                options["offset"] = offset_list
+        if leader_line:
+            options["leader_line"] = True
+        if leader_line_style != "dashed":
+            options["leader_line_style"] = leader_line_style
         if label_style:
             options["style"] = dict(label_style)
 
@@ -284,13 +339,28 @@ class AnnotationsManager:
         tag: str | None = None,
         layer_tag: str | None = None,
         label_style: dict | None = None,
+        position: tuple[float, float, float] | None = None,
+        offset_mode: str = "camera",
+        offset: tuple[float, float, float] = (0.0, 0.0, 0.0),
+        leader_line: bool = False,
+        leader_line_style: str = "dashed",
         skip_digestion: bool = False,
     ) -> Layer:
-        """Add a persistent label from the last active selection.
+        """Add a persistent label from the last active selection or coordinates."""
+        if position is not None:
+            return self.add_annotation(
+                text=text,
+                position=position,
+                offset_mode=offset_mode,
+                offset=offset,
+                leader_line=leader_line,
+                leader_line_style=leader_line_style,
+                tag=tag,
+                layer_tag=layer_tag,
+                label_style=label_style,
+                skip_digestion=True,
+            )
 
-        Supports single- and multi-group selections.  The label is anchored
-        to the union of all selected atom indices.
-        """
         event = self._view.get_last_active_selection_event()
         if event is None:
             raise ValueError("No active selection stored. Select an element before adding a label.")
@@ -302,6 +372,10 @@ class AnnotationsManager:
         return self.add_annotation(
             text=text,
             atom_indices=[int(i) for i in atom_indices],
+            offset_mode=offset_mode,
+            offset=offset,
+            leader_line=leader_line,
+            leader_line_style=leader_line_style,
             tag=tag,
             layer_tag=layer_tag,
             label_style=label_style,

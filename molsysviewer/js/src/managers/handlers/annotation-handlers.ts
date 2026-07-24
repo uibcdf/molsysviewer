@@ -6,6 +6,7 @@ import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
 import { Structure, StructureElement, Unit } from "molstar/lib/mol-model/structure";
 import { StructureSelection } from "molstar/lib/mol-model/structure/query";
 import { Color } from "molstar/lib/mol-util/color";
+import { Vec3 } from "molstar/lib/mol-math/linear-algebra";
 
 import { AddLabelMessage, LabelStyle, UpdateLabelMessage } from "../../messages/viewer-messages";
 
@@ -36,7 +37,18 @@ export interface AnnotationCallbacks {
 export class AnnotationHandlers {
     private readonly labelRefs = new Set<StateTransform.Ref>();
     private readonly refsByTag = new Map<string, Set<StateTransform.Ref>>();
-    private readonly specsByTag = new Map<string, { text: string; atom_indices: number[]; tag: string; layer_tag?: string; style?: LabelStyle }>();
+    private readonly specsByTag = new Map<string, {
+        text: string;
+        atom_indices: number[];
+        tag: string;
+        layer_tag?: string;
+        style?: LabelStyle;
+        position?: number[];
+        offset_mode?: "camera" | "world";
+        offset?: number[];
+        leader_line?: boolean;
+        leader_line_style?: "solid" | "dashed" | "dotted";
+    }>();
     /** Maps layer_tag → Set of annotation tags that belong to it. */
     private readonly layerTagIndex = new Map<string, Set<string>>();
 
@@ -56,8 +68,31 @@ export class AnnotationHandlers {
         const tag = msg.tag ?? msg.options?.tag ?? "annotation";
         const layer_tag = msg.options?.layer_tag;
         const style = msg.options?.style;
-        if (!text.trim() || atomIndices.length === 0) return;
-        this.specsByTag.set(tag, { text: text.trim(), atom_indices: [...atomIndices], tag, layer_tag, style });
+        const position = Array.isArray(msg.options?.position)
+            ? msg.options.position.map(Number)
+            : undefined;
+        const offsetMode = msg.options?.offset_mode ?? "camera";
+        const offset = Array.isArray(msg.options?.offset)
+            ? msg.options.offset.map(Number)
+            : [0.0, 0.0, 0.0];
+        const leaderLine = !!msg.options?.leader_line;
+        const leaderLineStyle = msg.options?.leader_line_style ?? "dashed";
+
+        if (!text.trim() && !position && atomIndices.length === 0) return;
+
+        this.specsByTag.set(tag, {
+            text: text.trim(),
+            atom_indices: [...atomIndices],
+            tag,
+            layer_tag,
+            style,
+            position,
+            offset_mode: offsetMode,
+            offset,
+            leader_line: leaderLine,
+            leader_line_style: leaderLineStyle,
+        });
+
         if (layer_tag && layer_tag !== tag) {
             const group = this.layerTagIndex.get(layer_tag) ?? new Set<string>();
             group.add(tag);
@@ -67,12 +102,36 @@ export class AnnotationHandlers {
         // Notify UI overlay (strips)
         this.callbacks.addLabelOverlay?.(msg);
 
-        const loci = this.buildLociFromAtomIndices(structure, atomIndices);
+        let loci: any;
+        const finalOffset = [...offset];
+
+        if (position) {
+            const closest = this.findClosestAtom(structure, position);
+            if (!closest) return; // No atoms in structure
+            loci = this.buildLociForSingleAtom(structure, closest.unit, closest.elementIndex);
+
+            // Compute displacement vector to project the label to the absolute coordinates
+            finalOffset[0] = position[0] - closest.coords[0] + offset[0];
+            finalOffset[1] = position[1] - closest.coords[1] + offset[1];
+            finalOffset[2] = position[2] - closest.coords[2] + offset[2];
+        } else {
+            loci = this.buildLociFromAtomIndices(structure, atomIndices);
+        }
+
         if (!loci) return;
 
         const styleParams = styleToVisualParams(style) ?? {};
         // tooltip: tag enables Mol*'s pickability for this label repr
-        const mergedVisualParams = { ...styleParams, tooltip: tag } as any;
+        const mergedVisualParams = {
+            ...styleParams,
+            tooltip: tag,
+            offsetX: finalOffset[0],
+            offsetY: finalOffset[1],
+            offsetZ: finalOffset[2],
+            tether: leaderLine,
+            tetherLength: 1,
+        } as any;
+
         const added = await this.plugin.managers.structure.measurement.addLabel(loci, {
             selectionTags: [tag],
             reprTags: [tag],
@@ -111,11 +170,16 @@ export class AnnotationHandlers {
             op: "add_label",
             tag,
             options: {
-                text: msg.options?.text,
-                atom_indices: msg.options?.atom_indices,
+                text: msg.options?.text ?? prevSpec?.text,
+                atom_indices: msg.options?.atom_indices ?? prevSpec?.atom_indices,
                 tag,
                 layer_tag: msg.options?.layer_tag ?? prevSpec?.layer_tag,
                 style: msg.options?.style ?? prevSpec?.style,
+                position: msg.options?.position ?? prevSpec?.position,
+                offset_mode: msg.options?.offset_mode ?? prevSpec?.offset_mode,
+                offset: msg.options?.offset ?? prevSpec?.offset,
+                leader_line: msg.options?.leader_line ?? prevSpec?.leader_line,
+                leader_line_style: msg.options?.leader_line_style ?? prevSpec?.leader_line_style,
             },
         });
     }
@@ -212,6 +276,11 @@ export class AnnotationHandlers {
                 tag,
                 layer_tag: spec.layer_tag,
                 style: spec.style,
+                position: spec.position,
+                offset_mode: spec.offset_mode,
+                offset: spec.offset,
+                leader_line: spec.leader_line,
+                leader_line_style: spec.leader_line_style,
             },
         });
     }
@@ -252,5 +321,50 @@ export class AnnotationHandlers {
 
         if (!added) return undefined;
         return StructureSelection.toLociWithSourceUnits(selectionBuilder.getSelection());
+    }
+
+    private findClosestAtom(structure: Structure, target: number[]): { elementIndex: number; unit: Unit; distance: number; coords: [number, number, number] } | undefined {
+        let closest: { elementIndex: number; unit: Unit; distance: number; coords: [number, number, number] } | undefined = undefined;
+        let minDistSq = Infinity;
+
+        const tx = target[0];
+        const ty = target[1];
+        const tz = target[2];
+
+        for (const unit of structure.units) {
+            if (!Unit.isAtomic(unit)) continue;
+            const elements = unit.elements;
+            const elementCount = OrderedSet.size(elements);
+            const p = Vec3.zero();
+
+            for (let ordinal = 0; ordinal < elementCount; ordinal++) {
+                const elementIndex = OrderedSet.getAt(elements, ordinal);
+                unit.conformation.position(elementIndex, p);
+                const dx = p[0] - tx;
+                const dy = p[1] - ty;
+                const dz = p[2] - tz;
+                const distSq = dx * dx + dy * dy + dz * dz;
+                if (distSq < minDistSq) {
+                    minDistSq = distSq;
+                    closest = {
+                        elementIndex,
+                        unit,
+                        distance: Math.sqrt(distSq),
+                        coords: [p[0], p[1], p[2]]
+                    };
+                }
+            }
+        }
+        return closest;
+    }
+
+    private buildLociForSingleAtom(structure: Structure, unit: Unit, elementIndex: number) {
+        const subset = SortedArray.ofSortedArray([elementIndex]) as StructureElement.Set;
+        const childUnit = unit.getChild(subset);
+        const subStructure = Structure.create([childUnit], { parent: structure });
+        const selectionBuilder = StructureSelection.LinearBuilder(structure);
+        selectionBuilder.add(subStructure);
+        const sel = selectionBuilder.getSelection();
+        return StructureSelection.toLociWithSourceUnits(sel);
     }
 }

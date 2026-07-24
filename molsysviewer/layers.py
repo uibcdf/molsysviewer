@@ -1142,17 +1142,24 @@ class Annotation(SceneObject):
     def get_coordinates(self):
         """Return the anchor position in the configured standard length unit.
 
-        The anchor is the centroid of the atom indices stored in the annotation
-        record, evaluated at the current structure frame.
+        The anchor is either the position stored in the annotation record,
+        or the centroid of the atom indices evaluated at the current frame.
         """
         import numpy as _np
 
         record = self._require_annotation_record()
         options = record.get("options") or {}
+
+        position = options.get("position")
+        if position is not None:
+            if puw.is_quantity(position):
+                return puw.standardize(position)
+            return puw.standardize(puw.quantity(position, "angstrom"))
+
         atom_indices = options.get("atom_indices")
         if not isinstance(atom_indices, list) or len(atom_indices) == 0:
             raise ValueError(
-                f"Annotation {self.tag!r} has no atom-index anchor; cannot resolve coordinates."
+                f"Annotation {self.tag!r} has no anchor (no position and no atom_indices)."
             )
         molsys = getattr(self._view, "_molsys", None)
         if molsys is None:

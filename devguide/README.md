@@ -124,6 +124,8 @@ That principle should guide prioritization throughout the repository.
    - Long-term strategy for addressing JIT/Numba latency and transitioning to Rust/WASM.
 40. [**Standalone Version 2 Evolution Plan**](standalone_v2_evolution_plan.md)
    - Architectural roadmap for transitioning to a zero-configuration, lightweight desktop app for non-programmers.
+41. [**pytest-receptor**](pytest_receptor.md)
+   - Compact, agent-oriented output for the Python test suite; that it is pre-1.0, and where to report anomalies and proposals.
 
 
 

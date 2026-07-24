@@ -140437,18 +140437,53 @@ var AnnotationHandlers = class {
     const tag = msg.tag ?? msg.options?.tag ?? "annotation";
     const layer_tag = msg.options?.layer_tag;
     const style = msg.options?.style;
-    if (!text.trim() || atomIndices.length === 0) return;
-    this.specsByTag.set(tag, { text: text.trim(), atom_indices: [...atomIndices], tag, layer_tag, style });
+    const position = Array.isArray(msg.options?.position) ? msg.options.position.map(Number) : void 0;
+    const offsetMode = msg.options?.offset_mode ?? "camera";
+    const offset3 = Array.isArray(msg.options?.offset) ? msg.options.offset.map(Number) : [0, 0, 0];
+    const leaderLine = !!msg.options?.leader_line;
+    const leaderLineStyle = msg.options?.leader_line_style ?? "dashed";
+    if (!text.trim() && !position && atomIndices.length === 0) return;
+    this.specsByTag.set(tag, {
+      text: text.trim(),
+      atom_indices: [...atomIndices],
+      tag,
+      layer_tag,
+      style,
+      position,
+      offset_mode: offsetMode,
+      offset: offset3,
+      leader_line: leaderLine,
+      leader_line_style: leaderLineStyle
+    });
     if (layer_tag && layer_tag !== tag) {
       const group = this.layerTagIndex.get(layer_tag) ?? /* @__PURE__ */ new Set();
       group.add(tag);
       this.layerTagIndex.set(layer_tag, group);
     }
     this.callbacks.addLabelOverlay?.(msg);
-    const loci = this.buildLociFromAtomIndices(structure, atomIndices);
+    let loci;
+    const finalOffset = [...offset3];
+    if (position) {
+      const closest = this.findClosestAtom(structure, position);
+      if (!closest) return;
+      loci = this.buildLociForSingleAtom(structure, closest.unit, closest.elementIndex);
+      finalOffset[0] = position[0] - closest.coords[0] + offset3[0];
+      finalOffset[1] = position[1] - closest.coords[1] + offset3[1];
+      finalOffset[2] = position[2] - closest.coords[2] + offset3[2];
+    } else {
+      loci = this.buildLociFromAtomIndices(structure, atomIndices);
+    }
     if (!loci) return;
     const styleParams = styleToVisualParams(style) ?? {};
-    const mergedVisualParams = { ...styleParams, tooltip: tag };
+    const mergedVisualParams = {
+      ...styleParams,
+      tooltip: tag,
+      offsetX: finalOffset[0],
+      offsetY: finalOffset[1],
+      offsetZ: finalOffset[2],
+      tether: leaderLine,
+      tetherLength: 1
+    };
     const added = await this.plugin.managers.structure.measurement.addLabel(loci, {
       selectionTags: [tag],
       reprTags: [tag],
@@ -140485,11 +140520,16 @@ var AnnotationHandlers = class {
       op: "add_label",
       tag,
       options: {
-        text: msg.options?.text,
-        atom_indices: msg.options?.atom_indices,
+        text: msg.options?.text ?? prevSpec?.text,
+        atom_indices: msg.options?.atom_indices ?? prevSpec?.atom_indices,
         tag,
         layer_tag: msg.options?.layer_tag ?? prevSpec?.layer_tag,
-        style: msg.options?.style ?? prevSpec?.style
+        style: msg.options?.style ?? prevSpec?.style,
+        position: msg.options?.position ?? prevSpec?.position,
+        offset_mode: msg.options?.offset_mode ?? prevSpec?.offset_mode,
+        offset: msg.options?.offset ?? prevSpec?.offset,
+        leader_line: msg.options?.leader_line ?? prevSpec?.leader_line,
+        leader_line_style: msg.options?.leader_line_style ?? prevSpec?.leader_line_style
       }
     });
   }
@@ -140578,7 +140618,12 @@ var AnnotationHandlers = class {
         atom_indices: [...spec.atom_indices],
         tag,
         layer_tag: spec.layer_tag,
-        style: spec.style
+        style: spec.style,
+        position: spec.position,
+        offset_mode: spec.offset_mode,
+        offset: spec.offset,
+        leader_line: spec.leader_line,
+        leader_line_style: spec.leader_line_style
       }
     });
   }
@@ -140610,6 +140655,46 @@ var AnnotationHandlers = class {
     }
     if (!added) return void 0;
     return StructureSelection.toLociWithSourceUnits(selectionBuilder.getSelection());
+  }
+  findClosestAtom(structure, target) {
+    let closest = void 0;
+    let minDistSq = Infinity;
+    const tx = target[0];
+    const ty = target[1];
+    const tz = target[2];
+    for (const unit2 of structure.units) {
+      if (!Unit.isAtomic(unit2)) continue;
+      const elements = unit2.elements;
+      const elementCount = OrderedSet2.size(elements);
+      const p6 = Vec3.zero();
+      for (let ordinal = 0; ordinal < elementCount; ordinal++) {
+        const elementIndex = OrderedSet2.getAt(elements, ordinal);
+        unit2.conformation.position(elementIndex, p6);
+        const dx = p6[0] - tx;
+        const dy = p6[1] - ty;
+        const dz = p6[2] - tz;
+        const distSq = dx * dx + dy * dy + dz * dz;
+        if (distSq < minDistSq) {
+          minDistSq = distSq;
+          closest = {
+            elementIndex,
+            unit: unit2,
+            distance: Math.sqrt(distSq),
+            coords: [p6[0], p6[1], p6[2]]
+          };
+        }
+      }
+    }
+    return closest;
+  }
+  buildLociForSingleAtom(structure, unit2, elementIndex) {
+    const subset = SortedArray.ofSortedArray([elementIndex]);
+    const childUnit = unit2.getChild(subset);
+    const subStructure = Structure.create([childUnit], { parent: structure });
+    const selectionBuilder = StructureSelection.LinearBuilder(structure);
+    selectionBuilder.add(subStructure);
+    const sel = selectionBuilder.getSelection();
+    return StructureSelection.toLociWithSourceUnits(sel);
   }
 };
 
@@ -155087,6 +155172,13 @@ var AnnotationsPanel = class extends BasePanel {
     this.editDetailsTag = null;
     this.selectedTag = null;
     this.coalescing = false;
+    this.anchorType = "selection";
+    this.customPosition = [0, 0, 0];
+    this.nextOffsetMode = "camera";
+    this.nextOffset = [0, 0, 0];
+    this.nextLeaderLine = false;
+    this.nextLeaderLineStyle = "dashed";
+    this.stagedAnchor = null;
     this.annotationsQueryComposer = null;
     this.annotationsCheatSheetOpen = false;
   }
@@ -155183,7 +155275,6 @@ var AnnotationsPanel = class extends BasePanel {
       }
     }
     this.host.appendChild(list3);
-    this.host.appendChild(this.renderStyle());
   }
   selectionCount() {
     return this.selection.count_atoms || this.selection.atom_indices.length || this.settings.activeSelectionCount;
@@ -155191,6 +155282,7 @@ var AnnotationsPanel = class extends BasePanel {
   renderNewAnnotationElements(parent) {
     const activeCount = this.selection.atom_indices.length;
     const hasActive = activeCount > 0;
+    const canCreate = this.anchorType === "coordinates" ? !!this.newText.trim() : this.stagedAnchor !== null && !!this.newText.trim();
     const createCard = card3();
     createCard.setAttribute("data-molsysviewer-annotation-create-card", "true");
     Object.assign(createCard.style, {
@@ -155219,10 +155311,21 @@ var AnnotationsPanel = class extends BasePanel {
       const text = textInput.value.trim();
       if (!text) return;
       this.newText = "";
-      this.ctx.onAction("create_annotation", { text, label_style: { ...this.nextStyle } });
+      const atomIndices = this.anchorType === "selection" ? this.stagedAnchor || [] : void 0;
+      this.stagedAnchor = null;
+      this.ctx.onAction("create_annotation", {
+        text,
+        label_style: { ...this.nextStyle },
+        position: this.anchorType === "coordinates" ? [...this.customPosition] : void 0,
+        atom_indices: atomIndices,
+        offset_mode: this.nextOffsetMode,
+        offset: [...this.nextOffset],
+        leader_line: this.nextLeaderLine,
+        leader_line_style: this.nextLeaderLineStyle
+      });
     });
     addBtn.setAttribute("data-molsysviewer-annotation-create-confirm", "true");
-    addBtn.disabled = !this.settings.systemLoaded || !hasActive || !this.newText.trim();
+    addBtn.disabled = !this.settings.systemLoaded || !canCreate;
     addBtn.style.opacity = addBtn.disabled ? "0.42" : "1";
     Object.assign(addBtn.style, {
       flex: "0 0 auto",
@@ -155239,7 +155342,8 @@ var AnnotationsPanel = class extends BasePanel {
     createCard.appendChild(formRow);
     textInput.addEventListener("input", () => {
       this.newText = textInput.value;
-      addBtn.disabled = !this.settings.systemLoaded || !hasActive || !this.newText.trim();
+      const updatedCanCreate = this.anchorType === "coordinates" ? !!this.newText.trim() : this.stagedAnchor !== null && !!this.newText.trim();
+      addBtn.disabled = !this.settings.systemLoaded || !updatedCanCreate;
       addBtn.style.opacity = addBtn.disabled ? "0.42" : "1";
     });
     textInput.addEventListener("keydown", (event) => {
@@ -155370,259 +155474,433 @@ var AnnotationsPanel = class extends BasePanel {
       this.scheduleRender();
     });
     createCard.appendChild(styleRow);
+    const offsetRow = document.createElement("div");
+    Object.assign(offsetRow.style, {
+      display: "flex",
+      alignItems: "center",
+      flexWrap: "wrap",
+      gap: "8px 12px",
+      fontSize: "11px",
+      color: "rgba(244,244,245,0.7)",
+      marginTop: "6px",
+      paddingTop: "6px",
+      borderTop: "1px solid rgba(255,255,255,0.06)"
+    });
+    const modeLabel = document.createElement("label");
+    Object.assign(modeLabel.style, { display: "flex", alignItems: "center", gap: "4px" });
+    modeLabel.appendChild(document.createTextNode("Offset Mode"));
+    const modeSelect = makeStyledSelect([
+      { value: "camera", label: "Camera Space" },
+      { value: "world", label: "World Space" }
+    ], this.nextOffsetMode, (val) => {
+      this.nextOffsetMode = val;
+      this.scheduleRender();
+    });
+    Object.assign(modeSelect.style, { padding: "2px 4px", fontSize: "10px" });
+    modeLabel.appendChild(modeSelect);
+    offsetRow.appendChild(modeLabel);
+    const unit2 = this.nextOffsetMode === "camera" ? "px" : "nm";
+    ["X", "Y", "Z"].forEach((axis, idx) => {
+      const axisLabel = document.createElement("label");
+      Object.assign(axisLabel.style, { display: "flex", alignItems: "center", gap: "2px" });
+      axisLabel.appendChild(document.createTextNode(`${axis} (${unit2}):`));
+      const valInput = document.createElement("input");
+      valInput.type = "number";
+      valInput.step = "0.5";
+      valInput.value = String(this.nextOffset[idx]);
+      Object.assign(valInput.style, {
+        width: "45px",
+        background: "rgba(0,0,0,0.2)",
+        border: "1px solid rgba(255,255,255,0.12)",
+        borderRadius: "4px",
+        padding: "2px 4px",
+        color: "#fff",
+        fontSize: "10px",
+        textAlign: "center"
+      });
+      valInput.addEventListener("input", () => {
+        this.nextOffset[idx] = Number(valInput.value) || 0;
+      });
+      axisLabel.appendChild(valInput);
+      offsetRow.appendChild(axisLabel);
+    });
+    const lineLabel = document.createElement("label");
+    Object.assign(lineLabel.style, { display: "flex", alignItems: "center", gap: "4px", cursor: "pointer" });
+    const lineCheckbox = document.createElement("input");
+    lineCheckbox.type = "checkbox";
+    lineCheckbox.checked = this.nextLeaderLine;
+    lineCheckbox.addEventListener("change", () => {
+      this.nextLeaderLine = lineCheckbox.checked;
+      this.scheduleRender();
+    });
+    lineLabel.appendChild(lineCheckbox);
+    lineLabel.appendChild(document.createTextNode("Leader Line"));
+    offsetRow.appendChild(lineLabel);
+    createCard.appendChild(offsetRow);
     const hint = document.createElement("div");
-    hint.textContent = !this.settings.systemLoaded ? "Load a structure first." : !hasActive ? "Select atoms to anchor the annotation." : `Anchored to the active selection (${activeCount} atom${activeCount === 1 ? "" : "s"}).`;
+    if (!this.settings.systemLoaded) {
+      hint.textContent = "Load a structure first.";
+    } else if (this.anchorType === "coordinates") {
+      hint.textContent = "Anchored to the absolute coordinates specified below.";
+    } else if (this.stagedAnchor === null) {
+      hint.textContent = "Select atoms to anchor the annotation and click Anchor.";
+    } else {
+      const cnt = this.stagedAnchor.length;
+      const desc = cnt === 1 ? "1 atom" : `centroid of ${cnt} atoms`;
+      hint.textContent = `Anchored to the active selection (${desc})`;
+    }
     Object.assign(hint.style, { fontSize: "10px", color: "rgba(244,244,245,0.58)", marginTop: "2px" });
     createCard.appendChild(hint);
     parent.appendChild(createCard);
-    const activeCard = document.createElement("div");
-    activeCard.setAttribute("data-molsysviewer-annotation-active-selection-card", "true");
-    Object.assign(activeCard.style, {
+    const anchorRow = document.createElement("div");
+    Object.assign(anchorRow.style, {
       display: "flex",
-      flexDirection: "column",
-      gap: "8px",
+      alignItems: "center",
+      gap: "12px",
+      fontSize: "11px",
+      color: "rgba(244,244,245,0.7)",
+      marginBottom: "10px",
       padding: "8px 10px",
       borderRadius: "8px",
-      background: "rgba(255,255,255,0.035)",
-      border: "1px solid rgba(255,255,255,0.08)",
-      marginBottom: "10px"
+      background: "rgba(255,255,255,0.02)",
+      border: "1px solid rgba(255,255,255,0.04)"
     });
-    const activeRow = document.createElement("div");
-    Object.assign(activeRow.style, {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      width: "100%",
-      gap: "6px 10px"
-    });
-    const leftWrap = document.createElement("div");
-    Object.assign(leftWrap.style, {
-      display: "flex",
-      alignItems: "center",
-      gap: "6px",
-      fontSize: "12px",
-      fontWeight: "700",
-      color: "#fff"
-    });
-    const dot = document.createElement("span");
-    Object.assign(dot.style, {
-      width: "5px",
-      height: "5px",
-      borderRadius: "999px",
-      background: hasActive ? "#34d399" : "rgba(244,244,245,0.28)",
-      boxShadow: hasActive ? "0 0 6px rgba(52,211,153,0.4)" : "none",
-      flexShrink: "0"
-    });
-    leftWrap.appendChild(dot);
-    leftWrap.appendChild(document.createTextNode("Active selection"));
-    activeRow.appendChild(leftWrap);
-    const countText = document.createElement("span");
-    Object.assign(countText.style, {
-      fontSize: "11px",
-      color: "rgba(244,244,245,0.6)",
-      marginLeft: "auto",
-      marginRight: "4px"
-    });
-    if (hasActive) {
-      countText.textContent = `${activeCount} atom${activeCount === 1 ? "" : "s"}`;
-    } else {
-      countText.textContent = "No selection";
-    }
-    activeRow.appendChild(countText);
-    const btnRow = document.createElement("div");
-    Object.assign(btnRow.style, {
-      display: "flex",
-      gap: "4px",
-      alignItems: "center",
-      flexShrink: "0"
-    });
-    const deactivateBtn = makeButton("Deactivate", () => {
-      this.ctx.onAction("set_active_selection_operation", { operation: "none" });
+    anchorRow.appendChild(document.createTextNode("Anchor:"));
+    const selRadioLabel = document.createElement("label");
+    Object.assign(selRadioLabel.style, { display: "flex", alignItems: "center", gap: "4px", cursor: "pointer" });
+    const selRadio = document.createElement("input");
+    selRadio.type = "radio";
+    selRadio.name = "annotation-anchor-type";
+    selRadio.checked = this.anchorType === "selection";
+    selRadio.addEventListener("change", () => {
+      this.anchorType = "selection";
       this.scheduleRender();
     });
-    deactivateBtn.disabled = !hasActive;
-    deactivateBtn.style.opacity = hasActive ? "1" : "0.42";
-    deactivateBtn.style.padding = "4px 8px";
-    deactivateBtn.style.fontSize = "11px";
-    deactivateBtn.style.whiteSpace = "nowrap";
-    deactivateBtn.setAttribute("data-molsysviewer-annotation-active-deactivate", "true");
-    btnRow.appendChild(deactivateBtn);
-    activeRow.appendChild(btnRow);
-    activeCard.appendChild(activeRow);
-    parent.appendChild(activeCard);
-    const queryCard = document.createElement("div");
-    queryCard.setAttribute("data-molsysviewer-annotation-query-card", "true");
-    Object.assign(queryCard.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "8px",
-      padding: "10px",
-      borderRadius: "8px",
-      background: "rgba(255,255,255,0.03)",
-      border: "1px solid rgba(255,255,255,0.05)",
-      marginBottom: "10px"
+    selRadioLabel.appendChild(selRadio);
+    selRadioLabel.appendChild(document.createTextNode("Selection"));
+    anchorRow.appendChild(selRadioLabel);
+    const coordsRadioLabel = document.createElement("label");
+    Object.assign(coordsRadioLabel.style, { display: "flex", alignItems: "center", gap: "4px", cursor: "pointer" });
+    const coordsRadio = document.createElement("input");
+    coordsRadio.type = "radio";
+    coordsRadio.name = "annotation-anchor-type";
+    coordsRadio.checked = this.anchorType === "coordinates";
+    coordsRadio.addEventListener("change", () => {
+      this.anchorType = "coordinates";
+      this.scheduleRender();
     });
-    const qHeader = document.createElement("div");
-    qHeader.textContent = "Select by query";
-    Object.assign(qHeader.style, {
-      fontSize: "12px",
-      fontWeight: "700",
-      color: "#fff"
-    });
-    queryCard.appendChild(qHeader);
-    const composer = this.getAnnotationsQueryComposer();
-    queryCard.appendChild(composer.element());
-    const presetRow = document.createElement("div");
-    presetRow.setAttribute("data-molsysviewer-annotation-query-presets", "true");
-    Object.assign(presetRow.style, {
-      display: "flex",
-      flexWrap: "wrap",
-      gap: "5px",
-      alignItems: "center"
-    });
-    const presetLabel = document.createElement("span");
-    Object.assign(presetLabel.style, {
-      fontSize: "10px",
-      color: "rgba(244,244,245,0.52)",
-      marginRight: "2px"
-    });
-    presetLabel.textContent = "shortcuts";
-    presetRow.appendChild(presetLabel);
-    const presets = [
-      { label: "protein", expression: 'molecule_type=="protein"' },
-      { label: "water", expression: 'molecule_type=="water"' },
-      { label: "backbone", expression: 'atom_name in ["N", "CA", "C", "O"]' },
-      { label: "sidechain", expression: 'atom_name not in ["N", "CA", "C", "O"]' },
-      { label: "ligand", expression: 'molecule_type=="small molecule"' }
-    ];
-    for (const preset of presets) {
-      const chip = document.createElement("button");
-      chip.type = "button";
-      chip.textContent = preset.label;
-      chip.setAttribute("data-molsysviewer-annotation-query-preset", preset.label);
-      Object.assign(chip.style, {
-        background: "rgba(99, 102, 241, 0.16)",
-        border: "1px solid rgba(129, 140, 248, 0.34)",
-        borderRadius: "9999px",
-        padding: "2px 6px",
-        color: "#c7d2fe",
-        fontSize: "9px",
-        fontWeight: "500",
-        cursor: "pointer"
+    coordsRadioLabel.appendChild(coordsRadio);
+    coordsRadioLabel.appendChild(document.createTextNode("Coordinates"));
+    anchorRow.appendChild(coordsRadioLabel);
+    parent.appendChild(anchorRow);
+    if (this.anchorType === "coordinates") {
+      const coordsCard = document.createElement("div");
+      coordsCard.setAttribute("data-molsysviewer-annotation-coords-card", "true");
+      Object.assign(coordsCard.style, {
+        display: "flex",
+        flexDirection: "column",
+        gap: "8px",
+        padding: "10px",
+        borderRadius: "8px",
+        background: "rgba(255,255,255,0.03)",
+        border: "1px solid rgba(255,255,255,0.05)",
+        marginBottom: "10px"
       });
-      chip.addEventListener("click", (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        composer.setExpression(preset.expression, "MolSysMT");
+      const cHeader = document.createElement("div");
+      cHeader.textContent = "Coordinate anchor (nm)";
+      Object.assign(cHeader.style, {
+        fontSize: "12px",
+        fontWeight: "700",
+        color: "#fff"
       });
-      presetRow.appendChild(chip);
-    }
-    queryCard.appendChild(presetRow);
-    if (this.annotationsCheatSheetOpen) {
-      const cheatSheet = document.createElement("div");
-      cheatSheet.setAttribute("data-molsysviewer-annotation-cheatsheet", "true");
-      Object.assign(cheatSheet.style, {
-        display: "grid",
-        gridTemplateColumns: "1fr",
+      coordsCard.appendChild(cHeader);
+      const inputRow = document.createElement("div");
+      Object.assign(inputRow.style, {
+        display: "flex",
+        gap: "8px"
+      });
+      ["X", "Y", "Z"].forEach((axis, index) => {
+        const col = document.createElement("div");
+        Object.assign(col.style, { display: "flex", flexDirection: "column", gap: "2px", flex: "1 1 0" });
+        const label2 = document.createElement("span");
+        label2.textContent = axis;
+        Object.assign(label2.style, { fontSize: "10px", color: "rgba(244,244,245,0.5)" });
+        col.appendChild(label2);
+        const numInput = document.createElement("input");
+        numInput.type = "number";
+        numInput.step = "0.1";
+        numInput.value = String(this.customPosition[index]);
+        Object.assign(numInput.style, INPUT_STYLE2);
+        numInput.addEventListener("input", () => {
+          this.customPosition[index] = Number(numInput.value) || 0;
+        });
+        col.appendChild(numInput);
+        inputRow.appendChild(col);
+      });
+      coordsCard.appendChild(inputRow);
+      parent.appendChild(coordsCard);
+    } else {
+      const activeCard = document.createElement("div");
+      activeCard.setAttribute("data-molsysviewer-annotation-active-selection-card", "true");
+      Object.assign(activeCard.style, {
+        display: "flex",
+        flexDirection: "column",
+        gap: "8px",
+        padding: "8px 10px",
+        borderRadius: "8px",
+        background: "rgba(255,255,255,0.035)",
+        border: "1px solid rgba(255,255,255,0.08)",
+        marginBottom: "10px"
+      });
+      const activeRow = document.createElement("div");
+      Object.assign(activeRow.style, {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        width: "100%",
+        gap: "6px 10px"
+      });
+      const leftWrap = document.createElement("div");
+      Object.assign(leftWrap.style, {
+        display: "flex",
+        alignItems: "center",
+        gap: "6px",
+        fontSize: "12px",
+        fontWeight: "700",
+        color: "#fff"
+      });
+      const dot = document.createElement("span");
+      Object.assign(dot.style, {
+        width: "5px",
+        height: "5px",
+        borderRadius: "999px",
+        background: hasActive ? "#34d399" : "rgba(244,244,245,0.28)",
+        boxShadow: hasActive ? "0 0 6px rgba(52,211,153,0.4)" : "none",
+        flexShrink: "0"
+      });
+      leftWrap.appendChild(dot);
+      leftWrap.appendChild(document.createTextNode("Active selection"));
+      activeRow.appendChild(leftWrap);
+      const countText = document.createElement("span");
+      Object.assign(countText.style, {
+        fontSize: "11px",
+        color: "rgba(244,244,245,0.6)",
+        marginLeft: "auto",
+        marginRight: "4px"
+      });
+      if (hasActive) {
+        countText.textContent = `${activeCount} atom${activeCount === 1 ? "" : "s"}`;
+      } else {
+        countText.textContent = "No selection";
+      }
+      activeRow.appendChild(countText);
+      const btnRow = document.createElement("div");
+      Object.assign(btnRow.style, {
+        display: "flex",
         gap: "4px",
-        padding: "8px",
-        borderRadius: "6px",
-        background: "rgba(0,0,0,0.18)",
-        border: "1px solid rgba(255,255,255,0.08)"
+        alignItems: "center",
+        flexShrink: "0"
       });
-      const examples = [
-        ["Atom name", 'atom_name=="CA"'],
-        ["Group index", "group_index in [10, 15]"],
-        ["Chain", 'chain_id=="A"'],
-        ["Protein", 'molecule_type=="protein"'],
-        ["Nearby", "all within 5 angstroms of atom_index in [0]"],
-        ["Bonded", "bonded to atom_index in [0]"]
+      const anchorBtn = makeButton("Anchor", () => {
+        this.stagedAnchor = [...this.selection.atom_indices];
+        this.scheduleRender();
+      });
+      anchorBtn.disabled = !hasActive;
+      anchorBtn.style.opacity = hasActive ? "1" : "0.42";
+      anchorBtn.style.padding = "4px 8px";
+      anchorBtn.style.fontSize = "11px";
+      anchorBtn.style.whiteSpace = "nowrap";
+      anchorBtn.setAttribute("data-molsysviewer-annotation-active-anchor", "true");
+      btnRow.appendChild(anchorBtn);
+      const deactivateBtn = makeButton("Deactivate", () => {
+        this.ctx.onAction("set_active_selection_operation", { operation: "none" });
+        this.stagedAnchor = null;
+        this.scheduleRender();
+      });
+      deactivateBtn.disabled = !hasActive;
+      deactivateBtn.style.opacity = hasActive ? "1" : "0.42";
+      deactivateBtn.style.padding = "4px 8px";
+      deactivateBtn.style.fontSize = "11px";
+      deactivateBtn.style.whiteSpace = "nowrap";
+      deactivateBtn.setAttribute("data-molsysviewer-annotation-active-deactivate", "true");
+      btnRow.appendChild(deactivateBtn);
+      activeRow.appendChild(btnRow);
+      activeCard.appendChild(activeRow);
+      parent.appendChild(activeCard);
+      const queryCard = document.createElement("div");
+      queryCard.setAttribute("data-molsysviewer-annotation-query-card", "true");
+      Object.assign(queryCard.style, {
+        display: "flex",
+        flexDirection: "column",
+        gap: "8px",
+        padding: "10px",
+        borderRadius: "8px",
+        background: "rgba(255,255,255,0.03)",
+        border: "1px solid rgba(255,255,255,0.05)",
+        marginBottom: "10px"
+      });
+      const qHeader = document.createElement("div");
+      qHeader.textContent = "Select by query";
+      Object.assign(qHeader.style, {
+        fontSize: "12px",
+        fontWeight: "700",
+        color: "#fff"
+      });
+      queryCard.appendChild(qHeader);
+      const composer = this.getAnnotationsQueryComposer();
+      queryCard.appendChild(composer.element());
+      const presetRow = document.createElement("div");
+      presetRow.setAttribute("data-molsysviewer-annotation-query-presets", "true");
+      Object.assign(presetRow.style, {
+        display: "flex",
+        flexWrap: "wrap",
+        gap: "5px",
+        alignItems: "center"
+      });
+      const presetLabel = document.createElement("span");
+      Object.assign(presetLabel.style, {
+        fontSize: "10px",
+        color: "rgba(244,244,245,0.52)",
+        marginRight: "2px"
+      });
+      presetLabel.textContent = "shortcuts";
+      presetRow.appendChild(presetLabel);
+      const presets = [
+        { label: "protein", expression: 'molecule_type=="protein"' },
+        { label: "water", expression: 'molecule_type=="water"' },
+        { label: "backbone", expression: 'atom_name in ["N", "CA", "C", "O"]' },
+        { label: "sidechain", expression: 'atom_name not in ["N", "CA", "C", "O"]' },
+        { label: "ligand", expression: 'molecule_type=="small molecule"' }
       ];
-      for (const [label2, expression] of examples) {
-        const row2 = document.createElement("button");
-        row2.type = "button";
-        row2.setAttribute("data-molsysviewer-annotation-cheatsheet-example", label2);
-        Object.assign(row2.style, {
-          display: "flex",
-          justifyContent: "space-between",
-          gap: "8px",
-          width: "100%",
-          background: "transparent",
-          border: "0",
-          padding: "3px 2px",
-          color: "#e4e4e7",
-          fontSize: "10px",
-          textAlign: "left",
+      for (const preset of presets) {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.textContent = preset.label;
+        chip.setAttribute("data-molsysviewer-annotation-query-preset", preset.label);
+        Object.assign(chip.style, {
+          background: "rgba(99, 102, 241, 0.16)",
+          border: "1px solid rgba(129, 140, 248, 0.34)",
+          borderRadius: "9999px",
+          padding: "2px 6px",
+          color: "#c7d2fe",
+          fontSize: "9px",
+          fontWeight: "500",
           cursor: "pointer"
         });
-        const name = document.createElement("span");
-        name.textContent = label2;
-        name.style.color = "rgba(244,244,245,0.62)";
-        const code = document.createElement("code");
-        code.textContent = expression;
-        Object.assign(code.style, {
-          color: "#c7d2fe",
-          fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap"
-        });
-        row2.appendChild(name);
-        row2.appendChild(code);
-        row2.addEventListener("click", (event) => {
+        chip.addEventListener("click", (event) => {
           event.preventDefault();
           event.stopPropagation();
-          composer.setExpression(expression, "MolSysMT");
+          composer.setExpression(preset.expression, "MolSysMT");
         });
-        cheatSheet.appendChild(row2);
+        presetRow.appendChild(chip);
       }
-      queryCard.appendChild(cheatSheet);
-    }
-    parent.appendChild(queryCard);
-    const savedCard = document.createElement("div");
-    savedCard.setAttribute("data-molsysviewer-annotation-activate-saved-card", "true");
-    Object.assign(savedCard.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "8px",
-      padding: "8px 10px",
-      borderRadius: "8px",
-      background: "rgba(255,255,255,0.035)",
-      border: "1px solid rgba(255,255,255,0.08)",
-      marginBottom: "10px"
-    });
-    const sHeader = document.createElement("div");
-    sHeader.textContent = "Activate saved selection";
-    Object.assign(sHeader.style, {
-      fontSize: "12px",
-      fontWeight: "700",
-      color: "#fff"
-    });
-    savedCard.appendChild(sHeader);
-    let activeSavedTag = "";
-    for (const s of this.savedSelections) {
-      if (this.isSavedSelectionActive(s)) {
-        activeSavedTag = s.tag;
-        break;
+      queryCard.appendChild(presetRow);
+      if (this.annotationsCheatSheetOpen) {
+        const cheatSheet = document.createElement("div");
+        cheatSheet.setAttribute("data-molsysviewer-annotation-cheatsheet", "true");
+        Object.assign(cheatSheet.style, {
+          display: "grid",
+          gridTemplateColumns: "1fr",
+          gap: "4px",
+          padding: "8px",
+          borderRadius: "6px",
+          background: "rgba(0,0,0,0.18)",
+          border: "1px solid rgba(255,255,255,0.08)"
+        });
+        const examples = [
+          ["Atom name", 'atom_name=="CA"'],
+          ["Group index", "group_index in [10, 15]"],
+          ["Chain", 'chain_id=="A"'],
+          ["Protein", 'molecule_type=="protein"'],
+          ["Nearby", "all within 5 angstroms of atom_index in [0]"],
+          ["Bonded", "bonded to atom_index in [0]"]
+        ];
+        for (const [label2, expression] of examples) {
+          const row2 = document.createElement("button");
+          row2.type = "button";
+          row2.setAttribute("data-molsysviewer-annotation-cheatsheet-example", label2);
+          Object.assign(row2.style, {
+            display: "flex",
+            justifyContent: "space-between",
+            gap: "8px",
+            width: "100%",
+            background: "transparent",
+            border: "0",
+            padding: "3px 2px",
+            color: "#e4e4e7",
+            fontSize: "10px",
+            textAlign: "left",
+            cursor: "pointer"
+          });
+          const name = document.createElement("span");
+          name.textContent = label2;
+          name.style.color = "rgba(244,244,245,0.62)";
+          const code = document.createElement("code");
+          code.textContent = expression;
+          Object.assign(code.style, {
+            color: "#c7d2fe",
+            fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap"
+          });
+          row2.appendChild(name);
+          row2.appendChild(code);
+          row2.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            composer.setExpression(expression, "MolSysMT");
+          });
+          cheatSheet.appendChild(row2);
+        }
+        queryCard.appendChild(cheatSheet);
       }
-    }
-    const savedOptions = [
-      { value: "", label: "Select saved selection..." },
-      ...this.savedSelections.map((s) => ({ value: s.tag, label: `${s.tag} (${s.atom_count} atoms)` }))
-    ];
-    const savedSelect = makeStyledSelect(
-      savedOptions,
-      activeSavedTag,
-      (val) => {
-        if (val) {
-          this.ctx.onAction("activate_selection", { tag: val });
-        } else {
-          this.ctx.onAction("set_active_selection_operation", { operation: "none" });
+      parent.appendChild(queryCard);
+      const savedCard = document.createElement("div");
+      savedCard.setAttribute("data-molsysviewer-annotation-activate-saved-card", "true");
+      Object.assign(savedCard.style, {
+        display: "flex",
+        flexDirection: "column",
+        gap: "8px",
+        padding: "8px 10px",
+        borderRadius: "8px",
+        background: "rgba(255,255,255,0.035)",
+        border: "1px solid rgba(255,255,255,0.08)",
+        marginBottom: "10px"
+      });
+      const sHeader = document.createElement("div");
+      sHeader.textContent = "Activate saved selection";
+      Object.assign(sHeader.style, {
+        fontSize: "12px",
+        fontWeight: "700",
+        color: "#fff"
+      });
+      savedCard.appendChild(sHeader);
+      let activeSavedTag = "";
+      for (const s of this.savedSelections) {
+        if (this.isSavedSelectionActive(s)) {
+          activeSavedTag = s.tag;
+          break;
         }
       }
-    );
-    savedCard.appendChild(savedSelect);
-    parent.appendChild(savedCard);
+      const savedOptions = [
+        { value: "", label: "Select saved selection..." },
+        ...this.savedSelections.map((s) => ({ value: s.tag, label: `${s.tag} (${s.atom_count} atoms)` }))
+      ];
+      const savedSelect = makeStyledSelect(
+        savedOptions,
+        activeSavedTag,
+        (val) => {
+          if (val) {
+            this.ctx.onAction("activate_selection", { tag: val });
+          } else {
+            this.ctx.onAction("set_active_selection_operation", { operation: "none" });
+          }
+        }
+      );
+      savedCard.appendChild(savedSelect);
+      parent.appendChild(savedCard);
+    }
   }
   renderAnnotation(item2) {
     const row2 = card3();
@@ -155689,16 +155967,10 @@ var AnnotationsPanel = class extends BasePanel {
     });
     editBtn.title = "Rename, layer, or re-anchor";
     editBtn.setAttribute("data-molsysviewer-annotation-more", item2.tag);
-    const styleBtn = makeButton("Style", () => {
-      this.selectedTag = item2.tag;
-      this.scheduleRender();
-    });
-    styleBtn.title = "Select style";
-    styleBtn.setAttribute("data-molsysviewer-annotation-style-select", item2.tag);
     const remove3 = makeButton("\u{1F5D1}", () => this.ctx.onAction("delete_annotation", { tag: item2.tag }));
     remove3.title = "Delete annotation";
     remove3.setAttribute("data-molsysviewer-annotation-delete", item2.tag);
-    for (const button of [focus, eye, editBtn, styleBtn, remove3]) {
+    for (const button of [focus, eye, editBtn, remove3]) {
       button.style.flex = "0 1 auto";
       button.style.padding = "3px 6px";
       button.style.fontSize = "10px";
@@ -155816,6 +156088,67 @@ var AnnotationsPanel = class extends BasePanel {
     reanchor.style.width = "100%";
     reanchor.setAttribute("data-molsysviewer-annotation-reanchor", item2.tag);
     editor.appendChild(reanchor);
+    const sHeader = document.createElement("div");
+    sHeader.textContent = "Style";
+    Object.assign(sHeader.style, {
+      fontSize: "11px",
+      fontWeight: "700",
+      color: "rgba(255,255,255,0.8)",
+      marginTop: "4px",
+      paddingTop: "4px",
+      borderTop: "1px solid rgba(255,255,255,0.06)"
+    });
+    editor.appendChild(sHeader);
+    const style = resolvedStyle(item2.style);
+    const color = document.createElement("input");
+    color.type = "color";
+    color.value = style.color;
+    color.setAttribute("data-molsysviewer-annotation-style-color", item2.tag);
+    const bindContinuous = (inp, readStyle) => {
+      inp.addEventListener("focus", () => this.beginCoalescing());
+      inp.addEventListener("pointerdown", () => this.beginCoalescing());
+      inp.addEventListener("input", () => {
+        this.ctx.onAction("set_annotation_style", { tag: item2.tag, style: readStyle() });
+      });
+      inp.addEventListener("change", () => this.endCoalescing());
+      inp.addEventListener("blur", () => this.endCoalescing());
+    };
+    bindContinuous(color, () => ({ ...style, color: color.value }));
+    editor.appendChild(this.styleRow("Colour", color));
+    const size4 = document.createElement("input");
+    size4.type = "range";
+    size4.min = "0.5";
+    size4.max = "4";
+    size4.step = "0.1";
+    size4.value = String(style.size_em);
+    size4.setAttribute("data-molsysviewer-annotation-style-size", item2.tag);
+    bindContinuous(size4, () => ({ ...style, size_em: Number(size4.value) }));
+    editor.appendChild(this.styleRow("Size", size4));
+    const background = document.createElement("input");
+    background.type = "checkbox";
+    background.checked = style.background;
+    background.setAttribute("data-molsysviewer-annotation-style-background", item2.tag);
+    const opacity = document.createElement("input");
+    opacity.type = "range";
+    opacity.min = "0";
+    opacity.max = "1";
+    opacity.step = "0.05";
+    opacity.value = String(style.background_opacity);
+    opacity.disabled = !style.background;
+    opacity.setAttribute("data-molsysviewer-annotation-style-background-opacity", item2.tag);
+    const updateOpacityEnabled = () => {
+      opacity.disabled = !background.checked;
+    };
+    background.addEventListener("change", () => {
+      updateOpacityEnabled();
+      this.ctx.onAction("set_annotation_style", {
+        tag: item2.tag,
+        style: { ...style, background: background.checked, background_opacity: Number(opacity.value) }
+      });
+    });
+    bindContinuous(opacity, () => ({ ...style, background: background.checked, background_opacity: Number(opacity.value) }));
+    editor.appendChild(this.styleRow("Background", background));
+    editor.appendChild(this.styleRow("Background opacity", opacity));
     return editor;
   }
   renderGlobalActions() {

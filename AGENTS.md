@@ -81,6 +81,17 @@ validation work instead.
     `npm run build:runtime` over `npm run build`. The latter is a
     release/packaging command because it synchronizes package versions from the
     Python `versioningit` output.
+14. **Agent-oriented Python test output**: for the `pytest` runs in rule 12, an
+    agent may render output compactly with `pytest-receptor` —
+    `pytest --receptor=llm tests/test_foo.py -x` and `pytest --receptor=llm tests/`.
+    It changes nothing about pass/fail; **normal `pytest` remains the
+    authority**. Do **not** pair it with `--tb=no`/`--tb=line` (they delete the
+    location evidence the compact report needs), so drop `--tb=no` from the
+    rule-12 full-suite check when using it. It is pre-1.0 and under evaluation:
+    report any disagreement with pytest, any failure its compact output was not
+    enough to diagnose, or any wrong grouping, in the `pytest-receptor`
+    repository under `devguide/pending_bugs/` (or `pending_proposals/`). See
+    [`devguide/pytest_receptor.md`](devguide/pytest_receptor.md).
 
 ## Developer documentation (where to look first)
 
