@@ -220,7 +220,173 @@ export class AnnotationsPanel extends BasePanel {
         const activeCount = this.selection.atom_indices.length;
         const hasActive = activeCount > 0;
 
-        // 1. Active Selection Card
+        // 1. Creation Input Form & Style Selection (At the top of the section)
+        const createCard = card();
+        createCard.setAttribute("data-molsysviewer-annotation-create-card", "true");
+        Object.assign(createCard.style, {
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+            marginBottom: "10px",
+        });
+
+        const formRow = document.createElement("div");
+        Object.assign(formRow.style, {
+            display: "flex",
+            gap: "6px",
+            width: "100%",
+        });
+
+        const textInput = document.createElement("input");
+        textInput.type = "text";
+        textInput.value = this.newText;
+        textInput.placeholder = "Annotation text...";
+        Object.assign(textInput.style, {
+            flex: "1 1 auto",
+            ...INPUT_STYLE,
+        });
+        textInput.setAttribute("data-molsysviewer-annotation-create-text", "true");
+        formRow.appendChild(textInput);
+
+        const addBtn = makeButton("Create", () => {
+            const text = textInput.value.trim();
+            if (!text) return;
+            this.newText = "";
+            this.ctx.onAction("create_annotation", { text, label_style: { ...this.nextStyle } });
+        });
+        addBtn.setAttribute("data-molsysviewer-annotation-create-confirm", "true");
+        addBtn.disabled = !this.settings.systemLoaded || !hasActive || !this.newText.trim();
+        addBtn.style.opacity = addBtn.disabled ? "0.42" : "1";
+        Object.assign(addBtn.style, {
+            flex: "0 0 auto",
+            background: "#6366f1",
+            border: "0",
+            borderRadius: "6px",
+            padding: "4px 10px",
+            color: "#fff",
+            fontSize: "11px",
+            fontWeight: "600",
+            cursor: "pointer",
+        });
+        formRow.appendChild(addBtn);
+        createCard.appendChild(formRow);
+
+        textInput.addEventListener("input", () => {
+            this.newText = textInput.value;
+            addBtn.disabled = !this.settings.systemLoaded || !hasActive || !this.newText.trim();
+            addBtn.style.opacity = addBtn.disabled ? "0.42" : "1";
+        });
+        textInput.addEventListener("keydown", event => {
+            if (event.key === "Enter" && !addBtn.disabled) addBtn.click();
+        });
+
+        // Compact Style Row
+        const styleRow = document.createElement("div");
+        Object.assign(styleRow.style, {
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            fontSize: "11px",
+            color: "rgba(244,244,245,0.7)",
+        });
+
+        // Color Picker
+        const colorLabel = document.createElement("label");
+        Object.assign(colorLabel.style, {
+            display: "flex",
+            alignItems: "center",
+            gap: "4px",
+            cursor: "pointer",
+        });
+        colorLabel.appendChild(document.createTextNode("Color"));
+        const colorInput = document.createElement("input");
+        colorInput.type = "color";
+        colorInput.value = this.nextStyle.color || "#ffffff";
+        Object.assign(colorInput.style, {
+            width: "18px",
+            height: "18px",
+            border: "1px solid rgba(255,255,255,0.2)",
+            borderRadius: "4px",
+            background: "transparent",
+            padding: "0",
+            cursor: "pointer",
+        });
+        colorInput.addEventListener("input", () => {
+            this.nextStyle.color = colorInput.value;
+            this.scheduleRender();
+        });
+        colorLabel.appendChild(colorInput);
+        styleRow.appendChild(colorLabel);
+
+        // Size Slider
+        const sizeLabel = document.createElement("label");
+        Object.assign(sizeLabel.style, {
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            flex: "1 1 0",
+            cursor: "pointer",
+        });
+        sizeLabel.appendChild(document.createTextNode("Size"));
+        const sizeInput = document.createElement("input");
+        sizeInput.type = "range";
+        sizeInput.min = "0.5";
+        sizeInput.max = "3";
+        sizeInput.step = "0.1";
+        sizeInput.value = String(this.nextStyle.size_em || 1);
+        Object.assign(sizeInput.style, {
+            flex: "1 1 0",
+            height: "4px",
+            borderRadius: "2px",
+            background: "rgba(255,255,255,0.2)",
+            outline: "none",
+            cursor: "pointer",
+        });
+        sizeInput.addEventListener("input", () => {
+            this.nextStyle.size_em = Number(sizeInput.value);
+        });
+        sizeInput.addEventListener("change", () => {
+            this.scheduleRender();
+        });
+        sizeLabel.appendChild(sizeInput);
+        styleRow.appendChild(sizeLabel);
+
+        // Background Checkbox
+        const bgLabel = document.createElement("label");
+        Object.assign(bgLabel.style, {
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            cursor: "pointer",
+        });
+        const bgInput = document.createElement("input");
+        bgInput.type = "checkbox";
+        bgInput.checked = this.nextStyle.background !== false;
+        Object.assign(bgInput.style, {
+            cursor: "pointer",
+        });
+        bgInput.addEventListener("change", () => {
+            this.nextStyle.background = bgInput.checked;
+            this.scheduleRender();
+        });
+        bgLabel.appendChild(bgInput);
+        bgLabel.appendChild(document.createTextNode("Background"));
+        styleRow.appendChild(bgLabel);
+
+        createCard.appendChild(styleRow);
+
+        const hint = document.createElement("div");
+        hint.textContent = !this.settings.systemLoaded
+            ? "Load a structure first."
+            : !hasActive
+                ? "Select atoms to anchor the annotation."
+                : `Anchored to the active selection (${activeCount} atom${activeCount === 1 ? "" : "s"}).`;
+        Object.assign(hint.style, { fontSize: "10px", color: "rgba(244,244,245,0.58)", marginTop: "2px" });
+        createCard.appendChild(hint);
+
+        parent.appendChild(createCard);
+
+        // 2. Active Selection Card
         const activeCard = document.createElement("div");
         activeCard.setAttribute("data-molsysviewer-annotation-active-selection-card", "true");
         Object.assign(activeCard.style, {
@@ -304,7 +470,7 @@ export class AnnotationsPanel extends BasePanel {
         activeCard.appendChild(activeRow);
         parent.appendChild(activeCard);
 
-        // 2. Select by Query Card
+        // 3. Select by Query Card
         const queryCard = document.createElement("div");
         queryCard.setAttribute("data-molsysviewer-annotation-query-card", "true");
         Object.assign(queryCard.style, {
@@ -442,7 +608,7 @@ export class AnnotationsPanel extends BasePanel {
         }
         parent.appendChild(queryCard);
 
-        // 3. Activate Saved Selection Card
+        // 4. Activate Saved Selection Card
         const savedCard = document.createElement("div");
         savedCard.setAttribute("data-molsysviewer-annotation-activate-saved-card", "true");
         Object.assign(savedCard.style, {
@@ -490,76 +656,6 @@ export class AnnotationsPanel extends BasePanel {
         );
         savedCard.appendChild(savedSelect);
         parent.appendChild(savedCard);
-
-        // 4. Creation Input Form
-        const createCard = card();
-        createCard.setAttribute("data-molsysviewer-annotation-create-card", "true");
-        Object.assign(createCard.style, {
-            display: "flex",
-            flexDirection: "column",
-            gap: "6px",
-        });
-
-        const formRow = document.createElement("div");
-        Object.assign(formRow.style, {
-            display: "flex",
-            gap: "6px",
-            width: "100%",
-        });
-
-        const textInput = document.createElement("input");
-        textInput.type = "text";
-        textInput.value = this.newText;
-        textInput.placeholder = "Annotation text...";
-        Object.assign(textInput.style, {
-            flex: "1 1 auto",
-            ...INPUT_STYLE,
-        });
-        textInput.setAttribute("data-molsysviewer-annotation-create-text", "true");
-        formRow.appendChild(textInput);
-
-        const addBtn = makeButton("Create", () => {
-            const text = textInput.value.trim();
-            if (!text) return;
-            this.newText = "";
-            this.ctx.onAction("create_annotation", { text, label_style: { ...this.nextStyle } });
-        });
-        addBtn.setAttribute("data-molsysviewer-annotation-create-confirm", "true");
-        addBtn.disabled = !this.settings.systemLoaded || !hasActive || !this.newText.trim();
-        addBtn.style.opacity = addBtn.disabled ? "0.42" : "1";
-        Object.assign(addBtn.style, {
-            flex: "0 0 auto",
-            background: "#6366f1",
-            border: "0",
-            borderRadius: "6px",
-            padding: "4px 10px",
-            color: "#fff",
-            fontSize: "11px",
-            fontWeight: "600",
-            cursor: "pointer",
-        });
-        formRow.appendChild(addBtn);
-        createCard.appendChild(formRow);
-
-        textInput.addEventListener("input", () => {
-            this.newText = textInput.value;
-            addBtn.disabled = !this.settings.systemLoaded || !hasActive || !this.newText.trim();
-            addBtn.style.opacity = addBtn.disabled ? "0.42" : "1";
-        });
-        textInput.addEventListener("keydown", event => {
-            if (event.key === "Enter" && !addBtn.disabled) addBtn.click();
-        });
-
-        const hint = document.createElement("div");
-        hint.textContent = !this.settings.systemLoaded
-            ? "Load a structure first."
-            : !hasActive
-                ? "Select atoms to anchor the annotation."
-                : `Anchored to the active selection (${activeCount} atom${activeCount === 1 ? "" : "s"}).`;
-        Object.assign(hint.style, { fontSize: "10px", color: "rgba(244,244,245,0.58)" });
-        createCard.appendChild(hint);
-
-        parent.appendChild(createCard);
     }
 
     private renderAnnotation(item: AnnotationSummary): HTMLDivElement {
@@ -768,8 +864,61 @@ export class AnnotationsPanel extends BasePanel {
     }
 
     private renderGlobalActions(): HTMLDivElement {
+        const card = document.createElement("div");
+        Object.assign(card.style, {
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+            padding: "8px 10px",
+            borderRadius: "6px",
+            background: "rgba(255,255,255,0.035)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            marginBottom: "10px",
+        });
+
+        const totalCount = this.annotations.length;
+        const visibleCount = this.annotations.filter(m => !m.hidden).length;
+
         const row = document.createElement("div");
-        Object.assign(row.style, { display: "flex", gap: "6px", marginBottom: "8px" });
+        Object.assign(row.style, {
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: "100%",
+            gap: "10px",
+        });
+
+        const info = document.createElement("div");
+        Object.assign(info.style, {
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            fontSize: "11px",
+            color: "rgba(244,244,245,0.75)",
+        });
+
+        const dot = document.createElement("span");
+        const anyVisible = totalCount > 0 && visibleCount > 0;
+        Object.assign(dot.style, {
+            width: "6px",
+            height: "6px",
+            borderRadius: "999px",
+            background: anyVisible ? "#34d399" : "rgba(244,244,245,0.28)",
+            boxShadow: anyVisible ? "0 0 6px rgba(52,211,153,0.4)" : "none",
+            flexShrink: "0",
+        });
+        info.appendChild(dot);
+        info.appendChild(document.createTextNode(`${visibleCount} of ${totalCount} annotation${totalCount === 1 ? "" : "s"} visible`));
+        row.appendChild(info);
+
+        const actions = document.createElement("div");
+        Object.assign(actions.style, {
+            display: "flex",
+            gap: "4px",
+            alignItems: "center",
+            flexShrink: "0",
+        });
+
         for (const [label, action] of [
             ["Show all", "show_all_annotations"],
             ["Hide all", "hide_all_annotations"],
@@ -777,10 +926,16 @@ export class AnnotationsPanel extends BasePanel {
             const button = makeButton(label, () => {
                 this.ctx.onAction(action);
             });
+            button.style.padding = "3px 6px";
+            button.style.fontSize = "10px";
+            button.style.whiteSpace = "nowrap";
             button.setAttribute("data-molsysviewer-annotation-global", action);
-            row.appendChild(button);
+            actions.appendChild(button);
         }
-        return row;
+        row.appendChild(actions);
+        card.appendChild(row);
+
+        return card;
     }
 
     private renderStyle(): HTMLDivElement {
