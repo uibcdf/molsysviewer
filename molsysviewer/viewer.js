@@ -154677,6 +154677,42 @@ function formatValue2(item2) {
   const digits = unit2 === "nanometer" || unit2 === "nanometers" || unit2 === "nm" || unit2 === "radian" || unit2 === "radians" ? 3 : item2.kind === "distance" ? 2 : 1;
   return `${item2.value.toFixed(digits)} ${formatUnitLabel(item2.unit)}`;
 }
+function makePurplishSegmentButton(text, isActive, onClick, padding2 = "6px 0", fontSize = "11px") {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.textContent = text;
+  const bgNormal = isActive ? "#6366f1" : "rgba(99, 102, 241, 0.16)";
+  const bgHover = isActive ? "#4f46e5" : "rgba(99, 102, 241, 0.28)";
+  const borderNormal = isActive ? "1px solid #818cf8" : "1px solid rgba(129, 140, 248, 0.3)";
+  const borderHover = isActive ? "1px solid #a5b4fc" : "1px solid rgba(129, 140, 248, 0.5)";
+  Object.assign(btn.style, {
+    flex: "1 1 0",
+    padding: padding2,
+    fontSize,
+    fontWeight: isActive ? "700" : "500",
+    textAlign: "center",
+    background: bgNormal,
+    border: borderNormal,
+    borderRadius: "6px",
+    color: isActive ? "#ffffff" : "#c7d2fe",
+    cursor: "pointer",
+    transition: "all 0.12s ease"
+  });
+  btn.addEventListener("mouseenter", () => {
+    btn.style.background = bgHover;
+    btn.style.border = borderHover;
+  });
+  btn.addEventListener("mouseleave", () => {
+    btn.style.background = bgNormal;
+    btn.style.border = borderNormal;
+  });
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onClick();
+  });
+  return btn;
+}
 var MeasuresPanel = class extends BasePanel {
   constructor(ctx) {
     super();
@@ -154691,8 +154727,10 @@ var MeasuresPanel = class extends BasePanel {
     this.expectedSeriesRequest = /* @__PURE__ */ new Map();
     this.nextSeriesRequest = 1;
     this.editTag = null;
+    this.inlineTab = "active";
     this.selectedSavedKind = "distance";
     this.stagedSlots = [null, null, null, null];
+    this.activeSlotExpansion = null;
     this.measuresQueryComposer = null;
     this.measuresCheatSheetOpen = false;
   }
@@ -154704,6 +154742,18 @@ var MeasuresPanel = class extends BasePanel {
   }
   setCurrentSelection(selection) {
     this.selection = selection;
+    if (this.activeSlotExpansion !== null && selection.atom_indices && selection.atom_indices.length > 0) {
+      const activeCount = selection.atom_indices.length;
+      const endpointType = activeCount === 1 ? "Atom" : "Centroid";
+      const summaryText = `${activeCount} atom${activeCount === 1 ? "" : "s"} \xB7 ${endpointType}`;
+      this.stagedSlots[this.activeSlotExpansion] = {
+        atom_indices: [...selection.atom_indices],
+        summary: summaryText,
+        endpointType,
+        policy: "centroid"
+      };
+      this.activeSlotExpansion = null;
+    }
     this.scheduleRender();
   }
   setSavedSelections(items) {
@@ -154868,21 +154918,18 @@ var MeasuresPanel = class extends BasePanel {
     });
     for (const kind of ["distance", "angle", "dihedral"]) {
       const isActive = this.selectedSavedKind === kind;
-      const btn = makeButton(kind[0].toUpperCase() + kind.slice(1), () => {
-        this.selectedSavedKind = kind;
-        this.stagedSlots = [null, null, null, null];
-        this.scheduleRender();
-      });
-      Object.assign(btn.style, {
-        flex: "1 1 0",
-        padding: "6px 0",
-        fontSize: "11px",
-        fontWeight: "600",
-        textAlign: "center",
-        background: isActive ? "#6366f1" : "rgba(255,255,255,0.06)",
-        border: "1px solid " + (isActive ? "#6366f1" : "rgba(255,255,255,0.12)"),
-        color: isActive ? "#fff" : "#f4f4f5"
-      });
+      const btn = makePurplishSegmentButton(
+        kind[0].toUpperCase() + kind.slice(1),
+        isActive,
+        () => {
+          this.selectedSavedKind = kind;
+          this.stagedSlots = [null, null, null, null];
+          this.activeSlotExpansion = null;
+          this.scheduleRender();
+        },
+        "6px 0",
+        "11px"
+      );
       btn.setAttribute("data-molsysviewer-measurement-mode-btn", kind);
       modeRow.appendChild(btn);
     }
@@ -154902,15 +154949,23 @@ var MeasuresPanel = class extends BasePanel {
     });
     for (let i = 0; i < requiredCount; i++) {
       const slot2 = this.stagedSlots[i];
+      const isExpanded = this.activeSlotExpansion === i;
+      const slotWrapper = document.createElement("div");
+      Object.assign(slotWrapper.style, {
+        display: "flex",
+        flexDirection: "column",
+        gap: "6px",
+        padding: "6px 8px",
+        background: isExpanded ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.15)",
+        border: "1px solid " + (isExpanded ? "rgba(255,255,255,0.16)" : "rgba(255,255,255,0.05)"),
+        borderRadius: "6px"
+      });
       const row2 = document.createElement("div");
       Object.assign(row2.style, {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
         gap: "10px",
-        padding: "6px 8px",
-        background: "rgba(0,0,0,0.15)",
-        borderRadius: "6px",
         fontSize: "11px"
       });
       const leftPart = document.createElement("div");
@@ -154926,15 +154981,24 @@ var MeasuresPanel = class extends BasePanel {
       label2.style.color = "#fff";
       label2.style.flexShrink = "0";
       leftPart.appendChild(label2);
-      const summary = document.createElement("span");
-      Object.assign(summary.style, {
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        whiteSpace: "nowrap",
-        color: slot2 ? "rgba(244,244,245,0.85)" : "rgba(244,244,245,0.4)"
+      const selectBtn = makeButton(slot2 ? slot2.summary : "Set selection \u25BC", () => {
+        if (!isExpanded) {
+          this.inlineTab = hasActive ? "active" : "query";
+        }
+        this.activeSlotExpansion = isExpanded ? null : i;
+        this.scheduleRender();
       });
-      summary.textContent = slot2 ? slot2.summary : "Empty";
-      leftPart.appendChild(summary);
+      selectBtn.style.flex = "1 1 auto";
+      selectBtn.style.textAlign = "left";
+      selectBtn.style.overflow = "hidden";
+      selectBtn.style.textOverflow = "ellipsis";
+      selectBtn.style.whiteSpace = "nowrap";
+      selectBtn.style.fontSize = "11px";
+      selectBtn.style.padding = "4px 8px";
+      selectBtn.style.background = isExpanded ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.06)";
+      selectBtn.style.borderColor = isExpanded ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.12)";
+      selectBtn.style.color = slot2 ? "#34d399" : "rgba(244,244,245,0.75)";
+      leftPart.appendChild(selectBtn);
       row2.appendChild(leftPart);
       const actions = document.createElement("div");
       Object.assign(actions.style, {
@@ -154943,26 +155007,6 @@ var MeasuresPanel = class extends BasePanel {
         alignItems: "center",
         flexShrink: "0"
       });
-      const setBtn = makeButton("Set active selection", () => {
-        const activeCount = this.selection.atom_indices.length;
-        if (activeCount === 0) return;
-        const endpointType = activeCount === 1 ? "Atom" : "Centroid";
-        const summaryText = `${activeCount} atom${activeCount === 1 ? "" : "s"} \xB7 ${endpointType}`;
-        this.stagedSlots[i] = {
-          atom_indices: [...this.selection.atom_indices],
-          summary: summaryText,
-          endpointType,
-          policy: "centroid"
-        };
-        this.scheduleRender();
-      });
-      setBtn.disabled = !hasActive;
-      setBtn.style.opacity = setBtn.disabled ? "0.42" : "1";
-      setBtn.style.padding = "2px 6px";
-      setBtn.style.fontSize = "10px";
-      setBtn.style.whiteSpace = "nowrap";
-      setBtn.setAttribute("data-molsysviewer-measurement-slot-set", String(i));
-      actions.appendChild(setBtn);
       const clearBtn = makeButton("Clear", () => {
         this.stagedSlots[i] = null;
         this.scheduleRender();
@@ -154975,7 +155019,12 @@ var MeasuresPanel = class extends BasePanel {
       clearBtn.setAttribute("data-molsysviewer-measurement-slot-clear", String(i));
       actions.appendChild(clearBtn);
       row2.appendChild(actions);
-      slotsCard.appendChild(row2);
+      slotWrapper.appendChild(row2);
+      if (isExpanded) {
+        const mechanismInline = this.renderSelectionMechanismInline(i, requiredCount);
+        slotWrapper.appendChild(mechanismInline);
+      }
+      slotsCard.appendChild(slotWrapper);
     }
     const divider = document.createElement("div");
     Object.assign(divider.style, {
@@ -155016,6 +155065,7 @@ var MeasuresPanel = class extends BasePanel {
       this.ctx.onAction("create_measurement", details);
       nameInput.value = "";
       this.stagedSlots = [null, null, null, null];
+      this.activeSlotExpansion = null;
       this.scheduleRender();
     });
     createButton.disabled = !canCreate;
@@ -155035,254 +155085,219 @@ var MeasuresPanel = class extends BasePanel {
     formRow.appendChild(createButton);
     slotsCard.appendChild(formRow);
     parent.appendChild(slotsCard);
-    const activeCard = document.createElement("div");
-    activeCard.setAttribute("data-molsysviewer-measurement-active-selection-card", "true");
-    Object.assign(activeCard.style, {
+  }
+  renderSelectionMechanismInline(slotIndex, requiredCount) {
+    const container = document.createElement("div");
+    Object.assign(container.style, {
       display: "flex",
       flexDirection: "column",
-      gap: "8px",
-      padding: "8px 10px",
-      borderRadius: "8px",
-      background: "rgba(255,255,255,0.035)",
-      border: "1px solid rgba(255,255,255,0.08)",
-      marginBottom: "10px"
-    });
-    const activeRow = document.createElement("div");
-    Object.assign(activeRow.style, {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      width: "100%",
-      gap: "6px 10px"
-    });
-    const leftWrap = document.createElement("div");
-    Object.assign(leftWrap.style, {
-      display: "flex",
-      alignItems: "center",
       gap: "6px",
-      fontSize: "12px",
-      fontWeight: "700",
-      color: "#fff"
+      marginTop: "6px",
+      padding: "8px",
+      borderRadius: "6px",
+      background: "rgba(0, 0, 0, 0.2)",
+      border: "1px solid rgba(255, 255, 255, 0.08)"
     });
-    const dot = document.createElement("span");
-    Object.assign(dot.style, {
-      width: "5px",
-      height: "5px",
-      borderRadius: "999px",
-      background: hasActive ? "#34d399" : "rgba(244,244,245,0.28)",
-      boxShadow: hasActive ? "0 0 6px rgba(52,211,153,0.4)" : "none",
-      flexShrink: "0"
-    });
-    leftWrap.appendChild(dot);
-    leftWrap.appendChild(document.createTextNode("Active selection"));
-    activeRow.appendChild(leftWrap);
-    const countText = document.createElement("span");
-    Object.assign(countText.style, {
-      fontSize: "11px",
-      color: "rgba(244,244,245,0.6)",
-      marginLeft: "auto",
-      marginRight: "4px"
-    });
-    if (hasActive) {
-      countText.textContent = `${count3} atom${count3 === 1 ? "" : "s"}`;
-    } else {
-      countText.textContent = "No selection";
-    }
-    activeRow.appendChild(countText);
-    const btnRow = document.createElement("div");
-    Object.assign(btnRow.style, {
+    const count3 = this.selection.atom_indices.length;
+    const hasActive = count3 > 0;
+    const activeTab = this.inlineTab;
+    const tabRow = document.createElement("div");
+    Object.assign(tabRow.style, {
       display: "flex",
       gap: "4px",
-      alignItems: "center",
-      flexShrink: "0"
+      padding: "2px",
+      borderRadius: "5px"
     });
+    const tabs = [
+      { id: "active", label: "Active selection" },
+      { id: "query", label: "Select by query" },
+      { id: "saved", label: "Saved selections" }
+    ];
+    for (const tab of tabs) {
+      const isTabActive = activeTab === tab.id;
+      const tabBtn = makePurplishSegmentButton(
+        tab.label,
+        isTabActive,
+        () => {
+          this.inlineTab = tab.id;
+          this.scheduleRender();
+        },
+        "4px 0",
+        "10px"
+      );
+      tabRow.appendChild(tabBtn);
+    }
+    container.appendChild(tabRow);
+    const contentBox = document.createElement("div");
+    Object.assign(contentBox.style, { marginTop: "4px" });
+    const activeCard = document.createElement("div");
+    activeCard.setAttribute("data-molsysviewer-measurement-active-selection-card", "true");
+    if (activeTab === "active") {
+      Object.assign(activeCard.style, {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: "6px",
+        padding: "4px 2px"
+      });
+      const leftWrap = document.createElement("div");
+      Object.assign(leftWrap.style, {
+        display: "flex",
+        alignItems: "center",
+        gap: "6px",
+        fontSize: "11px",
+        fontWeight: "600",
+        color: "#fff"
+      });
+      const dot = document.createElement("span");
+      Object.assign(dot.style, {
+        width: "5px",
+        height: "5px",
+        borderRadius: "999px",
+        background: hasActive ? "#34d399" : "rgba(244,244,245,0.28)",
+        boxShadow: hasActive ? "0 0 6px rgba(52,211,153,0.4)" : "none",
+        flexShrink: "0"
+      });
+      leftWrap.appendChild(dot);
+      leftWrap.appendChild(document.createTextNode(hasActive ? `${count3} atom${count3 === 1 ? "" : "s"} selected` : "No active selection"));
+      activeCard.appendChild(leftWrap);
+      const useBtn = document.createElement("button");
+      useBtn.type = "button";
+      useBtn.textContent = "Set";
+      useBtn.setAttribute("data-molsysviewer-measurement-slot-set", String(slotIndex));
+      useBtn.disabled = !hasActive;
+      const greenNormal = "#34d399";
+      const greenHover = "#10b981";
+      Object.assign(useBtn.style, {
+        flex: "0 0 auto",
+        padding: "4px 12px",
+        fontSize: "11px",
+        fontWeight: "700",
+        background: greenNormal,
+        border: "0",
+        borderRadius: "6px",
+        color: "#000000",
+        cursor: hasActive ? "pointer" : "default",
+        opacity: hasActive ? "1" : "0.42",
+        transition: "all 0.12s ease"
+      });
+      useBtn.addEventListener("mouseenter", () => {
+        if (hasActive) {
+          useBtn.style.background = greenHover;
+        }
+      });
+      useBtn.addEventListener("mouseleave", () => {
+        if (hasActive) {
+          useBtn.style.background = greenNormal;
+        }
+      });
+      useBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!hasActive) return;
+        const endpointType = count3 === 1 ? "Atom" : "Centroid";
+        this.stagedSlots[slotIndex] = {
+          atom_indices: [...this.selection.atom_indices],
+          summary: `${count3} atom${count3 === 1 ? "" : "s"} \xB7 ${endpointType}`,
+          endpointType,
+          policy: "centroid"
+        };
+        this.activeSlotExpansion = null;
+        this.scheduleRender();
+      });
+      activeCard.appendChild(useBtn);
+    } else {
+      activeCard.style.display = "none";
+    }
     const deselectBtn = makeButton("Deactivate", () => {
       this.ctx.onAction("set_active_selection_operation", { operation: "none" });
       this.scheduleRender();
     });
     deselectBtn.disabled = !hasActive;
-    deselectBtn.style.opacity = hasActive ? "1" : "0.42";
-    deselectBtn.style.padding = "4px 8px";
-    deselectBtn.style.fontSize = "11px";
-    deselectBtn.style.whiteSpace = "nowrap";
+    deselectBtn.style.display = "none";
     deselectBtn.setAttribute("data-molsysviewer-measurement-active-deselect", "true");
-    btnRow.appendChild(deselectBtn);
-    activeRow.appendChild(btnRow);
-    activeCard.appendChild(activeRow);
-    parent.appendChild(activeCard);
+    activeCard.appendChild(deselectBtn);
+    contentBox.appendChild(activeCard);
     const queryCard = document.createElement("div");
     queryCard.setAttribute("data-molsysviewer-measurement-query-card", "true");
-    Object.assign(queryCard.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "8px",
-      padding: "10px",
-      borderRadius: "8px",
-      background: "rgba(255,255,255,0.03)",
-      border: "1px solid rgba(255,255,255,0.05)",
-      marginBottom: "10px"
-    });
-    const qHeader = document.createElement("div");
-    qHeader.textContent = "Select by query";
-    Object.assign(qHeader.style, {
-      fontSize: "12px",
-      fontWeight: "700",
-      color: "#fff"
-    });
-    queryCard.appendChild(qHeader);
-    const composer = this.getMeasuresQueryComposer();
-    queryCard.appendChild(composer.element());
-    const presetRow = document.createElement("div");
-    presetRow.setAttribute("data-molsysviewer-measurement-query-presets", "true");
-    Object.assign(presetRow.style, {
-      display: "flex",
-      flexWrap: "wrap",
-      gap: "5px",
-      alignItems: "center"
-    });
-    const presetLabel = document.createElement("span");
-    Object.assign(presetLabel.style, {
-      fontSize: "10px",
-      color: "rgba(244,244,245,0.52)",
-      marginRight: "2px"
-    });
-    presetLabel.textContent = "shortcuts";
-    presetRow.appendChild(presetLabel);
-    const presets = [
-      { label: "protein", expression: 'molecule_type=="protein"' },
-      { label: "water", expression: 'molecule_type=="water"' },
-      { label: "backbone", expression: 'atom_name in ["N", "CA", "C", "O"]' },
-      { label: "sidechain", expression: 'atom_name not in ["N", "CA", "C", "O"]' },
-      { label: "ligand", expression: 'molecule_type=="small molecule"' }
-    ];
-    for (const preset of presets) {
-      const chip = document.createElement("button");
-      chip.type = "button";
-      chip.textContent = preset.label;
-      chip.setAttribute("data-molsysviewer-measurement-query-preset", preset.label);
-      Object.assign(chip.style, {
-        background: "rgba(99, 102, 241, 0.16)",
-        border: "1px solid rgba(129, 140, 248, 0.34)",
-        borderRadius: "9999px",
-        padding: "2px 6px",
-        color: "#c7d2fe",
-        fontSize: "9px",
-        fontWeight: "500",
-        cursor: "pointer"
-      });
-      chip.addEventListener("click", (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        composer.setExpression(preset.expression, "MolSysMT");
-      });
-      presetRow.appendChild(chip);
-    }
-    queryCard.appendChild(presetRow);
-    if (this.measuresCheatSheetOpen) {
-      const cheatSheet = document.createElement("div");
-      cheatSheet.setAttribute("data-molsysviewer-measurement-cheatsheet", "true");
-      Object.assign(cheatSheet.style, {
-        display: "grid",
-        gridTemplateColumns: "1fr",
-        gap: "4px",
-        padding: "8px",
-        borderRadius: "6px",
-        background: "rgba(0,0,0,0.18)",
-        border: "1px solid rgba(255,255,255,0.08)"
-      });
-      const examples = [
-        ["Atom name", 'atom_name=="CA"'],
-        ["Group index", "group_index in [10, 15]"],
-        ["Chain", 'chain_id=="A"'],
-        ["Protein", 'molecule_type=="protein"'],
-        ["Nearby", "all within 5 angstroms of atom_index in [0]"],
-        ["Bonded", "bonded to atom_index in [0]"]
+    if (activeTab === "query") {
+      Object.assign(queryCard.style, { display: "flex", flexDirection: "column", gap: "6px" });
+      const composer = this.getMeasuresQueryComposer();
+      queryCard.appendChild(composer.element());
+      const presetRow = document.createElement("div");
+      presetRow.setAttribute("data-molsysviewer-measurement-query-presets", "true");
+      Object.assign(presetRow.style, { display: "flex", flexWrap: "wrap", gap: "4px", alignItems: "center" });
+      const presets = [
+        { label: "protein", expression: 'molecule_type=="protein"' },
+        { label: "water", expression: 'molecule_type=="water"' },
+        { label: "backbone", expression: 'atom_name in ["N", "CA", "C", "O"]' },
+        { label: "sidechain", expression: 'atom_name not in ["N", "CA", "C", "O"]' },
+        { label: "ligand", expression: 'molecule_type=="small molecule"' }
       ];
-      for (const [label2, expression] of examples) {
-        const row2 = document.createElement("button");
-        row2.type = "button";
-        row2.setAttribute("data-molsysviewer-measurement-cheatsheet-example", label2);
-        Object.assign(row2.style, {
-          display: "flex",
-          justifyContent: "space-between",
-          gap: "8px",
-          width: "100%",
-          background: "transparent",
-          border: "0",
-          padding: "3px 2px",
-          color: "#e4e4e7",
-          fontSize: "10px",
-          textAlign: "left",
+      for (const preset of presets) {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.textContent = preset.label;
+        chip.setAttribute("data-molsysviewer-measurement-query-preset", preset.label);
+        Object.assign(chip.style, {
+          background: "rgba(99, 102, 241, 0.16)",
+          border: "1px solid rgba(129, 140, 248, 0.34)",
+          borderRadius: "9999px",
+          padding: "2px 6px",
+          color: "#c7d2fe",
+          fontSize: "9px",
+          fontWeight: "500",
           cursor: "pointer"
         });
-        const name = document.createElement("span");
-        name.textContent = label2;
-        name.style.color = "rgba(244,244,245,0.62)";
-        const code = document.createElement("code");
-        code.textContent = expression;
-        Object.assign(code.style, {
-          color: "#c7d2fe",
-          fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap"
-        });
-        row2.appendChild(name);
-        row2.appendChild(code);
-        row2.addEventListener("click", (event) => {
+        chip.addEventListener("click", (event) => {
           event.preventDefault();
           event.stopPropagation();
-          composer.setExpression(expression, "MolSysMT");
+          composer.setExpression(preset.expression, "MolSysMT");
         });
-        cheatSheet.appendChild(row2);
+        presetRow.appendChild(chip);
       }
-      queryCard.appendChild(cheatSheet);
+      queryCard.appendChild(presetRow);
+    } else {
+      queryCard.style.display = "none";
     }
-    parent.appendChild(queryCard);
+    contentBox.appendChild(queryCard);
     const savedCard = document.createElement("div");
     savedCard.setAttribute("data-molsysviewer-measurement-activate-saved-card", "true");
-    Object.assign(savedCard.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "8px",
-      padding: "8px 10px",
-      borderRadius: "8px",
-      background: "rgba(255,255,255,0.035)",
-      border: "1px solid rgba(255,255,255,0.08)",
-      marginBottom: "10px"
-    });
-    const sHeader = document.createElement("div");
-    sHeader.textContent = "Activate saved selection";
-    Object.assign(sHeader.style, {
-      fontSize: "12px",
-      fontWeight: "700",
-      color: "#fff"
-    });
-    savedCard.appendChild(sHeader);
-    let activeSavedTag = "";
-    for (const s of this.savedSelections) {
-      if (this.isSavedSelectionActive(s)) {
-        activeSavedTag = s.tag;
-        break;
-      }
-    }
-    const savedOptions = [
-      { value: "", label: "Select saved selection..." },
-      ...this.savedSelections.map((s) => ({ value: s.tag, label: `${s.tag} (${s.atom_count} atoms)` }))
-    ];
-    const savedSelect = makeStyledSelect(
-      savedOptions,
-      activeSavedTag,
-      (val) => {
-        if (val) {
-          this.ctx.onAction("activate_selection", { tag: val });
-        } else {
-          this.ctx.onAction("set_active_selection_operation", { operation: "none" });
+    if (activeTab === "saved") {
+      Object.assign(savedCard.style, { display: "flex", flexDirection: "column", gap: "4px" });
+      const savedOptions = [
+        { value: "", label: "Select saved selection to use..." },
+        ...this.savedSelections.map((s) => ({ value: s.tag, label: `${s.tag} (${s.atom_count} atoms)` }))
+      ];
+      const savedSelect = makeStyledSelect(
+        savedOptions,
+        "",
+        (val) => {
+          if (val) {
+            const found = this.savedSelections.find((s) => s.tag === val);
+            if (found && found.atom_indices) {
+              const countAtoms = found.atom_indices.length;
+              const endpointType = countAtoms === 1 ? "Atom" : "Centroid";
+              this.stagedSlots[slotIndex] = {
+                atom_indices: [...found.atom_indices],
+                summary: `${found.tag} (${countAtoms} atoms) \xB7 ${endpointType}`,
+                endpointType,
+                policy: "centroid"
+              };
+              this.ctx.onAction("activate_selection", { tag: val });
+              this.activeSlotExpansion = null;
+              this.scheduleRender();
+            }
+          }
         }
-      }
-    );
-    savedCard.appendChild(savedSelect);
-    parent.appendChild(savedCard);
+      );
+      savedCard.appendChild(savedSelect);
+    } else {
+      savedCard.style.display = "none";
+    }
+    contentBox.appendChild(savedCard);
+    container.appendChild(contentBox);
+    return container;
   }
   renderMeasurement(item2) {
     const row2 = card5();
@@ -155302,153 +155317,350 @@ var MeasuresPanel = class extends BasePanel {
       color: item2.broken ? "rgba(244,244,245,0.46)" : "#f4f4f5"
     });
     head.appendChild(value);
-    const eye = makeButton(
-      item2.hidden ? "\u29BB" : "\u{1F441}",
-      () => this.ctx.onAction("toggle_measurement_visibility", { tag: item2.tag })
-    );
-    eye.title = item2.hidden ? "Show measurement" : "Hide measurement";
+    const eye = makeButton(item2.hidden ? "\u29BB" : "\u{1F441}", () => this.ctx.onAction("toggle_measurement_visibility", { tag: item2.tag }));
     eye.setAttribute("data-molsysviewer-measurement-visibility", item2.tag);
-    const more = makeButton("\u22EF", () => {
+    const focus = makeButton("Focus", () => this.ctx.onAction("focus_measurement", { tag: item2.tag }));
+    focus.setAttribute("data-molsysviewer-measurement-focus", item2.tag);
+    for (const button of [eye, focus]) {
+      button.style.flex = "0 0 auto";
+      button.style.padding = "3px 6px";
+      button.style.fontSize = "10px";
+      head.appendChild(button);
+    }
+    const edit = makeButton("Edit", () => {
       this.editTag = this.editTag === item2.tag ? null : item2.tag;
       this.scheduleRender();
     });
-    more.title = "Rename or move to layer";
-    more.setAttribute("data-molsysviewer-measurement-more", item2.tag);
-    const remove3 = makeButton("\xD7", () => this.ctx.onAction("delete_measurement", { tag: item2.tag }));
-    remove3.title = "Delete measurement";
-    remove3.setAttribute("data-molsysviewer-measurement-delete", item2.tag);
-    for (const button of [eye, more, remove3]) {
-      button.style.flex = "0 0 auto";
-      head.appendChild(button);
-    }
+    edit.setAttribute("data-molsysviewer-measurement-more", item2.tag);
+    edit.setAttribute("data-molsysviewer-measurement-edit-toggle", item2.tag);
+    edit.style.padding = "3px 6px";
+    edit.style.fontSize = "10px";
+    head.appendChild(edit);
+    const destroy = makeButton("\u{1F5D1}", () => this.ctx.onAction("delete_measurement", { tag: item2.tag }));
+    destroy.setAttribute("data-molsysviewer-measurement-delete", item2.tag);
+    destroy.style.padding = "3px 6px";
+    destroy.style.fontSize = "10px";
+    head.appendChild(destroy);
     row2.appendChild(head);
-    const identity2 = document.createElement("div");
-    identity2.textContent = `${item2.kind} \xB7 ${item2.tag}${item2.layerTag && item2.layerTag !== item2.tag ? ` \xB7 layer: ${item2.layerTag}` : ""}${item2.owner ? ` \xB7 from ${item2.owner}` : ""}`;
-    Object.assign(identity2.style, { fontSize: "10px", color: "rgba(244,244,245,0.58)" });
-    row2.appendChild(identity2);
-    const endpoints = document.createElement("div");
-    endpoints.textContent = item2.endpointLabels.length ? item2.endpointLabels.join(" \u2192 ") : `${item2.picks} picks`;
-    endpoints.setAttribute("data-molsysviewer-measurement-endpoints", item2.tag);
-    Object.assign(endpoints.style, { fontSize: "11px", color: "rgba(244,244,245,0.78)" });
-    row2.appendChild(endpoints);
-    if (!item2.broken) row2.appendChild(this.renderSeries(item2));
-    if (this.editTag === item2.tag) row2.appendChild(this.renderEdit(item2));
+    if (this.editTag === item2.tag) {
+      const editor = document.createElement("div");
+      Object.assign(editor.style, { display: "flex", flexDirection: "column", gap: "6px", marginTop: "6px", padding: "6px", background: "rgba(0,0,0,0.15)", borderRadius: "4px" });
+      const renameRow = document.createElement("div");
+      Object.assign(renameRow.style, { display: "flex", gap: "6px" });
+      const renameInput = document.createElement("input");
+      renameInput.type = "text";
+      renameInput.placeholder = "New name";
+      renameInput.value = item2.tag;
+      renameInput.setAttribute("data-molsysviewer-measurement-rename-input", item2.tag);
+      this.styleControl(renameInput);
+      renameInput.style.flex = "1 1 auto";
+      const renameBtn = makeButton("Rename", () => {
+        const newTag = renameInput.value.trim();
+        if (newTag && newTag !== item2.tag) {
+          this.ctx.onAction("rename_measurement", { tag: item2.tag, new_tag: newTag });
+        }
+      });
+      renameBtn.setAttribute("data-molsysviewer-measurement-rename", item2.tag);
+      renameRow.appendChild(renameInput);
+      renameRow.appendChild(renameBtn);
+      editor.appendChild(renameRow);
+      const layerRow = document.createElement("div");
+      Object.assign(layerRow.style, { display: "flex", gap: "6px" });
+      const layerInput = document.createElement("input");
+      layerInput.type = "text";
+      layerInput.placeholder = "Layer name";
+      layerInput.value = item2.layerTag || "";
+      layerInput.setAttribute("data-molsysviewer-measurement-layer-input", item2.tag);
+      this.styleControl(layerInput);
+      layerInput.style.flex = "1 1 auto";
+      const layerBtn = makeButton("Set layer", () => {
+        const layer = layerInput.value.trim();
+        this.ctx.onAction("set_measurement_layer", { tag: item2.tag, layer });
+      });
+      layerBtn.setAttribute("data-molsysviewer-measurement-layer", item2.tag);
+      layerRow.appendChild(layerInput);
+      layerRow.appendChild(layerBtn);
+      editor.appendChild(layerRow);
+      row2.appendChild(editor);
+    }
+    const sub = document.createElement("div");
+    Object.assign(sub.style, { display: "flex", justifyContent: "space-between", fontSize: "10px", color: "rgba(244,244,245,0.52)" });
+    const summaryText = `${item2.kind} \xB7 ${item2.picks} pick${item2.picks === 1 ? "" : "s"}${item2.owner ? ` \xB7 from ${item2.owner}` : ""}`;
+    sub.appendChild(document.createTextNode(summaryText));
+    row2.appendChild(sub);
+    if (item2.endpointLabels.length > 0) {
+      const endpoints = document.createElement("div");
+      endpoints.setAttribute("data-molsysviewer-measurement-endpoints", item2.tag);
+      Object.assign(endpoints.style, { fontSize: "10px", color: "rgba(244,244,245,0.72)" });
+      endpoints.textContent = item2.endpointLabels.join(" \u2192 ");
+      row2.appendChild(endpoints);
+    }
+    const seriesData = this.seriesByTag.get(item2.tag);
+    const isSeriesExpanded = this.expandedSeries.has(item2.tag);
+    const seriesRow = document.createElement("div");
+    Object.assign(seriesRow.style, { display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "4px" });
+    const seriesToggleBtn = makeButton(isSeriesExpanded ? "Hide Series" : "Show Trajectory Series", () => {
+      if (isSeriesExpanded) {
+        this.expandedSeries.delete(item2.tag);
+      } else {
+        this.expandedSeries.add(item2.tag);
+        const reqId = this.nextSeriesRequest++;
+        this.expectedSeriesRequest.set(item2.tag, reqId);
+        this.ctx.onAction("request_measurement_series", { tag: item2.tag, request_id: reqId });
+      }
+      this.scheduleRender();
+    });
+    seriesToggleBtn.setAttribute("data-molsysviewer-measurement-series-toggle", item2.tag);
+    seriesToggleBtn.style.padding = "2px 6px";
+    seriesToggleBtn.style.fontSize = "10px";
+    seriesRow.appendChild(seriesToggleBtn);
+    row2.appendChild(seriesRow);
+    if (isSeriesExpanded && seriesData) {
+      const sparklineBox = document.createElement("div");
+      sparklineBox.setAttribute("data-molsysviewer-measurement-series", item2.tag);
+      Object.assign(sparklineBox.style, {
+        display: "flex",
+        flexDirection: "column",
+        gap: "4px",
+        padding: "6px",
+        borderRadius: "4px",
+        background: "rgba(0,0,0,0.2)",
+        marginTop: "4px"
+      });
+      const sparkText = document.createElement("div");
+      sparkText.style.fontSize = "10px";
+      sparkText.style.color = "rgba(244,244,245,0.7)";
+      sparkText.textContent = `Trajectory (${seriesData.nFrames} frames): avg ${seriesData.sparkline.length > 0 ? (seriesData.sparkline.reduce((a8, b8) => a8 + b8, 0) / seriesData.sparkline.length).toFixed(2) : "\u2014"} ${formatUnitLabel(seriesData.unit)}`;
+      sparklineBox.appendChild(sparkText);
+      row2.appendChild(sparklineBox);
+    }
     return row2;
   }
-  renderSeries(item2) {
-    if (!this.expandedSeries.has(item2.tag)) {
-      const button = makeButton("Show trajectory", () => {
-        this.expandedSeries.add(item2.tag);
-        const requestId = this.nextSeriesRequest++;
-        this.expectedSeriesRequest.set(item2.tag, requestId);
-        this.ctx.onAction("request_measurement_series", { tag: item2.tag, request_id: requestId });
-        this.scheduleRender();
-      });
-      button.setAttribute("data-molsysviewer-measurement-series-toggle", item2.tag);
-      return button;
-    }
-    const payload = this.seriesByTag.get(item2.tag);
-    if (!payload) {
-      const pending = document.createElement("div");
-      pending.textContent = "Loading trajectory\u2026";
-      pending.setAttribute("data-molsysviewer-measurement-series-pending", item2.tag);
-      Object.assign(pending.style, { fontSize: "10px", color: "rgba(244,244,245,0.52)" });
-      return pending;
-    }
-    const wrap = document.createElement("div");
-    wrap.setAttribute("data-molsysviewer-measurement-series", item2.tag);
-    const canvas = document.createElement("canvas");
-    canvas.width = 260;
-    canvas.height = 38;
-    Object.assign(canvas.style, { width: "100%", height: "38px" });
-    wrap.appendChild(canvas);
-    const context2 = canvas.getContext?.("2d");
-    const values2 = payload.sparkline;
-    if (context2 && values2.length > 1) {
-      const min5 = Math.min(...values2);
-      const span = Math.max(1e-12, Math.max(...values2) - min5);
-      const fill = context2.createLinearGradient(0, 0, 0, canvas.height);
-      fill.addColorStop(0, "rgba(96, 165, 250, 0.22)");
-      fill.addColorStop(1, "rgba(96, 165, 250, 0)");
-      context2.fillStyle = fill;
-      context2.beginPath();
-      context2.moveTo(0, canvas.height);
-      values2.forEach((point, index) => {
-        const x = index * (canvas.width - 1) / (values2.length - 1);
-        const y = canvas.height - 3 - (point - min5) * (canvas.height - 6) / span;
-        context2.lineTo(x, y);
-      });
-      context2.lineTo(canvas.width, canvas.height);
-      context2.closePath();
-      context2.fill();
-      context2.strokeStyle = "#60a5fa";
-      context2.lineWidth = 1.5;
-      context2.beginPath();
-      values2.forEach((point, index) => {
-        const x = index * (canvas.width - 1) / (values2.length - 1);
-        const y = canvas.height - 3 - (point - min5) * (canvas.height - 6) / span;
-        if (index === 0) context2.moveTo(x, y);
-        else context2.lineTo(x, y);
-      });
-      context2.stroke();
-      if (payload.sparklineIndices.length === values2.length) {
-        const currentFrame = Math.max(0, Math.min(payload.nFrames - 1, this.settings.structureIndex));
-        const markerIndex = payload.sparklineIndices.reduce(
-          (best, frame2, index) => Math.abs(frame2 - currentFrame) < Math.abs(payload.sparklineIndices[best] - currentFrame) ? index : best,
-          0
-        );
-        const markerX = markerIndex * (canvas.width - 1) / (values2.length - 1);
-        context2.strokeStyle = "rgba(244,244,245,0.72)";
-        context2.lineWidth = 1;
-        context2.beginPath();
-        context2.moveTo(markerX, 1);
-        context2.lineTo(markerX, canvas.height - 1);
-        context2.stroke();
-      }
-    }
-    const caption = document.createElement("div");
-    const frame = payload.nFrames > 0 ? Math.max(0, Math.min(payload.nFrames - 1, this.settings.structureIndex)) + 1 : 0;
-    caption.textContent = `${payload.nFrames} frame${payload.nFrames === 1 ? "" : "s"} \xB7 current ${frame}`;
-    caption.setAttribute("data-molsysviewer-measurement-series-caption", item2.tag);
-    Object.assign(caption.style, { fontSize: "9px", color: "rgba(244,244,245,0.46)" });
-    wrap.appendChild(caption);
-    return wrap;
-  }
-  renderEdit(item2) {
-    const editor = document.createElement("div");
-    Object.assign(editor.style, { display: "grid", gridTemplateColumns: "1fr auto", gap: "6px", marginTop: "6px" });
-    const rename = document.createElement("input");
-    rename.value = item2.tag;
-    rename.setAttribute("data-molsysviewer-measurement-rename-input", item2.tag);
-    Object.assign(rename.style, INPUT_STYLE);
-    const renameButton = makeButton("Rename", () => this.ctx.onAction("rename_measurement", { tag: item2.tag, new_tag: rename.value }));
-    renameButton.setAttribute("data-molsysviewer-measurement-rename", item2.tag);
-    rename.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        renameButton.click();
-      }
+  styleControl(control) {
+    Object.assign(control.style, {
+      minWidth: "0",
+      background: "rgba(0,0,0,0.28)",
+      border: "1px solid rgba(255,255,255,0.12)",
+      borderRadius: "6px",
+      padding: "5px 7px",
+      color: "#f4f4f5",
+      fontSize: "11px",
+      outline: "none"
     });
-    const layer = document.createElement("input");
-    layer.value = item2.layerTag && item2.layerTag !== item2.tag ? item2.layerTag : "";
-    layer.placeholder = "No user layer";
-    layer.setAttribute("data-molsysviewer-measurement-layer-input", item2.tag);
-    Object.assign(layer.style, INPUT_STYLE);
-    const layerButton = makeButton("Set layer", () => this.ctx.onAction("set_measurement_layer", { tag: item2.tag, layer: layer.value || null }));
-    layerButton.setAttribute("data-molsysviewer-measurement-layer", item2.tag);
-    layer.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        layerButton.click();
-      }
-    });
-    editor.appendChild(rename);
-    editor.appendChild(renameButton);
-    editor.appendChild(layer);
-    editor.appendChild(layerButton);
-    return editor;
   }
 };
+
+// src/ui/panels/selection-dock.ts
+function renderSelectionDock(options) {
+  const container = document.createElement("div");
+  Object.assign(container.style, {
+    display: "flex",
+    flexDirection: "column",
+    gap: "6px",
+    marginTop: "6px",
+    padding: "8px",
+    borderRadius: "6px",
+    background: "rgba(0, 0, 0, 0.2)",
+    border: "1px solid rgba(255, 255, 255, 0.08)"
+  });
+  const count3 = options.activeSelection.atom_indices.length;
+  const hasActive = count3 > 0;
+  const btnLabel = options.buttonLabel || "Set";
+  const prefix2 = options.dataAttributePrefix || "selection-dock";
+  const tabRow = document.createElement("div");
+  Object.assign(tabRow.style, {
+    display: "flex",
+    gap: "4px",
+    padding: "2px",
+    borderRadius: "5px"
+  });
+  const tabs = [
+    { id: "active", label: "Active selection" },
+    { id: "query", label: "Select by query" },
+    { id: "saved", label: "Saved selections" }
+  ];
+  for (const tab of tabs) {
+    const isTabActive = options.activeTab === tab.id;
+    const tabBtn = makePurplishSegmentButton(
+      tab.label,
+      isTabActive,
+      () => {
+        options.onTabChange(tab.id);
+      },
+      "4px 0",
+      "10px"
+    );
+    tabRow.appendChild(tabBtn);
+  }
+  container.appendChild(tabRow);
+  const contentBox = document.createElement("div");
+  Object.assign(contentBox.style, { marginTop: "4px" });
+  const activeCard = document.createElement("div");
+  activeCard.setAttribute(`data-molsysviewer-${prefix2}-active-selection-card`, "true");
+  if (options.activeTab === "active") {
+    Object.assign(activeCard.style, {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: "6px",
+      padding: "4px 2px"
+    });
+    const leftWrap = document.createElement("div");
+    Object.assign(leftWrap.style, {
+      display: "flex",
+      alignItems: "center",
+      gap: "6px",
+      fontSize: "11px",
+      fontWeight: "600",
+      color: "#fff"
+    });
+    const dot = document.createElement("span");
+    Object.assign(dot.style, {
+      width: "5px",
+      height: "5px",
+      borderRadius: "999px",
+      background: hasActive ? "#34d399" : "rgba(244,244,245,0.28)",
+      boxShadow: hasActive ? "0 0 6px rgba(52,211,153,0.4)" : "none",
+      flexShrink: "0"
+    });
+    leftWrap.appendChild(dot);
+    leftWrap.appendChild(document.createTextNode(hasActive ? `${count3} atom${count3 === 1 ? "" : "s"} selected` : "No active selection"));
+    activeCard.appendChild(leftWrap);
+    const useBtn = document.createElement("button");
+    useBtn.type = "button";
+    useBtn.textContent = btnLabel;
+    useBtn.setAttribute(`data-molsysviewer-${prefix2}-slot-set`, "0");
+    useBtn.disabled = !hasActive;
+    const greenNormal = "#34d399";
+    const greenHover = "#10b981";
+    Object.assign(useBtn.style, {
+      flex: "0 0 auto",
+      padding: "4px 12px",
+      fontSize: "11px",
+      fontWeight: "700",
+      background: greenNormal,
+      border: "0",
+      borderRadius: "6px",
+      color: "#000000",
+      cursor: hasActive ? "pointer" : "default",
+      opacity: hasActive ? "1" : "0.42",
+      transition: "all 0.12s ease"
+    });
+    useBtn.addEventListener("mouseenter", () => {
+      if (hasActive) {
+        useBtn.style.background = greenHover;
+      }
+    });
+    useBtn.addEventListener("mouseleave", () => {
+      if (hasActive) {
+        useBtn.style.background = greenNormal;
+      }
+    });
+    useBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!hasActive) return;
+      options.onCommitSelection([...options.activeSelection.atom_indices]);
+    });
+    activeCard.appendChild(useBtn);
+    contentBox.appendChild(activeCard);
+  }
+  const queryCard = document.createElement("div");
+  queryCard.setAttribute(`data-molsysviewer-${prefix2}-query-card`, "true");
+  if (options.activeTab === "query") {
+    Object.assign(queryCard.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "6px",
+      padding: "2px 0"
+    });
+    queryCard.appendChild(options.queryComposer.element());
+    const presetRow = document.createElement("div");
+    presetRow.setAttribute(`data-molsysviewer-${prefix2}-query-presets`, "true");
+    Object.assign(presetRow.style, {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: "4px",
+      alignItems: "center",
+      marginTop: "2px"
+    });
+    const presets = [
+      { label: "protein", expression: 'molecule_type=="protein"' },
+      { label: "water", expression: 'molecule_type=="water"' },
+      { label: "backbone", expression: 'atom_name in ["N", "CA", "C", "O"]' },
+      { label: "sidechain", expression: 'atom_name not in ["N", "CA", "C", "O"]' },
+      { label: "ligand", expression: 'molecule_type=="small molecule"' }
+    ];
+    for (const preset of presets) {
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.textContent = preset.label;
+      chip.setAttribute(`data-molsysviewer-${prefix2}-query-preset`, preset.label);
+      Object.assign(chip.style, {
+        background: "rgba(99, 102, 241, 0.16)",
+        border: "1px solid rgba(129, 140, 248, 0.34)",
+        borderRadius: "9999px",
+        padding: "2px 6px",
+        color: "#c7d2fe",
+        fontSize: "9px",
+        fontWeight: "500",
+        cursor: "pointer"
+      });
+      chip.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        options.queryComposer.setExpression(preset.expression, "MolSysMT");
+      });
+      presetRow.appendChild(chip);
+    }
+    queryCard.appendChild(presetRow);
+    contentBox.appendChild(queryCard);
+  }
+  const savedCard = document.createElement("div");
+  savedCard.setAttribute(`data-molsysviewer-${prefix2}-saved-selection-card`, "true");
+  if (options.activeTab === "saved") {
+    Object.assign(savedCard.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "6px",
+      padding: "2px 0"
+    });
+    if (options.savedSelections.length === 0) {
+      const noSaved = document.createElement("div");
+      noSaved.textContent = "No saved selections available.";
+      Object.assign(noSaved.style, { fontSize: "11px", color: "rgba(244,244,245,0.5)" });
+      savedCard.appendChild(noSaved);
+    } else {
+      const savedOptions = [
+        { value: "", label: "Select saved selection to use..." },
+        ...options.savedSelections.map((s) => ({
+          value: s.tag,
+          label: `${s.tag} (${s.atom_count} atoms)`
+        }))
+      ];
+      const savedSelect = makeStyledSelect(savedOptions, "", (tag) => {
+        if (!tag) return;
+        const found = options.savedSelections.find((s) => s.tag === tag);
+        if (found) {
+          if (options.onActivateSavedSelection) {
+            options.onActivateSavedSelection(found);
+          }
+          options.onCommitSelection([...found.atom_indices]);
+        }
+      });
+      savedSelect.setAttribute(`data-molsysviewer-${prefix2}-saved-select`, "true");
+      Object.assign(savedSelect.style, {
+        width: "100%",
+        padding: "5px 8px",
+        fontSize: "11px"
+      });
+      savedCard.appendChild(savedSelect);
+    }
+    contentBox.appendChild(savedCard);
+  }
+  container.appendChild(contentBox);
+  return container;
+}
 
 // src/ui/panels/annotations-panel.ts
 var defaultStyle = () => ({
@@ -155522,6 +155734,8 @@ var AnnotationsPanel = class extends BasePanel {
     this.nextLeaderLine = false;
     this.nextLeaderLineStyle = "dashed";
     this.stagedAnchor = null;
+    this.inlineTab = "active";
+    this.anchorSlotExpanded = true;
     this.annotationsQueryComposer = null;
     this.annotationsCheatSheetOpen = false;
   }
@@ -155983,266 +156197,70 @@ var AnnotationsPanel = class extends BasePanel {
       coordsCard.appendChild(inputRow);
       parent.appendChild(coordsCard);
     } else {
-      const activeCard = document.createElement("div");
-      activeCard.setAttribute("data-molsysviewer-annotation-active-selection-card", "true");
-      Object.assign(activeCard.style, {
+      const selContainer = document.createElement("div");
+      selContainer.setAttribute("data-molsysviewer-annotation-slots-card", "true");
+      Object.assign(selContainer.style, {
         display: "flex",
         flexDirection: "column",
-        gap: "8px",
-        padding: "8px 10px",
-        borderRadius: "8px",
-        background: "rgba(255,255,255,0.035)",
-        border: "1px solid rgba(255,255,255,0.08)",
-        marginBottom: "10px"
-      });
-      const activeRow = document.createElement("div");
-      Object.assign(activeRow.style, {
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        width: "100%",
-        gap: "6px 10px"
-      });
-      const leftWrap = document.createElement("div");
-      Object.assign(leftWrap.style, {
-        display: "flex",
-        alignItems: "center",
         gap: "6px",
-        fontSize: "12px",
-        fontWeight: "700",
-        color: "#fff"
-      });
-      const dot = document.createElement("span");
-      Object.assign(dot.style, {
-        width: "5px",
-        height: "5px",
-        borderRadius: "999px",
-        background: hasActive ? "#34d399" : "rgba(244,244,245,0.28)",
-        boxShadow: hasActive ? "0 0 6px rgba(52,211,153,0.4)" : "none",
-        flexShrink: "0"
-      });
-      leftWrap.appendChild(dot);
-      leftWrap.appendChild(document.createTextNode("Active selection"));
-      activeRow.appendChild(leftWrap);
-      const countText = document.createElement("span");
-      Object.assign(countText.style, {
-        fontSize: "11px",
-        color: "rgba(244,244,245,0.6)",
-        marginLeft: "auto",
-        marginRight: "4px"
-      });
-      if (hasActive) {
-        countText.textContent = `${activeCount} atom${activeCount === 1 ? "" : "s"}`;
-      } else {
-        countText.textContent = "No selection";
-      }
-      activeRow.appendChild(countText);
-      const btnRow = document.createElement("div");
-      Object.assign(btnRow.style, {
-        display: "flex",
-        gap: "4px",
-        alignItems: "center",
-        flexShrink: "0"
-      });
-      const anchorBtn = makeButton("Anchor", () => {
-        this.stagedAnchor = [...this.selection.atom_indices];
-        this.scheduleRender();
-      });
-      anchorBtn.disabled = !hasActive;
-      anchorBtn.style.opacity = hasActive ? "1" : "0.42";
-      anchorBtn.style.padding = "4px 8px";
-      anchorBtn.style.fontSize = "11px";
-      anchorBtn.style.whiteSpace = "nowrap";
-      anchorBtn.setAttribute("data-molsysviewer-annotation-active-anchor", "true");
-      btnRow.appendChild(anchorBtn);
-      const deactivateBtn = makeButton("Deactivate", () => {
-        this.ctx.onAction("set_active_selection_operation", { operation: "none" });
-        this.stagedAnchor = null;
-        this.scheduleRender();
-      });
-      deactivateBtn.disabled = !hasActive;
-      deactivateBtn.style.opacity = hasActive ? "1" : "0.42";
-      deactivateBtn.style.padding = "4px 8px";
-      deactivateBtn.style.fontSize = "11px";
-      deactivateBtn.style.whiteSpace = "nowrap";
-      deactivateBtn.setAttribute("data-molsysviewer-annotation-active-deactivate", "true");
-      btnRow.appendChild(deactivateBtn);
-      activeRow.appendChild(btnRow);
-      activeCard.appendChild(activeRow);
-      parent.appendChild(activeCard);
-      const queryCard = document.createElement("div");
-      queryCard.setAttribute("data-molsysviewer-annotation-query-card", "true");
-      Object.assign(queryCard.style, {
-        display: "flex",
-        flexDirection: "column",
-        gap: "8px",
-        padding: "10px",
-        borderRadius: "8px",
-        background: "rgba(255,255,255,0.03)",
-        border: "1px solid rgba(255,255,255,0.05)",
         marginBottom: "10px"
       });
-      const qHeader = document.createElement("div");
-      qHeader.textContent = "Select by query";
-      Object.assign(qHeader.style, {
-        fontSize: "12px",
-        fontWeight: "700",
-        color: "#fff"
-      });
-      queryCard.appendChild(qHeader);
-      const composer = this.getAnnotationsQueryComposer();
-      queryCard.appendChild(composer.element());
-      const presetRow = document.createElement("div");
-      presetRow.setAttribute("data-molsysviewer-annotation-query-presets", "true");
-      Object.assign(presetRow.style, {
-        display: "flex",
-        flexWrap: "wrap",
-        gap: "5px",
-        alignItems: "center"
-      });
-      const presetLabel = document.createElement("span");
-      Object.assign(presetLabel.style, {
-        fontSize: "10px",
-        color: "rgba(244,244,245,0.52)",
-        marginRight: "2px"
-      });
-      presetLabel.textContent = "shortcuts";
-      presetRow.appendChild(presetLabel);
-      const presets = [
-        { label: "protein", expression: 'molecule_type=="protein"' },
-        { label: "water", expression: 'molecule_type=="water"' },
-        { label: "backbone", expression: 'atom_name in ["N", "CA", "C", "O"]' },
-        { label: "sidechain", expression: 'atom_name not in ["N", "CA", "C", "O"]' },
-        { label: "ligand", expression: 'molecule_type=="small molecule"' }
-      ];
-      for (const preset of presets) {
-        const chip = document.createElement("button");
-        chip.type = "button";
-        chip.textContent = preset.label;
-        chip.setAttribute("data-molsysviewer-annotation-query-preset", preset.label);
-        Object.assign(chip.style, {
-          background: "rgba(99, 102, 241, 0.16)",
-          border: "1px solid rgba(129, 140, 248, 0.34)",
-          borderRadius: "9999px",
-          padding: "2px 6px",
-          color: "#c7d2fe",
-          fontSize: "9px",
-          fontWeight: "500",
-          cursor: "pointer"
-        });
-        chip.addEventListener("click", (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          composer.setExpression(preset.expression, "MolSysMT");
-        });
-        presetRow.appendChild(chip);
-      }
-      queryCard.appendChild(presetRow);
-      if (this.annotationsCheatSheetOpen) {
-        const cheatSheet = document.createElement("div");
-        cheatSheet.setAttribute("data-molsysviewer-annotation-cheatsheet", "true");
-        Object.assign(cheatSheet.style, {
-          display: "grid",
-          gridTemplateColumns: "1fr",
-          gap: "4px",
-          padding: "8px",
+      if (this.stagedAnchor !== null) {
+        const statusCard = document.createElement("div");
+        Object.assign(statusCard.style, {
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "8px",
+          padding: "6px 10px",
           borderRadius: "6px",
-          background: "rgba(0,0,0,0.18)",
-          border: "1px solid rgba(255,255,255,0.08)"
+          background: "rgba(52, 211, 153, 0.12)",
+          border: "1px solid rgba(52, 211, 153, 0.3)",
+          fontSize: "11px",
+          color: "#34d399",
+          fontWeight: "600"
         });
-        const examples = [
-          ["Atom name", 'atom_name=="CA"'],
-          ["Group index", "group_index in [10, 15]"],
-          ["Chain", 'chain_id=="A"'],
-          ["Protein", 'molecule_type=="protein"'],
-          ["Nearby", "all within 5 angstroms of atom_index in [0]"],
-          ["Bonded", "bonded to atom_index in [0]"]
-        ];
-        for (const [label2, expression] of examples) {
-          const row2 = document.createElement("button");
-          row2.type = "button";
-          row2.setAttribute("data-molsysviewer-annotation-cheatsheet-example", label2);
-          Object.assign(row2.style, {
-            display: "flex",
-            justifyContent: "space-between",
-            gap: "8px",
-            width: "100%",
-            background: "transparent",
-            border: "0",
-            padding: "3px 2px",
-            color: "#e4e4e7",
-            fontSize: "10px",
-            textAlign: "left",
-            cursor: "pointer"
-          });
-          const name = document.createElement("span");
-          name.textContent = label2;
-          name.style.color = "rgba(244,244,245,0.62)";
-          const code = document.createElement("code");
-          code.textContent = expression;
-          Object.assign(code.style, {
-            color: "#c7d2fe",
-            fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap"
-          });
-          row2.appendChild(name);
-          row2.appendChild(code);
-          row2.addEventListener("click", (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            composer.setExpression(expression, "MolSysMT");
-          });
-          cheatSheet.appendChild(row2);
-        }
-        queryCard.appendChild(cheatSheet);
+        const count3 = this.stagedAnchor.length;
+        const desc = count3 === 1 ? "1 atom" : `${count3} atoms \xB7 Centroid`;
+        const text = document.createElement("span");
+        text.textContent = `\u2713 Staged anchor: ${desc}`;
+        statusCard.appendChild(text);
+        const clearBtn = makeButton("Clear", () => {
+          this.stagedAnchor = null;
+          this.scheduleRender();
+        });
+        clearBtn.setAttribute("data-molsysviewer-annotation-slot-clear", "0");
+        Object.assign(clearBtn.style, {
+          padding: "2px 8px",
+          fontSize: "10px",
+          background: "rgba(255,255,255,0.08)",
+          border: "1px solid rgba(255,255,255,0.15)",
+          color: "#fff"
+        });
+        statusCard.appendChild(clearBtn);
+        selContainer.appendChild(statusCard);
       }
-      parent.appendChild(queryCard);
-      const savedCard = document.createElement("div");
-      savedCard.setAttribute("data-molsysviewer-annotation-activate-saved-card", "true");
-      Object.assign(savedCard.style, {
-        display: "flex",
-        flexDirection: "column",
-        gap: "8px",
-        padding: "8px 10px",
-        borderRadius: "8px",
-        background: "rgba(255,255,255,0.035)",
-        border: "1px solid rgba(255,255,255,0.08)",
-        marginBottom: "10px"
-      });
-      const sHeader = document.createElement("div");
-      sHeader.textContent = "Activate saved selection";
-      Object.assign(sHeader.style, {
-        fontSize: "12px",
-        fontWeight: "700",
-        color: "#fff"
-      });
-      savedCard.appendChild(sHeader);
-      let activeSavedTag = "";
-      for (const s of this.savedSelections) {
-        if (this.isSavedSelectionActive(s)) {
-          activeSavedTag = s.tag;
-          break;
+      const dockInline = renderSelectionDock({
+        activeSelection: this.selection,
+        savedSelections: this.savedSelections,
+        activeTab: this.inlineTab,
+        buttonLabel: "Anchor",
+        queryComposer: this.getAnnotationsQueryComposer(),
+        dataAttributePrefix: "annotation",
+        onTabChange: (tab) => {
+          this.inlineTab = tab;
+          this.scheduleRender();
+        },
+        onCommitSelection: (atomIndices) => {
+          this.stagedAnchor = [...atomIndices];
+          this.scheduleRender();
+        },
+        onActivateSavedSelection: (item2) => {
+          this.ctx.onAction("activate_selection", { tag: item2.tag });
         }
-      }
-      const savedOptions = [
-        { value: "", label: "Select saved selection..." },
-        ...this.savedSelections.map((s) => ({ value: s.tag, label: `${s.tag} (${s.atom_count} atoms)` }))
-      ];
-      const savedSelect = makeStyledSelect(
-        savedOptions,
-        activeSavedTag,
-        (val) => {
-          if (val) {
-            this.ctx.onAction("activate_selection", { tag: val });
-          } else {
-            this.ctx.onAction("set_active_selection_operation", { operation: "none" });
-          }
-        }
-      );
-      savedCard.appendChild(savedSelect);
-      parent.appendChild(savedCard);
+      });
+      selContainer.appendChild(dockInline);
+      parent.appendChild(selContainer);
     }
   }
   renderAnnotation(item2) {
@@ -157851,6 +157869,8 @@ var FloatingPanelShell = class {
     this.expanded = false;
     this.displayUpdatePending = false;
     this.minimized = false;
+    this.savedHeight = "";
+    this.savedMinHeight = "";
     this.workspaceMenuOpen = false;
     this.isSplit = false;
     this.isAmbient = false;
@@ -158212,11 +158232,11 @@ var FloatingPanelShell = class {
       });
       this.headerElement.appendChild(panelPopBtn);
     }
-    const minimizeButton = document.createElement("button");
-    minimizeButton.type = "button";
-    minimizeButton.title = "Minimize";
-    minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>`;
-    Object.assign(minimizeButton.style, {
+    this.minimizeButton = document.createElement("button");
+    this.minimizeButton.type = "button";
+    this.minimizeButton.title = "Minimize";
+    this.minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>`;
+    Object.assign(this.minimizeButton.style, {
       background: "transparent",
       border: "none",
       color: "rgba(255,255,255,0.45)",
@@ -158229,40 +158249,19 @@ var FloatingPanelShell = class {
       flexShrink: "0",
       marginLeft: "4px"
     });
-    minimizeButton.addEventListener("mouseenter", () => {
-      minimizeButton.style.color = "rgba(255,255,255,0.9)";
+    this.minimizeButton.addEventListener("mouseenter", () => {
+      if (this.minimizeButton) this.minimizeButton.style.color = "rgba(255,255,255,0.9)";
     });
-    minimizeButton.addEventListener("mouseleave", () => {
-      minimizeButton.style.color = "rgba(255,255,255,0.45)";
+    this.minimizeButton.addEventListener("mouseleave", () => {
+      if (this.minimizeButton) this.minimizeButton.style.color = "rgba(255,255,255,0.45)";
     });
-    let originalHeight = "";
-    let originalMinHeight = "";
-    minimizeButton.addEventListener("click", (e) => {
+    this.minimizeButton.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
-      this.minimized = !this.minimized;
-      if (this.minimized) {
-        originalHeight = this.panel.style.height;
-        originalMinHeight = this.panel.style.minHeight;
-        this.panel.style.height = "auto";
-        this.panel.style.minHeight = "0";
-        this.content.style.display = "none";
-        this.root.style.background = "transparent";
-        this.root.style.pointerEvents = "none";
-        minimizeButton.title = "Restore";
-        minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="10" height="10" rx="1"/></svg>`;
-      } else {
-        this.panel.style.height = originalHeight || (this.isSplit ? "calc(100% - 20px)" : "min(68%, 700px)");
-        this.panel.style.minHeight = originalMinHeight || (this.isSplit ? "0" : "420px");
-        this.content.style.display = "flex";
-        this.root.style.background = this.isAmbient || this.isSplit ? "transparent" : "rgba(0,0,0,0.32)";
-        this.root.style.pointerEvents = this.isAmbient || this.isSplit ? "none" : "auto";
-        minimizeButton.title = "Minimize";
-        minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>`;
-      }
+      this.setMinimized(!this.minimized);
     });
     if (!this.isPanelOnly) {
-      this.headerElement.appendChild(minimizeButton);
+      this.headerElement.appendChild(this.minimizeButton);
     }
     this.toggleButton = document.createElement("button");
     this.toggleButton.type = "button";
@@ -158379,7 +158378,13 @@ var FloatingPanelShell = class {
     this.panel.style.left = `${left}px`;
     this.panel.style.top = `${top}px`;
     this.panel.style.width = `${panelWidth}px`;
-    this.panel.style.height = `${panelHeight}px`;
+    if (this.minimized) {
+      this.savedHeight = `${panelHeight}px`;
+      this.panel.style.height = "auto";
+      this.panel.style.minHeight = "0";
+    } else {
+      this.panel.style.height = `${panelHeight}px`;
+    }
   }
   updateLayout() {
     const isSplit = this.isSplit;
@@ -158486,8 +158491,42 @@ var FloatingPanelShell = class {
     }
     return w;
   }
+  setMinimized(minimized) {
+    this.minimized = minimized;
+    if (minimized) {
+      if (this.panel.style.height && this.panel.style.height !== "auto") {
+        this.savedHeight = this.panel.style.height;
+      }
+      if (this.panel.style.minHeight && this.panel.style.minHeight !== "0px") {
+        this.savedMinHeight = this.panel.style.minHeight;
+      }
+      this.panel.style.height = "auto";
+      this.panel.style.minHeight = "0";
+      this.content.style.display = "none";
+      this.root.style.background = "transparent";
+      this.root.style.pointerEvents = "none";
+      if (this.minimizeButton) {
+        this.minimizeButton.title = "Restore";
+        this.minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="10" height="10" rx="1"/></svg>`;
+      }
+    } else {
+      this.panel.style.height = this.savedHeight || (this.isSplit ? "calc(100% - 20px)" : "min(68%, 700px)");
+      this.panel.style.minHeight = this.savedMinHeight || (this.isSplit ? "0" : "420px");
+      this.content.style.display = "flex";
+      this.root.style.background = this.isAmbient || this.isSplit ? "transparent" : "rgba(0,0,0,0.32)";
+      this.root.style.pointerEvents = this.isAmbient || this.isSplit ? "none" : "auto";
+      if (this.minimizeButton) {
+        this.minimizeButton.title = "Minimize";
+        this.minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>`;
+      }
+    }
+  }
   applyDisplay() {
-    this.root.style.display = this.visible && this.expanded ? "flex" : "none";
+    const isShown = this.visible && this.expanded;
+    this.root.style.display = isShown ? "flex" : "none";
+    if (isShown) {
+      this.setMinimized(this.minimized);
+    }
   }
   scheduleDisplayUpdate() {
     if (this.displayUpdatePending) return;
@@ -158944,8 +158983,8 @@ var GroupPanel = class {
       ["whole", ["Whole", "Overall Representation & Presets", this.wholeSection, this.wholePanel]],
       ["selection", ["Selections", "None", this.selectionSection, this.selectionPanel]],
       ["regions", ["Regions", "0", this.regionsSection, this.regionsPanel]],
-      ["measures", ["Measures", "0", this.measuresSection, this.measuresPanel]],
       ["annotations", ["Annotations", "0", this.annotationsSection, this.annotationsPanel]],
+      ["measures", ["Measures", "0", this.measuresSection, this.measuresPanel]],
       ["shapes", ["Shapes", "0", this.shapesSection, this.shapesPanel]],
       ["layers", ["Layers", "0", this.layersSection, this.layersPanel]],
       ["viewport", ["Viewport", "Dark", this.viewportSection, this.viewportPanel]],
@@ -158956,8 +158995,8 @@ var GroupPanel = class {
       "whole",
       "selection",
       "regions",
-      "measures",
       "annotations",
+      "measures",
       "shapes",
       "layers",
       "viewport",
@@ -164180,10 +164219,11 @@ var bootPopup = async (loadedModule) => {
   const popControllerPromise = (async () => {
     await new Promise((r) => setTimeout(r, 100));
     const ctrl2 = await MolSysViewerController2.create(container, (msg) => {
-      if (msg?.event === "interaction_measurement_created") {
+      if (msg && typeof msg === "object" && typeof msg.event === "string") {
         sendToHost("molsysviewer-popup-interaction", msg);
+      } else {
+        sendToHost("molsysviewer-log-from-popout", msg);
       }
-      sendToHost("molsysviewer-log-from-popout", msg);
     }, void 0, initOptions);
     if (initOptions.isPanelOnly) {
       ctrl2.setCanvasVisibility(false);

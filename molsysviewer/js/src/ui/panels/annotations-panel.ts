@@ -4,6 +4,7 @@ import { BasePanel } from "./base-panel";
 import type { PanelContext } from "./types";
 import { makeButton, makeSectionHeader, makeStyledSelect } from "./ui-helpers";
 import { ManualQueryComposer } from "../query-composer";
+import { renderSelectionDock } from "./selection-dock";
 
 export type AnnotationLabelStyle = {
     color?: string;
@@ -101,6 +102,8 @@ export class AnnotationsPanel extends BasePanel {
     private nextLeaderLine = false;
     private nextLeaderLineStyle: "solid" | "dashed" | "dotted" = "dashed";
     private stagedAnchor: number[] | null = null;
+    private inlineTab: "active" | "query" | "saved" = "active";
+    private anchorSlotExpanded = true;
 
     private annotationsQueryComposer: ManualQueryComposer | null = null;
     private annotationsCheatSheetOpen = false;
@@ -625,290 +628,76 @@ export class AnnotationsPanel extends BasePanel {
             coordsCard.appendChild(inputRow);
             parent.appendChild(coordsCard);
         } else {
-            // Render selection cards:
-            // 2. Active Selection Card
-            const activeCard = document.createElement("div");
-            activeCard.setAttribute("data-molsysviewer-annotation-active-selection-card", "true");
-            Object.assign(activeCard.style, {
+            // Render Selection Dock directly in Annotations (no redundant outer line wrapper)
+            const selContainer = document.createElement("div");
+            selContainer.setAttribute("data-molsysviewer-annotation-slots-card", "true");
+            Object.assign(selContainer.style, {
                 display: "flex",
                 flexDirection: "column",
-                gap: "8px",
-                padding: "8px 10px",
-                borderRadius: "8px",
-                background: "rgba(255,255,255,0.035)",
-                border: "1px solid rgba(255,255,255,0.08)",
-                marginBottom: "10px",
-            });
-
-            const activeRow = document.createElement("div");
-            Object.assign(activeRow.style, {
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                width: "100%",
-                gap: "6px 10px",
-            });
-
-            const leftWrap = document.createElement("div");
-            Object.assign(leftWrap.style, {
-                display: "flex",
-                alignItems: "center",
                 gap: "6px",
-                fontSize: "12px",
-                fontWeight: "700",
-                color: "#fff",
-            });
-            const dot = document.createElement("span");
-            Object.assign(dot.style, {
-                width: "5px",
-                height: "5px",
-                borderRadius: "999px",
-                background: hasActive ? "#34d399" : "rgba(244,244,245,0.28)",
-                boxShadow: hasActive ? "0 0 6px rgba(52,211,153,0.4)" : "none",
-                flexShrink: "0",
-            });
-            leftWrap.appendChild(dot);
-            leftWrap.appendChild(document.createTextNode("Active selection"));
-            activeRow.appendChild(leftWrap);
-
-            const countText = document.createElement("span");
-            Object.assign(countText.style, {
-                fontSize: "11px",
-                color: "rgba(244,244,245,0.6)",
-                marginLeft: "auto",
-                marginRight: "4px",
-            });
-            if (hasActive) {
-                countText.textContent = `${activeCount} atom${activeCount === 1 ? "" : "s"}`;
-            } else {
-                countText.textContent = "No selection";
-            }
-            activeRow.appendChild(countText);
-
-            // Right: Action Buttons (Anchor and Deactivate)
-            const btnRow = document.createElement("div");
-            Object.assign(btnRow.style, {
-                display: "flex",
-                gap: "4px",
-                alignItems: "center",
-                flexShrink: "0",
-            });
-
-            const anchorBtn = makeButton("Anchor", () => {
-                this.stagedAnchor = [...this.selection.atom_indices];
-                this.scheduleRender();
-            });
-            anchorBtn.disabled = !hasActive;
-            anchorBtn.style.opacity = hasActive ? "1" : "0.42";
-            anchorBtn.style.padding = "4px 8px";
-            anchorBtn.style.fontSize = "11px";
-            anchorBtn.style.whiteSpace = "nowrap";
-            anchorBtn.setAttribute("data-molsysviewer-annotation-active-anchor", "true");
-            btnRow.appendChild(anchorBtn);
-
-            const deactivateBtn = makeButton("Deactivate", () => {
-                this.ctx.onAction("set_active_selection_operation", { operation: "none" });
-                this.stagedAnchor = null;
-                this.scheduleRender();
-            });
-            deactivateBtn.disabled = !hasActive;
-            deactivateBtn.style.opacity = hasActive ? "1" : "0.42";
-            deactivateBtn.style.padding = "4px 8px";
-            deactivateBtn.style.fontSize = "11px";
-            deactivateBtn.style.whiteSpace = "nowrap";
-            deactivateBtn.setAttribute("data-molsysviewer-annotation-active-deactivate", "true");
-            btnRow.appendChild(deactivateBtn);
-            activeRow.appendChild(btnRow);
-
-            activeCard.appendChild(activeRow);
-            parent.appendChild(activeCard);
-
-            // 3. Select by Query Card
-            const queryCard = document.createElement("div");
-            queryCard.setAttribute("data-molsysviewer-annotation-query-card", "true");
-            Object.assign(queryCard.style, {
-                display: "flex",
-                flexDirection: "column",
-                gap: "8px",
-                padding: "10px",
-                borderRadius: "8px",
-                background: "rgba(255,255,255,0.03)",
-                border: "1px solid rgba(255,255,255,0.05)",
                 marginBottom: "10px",
             });
 
-            const qHeader = document.createElement("div");
-            qHeader.textContent = "Select by query";
-            Object.assign(qHeader.style, {
-                fontSize: "12px",
-                fontWeight: "700",
-                color: "#fff",
-            });
-            queryCard.appendChild(qHeader);
-
-            const composer = this.getAnnotationsQueryComposer();
-            queryCard.appendChild(composer.element());
-
-            // Shortcuts Row
-            const presetRow = document.createElement("div");
-            presetRow.setAttribute("data-molsysviewer-annotation-query-presets", "true");
-            Object.assign(presetRow.style, {
-                display: "flex",
-                flexWrap: "wrap",
-                gap: "5px",
-                alignItems: "center",
-            });
-            const presetLabel = document.createElement("span");
-            Object.assign(presetLabel.style, {
-                fontSize: "10px",
-                color: "rgba(244,244,245,0.52)",
-                marginRight: "2px",
-            });
-            presetLabel.textContent = "shortcuts";
-            presetRow.appendChild(presetLabel);
-
-            const presets = [
-                { label: "protein", expression: 'molecule_type=="protein"' },
-                { label: "water", expression: 'molecule_type=="water"' },
-                { label: "backbone", expression: 'atom_name in ["N", "CA", "C", "O"]' },
-                { label: "sidechain", expression: 'atom_name not in ["N", "CA", "C", "O"]' },
-                { label: "ligand", expression: 'molecule_type=="small molecule"' },
-            ] as const;
-            for (const preset of presets) {
-                const chip = document.createElement("button");
-                chip.type = "button";
-                chip.textContent = preset.label;
-                chip.setAttribute("data-molsysviewer-annotation-query-preset", preset.label);
-                Object.assign(chip.style, {
-                    background: "rgba(99, 102, 241, 0.16)",
-                    border: "1px solid rgba(129, 140, 248, 0.34)",
-                    borderRadius: "9999px",
-                    padding: "2px 6px",
-                    color: "#c7d2fe",
-                    fontSize: "9px",
-                    fontWeight: "500",
-                    cursor: "pointer",
-                });
-                chip.addEventListener("click", (event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    composer.setExpression(preset.expression, "MolSysMT");
-                });
-                presetRow.appendChild(chip);
-            }
-            queryCard.appendChild(presetRow);
-
-            // Query Cheat Sheet
-            if (this.annotationsCheatSheetOpen) {
-                const cheatSheet = document.createElement("div");
-                cheatSheet.setAttribute("data-molsysviewer-annotation-cheatsheet", "true");
-                Object.assign(cheatSheet.style, {
-                    display: "grid",
-                    gridTemplateColumns: "1fr",
-                    gap: "4px",
-                    padding: "8px",
+            // Staged anchor readout indicator if anchor is set
+            if (this.stagedAnchor !== null) {
+                const statusCard = document.createElement("div");
+                Object.assign(statusCard.style, {
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: "8px",
+                    padding: "6px 10px",
                     borderRadius: "6px",
-                    background: "rgba(0,0,0,0.18)",
-                    border: "1px solid rgba(255,255,255,0.08)",
+                    background: "rgba(52, 211, 153, 0.12)",
+                    border: "1px solid rgba(52, 211, 153, 0.3)",
+                    fontSize: "11px",
+                    color: "#34d399",
+                    fontWeight: "600",
                 });
-                const examples = [
-                    ["Atom name", 'atom_name=="CA"'],
-                    ["Group index", "group_index in [10, 15]"],
-                    ["Chain", 'chain_id=="A"'],
-                    ["Protein", 'molecule_type=="protein"'],
-                    ["Nearby", "all within 5 angstroms of atom_index in [0]"],
-                    ["Bonded", "bonded to atom_index in [0]"],
-                ] as const;
-                for (const [label, expression] of examples) {
-                    const row = document.createElement("button");
-                    row.type = "button";
-                    row.setAttribute("data-molsysviewer-annotation-cheatsheet-example", label);
-                    Object.assign(row.style, {
-                        display: "flex",
-                        justifyContent: "space-between",
-                        gap: "8px",
-                        width: "100%",
-                        background: "transparent",
-                        border: "0",
-                        padding: "3px 2px",
-                        color: "#e4e4e7",
-                        fontSize: "10px",
-                        textAlign: "left",
-                        cursor: "pointer",
-                    });
-                    const name = document.createElement("span");
-                    name.textContent = label;
-                    name.style.color = "rgba(244,244,245,0.62)";
-                    const code = document.createElement("code");
-                    code.textContent = expression;
-                    Object.assign(code.style, {
-                        color: "#c7d2fe",
-                        fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                    });
-                    row.appendChild(name);
-                    row.appendChild(code);
-                    row.addEventListener("click", (event) => {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        composer.setExpression(expression, "MolSysMT");
-                    });
-                    cheatSheet.appendChild(row);
-                }
-                queryCard.appendChild(cheatSheet);
-            }
-            parent.appendChild(queryCard);
 
-            // 4. Activate Saved Selection Card
-            const savedCard = document.createElement("div");
-            savedCard.setAttribute("data-molsysviewer-annotation-activate-saved-card", "true");
-            Object.assign(savedCard.style, {
-                display: "flex",
-                flexDirection: "column",
-                gap: "8px",
-                padding: "8px 10px",
-                borderRadius: "8px",
-                background: "rgba(255,255,255,0.035)",
-                border: "1px solid rgba(255,255,255,0.08)",
-                marginBottom: "10px",
-            });
+                const count = this.stagedAnchor.length;
+                const desc = count === 1 ? "1 atom" : `${count} atoms · Centroid`;
+                const text = document.createElement("span");
+                text.textContent = `✓ Staged anchor: ${desc}`;
+                statusCard.appendChild(text);
 
-            const sHeader = document.createElement("div");
-            sHeader.textContent = "Activate saved selection";
-            Object.assign(sHeader.style, {
-                fontSize: "12px",
-                fontWeight: "700",
-                color: "#fff",
-            });
-            savedCard.appendChild(sHeader);
-
-            let activeSavedTag = "";
-            for (const s of this.savedSelections) {
-                if (this.isSavedSelectionActive(s)) {
-                    activeSavedTag = s.tag;
-                    break;
-                }
+                const clearBtn = makeButton("Clear", () => {
+                    this.stagedAnchor = null;
+                    this.scheduleRender();
+                });
+                clearBtn.setAttribute("data-molsysviewer-annotation-slot-clear", "0");
+                Object.assign(clearBtn.style, {
+                    padding: "2px 8px",
+                    fontSize: "10px",
+                    background: "rgba(255,255,255,0.08)",
+                    border: "1px solid rgba(255,255,255,0.15)",
+                    color: "#fff",
+                });
+                statusCard.appendChild(clearBtn);
+                selContainer.appendChild(statusCard);
             }
 
-            const savedOptions = [
-                { value: "", label: "Select saved selection..." },
-                ...this.savedSelections.map(s => ({ value: s.tag, label: `${s.tag} (${s.atom_count} atoms)` })),
-            ];
-            const savedSelect = makeStyledSelect(
-                savedOptions,
-                activeSavedTag,
-                (val) => {
-                    if (val) {
-                        this.ctx.onAction("activate_selection", { tag: val });
-                    } else {
-                        this.ctx.onAction("set_active_selection_operation", { operation: "none" });
-                    }
-                }
-            );
-            savedCard.appendChild(savedSelect);
-            parent.appendChild(savedCard);
+            const dockInline = renderSelectionDock({
+                activeSelection: this.selection,
+                savedSelections: this.savedSelections,
+                activeTab: this.inlineTab,
+                buttonLabel: "Anchor",
+                queryComposer: this.getAnnotationsQueryComposer(),
+                dataAttributePrefix: "annotation",
+                onTabChange: (tab) => {
+                    this.inlineTab = tab;
+                    this.scheduleRender();
+                },
+                onCommitSelection: (atomIndices) => {
+                    this.stagedAnchor = [...atomIndices];
+                    this.scheduleRender();
+                },
+                onActivateSavedSelection: (item) => {
+                    this.ctx.onAction("activate_selection", { tag: item.tag });
+                },
+            });
+            selContainer.appendChild(dockInline);
+            parent.appendChild(selContainer);
         }
     }
 

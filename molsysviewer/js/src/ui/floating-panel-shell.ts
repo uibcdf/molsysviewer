@@ -48,6 +48,9 @@ export class FloatingPanelShell {
     private expanded = false;
     private displayUpdatePending = false;
     public minimized = false;
+    private minimizeButton?: HTMLButtonElement;
+    private savedHeight = "";
+    private savedMinHeight = "";
     private onSelectPanel?: (panelId: string) => void;
     private onSelectWorkspace?: (workspaceId: string) => void;
     private workspaceMenuOpen = false;
@@ -129,7 +132,13 @@ export class FloatingPanelShell {
         this.panel.style.left = `${left}px`;
         this.panel.style.top = `${top}px`;
         this.panel.style.width = `${panelWidth}px`;
-        this.panel.style.height = `${panelHeight}px`;
+        if (this.minimized) {
+            this.savedHeight = `${panelHeight}px`;
+            this.panel.style.height = "auto";
+            this.panel.style.minHeight = "0";
+        } else {
+            this.panel.style.height = `${panelHeight}px`;
+        }
     }
 
     constructor(private readonly host: HTMLElement, options: FloatingPanelShellOptions) {
@@ -502,11 +511,11 @@ export class FloatingPanelShell {
             this.headerElement.appendChild(panelPopBtn);
         }
 
-        const minimizeButton = document.createElement("button");
-        minimizeButton.type = "button";
-        minimizeButton.title = "Minimize";
-        minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>`;
-        Object.assign(minimizeButton.style, {
+        this.minimizeButton = document.createElement("button");
+        this.minimizeButton.type = "button";
+        this.minimizeButton.title = "Minimize";
+        this.minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>`;
+        Object.assign(this.minimizeButton.style, {
             background: "transparent",
             border: "none",
             color: "rgba(255,255,255,0.45)",
@@ -519,37 +528,16 @@ export class FloatingPanelShell {
             flexShrink: "0",
             marginLeft: "4px",
         });
-        minimizeButton.addEventListener("mouseenter", () => { minimizeButton.style.color = "rgba(255,255,255,0.9)"; });
-        minimizeButton.addEventListener("mouseleave", () => { minimizeButton.style.color = "rgba(255,255,255,0.45)"; });
+        this.minimizeButton.addEventListener("mouseenter", () => { if (this.minimizeButton) this.minimizeButton.style.color = "rgba(255,255,255,0.9)"; });
+        this.minimizeButton.addEventListener("mouseleave", () => { if (this.minimizeButton) this.minimizeButton.style.color = "rgba(255,255,255,0.45)"; });
         
-        let originalHeight = "";
-        let originalMinHeight = "";
-        minimizeButton.addEventListener("click", (e) => {
+        this.minimizeButton.addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
-            this.minimized = !this.minimized;
-            if (this.minimized) {
-                originalHeight = this.panel.style.height;
-                originalMinHeight = this.panel.style.minHeight;
-                this.panel.style.height = "auto";
-                this.panel.style.minHeight = "0";
-                this.content.style.display = "none";
-                this.root.style.background = "transparent";
-                this.root.style.pointerEvents = "none";
-                minimizeButton.title = "Restore";
-                minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="10" height="10" rx="1"/></svg>`;
-            } else {
-                this.panel.style.height = originalHeight || (this.isSplit ? "calc(100% - 20px)" : "min(68%, 700px)");
-                this.panel.style.minHeight = originalMinHeight || (this.isSplit ? "0" : "420px");
-                this.content.style.display = "flex";
-                this.root.style.background = (this.isAmbient || this.isSplit) ? "transparent" : "rgba(0,0,0,0.32)";
-                this.root.style.pointerEvents = (this.isAmbient || this.isSplit) ? "none" : "auto";
-                minimizeButton.title = "Minimize";
-                minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>`;
-            }
+            this.setMinimized(!this.minimized);
         });
         if (!this.isPanelOnly) {
-            this.headerElement.appendChild(minimizeButton);
+            this.headerElement.appendChild(this.minimizeButton);
         }
 
         // Close button (this is the toggleButton for interface compatibility)
@@ -754,8 +742,43 @@ export class FloatingPanelShell {
         return w;
     }
 
+    public setMinimized(minimized: boolean): void {
+        this.minimized = minimized;
+        if (minimized) {
+            if (this.panel.style.height && this.panel.style.height !== "auto") {
+                this.savedHeight = this.panel.style.height;
+            }
+            if (this.panel.style.minHeight && this.panel.style.minHeight !== "0px") {
+                this.savedMinHeight = this.panel.style.minHeight;
+            }
+            this.panel.style.height = "auto";
+            this.panel.style.minHeight = "0";
+            this.content.style.display = "none";
+            this.root.style.background = "transparent";
+            this.root.style.pointerEvents = "none";
+            if (this.minimizeButton) {
+                this.minimizeButton.title = "Restore";
+                this.minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="10" height="10" rx="1"/></svg>`;
+            }
+        } else {
+            this.panel.style.height = this.savedHeight || (this.isSplit ? "calc(100% - 20px)" : "min(68%, 700px)");
+            this.panel.style.minHeight = this.savedMinHeight || (this.isSplit ? "0" : "420px");
+            this.content.style.display = "flex";
+            this.root.style.background = (this.isAmbient || this.isSplit) ? "transparent" : "rgba(0,0,0,0.32)";
+            this.root.style.pointerEvents = (this.isAmbient || this.isSplit) ? "none" : "auto";
+            if (this.minimizeButton) {
+                this.minimizeButton.title = "Minimize";
+                this.minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>`;
+            }
+        }
+    }
+
     private applyDisplay(): void {
-        this.root.style.display = (this.visible && this.expanded) ? "flex" : "none";
+        const isShown = this.visible && this.expanded;
+        this.root.style.display = isShown ? "flex" : "none";
+        if (isShown) {
+            this.setMinimized(this.minimized);
+        }
     }
 
     private scheduleDisplayUpdate(): void {
