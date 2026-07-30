@@ -1,5 +1,8 @@
 # Standalone Qt Prototype Plan
 
+**Status:** completed prototype plan. Current standalone status is documented in
+the supported-environment, packaging, audit, and known-issues documents.
+
 This document defines the first technical prototype for the final standalone
 host direction already chosen in:
 

@@ -433,7 +433,7 @@ The host dispatches based on which field is present. anywidget panels and JS-bun
 - `path_to_1_0.md` — The unified release plan requires ElastNetMT to "use the workspace
   panel host" as a condition for the stable 1.0.0 release. This
   contract is the implementation path for that gap.
-- `elastnetmt_addon_plan.md` — ElastNetMT add-on plan. The "richer
+- `archive/elastnetmt_addon_plan.md` — completed ElastNetMT add-on plan. The "richer
   parameter-editing surface" flagged there is implemented through this contract.
 - `elastnetmt_addon_follow_up.md` — explicitly names "a richer
   parameter-editing surface" as the next open item. This document is the answer.

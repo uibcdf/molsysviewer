@@ -1,5 +1,7 @@
 # Styles: First Implementation Slice
 
+**Status:** implemented historical plan. Do not use as current API reference.
+
 This page defines the first concrete implementation slice for `Style` in
 MolSysViewer.
 

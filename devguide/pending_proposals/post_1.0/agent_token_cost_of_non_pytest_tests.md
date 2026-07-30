@@ -1,6 +1,6 @@
 # Proposal: Study the token cost of non-pytest test output for agent consumers
 
-**Status:** proposed (study). Not a build decision.
+**Status:** post-1.0 study. Not a build decision.
 
 **Scope:** The Python side already has an answer (`pytest-receptor`, see
 [`../pytest_receptor.md`](../pytest_receptor.md)). This asks whether MolSysViewer's
@@ -28,11 +28,9 @@ transfer directly.
   driven by our own `e2e-runner.ts` and test files. Their console output is
   therefore *ours to shape* — no external "receptor" plugin is needed for these,
   unlike pytest.
-- **The unit runner is the exception to confirm.** `npm run test:js` (unit tests
-  under `molsysviewer/js/tests/unit`) — confirm whether it uses a standard runner
-  (Vitest/Jest/…) or is also a custom Node harness. If standard, that surface is
-  the only one that would need a *reporter* through the runner's plugin API, which
-  is the piece most resembling pytest-receptor's approach.
+- **The unit runner is known.** `npm run test:js` bundles the tests with esbuild
+  and runs Node's built-in `node --test` runner. Any compact output would use a
+  Node test reporter or a repo-local wrapper, not a Vitest/Jest plugin.
 - **E2E has an artifact trap.** Screenshots, traces, videos, and DOM dumps are the
   real token risk if an agent tries to read them inline. The fix is structural and
   cheap: reference artifacts by path, never emit the blob. (This is how
@@ -85,7 +83,6 @@ own harnesses (or a unit reporter):
 
 ## Open items
 
-- Confirm the `test:js` runner: standard (Vitest/Jest/…) or a custom Node harness.
 - Fix the tokenizer and the three scenarios per surface.
 - Identify whether an existing JS reporter already covers the need.
 

@@ -1,5 +1,7 @@
 # Styles: Second Slice And Project Configuration
 
+**Status:** implemented historical plan. Do not use as current API reference.
+
 This page defines the recommended second step after the first implemented
 `Style` slice.
 

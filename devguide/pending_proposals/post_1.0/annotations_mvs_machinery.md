@@ -103,7 +103,7 @@ después.
 
 - **Esto no toca el dominio de Interacciones.** `extensions/mvs/` y
   `extensions/interactions/` son extensiones distintas. El plan de
-  `../interactions_domain.md`, que usa `CustomInteractions`, sigue en pie sin
+  `interactions_domain.md`, que usa `CustomInteractions`, sigue en pie sin
   cambios.
 - **`annotation-color-theme` solapa con nuestras capas de color por átomo**
   (Contract B, `_atom_color_layers`): reimplementamos algo que Mol\* ya traía. **No

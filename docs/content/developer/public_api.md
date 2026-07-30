@@ -17,8 +17,31 @@ You treat these as public:
 - `molsysviewer.styles.Style`
 - `molsysviewer.styles.BUILTIN_SCENE_STYLES`
 - `molsysviewer.styles.BUILTIN_FOCUS_STYLES`
+- `molsysviewer.set_structure_scale_budget`
 
 If you rename, remove, or change behavior here, you update docs and add tests.
+
+### `set_structure_scale_budget(budget_bytes)`
+
+MolSysViewer materializes **every** selected structure: `view.molsys` is the
+complete selected system, and scientific operations, add-ons and measurements
+rely on that. A large trajectory is therefore held in full, in Python and in the
+browser.
+
+To keep that honest, a load whose coordinates exceed a budget warns with the
+measured size and a concrete `structure_indices` subset that fits. The default
+ceiling is 256 MB of coordinates (`atoms x structures x 3 x float32`).
+
+```python
+import molsysviewer as msv
+
+msv.set_structure_scale_budget(1024 * 1024 * 1024)  # allow up to 1 GB
+msv.set_structure_scale_budget(0)                   # silence the warning
+```
+
+It **warns, never refuses** — only you know what your machine can hold. Note
+that opening a canvas popup roughly doubles the renderer-side cost, because two
+Mol* instances each keep their own coordinate axes.
 
 Current scope clarification for `Style`:
 
@@ -190,7 +213,9 @@ Shape methods that accept per-structure arrays are also public:
 Related object wrappers are also part of the intended public surface:
 
 - `view.whole.focus(...)`
+- `view.whole.set_color(color)`
 - `view.regions[tag].focus(...)`
+- `view.regions[tag].set_color(color)`
 - `view.regions[tag].show_only(...)`
 - `view.regions[tag].rename(new_tag)`
   - renames the region in Python state and sends `rename_region` to JS

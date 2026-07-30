@@ -1406,7 +1406,7 @@ The `"classic"` / `"drawer"` defaults are unchanged. The full coexistence plan,
 configuration seam, prerequisites before switching defaults, and the
 `0.16.x → 0.17.x` decision horizon are documented in:
 
-- `canvas_panel_transition.md`
+- `archive/canvas_panel_transition.md` (historical transition plan)
 
 That document is intentionally temporary.
 This file remains the authoritative design target regardless of which mode is

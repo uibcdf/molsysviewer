@@ -1,5 +1,7 @@
 # Standalone Qt audit — 2026-07
 
+**Status:** closed. Findings Q1-Q5 were implemented and mutation-tested.
+
 ## Scope and method
 
 This audit reviews `molsysviewer/standalone_qt/` as a deployment path. It does not

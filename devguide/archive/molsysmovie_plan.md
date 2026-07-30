@@ -1,5 +1,8 @@
 # MolSysMovie — Implementation Plan (Pre-1.0)
 
+**Status:** implemented historical plan. Current behavior is defined by the
+public movie API and its tests.
+
 > **Status:** Pre-1.0. All phases complete (2026-04-27).
 > This document supersedes the strategic vision in
 > `molsysmovie_vision.md` with a concrete architecture and phased plan.

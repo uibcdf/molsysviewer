@@ -1,6 +1,6 @@
 # Studio Subpanel — Interactions (UI Design Specification)
 
-**Status:** Proposed UI Specification (2026-07-24). Companion to [the Interactions domain spec](interactions_domain.md).  
+**Status:** Post-1.0 UI specification (2026-07-24). Companion to [the Interactions domain spec](interactions_domain.md).
 **Visual Language:** Standard Studio Workbench design system (`panels/ui-helpers.ts`).  
 
 ---

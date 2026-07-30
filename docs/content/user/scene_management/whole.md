@@ -30,6 +30,12 @@ The whole also owns the baseline structural colour scheme:
 view.whole.set_color_scheme("secondary_structure_default")
 ```
 
+For one uniform color, use the base per-atom color layer:
+
+```python
+view.whole.set_color("cornflowerblue")
+```
+
 Changing the whole representation updates regions that explicitly inherit from
 it (`region.set_representation("inherit")`). Regions with their own
 representation keep their own visual state.

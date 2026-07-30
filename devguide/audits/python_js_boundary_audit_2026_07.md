@@ -1,5 +1,7 @@
 # Python ↔ JS boundary audit (2026-07)
 
+**Status:** closed audit. Retained as evidence; not active work.
+
 Motivated by a pattern that appeared four times during dogfooding: a public
 argument that Python accepts and validates, and that something downstream then
 ignores in silence. Rather than keep catching them one at a time, this is a

@@ -1,5 +1,8 @@
 # Canvas Panel Transition Strategy
 
+**Status:** completed historical transition plan. Current panel behavior is
+defined by the runtime and public viewer configuration.
+
 This document records the coexistence and transition strategy for the canvas
 panel architecture and controls surface.
 

@@ -1,6 +1,11 @@
 # Proposal: `Interactions` — a scene domain for derived atom–atom relations
 
-**Status:** approved (design finalized 2026-07-20). Ready for step-by-step implementation.
+**Status:** approved post-1.0 design (finalized 2026-07-20).
+
+The design remains valid, but it introduces a new reproducible scene domain,
+serialization surface, dynamic evaluation path, and Studio workflow. The
+pre-1.0 runtime contracts are complete, so this feature expansion is deferred
+until after the release rather than widening the release gate.
 
 **Verdict: yes — a domain of its own, with its own Studio subpanel.** An interaction has a *shape* (graph edges over frames) that no existing domain has.
 

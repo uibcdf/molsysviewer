@@ -88,7 +88,8 @@ runtime's "conceptual confusion", which the roadmap Fase D required for `1.0.0`.
 
 ### Fase E closed for real — standalone Qt audit + Q1–Q5
 The roadmap already marked *"host-side error handling no longer silent ✓"*. A full audit
-(`devguide/standalone_qt_audit_2026_07.md`) found it was **not** true and closed the five gaps:
+([`devguide/audits/standalone_qt_audit_2026_07.md`](audits/standalone_qt_audit_2026_07.md))
+found it was **not** true and closed the five gaps:
 Q1 swallowed view-event exceptions, Q2 a bridge that could stall or retry forever, Q3 unvalidated
 malformed events, Q4 a delivery guarantee the docs promised but the code did not keep, Q5 silent
 persistence failures. **That ✓ is now genuinely true.** The only Fase E item still open is the
@@ -97,9 +98,19 @@ real-window Qt/WebGL validation, which requires a real display/GPU.
 ### Ecosystem
 The **ElasNetMT add-on was renamed to ElastNetMT** across both repositories.
 
-**Reading:** development toward `1.0.0` is essentially complete. What remains is not feature work —
-it is the real-window Qt/WebGL validation, scientific dogfooding (#14), and the end-user distribution
-story, all of which are Diego's gate, plus the onboarding README (#12).
+**Reading:** scene and product contracts are mature, but the July 2026 transport
+baseline exposed one remaining transport requirement. Before `1.0.0`, the
+viewer should eliminate avoidable `ViewerJSON`, nested-list, and text-JSON
+coordinate amplification for structures already selected into `view.molsys`,
+while preserving the current complete-materialization semantics and JSON
+fallback. The same round establishes typed routing across Python, widget/Qt
+hosts, embedded canvases, and popups so large payloads are not replayed or
+mutated twice. Lazy structure sources, eager/windowed modes, compression,
+workers, multiview, camera/movie expansion, and other product scope remain
+post-1.0.
+
+Real-window Qt/WebGL validation, scientific dogfooding (#14), end-user
+distribution, and onboarding README verification remain release gates as well.
 
 ---
 
@@ -108,7 +119,7 @@ Released when the `0.19.0` dogfooding and validation produce no new surprises.
 
 ---
 
-## Post-1.0 — Escalabilidad y Distribución
+## Post-1.0 — Optimización avanzada y distribución
 
 Tasks that extend the reach and automation of the project but do not block the initial stable release.
 

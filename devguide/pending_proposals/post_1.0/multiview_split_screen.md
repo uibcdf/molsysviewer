@@ -1,6 +1,6 @@
 # Proposal: Multi-View Split-Screen Viewport Synchronization
 
-**Status:** proposed (post-1.0 design).
+**Status:** post-1.0 design.
 
 **Scope:** Viewport splitting and camera synchronization in MolSysViewer to compare multiple structures or frames side-by-side.
 

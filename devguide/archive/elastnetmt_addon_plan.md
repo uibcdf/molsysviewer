@@ -1,5 +1,8 @@
 # ElastNetMT Add-On Plan
 
+**Status:** completed historical plan. Current add-on behavior lives in the
+add-on repositories and the durable panel-widget contract.
+
 Last update: 2026-04-17
 
 This note records the current development plan for an **ElastNetMT add-on** on

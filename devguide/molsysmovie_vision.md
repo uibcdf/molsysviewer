@@ -1,7 +1,7 @@
 # VISION: `MolSysMovie` - Cinematic and VR Molecular Animation
 
 > **Roadmap Status:** The core implementation has been promoted to **Pre-1.0**.
-> See [`molsysmovie_plan.md`](molsysmovie_plan.md) for the concrete architecture
+> See the archived [`molsysmovie_plan.md`](archive/molsysmovie_plan.md) for the concrete architecture
 > and phased plan. The VR/360° export direction (Phase 4 of the original vision)
 > remains Post-1.0.
 

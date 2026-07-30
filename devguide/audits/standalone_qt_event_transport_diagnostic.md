@@ -1,5 +1,8 @@
 # Diagnostico provisional: transporte JS -> Python en standalone Qt
 
+**Estado:** diagnóstico cerrado. Se conserva como evidencia de la investigación;
+no describe trabajo pendiente.
+
 ## Contexto
 
 Durante la validacion real de `standalone_qt`, el backend Qt interactivo no

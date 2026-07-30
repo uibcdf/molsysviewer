@@ -5,7 +5,7 @@ This document records the packaging/distribution position for the standalone hos
 It should be read together with:
 
 - `devguide/standalone_host_plan.md`
-- `devguide/standalone_qt_prototype_plan.md`
+- `devguide/archive/standalone_qt_prototype_plan.md`
 - `devguide/standalone_supported_environment.md`
 
 ## Decision Made (2026-04-04)

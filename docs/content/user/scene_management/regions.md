@@ -61,6 +61,16 @@ ligand.set_representation(None)
 Extra representation parameters are ignored in state None. If you want to pass
 parameters while following the whole representation, use `"inherit"` instead.
 
+## Apply a uniform colour
+
+```python
+ligand.set_color("red")
+```
+
+Uniform colour uses the region's own per-atom colour layer. It is valid even
+when the region is in state None: the whole draws those atoms and the region
+layer decorates them. It does not recolour atoms outside the region.
+
 ## Reset representation and colours
 
 ```python
