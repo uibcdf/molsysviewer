@@ -2,6 +2,37 @@ import assert from "node:assert";
 import test from "node:test";
 
 import { bootPopup } from "../../src/popup/popup-logic";
+import type { PopupChannelIdentity } from "../../src/messages/popup-channel";
+
+const TEST_CHANNEL: PopupChannelIdentity = {
+    protocolVersion: 1,
+    viewerId: "view-a",
+    sessionId: "session-a",
+    authorityEndpointId: "python:view-a",
+    hostEndpointId: "host-a",
+    popupEndpointId: "canvas-popup-a",
+    token: "unguessable-test-token",
+    mode: "canvas",
+};
+
+let hostMessageCounter = 0;
+
+function hostWire(action: string, payload: unknown) {
+    return {
+        channel: TEST_CHANNEL,
+        envelope: {
+            protocolVersion: 1,
+            viewerId: TEST_CHANNEL.viewerId,
+            sessionId: TEST_CHANNEL.sessionId,
+            endpointId: TEST_CHANNEL.authorityEndpointId,
+            targetEndpointId: TEST_CHANNEL.popupEndpointId,
+            messageId: `host-test:${++hostMessageCounter}`,
+            direction: "projection",
+            action,
+            payload,
+        },
+    };
+}
 
 type Listener = (event?: any) => any;
 
@@ -83,6 +114,8 @@ function makePopupTestEnv() {
 
     const windowObj: any = {
         opener,
+        location: { origin: "https://notebook.example.dev" },
+        molsysviewer_popup_channel: TEST_CHANNEL,
         listeners: windowListeners,
         addEventListener(type: string, listener: Listener) {
             const current = windowListeners.get(type) ?? [];
@@ -113,6 +146,15 @@ function flushAsync() {
     return new Promise(resolve => setImmediate(resolve));
 }
 
+function findByText(root: any, text: string): any | undefined {
+    if (root?.textContent === text) return root;
+    for (const child of root?.children ?? []) {
+        const found = findByText(child, text);
+        if (found) return found;
+    }
+    return undefined;
+}
+
 test("bootPopup replays initial sync and enables autohide listeners", async () => {
     const previousWindow = (globalThis as any).window;
     const previousDocument = (globalThis as any).document;
@@ -125,6 +167,7 @@ test("bootPopup replays initial sync and enables autohide listeners", async () =
         spin: [] as any[],
         swing: [] as any[],
         bg: [] as any[],
+        reset: [] as any[],
     };
     let drawSubscriber: (() => void) | undefined;
 
@@ -162,7 +205,7 @@ test("bootPopup replays initial sync and enables autohide listeners", async () =
             return { position: [1, 2, 3] };
         },
         onTrajectoryState(_cb: any, _opts: any) {},
-        async resetView() {},
+        async resetView() { calls.reset.push(true); },
         toggleFullscreen() {},
         stepTrajectory(_by: number) {},
         stopTrajectoryPlayback() {},
@@ -185,17 +228,55 @@ test("bootPopup replays initial sync and enables autohide listeners", async () =
         await bootPopup({ MolSysViewerController: { create: async () => ctrl } });
         await flushAsync();
 
-        assert.deepStrictEqual(env.postedToHost[0], {
-            type: "molsysviewer-pop-ready",
-            data: null,
-            from: "popup",
+        assert.deepStrictEqual(env.postedToHost[0].channel, TEST_CHANNEL);
+        assert.deepStrictEqual(env.postedToHost[0].envelope, {
+            protocolVersion: 1,
+            viewerId: TEST_CHANNEL.viewerId,
+            sessionId: TEST_CHANNEL.sessionId,
+            endpointId: TEST_CHANNEL.popupEndpointId,
+            targetEndpointId: TEST_CHANNEL.hostEndpointId,
+            messageId: `${TEST_CHANNEL.popupEndpointId}:1`,
+            direction: "event",
+            action: "molsysviewer-pop-ready",
+            payload: null,
         });
         assert.ok(drawSubscriber);
 
         env.windowObj.dispatch("message", {
+            source: {},
+            data: hostWire(
+                "molsysviewer-sync-op",
+                { op: "hide_whole", target: "whole" },
+            ),
+        });
+        const forgedToken = hostWire(
+            "molsysviewer-sync-op",
+            { op: "hide_whole", target: "whole" },
+        );
+        env.windowObj.dispatch("message", {
+            source: env.windowObj.opener,
             data: {
-                type: "molsysviewer-initial-sync",
-                data: {
+                ...forgedToken,
+                channel: { ...TEST_CHANNEL, token: "forged" },
+            },
+        });
+        const impersonatedPopup = hostWire(
+            "molsysviewer-sync-op",
+            { op: "hide_whole", target: "whole" },
+        );
+        impersonatedPopup.envelope.endpointId = TEST_CHANNEL.popupEndpointId;
+        env.windowObj.dispatch("message", {
+            source: env.windowObj.opener,
+            data: impersonatedPopup,
+        });
+        await flushAsync();
+        assert.deepStrictEqual(calls.handled, []);
+
+        env.windowObj.dispatch("message", {
+            source: env.windowObj.opener,
+            data: hostWire(
+                "molsysviewer-initial-sync",
+                {
                     messages: [{ op: "load_molsys_payload" }, { op: "hide_whole", target: "whole" }],
                     cameraSnapshot: { target: [0, 0, 0] },
                     isSpinActive: true,
@@ -203,7 +284,7 @@ test("bootPopup replays initial sync and enables autohide listeners", async () =
                     isDarkMode: true,
                     autohide: true,
                 },
-            },
+            ),
         });
         await flushAsync();
 
@@ -219,6 +300,29 @@ test("bootPopup replays initial sync and enables autohide listeners", async () =
         assert.deepStrictEqual(calls.bg, ["dark"]);
         assert.ok(env.container.listenerCount("pointerenter") > 0);
         assert.ok(env.container.listenerCount("pointerleave") > 0);
+
+        const resetButton = findByText(env.container, "Reset");
+        assert.ok(resetButton);
+        resetButton.dispatch("click");
+        await flushAsync();
+        assert.deepStrictEqual(calls.reset, []);
+        assert.deepStrictEqual(calls.handled, [
+            { op: "load_molsys_payload" },
+            { op: "hide_whole", target: "whole" },
+        ]);
+        assert.deepStrictEqual(env.postedToHost.at(-1)?.envelope.action, "molsysviewer-sync-op");
+        assert.deepStrictEqual(
+            env.postedToHost.at(-1)?.envelope.payload,
+            { op: "reset_view" },
+        );
+        assert.deepStrictEqual(env.postedToHost.at(-1)?.envelope.direction, "command");
+
+        env.windowObj.dispatch("message", {
+            source: env.windowObj.opener,
+            data: hostWire("molsysviewer-sync-op", { op: "reset_view" }),
+        });
+        await flushAsync();
+        assert.deepStrictEqual(calls.handled.at(-1), { op: "reset_view" });
     } finally {
         (globalThis as any).window = previousWindow;
         (globalThis as any).document = previousDocument;
@@ -294,27 +398,27 @@ test("bootPopup gates camera sync by interaction in both directions", async () =
 
         env.container.dispatch("pointerdown");
         drawSubscriber?.();
-        assert.deepStrictEqual(env.postedToHost.at(-1), {
-            type: "molsysviewer-sync-camera",
-            data: { eye: [9, 8, 7] },
-            from: "popup",
-        });
+        assert.deepStrictEqual(
+            env.postedToHost.at(-1)?.envelope.action,
+            "molsysviewer-sync-camera",
+        );
+        assert.deepStrictEqual(
+            env.postedToHost.at(-1)?.envelope.payload,
+            { eye: [9, 8, 7] },
+        );
+        assert.deepStrictEqual(env.postedToHost.at(-1)?.envelope.direction, "event");
 
         env.windowObj.dispatch("message", {
-            data: {
-                type: "molsysviewer-sync-camera",
-                data: { target: [1, 1, 1] },
-            },
+            source: env.windowObj.opener,
+            data: hostWire("molsysviewer-sync-camera", { target: [1, 1, 1] }),
         });
         await flushAsync();
         assert.deepStrictEqual(cameraApplied, []);
 
         env.windowObj.dispatch("pointerup");
         env.windowObj.dispatch("message", {
-            data: {
-                type: "molsysviewer-sync-camera",
-                data: { target: [2, 2, 2] },
-            },
+            source: env.windowObj.opener,
+            data: hostWire("molsysviewer-sync-camera", { target: [2, 2, 2] }),
         });
         await flushAsync();
         assert.deepStrictEqual(cameraApplied, [
@@ -367,12 +471,14 @@ test("bootPopup dispatches molsysviewer-sync-op to controller (live mirror)", as
         await flushAsync();
 
         env.windowObj.dispatch("message", {
-            data: { type: "molsysviewer-sync-op", data: { op: "hide_region", tag: "r1" } },
+            source: env.windowObj.opener,
+            data: hostWire("molsysviewer-sync-op", { op: "hide_region", tag: "r1" }),
         });
         await flushAsync();
 
         env.windowObj.dispatch("message", {
-            data: { type: "molsysviewer-sync-op", data: { op: "show_whole", target: "whole" } },
+            source: env.windowObj.opener,
+            data: hostWire("molsysviewer-sync-op", { op: "show_whole", target: "whole" }),
         });
         await flushAsync();
 
@@ -430,14 +536,16 @@ test("bootPopup molsysviewer-sync-autohide disables and re-enables autohide list
 
         // Enable autohide
         env.windowObj.dispatch("message", {
-            data: { type: "molsysviewer-sync-autohide", data: { enabled: true } },
+            source: env.windowObj.opener,
+            data: hostWire("molsysviewer-sync-autohide", { enabled: true }),
         });
         await flushAsync();
         assert.ok(env.container.listenerCount("pointerenter") > 0, "pointerenter listener added on autohide enable");
 
         // Disable autohide — listeners removed
         env.windowObj.dispatch("message", {
-            data: { type: "molsysviewer-sync-autohide", data: { enabled: false } },
+            source: env.windowObj.opener,
+            data: hostWire("molsysviewer-sync-autohide", { enabled: false }),
         });
         await flushAsync();
         assert.strictEqual(env.container.listenerCount("pointerenter"), 0, "pointerenter listener removed on autohide disable");

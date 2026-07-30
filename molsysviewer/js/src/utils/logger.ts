@@ -10,11 +10,18 @@ export const formatArg = (v: any) => {
     return String(v);
 };
 
-export const createLogger = (model: any, debug: boolean) => {
+export const createLogger = (
+    model: any,
+    debug: boolean,
+    send?: (message: Record<string, unknown>) => void,
+) => {
+    // Route js_log through the same seam as every other browser->Python message
+    // (R1). Falls back to a raw model.send only if no sender is supplied.
+    const emit = send ?? ((message: Record<string, unknown>) => model.send(message));
     const sendLog = (level: "info" | "warn" | "error" | "log", ...args: any[]) => {
         if (!debug) return;
         try {
-            model.send({
+            emit({
                 event: "js_log",
                 level,
                 message: args.map(formatArg).join(" "),

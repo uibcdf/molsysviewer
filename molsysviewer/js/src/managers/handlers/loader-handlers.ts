@@ -7,8 +7,10 @@ import {
     LoadStructureMessage,
 } from "../../messages/viewer-messages";
 import {
+    ArrayNativeMolSysPayload,
     LoadedStructure,
     MolSysPayload,
+    loadStructureFromArrayNativeMolSys,
     loadStructureFromMolSysPayload,
     loadStructureFromString,
     loadStructureFromUrl,
@@ -56,6 +58,17 @@ export class LoaderHandlers {
         }
         const payload = await response.json() as MolSysPayload;
         await this.loadFromMolSysPayloadInternal(payload, msg.label);
+    }
+
+    async loadArrayNativeMolSysPayload(payload: ArrayNativeMolSysPayload, label?: string) {
+        this.callbacks.setExpectedFrameCount?.(payload.nStructures);
+        await this.callbacks.clearGlobalRepresentations();
+        const previous = this.callbacks.getLoadedStructure()?.data ?? this.callbacks.getLoadedStructure()?.trajectory;
+        const loaded = await loadStructureFromArrayNativeMolSys(this.plugin, payload, label, {
+            previous,
+        });
+        this.callbacks.setLoadedStructure(loaded);
+        this.callbacks.captureCurrentStructure();
     }
 
     async loadFromUrl(msg: LoadStructureFromUrlMessage) {

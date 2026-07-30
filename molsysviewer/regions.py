@@ -9,6 +9,7 @@ import molsysmt as msm
 from depdigest import dep_digest
 from smonitor import signal
 from ._private.arg_digestion import digest
+from ._private.exceptions import ArgumentError
 from ._private.smonitor_emit import emit_suppressed_exception
 from .colors import expand_values_to_atoms, normalize_color
 from .scene_history import records_scene_history
@@ -483,18 +484,34 @@ class Region:
         msg = {"op": op, "tag": self.tag, **payload}
         self._view._send_region_operation(msg)  # noqa: SLF001
 
-    def _send_create(self, *, include_visual: bool = True) -> None:
+    def _create_message(self, *, include_visual: bool = True) -> dict:
+        """Build this region's current ``create_region`` op from live state.
+
+        Shared by the live send path (``_send_create``) and the R2 popup snapshot
+        projector so both regenerate the same message. Returns a fresh dict with
+        copied indices; the caller may mutate it without affecting the region.
+        For dynamic regions ``atom_indices`` are the materialized indices of the
+        current frame.
+        """
         atom_indices = None
         if self.atom_indices is not None:
             atom_indices = list(self.atom_indices)
         payload = {
+            "op": "create_region",
+            "tag": self.tag,
             "selection": self.selection,
             "atom_indices": atom_indices,
             "order": self.order,
         }
         if include_visual and self._has_own_visual():
             payload["representation"] = self.representation
-            payload["params"] = self.repr_params
+            payload["params"] = dict(self.repr_params) if isinstance(self.repr_params, dict) else self.repr_params
+        return payload
+
+    def _send_create(self, *, include_visual: bool = True) -> None:
+        payload = self._create_message(include_visual=include_visual)
+        payload.pop("op", None)
+        payload.pop("tag", None)
         self._send("create_region", **payload)
         self._view._sync_region_summaries_runtime()  # noqa: SLF001
 
@@ -1205,6 +1222,23 @@ class Region:
         self._view._sync_region_summaries_runtime()  # noqa: SLF001
 
     # --- Scalar colour mapping ---
+
+    @records_scene_history
+    @signal(tags=["color", "region"])
+    @digest()
+    def set_color(self, color: Any, skip_digestion: bool = False) -> None:
+        """Paint this region's atom-color layer uniformly."""
+        if self.atom_indices is None:
+            raise ValueError("set_color requires known atom_indices for this region.")
+        try:
+            normalized = normalize_color(color)
+        except (TypeError, ValueError) as exc:
+            raise ArgumentError("color", value=color, caller="Region.set_color") from exc
+        self._view._set_atom_color_layer(  # noqa: SLF001
+            self.tag,
+            {int(atom_index): normalized for atom_index in self.atom_indices},
+            bump=self,
+        )
 
     @records_scene_history
     @signal(tags=["color", "region"])

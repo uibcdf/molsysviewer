@@ -1,5 +1,18 @@
 // src/popup/popup-logic.ts
 
+import {
+    decodePopupEvent,
+    encodePopupMessage,
+    isPopupChannelIdentity,
+} from "../messages/popup-channel";
+import {
+    RUNTIME_PROTOCOL_VERSION,
+    RuntimeMessageRouter,
+    type RuntimeDirection,
+    type RuntimeEnvelope,
+} from "../messages/runtime-router";
+import { ArrayNativeStreamReceiver } from "../messages/array-native-stream";
+
 /**
  * This function contains the entire logic that runs INSIDE the popup window.
  * IMPORTANT: This function is serialized via .toString() and executed in a separate window context.
@@ -15,6 +28,30 @@ export const bootPopup = async (loadedModule?: any) => {
         console.error("MolSysViewer Popout: Opened without opener");
         return;
     }
+
+    const initOptions = (window as any).molsysviewer_init_options || {};
+    const popupChannel = (window as any).molsysviewer_popup_channel;
+    if (!isPopupChannelIdentity(popupChannel)) {
+        console.error("MolSysViewer Popout: Missing secure popup channel identity");
+        return;
+    }
+    const runtimeRouter = new RuntimeMessageRouter(
+        popupChannel.viewerId,
+        popupChannel.sessionId,
+    );
+    runtimeRouter.registerEndpoint({
+        endpointId: popupChannel.authorityEndpointId,
+        role: "python",
+    });
+    runtimeRouter.registerEndpoint({
+        endpointId: popupChannel.hostEndpointId,
+        role: "widget-host",
+    });
+    runtimeRouter.registerEndpoint({
+        endpointId: popupChannel.popupEndpointId,
+        role: popupChannel.mode === "canvas" ? "canvas-popup" : "panel-popup",
+    });
+    let popupMessageCounter = 0;
     
     // Load the viewer module dynamically using the global path set by the opener
     let MolSysViewerController;
@@ -61,7 +98,29 @@ export const bootPopup = async (loadedModule?: any) => {
 
     const sendToHost = (type: string, data: any) => {
         if (!openerWin || openerWin.closed) return;
-        try { openerWin.postMessage({ type, data, from: "popup" }, "*"); } catch (e) {}
+        const direction: RuntimeDirection =
+            type === "molsysviewer-sync-op"
+            || type === "molsysviewer-popup-interaction"
+                ? "command"
+                : "event";
+        const envelope: RuntimeEnvelope = {
+            protocolVersion: RUNTIME_PROTOCOL_VERSION,
+            viewerId: popupChannel.viewerId,
+            sessionId: popupChannel.sessionId,
+            endpointId: popupChannel.popupEndpointId,
+            targetEndpointId:
+                direction === "command"
+                    ? popupChannel.authorityEndpointId
+                    : popupChannel.hostEndpointId,
+            messageId: `${popupChannel.popupEndpointId}:${++popupMessageCounter}`,
+            direction,
+            action: type,
+            payload: data,
+        };
+        if (runtimeRouter.route(envelope).status !== "accepted") return;
+        const origin = window.location?.origin;
+        const targetOrigin = origin && origin !== "null" ? origin : "*";
+        try { openerWin.postMessage(encodePopupMessage(popupChannel, envelope), targetOrigin); } catch (e) {}
     };
 
     // Inject minimal styles for the trajectory slider to match the host look
@@ -156,7 +215,30 @@ export const bootPopup = async (loadedModule?: any) => {
 
     const revealTimer = window.setTimeout(revealViewer, 2500);
 
-    const initOptions = (window as any).molsysviewer_init_options || {};
+    // D4: this popup assembles its own typed molecular generation from the
+    // chunks Python addressed to it (the host only relays). Acknowledgements go
+    // back through the host, so the one-chunk-in-flight discipline holds end to
+    // end and nobody keeps a spare full copy of the coordinates.
+    const relayedBuffers = (payload: any): DataView[] => {
+        const buffers = payload?.buffers;
+        if (!Array.isArray(buffers)) return [];
+        return buffers.map((buffer: any) =>
+            buffer instanceof DataView
+                ? buffer
+                : new DataView(
+                    buffer.buffer ?? buffer,
+                    buffer.byteOffset ?? 0,
+                    buffer.byteLength ?? (buffer.buffer ?? buffer).byteLength,
+                ),
+        );
+    };
+    const arrayNativeStream = new ArrayNativeStreamReceiver(
+        event => sendToHost("molsysviewer-structure-data-ack", event),
+        async (begin, payload) => {
+            const ctrl = await popControllerPromise;
+            await ctrl.loadArrayNativeMolSysPayload(payload, begin.label);
+        },
+    );
 
     // Create a new instance of MolSysViewerController for the popout
     const popControllerPromise = (async () => {
@@ -234,8 +316,16 @@ export const bootPopup = async (loadedModule?: any) => {
 
     // Logic to handle incoming messages
     window.addEventListener("message", async (ev) => {
-        if (!ev.data || ev.data.from === "popup") return;
-        const { type, data } = ev.data;
+        const message = decodePopupEvent(ev, openerWin, popupChannel);
+        if (!message) return;
+        if (
+            message.envelope.endpointId !== popupChannel.authorityEndpointId
+            && message.envelope.endpointId !== popupChannel.hostEndpointId
+        ) return;
+        const routed = runtimeRouter.route(message.envelope);
+        if (routed.status !== "accepted") return;
+        const type = routed.envelope.action;
+        const data: any = routed.envelope.payload;
         // We need to await the controller promise created above
         const ctrl = await popControllerPromise;
 
@@ -292,6 +382,13 @@ export const bootPopup = async (loadedModule?: any) => {
                     if (data && !isUserInteracting) {
                         ctrl.setCameraSnapshot(data, 0);
                     }
+                    break;
+
+                // D4: Python streams this popup its own typed molecular
+                // generation; the host only relays. Acknowledgements travel back
+                // the same way, so the stream stays flow-controlled end to end.
+                case "molsysviewer-structure-data":
+                    await arrayNativeStream.handle(data?.message, relayedBuffers(data));
                     break;
             }
         } catch (e) {
@@ -393,8 +490,6 @@ export const bootPopup = async (loadedModule?: any) => {
     // I will apply the changes to the message listener below in a separate replacement block or merge logic.
     
     addBtn("Reset", async () => {
-        const ctrl = await popControllerPromise;
-        await ctrl.resetView();
         sendToHost("molsysviewer-sync-op", { op: "reset_view" });
     });
     addBtn("Full", async () => {
@@ -402,19 +497,13 @@ export const bootPopup = async (loadedModule?: any) => {
         ctrl.toggleFullscreen();
     });
     addBtn("Bg", async () => {
-        const ctrl = await popControllerPromise;
-        await ctrl.toggleBackground();
-        sendToHost("molsysviewer-sync-op", { op: "toggle_background", mode: ctrl.isDarkMode ? "dark" : "light" });
+        sendToHost("molsysviewer-sync-op", { op: "toggle_background" });
     });
     addBtn("Spin", async () => {
-        const ctrl = await popControllerPromise;
-        await ctrl.toggleSpin();
-        sendToHost("molsysviewer-sync-op", { op: "toggle_spin", enable: ctrl.isSpinActive });
+        sendToHost("molsysviewer-sync-op", { op: "toggle_spin" });
     });
     addBtn("Swing", async () => {
-        const ctrl = await popControllerPromise;
-        await ctrl.toggleSwing();
-        sendToHost("molsysviewer-sync-op", { op: "toggle_swing", enable: ctrl.isSwingActive });
+        sendToHost("molsysviewer-sync-op", { op: "toggle_swing" });
     });
     let isUiVisible = true;
     const uiBtn = addBtn("UI", async () => {
@@ -446,8 +535,6 @@ export const bootPopup = async (loadedModule?: any) => {
     let currentFps = 30;
 
     const btnPrev = makeBtn("−", async () => {
-        const ctrl = await popControllerPromise;
-        ctrl.stepTrajectory(-currentStep);
         sendToHost("molsysviewer-sync-op", { op: "step_trajectory", by: -currentStep });
     });
     
@@ -455,10 +542,8 @@ export const bootPopup = async (loadedModule?: any) => {
         const ctrl = await popControllerPromise;
         const isPlaying = ctrl.trajectory.getTrajectoryState().isPlaying; // Get current state
         if (isPlaying) {
-            ctrl.stopTrajectoryPlayback();
             sendToHost("molsysviewer-sync-op", { op: "set_trajectory_playback", action: "stop" });
         } else {
-            ctrl.playTrajectory({ fps: currentFps, step: currentStep });
             sendToHost("molsysviewer-sync-op", { op: "set_trajectory_playback", action: "play", fps: currentFps, step: currentStep });
         }
     });
@@ -470,8 +555,6 @@ export const bootPopup = async (loadedModule?: any) => {
     btnPlayPause.title = "Play/Pause Trajectory";
 
     const btnNext = makeBtn("+", async () => {
-        const ctrl = await popControllerPromise;
-        ctrl.stepTrajectory(currentStep);
         sendToHost("molsysviewer-sync-op", { op: "step_trajectory", by: currentStep });
     });
 
@@ -499,8 +582,6 @@ export const bootPopup = async (loadedModule?: any) => {
     slider.oninput = async () => {
         const val = Number(slider.value);
         if (!Number.isFinite(val)) return;
-        const ctrl = await popControllerPromise;
-        ctrl.setTrajectoryFrame(val);
         sendToHost("molsysviewer-sync-op", { op: "set_trajectory_frame", index: val });
         updateSliderBg();
     };

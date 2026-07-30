@@ -16,6 +16,8 @@ import {
 } from "molstar/lib/mol-plugin-state/helpers/structure-transparency";
 import { setSubtreeVisibility } from "molstar/lib/mol-plugin/behavior/static/state";
 import { MsvPerAtomColorThemeProvider } from "../../src/themes/per-atom-color";
+import { ArrayNativeStreamReceiver } from "../../src/messages/array-native-stream";
+import { PopupHostManager } from "../../src/managers/popup-host";
 
 declare global {
     // eslint-disable-next-line no-var
@@ -31,7 +33,212 @@ declare global {
         inspectScene: typeof inspectScene;
         probeAtomColors: typeof probeAtomColors;
         inspectTaggedRefs: typeof inspectTaggedRefs;
+        loadArrayNativeFixture: typeof loadArrayNativeFixture;
+        probePopupChannel: typeof probePopupChannel;
+        probeStructureDataRelay: typeof probeStructureDataRelay;
     } | undefined;
+}
+
+export async function probePopupChannel(): Promise<{
+    type: string;
+    viewerId: string;
+    sessionId: string;
+    mode: string;
+}> {
+    const popupModule = `
+        export function bootPopup() {
+            const channel = window.molsysviewer_popup_channel;
+            const targetOrigin = window.location.origin && window.location.origin !== "null"
+                ? window.location.origin : "*";
+            let messageCounter = 0;
+            const send = (action, payload) => window.opener.postMessage({
+                channel,
+                envelope: {
+                    protocolVersion: 1,
+                    viewerId: channel.viewerId,
+                    sessionId: channel.sessionId,
+                    endpointId: channel.popupEndpointId,
+                    targetEndpointId: channel.hostEndpointId,
+                    messageId: channel.popupEndpointId + ":" + (++messageCounter),
+                    direction: "event",
+                    action,
+                    payload,
+                },
+            }, targetOrigin);
+            window.addEventListener("message", event => {
+                const message = event.data;
+                if (
+                    event.source !== window.opener ||
+                    !message ||
+                    message.channel?.token !== channel.token ||
+                    message.channel?.viewerId !== channel.viewerId ||
+                    message.channel?.sessionId !== channel.sessionId ||
+                    message.envelope?.endpointId !== channel.authorityEndpointId
+                ) return;
+                send("molsysviewer-probe-echo", message.envelope.payload);
+            });
+            send("molsysviewer-pop-ready", null);
+        }
+    `;
+    const moduleUrl = `data:text/javascript;charset=utf-8,${encodeURIComponent(popupModule)}`;
+    const manager = new PopupHostManager({
+        moduleUrl,
+        viewerId: "e2e-popup-view",
+        sessionId: "e2e-popup-session",
+    });
+
+    return new Promise((resolve, reject) => {
+        const timeout = window.setTimeout(() => {
+            cleanup();
+            reject(new Error("Timed out waiting for authenticated popup relay"));
+        }, 5000);
+        const cleanup = () => {
+            window.clearTimeout(timeout);
+            window.removeEventListener("message", onMessage);
+            manager.close();
+        };
+        const onMessage = (event: MessageEvent) => {
+            const message = manager.receive(event);
+            if (!message) return;
+            if (message.type === "molsysviewer-pop-ready") {
+                manager.isReady = true;
+                manager.send("molsysviewer-probe", { value: 7 });
+                return;
+            }
+            if (message.type === "molsysviewer-probe-echo") {
+                const channel = message.channel;
+                cleanup();
+                resolve({
+                    type: message.type,
+                    viewerId: channel.viewerId,
+                    sessionId: channel.sessionId,
+                    mode: channel.mode,
+                });
+            }
+        };
+        window.addEventListener("message", onMessage);
+        void manager.open().catch(error => {
+            cleanup();
+            reject(error);
+        });
+    });
+}
+
+export async function loadArrayNativeFixture(controller: MolSysViewerController) {
+    // Planar per structure: all x, then all y, then all z. Same three atoms as
+    // the interleaved fixture it replaces — structure 0 at (0,0,0) (1,0,0)
+    // (0,1,0) and structure 1 translated by +5 in x.
+    const coordinates = new Float32Array([
+        0, 1, 0,   // structure 0, x
+        0, 0, 1,   // structure 0, y
+        0, 0, 0,   // structure 0, z
+        5, 6, 5,   // structure 1, x
+        0, 0, 1,   // structure 1, y
+        0, 0, 0,   // structure 1, z
+    ]);
+    const time = new Float64Array([0, 2]);
+    const metadata = {
+        protocol_version: 1,
+        n_atoms: 3,
+        n_structures: 2,
+        atoms: {
+            atom_id: [1, 2, 3],
+            atom_name: ["N", "CA", "C"],
+            element_symbol: ["N", "C", "C"],
+            residue_id: [1, 1, 1],
+            residue_name: ["GLY", "GLY", "GLY"],
+            chain_id: ["A", "A", "A"],
+            entity_id: ["1", "1", "1"],
+            group_type: ["amino acid", "amino acid", "amino acid"],
+        },
+        structural_arrays: [
+            {
+                kind: "coordinates" as const,
+                dtype: "float32" as const,
+                shape: [2, 3, 3],
+                layout: "structure-planar-c" as const,
+                units: "angstrom" as const,
+                endianness: "little" as const,
+                buffer_index: 0,
+                byte_length: coordinates.byteLength,
+            },
+            {
+                kind: "time" as const,
+                dtype: "float64" as const,
+                shape: [2],
+                layout: "structure-major-c" as const,
+                units: "ps" as const,
+                endianness: "little" as const,
+                buffer_index: 1,
+                byte_length: time.byteLength,
+            },
+        ],
+    };
+    const begin = {
+        op: "structure_data_begin" as const,
+        protocol_version: 1,
+        viewer_id: "e2e-view",
+        session_id: "e2e-session",
+        stream_id: "structures:main",
+        generation: 1,
+        chunk_count: 2,
+        metadata,
+        label: "array-native-e2e",
+        multiple_structures: true,
+    };
+    const events: string[] = [];
+    const receiver = new ArrayNativeStreamReceiver(
+        event => events.push(String(event.event)),
+        async (message, payload) => controller.loadArrayNativeMolSysPayload(payload, message.label),
+    );
+    await receiver.handle(begin);
+    for (let chunkId = 0; chunkId < 2; chunkId++) {
+        const coordinateChunk = coordinates.subarray(chunkId * 9, (chunkId + 1) * 9);
+        const timeChunk = time.subarray(chunkId, chunkId + 1);
+        await receiver.handle({
+            op: "structure_data_chunk",
+            protocol_version: 1,
+            viewer_id: "e2e-view",
+            session_id: "e2e-session",
+            stream_id: "structures:main",
+            generation: 1,
+            chunk_id: chunkId,
+            structure_start: chunkId,
+            structure_count: 1,
+            structural_arrays: [
+                {
+                    ...metadata.structural_arrays[0],
+                    shape: [1, 3, 3],
+                    byte_length: coordinateChunk.byteLength,
+                },
+                {
+                    ...metadata.structural_arrays[1],
+                    shape: [1],
+                    byte_length: timeChunk.byteLength,
+                },
+            ],
+        }, [
+            new DataView(
+                coordinateChunk.buffer,
+                coordinateChunk.byteOffset,
+                coordinateChunk.byteLength,
+            ),
+            new DataView(timeChunk.buffer, timeChunk.byteOffset, timeChunk.byteLength),
+        ]);
+    }
+
+    const profiled = controller as ProfileController;
+    const structure = profiled.getStructureData();
+    const loaded = (profiled as any).loadedStructure;
+    const trajectoryCell = loaded?.trajectory
+        ? profiled.plugin.state.data.cells.get(loaded.trajectory)
+        : undefined;
+    return {
+        atomCount: structure?.elementCount ?? 0,
+        frameCount: trajectoryCell?.obj?.data?.frameCount ?? 0,
+        firstAtomX: structure?.models?.[0]?.atomicConformation?.x?.[0] ?? null,
+        events,
+    };
 }
 
 /**
@@ -1227,5 +1434,146 @@ if (typeof window !== "undefined") {
         inspectScene,
         probeAtomColors,
         inspectTaggedRefs,
+        loadArrayNativeFixture,
+        probePopupChannel,
+        probeStructureDataRelay,
     };
+}
+
+/**
+ * D4: the host relays an endpoint-addressed structure-data message to exactly
+ * one popup, with its binary buffers intact across the real postMessage seam.
+ *
+ * The receiver itself is covered by the array-native E2E; what is unverified
+ * here is the relay: that buffers survive structured clone byte for byte, that
+ * only the addressed endpoint receives them, and that the popup's
+ * acknowledgement travels back through the host.
+ */
+export async function probeStructureDataRelay(): Promise<{
+    canvasReceived: number;
+    panelReceived: number;
+    bytesMatch: boolean;
+    chunkId: number;
+    ackAction: string;
+}> {
+    const popupModule = `
+        export function bootPopup() {
+            const channel = window.molsysviewer_popup_channel;
+            const targetOrigin = window.location.origin && window.location.origin !== "null"
+                ? window.location.origin : "*";
+            let messageCounter = 0;
+            const send = (action, payload) => window.opener.postMessage({
+                channel,
+                envelope: {
+                    protocolVersion: 1,
+                    viewerId: channel.viewerId,
+                    sessionId: channel.sessionId,
+                    endpointId: channel.popupEndpointId,
+                    targetEndpointId: channel.hostEndpointId,
+                    messageId: channel.popupEndpointId + ":" + (++messageCounter),
+                    direction: "event",
+                    action,
+                    payload,
+                },
+            }, targetOrigin);
+            window.addEventListener("message", event => {
+                const message = event.data;
+                if (
+                    event.source !== window.opener ||
+                    !message ||
+                    message.channel?.token !== channel.token ||
+                    message.envelope?.endpointId !== channel.authorityEndpointId
+                ) return;
+                if (message.envelope.action !== "molsysviewer-structure-data") return;
+                // Report what actually crossed the seam: the chunk identity and
+                // the bytes, so a corrupted or empty relay cannot pass.
+                const payload = message.envelope.payload;
+                const view = payload.buffers[0];
+                const bytes = new Uint8Array(
+                    view.buffer ?? view, view.byteOffset ?? 0, view.byteLength,
+                );
+                send("molsysviewer-structure-data-ack", {
+                    event: "relay_probe",
+                    mode: channel.mode,
+                    chunk_id: payload.message.chunk_id,
+                    bytes: Array.from(bytes),
+                });
+            });
+            send("molsysviewer-pop-ready", null);
+        }
+    `;
+    const moduleUrl = `data:text/javascript;charset=utf-8,${encodeURIComponent(popupModule)}`;
+    const manager = new PopupHostManager({
+        moduleUrl,
+        viewerId: "e2e-relay-view",
+        sessionId: "e2e-relay-session",
+    });
+
+    // A distinctive payload: if the relay drops or corrupts bytes, this fails.
+    const source = new Uint8Array([1, 2, 3, 250, 251, 252]);
+
+    return new Promise((resolve, reject) => {
+        const counts = { canvas: 0, panel: 0 };
+        const timeout = window.setTimeout(() => {
+            cleanup();
+            reject(new Error("Timed out waiting for the relayed structure-data ack"));
+        }, 8000);
+        const cleanup = () => {
+            window.clearTimeout(timeout);
+            window.removeEventListener("message", onMessage);
+            manager.close("canvas");
+            manager.close("panel");
+        };
+        const onMessage = (event: MessageEvent) => {
+            const message = manager.receive(event);
+            if (!message) return;
+            if (message.type === "molsysviewer-pop-ready") {
+                manager.isReady = true;
+                const canvasEndpoint = manager.popupEndpointId("canvas");
+                // Exactly what Python emits for a popup-addressed chunk.
+                const relayed = {
+                    op: "structure_data_chunk",
+                    protocol_version: 1,
+                    viewer_id: "e2e-relay-view",
+                    session_id: "e2e-relay-session",
+                    stream_id: "structures:main",
+                    generation: 1,
+                    chunk_id: 4,
+                    structure_start: 0,
+                    structure_count: 1,
+                    target_endpoint_id: canvasEndpoint,
+                    structural_arrays: [],
+                };
+                const view = new DataView(source.buffer, source.byteOffset, source.byteLength);
+                counts.canvas += manager.sendTo("canvas", "molsysviewer-structure-data", {
+                    message: relayed,
+                    buffers: [view],
+                }) ? 1 : 0;
+                // No panel popup is open, so a panel-addressed relay must not land.
+                counts.panel += manager.sendTo("panel", "molsysviewer-structure-data", {
+                    message: relayed,
+                    buffers: [view],
+                }) ? 1 : 0;
+                return;
+            }
+            if (message.type === "molsysviewer-structure-data-ack") {
+                const data: any = message.data;
+                cleanup();
+                resolve({
+                    canvasReceived: counts.canvas,
+                    panelReceived: counts.panel,
+                    bytesMatch: Array.isArray(data.bytes)
+                        && data.bytes.length === source.length
+                        && data.bytes.every((b: number, i: number) => b === source[i]),
+                    chunkId: data.chunk_id,
+                    ackAction: message.type,
+                });
+            }
+        };
+        window.addEventListener("message", onMessage);
+        void manager.open("canvas").catch(error => {
+            cleanup();
+            reject(error);
+        });
+    });
 }

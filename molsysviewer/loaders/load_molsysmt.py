@@ -13,6 +13,9 @@ from .._pyunitwizard import puw
 from .._private.arg_digestion import digest
 from .._private.smonitor import CATALOG, PACKAGE_ROOT, META
 
+from .._private import scale_budget
+from .._private.scale_budget import check_structure_scale
+
 if TYPE_CHECKING:
     from ..viewer import MolSysView
 
@@ -95,10 +98,24 @@ def load_from_molsysmt(
     n_atoms = int(view._molsys.get_n_atoms())
     n_structures: int | None = None
     try:
-        n_structures = int(view._molsys.structures.get_n_structures())
+        # `Structures.n_structures` is an attribute, not a getter. The previous
+        # `get_n_structures()` call always raised and was swallowed here, so this
+        # value silently stayed None and was only recovered later by counting the
+        # serialized payload.
+        n_structures = int(view._molsys.structures.n_structures)
     except Exception:
         n_structures = None
     view.atom_mask = np.ones(n_atoms, dtype=bool)
+
+    # 1.0 materializes every selected structure, so a load large enough to
+    # exhaust the browser tab must say so with numbers and a way forward rather
+    # than dying silently. Warning only: the caller's machine may hold it.
+    if n_structures:
+        check_structure_scale(
+            n_atoms,
+            n_structures,
+            budget_bytes=scale_budget.DEFAULT_COORDINATE_BUDGET_BYTES,
+        )
 
     viewer_json = view._molsys.to_form("molsysmt.ViewerJSON")
 

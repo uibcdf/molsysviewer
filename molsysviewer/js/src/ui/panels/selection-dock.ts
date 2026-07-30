@@ -234,7 +234,9 @@ export function renderSelectionDock(options: SelectionDockOptions): HTMLDivEleme
                     if (options.onActivateSavedSelection) {
                         options.onActivateSavedSelection(found);
                     }
-                    options.onCommitSelection([...found.atom_indices]);
+                    if (found.atom_indices) {
+                        options.onCommitSelection([...found.atom_indices]);
+                    }
                 }
             });
 

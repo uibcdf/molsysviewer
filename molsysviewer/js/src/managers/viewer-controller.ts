@@ -30,6 +30,11 @@ import { TrajectoryPlotOverlay } from "../ui/trajectory-plot-overlay";
 import { WebGLStatusOverlay } from "../ui/webgl-status-overlay";
 import { ActiveSelectionController, ActiveSelectionItem, buildGroupItemsFromStructure, lociToGroupItems } from "./active-selection";
 import type { ActiveSelectionPayload } from "./active-selection";
+import {
+    decodeArrayNativeMolSys,
+    type DecodedArrayNativeMolSys,
+    type LoadMolSysArrayPayloadMessage,
+} from "../messages/array-native-transport";
 import { GroupPanel, type SectionSummary, type SectionSettings } from "../ui/group-panel";
 import { AddonsPanel } from "../ui/addons-panel";
 import { FloatingPanelShell } from "../ui/floating-panel-shell";
@@ -484,13 +489,30 @@ export function registerInteractionObservers(
     const hover = plugin?.behaviors?.interaction?.hover;
     const click = plugin?.behaviors?.interaction?.click;
     if (typeof hover?.subscribe === "function") {
+        // Mol* re-emits hover on every resolved pick (rate-limited by maxFps),
+        // storing prevLoci but never using it to suppress. A mouse resting on one
+        // atom therefore produced ~30 identical messages per second to Python.
+        // Local UI still sees every tick through onHover/notifyHover; only the
+        // Python-bound projection is deduplicated, and "hovered thing changed" is
+        // the semantic a hover callback expects anyway.
+        let lastHoverKey: string | null = null;
         hover.subscribe((ev: any) => {
             onHover?.(ev);
             if (notifyHover) {
                 notifyHover(ev);
-            } else {
-                notify?.(normalizeInteractionEvent("hover", ev));
+                return;
             }
+            if (!notify) return;
+            const payload = normalizeInteractionEvent("hover", ev);
+            let key: string;
+            try {
+                key = JSON.stringify(payload);
+            } catch {
+                key = "";  // unserializable: never suppress
+            }
+            if (key !== "" && key === lastHoverKey) return;
+            lastHoverKey = key;
+            notify(payload);
         });
     }
     if (typeof click?.subscribe === "function") {
@@ -1009,6 +1031,10 @@ export class MolSysViewerController {
         }, (action, details) => {
             if (action === "download_image") {
                 this.downloadViewportImage();
+                return;
+            }
+            if (action === "reset_view") {
+                void this.resetView();
                 return;
             }
             if (action === "undo_active_selection") {
@@ -2737,6 +2763,23 @@ export class MolSysViewerController {
         } catch (error) {
             console.error("[MolSysViewer] Error handling message:", msg, error);
         }
+    }
+
+    async handleArrayNativeMolSysMessage(
+        msg: LoadMolSysArrayPayloadMessage,
+        buffers: readonly DataView[],
+    ): Promise<void> {
+        const payload = decodeArrayNativeMolSys(msg, buffers);
+        await this.loadArrayNativeMolSysPayload(payload, msg.label);
+    }
+
+    async loadArrayNativeMolSysPayload(
+        payload: DecodedArrayNativeMolSys,
+        label?: string,
+    ): Promise<void> {
+        this.hideWelcomeCard();
+        this.trajectory.setExpectedFrameCount(payload.nStructures);
+        await this.loader.loadArrayNativeMolSysPayload(payload, label);
     }
 
     // Helper accessors for internal state management

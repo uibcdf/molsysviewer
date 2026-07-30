@@ -134,6 +134,7 @@ export class AnnotationsPanel extends BasePanel {
     }
 
     private isSavedSelectionActive(saved: SavedSelectionSummary): boolean {
+        if (!saved.atom_indices) return false;
         if (this.selection.atom_indices.length !== saved.atom_count) return false;
         const set = new Set(this.selection.atom_indices);
         for (const idx of saved.atom_indices) {

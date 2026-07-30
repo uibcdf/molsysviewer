@@ -8680,7 +8680,7 @@ function Mat3() {
     return ret;
   }
   Mat32.zero = zero;
-  function identity2() {
+  function identity3() {
     const out = zero();
     out[0] = 1;
     out[1] = 0;
@@ -8693,7 +8693,7 @@ function Mat3() {
     out[8] = 1;
     return out;
   }
-  Mat32.identity = identity2;
+  Mat32.identity = identity3;
   function setIdentity(mat) {
     mat[0] = 1;
     mat[1] = 0;
@@ -8784,7 +8784,7 @@ function Mat3() {
     return out;
   }
   Mat32.create = create3;
-  const _id = identity2();
+  const _id = identity3();
   function isIdentity2(m, eps) {
     return areEqual4(m, _id, typeof eps === "undefined" ? EPSILON : eps);
   }
@@ -9077,7 +9077,7 @@ function Mat3() {
     return out;
   }
   Mat32.directionTransform = directionTransform;
-  Mat32.Identity = identity2();
+  Mat32.Identity = identity3();
   function innerProduct(a8, b8) {
     return a8[0] * b8[0] + a8[1] * b8[1] + a8[2] * b8[2] + a8[3] * b8[3] + a8[4] * b8[4] + a8[5] * b8[5] + a8[6] * b8[6] + a8[7] * b8[7] + a8[8] * b8[8];
   }
@@ -9128,12 +9128,12 @@ function Quat() {
     return ret;
   }
   Quat2.zero = zero;
-  function identity2() {
+  function identity3() {
     const out = zero();
     out[3] = 1;
     return out;
   }
-  Quat2.identity = identity2;
+  Quat2.identity = identity3;
   function setIdentity(out) {
     out[0] = 0;
     out[1] = 0;
@@ -9146,7 +9146,7 @@ function Quat() {
   }
   Quat2.hasNaN = hasNaN;
   function create3(x, y, z, w) {
-    const out = identity2();
+    const out = identity3();
     out[0] = x;
     out[1] = y;
     out[2] = z;
@@ -9546,7 +9546,7 @@ function Quat() {
     return `[${a8[0].toPrecision(precision)} ${a8[1].toPrecision(precision)} ${a8[2].toPrecision(precision)}  ${a8[3].toPrecision(precision)}]`;
   }
   Quat2.toString = toString8;
-  Quat2.Identity = identity2();
+  Quat2.Identity = identity3();
 })(Quat || (Quat = {}));
 
 // node_modules/molstar/lib/mol-math/misc.js
@@ -9612,7 +9612,7 @@ function Mat4() {
     return ret;
   }
   Mat42.zero = zero;
-  function identity2() {
+  function identity3() {
     const out = zero();
     out[0] = 1;
     out[1] = 0;
@@ -9632,7 +9632,7 @@ function Mat4() {
     out[15] = 1;
     return out;
   }
-  Mat42.identity = identity2;
+  Mat42.identity = identity3;
   function setIdentity(mat) {
     mat[0] = 1;
     mat[1] = 0;
@@ -9677,7 +9677,7 @@ function Mat4() {
     return out;
   }
   Mat42.ofRows = ofRows;
-  const _id = identity2();
+  const _id = identity3();
   function isIdentity2(m, eps) {
     return areEqual4(m, _id, typeof eps === "undefined" ? EPSILON : eps);
   }
@@ -10089,7 +10089,7 @@ function Mat4() {
     let x = axis[0], y = axis[1], z = axis[2];
     let len = Math.sqrt(x * x + y * y + z * z);
     if (Math.abs(len) < EPSILON) {
-      return identity2();
+      return identity3();
     }
     len = 1 / len;
     x *= len;
@@ -10692,7 +10692,7 @@ function Mat4() {
   Mat42.rotZYZ90 = mul(zero(), Mat42.rotZY90, Mat42.rotZ90);
   Mat42.rotZ90X180 = mul(zero(), Mat42.rotZ90, Mat42.rotX180);
   Mat42.rotY90Z180 = mul(zero(), Mat42.rotY90, Mat42.rotZ180);
-  Mat42.id = identity2();
+  Mat42.id = identity3();
 })(Mat4 || (Mat4 = {}));
 
 // node_modules/molstar/lib/mol-math/linear-algebra/3d/vec2.js
@@ -14297,9 +14297,9 @@ function multiplyBy256BitPrime(hash5) {
   MultTmp2[7] = hash5[6] >>> 24 | hash5[7] << 8;
   let carry = 0;
   for (let i = 0; i < 8; i++) {
-    const product = hash5[i] * 59 + carry;
-    hash5[i] = product >>> 0;
-    carry = Math.floor(product / 4294967296);
+    const product2 = hash5[i] * 59 + carry;
+    hash5[i] = product2 >>> 0;
+    carry = Math.floor(product2 / 4294967296);
   }
   carry = 0;
   for (let i = 0; i < 8; i++) {
@@ -42322,8 +42322,8 @@ var Arguments;
   }
   Arguments2.Dictionary = Dictionary;
   function List4(type3, params) {
-    const { nonEmpty = false } = params || {};
-    return { kind: "list", type: type3, nonEmpty, "@type": 0 };
+    const { nonEmpty: nonEmpty2 = false } = params || {};
+    return { kind: "list", type: type3, nonEmpty: nonEmpty2, "@type": 0 };
   }
   Arguments2.List = List4;
 })(Arguments || (Arguments = {}));
@@ -140173,6 +140173,76 @@ async function loadStructureFromMolSysPayload(plugin, payload, label2, options) 
     structure: preset?.structure?.ref
   };
 }
+async function loadStructureFromArrayNativeMolSys(plugin, payload, label2, options) {
+  await recyclePreviousNode(plugin, options?.previous);
+  const { nAtoms: atomCount2, nStructures } = payload;
+  if (atomCount2 <= 0 || nStructures <= 0 || payload.atoms.atom_id.length !== atomCount2 || payload.coordinates.length !== nStructures * atomCount2 * 3) {
+    throw new Error("Array-native MolSys payload dimensions are inconsistent");
+  }
+  if (payload.box && payload.box.length !== nStructures * 9) {
+    throw new Error("Array-native MolSys box dimensions are inconsistent");
+  }
+  if (payload.time && payload.time.length !== nStructures) {
+    throw new Error("Array-native MolSys time dimensions are inconsistent");
+  }
+  const firstAxes = planarAxisViews(payload.coordinates, atomCount2, 0);
+  const atomSite = createAtomSiteTableFromAxes(payload, atomCount2, firstAxes);
+  const basic = createBasic({ atom_site: atomSite }, true);
+  const topology = Topology.create(
+    label2 ?? "MolSysMT",
+    basic,
+    createBondColumns(payload.bonds),
+    {
+      kind: "mol-viewer:molsysmt",
+      name: label2 ?? "MolSysMT",
+      data: {
+        ...payload.meta ?? {},
+        molecule_id: payload.atoms.molecule_id,
+        molecule_name: payload.atoms.molecule_name,
+        component_id: payload.atoms.component_id,
+        component_name: payload.atoms.component_name
+      }
+    }
+  );
+  const frames = new Array(nStructures);
+  for (let index = 0; index < nStructures; index++) {
+    const axes = planarAxisViews(payload.coordinates, atomCount2, index);
+    frames[index] = {
+      elementCount: atomCount2,
+      time: { value: payload.time?.[index] ?? index, unit: "ps" },
+      ...axes,
+      cell: createCellFromFlatBox(payload.box, index),
+      xyzOrdering: { isIdentity: true }
+    };
+  }
+  const coordinates = Coordinates.create(
+    frames,
+    { value: 1, unit: "ps" },
+    { value: 0, unit: "ps" }
+  );
+  const trajectory = await plugin.runTask(
+    Model.trajectoryFromTopologyAndCoordinates(topology, coordinates),
+    { useOverlay: false }
+  );
+  const builder = plugin.build();
+  const trajectoryNode = builder.toRoot().insert(InsertMolSysTrajectory, {
+    trajectory,
+    props: {
+      label: label2 ?? "MolSysMT Trajectory",
+      description: `${trajectory.frameCount} model${trajectory.frameCount === 1 ? "" : "s"}`
+    }
+  });
+  await PluginCommands.State.Update(plugin, {
+    state: plugin.state.data,
+    tree: builder,
+    options: { doNotLogTiming: true }
+  });
+  const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectoryNode.ref, "default");
+  return {
+    trajectory: trajectoryNode.ref,
+    structure: preset?.structure?.ref
+  };
+}
 function isPolymerGroupType(groupType) {
   const t5 = groupType.toLowerCase().replace(/[\s_-]/g, "");
   return t5.includes("protein") || t5.includes("aminoacid") || t5.includes("peptide") || t5.includes("nucleic") || t5.includes("dna") || t5.includes("rna") || t5.includes("nucleotide");
@@ -140185,6 +140255,9 @@ function groupTypesToGroupPDB(groupTypes, atomCount2) {
   return out;
 }
 function createAtomSiteTable(payload, atomCount2, structure) {
+  return createAtomSiteTableFromAxes(payload, atomCount2, splitPositions(structure, atomCount2));
+}
+function createAtomSiteTableFromAxes(payload, atomCount2, axes) {
   const atoms2 = payload.atoms;
   const ids = ensureNumericArray(atoms2.atom_id, atomCount2, (i) => i + 1);
   const names = ensureStringArray(atoms2.atom_name, atomCount2, (i) => `A${i + 1}`);
@@ -140199,7 +140272,7 @@ function createAtomSiteTable(payload, atomCount2, structure) {
   const molName = ensureStringArray(atoms2.molecule_name, atomCount2, () => "Molecule");
   const compId3 = ensureNumericArray(atoms2.component_id, atomCount2, () => 0);
   const compName = ensureStringArray(atoms2.component_name, atomCount2, () => "Component");
-  const { x, y, z } = splitPositions(structure, atomCount2);
+  const { x, y, z } = axes;
   return Table.ofPartialColumns(BasicSchema.atom_site, {
     id: Column.ofIntArray(ids),
     label_atom_id: Column.ofStringArray(names),
@@ -140230,6 +140303,24 @@ function createAtomSiteTable(payload, atomCount2, structure) {
     ["molsys_component_name"]: Column.ofStringArray(compName),
     ["molsys_group_type"]: Column.ofStringArray(groupTypes)
   }, atomCount2);
+}
+function planarAxisViews(coordinates, atomCount2, structureIndex) {
+  const base = structureIndex * atomCount2 * 3;
+  return {
+    x: coordinates.subarray(base, base + atomCount2),
+    y: coordinates.subarray(base + atomCount2, base + atomCount2 * 2),
+    z: coordinates.subarray(base + atomCount2 * 2, base + atomCount2 * 3)
+  };
+}
+function createCellFromFlatBox(box4, structureIndex) {
+  if (!box4) return void 0;
+  const offset3 = structureIndex * 9;
+  const candidate = Cell.fromBasis(
+    Vec3.create(box4[offset3], box4[offset3 + 1], box4[offset3 + 2]),
+    Vec3.create(box4[offset3 + 3], box4[offset3 + 4], box4[offset3 + 5]),
+    Vec3.create(box4[offset3 + 6], box4[offset3 + 7], box4[offset3 + 8])
+  );
+  return candidate.size[0] > 0 && candidate.size[1] > 0 && candidate.size[2] > 0 ? candidate : void 0;
 }
 function splitPositions(frame, atomCount2) {
   if (!Array.isArray(frame.coordinates) || frame.coordinates.length !== atomCount2) {
@@ -140350,6 +140441,16 @@ var LoaderHandlers = class {
     }
     const payload = await response.json();
     await this.loadFromMolSysPayloadInternal(payload, msg.label);
+  }
+  async loadArrayNativeMolSysPayload(payload, label2) {
+    this.callbacks.setExpectedFrameCount?.(payload.nStructures);
+    await this.callbacks.clearGlobalRepresentations();
+    const previous = this.callbacks.getLoadedStructure()?.data ?? this.callbacks.getLoadedStructure()?.trajectory;
+    const loaded = await loadStructureFromArrayNativeMolSys(this.plugin, payload, label2, {
+      previous
+    });
+    this.callbacks.setLoadedStructure(loaded);
+    this.callbacks.captureCurrentStructure();
   }
   async loadFromUrl(msg) {
     if (!msg.url || typeof msg.url !== "string") {
@@ -146023,28 +146124,28 @@ var StateHandlers = class {
   }
   async applyRegionOperations(msg) {
     const operations = Array.isArray(msg.operations) ? msg.operations : [];
-    for (const operation of operations) {
-      switch (operation.op) {
+    for (const operation2 of operations) {
+      switch (operation2.op) {
         case "create_region":
-          await this.createRegion(operation);
+          await this.createRegion(operation2);
           break;
         case "set_region_representation":
-          await this.setRegionRepresentation(operation);
+          await this.setRegionRepresentation(operation2);
           break;
         case "set_region_order":
-          await this.setRegionOrder(operation);
+          await this.setRegionOrder(operation2);
           break;
         case "show_region":
-          await this.showRegion(operation);
+          await this.showRegion(operation2);
           break;
         case "show_only_region":
-          await this.showOnlyRegion(operation);
+          await this.showOnlyRegion(operation2);
           break;
         case "hide_region":
-          await this.hideRegion(operation);
+          await this.hideRegion(operation2);
           break;
         default:
-          console.warn("[MolSysViewer] unsupported batched region op:", operation.op);
+          console.warn("[MolSysViewer] unsupported batched region op:", operation2.op);
           break;
       }
     }
@@ -149745,6 +149846,129 @@ function sameItems(a8, b8) {
   return true;
 }
 
+// src/messages/array-native-transport.ts
+var ARRAY_NATIVE_PROTOCOL_VERSION = 1;
+function isStructuralArrayKind(value) {
+  return value === "coordinates" || value === "box" || value === "time";
+}
+function requirePositiveInteger(value, name) {
+  if (!Number.isInteger(value) || Number(value) <= 0) {
+    throw new Error(`${name} must be a positive integer`);
+  }
+  return Number(value);
+}
+function product(shape) {
+  return shape.reduce((total, value) => total * value, 1);
+}
+function sameShape(actual, expected) {
+  return actual.length === expected.length && actual.every((value, index) => value === expected[index]);
+}
+function typedView(buffer, descriptor) {
+  const bytesPerElement = descriptor.dtype === "float32" ? 4 : 8;
+  const expectedBytes = product(descriptor.shape) * bytesPerElement;
+  if (descriptor.byte_length !== expectedBytes || buffer.byteLength !== expectedBytes) {
+    throw new Error(
+      `${descriptor.kind} byte length mismatch: descriptor=${descriptor.byte_length}, buffer=${buffer.byteLength}, expected=${expectedBytes}`
+    );
+  }
+  const length = expectedBytes / bytesPerElement;
+  if (buffer.byteOffset % bytesPerElement === 0) {
+    return descriptor.dtype === "float32" ? new Float32Array(buffer.buffer, buffer.byteOffset, length) : new Float64Array(buffer.buffer, buffer.byteOffset, length);
+  }
+  const copy = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
+  return descriptor.dtype === "float32" ? new Float32Array(copy) : new Float64Array(copy);
+}
+function decodeStructuralArraySet(descriptors, buffers, nAtoms, nStructures) {
+  if (!Array.isArray(descriptors)) {
+    throw new Error("Array-native metadata requires structural array descriptors");
+  }
+  const decoded = {};
+  const usedBufferIndices = /* @__PURE__ */ new Set();
+  for (const descriptor of descriptors) {
+    if (!isStructuralArrayKind(descriptor.kind)) {
+      throw new Error(`Unsupported structural array kind ${String(descriptor.kind)}`);
+    }
+    if (decoded[descriptor.kind]) {
+      throw new Error(`Duplicate structural array ${descriptor.kind}`);
+    }
+    const expectedLayout = descriptor.kind === "coordinates" ? "structure-planar-c" : "structure-major-c";
+    if (descriptor.layout !== expectedLayout || descriptor.endianness !== "little") {
+      throw new Error(`Unsupported ${descriptor.kind} layout or endianness`);
+    }
+    if (!Number.isInteger(descriptor.buffer_index) || descriptor.buffer_index < 0) {
+      throw new Error(`${descriptor.kind} has an invalid buffer index`);
+    }
+    if (usedBufferIndices.has(descriptor.buffer_index)) {
+      throw new Error(`Structural arrays share buffer index ${descriptor.buffer_index}`);
+    }
+    usedBufferIndices.add(descriptor.buffer_index);
+    const buffer = buffers[descriptor.buffer_index];
+    if (!(buffer instanceof DataView)) {
+      throw new Error(`${descriptor.kind} buffer ${descriptor.buffer_index} is missing`);
+    }
+    const expectedShape = descriptor.kind === "coordinates" ? [nStructures, 3, nAtoms] : descriptor.kind === "box" ? [nStructures, 3, 3] : [nStructures];
+    const expectedDtype = descriptor.kind === "time" ? "float64" : "float32";
+    const expectedUnits = descriptor.kind === "time" ? "ps" : "angstrom";
+    if (descriptor.dtype !== expectedDtype || descriptor.units !== expectedUnits || !sameShape(descriptor.shape, expectedShape)) {
+      throw new Error(`Invalid ${descriptor.kind} dtype, units, or shape`);
+    }
+    decoded[descriptor.kind] = typedView(buffer, descriptor);
+  }
+  if (!(decoded.coordinates instanceof Float32Array)) {
+    throw new Error("Array-native payload requires coordinates");
+  }
+  if (buffers.length !== descriptors.length || usedBufferIndices.size !== buffers.length) {
+    throw new Error("Array-native payload contains unreferenced or missing buffers");
+  }
+  return {
+    coordinates: decoded.coordinates,
+    box: decoded.box,
+    time: decoded.time
+  };
+}
+function decodeArrayNativeMolSys(message, buffers) {
+  if (message.protocol_version !== ARRAY_NATIVE_PROTOCOL_VERSION) {
+    throw new Error(`Unsupported array-native protocol version ${message.protocol_version}`);
+  }
+  if (!message.viewer_id || !message.session_id || !message.stream_id) {
+    throw new Error("Array-native envelope requires viewer, session, and stream identity");
+  }
+  if (!Number.isInteger(message.generation) || message.generation < 1) {
+    throw new Error("Array-native envelope requires a positive generation");
+  }
+  if (message.chunk_id !== 0 || message.structure_start !== 0) {
+    throw new Error("Array-native protocol D2a accepts one complete chunk only");
+  }
+  const metadata = message.metadata;
+  if (!metadata || metadata.protocol_version !== ARRAY_NATIVE_PROTOCOL_VERSION) {
+    throw new Error("Array-native metadata protocol does not match the envelope");
+  }
+  const nAtoms = requirePositiveInteger(metadata.n_atoms, "n_atoms");
+  const nStructures = requirePositiveInteger(metadata.n_structures, "n_structures");
+  if (message.structure_count !== nStructures) {
+    throw new Error("Array-native structure_count does not match metadata");
+  }
+  if (!metadata.atoms || metadata.atoms.atom_id?.length !== nAtoms) {
+    throw new Error("Array-native atom metadata does not match n_atoms");
+  }
+  const decoded = decodeStructuralArraySet(
+    metadata.structural_arrays,
+    buffers,
+    nAtoms,
+    nStructures
+  );
+  return {
+    atoms: metadata.atoms,
+    bonds: metadata.bonds,
+    meta: metadata.meta,
+    nAtoms,
+    nStructures,
+    coordinates: decoded.coordinates,
+    box: decoded.box,
+    time: decoded.time
+  };
+}
+
 // src/ui/panels/ui-helpers.ts
 function formatUnitLabel(unit2) {
   switch (unit2.trim().toLowerCase()) {
@@ -150323,19 +150547,19 @@ var ViewportPanel = class extends BasePanel {
     if (item2.hidden) cardItem.style.opacity = "0.62";
     const top = document.createElement("div");
     Object.assign(top.style, { display: "flex", alignItems: "center", gap: "6px", minWidth: "0" });
-    const identity2 = document.createElement("div");
-    Object.assign(identity2.style, { display: "flex", flexDirection: "column", flex: "1 1 auto", minWidth: "0" });
+    const identity3 = document.createElement("div");
+    Object.assign(identity3.style, { display: "flex", flexDirection: "column", flex: "1 1 auto", minWidth: "0" });
     const tag = document.createElement("strong");
     tag.textContent = item2.tag;
     Object.assign(tag.style, { fontSize: "11px", overflow: "hidden", textOverflow: "ellipsis", color: "#f4f4f5" });
-    identity2.appendChild(tag);
+    identity3.appendChild(tag);
     if (item2.owner) {
       const owner = document.createElement("span");
       owner.textContent = item2.owner;
       Object.assign(owner.style, { fontSize: "9px", color: "rgba(244,244,245,0.48)" });
-      identity2.appendChild(owner);
+      identity3.appendChild(owner);
     }
-    top.appendChild(identity2);
+    top.appendChild(identity3);
     const visibility = makeButton(item2.hidden ? "Show" : "Hide", () => this.ctx.onAction("set_section_visibility", {
       tag: item2.tag,
       visible: item2.hidden
@@ -150843,9 +151067,9 @@ var LayersPanel = class extends BasePanel {
     row2.style.opacity = layer.hidden ? "0.48" : "1";
     const head = document.createElement("div");
     Object.assign(head.style, { display: "flex", alignItems: "center", gap: "6px" });
-    const identity2 = document.createElement("div");
-    identity2.textContent = `${layer.tag}${layer.owner ? ` \xB7 from ${layer.owner}` : ""}`;
-    Object.assign(identity2.style, {
+    const identity3 = document.createElement("div");
+    identity3.textContent = `${layer.tag}${layer.owner ? ` \xB7 from ${layer.owner}` : ""}`;
+    Object.assign(identity3.style, {
       flex: "1 1 0",
       minWidth: "0",
       overflow: "hidden",
@@ -150855,7 +151079,7 @@ var LayersPanel = class extends BasePanel {
       fontSize: "12px",
       fontWeight: "650"
     });
-    head.appendChild(identity2);
+    head.appendChild(identity3);
     row2.appendChild(head);
     const summary = document.createElement("div");
     summary.textContent = `${layer.members.length} member${layer.members.length === 1 ? "" : "s"}`;
@@ -155645,7 +155869,9 @@ function renderSelectionDock(options) {
           if (options.onActivateSavedSelection) {
             options.onActivateSavedSelection(found);
           }
-          options.onCommitSelection([...found.atom_indices]);
+          if (found.atom_indices) {
+            options.onCommitSelection([...found.atom_indices]);
+          }
         }
       });
       savedSelect.setAttribute(`data-molsysviewer-${prefix2}-saved-select`, "true");
@@ -155757,6 +155983,7 @@ var AnnotationsPanel = class extends BasePanel {
     this.scheduleRender();
   }
   isSavedSelectionActive(saved) {
+    if (!saved.atom_indices) return false;
     if (this.selection.atom_indices.length !== saved.atom_count) return false;
     const set4 = new Set(this.selection.atom_indices);
     for (const idx of saved.atom_indices) {
@@ -156338,11 +156565,11 @@ var AnnotationsPanel = class extends BasePanel {
       btnRow.appendChild(button);
     }
     row2.appendChild(btnRow);
-    const identity2 = document.createElement("div");
-    identity2.textContent = item2.broken ? `${item2.tag} \xB7 anchor broken${item2.owner ? ` \xB7 from ${item2.owner}` : ""}` : `${item2.tag} \xB7 ${item2.nAtoms} atom${item2.nAtoms === 1 ? "" : "s"}${item2.layerTag && item2.layerTag !== item2.tag ? ` \xB7 layer: ${item2.layerTag}` : ""}${item2.owner ? ` \xB7 from ${item2.owner}` : ""}`;
-    identity2.setAttribute("data-molsysviewer-annotation-identity", item2.tag);
-    Object.assign(identity2.style, { fontSize: "10px", color: "rgba(244,244,245,0.58)", marginTop: "4px" });
-    row2.appendChild(identity2);
+    const identity3 = document.createElement("div");
+    identity3.textContent = item2.broken ? `${item2.tag} \xB7 anchor broken${item2.owner ? ` \xB7 from ${item2.owner}` : ""}` : `${item2.tag} \xB7 ${item2.nAtoms} atom${item2.nAtoms === 1 ? "" : "s"}${item2.layerTag && item2.layerTag !== item2.tag ? ` \xB7 layer: ${item2.layerTag}` : ""}${item2.owner ? ` \xB7 from ${item2.owner}` : ""}`;
+    identity3.setAttribute("data-molsysviewer-annotation-identity", item2.tag);
+    Object.assign(identity3.style, { fontSize: "10px", color: "rgba(244,244,245,0.58)", marginTop: "4px" });
+    row2.appendChild(identity3);
     if (this.editDetailsTag === item2.tag) {
       row2.appendChild(this.renderDetails(item2));
     }
@@ -156663,6 +156890,23 @@ var AnnotationsPanel = class extends BasePanel {
 };
 
 // src/ui/panels/shapes-panel.ts
+var emptySelection3 = () => ({
+  event: "interaction_active_selection_changed",
+  source_kind: "empty",
+  target_level: "none",
+  element_level: "none",
+  items: [],
+  atom_indices: [],
+  group_indices: [],
+  component_indices: [],
+  chain_indices: [],
+  molecule_indices: [],
+  entity_indices: [],
+  count_atoms: 0,
+  count_groups: 0,
+  count_shapes: 0,
+  count_annotations: 0
+});
 var SHAPE_STYLE_CONTROLS = {
   add_sphere: ["color", "alpha", "radius"],
   add_network_links: ["colors", "alpha", "radii"],
@@ -156788,7 +157032,7 @@ var ShapesPanel = class extends BasePanel {
     // in nm
     this.colorVal = "#3b82f6";
     this.alphaVal = 0.8;
-    this.selection = { atom_indices: [] };
+    this.selection = emptySelection3();
     this.savedSelections = [];
   }
   setShapes(items, renderStatuses = /* @__PURE__ */ new Map()) {
@@ -157197,10 +157441,10 @@ var ShapesPanel = class extends BasePanel {
     row2.style.opacity = item2.hidden ? "0.48" : "1";
     const head = document.createElement("div");
     Object.assign(head.style, { display: "flex", alignItems: "center", gap: "6px" });
-    const identity2 = document.createElement("div");
-    identity2.textContent = `${item2.kind} \xB7 ${item2.tag}${item2.owner ? ` \xB7 from ${item2.owner}` : ""}`;
-    identity2.setAttribute("data-molsysviewer-shape-identity", item2.tag);
-    Object.assign(identity2.style, {
+    const identity3 = document.createElement("div");
+    identity3.textContent = `${item2.kind} \xB7 ${item2.tag}${item2.owner ? ` \xB7 from ${item2.owner}` : ""}`;
+    identity3.setAttribute("data-molsysviewer-shape-identity", item2.tag);
+    Object.assign(identity3.style, {
       flex: "1 1 0",
       minWidth: "0",
       overflow: "hidden",
@@ -157210,7 +157454,7 @@ var ShapesPanel = class extends BasePanel {
       fontSize: "12px",
       fontWeight: "650"
     });
-    head.appendChild(identity2);
+    head.appendChild(identity3);
     row2.appendChild(head);
     const btnRow = document.createElement("div");
     Object.assign(btnRow.style, {
@@ -160874,13 +161118,24 @@ function registerInteractionObservers(plugin, notify, openContextMenu, onPrimary
   const hover = plugin?.behaviors?.interaction?.hover;
   const click2 = plugin?.behaviors?.interaction?.click;
   if (typeof hover?.subscribe === "function") {
+    let lastHoverKey = null;
     hover.subscribe((ev) => {
       onHover?.(ev);
       if (notifyHover) {
         notifyHover(ev);
-      } else {
-        notify?.(normalizeInteractionEvent("hover", ev));
+        return;
       }
+      if (!notify) return;
+      const payload = normalizeInteractionEvent("hover", ev);
+      let key2;
+      try {
+        key2 = JSON.stringify(payload);
+      } catch {
+        key2 = "";
+      }
+      if (key2 !== "" && key2 === lastHoverKey) return;
+      lastHoverKey = key2;
+      notify(payload);
     });
   }
   if (typeof click2?.subscribe === "function") {
@@ -161152,6 +161407,10 @@ var MolSysViewerController = class _MolSysViewerController {
     }, (action, details) => {
       if (action === "download_image") {
         this.downloadViewportImage();
+        return;
+      }
+      if (action === "reset_view") {
+        void this.resetView();
         return;
       }
       if (action === "undo_active_selection") {
@@ -163027,6 +163286,15 @@ var MolSysViewerController = class _MolSysViewerController {
       console.error("[MolSysViewer] Error handling message:", msg, error2);
     }
   }
+  async handleArrayNativeMolSysMessage(msg, buffers) {
+    const payload = decodeArrayNativeMolSys(msg, buffers);
+    await this.loadArrayNativeMolSysPayload(payload, msg.label);
+  }
+  async loadArrayNativeMolSysPayload(payload, label2) {
+    this.hideWelcomeCard();
+    this.trajectory.setExpectedFrameCount(payload.nStructures);
+    await this.loader.loadArrayNativeMolSysPayload(payload, label2);
+  }
   // Helper accessors for internal state management
   getStructureData() {
     const structures = this.plugin.managers.structure.hierarchy.current.structures;
@@ -164074,6 +164342,458 @@ var MolSysViewerController = class _MolSysViewerController {
   }
 };
 
+// src/messages/popup-channel.ts
+var POPUP_CHANNEL_PROTOCOL_VERSION = 1;
+function nonEmptyString(value) {
+  return typeof value === "string" && value.trim().length > 0;
+}
+function createSecureRuntimeId(prefix2) {
+  const cryptography = globalThis.crypto;
+  const uuid = cryptography?.randomUUID?.();
+  if (uuid) return `${prefix2}-${uuid}`;
+  if (!cryptography?.getRandomValues) {
+    throw new Error("Secure popup channel identity requires Web Crypto");
+  }
+  const words = cryptography.getRandomValues(new Uint32Array(4));
+  return `${prefix2}-${[...words].map((word) => word.toString(16).padStart(8, "0")).join("")}`;
+}
+function createPopupChannelIdentity(viewerId, sessionId, mode, authorityEndpointId = "python", hostEndpointId = "host") {
+  if (!nonEmptyString(viewerId) || !nonEmptyString(sessionId) || !nonEmptyString(authorityEndpointId) || !nonEmptyString(hostEndpointId)) {
+    throw new Error("Popup channel requires viewer, session, authority, and host identity");
+  }
+  return {
+    protocolVersion: POPUP_CHANNEL_PROTOCOL_VERSION,
+    viewerId,
+    sessionId,
+    authorityEndpointId,
+    hostEndpointId,
+    popupEndpointId: createSecureRuntimeId(mode === "canvas" ? "canvas-popup" : "panel-popup"),
+    token: createSecureRuntimeId("token"),
+    mode
+  };
+}
+function isPopupChannelIdentity(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const channel = value;
+  return channel.protocolVersion === POPUP_CHANNEL_PROTOCOL_VERSION && nonEmptyString(channel.viewerId) && nonEmptyString(channel.sessionId) && nonEmptyString(channel.authorityEndpointId) && nonEmptyString(channel.hostEndpointId) && nonEmptyString(channel.popupEndpointId) && nonEmptyString(channel.token) && (channel.mode === "canvas" || channel.mode === "panel");
+}
+function samePopupChannel(actual, expected) {
+  if (!isPopupChannelIdentity(actual)) return false;
+  return actual.viewerId === expected.viewerId && actual.sessionId === expected.sessionId && actual.authorityEndpointId === expected.authorityEndpointId && actual.hostEndpointId === expected.hostEndpointId && actual.popupEndpointId === expected.popupEndpointId && actual.token === expected.token && actual.mode === expected.mode;
+}
+function encodePopupMessage(channel, envelope) {
+  return { channel, envelope };
+}
+function decodePopupMessage(value, expected) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const message = value;
+  if (!samePopupChannel(message.channel, expected)) return null;
+  if (!message.envelope || typeof message.envelope !== "object") return null;
+  return message;
+}
+function decodePopupEvent(event, expectedSource, expectedChannel, expectedEndpointIds) {
+  if (event.source !== expectedSource) return null;
+  const message = decodePopupMessage(event.data, expectedChannel);
+  if (!message || expectedEndpointIds && !expectedEndpointIds.has(message.envelope.endpointId)) {
+    return null;
+  }
+  return message;
+}
+
+// src/messages/runtime-router.ts
+var RUNTIME_PROTOCOL_VERSION = 1;
+var DIRECTIONS = /* @__PURE__ */ new Set([
+  "command",
+  "projection",
+  "event",
+  "request",
+  "ack",
+  "error"
+]);
+var ROLES = /* @__PURE__ */ new Set([
+  "python",
+  "widget-host",
+  "qt-host",
+  "canvas",
+  "panel-popup",
+  "canvas-popup"
+]);
+var PROJECTION_RECIPIENT_ROLES = /* @__PURE__ */ new Set([
+  "widget-host",
+  "qt-host",
+  "canvas",
+  "panel-popup",
+  "canvas-popup"
+]);
+function isNonEmptyString(value) {
+  return typeof value === "string" && value.trim().length > 0;
+}
+function isRuntimeDirection(value) {
+  return typeof value === "string" && DIRECTIONS.has(value);
+}
+function isRuntimeEndpointRole(value) {
+  return typeof value === "string" && ROLES.has(value);
+}
+function validateEnvelopeShape(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const candidate = value;
+  if (!Number.isInteger(candidate.protocolVersion) || !isNonEmptyString(candidate.viewerId) || !isNonEmptyString(candidate.sessionId) || !isNonEmptyString(candidate.endpointId) || !isNonEmptyString(candidate.messageId) || !isRuntimeDirection(candidate.direction) || !isNonEmptyString(candidate.action)) {
+    return null;
+  }
+  if (candidate.targetEndpointId !== void 0 && !isNonEmptyString(candidate.targetEndpointId)) {
+    return null;
+  }
+  if (candidate.correlationId !== void 0 && !isNonEmptyString(candidate.correlationId)) {
+    return null;
+  }
+  if (candidate.generation !== void 0 && (!Number.isInteger(candidate.generation) || candidate.generation < 0)) {
+    return null;
+  }
+  return candidate;
+}
+function directionAllowed(role, direction) {
+  if (direction === "projection") return role === "python";
+  if (direction === "command" || direction === "request") return role !== "python";
+  return true;
+}
+var RuntimeMessageRouter = class {
+  constructor(viewerId, sessionId, maxProcessedCommands = 1024) {
+    this.viewerId = viewerId;
+    this.sessionId = sessionId;
+    this.maxProcessedCommands = maxProcessedCommands;
+    this.endpoints = /* @__PURE__ */ new Map();
+    this.processedCommandIds = /* @__PURE__ */ new Map();
+    if (!isNonEmptyString(viewerId)) throw new ValueError("viewerId must be non-empty");
+    if (!isNonEmptyString(sessionId)) throw new ValueError("sessionId must be non-empty");
+    if (!Number.isInteger(maxProcessedCommands) || maxProcessedCommands < 1) {
+      throw new ValueError("maxProcessedCommands must be a positive integer");
+    }
+  }
+  registerEndpoint(endpoint) {
+    if (!endpoint || !isNonEmptyString(endpoint.endpointId) || !isRuntimeEndpointRole(endpoint.role)) {
+      throw new ValueError("Invalid runtime endpoint");
+    }
+    if (this.endpoints.has(endpoint.endpointId)) {
+      throw new ValueError(`Runtime endpoint already registered: ${endpoint.endpointId}`);
+    }
+    this.endpoints.set(endpoint.endpointId, endpoint.role);
+  }
+  unregisterEndpoint(endpointId) {
+    return this.endpoints.delete(endpointId);
+  }
+  hasEndpoint(endpointId) {
+    return this.endpoints.has(endpointId);
+  }
+  route(value) {
+    const envelope = validateEnvelopeShape(value);
+    if (!envelope) {
+      return {
+        status: "rejected",
+        reason: "malformed-envelope",
+        detail: "Runtime envelope is malformed"
+      };
+    }
+    if (envelope.protocolVersion !== RUNTIME_PROTOCOL_VERSION) {
+      return {
+        status: "rejected",
+        reason: "protocol-mismatch",
+        detail: `Unsupported runtime protocol: ${envelope.protocolVersion}`
+      };
+    }
+    if (envelope.viewerId !== this.viewerId) {
+      return {
+        status: "rejected",
+        reason: "viewer-mismatch",
+        detail: `Envelope belongs to viewer ${envelope.viewerId}`
+      };
+    }
+    if (envelope.sessionId !== this.sessionId) {
+      return {
+        status: "rejected",
+        reason: "session-mismatch",
+        detail: `Envelope belongs to session ${envelope.sessionId}`
+      };
+    }
+    const sourceRole = this.endpoints.get(envelope.endpointId);
+    if (!sourceRole) {
+      return {
+        status: "rejected",
+        reason: "unknown-source",
+        detail: `Unknown runtime endpoint: ${envelope.endpointId}`
+      };
+    }
+    if (!directionAllowed(sourceRole, envelope.direction)) {
+      return {
+        status: "rejected",
+        reason: "direction-not-allowed",
+        detail: `${sourceRole} cannot originate ${envelope.direction}`
+      };
+    }
+    if (envelope.direction === "command" && this.processedCommandIds.has(envelope.messageId)) {
+      return {
+        status: "duplicate",
+        envelope,
+        recipientEndpointIds: []
+      };
+    }
+    const recipients = this.resolveRecipients(envelope);
+    if ("reason" in recipients) return recipients;
+    if (envelope.direction === "command") {
+      this.processedCommandIds.set(envelope.messageId, true);
+      while (this.processedCommandIds.size > this.maxProcessedCommands) {
+        const oldest = this.processedCommandIds.keys().next().value;
+        if (oldest === void 0) break;
+        this.processedCommandIds.delete(oldest);
+      }
+    }
+    return {
+      status: "accepted",
+      envelope,
+      recipientEndpointIds: recipients
+    };
+  }
+  resolveRecipients(envelope) {
+    if (envelope.targetEndpointId !== void 0) {
+      if (!this.endpoints.has(envelope.targetEndpointId)) {
+        return {
+          status: "rejected",
+          reason: "unknown-target",
+          detail: `Unknown target endpoint: ${envelope.targetEndpointId}`
+        };
+      }
+      return [envelope.targetEndpointId];
+    }
+    if (envelope.direction === "ack" || envelope.direction === "error") {
+      return {
+        status: "rejected",
+        reason: "target-required",
+        detail: `${envelope.direction} requires targetEndpointId`
+      };
+    }
+    let recipients;
+    if (envelope.direction === "command" || envelope.direction === "request" || envelope.direction === "event") {
+      recipients = this.endpointIdsForRoles(/* @__PURE__ */ new Set(["python"]));
+    } else {
+      recipients = this.endpointIdsForRoles(PROJECTION_RECIPIENT_ROLES).filter((endpointId) => endpointId !== envelope.endpointId);
+    }
+    if (recipients.length === 0) {
+      return {
+        status: "rejected",
+        reason: "no-recipient",
+        detail: `No recipient is registered for ${envelope.direction}`
+      };
+    }
+    return recipients;
+  }
+  endpointIdsForRoles(roles) {
+    return [...this.endpoints.entries()].filter(([, role]) => roles.has(role)).map(([endpointId]) => endpointId);
+  }
+};
+var ValueError = class extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "ValueError";
+  }
+};
+
+// src/messages/array-native-stream.ts
+function positiveInteger(value, name) {
+  if (!Number.isInteger(value) || Number(value) <= 0) {
+    throw new Error(`${name} must be a positive integer`);
+  }
+  return Number(value);
+}
+function metadataKinds(metadata) {
+  const nAtoms = positiveInteger(metadata.n_atoms, "n_atoms");
+  const nStructures = positiveInteger(metadata.n_structures, "n_structures");
+  if (metadata.protocol_version !== ARRAY_NATIVE_PROTOCOL_VERSION || !metadata.atoms || metadata.atoms.atom_id?.length !== nAtoms) {
+    throw new Error("Invalid array-native stream metadata");
+  }
+  const kinds = /* @__PURE__ */ new Set();
+  const bufferIndices = /* @__PURE__ */ new Set();
+  for (const descriptor of metadata.structural_arrays ?? []) {
+    if (!isStructuralArrayKind(descriptor.kind)) {
+      throw new Error(`Unsupported structural array kind ${String(descriptor.kind)}`);
+    }
+    if (kinds.has(descriptor.kind)) {
+      throw new Error(`Duplicate structural array ${descriptor.kind}`);
+    }
+    kinds.add(descriptor.kind);
+    if (!Number.isInteger(descriptor.buffer_index) || descriptor.buffer_index < 0 || bufferIndices.has(descriptor.buffer_index)) {
+      throw new Error(`Invalid complete buffer index for ${descriptor.kind}`);
+    }
+    bufferIndices.add(descriptor.buffer_index);
+    const expectedShape = descriptor.kind === "coordinates" ? [nStructures, 3, nAtoms] : descriptor.kind === "box" ? [nStructures, 3, 3] : [nStructures];
+    const bytesPerElement = descriptor.kind === "time" ? 8 : 4;
+    const expectedDtype = descriptor.kind === "time" ? "float64" : "float32";
+    const expectedUnits = descriptor.kind === "time" ? "ps" : "angstrom";
+    const expectedLayout = descriptor.kind === "coordinates" ? "structure-planar-c" : "structure-major-c";
+    const expectedBytes = expectedShape.reduce((total, item2) => total * item2, 1) * bytesPerElement;
+    if (descriptor.dtype !== expectedDtype || descriptor.units !== expectedUnits || descriptor.layout !== expectedLayout || descriptor.endianness !== "little" || descriptor.shape.length !== expectedShape.length || descriptor.shape.some((value, index) => value !== expectedShape[index]) || descriptor.byte_length !== expectedBytes) {
+      throw new Error(`Invalid complete descriptor for ${descriptor.kind}`);
+    }
+  }
+  if (!kinds.has("coordinates")) {
+    throw new Error("Array-native stream requires coordinates");
+  }
+  if (bufferIndices.size !== kinds.size || [...bufferIndices].some((index) => index >= kinds.size)) {
+    throw new Error("Array-native stream descriptor indices are incomplete");
+  }
+  return kinds;
+}
+function identity2(message) {
+  return `${message.viewer_id}\0${message.session_id}\0${message.stream_id}`;
+}
+var ArrayNativeStreamReceiver = class {
+  constructor(notify, onComplete) {
+    this.notify = notify;
+    this.onComplete = onComplete;
+    this.endpointIdentity = null;
+    this.latestGeneration = 0;
+    this.active = null;
+  }
+  async handle(message, buffers = []) {
+    try {
+      if (message.op === "structure_data_begin") {
+        this.begin(message);
+        return;
+      }
+      if (message.op === "structure_data_cancel") {
+        this.cancel(message);
+        return;
+      }
+      await this.chunk(message, buffers);
+    } catch (error2) {
+      const errorMessage = error2 instanceof Error ? error2.message : String(error2);
+      this.notify({
+        event: "structure_data_error",
+        viewer_id: message.viewer_id,
+        session_id: message.session_id,
+        stream_id: message.stream_id,
+        generation: message.generation,
+        chunk_id: message.op === "structure_data_chunk" ? message.chunk_id : void 0,
+        error: errorMessage
+      });
+      if (message.op !== "structure_data_begin" && this.active?.begin.generation === message.generation) {
+        this.active = null;
+      }
+      throw error2;
+    }
+  }
+  dispose() {
+    this.active = null;
+    this.endpointIdentity = null;
+    this.latestGeneration = 0;
+  }
+  begin(message) {
+    if (message.protocol_version !== ARRAY_NATIVE_PROTOCOL_VERSION) {
+      throw new Error(`Unsupported array-native stream version ${message.protocol_version}`);
+    }
+    const incomingIdentity = identity2(message);
+    if (this.endpointIdentity !== null && incomingIdentity !== this.endpointIdentity) {
+      throw new Error("Array-native stream identity does not belong to this endpoint");
+    }
+    if (!Number.isInteger(message.generation) || message.generation <= this.latestGeneration) {
+      throw new Error(`Stale array-native generation ${message.generation}`);
+    }
+    const chunkCount = positiveInteger(message.chunk_count, "chunk_count");
+    const kinds = metadataKinds(message.metadata);
+    const nAtoms = message.metadata.n_atoms;
+    const nStructures = message.metadata.n_structures;
+    this.endpointIdentity = incomingIdentity;
+    this.latestGeneration = message.generation;
+    this.active = {
+      begin: { ...message, chunk_count: chunkCount },
+      nextChunkId: 0,
+      nextStructureStart: 0,
+      coordinates: new Float32Array(nStructures * nAtoms * 3),
+      box: kinds.has("box") ? new Float32Array(nStructures * 9) : void 0,
+      time: kinds.has("time") ? new Float64Array(nStructures) : void 0,
+      kinds
+    };
+    this.notify({
+      event: "structure_data_begin_ack",
+      viewer_id: message.viewer_id,
+      session_id: message.session_id,
+      stream_id: message.stream_id,
+      generation: message.generation
+    });
+  }
+  cancel(message) {
+    if (this.active && identity2(message) === this.endpointIdentity && message.generation === this.active.begin.generation) {
+      this.active = null;
+    }
+  }
+  async chunk(message, buffers) {
+    const active = this.active;
+    if (!active) {
+      throw new Error("Late array-native chunk has no active generation");
+    }
+    if (message.protocol_version !== ARRAY_NATIVE_PROTOCOL_VERSION) {
+      throw new Error(`Unsupported array-native stream version ${message.protocol_version}`);
+    }
+    if (identity2(message) !== this.endpointIdentity || message.generation !== active.begin.generation) {
+      throw new Error("Array-native chunk identity or generation mismatch");
+    }
+    if (message.chunk_id !== active.nextChunkId || message.structure_start !== active.nextStructureStart) {
+      throw new Error("Duplicate, out-of-order, or non-contiguous array-native chunk");
+    }
+    const structureCount = positiveInteger(message.structure_count, "structure_count");
+    const end4 = message.structure_start + structureCount;
+    if (end4 > active.begin.metadata.n_structures) {
+      throw new Error("Array-native chunk exceeds the declared structure range");
+    }
+    const chunkKinds = new Set(message.structural_arrays.map((item2) => item2.kind));
+    if (chunkKinds.size !== active.kinds.size || [...active.kinds].some((kind) => !chunkKinds.has(kind))) {
+      throw new Error("Array-native chunk arrays do not match the stream declaration");
+    }
+    const decoded = decodeStructuralArraySet(
+      message.structural_arrays,
+      buffers,
+      active.begin.metadata.n_atoms,
+      structureCount
+    );
+    active.coordinates.set(
+      decoded.coordinates,
+      message.structure_start * active.begin.metadata.n_atoms * 3
+    );
+    if (active.box && decoded.box) active.box.set(decoded.box, message.structure_start * 9);
+    if (active.time && decoded.time) active.time.set(decoded.time, message.structure_start);
+    active.nextChunkId += 1;
+    active.nextStructureStart = end4;
+    this.notify({
+      event: "structure_data_chunk_ack",
+      viewer_id: message.viewer_id,
+      session_id: message.session_id,
+      stream_id: message.stream_id,
+      generation: message.generation,
+      chunk_id: message.chunk_id
+    });
+    if (active.nextChunkId !== active.begin.chunk_count) return;
+    if (active.nextStructureStart !== active.begin.metadata.n_structures) {
+      throw new Error("Array-native stream ended before all structures arrived");
+    }
+    this.active = null;
+    await this.onComplete(active.begin, {
+      atoms: active.begin.metadata.atoms,
+      bonds: active.begin.metadata.bonds,
+      meta: active.begin.metadata.meta,
+      nAtoms: active.begin.metadata.n_atoms,
+      nStructures: active.begin.metadata.n_structures,
+      coordinates: active.coordinates,
+      box: active.box,
+      time: active.time
+    });
+    this.notify({
+      event: "structure_data_complete",
+      viewer_id: message.viewer_id,
+      session_id: message.session_id,
+      stream_id: message.stream_id,
+      generation: message.generation
+    });
+  }
+};
+
 // src/popup/popup-logic.ts
 var bootPopup = async (loadedModule) => {
   const openerWin = window.opener;
@@ -164081,6 +164801,29 @@ var bootPopup = async (loadedModule) => {
     console.error("MolSysViewer Popout: Opened without opener");
     return;
   }
+  const initOptions = window.molsysviewer_init_options || {};
+  const popupChannel = window.molsysviewer_popup_channel;
+  if (!isPopupChannelIdentity(popupChannel)) {
+    console.error("MolSysViewer Popout: Missing secure popup channel identity");
+    return;
+  }
+  const runtimeRouter = new RuntimeMessageRouter(
+    popupChannel.viewerId,
+    popupChannel.sessionId
+  );
+  runtimeRouter.registerEndpoint({
+    endpointId: popupChannel.authorityEndpointId,
+    role: "python"
+  });
+  runtimeRouter.registerEndpoint({
+    endpointId: popupChannel.hostEndpointId,
+    role: "widget-host"
+  });
+  runtimeRouter.registerEndpoint({
+    endpointId: popupChannel.popupEndpointId,
+    role: popupChannel.mode === "canvas" ? "canvas-popup" : "panel-popup"
+  });
+  let popupMessageCounter = 0;
   let MolSysViewerController2;
   if (loadedModule) {
     if (loadedModule.MolSysViewerController) {
@@ -164116,8 +164859,23 @@ var bootPopup = async (loadedModule) => {
   }
   const sendToHost = (type3, data) => {
     if (!openerWin || openerWin.closed) return;
+    const direction = type3 === "molsysviewer-sync-op" || type3 === "molsysviewer-popup-interaction" ? "command" : "event";
+    const envelope = {
+      protocolVersion: RUNTIME_PROTOCOL_VERSION,
+      viewerId: popupChannel.viewerId,
+      sessionId: popupChannel.sessionId,
+      endpointId: popupChannel.popupEndpointId,
+      targetEndpointId: direction === "command" ? popupChannel.authorityEndpointId : popupChannel.hostEndpointId,
+      messageId: `${popupChannel.popupEndpointId}:${++popupMessageCounter}`,
+      direction,
+      action: type3,
+      payload: data
+    };
+    if (runtimeRouter.route(envelope).status !== "accepted") return;
+    const origin = window.location?.origin;
+    const targetOrigin = origin && origin !== "null" ? origin : "*";
     try {
-      openerWin.postMessage({ type: type3, data, from: "popup" }, "*");
+      openerWin.postMessage(encodePopupMessage(popupChannel, envelope), targetOrigin);
     } catch (e) {
     }
   };
@@ -164215,7 +164973,24 @@ var bootPopup = async (loadedModule) => {
     }
   };
   const revealTimer = window.setTimeout(revealViewer, 2500);
-  const initOptions = window.molsysviewer_init_options || {};
+  const relayedBuffers = (payload) => {
+    const buffers = payload?.buffers;
+    if (!Array.isArray(buffers)) return [];
+    return buffers.map(
+      (buffer) => buffer instanceof DataView ? buffer : new DataView(
+        buffer.buffer ?? buffer,
+        buffer.byteOffset ?? 0,
+        buffer.byteLength ?? (buffer.buffer ?? buffer).byteLength
+      )
+    );
+  };
+  const arrayNativeStream = new ArrayNativeStreamReceiver(
+    (event) => sendToHost("molsysviewer-structure-data-ack", event),
+    async (begin, payload) => {
+      const ctrl2 = await popControllerPromise;
+      await ctrl2.loadArrayNativeMolSysPayload(payload, begin.label);
+    }
+  );
   const popControllerPromise = (async () => {
     await new Promise((r) => setTimeout(r, 100));
     const ctrl2 = await MolSysViewerController2.create(container, (msg) => {
@@ -164272,8 +165047,13 @@ var bootPopup = async (loadedModule) => {
     return ctrl2;
   })();
   window.addEventListener("message", async (ev) => {
-    if (!ev.data || ev.data.from === "popup") return;
-    const { type: type3, data } = ev.data;
+    const message = decodePopupEvent(ev, openerWin, popupChannel);
+    if (!message) return;
+    if (message.envelope.endpointId !== popupChannel.authorityEndpointId && message.envelope.endpointId !== popupChannel.hostEndpointId) return;
+    const routed = runtimeRouter.route(message.envelope);
+    if (routed.status !== "accepted") return;
+    const type3 = routed.envelope.action;
+    const data = routed.envelope.payload;
     const ctrl2 = await popControllerPromise;
     try {
       switch (type3) {
@@ -164319,6 +165099,12 @@ var bootPopup = async (loadedModule) => {
           if (data && !isUserInteracting) {
             ctrl2.setCameraSnapshot(data, 0);
           }
+          break;
+        // D4: Python streams this popup its own typed molecular
+        // generation; the host only relays. Acknowledgements travel back
+        // the same way, so the stream stays flow-controlled end to end.
+        case "molsysviewer-structure-data":
+          await arrayNativeStream.handle(data?.message, relayedBuffers(data));
           break;
       }
     } catch (e) {
@@ -164390,8 +165176,6 @@ var bootPopup = async (loadedModule) => {
     }
   };
   addBtn("Reset", async () => {
-    const ctrl2 = await popControllerPromise;
-    await ctrl2.resetView();
     sendToHost("molsysviewer-sync-op", { op: "reset_view" });
   });
   addBtn("Full", async () => {
@@ -164399,19 +165183,13 @@ var bootPopup = async (loadedModule) => {
     ctrl2.toggleFullscreen();
   });
   addBtn("Bg", async () => {
-    const ctrl2 = await popControllerPromise;
-    await ctrl2.toggleBackground();
-    sendToHost("molsysviewer-sync-op", { op: "toggle_background", mode: ctrl2.isDarkMode ? "dark" : "light" });
+    sendToHost("molsysviewer-sync-op", { op: "toggle_background" });
   });
   addBtn("Spin", async () => {
-    const ctrl2 = await popControllerPromise;
-    await ctrl2.toggleSpin();
-    sendToHost("molsysviewer-sync-op", { op: "toggle_spin", enable: ctrl2.isSpinActive });
+    sendToHost("molsysviewer-sync-op", { op: "toggle_spin" });
   });
   addBtn("Swing", async () => {
-    const ctrl2 = await popControllerPromise;
-    await ctrl2.toggleSwing();
-    sendToHost("molsysviewer-sync-op", { op: "toggle_swing", enable: ctrl2.isSwingActive });
+    sendToHost("molsysviewer-sync-op", { op: "toggle_swing" });
   });
   let isUiVisible = true;
   const uiBtn = addBtn("UI", async () => {
@@ -164439,18 +165217,14 @@ var bootPopup = async (loadedModule) => {
   let currentStep = 1;
   let currentFps = 30;
   const btnPrev = makeBtn("\u2212", async () => {
-    const ctrl2 = await popControllerPromise;
-    ctrl2.stepTrajectory(-currentStep);
     sendToHost("molsysviewer-sync-op", { op: "step_trajectory", by: -currentStep });
   });
   const btnPlayPause = makeBtn("\u25B6", async () => {
     const ctrl2 = await popControllerPromise;
     const isPlaying = ctrl2.trajectory.getTrajectoryState().isPlaying;
     if (isPlaying) {
-      ctrl2.stopTrajectoryPlayback();
       sendToHost("molsysviewer-sync-op", { op: "set_trajectory_playback", action: "stop" });
     } else {
-      ctrl2.playTrajectory({ fps: currentFps, step: currentStep });
       sendToHost("molsysviewer-sync-op", { op: "set_trajectory_playback", action: "play", fps: currentFps, step: currentStep });
     }
   });
@@ -164461,8 +165235,6 @@ var bootPopup = async (loadedModule) => {
   btnPlayPause.style.width = "28px";
   btnPlayPause.title = "Play/Pause Trajectory";
   const btnNext = makeBtn("+", async () => {
-    const ctrl2 = await popControllerPromise;
-    ctrl2.stepTrajectory(currentStep);
     sendToHost("molsysviewer-sync-op", { op: "step_trajectory", by: currentStep });
   });
   [btnPrev, btnPlayPause, btnNext].forEach((b8) => {
@@ -164488,8 +165260,6 @@ var bootPopup = async (loadedModule) => {
   slider.oninput = async () => {
     const val = Number(slider.value);
     if (!Number.isFinite(val)) return;
-    const ctrl2 = await popControllerPromise;
-    ctrl2.setTrajectoryFrame(val);
     sendToHost("molsysviewer-sync-op", { op: "set_trajectory_frame", index: val });
     updateSliderBg();
   };
@@ -164551,13 +165321,30 @@ var PopupHostManager = class {
     this.panelWin = null;
     this.isReady = false;
     this.isPanelReady = false;
+    this.messageCounter = 0;
+    this.channels = /* @__PURE__ */ new Map();
     if (typeof viewer === "string") {
       this.viewerJsSource = viewer;
+      this.viewerId = createSecureRuntimeId("view");
+      this.sessionId = createSecureRuntimeId("session");
+      this.authorityEndpointId = `python:${this.viewerId}`;
+      this.hostEndpointId = `widget-host:${this.sessionId}`;
+      this.router = this.createRouter();
       return;
     }
     this.viewerJsSource = viewer.source ?? "";
     this.viewerModuleUrl = viewer.moduleUrl;
     this.viewerSourceProvider = viewer.sourceProvider;
+    this.viewerId = viewer.viewerId || createSecureRuntimeId("view");
+    this.sessionId = viewer.sessionId || createSecureRuntimeId("session");
+    this.authorityEndpointId = `python:${this.viewerId}`;
+    this.hostEndpointId = `widget-host:${this.sessionId}`;
+    this.onEndpointClosed = viewer.onEndpointClosed;
+    this.router = this.createRouter();
+  }
+  /** Endpoint id of the live popup for `mode`, or null when none is open. */
+  popupEndpointId(mode) {
+    return this.channels.get(mode)?.popupEndpointId ?? null;
   }
   async resolveViewerJsSource() {
     if (this.viewerJsSource) return this.viewerJsSource;
@@ -164600,6 +165387,19 @@ var PopupHostManager = class {
       this.panelWin = win;
       this.isPanelReady = false;
     }
+    const channel = createPopupChannelIdentity(
+      this.viewerId,
+      this.sessionId,
+      mode,
+      this.authorityEndpointId,
+      this.hostEndpointId
+    );
+    this.channels.set(mode, channel);
+    this.router.registerEndpoint({
+      endpointId: channel.popupEndpointId,
+      role: mode === "canvas" ? "canvas-popup" : "panel-popup"
+    });
+    win.molsysviewer_popup_channel = channel;
     if (this.controller) {
       win.molsysviewer_init_options = {
         viewerMode: this.controller.getViewerMode(),
@@ -164703,13 +165503,19 @@ var PopupHostManager = class {
         if (!this.popoutWin || this.popoutWin.closed) {
           this.popoutWin = null;
           this.isReady = false;
+          this.channels.delete("canvas");
+          this.router.unregisterEndpoint(channel.popupEndpointId);
           window.clearInterval(interval);
+          this.onEndpointClosed?.("canvas");
         }
       } else {
         if (!this.panelWin || this.panelWin.closed) {
           this.panelWin = null;
           this.isPanelReady = false;
+          this.channels.delete("panel");
+          this.router.unregisterEndpoint(channel.popupEndpointId);
           window.clearInterval(interval);
+          this.onEndpointClosed?.("panel");
           if (this.controller) {
             this.controller.restoreHostPanelState();
           }
@@ -164720,33 +165526,126 @@ var PopupHostManager = class {
   close(mode = "canvas") {
     if (mode === "canvas") {
       if (this.popoutWin) {
+        const channel = this.channels.get("canvas");
         this.popoutWin.close();
         this.popoutWin = null;
         this.isReady = false;
+        this.channels.delete("canvas");
+        if (channel) this.router.unregisterEndpoint(channel.popupEndpointId);
+        this.onEndpointClosed?.("canvas");
       }
     } else {
       if (this.panelWin) {
+        const channel = this.channels.get("panel");
         this.panelWin.close();
         this.panelWin = null;
         this.isPanelReady = false;
+        this.channels.delete("panel");
+        if (channel) this.router.unregisterEndpoint(channel.popupEndpointId);
+        this.onEndpointClosed?.("panel");
       }
     }
   }
+  dispose() {
+    this.close("canvas");
+    this.close("panel");
+    this.channels.clear();
+  }
+  /**
+   * Deliver to exactly one popup endpoint.
+   *
+   * `send` fans out to every open popup, which is right for shared scene
+   * projections but wrong for anything endpoint-specific: a canvas bootstrap
+   * carries molecular data, and a panel popup must never receive it. Returns
+   * false when that endpoint is not open.
+   */
+  sendTo(mode, type3, data) {
+    const direction = type3 === "molsysviewer-sync-camera" ? "event" : "projection";
+    const target = mode === "canvas" ? this.popoutWin : this.panelWin;
+    const ready = mode === "canvas" ? this.isReady : this.isPanelReady;
+    const channel = this.channels.get(mode);
+    if (!ready || !target || target.closed || !channel) return false;
+    try {
+      this.postToPopup(target, channel, type3, data, direction);
+      return true;
+    } catch (e) {
+      console.warn(`[MolSysViewer Host] ${mode} popup message failed`, e);
+      return false;
+    }
+  }
   send(type3, data) {
+    const direction = type3 === "molsysviewer-sync-camera" ? "event" : "projection";
     if (this.isReady && this.popoutWin && !this.popoutWin.closed) {
       try {
-        this.popoutWin.postMessage({ type: type3, data, from: "host" }, "*");
+        const channel = this.channels.get("canvas");
+        if (channel) {
+          this.postToPopup(this.popoutWin, channel, type3, data, direction);
+        }
       } catch (e) {
         console.warn("[MolSysViewer Host] Popout message failed", e);
       }
     }
     if (this.isPanelReady && this.panelWin && !this.panelWin.closed) {
       try {
-        this.panelWin.postMessage({ type: type3, data, from: "host" }, "*");
+        const channel = this.channels.get("panel");
+        if (channel) {
+          this.postToPopup(this.panelWin, channel, type3, data, direction);
+        }
       } catch (e) {
         console.warn("[MolSysViewer Host] Panel message failed", e);
       }
     }
+  }
+  receive(event) {
+    const mode = event.source === this.popoutWin ? "canvas" : event.source === this.panelWin ? "panel" : null;
+    if (!mode) return null;
+    const channel = this.channels.get(mode);
+    const expectedSource = mode === "canvas" ? this.popoutWin : this.panelWin;
+    if (!channel || !expectedSource) return null;
+    const wire = decodePopupEvent(
+      event,
+      expectedSource,
+      channel,
+      /* @__PURE__ */ new Set([channel.popupEndpointId])
+    );
+    if (!wire) return null;
+    const routed = this.router.route(wire.envelope);
+    if (routed.status !== "accepted") return null;
+    return {
+      type: routed.envelope.action,
+      data: routed.envelope.payload,
+      envelope: routed.envelope,
+      channel
+    };
+  }
+  targetOrigin() {
+    const origin = window.location?.origin;
+    return origin && origin !== "null" ? origin : "*";
+  }
+  createRouter() {
+    const router = new RuntimeMessageRouter(this.viewerId, this.sessionId);
+    router.registerEndpoint({ endpointId: this.authorityEndpointId, role: "python" });
+    router.registerEndpoint({ endpointId: this.hostEndpointId, role: "widget-host" });
+    return router;
+  }
+  postToPopup(target, channel, action, payload, direction = "projection") {
+    const envelope = {
+      protocolVersion: RUNTIME_PROTOCOL_VERSION,
+      viewerId: this.viewerId,
+      sessionId: this.sessionId,
+      endpointId: direction === "projection" ? this.authorityEndpointId : this.hostEndpointId,
+      targetEndpointId: channel.popupEndpointId,
+      messageId: `${this.hostEndpointId}:${++this.messageCounter}`,
+      direction,
+      action,
+      payload
+    };
+    const routed = this.router.route(envelope);
+    if (routed.status !== "accepted") {
+      const detail = routed.status === "rejected" ? routed.detail : `duplicate message ${routed.envelope.messageId}`;
+      throw new Error(`Popup projection rejected: ${detail}`);
+    }
+    target.postMessage(encodePopupMessage(channel, envelope), this.targetOrigin());
   }
 };
 
@@ -165919,11 +166818,12 @@ var formatArg = (v4) => {
   }
   return String(v4);
 };
-var createLogger = (model, debug) => {
+var createLogger = (model, debug, send) => {
+  const emit = send ?? ((message) => model.send(message));
   const sendLog = (level, ...args) => {
     if (!debug) return;
     try {
-      model.send({
+      emit({
         event: "js_log",
         level,
         message: args.map(formatArg).join(" ")
@@ -165946,6 +166846,300 @@ var createLogger = (model, debug) => {
     });
   }
   return sendLog;
+};
+
+// src/messages/popup-replay-log.ts
+var STRUCTURE_LOAD_OPS = /* @__PURE__ */ new Set([
+  "load_molsys_payload",
+  "load_molsys_payload_ref",
+  "load_structure_from_string",
+  "load_pdb_string",
+  "load_structure_from_url",
+  "load_pdb_id"
+]);
+var PANEL_PROJECTION_OPS = /* @__PURE__ */ new Set([
+  "set_region_summaries",
+  "set_layer_summaries",
+  "set_annotation_summaries",
+  "set_measurement_summaries",
+  "set_shape_summaries",
+  "set_section_summaries",
+  "set_whole_summary",
+  "set_history_state",
+  "set_active_selection",
+  "clear_active_selection",
+  "region_details",
+  "whole_details",
+  "measurement_series",
+  "dynamic_region_evaluation_warning",
+  "selection_query_preview",
+  "set_addon_runtime_summary",
+  "set_addon_context_items",
+  "mount_addon_panel",
+  "addon_panel_message",
+  "backend_error_occurred",
+  "set_panel_mode",
+  "set_workspace",
+  "set_workspace_panel"
+]);
+var LAST_WRITE_WINS_OPS = /* @__PURE__ */ new Set([
+  "set_trajectory_frame",
+  "set_trajectory_playback",
+  "set_region_summaries",
+  "set_layer_summaries",
+  "set_annotation_summaries",
+  "set_measurement_summaries",
+  "set_shape_summaries",
+  "set_section_summaries",
+  "set_whole_summary",
+  "set_history_state",
+  "set_active_selection",
+  "set_panel_mode",
+  "set_canvas_visibility",
+  "set_legend",
+  "set_trajectory_plot",
+  "update_visibility"
+]);
+function operation(message) {
+  return typeof message.op === "string" ? String(message.op) : "";
+}
+var PopupReplayLog = class {
+  constructor(initialMessages = []) {
+    this.entries = [];
+    for (const message of initialMessages) this.record(message);
+  }
+  record(message) {
+    if (!message || typeof message !== "object") return;
+    const op4 = operation(message);
+    if (!op4) return;
+    if (op4 === "clear_all") {
+      this.entries = [];
+      return;
+    }
+    if (STRUCTURE_LOAD_OPS.has(op4)) {
+      this.entries = [message];
+      return;
+    }
+    if (LAST_WRITE_WINS_OPS.has(op4)) {
+      const index = this.entries.findIndex((entry) => operation(entry) === op4);
+      if (index >= 0) {
+        this.entries[index] = message;
+        return;
+      }
+    }
+    this.entries.push(message);
+  }
+  snapshot(mode) {
+    const source = mode === "panel" ? this.entries.filter((message) => PANEL_PROJECTION_OPS.has(operation(message))) : this.entries;
+    return [...source];
+  }
+  get size() {
+    return this.entries.length;
+  }
+};
+
+// ../runtime_actions.json
+var runtime_actions_default = {
+  protocol_version: 1,
+  comment: "Shared Python<->TypeScript action contract for the AnyWidget runtime seam (R1). Python (viewer/runtime_router.py) and TypeScript (js/src/messages/runtime-actions.ts) both load THIS file so every action is classified identically. `actions` are browser->Python; category is the RuntimeEnvelope direction the action must carry, and the envelope action must equal the payload `event`. `outbound_requests` are Python->browser requests and must never be accepted as browser-originated. `raw` is the pre-runtime/source bootstrap (both directions), never enveloped in R1. `data_plane` travels on the array-native binary seam (both directions), not the control-plane envelope. Domain projection ops (Python->browser) are authored and trusted by the Python authority and are wrapped with direction 'projection'; they are intentionally not enumerated. NOTE: interaction_measurement_created and section_moved are still compatibility paths where the frontend acts before Python confirms; R1 protects and deduplicates them but does not yet fully normalize 'Python first, projection after' (a later slice).",
+  actions: {
+    interaction_active_selection_changed: "command",
+    interaction_context_action: "command",
+    interaction_measurement_created: "command",
+    addon_panel_action: "command",
+    section_moved: "command",
+    scene_history_undo: "command",
+    scene_history_redo: "command",
+    scene_history_coalescing_begin: "command",
+    scene_history_coalescing_end: "command",
+    interaction_hover: "event",
+    interaction_click: "event",
+    interaction_context_menu: "event",
+    interaction_tool_state: "event",
+    camera_snapshot: "event",
+    widget_resize: "event",
+    trajectory_frame_changed: "event",
+    shape_render_status: "event",
+    js_log: "event",
+    movie_frame: "event",
+    webgl_context_lost: "event",
+    webgl_context_restored: "event",
+    panel_mode_state: "event",
+    panel_navigate: "event",
+    panel_unmount: "event",
+    request_dynamic_region_evaluation: "request",
+    request_visibility_resync: "request",
+    selection_query_preview_request: "request",
+    request_popup_scene_snapshot: "request",
+    region_ack: "ack",
+    layer_ack: "ack",
+    registry_cleared: "ack",
+    region_deleted: "ack",
+    layer_deleted: "ack",
+    trajectory_frame_rendered: "ack",
+    image_export: "ack",
+    movie_export_done: "ack",
+    viewer_init_failed: "error"
+  },
+  outbound_requests: [
+    "request_camera_snapshot",
+    "request_image_export"
+  ],
+  raw: [
+    "request_widget_runtime_source",
+    "widget_runtime_source",
+    "request_popup_source",
+    "popup_source",
+    "ready"
+  ],
+  data_plane: [
+    "structure_data_begin",
+    "structure_data_chunk",
+    "structure_data_cancel",
+    "load_molsys_array_payload",
+    "structure_data_begin_ack",
+    "structure_data_chunk_ack",
+    "structure_data_complete",
+    "structure_data_error"
+  ]
+};
+
+// src/messages/runtime-actions.ts
+var RUNTIME_ACTIONS_PROTOCOL_VERSION = 1;
+var rawManifest = runtime_actions_default;
+if (rawManifest.protocol_version !== RUNTIME_ACTIONS_PROTOCOL_VERSION) {
+  throw new Error(
+    `runtime_actions.json protocol_version must be ${RUNTIME_ACTIONS_PROTOCOL_VERSION}`
+  );
+}
+var VALID = /* @__PURE__ */ new Set(["command", "event", "request", "ack", "error"]);
+var ACTION_CATEGORIES = new Map(
+  Object.entries(rawManifest.actions).map(([name, category]) => {
+    if (!VALID.has(category)) {
+      throw new Error(`runtime_actions.json action ${name} has invalid category ${category}`);
+    }
+    return [name, category];
+  })
+);
+var OUTBOUND_REQUESTS = new Set(rawManifest.outbound_requests);
+var RAW_ACTIONS = new Set(rawManifest.raw);
+var DATA_PLANE_ACTIONS = new Set(rawManifest.data_plane);
+(() => {
+  const groups = [
+    new Set(ACTION_CATEGORIES.keys()),
+    OUTBOUND_REQUESTS,
+    RAW_ACTIONS,
+    DATA_PLANE_ACTIONS
+  ];
+  const seen = /* @__PURE__ */ new Set();
+  for (const group of groups) {
+    for (const name of group) {
+      if (seen.has(name)) {
+        throw new Error(`runtime_actions.json action appears in two groups: ${name}`);
+      }
+      seen.add(name);
+    }
+  }
+})();
+function categoryOf(action) {
+  return ACTION_CATEGORIES.get(action);
+}
+
+// src/messages/widget-envelope.ts
+var RUNTIME_PROTOCOL_VERSION2 = 1;
+var INBOUND_DIRECTIONS = /* @__PURE__ */ new Set(["projection", "request", "ack", "error"]);
+function nonEmpty(value) {
+  return typeof value === "string" && value.trim() !== "";
+}
+function outboundActionOf(message) {
+  return nonEmpty(message.event) ? message.event : null;
+}
+function payloadActionOf(message) {
+  if (nonEmpty(message.op)) return message.op;
+  if (nonEmpty(message.event)) return message.event;
+  return null;
+}
+function looksLikeEnvelope(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const v4 = value;
+  return typeof v4.protocolVersion === "number" && typeof v4.direction === "string" && typeof v4.action === "string" && "payload" in v4;
+}
+var WidgetEnvelopeAdapter = class {
+  constructor(viewerId, sessionId) {
+    this.viewerId = viewerId;
+    this.sessionId = sessionId;
+    this.sequence = 0;
+    this.pythonEndpoint = `python:${viewerId}`;
+    this.widgetHostEndpoint = `widget-host:${sessionId}`;
+  }
+  /** browser -> Python. `send` carries the wire message (raw for raw/data-plane
+   * actions, an envelope otherwise); `rejected` must NOT reach `model.send`. */
+  wrapOutbound(message) {
+    const action = outboundActionOf(message);
+    if (action === null) {
+      return { kind: "rejected", reason: "no-action", detail: "outbound message has no event action" };
+    }
+    if (RAW_ACTIONS.has(action) || DATA_PLANE_ACTIONS.has(action)) {
+      return { kind: "send", message };
+    }
+    if (OUTBOUND_REQUESTS.has(action)) {
+      return { kind: "rejected", reason: "outbound-only", detail: action };
+    }
+    const category = categoryOf(action);
+    if (category === void 0) {
+      return { kind: "rejected", reason: "unknown-action", detail: action };
+    }
+    const envelope = {
+      protocolVersion: RUNTIME_PROTOCOL_VERSION2,
+      viewerId: this.viewerId,
+      sessionId: this.sessionId,
+      endpointId: this.widgetHostEndpoint,
+      targetEndpointId: this.pythonEndpoint,
+      messageId: `wh-${this.sessionId}-${++this.sequence}`,
+      direction: category,
+      action,
+      payload: message
+    };
+    return { kind: "send", message: envelope };
+  }
+  /** Python -> browser. `raw` means "not an envelope, use the existing dispatch",
+   * and is allowed ONLY for bootstrap/source and data-plane actions. */
+  unwrapInbound(value) {
+    if (!looksLikeEnvelope(value)) {
+      const action = value && typeof value === "object" && !Array.isArray(value) ? payloadActionOf(value) : null;
+      if (action !== null && (RAW_ACTIONS.has(action) || DATA_PLANE_ACTIONS.has(action))) {
+        return { kind: "raw" };
+      }
+      return { kind: "rejected", reason: "unenveloped-control-message", detail: action ?? "(no action)" };
+    }
+    const env = value;
+    if (env.protocolVersion !== RUNTIME_PROTOCOL_VERSION2) {
+      return { kind: "rejected", reason: "protocol-mismatch", detail: String(env.protocolVersion) };
+    }
+    if (env.viewerId !== this.viewerId) {
+      return { kind: "rejected", reason: "viewer-mismatch", detail: env.viewerId };
+    }
+    if (env.sessionId !== this.sessionId) {
+      return { kind: "rejected", reason: "session-mismatch", detail: env.sessionId };
+    }
+    if (env.endpointId !== this.pythonEndpoint) {
+      return { kind: "rejected", reason: "unknown-source", detail: env.endpointId };
+    }
+    if (env.targetEndpointId !== void 0 && env.targetEndpointId !== this.widgetHostEndpoint) {
+      return { kind: "rejected", reason: "unknown-target", detail: String(env.targetEndpointId) };
+    }
+    if (!INBOUND_DIRECTIONS.has(env.direction)) {
+      return { kind: "rejected", reason: "direction-not-allowed", detail: env.direction };
+    }
+    if (!env.payload || typeof env.payload !== "object" || Array.isArray(env.payload)) {
+      return { kind: "rejected", reason: "malformed-payload", detail: env.action };
+    }
+    const payload = env.payload;
+    if (payloadActionOf(payload) !== env.action) {
+      return { kind: "rejected", reason: "action-payload-mismatch", detail: env.action };
+    }
+    return { kind: "message", message: payload, envelope: env };
+  }
 };
 
 // src/index.ts
@@ -166005,7 +167199,8 @@ async function bootDocsView(opts) {
     if (!debug) return;
     console.log("[MolSysViewer docs]", level, ...args);
   };
-  const commandLog = Array.isArray(opts.initialMessages) ? [...opts.initialMessages] : [];
+  const initialMessages = Array.isArray(opts.initialMessages) ? opts.initialMessages : [];
+  const popupReplay = new PopupReplayLog(initialMessages);
   const ui = opts.ui || {};
   const notifyHost = (event) => {
     if (!event || typeof event !== "object") return;
@@ -166038,7 +167233,7 @@ async function bootDocsView(opts) {
     try {
       const controller = await controllerPromise;
       await controller.handleMessage(msg);
-      commandLog.push(msg);
+      popupReplay.record(msg);
       notifyHost({ event: "message_ack", phase: "handled", ...meta });
       if (msg?.op === "load_molsys_payload" || msg?.op === "load_molsys_payload_ref") {
         notifyHost({ event: "structure_ready", ...meta });
@@ -166089,7 +167284,7 @@ async function bootDocsView(opts) {
   window.addEventListener("pointercancel", onPointerUpOrCancel);
   target.addEventListener("wheel", onWheel, { passive: true });
   hostEl.appendChild(target);
-  const trajInfo = parseInitialTrajectoryInfo(commandLog);
+  const trajInfo = parseInitialTrajectoryInfo(initialMessages);
   const panelModeStyle = ui.panel_mode_style || "drawer";
   const controllerPromise = MolSysViewerController.create(target, () => {
   }, void 0, {
@@ -166098,7 +167293,9 @@ async function bootDocsView(opts) {
   });
   const popupMgr = new PopupHostManager({
     moduleUrl: typeof opts.runtimeUrl === "string" ? opts.runtimeUrl : void 0,
-    source: ""
+    source: "",
+    viewerId: typeof ui.runtime_viewer_id === "string" ? ui.runtime_viewer_id : void 0,
+    sessionId: typeof ui.runtime_session_id === "string" ? ui.runtime_session_id : void 0
   });
   const enablePopout = !!ui.enable_popout && !!opts.runtimeUrl;
   const model = {
@@ -166114,7 +167311,7 @@ async function bootDocsView(opts) {
     }
     const sendSync = (msg) => {
       if (!msg) return;
-      commandLog.push(msg);
+      popupReplay.record(msg);
       popupMgr.send("molsysviewer-sync-op", msg);
     };
     const overlay = buildControls(
@@ -166147,16 +167344,17 @@ async function bootDocsView(opts) {
     }
   });
   const messageHandler = async (ev) => {
-    if (!ev.data || ev.data.from === "host") return;
-    const { type: type3, data } = ev.data;
-    if (!type3 || typeof type3 !== "string" || !type3.startsWith("molsysviewer-")) return;
+    const popupMessage = popupMgr.receive(ev);
+    if (!popupMessage) return;
+    const { type: type3 } = popupMessage;
+    const data = popupMessage.data;
     const controller = await controllerPromise;
     try {
       switch (type3) {
         case "molsysviewer-pop-ready":
           popupMgr.isReady = true;
           popupMgr.send("molsysviewer-initial-sync", {
-            messages: [...commandLog],
+            messages: popupReplay.snapshot("canvas"),
             cameraSnapshot: controller.getCameraSnapshot(),
             isSpinActive: controller.isSpinActive,
             isSwingActive: controller.isSwingActive,
@@ -166166,6 +167364,8 @@ async function bootDocsView(opts) {
           break;
         case "molsysviewer-sync-op":
           if (data) await controller.handleMessage(data);
+          if (data) popupReplay.record(data);
+          if (data) popupMgr.send("molsysviewer-sync-op", data);
           break;
         case "molsysviewer-sync-camera":
           if (data && !isUserInteracting) {
@@ -166252,10 +167452,55 @@ function setupWidgetResizer(host, target, onResize) {
 var index_default = {
   render({ model, el }) {
     const debug = !!model.get("debug_js");
-    const sendLog = createLogger(model, debug);
+    const envelopeAdapter = new WidgetEnvelopeAdapter(
+      String(model.get("runtime_viewer_id") || ""),
+      String(model.get("runtime_session_id") || "")
+    );
+    let sendLog;
+    const sendToPython = (message) => {
+      const result2 = envelopeAdapter.wrapOutbound(message);
+      if (result2.kind === "send") {
+        model.send(result2.message);
+        return result2.message.messageId ?? null;
+      }
+      try {
+        sendLog?.("error", `[MolSysViewer] outbound envelope rejected (${result2.reason}): ${result2.detail}`);
+      } catch {
+      }
+      return null;
+    };
+    sendLog = createLogger(model, debug, sendToPython);
+    const pendingSceneSnapshots = /* @__PURE__ */ new Map();
+    const cancelSceneSnapshotsFor = (mode) => {
+      for (const [messageId, entry] of [...pendingSceneSnapshots]) {
+        if (entry.mode !== mode) continue;
+        pendingSceneSnapshots.delete(messageId);
+        entry.settle(null);
+      }
+    };
+    const requestPopupSceneSnapshot = (mode, popupEndpointId) => new Promise((resolve) => {
+      const messageId = sendToPython({
+        event: "request_popup_scene_snapshot",
+        mode,
+        popup_endpoint_id: popupEndpointId
+      });
+      if (!messageId) {
+        resolve(null);
+        return;
+      }
+      let done = false;
+      const settle = (messages) => {
+        if (done) return;
+        done = true;
+        pendingSceneSnapshots.delete(messageId);
+        resolve(messages);
+      };
+      pendingSceneSnapshots.set(messageId, { mode, settle });
+      window.setTimeout(() => settle(null), 5e3);
+    });
     const initialMessages = model.get("initial_messages");
     const trajInfo = parseInitialTrajectoryInfo(initialMessages);
-    const commandLog = [];
+    const popupReplay = new PopupReplayLog();
     let messageQueue = Promise.resolve();
     const target = document.createElement("div");
     target.tabIndex = 0;
@@ -166310,7 +167555,7 @@ var index_default = {
     setupWidgetResizer(el, target, (w, h) => {
       el.style.height = `${h}px`;
       target.style.height = `${h}px`;
-      model.send({ event: "widget_resize", height: h, width: w });
+      sendToPython({ event: "widget_resize", height: h, width: w });
       controllerPromise.then((c8) => {
         c8.plugin.canvas3d?.requestResize();
       });
@@ -166337,22 +167582,25 @@ var index_default = {
           rejectPendingPopupSource = null;
           popupSourceTimer = null;
         }, 1e4);
-        model.send({ event: "request_popup_source" });
+        sendToPython({ event: "request_popup_source" });
       });
       return pendingPopupSource;
     };
     const popupMgr = new PopupHostManager({
       source: popupJsSourceCache || void 0,
-      sourceProvider: requestPopupSource
+      sourceProvider: requestPopupSource,
+      viewerId: model.get("runtime_viewer_id"),
+      sessionId: model.get("runtime_session_id"),
+      onEndpointClosed: (mode) => cancelSceneSnapshotsFor(mode)
     });
     const enablePopout = !!model.get("enable_popout");
     const panelModeStyle = model.get("panel_mode_style") || "drawer";
     const controllerPromise = MolSysViewerController.create(target, (msg) => {
-      model.send(msg);
+      sendToPython(msg);
       if (msg?.event === "interaction_measurement_created") {
         const op4 = buildMeasurementOpFromInteractionEvent(msg);
         if (op4) {
-          commandLog.push(op4);
+          popupReplay.record(op4);
           popupMgr.send("molsysviewer-sync-op", op4);
         }
       }
@@ -166377,6 +167625,13 @@ var index_default = {
         });
       } : void 0
     });
+    const arrayNativeStream = new ArrayNativeStreamReceiver(
+      (event) => sendToPython(event),
+      async (begin, payload) => {
+        const controller = await controllerPromise;
+        await controller.loadArrayNativeMolSysPayload(payload, begin.label);
+      }
+    );
     controllerPromise.then((c8) => {
       const removeOutputLimits = () => {
         let parent = target.parentElement;
@@ -166460,7 +167715,7 @@ var index_default = {
           cameraSnapshotTimer = setTimeout(() => {
             const snapshot = c8.getCameraSnapshot();
             if (snapshot) {
-              model.send({ event: "camera_snapshot", snapshot });
+              sendToPython({ event: "camera_snapshot", snapshot });
             }
             cameraSnapshotTimer = null;
           }, 300);
@@ -166487,17 +167742,21 @@ var index_default = {
         window.removeEventListener("message", messageHandler);
         return;
       }
-      if (!ev.data || ev.data.from === "host") return;
-      const { type: type3, data } = ev.data;
-      if (!type3 || typeof type3 !== "string" || !type3.startsWith("molsysviewer-")) return;
+      const popupMessage = popupMgr.receive(ev);
+      if (!popupMessage) return;
+      const { type: type3 } = popupMessage;
+      const data = popupMessage.data;
       const controller = await controllerPromise;
       try {
         switch (type3) {
-          case "molsysviewer-pop-ready":
+          case "molsysviewer-pop-ready": {
             popupMgr.isReady = true;
-            popupMgr.send("molsysviewer-initial-sync", {
-              messages: [...commandLog],
-              // Sending sanitized copy
+            const canvasSnapshot = await requestPopupSceneSnapshot(
+              "canvas",
+              popupMgr.popupEndpointId("canvas")
+            );
+            popupMgr.sendTo("canvas", "molsysviewer-initial-sync", {
+              messages: canvasSnapshot ?? popupReplay.snapshot("canvas"),
               cameraSnapshot: controller.getCameraSnapshot(),
               isSpinActive: controller.isSpinActive,
               isSwingActive: controller.isSwingActive,
@@ -166510,10 +167769,15 @@ var index_default = {
               isSplit: controller.sharedShell?.isSplit
             });
             break;
-          case "molsysviewer-panel-ready":
+          }
+          case "molsysviewer-panel-ready": {
             popupMgr.isPanelReady = true;
-            popupMgr.send("molsysviewer-initial-sync", {
-              messages: [...commandLog],
+            const panelSnapshot = await requestPopupSceneSnapshot(
+              "panel",
+              popupMgr.popupEndpointId("panel")
+            );
+            popupMgr.sendTo("panel", "molsysviewer-initial-sync", {
+              messages: panelSnapshot ?? popupReplay.snapshot("panel"),
               cameraSnapshot: controller.getCameraSnapshot(),
               isSpinActive: controller.isSpinActive,
               isSwingActive: controller.isSwingActive,
@@ -166526,9 +167790,14 @@ var index_default = {
               isSplit: controller.sharedShell?.isSplit
             });
             break;
+          }
           case "molsysviewer-sync-op":
-            console.log("[MolSysViewer Host] Received sync-op:", data);
             if (data) await controller.handleMessage(data);
+            if (data) popupReplay.record(data);
+            if (data) popupMgr.send("molsysviewer-sync-op", data);
+            break;
+          case "molsysviewer-structure-data-ack":
+            if (data) sendToPython(data);
             break;
           case "molsysviewer-sync-camera":
             if (data && !isUserInteracting) {
@@ -166536,7 +167805,7 @@ var index_default = {
             }
             break;
           case "molsysviewer-popup-interaction":
-            if (data) model.send(data);
+            if (data) sendToPython(data);
             if (data) {
               const op4 = buildMeasurementOpFromInteractionEvent(data);
               if (op4) enqueueMessage(op4, { syncToPopup: false });
@@ -166561,7 +167830,7 @@ var index_default = {
         if (debug) sendLog("info", "[MolSysViewer] msg from Python:", msg);
         const controller = await controllerPromise;
         await controller.handleMessage(msg);
-        commandLog.push(msg);
+        popupReplay.record(msg);
         if (opts?.syncToPopup) popupMgr.send("molsysviewer-sync-op", msg);
       }).catch((error2) => {
         console.error("[MolSysViewer] Error handling message:", msg, error2);
@@ -166579,7 +167848,15 @@ var index_default = {
           }
           await messageQueue;
         }
-        model.send({ event: "ready" });
+        const binaryStructureData = [1];
+        sendToPython({
+          event: "ready",
+          capabilities: {
+            binary_structure_data: binaryStructureData,
+            max_buffer_bytes: 16 * 1024 * 1024,
+            transferable_array_buffer: false
+          }
+        });
       } catch (err) {
         console.error("[MolSysViewer] Init error:", err);
         sendLog("error", "[MolSysViewer] Init error:", err);
@@ -166587,7 +167864,55 @@ var index_default = {
     })();
     console.log("[MolSysViewer] widget render init");
     sendLog("info", "[MolSysViewer] widget render init");
-    const onCustomMsg = (msg) => {
+    const onCustomMsg = (msg, buffers) => {
+      const inbound = envelopeAdapter.unwrapInbound(msg);
+      if (inbound.kind === "rejected") {
+        sendLog("error", `[MolSysViewer] inbound envelope rejected (${inbound.reason}): ${inbound.detail}`);
+        return;
+      }
+      if (inbound.kind === "message") {
+        const event = inbound.message.event;
+        if (event === "command_duplicate_ack") return;
+        if (event === "popup_scene_snapshot") {
+          const correlationId = inbound.envelope.correlationId;
+          const entry = correlationId ? pendingSceneSnapshots.get(correlationId) : void 0;
+          if (entry) {
+            entry.settle(inbound.message.messages ?? []);
+          }
+          return;
+        }
+        msg = inbound.message;
+      }
+      const relayTarget = msg?.target_endpoint_id;
+      if (typeof relayTarget === "string" && relayTarget) {
+        const mode = relayTarget === popupMgr.popupEndpointId("canvas") ? "canvas" : relayTarget === popupMgr.popupEndpointId("panel") ? "panel" : null;
+        if (!mode) {
+          sendLog("error", `[MolSysViewer] relay target is not an open endpoint: ${relayTarget}`);
+          return;
+        }
+        popupMgr.sendTo(mode, "molsysviewer-structure-data", {
+          message: msg,
+          buffers: buffers ?? []
+        });
+        return;
+      }
+      if (msg && (msg.op === "structure_data_begin" || msg.op === "structure_data_chunk" || msg.op === "structure_data_cancel")) {
+        messageQueue = messageQueue.then(() => arrayNativeStream.handle(msg, buffers ?? [])).catch((error2) => {
+          console.error("[MolSysViewer] Error handling array-native stream:", error2);
+          sendLog("error", "[MolSysViewer] Error handling array-native stream:", error2);
+        });
+        return;
+      }
+      if (msg && msg.op === "load_molsys_array_payload") {
+        messageQueue = messageQueue.then(async () => {
+          const controller = await controllerPromise;
+          await controller.handleArrayNativeMolSysMessage(msg, buffers ?? []);
+        }).catch((error2) => {
+          console.error("[MolSysViewer] Error handling array-native payload:", error2);
+          sendLog("error", "[MolSysViewer] Error handling array-native payload:", error2);
+        });
+        return;
+      }
       if (msg && msg.op === "popup_source") {
         const source = typeof msg.source === "string" ? msg.source : "";
         if (popupSourceTimer) {
@@ -166609,7 +167934,7 @@ var index_default = {
         controllerPromise.then((c8) => {
           const snapshot = c8.getCameraSnapshot();
           if (snapshot) {
-            model.send({ event: "camera_snapshot", snapshot });
+            sendToPython({ event: "camera_snapshot", snapshot });
           }
         });
         return;
@@ -166625,7 +167950,7 @@ var index_default = {
             cameraSnapshot: msg.camera_snapshot && typeof msg.camera_snapshot === "object" ? msg.camera_snapshot : void 0
           });
           if (typeof imageExportResult === "string" && imageExportResult) {
-            model.send({
+            sendToPython({
               event: "image_export",
               data_uri: imageExportResult,
               scale: typeof msg.scale === "number" ? msg.scale : 1,
@@ -166636,7 +167961,7 @@ var index_default = {
               format: "png"
             });
           } else if (imageExportResult && typeof imageExportResult === "object" && imageExportResult.success === false) {
-            model.send({
+            sendToPython({
               event: "image_export",
               ...imageExportResult,
               scale: typeof msg.scale === "number" ? msg.scale : 1,
@@ -166681,7 +168006,8 @@ var index_default = {
           console.error("[MolSysViewer] Error disposing plugin:", e);
         }
       });
-      popupMgr.close();
+      popupMgr.dispose();
+      arrayNativeStream.dispose();
     };
   }
 };

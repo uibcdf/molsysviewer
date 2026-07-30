@@ -6,6 +6,15 @@ import { bootPopup } from "./popup/popup-logic";
 import { PopupHostManager } from "./managers/popup-host";
 import { buildControls } from "./ui/controls";
 import { createLogger } from "./utils/logger";
+import type {
+    LoadMolSysArrayPayloadMessage,
+    StructureDataBeginMessage,
+    StructureDataCancelMessage,
+    StructureDataChunkMessage,
+} from "./messages/array-native-transport";
+import { ArrayNativeStreamReceiver } from "./messages/array-native-stream";
+import { PopupReplayLog } from "./messages/popup-replay-log";
+import { WidgetEnvelopeAdapter } from "./messages/widget-envelope";
 
 /**
  * Given an `interaction_measurement_created` event, build the corresponding
@@ -84,7 +93,8 @@ export async function bootDocsView(opts: {
         console.log("[MolSysViewer docs]", level, ...args);
     };
 
-    const commandLog: ViewerMessage[] = Array.isArray(opts.initialMessages) ? [...opts.initialMessages] : [];
+    const initialMessages = Array.isArray(opts.initialMessages) ? opts.initialMessages : [];
+    const popupReplay = new PopupReplayLog(initialMessages);
     const ui = opts.ui || {};
     const notifyHost = (event: Record<string, any>) => {
         if (!event || typeof event !== "object") return;
@@ -120,7 +130,7 @@ export async function bootDocsView(opts: {
         try {
             const controller = await controllerPromise;
             await controller.handleMessage(msg);
-            commandLog.push(msg);
+            popupReplay.record(msg);
             notifyHost({ event: "message_ack", phase: "handled", ...meta });
             if ((msg as any)?.op === "load_molsys_payload" || (msg as any)?.op === "load_molsys_payload_ref") {
                 notifyHost({ event: "structure_ready", ...meta });
@@ -168,7 +178,7 @@ export async function bootDocsView(opts: {
 
     hostEl.appendChild(target);
 
-    const trajInfo = parseInitialTrajectoryInfo(commandLog);
+    const trajInfo = parseInitialTrajectoryInfo(initialMessages);
 
     // Initialize Controller (no-op notify)
     const panelModeStyle = (ui.panel_mode_style as string) || "drawer";
@@ -180,7 +190,9 @@ export async function bootDocsView(opts: {
     // Popup manager: prefer runtime URL (docs-light), otherwise disable popout.
     const popupMgr = new PopupHostManager({
         moduleUrl: typeof opts.runtimeUrl === "string" ? opts.runtimeUrl : undefined,
-        source: ""
+        source: "",
+        viewerId: typeof ui.runtime_viewer_id === "string" ? ui.runtime_viewer_id : undefined,
+        sessionId: typeof ui.runtime_session_id === "string" ? ui.runtime_session_id : undefined,
     });
 
     const enablePopout = !!ui.enable_popout && !!opts.runtimeUrl;
@@ -202,7 +214,7 @@ export async function bootDocsView(opts: {
 
         const sendSync = (msg: ViewerMessage) => {
             if (!msg) return;
-            commandLog.push(msg);
+            popupReplay.record(msg);
             popupMgr.send("molsysviewer-sync-op", msg);
         };
         const overlay = buildControls(
@@ -239,16 +251,17 @@ export async function bootDocsView(opts: {
 
     // Handle Incoming Messages (Popup -> Host)
     const messageHandler = async (ev: MessageEvent) => {
-        if (!ev.data || ev.data.from === "host") return;
-        const { type, data } = ev.data;
-        if (!type || typeof type !== "string" || !type.startsWith("molsysviewer-")) return;
+        const popupMessage = popupMgr.receive(ev);
+        if (!popupMessage) return;
+        const { type } = popupMessage;
+        const data: any = popupMessage.data;
         const controller = await controllerPromise;
         try {
             switch (type) {
                 case "molsysviewer-pop-ready":
                     popupMgr.isReady = true;
                     popupMgr.send("molsysviewer-initial-sync", {
-                        messages: [...commandLog],
+                        messages: popupReplay.snapshot("canvas"),
                         cameraSnapshot: controller.getCameraSnapshot(),
                         isSpinActive: controller.isSpinActive,
                         isSwingActive: controller.isSwingActive,
@@ -258,6 +271,8 @@ export async function bootDocsView(opts: {
                     break;
                 case "molsysviewer-sync-op":
                     if (data) await controller.handleMessage(data as ViewerMessage);
+                    if (data) popupReplay.record(data as ViewerMessage);
+                    if (data) popupMgr.send("molsysviewer-sync-op", data);
                     break;
                 case "molsysviewer-sync-camera":
                     if (data && !isUserInteracting) {
@@ -365,13 +380,83 @@ function setupWidgetResizer(
 export default {
     render({ model, el }: { model: any; el: HTMLElement }) {
         const debug = !!model.get("debug_js");
-        const sendLog = createLogger(model, debug);
+
+        // R1 seam: every browser->Python message goes through sendToPython, which
+        // envelopes control messages (raw/data-plane pass through). The widget.py
+        // bootstrap (request_widget_runtime_source) runs before this adapter and
+        // stays raw by design. Rejected messages are observable and never sent.
+        const envelopeAdapter = new WidgetEnvelopeAdapter(
+            String(model.get("runtime_viewer_id") || ""),
+            String(model.get("runtime_session_id") || ""),
+        );
+        let sendLog: ReturnType<typeof createLogger>;
+        /** Sends to Python; returns the envelope messageId so a request can be
+         *  correlated to its answer, or null when the adapter rejected it. */
+        const sendToPython = (message: Record<string, unknown>): string | null => {
+            const result = envelopeAdapter.wrapOutbound(message);
+            if (result.kind === "send") {
+                model.send(result.message);
+                return (result.message as { messageId?: string }).messageId ?? null;
+            }
+            try {
+                sendLog?.("error", `[MolSysViewer] outbound envelope rejected (${result.reason}): ${result.detail}`);
+            } catch {
+                /* no-op */
+            }
+            return null;
+        };
+        sendLog = createLogger(model, debug, sendToPython);
+
+        // R2: the canonical popup scene snapshot is built by Python from live
+        // state. The host requests it on popup ready and resolves the pending
+        // promise when the correlated projection arrives.
+        const pendingSceneSnapshots = new Map<
+            string,
+            { mode: "canvas" | "panel"; settle: (messages: ViewerMessage[] | null) => void }
+        >();
+        /** Cancel requests owned by an endpoint that went away, instead of
+         *  leaving them pending until their timeout. */
+        const cancelSceneSnapshotsFor = (mode: "canvas" | "panel") => {
+            for (const [messageId, entry] of [...pendingSceneSnapshots]) {
+                if (entry.mode !== mode) continue;
+                pendingSceneSnapshots.delete(messageId);
+                entry.settle(null);
+            }
+        };
+        const requestPopupSceneSnapshot = (
+            mode: "canvas" | "panel",
+            popupEndpointId: string | null,
+        ): Promise<ViewerMessage[] | null> =>
+            new Promise(resolve => {
+                const messageId = sendToPython({
+                    event: "request_popup_scene_snapshot",
+                    mode,
+                    popup_endpoint_id: popupEndpointId,
+                });
+                if (!messageId) {
+                    resolve(null);
+                    return;
+                }
+                let done = false;
+                const settle = (messages: ViewerMessage[] | null) => {
+                    if (done) return;
+                    done = true;
+                    pendingSceneSnapshots.delete(messageId);
+                    resolve(messages);
+                };
+                pendingSceneSnapshots.set(messageId, { mode, settle });
+                // Never leave a popup blocked on a lost answer: fall back to the
+                // compatibility replay if Python does not respond.
+                window.setTimeout(() => settle(null), 5000);
+            });
 
         const initialMessages = model.get("initial_messages") as ViewerMessage[] | undefined;
         const trajInfo = parseInitialTrajectoryInfo(initialMessages);
 
-        // Store commands from Python to replay them in the popout
-        const commandLog: ViewerMessage[] = [];
+        // Avoid retaining superseded molecular generations and current-state
+        // updates. Non-reducible scene operations remain replayable until a
+        // canonical Python scene projection replaces this journal.
+        const popupReplay = new PopupReplayLog();
         // Serialize message handling to preserve order when many messages arrive at once
         // (e.g. flush of pending messages right after "ready").
         let messageQueue: Promise<void> = Promise.resolve();
@@ -432,7 +517,7 @@ export default {
             el.style.height = `${h}px`;
             target.style.height = `${h}px`;
             
-            model.send({ event: "widget_resize", height: h, width: w });
+            sendToPython({ event: "widget_resize", height: h, width: w });
             controllerPromise.then(c => {
                 c.plugin.canvas3d?.requestResize();
             });
@@ -473,7 +558,7 @@ export default {
                     rejectPendingPopupSource = null;
                     popupSourceTimer = null;
                 }, 10000);
-                model.send({ event: "request_popup_source" });
+                sendToPython({ event: "request_popup_source" });
             });
             return pendingPopupSource;
         };
@@ -481,20 +566,23 @@ export default {
         const popupMgr = new PopupHostManager({
             source: popupJsSourceCache || undefined,
             sourceProvider: requestPopupSource,
+            viewerId: model.get("runtime_viewer_id"),
+            sessionId: model.get("runtime_session_id"),
+            onEndpointClosed: mode => cancelSceneSnapshotsFor(mode),
         });
         const enablePopout = !!model.get("enable_popout");
 
         // 3. Initialize Controller
         const panelModeStyle = (model.get("panel_mode_style") as string) || "drawer";
         const controllerPromise = MolSysViewerController.create(target, msg => {
-            model.send(msg);
+            sendToPython(msg);
             // Sync interactive measurements to popup: the host already has them (created in-place),
-            // so we push the equivalent add_*_measurement op to the commandLog and forward to any
+            // so we retain the equivalent add_*_measurement op and forward it to any
             // open popup so it reflects the same measurement without going through Python round-trip.
             if (msg?.event === "interaction_measurement_created") {
                 const op = buildMeasurementOpFromInteractionEvent(msg);
                 if (op) {
-                    commandLog.push(op);
+                    popupReplay.record(op);
                     popupMgr.send("molsysviewer-sync-op", op);
                 }
             }
@@ -520,6 +608,13 @@ export default {
                 });
             } : undefined
         });
+        const arrayNativeStream = new ArrayNativeStreamReceiver(
+            event => sendToPython(event),
+            async (begin, payload) => {
+                const controller = await controllerPromise;
+                await controller.loadArrayNativeMolSysPayload(payload, begin.label);
+            },
+        );
 
         // 4. Build UI Controls & Setup Sync
         controllerPromise.then(c => {
@@ -625,7 +720,7 @@ export default {
                     cameraSnapshotTimer = setTimeout(() => {
                         const snapshot = c.getCameraSnapshot();
                         if (snapshot) {
-                            model.send({ event: "camera_snapshot", snapshot });
+                            sendToPython({ event: "camera_snapshot", snapshot });
                         }
                         cameraSnapshotTimer = null;
                     }, 300);
@@ -659,21 +754,27 @@ export default {
                 return;
             }
 
-            if (!ev.data || ev.data.from === "host") return;
-            
-            const { type, data } = ev.data;
-            // Filter out internal or unknown messages to reduce log spam
-            if (!type || typeof type !== 'string' || !type.startsWith("molsysviewer-")) return;
+            const popupMessage = popupMgr.receive(ev);
+            if (!popupMessage) return;
+            const { type } = popupMessage;
+            const data: any = popupMessage.data;
 
             const controller = await controllerPromise;
 
             try {
                 switch (type) {
-                    case "molsysviewer-pop-ready":
+                    case "molsysviewer-pop-ready": {
                         popupMgr.isReady = true;
-                        // Sync initial state to popup
-                        popupMgr.send("molsysviewer-initial-sync", {
-                            messages: [...commandLog], // Sending sanitized copy
+                        // R2: bootstrap from Python's canonical current-scene
+                        // projection; the replay journal is the fallback only.
+                        const canvasSnapshot = await requestPopupSceneSnapshot(
+                            "canvas",
+                            popupMgr.popupEndpointId("canvas"),
+                        );
+                        // Endpoint-targeted: this bootstrap carries molecular data
+                        // and must never reach a panel popup.
+                        popupMgr.sendTo("canvas", "molsysviewer-initial-sync", {
+                            messages: canvasSnapshot ?? popupReplay.snapshot("canvas"),
                             cameraSnapshot: controller.getCameraSnapshot(),
                             isSpinActive: controller.isSpinActive,
                             isSwingActive: controller.isSwingActive,
@@ -686,12 +787,17 @@ export default {
                             isSplit: controller.sharedShell?.isSplit,
                         });
                         break;
+                    }
 
-                    case "molsysviewer-panel-ready":
+                    case "molsysviewer-panel-ready": {
                         popupMgr.isPanelReady = true;
-                        // Sync initial state to panel popup
-                        popupMgr.send("molsysviewer-initial-sync", {
-                            messages: [...commandLog],
+                        // R2: canonical UI-only projection from Python.
+                        const panelSnapshot = await requestPopupSceneSnapshot(
+                            "panel",
+                            popupMgr.popupEndpointId("panel"),
+                        );
+                        popupMgr.sendTo("panel", "molsysviewer-initial-sync", {
+                            messages: panelSnapshot ?? popupReplay.snapshot("panel"),
                             cameraSnapshot: controller.getCameraSnapshot(),
                             isSpinActive: controller.isSpinActive,
                             isSwingActive: controller.isSwingActive,
@@ -704,11 +810,20 @@ export default {
                             isSplit: controller.sharedShell?.isSplit,
                         });
                         break;
+                    }
 
                     case "molsysviewer-sync-op":
-                        // Operations (style, color) are always applied
-                        console.log("[MolSysViewer Host] Received sync-op:", data);
+                        // The host applies a popup intent once, then projects the result
+                        // to every popup endpoint, including the source.
                         if (data) await controller.handleMessage(data as ViewerMessage);
+                        if (data) popupReplay.record(data as ViewerMessage);
+                        if (data) popupMgr.send("molsysviewer-sync-op", data);
+                        break;
+
+                    case "molsysviewer-structure-data-ack":
+                        // The popup acknowledges its own stream; Python drives the
+                        // next chunk from these, so they must reach the authority.
+                        if (data) sendToPython(data);
                         break;
 
                     case "molsysviewer-sync-camera":
@@ -720,7 +835,7 @@ export default {
 
                     case "molsysviewer-popup-interaction":
                         // 1. Forward to Python so it is recorded.
-                        if (data) model.send(data);
+                        if (data) sendToPython(data);
                         // 2. Apply to the host canvas (popup already has it, so do NOT re-sync to popup).
                         if (data) {
                             const op = buildMeasurementOpFromInteractionEvent(data);
@@ -751,7 +866,7 @@ export default {
                     if (debug) sendLog("info", "[MolSysViewer] msg from Python:", msg);
                     const controller = await controllerPromise;
                     await controller.handleMessage(msg);
-                    commandLog.push(msg);
+                    popupReplay.record(msg);
                     if (opts?.syncToPopup) popupMgr.send("molsysviewer-sync-op", msg);
                 })
                 .catch((error) => {
@@ -772,7 +887,18 @@ export default {
                     }
                     await messageQueue;
                 }
-                model.send({ event: "ready" });
+                // D4: a canvas popup now receives its own typed generation,
+                // streamed to its endpoint and relayed by the host, so enabling
+                // popout no longer forces the whole viewer onto the JSON path.
+                const binaryStructureData = [1];
+                sendToPython({
+                    event: "ready",
+                    capabilities: {
+                        binary_structure_data: binaryStructureData,
+                        max_buffer_bytes: 16 * 1024 * 1024,
+                        transferable_array_buffer: false,
+                    },
+                });
             } catch (err) {
                 console.error("[MolSysViewer] Init error:", err);
                 sendLog("error", "[MolSysViewer] Init error:", err);
@@ -782,7 +908,82 @@ export default {
         console.log("[MolSysViewer] widget render init");
         sendLog("info", "[MolSysViewer] widget render init");
 
-        const onCustomMsg = (msg: ViewerMessage) => {
+        const onCustomMsg = (
+            msg:
+                | ViewerMessage
+                | LoadMolSysArrayPayloadMessage
+                | StructureDataBeginMessage
+                | StructureDataChunkMessage
+                | StructureDataCancelMessage,
+            buffers?: DataView[],
+        ) => {
+            // R1 seam: unwrap and validate Python->browser envelopes. `raw` keeps
+            // the existing dispatch for bootstrap/data-plane; a rejected envelope is
+            // observable and dropped; the command-duplicate ack is consumed here.
+            const inbound = envelopeAdapter.unwrapInbound(msg);
+            if (inbound.kind === "rejected") {
+                sendLog("error", `[MolSysViewer] inbound envelope rejected (${inbound.reason}): ${inbound.detail}`);
+                return;
+            }
+            if (inbound.kind === "message") {
+                const event = (inbound.message as any).event;
+                if (event === "command_duplicate_ack") return;
+                if (event === "popup_scene_snapshot") {
+                    // Consumed at the seam: resolve the request that asked for it.
+                    const correlationId = inbound.envelope.correlationId;
+                    const entry = correlationId ? pendingSceneSnapshots.get(correlationId) : undefined;
+                    if (entry) {
+                        entry.settle(((inbound.message as any).messages ?? []) as ViewerMessage[]);
+                    }
+                    return;
+                }
+                msg = inbound.message as typeof msg;
+            }
+            // D4: a message addressed to a popup endpoint is relayed, never
+            // consumed. The host holds one chunk transiently while forwarding
+            // and keeps no copy of the generation.
+            const relayTarget = (msg as any)?.target_endpoint_id;
+            if (typeof relayTarget === "string" && relayTarget) {
+                const mode = relayTarget === popupMgr.popupEndpointId("canvas") ? "canvas"
+                    : relayTarget === popupMgr.popupEndpointId("panel") ? "panel"
+                    : null;
+                if (!mode) {
+                    sendLog("error", `[MolSysViewer] relay target is not an open endpoint: ${relayTarget}`);
+                    return;
+                }
+                popupMgr.sendTo(mode, "molsysviewer-structure-data", {
+                    message: msg,
+                    buffers: buffers ?? [],
+                });
+                return;
+            }
+            if (
+                msg && (
+                    msg.op === "structure_data_begin" ||
+                    msg.op === "structure_data_chunk" ||
+                    msg.op === "structure_data_cancel"
+                )
+            ) {
+                messageQueue = messageQueue
+                    .then(() => arrayNativeStream.handle(msg, buffers ?? []))
+                    .catch((error) => {
+                        console.error("[MolSysViewer] Error handling array-native stream:", error);
+                        sendLog("error", "[MolSysViewer] Error handling array-native stream:", error);
+                    });
+                return;
+            }
+            if (msg && msg.op === "load_molsys_array_payload") {
+                messageQueue = messageQueue
+                    .then(async () => {
+                        const controller = await controllerPromise;
+                        await controller.handleArrayNativeMolSysMessage(msg, buffers ?? []);
+                    })
+                    .catch((error) => {
+                        console.error("[MolSysViewer] Error handling array-native payload:", error);
+                        sendLog("error", "[MolSysViewer] Error handling array-native payload:", error);
+                    });
+                return;
+            }
             if (msg && (msg as any).op === "popup_source") {
                 const source = typeof (msg as any).source === "string" ? (msg as any).source : "";
                 if (popupSourceTimer) {
@@ -804,7 +1005,7 @@ export default {
                 controllerPromise.then(c => {
                     const snapshot = c.getCameraSnapshot();
                     if (snapshot) {
-                        model.send({ event: "camera_snapshot", snapshot });
+                        sendToPython({ event: "camera_snapshot", snapshot });
                     }
                 });
                 return;
@@ -823,7 +1024,7 @@ export default {
                                 : undefined,
                     });
                     if (typeof imageExportResult === "string" && imageExportResult) {
-                        model.send({
+                        sendToPython({
                             event: "image_export",
                             data_uri: imageExportResult,
                             scale: typeof (msg as any).scale === "number" ? (msg as any).scale : 1,
@@ -834,7 +1035,7 @@ export default {
                             format: "png",
                         });
                     } else if (imageExportResult && typeof imageExportResult === "object" && (imageExportResult as any).success === false) {
-                        model.send({
+                        sendToPython({
                             event: "image_export",
                             ...imageExportResult,
                             scale: typeof (msg as any).scale === "number" ? (msg as any).scale : 1,
@@ -893,7 +1094,8 @@ export default {
             });
 
             // 4. Close popup if open
-            popupMgr.close();
+            popupMgr.dispose();
+            arrayNativeStream.dispose();
         };
     },
 };

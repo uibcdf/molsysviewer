@@ -1,6 +1,7 @@
 import { BasePanel } from "./base-panel";
-import type { SavedSelectionSummary } from "./group-panel";
-import type { ActiveSelectionPayload, PanelContext } from "./types";
+import type { ActiveSelectionPayload } from "../../managers/active-selection";
+import type { SavedSelectionSummary } from "../group-panel";
+import type { PanelContext } from "./types";
 import { makeButton, makeSectionHeader, makeStyledSelect } from "./ui-helpers";
 
 export type ShapeLength = { magnitude: number; unit: string };
@@ -35,6 +36,24 @@ export type ShapeRenderStatus = {
     usedAtoms?: number;
     reason?: string;
 };
+
+const emptySelection = (): ActiveSelectionPayload => ({
+    event: "interaction_active_selection_changed",
+    source_kind: "empty",
+    target_level: "none",
+    element_level: "none",
+    items: [],
+    atom_indices: [],
+    group_indices: [],
+    component_indices: [],
+    chain_indices: [],
+    molecule_indices: [],
+    entity_indices: [],
+    count_atoms: 0,
+    count_groups: 0,
+    count_shapes: 0,
+    count_annotations: 0,
+});
 
 export type ShapeStyleControl = "color" | "colors" | "alpha" | "radius" | "radii" | "radius_scale" | "length_scale";
 
@@ -170,7 +189,7 @@ export class ShapesPanel extends BasePanel {
     private colorVal = "#3b82f6";
     private alphaVal = 0.8;
 
-    private selection: ActiveSelectionPayload = { atom_indices: [] };
+    private selection: ActiveSelectionPayload = emptySelection();
     private savedSelections: SavedSelectionSummary[] = [];
 
     constructor(private readonly ctx: PanelContext) { super(); }

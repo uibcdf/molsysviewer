@@ -486,17 +486,23 @@ class QtMessageBridge:
         script = (
             "(() => { "
             "const handler = window.__molsysviewerDocsHandleMessage; "
-            "if (typeof handler !== 'function') return {accepted:false}; "
+            "if (typeof handler !== 'function') return 'molsysviewer-handler-missing'; "
             f"const message = {payload}; "
             "Promise.resolve(handler(message)).catch((error) => { "
             "console.error('[MolSysViewer Qt bridge] message failed', error); "
             "}); "
-            "return {accepted:true}; "
+            "return 'molsysviewer-message-accepted'; "
             "})()"
         )
 
         def _callback(result=None):
-            accepted = isinstance(result, dict) and result.get("accepted") is True
+            # Scalar values cross the PySide/QWebEngine QVariant boundary
+            # consistently. Keep accepting the legacy object result for compatible
+            # hosts, but do not require object conversion from real Qt.
+            accepted = (
+                result == "molsysviewer-message-accepted"
+                or (isinstance(result, dict) and result.get("accepted") is True)
+            )
             if accepted:
                 return
             if self.inflight is entry:
@@ -602,7 +608,12 @@ def _register_qt_url_schemes(QWebEngineUrlScheme) -> None:
         QT_EVENT_SCHEME: flag.SecureScheme | flag.CorsEnabled | flag.FetchApiAllowed | flag.LocalScheme,
         # Payload scheme: served by a QWebEngineUrlSchemeHandler and fetched by the
         # page, so it must allow CORS-enabled fetches.
-        QT_PAYLOAD_SCHEME: flag.SecureScheme | flag.CorsEnabled | flag.FetchApiAllowed,
+        QT_PAYLOAD_SCHEME: (
+            flag.SecureScheme
+            | flag.CorsEnabled
+            | flag.FetchApiAllowed
+            | flag.LocalScheme
+        ),
     }
     for name, flags in specs.items():
         name_bytes = name.encode("ascii")

@@ -9,6 +9,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const SUITES = [
     "annotations-interaction",
     "annotations-subpanel",
+    "array-native-load",
+    "popup-channel",
+    "structure-data-relay",
     "broken-anchors",
     "export-replay",
     "group-panel-interaction",
@@ -17,6 +20,7 @@ const SUITES = [
     "measurements-interaction",
     "measures-subpanel",
     "range-selection",
+    "qt-live-reload",
     "region-hide",
     "region-subpanel",
     "selection-subpanel",

@@ -36,6 +36,7 @@ HANDLERS = _build_handlers()
 # intentionally consumed by the browser before the Python dispatch seam.
 FRONTEND_LOCAL_PANEL_ACTIONS = frozenset({
     "download_image",
+    "reset_view",
     "undo_active_selection",
     "redo_active_selection",
     "begin_scene_history_coalescing",
@@ -46,7 +47,6 @@ FRONTEND_LOCAL_PANEL_ACTIONS = frozenset({
 # These enter through interaction_context_action from context menus or addon
 # infrastructure, but are not emitted by a Studio subpanel.
 CONTEXT_ONLY_ACTIONS = frozenset({
-    "activate_selection",
     "addon_context_action",
     "addon_disable",
     "addon_enable",

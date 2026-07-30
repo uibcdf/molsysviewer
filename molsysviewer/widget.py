@@ -2,6 +2,8 @@ import anywidget
 import traitlets as T
 from pathlib import Path
 
+from .runtime_contract import wrap_outbound
+
 
 _VIEWER_JS_PATH = Path(__file__).parent / "viewer.js"
 _WIDGET_BOOTSTRAP_ESM = r"""const CACHE_KEY = "__molsysviewer_anywidget_runtime__";
@@ -82,6 +84,8 @@ class MolSysViewerWidget(anywidget.AnyWidget):
     initial_messages = T.List(default_value=[]).tag(sync=True)
     show_controls = T.Bool(default_value=True).tag(sync=True)
     enable_popout = T.Bool(default_value=True).tag(sync=True)
+    runtime_viewer_id = T.Unicode(default_value="").tag(sync=True)
+    runtime_session_id = T.Unicode(default_value="").tag(sync=True)
     autohide_controls = T.Bool(default_value=True).tag(sync=True)
     debug_js = T.Bool(default_value=False).tag(sync=True)
     controls_position = T.List(T.Unicode(), default_value=["top", "right"]).tag(sync=True)
@@ -90,3 +94,16 @@ class MolSysViewerWidget(anywidget.AnyWidget):
     panel_mode_style = T.Unicode(default_value="drawer").tag(sync=True)
     viewer_mode = T.Unicode(default_value="integrated").tag(sync=True)
     addon_states = T.Dict(default_value={}).tag(sync=True)
+
+    def send(self, content, buffers=None):
+        """Apply the R1 runtime envelope to control-plane messages on the wire.
+
+        The AnyWidget connector owns its wire format: this wraps domain
+        projection/request messages into a RuntimeEnvelope, while raw/data-plane
+        and already-enveloped messages (e.g. a duplicate-command ack) pass through
+        unchanged. Tests that replace ``view.widget.send`` therefore observe the
+        domain message, and only the real connector envelopes the wire.
+        """
+        if isinstance(content, dict):
+            content = wrap_outbound(content, self.runtime_viewer_id, self.runtime_session_id)
+        super().send(content, buffers=buffers)

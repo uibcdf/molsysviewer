@@ -7,6 +7,7 @@ import time
 import inspect
 import warnings
 import weakref
+import uuid
 from collections import OrderedDict
 from contextlib import contextmanager
 from typing import Any, Dict, Mapping, Sequence
@@ -25,6 +26,11 @@ from .._private.smonitor_emit import emit_suppressed_exception
 from .._private.variables import is_all
 from ..widget import MolSysViewerWidget
 from ..loaders import load_from_molsysmt as _load_from_molsysmt
+from ..loaders.array_native_molsys import (
+    ARRAY_NATIVE_PROTOCOL_VERSION,
+    serialize_array_native_molsys,
+)
+from .runtime_router import WidgetRuntimeRouter, is_envelope
 from ..annotations import AnnotationsManager
 from ..active_selection import ActiveSelection, _combine
 from ..addons import AddonPanelWidget, ViewAddonsManager, addons as global_addons
@@ -61,6 +67,7 @@ from .visibility import VisibilityMixin
 from .scene import SceneMixin
 from .molsysmt_interface import MolSysMTInterfaceMixin
 from .state import StateMixin
+from .popup_snapshot import PopupSnapshotMixin
 from .interaction import InteractionMixin
 
 from .utils import quantity_value_in_unit as _quantity_value_in_unit
@@ -165,6 +172,7 @@ class MolSysView(
     SceneMixin,
     MolSysMTInterfaceMixin,
     StateMixin,
+    PopupSnapshotMixin,
     InteractionMixin,
 ):
     """Mol* viewer widget with a Python-facing API.
@@ -191,6 +199,7 @@ class MolSysView(
         """
         self._unmount_addon_panel()
         self.addons._close_runtime()  # noqa: SLF001
+        self._cancel_binary_structure_stream("view closed")
 
         widget = self.widget
         layout = getattr(widget, "layout", None)
@@ -252,7 +261,32 @@ class MolSysView(
         self._already_shown = False
 
         self._ready = False
+        self._frontend_capabilities: dict[str, Any] = {}
+        self._binary_structure_generation = 0
+        self._binary_viewer_id = f"view-{uuid.uuid4()}"
+        self._binary_session_id = f"session-{uuid.uuid4()}"
+        # R1 envelope authority: only the AnyWidget connector uses envelopes; Qt and
+        # other transports keep raw messages (see _send_widget_message / _handle_msg).
+        self._runtime_router: WidgetRuntimeRouter | None = None
+        if isinstance(self.widget, MolSysViewerWidget):
+            self.widget.runtime_viewer_id = self._binary_viewer_id
+            self.widget.runtime_session_id = self._binary_session_id
+            self._runtime_router = WidgetRuntimeRouter(
+                self._binary_viewer_id, self._binary_session_id
+            )
+        self._binary_structure_stream: dict[str, Any] | None = None
+        # D3 backpressure: a frontend that never acknowledges must not pin the
+        # retained float32 arrays forever. The deadline is checked on main-thread
+        # entry points only (never from a timer thread, which would make
+        # `widget.send` unsafe for AnyWidget). Generous by default so a slow
+        # connection is not mistaken for a dead one.
+        self._binary_ack_timeout_s: float = 30.0
+        self._monotonic = time.monotonic
         self._message_history: list[dict] = []
+        # The current materialized molecular projection ("current molecular
+        # state"), updated on every load/rebuild. R2's canonical popup snapshot
+        # references this instead of scanning _message_history for the last load.
+        self._current_molecular_projection: dict | None = None
         self._last_camera_snapshot: dict | None = None
         self._current_figure_spec: dict | None = None
         self._last_image_export_event: dict | None = None
@@ -367,7 +401,7 @@ class MolSysView(
 
         # Register callback for JS->Python messages
         def _handle_msg(widget, content, buffers):  # type: ignore[override]
-            self._handle_frontend_event(content)
+            self._handle_inbound_message(content)
 
         self._widget_message_callback = _handle_msg
         self.widget.on_msg(self._widget_message_callback)
@@ -866,6 +900,388 @@ class MolSysView(
         expanded_atoms = np.asarray(all_atoms)[np.where(contact_map.any(axis=2)[0])[0]].tolist()
         self.active_selection.set(expanded_atoms, skip_digestion=True)
 
+    def _binary_structure_transport_limit(self) -> int | None:
+        versions = self._frontend_capabilities.get("binary_structure_data")
+        if (
+            not isinstance(self.widget, MolSysViewerWidget)
+            or not isinstance(versions, (list, tuple))
+            or ARRAY_NATIVE_PROTOCOL_VERSION not in versions
+        ):
+            return None
+        max_buffer_bytes = self._frontend_capabilities.get("max_buffer_bytes")
+        if (
+            not isinstance(max_buffer_bytes, int)
+            or isinstance(max_buffer_bytes, bool)
+            or max_buffer_bytes <= 0
+        ):
+            return None
+        return max_buffer_bytes
+
+    def _try_send_array_native_molsys(
+        self,
+        message: Mapping[str, Any],
+        target_endpoint_id: str | None = None,
+    ) -> bool:
+        """Stream the current MolSys as typed buffers.
+
+        With ``target_endpoint_id`` the stream is addressed to a popup endpoint:
+        the widget host relays each chunk to that popup instead of consuming it,
+        so no endpoint keeps a spare full copy of the coordinates. Only one
+        stream is in flight at a time, matching the one-chunk-in-flight rule.
+        """
+        # Main-thread entry point: a stalled previous stream is released here.
+        self._check_binary_structure_ack_timeout()
+        if message.get("op") != "load_molsys_payload" or self._molsys is None:
+            return False
+        max_buffer_bytes = self._binary_structure_transport_limit()
+        if max_buffer_bytes is None:
+            return False
+
+        try:
+            payload = serialize_array_native_molsys(self._molsys)
+            metadata = payload.metadata
+            n_structures = int(metadata["n_structures"])
+            bytes_per_structure = max(
+                int(array.nbytes // n_structures) for array in payload.arrays
+            )
+            structures_per_chunk = max_buffer_bytes // bytes_per_structure
+            if structures_per_chunk < 1:
+                return False
+            self._cancel_binary_structure_stream("replaced by newer generation")
+            self._binary_structure_generation += 1
+            generation = self._binary_structure_generation
+            chunks: list[tuple[dict[str, Any], list[memoryview]]] = []
+            for chunk_id, structure_start in enumerate(
+                range(0, n_structures, structures_per_chunk)
+            ):
+                structure_count = min(
+                    structures_per_chunk,
+                    n_structures - structure_start,
+                )
+                arrays = tuple(
+                    array[structure_start:structure_start + structure_count]
+                    for array in payload.arrays
+                )
+                descriptors: list[dict[str, Any]] = []
+                for buffer_index, (array, complete_descriptor) in enumerate(
+                    zip(arrays, metadata["structural_arrays"], strict=True)
+                ):
+                    descriptor = dict(complete_descriptor)
+                    descriptor["shape"] = [
+                        structure_count,
+                        *complete_descriptor["shape"][1:],
+                    ]
+                    descriptor["buffer_index"] = buffer_index
+                    descriptor["byte_length"] = array.nbytes
+                    descriptors.append(descriptor)
+                chunk_message: dict[str, Any] = {
+                    "op": "structure_data_chunk",
+                    "protocol_version": ARRAY_NATIVE_PROTOCOL_VERSION,
+                    "viewer_id": self._binary_viewer_id,
+                    "session_id": self._binary_session_id,
+                    "stream_id": "structures:main",
+                    "generation": generation,
+                    "chunk_id": chunk_id,
+                    "structure_start": structure_start,
+                    "structure_count": structure_count,
+                    "structural_arrays": descriptors,
+                }
+                if target_endpoint_id is not None:
+                    chunk_message["target_endpoint_id"] = target_endpoint_id
+                chunks.append((
+                    chunk_message,
+                    [memoryview(array).cast("B") for array in arrays],
+                ))
+
+            begin = {
+                "op": "structure_data_begin",
+                "protocol_version": ARRAY_NATIVE_PROTOCOL_VERSION,
+                "viewer_id": self._binary_viewer_id,
+                "session_id": self._binary_session_id,
+                "stream_id": "structures:main",
+                "generation": generation,
+                "chunk_count": len(chunks),
+                "metadata": metadata,
+                "label": message.get("label"),
+                "multiple_structures": bool(message.get("multiple_structures")),
+            }
+            if target_endpoint_id is not None:
+                begin["target_endpoint_id"] = target_endpoint_id
+            self._binary_structure_stream = {
+                "generation": generation,
+                "chunks": chunks,
+                "next_chunk": 0,
+                "awaiting": "begin",
+                "fallback": dict(message),
+                # Keep the parent ndarrays alive while chunk memoryviews are in flight.
+                "payload": payload,
+                "deadline": self._monotonic() + self._binary_ack_timeout_s,
+                "target_endpoint_id": target_endpoint_id,
+            }
+            self._send_widget_message(begin)
+            return True
+        except Exception as exc:
+            self._binary_structure_stream = None
+            warnings.warn(
+                f"Array-native AnyWidget delivery failed; using JSON fallback: {exc}",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            return False
+
+    def _release_binary_structure_stream(self) -> dict[str, Any] | None:
+        """Drop the retained arrays and clear the stream, returning what it held.
+
+        The chunk memoryviews and their parent ndarrays are released explicitly
+        rather than waiting for the dict to fall out of scope, so the transient
+        transfer memory is observably returned even while the view stays alive.
+        """
+        stream = self._binary_structure_stream
+        self._binary_structure_stream = None
+        if stream is not None:
+            stream["chunks"] = []
+            stream["payload"] = None
+        return stream
+
+    def _binary_structure_stream_expired(self) -> bool:
+        stream = self._binary_structure_stream
+        if stream is None or stream.get("awaiting") == "complete":
+            return False
+        deadline = stream.get("deadline")
+        return deadline is not None and self._monotonic() >= deadline
+
+    def _check_binary_structure_ack_timeout(self) -> None:
+        """Release a stream whose acknowledgement never arrived.
+
+        Called from main-thread entry points only. There is deliberately no timer
+        thread: `widget.send` is not safe to call off the kernel thread for
+        AnyWidget, so the deadline is evaluated when the kernel next does work.
+        """
+        if not self._binary_structure_stream_expired():
+            return
+        stream = self._binary_structure_stream
+        awaiting = stream.get("awaiting") if stream else None
+        self._fallback_binary_structure_stream(
+            f"no acknowledgement within {self._binary_ack_timeout_s:g}s while awaiting {awaiting!r}"
+        )
+
+    def _cancel_binary_structure_stream(self, reason: str) -> None:
+        stream = self._release_binary_structure_stream()
+        if stream is None:
+            return
+        try:
+            cancel: dict[str, Any] = {
+                "op": "structure_data_cancel",
+                "viewer_id": self._binary_viewer_id,
+                "session_id": self._binary_session_id,
+                "stream_id": "structures:main",
+                "generation": stream["generation"],
+                "reason": reason,
+            }
+            if stream.get("target_endpoint_id") is not None:
+                cancel["target_endpoint_id"] = stream["target_endpoint_id"]
+            self._send_widget_message(cancel)
+        except Exception:
+            pass
+
+    def _send_next_binary_structure_chunk(self) -> None:
+        stream = self._binary_structure_stream
+        if stream is None:
+            return
+        next_chunk = int(stream["next_chunk"])
+        chunks = stream["chunks"]
+        if next_chunk >= len(chunks):
+            stream["awaiting"] = "complete"
+            return
+        message, buffers = chunks[next_chunk]
+        try:
+            self._send_widget_message(message, buffers=buffers)
+            stream["awaiting"] = ("chunk", next_chunk)
+        except Exception as exc:
+            self._fallback_binary_structure_stream(
+                f"connector failed while sending chunk {next_chunk}: {exc}"
+            )
+
+    def _fallback_binary_structure_stream(self, reason: str) -> None:
+        stream = self._binary_structure_stream
+        if stream is None:
+            return
+        fallback = stream["fallback"]
+        generation = stream["generation"]
+        self._release_binary_structure_stream()
+        # Tell the receiver to drop its half too; a frontend that is merely slow
+        # (rather than gone) must not apply a generation Python has abandoned.
+        try:
+            self._send_widget_message({
+                "op": "structure_data_cancel",
+                "viewer_id": self._binary_viewer_id,
+                "session_id": self._binary_session_id,
+                "stream_id": "structures:main",
+                "generation": generation,
+                "reason": reason,
+            })
+        except Exception:
+            pass
+        warnings.warn(
+            f"Array-native stream failed; using JSON fallback: {reason}",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+        target_endpoint_id = stream.get("target_endpoint_id")
+        if target_endpoint_id is not None:
+            # A popup-targeted stream must not fall back into the host, which
+            # already holds this structure; the JSON load carries the target so
+            # the host relays it to the popup that was waiting for it.
+            fallback = {**fallback, "target_endpoint_id": target_endpoint_id}
+        self._send_widget_message(fallback)
+
+    def _handle_binary_structure_event(self, content: Mapping[str, Any]) -> None:
+        # An acknowledgement that arrives after the deadline belongs to a stream
+        # Python has already given up on; release it before looking at the event.
+        self._check_binary_structure_ack_timeout()
+        stream = self._binary_structure_stream
+        if stream is None:
+            return
+        if (
+            content.get("viewer_id") != self._binary_viewer_id
+            or content.get("session_id") != self._binary_session_id
+            or content.get("stream_id") != "structures:main"
+            or content.get("generation") != stream["generation"]
+        ):
+            warnings.warn(
+                "Ignored array-native acknowledgement for another endpoint or generation.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            return
+
+        event = content.get("event")
+        if event == "structure_data_begin_ack":
+            if stream["awaiting"] == "begin":
+                # Progress: the peer is alive, so the deadline starts again.
+                stream["deadline"] = self._monotonic() + self._binary_ack_timeout_s
+                self._send_next_binary_structure_chunk()
+            return
+        if event == "structure_data_chunk_ack":
+            chunk_id = content.get("chunk_id")
+            if stream["awaiting"] != ("chunk", chunk_id):
+                return
+            stream["next_chunk"] = int(chunk_id) + 1
+            stream["deadline"] = self._monotonic() + self._binary_ack_timeout_s
+            self._send_next_binary_structure_chunk()
+            return
+        if event == "structure_data_complete":
+            if stream["awaiting"] == "complete":
+                self._release_binary_structure_stream()
+            return
+        if event == "structure_data_error":
+            error = content.get("error")
+            self._fallback_binary_structure_stream(
+                f"frontend rejected generation {stream['generation']}: {error}"
+            )
+
+    def _send_widget_message(self, message: Mapping[str, Any], buffers: Any = None) -> None:
+        """Single outbound chokepoint to the frontend connector.
+
+        Every live send from ``MolSysView`` funnels through here with the domain
+        message. The connector owns its wire format: ``MolSysViewerWidget.send``
+        wraps control-plane messages in a RuntimeEnvelope (R1), while Qt and other
+        transports keep raw messages. ``raw``/``data_plane`` messages and their
+        buffers pass through unwrapped, and ``_message_history`` / the
+        ``initial_messages`` trait keep domain messages because wrapping happens
+        below this chokepoint, at the widget.
+        """
+        if buffers is None:
+            self.widget.send(message)
+        else:
+            self.widget.send(message, buffers=buffers)
+
+    def _handle_inbound_message(self, content: Any) -> None:
+        """Validate + unwrap an inbound envelope, or pass raw messages through.
+
+        Raw bootstrap/data-plane messages and non-AnyWidget connectors go straight
+        to ``_handle_frontend_event``. Enveloped control messages are validated and
+        deduplicated by the authority router: a duplicate command is acknowledged
+        without re-applying it; a rejected envelope is diagnosed and dropped.
+        """
+        # Main-thread entry point for anything the frontend sends: a stream whose
+        # acknowledgement never arrived is released here even if the frontend has
+        # moved on to unrelated traffic.
+        self._check_binary_structure_ack_timeout()
+        if self._runtime_router is None or not is_envelope(content):
+            self._handle_frontend_event(content)
+            return
+        result = self._runtime_router.route_inbound(content)
+        if result.status == "accepted":
+            # Transport-level request: it needs the envelope to correlate its
+            # answer, so it is served here rather than in the domain handler.
+            if result.envelope.action == "request_popup_scene_snapshot":
+                self._answer_popup_scene_snapshot(result.envelope)
+                return
+            self._handle_frontend_event(result.message)
+        elif result.status == "duplicate":
+            self._send_widget_message(self._runtime_router.duplicate_ack(result.envelope))
+        else:
+            emit_suppressed_exception(
+                "MolSysView._handle_inbound_message",
+                ValueError(f"{result.reason}: {result.detail}"),
+                context={"reason": result.reason},
+            )
+
+    def _answer_popup_scene_snapshot(self, request: Any) -> None:
+        """Serve `request_popup_scene_snapshot` with the canonical projection.
+
+        The answer is a correlated projection targeted at the widget host, which
+        routes it to the popup endpoint that asked. The snapshot is built from
+        live state; the host supplies its own ephemeral `endpointState`.
+        """
+        payload = request.payload if isinstance(request.payload, Mapping) else {}
+        mode = payload.get("mode")
+        popup_endpoint_id = payload.get("popup_endpoint_id")
+        # D4: a canvas popup gets its molecular generation as typed buffers,
+        # streamed straight to its endpoint, so neither the host nor Python keeps
+        # a spare copy. Only then is the JSON load left out of the snapshot.
+        binary_delivered = False
+        if (
+            mode == "canvas"
+            and isinstance(popup_endpoint_id, str)
+            and popup_endpoint_id
+            and self._current_molecular_projection is not None
+        ):
+            binary_delivered = self._try_send_array_native_molsys(
+                self._current_molecular_projection,
+                target_endpoint_id=popup_endpoint_id,
+            )
+        try:
+            messages = self.build_popup_scene_snapshot(
+                mode,
+                endpoint=popup_endpoint_id,
+                include_molecular=not binary_delivered,
+            )
+        except ValueError as exc:
+            emit_suppressed_exception(
+                "MolSysView._answer_popup_scene_snapshot",
+                exc,
+                context={"mode": mode},
+            )
+            return
+        self._send_widget_message(
+            self._runtime_router.correlated_projection(
+                request,
+                action="popup_scene_snapshot",
+                payload={
+                    "event": "popup_scene_snapshot",
+                    "mode": mode,
+                    "popup_endpoint_id": popup_endpoint_id,
+                    "messages": messages,
+                },
+            )
+        )
+
+    def _deliver_transport_message(self, message: dict[str, Any]) -> None:
+        if not self._try_send_array_native_molsys(message):
+            self._send_widget_message(message)
+
     def _handle_frontend_event(self, content: Mapping[str, Any]) -> None:
         event = content.get("event")
         if event == "widget_resize":
@@ -877,9 +1293,13 @@ class MolSysView(
                 self.widget.layout.width = f"{width}px"
             return
         elif event == "ready":
+            capabilities = content.get("capabilities")
+            self._frontend_capabilities = (
+                dict(capabilities) if isinstance(capabilities, Mapping) else {}
+            )
             self._ready = True
             for message in list(self._message_history):
-                self.widget.send(message)
+                self._deliver_transport_message(message)
             self._sync_region_summaries_runtime()
             self._sync_whole_summary_runtime()
             self._sync_annotation_summaries_runtime()
@@ -887,6 +1307,13 @@ class MolSysView(
             self._sync_shape_summaries_runtime()
             self._sync_layer_summaries_runtime()
             self._sync_section_summaries_runtime()
+        elif event in {
+            "structure_data_begin_ack",
+            "structure_data_chunk_ack",
+            "structure_data_complete",
+            "structure_data_error",
+        }:
+            self._handle_binary_structure_event(content)
         elif event == "request_widget_runtime_source":
             # This is the lazy-load bootstrap handshake: the frontend requests the
             # runtime source BEFORE the real runtime has loaded, so `_ready` is
@@ -894,9 +1321,9 @@ class MolSysView(
             # `_send_runtime_only`, which drops messages while not ready) — the
             # frontend is listening because it just asked. Gating this on `_ready`
             # deadlocks: `_ready` only becomes True once this source has loaded.
-            self.widget.send({"op": "widget_runtime_source", "source": MolSysViewerWidget._viewer_js_source})
+            self._send_widget_message({"op": "widget_runtime_source", "source": MolSysViewerWidget._viewer_js_source})
         elif event == "request_popup_source":
-            self.widget.send({"op": "popup_source", "source": MolSysViewerWidget._viewer_js_source})
+            self._send_widget_message({"op": "popup_source", "source": MolSysViewerWidget._viewer_js_source})
         elif event == "region_ack":
             tag = content.get("tag")
             if tag and tag in self._regions:
@@ -2239,7 +2666,7 @@ class MolSysView(
             return False
         previous = self._last_camera_snapshot
         try:
-            self.widget.send({"op": "request_camera_snapshot"})
+            self._send_widget_message({"op": "request_camera_snapshot"})
         except Exception:
             return False
         if timeout_s <= 0:
@@ -2280,7 +2707,7 @@ class MolSysView(
         if camera_snapshot:
             payload["camera_snapshot"] = dict(camera_snapshot)
         try:
-            self.widget.send(payload)
+            self._send_widget_message(payload)
         except Exception:
             return None
         if timeout_s <= 0:
@@ -2804,6 +3231,8 @@ class MolSysView(
             "panel_mode_style": str(getattr(self.widget, "panel_mode_style", "drawer")),
             "enable_popout": bool(include_popout),
             "debug_js": bool(getattr(self.widget, "debug_js", False)),
+            "runtime_viewer_id": self._binary_viewer_id,
+            "runtime_session_id": self._binary_session_id,
         }
         if host_event_transport:
             ui_config["host_event_transport"] = str(host_event_transport)

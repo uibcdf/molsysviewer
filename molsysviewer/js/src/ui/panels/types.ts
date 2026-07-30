@@ -22,6 +22,7 @@ export type PanelAction =
     | "selection_query_preview_request"
     | "set_active_selection_operation"
     | "expand_selection"
+    | "activate_selection"
     | "save_selection"
     | "rename_selection"
     | "delete_selection"
@@ -72,6 +73,7 @@ export type PanelAction =
     | "show_all_annotations"
     | "hide_all_annotations"
     | "clear_annotations"
+    | "create_shape"
     | "toggle_measurement_visibility"
     | "toggle_shape_visibility"
     | "rename_shape"
@@ -95,6 +97,7 @@ export type PanelAction =
     | "set_measurement_endpoint_policy"
     | "set_measurement_representative_atom"
     | "request_measurement_series"
+    | "focus_measurement"
     | "delete_shape"
     // Whole lifecycle & style
     | "set_whole_representation"
@@ -119,6 +122,7 @@ export type PanelAction =
     | "set_section_invert"
     | "remove_section"
     | "set_figure_spec"
+    | "reset_view"
     | "download_image"
     | "export_html";
 

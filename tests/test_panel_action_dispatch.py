@@ -85,6 +85,27 @@ def test_viewport_panel_actions_use_the_public_python_scene_api():
     ]
 
 
+def test_focus_measurement_panel_action_uses_the_measurement_public_api():
+    view = demo["dialanine"]
+    sent = []
+    view.widget.send = lambda message: sent.append(message)  # type: ignore[method-assign]
+    view._ready = True  # noqa: SLF001
+    view.measurements.add_distance(
+        [0],
+        [1],
+        tag="backbone-distance",
+        skip_digestion=True,
+    )
+    sent.clear()
+
+    dispatch_panel_action(
+        view,
+        {"action": "focus_measurement", "tag": "backbone-distance"},
+    )
+
+    assert sent[-1]["op"] in {"zoom_to_position", "zoom"}
+
+
 def test_viewport_section_actions_mutate_live_sections_and_use_molsysmt_center():
     view = demo["dialanine"]
     view.active_selection.set([0, 1], syntax="Indices", skip_digestion=True)

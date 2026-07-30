@@ -281,6 +281,14 @@ def hide_measurement(view: Any, content: Mapping[str, Any]) -> None:
     view.measurements.hide(_tag(content, "hide_measurement"), skip_digestion=True)
 
 
+def focus_measurement(view: Any, content: Mapping[str, Any]) -> None:
+    tag = _tag(content, "focus_measurement")
+    measurement = view.measurements.get(tag, skip_digestion=True)
+    if measurement is None:
+        raise ValueError(f"No measurement found with tag {tag!r}.")
+    measurement.focus()
+
+
 def _active_measurement_picks(view: Any) -> list[list[int]]:
     if view.molsys is None:
         raise ValueError("A molecular system must be loaded before creating a measurement.")
@@ -530,6 +538,7 @@ HANDLERS = {
     "delete_measurement": delete_measurement,
     "toggle_measurement_visibility": toggle_measurement_visibility,
     "hide_measurement": hide_measurement,
+    "focus_measurement": focus_measurement,
     "create_measurement": create_measurement,
     "rename_measurement": rename_measurement,
     "set_measurement_layer": set_measurement_layer,

@@ -1,10 +1,54 @@
 from __future__ import annotations
 
+import pytest
+
+from molsysviewer._private.exceptions import ArgumentError
 from molsysviewer.demo import demo
 
 
 def _constant_values(view):
     return [0.0] * int(view.molsys.get_n_atoms())
+
+
+def test_whole_set_color_replaces_only_the_base_layer():
+    view = demo["dialanine"]
+    region = view.regions.add(atom_indices=[0, 1], tag="A", skip_digestion=True)
+    region.set_color("#112233")
+
+    view.whole.set_color("red")
+
+    n_atoms = int(view.molsys.get_n_atoms())
+    assert view._atom_color_layers["whole"] == {  # noqa: SLF001
+        atom_index: 0xFF0000 for atom_index in range(n_atoms)
+    }
+    assert view._atom_color_layers["A"] == {0: 0x112233, 1: 0x112233}  # noqa: SLF001
+    assert view._atom_color_map[0] == 0x112233  # noqa: SLF001
+    assert view._atom_color_map[2] == 0xFF0000  # noqa: SLF001
+
+
+def test_region_set_color_works_without_an_own_representation():
+    view = demo["dialanine"]
+    region = view.regions.add(atom_indices=[0, 2], tag="base-only", skip_digestion=True)
+
+    assert region.representation is None
+    assert region.preset is None
+
+    region.set_color([0, 255, 0])
+
+    assert view._atom_color_layers["base-only"] == {0: 0x00FF00, 2: 0x00FF00}  # noqa: SLF001
+    assert set(view._atom_color_layers["base-only"]) == {0, 2}  # noqa: SLF001
+    assert region.representation is None
+    assert region.preset is None
+
+
+def test_set_color_rejects_invalid_color_at_the_public_boundary():
+    view = demo["dialanine"]
+    region = view.regions.add(atom_indices=[0, 1], tag="A", skip_digestion=True)
+
+    with pytest.raises(ArgumentError):
+        view.whole.set_color("not-a-color")
+    with pytest.raises(ArgumentError):
+        region.set_color([0xFF0000, 0x00FF00])
 
 
 def test_region_color_layer_overrides_whole_only_on_region_atoms():

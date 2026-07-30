@@ -23,7 +23,9 @@ def test_e2e_runner_inventory_matches_every_scientific_suite():
     suite_block = runner.split("const SUITES = [", 1)[1].split("] as const;", 1)[0]
     declared = set(re.findall(r'"([^"]+)"', suite_block))
 
-    assert len(expected) == 21
+    # Hardcoded on purpose: adding an E2E file without registering it in the
+    # runner (or vice versa) must be a deliberate, visible change.
+    assert len(expected) == 25
     assert declared == expected
 
 

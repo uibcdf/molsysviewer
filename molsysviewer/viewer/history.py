@@ -2,6 +2,17 @@ from __future__ import annotations
 
 
 class HistoryMixin:
+    # Ops that (re)define the current materialized molecular projection. Kept in
+    # sync with the frontend STRUCTURE_LOAD_OPS (js popup-replay-log.ts).
+    _MOLECULAR_LOAD_OPS = {
+        "load_molsys_payload",
+        "load_molsys_payload_ref",
+        "load_structure_from_string",
+        "load_pdb_string",
+        "load_structure_from_url",
+        "load_pdb_id",
+    }
+
     _SCENE_LOOK_KEYS = {
         "toggle_background": "background",
         "set_background_color": "background",
@@ -351,23 +362,27 @@ class HistoryMixin:
 
     def _send(self, msg: dict) -> None:
         self._message_history.append(msg)
+        if msg.get("op") in self._MOLECULAR_LOAD_OPS:
+            self._current_molecular_projection = msg
         self._record_shape_message(msg)
         self._record_annotation_message(msg)
         self._record_measurement_message(msg)
         self._record_selection_message(msg)
         self._record_scene_look_message(msg)
         if self._ready:
-            self.widget.send(msg)
+            self._deliver_transport_message(msg)
         self._sync_scene_object_summaries_for_message(msg)
 
     def _send_runtime_only(self, msg: dict) -> None:
         if self._ready:
-            self.widget.send(msg)
+            self._send_widget_message(msg)
 
     def _send_replay(self, msg: dict) -> None:
         self._message_history.append(msg)
+        if msg.get("op") in self._MOLECULAR_LOAD_OPS:
+            self._current_molecular_projection = msg
         if self._ready:
-            self.widget.send(msg)
+            self._deliver_transport_message(msg)
         self._sync_scene_object_summaries_for_message(msg)
 
     def _get_shape_message(self, tag: str) -> dict | None:

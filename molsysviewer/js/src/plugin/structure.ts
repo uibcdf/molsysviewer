@@ -73,6 +73,17 @@ export interface MolSysPayload {
     };
 }
 
+export interface ArrayNativeMolSysPayload {
+    atoms: MolSysAtomPayload;
+    nAtoms: number;
+    nStructures: number;
+    coordinates: Float32Array;
+    box?: Float32Array;
+    time?: Float64Array;
+    bonds?: MolSysPayload["bonds"];
+    meta?: Record<string, unknown>;
+}
+
 async function recyclePreviousNode(plugin: PluginContext, previous?: StateObjectRef) {
     if (!previous) return;
     const builder = plugin.build();
@@ -234,6 +245,93 @@ export async function loadStructureFromMolSysPayload(
     };
 }
 
+export async function loadStructureFromArrayNativeMolSys(
+    plugin: PluginContext,
+    payload: ArrayNativeMolSysPayload,
+    label?: string,
+    options?: LoadStructureOptions,
+): Promise<LoadedStructure> {
+    await recyclePreviousNode(plugin, options?.previous);
+
+    const { nAtoms: atomCount, nStructures } = payload;
+    if (
+        atomCount <= 0 ||
+        nStructures <= 0 ||
+        payload.atoms.atom_id.length !== atomCount ||
+        payload.coordinates.length !== nStructures * atomCount * 3
+    ) {
+        throw new Error("Array-native MolSys payload dimensions are inconsistent");
+    }
+    if (payload.box && payload.box.length !== nStructures * 9) {
+        throw new Error("Array-native MolSys box dimensions are inconsistent");
+    }
+    if (payload.time && payload.time.length !== nStructures) {
+        throw new Error("Array-native MolSys time dimensions are inconsistent");
+    }
+
+    const firstAxes = planarAxisViews(payload.coordinates, atomCount, 0);
+    const atomSite = createAtomSiteTableFromAxes(payload, atomCount, firstAxes);
+    const basic = createBasic({ atom_site: atomSite }, true);
+    const topology = Topology.create(
+        label ?? "MolSysMT",
+        basic,
+        createBondColumns(payload.bonds),
+        {
+            kind: "mol-viewer:molsysmt",
+            name: label ?? "MolSysMT",
+            data: {
+                ...(payload.meta ?? {}),
+                molecule_id: payload.atoms.molecule_id,
+                molecule_name: payload.atoms.molecule_name,
+                component_id: payload.atoms.component_id,
+                component_name: payload.atoms.component_name,
+            },
+        },
+    );
+
+    const frames = new Array<Frame>(nStructures);
+    for (let index = 0; index < nStructures; index++) {
+        const axes = planarAxisViews(payload.coordinates, atomCount, index);
+        frames[index] = {
+            elementCount: atomCount,
+            time: { value: payload.time?.[index] ?? index, unit: "ps" },
+            ...axes,
+            cell: createCellFromFlatBox(payload.box, index),
+            xyzOrdering: { isIdentity: true },
+        };
+    }
+    const coordinates = Coordinates.create(
+        frames,
+        { value: 1, unit: "ps" },
+        { value: 0, unit: "ps" },
+    );
+    const trajectory = await plugin.runTask(
+        Model.trajectoryFromTopologyAndCoordinates(topology, coordinates),
+        { useOverlay: false },
+    );
+
+    const builder = plugin.build();
+    const trajectoryNode = builder
+        .toRoot()
+        .insert(InsertMolSysTrajectory, {
+            trajectory,
+            props: {
+                label: label ?? "MolSysMT Trajectory",
+                description: `${trajectory.frameCount} model${trajectory.frameCount === 1 ? "" : "s"}`,
+            },
+        });
+    await PluginCommands.State.Update(plugin, {
+        state: plugin.state.data,
+        tree: builder,
+        options: { doNotLogTiming: true },
+    });
+    const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectoryNode.ref, "default");
+    return {
+        trajectory: trajectoryNode.ref,
+        structure: preset?.structure?.ref,
+    };
+}
+
 function isPolymerGroupType(groupType: string): boolean {
     const t = groupType.toLowerCase().replace(/[\s_-]/g, "");
     return (
@@ -256,6 +354,14 @@ function groupTypesToGroupPDB(groupTypes: string[], atomCount: number): string[]
 }
 
 function createAtomSiteTable(payload: MolSysPayload, atomCount: number, structure: MolSysStructurePayload) {
+    return createAtomSiteTableFromAxes(payload, atomCount, splitPositions(structure, atomCount));
+}
+
+function createAtomSiteTableFromAxes(
+    payload: Pick<MolSysPayload, "atoms" | "meta">,
+    atomCount: number,
+    axes: { x: Float32Array; y: Float32Array; z: Float32Array },
+) {
     const atoms = payload.atoms;
     const ids = ensureNumericArray(atoms.atom_id, atomCount, i => i + 1);
     const names = ensureStringArray(atoms.atom_name, atomCount, i => `A${i + 1}`);
@@ -272,7 +378,7 @@ function createAtomSiteTable(payload: MolSysPayload, atomCount: number, structur
     const compId = ensureNumericArray(atoms.component_id, atomCount, () => 0);
     const compName = ensureStringArray(atoms.component_name, atomCount, () => "Component");
 
-    const { x, y, z } = splitPositions(structure, atomCount);
+    const { x, y, z } = axes;
 
     return Table.ofPartialColumns(BasicSchema.atom_site, {
         id: Column.ofIntArray(ids),
@@ -304,6 +410,42 @@ function createAtomSiteTable(payload: MolSysPayload, atomCount: number, structur
         ["molsys_component_name" as any]: Column.ofStringArray(compName),
         ["molsys_group_type" as any]: Column.ofStringArray(groupTypes),
     } as any, atomCount);
+}
+
+/**
+ * Zero-copy per-axis views into the planar coordinate buffer.
+ *
+ * The wire layout is `structure-planar-c`: per structure, all x, then all y,
+ * then all z. Mol* frames want exactly those per-axis arrays, so each is a
+ * `subarray` view rather than a fresh allocation — no de-interleaving pass and
+ * no second copy of the coordinates. Mol* may reorder a frame's axes in place,
+ * which is safe here because each view spans a disjoint range and the buffer is
+ * not reused after loading.
+ */
+function planarAxisViews(
+    coordinates: Float32Array,
+    atomCount: number,
+    structureIndex: number,
+): { x: Float32Array; y: Float32Array; z: Float32Array } {
+    const base = structureIndex * atomCount * 3;
+    return {
+        x: coordinates.subarray(base, base + atomCount),
+        y: coordinates.subarray(base + atomCount, base + atomCount * 2),
+        z: coordinates.subarray(base + atomCount * 2, base + atomCount * 3),
+    };
+}
+
+function createCellFromFlatBox(box: Float32Array | undefined, structureIndex: number): Cell | undefined {
+    if (!box) return undefined;
+    const offset = structureIndex * 9;
+    const candidate = Cell.fromBasis(
+        Vec3.create(box[offset], box[offset + 1], box[offset + 2]),
+        Vec3.create(box[offset + 3], box[offset + 4], box[offset + 5]),
+        Vec3.create(box[offset + 6], box[offset + 7], box[offset + 8]),
+    );
+    return candidate.size[0] > 0 && candidate.size[1] > 0 && candidate.size[2] > 0
+        ? candidate
+        : undefined;
 }
 
 function splitPositions(frame: MolSysStructurePayload, atomCount: number) {

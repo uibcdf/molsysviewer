@@ -686,6 +686,34 @@ def test_qt_message_bridge_materializes_large_payload_refs(tmp_path, monkeypatch
     assert payload_id not in bridge.payloads
 
 
+def test_qt_bridge_accepts_scalar_javascript_delivery_sentinel():
+    class FakeQTimer:
+        callbacks = []
+
+        @classmethod
+        def singleShot(cls, _timeout_ms, callback):
+            cls.callbacks.append(callback)
+
+    class FakePage:
+        def runJavaScript(self, script, callback=None):
+            assert "molsysviewer-message-accepted" in script
+            if callback is not None:
+                callback("molsysviewer-message-accepted")
+
+    class FakeWebView:
+        def page(self):
+            return FakePage()
+
+    bridge = standalone_qt.QtMessageBridge(FakeWebView(), FakeQTimer)
+    bridge.ready = True
+    bridge.send({"op": "set_panel_mode", "mode": "studio"})
+
+    assert bridge.inflight is not None
+    assert bridge.inflight["delivery_attempts"] == 1
+    assert bridge.queue == []
+    assert bridge.failed_deliveries == []
+
+
 @pytest.mark.parametrize("failure_mode", ["missing_page", "rejected"])
 def test_qt_bridge_does_not_hang_or_spin_when_delivery_keeps_failing(failure_mode):
     class FakeQTimer:
@@ -1309,6 +1337,156 @@ def test_qt_event_transport_smoke_real_qt():
         "real Qt event transport (fetch -> molsysviewer:// scheme handler -> bridge) "
         f"failed.\nstdout={result.stdout}\nstderr={result.stderr[-1500:]}"
     )
+
+
+_QT_TWO_GENERATION_PAYLOAD_SCRIPT = r'''
+import json, os, sys, tempfile, time
+os.environ.setdefault("QTWEBENGINE_DISABLE_SANDBOX", "1")
+os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+os.environ["MOLSYSVIEWER_QT_PAYLOAD_REF_THRESHOLD"] = "1"
+import molsysviewer.standalone_qt as sq
+qt = sq._import_qt()
+sq._register_qt_url_schemes(qt["QWebEngineUrlScheme"])
+app = sq._get_or_create_application(qt["QApplication"], None)
+view = qt["QWebEngineView"]()
+bridge = sq._install_qt_message_bridge(
+    view, qt["QWebEnginePage"], qt["QTimer"],
+    QWebEngineUrlSchemeHandler=qt["QWebEngineUrlSchemeHandler"],
+    QBuffer=qt["QBuffer"], QByteArray=qt["QByteArray"],
+)
+received = []
+bridge.event_sink = received.append
+html = r"""<!doctype html><html><body><script>
+async function postHost(event) {
+  const payload = encodeURIComponent(JSON.stringify(event));
+  await fetch("molsysviewer://event?payload=" + payload);
+}
+window.__molsysviewerDocsHandleMessage = async function(message) {
+  if (message.op === "clear_all") {
+    await postHost({event:"message_ack", id:message.id, generation:message.generation});
+    return;
+  }
+  if (message.op === "load_molsys_payload_ref") {
+    const response = await fetch(message.ref.url);
+    if (!response.ok) throw new Error("payload ref failed: " + response.status);
+    const payload = await response.json();
+    await postHost({
+      event:"probe_payload",
+      id:message.id,
+      generation:message.generation,
+      atoms:payload.atoms.atom_id.length,
+      label:message.label
+    });
+    await postHost({event:"structure_ready", id:message.id, generation:message.generation});
+    return;
+  }
+  await postHost({event:"message_ack", id:message.id, generation:message.generation});
+};
+window.addEventListener("load", () => {
+  postHost({event:"ready"});
+});
+</script></body></html>"""
+with tempfile.NamedTemporaryFile("w", suffix=".html", delete=False) as fh:
+    fh.write(html)
+    path = fh.name
+view.setUrl(qt["QUrl"].fromLocalFile(path))
+
+def spin_until(predicate, timeout=15.0):
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        app.processEvents()
+        if predicate():
+            return True
+        time.sleep(0.01)
+    return False
+
+if not spin_until(lambda: bridge.ready):
+    print(json.dumps({"error":"ready_timeout"}))
+    sys.exit(1)
+
+def send_generation(label, atom_count):
+    generation = bridge.begin_generation()
+    bridge.send({"op":"clear_all"})
+    bridge.send({
+        "op":"load_molsys_payload",
+        "label":label,
+        "payload":{
+            "atoms":{"atom_id":list(range(1, atom_count + 1))},
+            "structures":[{"coordinates":[[float(i), 0.0, 0.0] for i in range(atom_count)]}]
+        }
+    })
+    ok = spin_until(
+        lambda: bridge.inflight is None
+        and not bridge.queue
+        and any(
+            event.get("event") == "probe_payload"
+            and event.get("generation") == generation
+            for event in received
+        )
+    )
+    return generation, ok
+
+first_generation, first_ok = send_generation("first", 1)
+second_generation, second_ok = send_generation("second", 2)
+probes = [event for event in received if event.get("event") == "probe_payload"]
+handler = view._molsysviewer_qt_payload_handler
+print(json.dumps({
+    "first_ok": first_ok,
+    "second_ok": second_ok,
+    "first_generation": first_generation,
+    "second_generation": second_generation,
+    "probes": probes,
+    "served": list(handler.served),
+    "failed_deliveries": bridge.failed_deliveries,
+}))
+sys.exit(0 if first_ok and second_ok else 1)
+'''
+
+
+def test_qt_payload_refs_replace_across_two_real_generations():
+    """Real Qt bridge serves and acknowledges two successive payload generations."""
+    import subprocess
+
+    try:
+        standalone_qt._import_qt()
+    except ImportError as exc:
+        pytest.skip(f"PySide6 is not available: {exc}")
+
+    env = dict(os.environ)
+    for key in (
+        "QTWEBENGINE_RESOURCES_PATH",
+        "QTWEBENGINEPROCESS_PATH",
+        "QTWEBENGINE_LOCALES_PATH",
+        "QTWEBENGINE_CHROMIUM_FLAGS",
+        "QT_QUICK_BACKEND",
+    ):
+        env.pop(key, None)
+    env["QT_QPA_PLATFORM"] = "offscreen"
+    env["QTWEBENGINE_DISABLE_SANDBOX"] = "1"
+
+    result = subprocess.run(
+        [sys.executable, "-c", _QT_TWO_GENERATION_PAYLOAD_SCRIPT],
+        capture_output=True,
+        text=True,
+        timeout=90,
+        env=env,
+    )
+    output_lines = [line for line in result.stdout.splitlines() if line.startswith("{")]
+    assert output_lines, f"Qt payload-generation probe produced no report.\nstderr={result.stderr[-1500:]}"
+    report = json.loads(output_lines[-1])
+
+    assert result.returncode == 0, (
+        f"two-generation Qt payload delivery failed: {report}\nstderr={result.stderr[-1500:]}"
+    )
+    assert report["first_ok"] is True
+    assert report["second_ok"] is True
+    assert report["second_generation"] > report["first_generation"]
+    assert [(item["label"], item["atoms"]) for item in report["probes"]] == [
+        ("first", 1),
+        ("second", 2),
+    ]
+    assert len(set(report["served"])) == 2
+    assert report["failed_deliveries"] == []
 
 
 def test_qt_live_model_smoke_real_window(monkeypatch):

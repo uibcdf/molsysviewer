@@ -2,6 +2,34 @@ import assert from "node:assert";
 import test from "node:test";
 
 import { PopupHostManager } from "../../src/managers/popup-host";
+import type { PopupChannelIdentity } from "../../src/messages/popup-channel";
+
+let popupMessageCounter = 0;
+
+function popupWire(
+    channel: PopupChannelIdentity,
+    action: string,
+    payload: unknown,
+    direction: "command" | "event" = "event",
+) {
+    return {
+        channel,
+        envelope: {
+            protocolVersion: 1,
+            viewerId: channel.viewerId,
+            sessionId: channel.sessionId,
+            endpointId: channel.popupEndpointId,
+            targetEndpointId:
+                direction === "command"
+                    ? channel.authorityEndpointId
+                    : channel.hostEndpointId,
+            messageId: `popup-test:${++popupMessageCounter}`,
+            direction,
+            action,
+            payload,
+        },
+    };
+}
 
 function makePopupWindow() {
     const appended: any[] = [];
@@ -58,7 +86,7 @@ test("popup host resolves source provider only when opening", async () => {
     const order: string[] = [];
 
     (globalThis as any).window = {
-        location: { href: "https://notebook.example.dev/lab" },
+        location: { href: "https://notebook.example.dev/lab", origin: "https://notebook.example.dev" },
         open: () => {
             order.push("open");
             return popup;
@@ -99,7 +127,7 @@ test("popup host resolves moduleUrl and injects module bootstrap", async () => {
         return Promise.resolve({ ok: true });
     };
     (globalThis as any).window = {
-        location: { href: "https://docs.example.dev/views/demo.html" },
+        location: { href: "https://docs.example.dev/views/demo.html", origin: "https://docs.example.dev" },
         open: () => popup,
         setInterval: () => 1,
         clearInterval: (_id: number) => {},
@@ -125,25 +153,228 @@ test("popup host resolves moduleUrl and injects module bootstrap", async () => {
     }
 });
 
-test("popup host send only posts when popup is ready and open", () => {
+test("popup host sends and accepts messages only on the bound popup channel", async () => {
+    const previousWindow = (globalThis as any).window;
     const { popup } = makePopupWindow();
+    (globalThis as any).window = {
+        location: { href: "https://notebook.example.dev/lab", origin: "https://notebook.example.dev" },
+        open: () => popup,
+        setInterval: () => 1,
+        clearInterval: (_id: number) => {},
+    };
+    const manager = new PopupHostManager({
+        source: "viewer-source",
+        viewerId: "view-a",
+        sessionId: "session-a",
+    });
+
+    try {
+        await manager.open();
+        const channel = popup.molsysviewer_popup_channel;
+
+        manager.send("molsysviewer-sync-op", { op: "dummy" });
+        assert.deepStrictEqual(popup.posted, []);
+
+        manager.isReady = true;
+        manager.send("molsysviewer-sync-op", { op: "dummy" });
+        assert.equal(popup.posted.length, 1);
+        assert.deepStrictEqual(popup.posted[0].message.channel, channel);
+        assert.deepStrictEqual(popup.posted[0].message.envelope, {
+            protocolVersion: 1,
+            viewerId: "view-a",
+            sessionId: "session-a",
+            endpointId: channel.authorityEndpointId,
+            targetEndpointId: channel.popupEndpointId,
+            messageId: `${channel.hostEndpointId}:1`,
+            direction: "projection",
+            action: "molsysviewer-sync-op",
+            payload: { op: "dummy" },
+        });
+        assert.equal(popup.posted[0].target, "https://notebook.example.dev");
+
+        const legitimate = {
+            source: popup,
+            data: popupWire(channel, "molsysviewer-pop-ready", null),
+        } as MessageEvent;
+        assert.equal(manager.receive(legitimate)?.type, "molsysviewer-pop-ready");
+        const command = {
+            source: popup,
+            data: popupWire(
+                channel,
+                "molsysviewer-sync-op",
+                { op: "reset_view" },
+                "command",
+            ),
+        } as MessageEvent;
+        assert.equal(manager.receive(command)?.type, "molsysviewer-sync-op");
+        assert.equal(manager.receive(command), null);
+
+        const impersonated = popupWire(
+            channel,
+            "molsysviewer-pop-ready",
+            null,
+        );
+        impersonated.envelope.endpointId = channel.hostEndpointId;
+        assert.equal(manager.receive({
+            source: popup,
+            data: impersonated,
+        } as MessageEvent), null);
+        assert.equal(manager.receive({
+            ...legitimate,
+            source: {},
+        } as MessageEvent), null);
+        assert.equal(manager.receive({
+            ...legitimate,
+            data: {
+                ...legitimate.data,
+                channel: { ...channel, token: "forged" },
+            },
+        } as MessageEvent), null);
+
+        popup.closed = true;
+        manager.send("molsysviewer-sync-op", { op: "ignored" });
+        assert.strictEqual(popup.posted.length, 1);
+    } finally {
+        (globalThis as any).window = previousWindow;
+    }
+});
+
+test("popup host reopening revokes the previous endpoint channel", async () => {
+    const previousWindow = (globalThis as any).window;
+    const first = makePopupWindow().popup;
+    const second = makePopupWindow().popup;
+    const popups = [first, second];
+    (globalThis as any).window = {
+        location: { href: "https://notebook.example.dev/lab", origin: "https://notebook.example.dev" },
+        open: () => popups.shift(),
+        setInterval: () => 1,
+        clearInterval: (_id: number) => {},
+    };
+    const manager = new PopupHostManager({
+        source: "viewer-source",
+        viewerId: "view-a",
+        sessionId: "session-a",
+    });
+
+    try {
+        await manager.open();
+        const staleChannel = first.molsysviewer_popup_channel;
+        manager.close();
+        await manager.open();
+        const currentChannel = second.molsysviewer_popup_channel;
+        assert.notEqual(staleChannel.token, currentChannel.token);
+
+        assert.equal(manager.receive({
+            source: second,
+            data: popupWire(staleChannel, "molsysviewer-pop-ready", null),
+        } as MessageEvent), null);
+        assert.equal(manager.receive({
+            source: second,
+            data: popupWire(currentChannel, "molsysviewer-pop-ready", null),
+        } as MessageEvent)?.type, "molsysviewer-pop-ready");
+    } finally {
+        manager.dispose();
+        (globalThis as any).window = previousWindow;
+    }
+});
+
+test("popup host dispose closes canvas and panel endpoints", async () => {
+    const previousWindow = (globalThis as any).window;
+    const canvas = makePopupWindow().popup;
+    const panel = makePopupWindow().popup;
+    const popups = [canvas, panel];
+    (globalThis as any).window = {
+        location: { href: "https://notebook.example.dev/lab", origin: "https://notebook.example.dev" },
+        open: () => popups.shift(),
+        setInterval: () => 1,
+        clearInterval: (_id: number) => {},
+    };
     const manager = new PopupHostManager("viewer-source");
 
-    (manager as any).popoutWin = popup;
+    try {
+        await manager.open("canvas");
+        await manager.open("panel");
+        manager.dispose();
 
-    manager.send("molsysviewer-sync-op", { op: "dummy" });
-    assert.deepStrictEqual(popup.posted, []);
+        assert.equal(canvas.closed, true);
+        assert.equal(panel.closed, true);
+        assert.equal(manager.isCanvasOpen, null);
+        assert.equal(manager.isPanelOpen, null);
+    } finally {
+        manager.dispose();
+        (globalThis as any).window = previousWindow;
+    }
+});
 
-    manager.isReady = true;
-    manager.send("molsysviewer-sync-op", { op: "dummy" });
-    assert.deepStrictEqual(popup.posted, [
-        {
-            message: { type: "molsysviewer-sync-op", data: { op: "dummy" }, from: "host" },
-            target: "*",
-        },
-    ]);
+test("sendTo delivers to one popup endpoint, so a canvas bootstrap never reaches a panel popup", async () => {
+    const previousWindow = (globalThis as any).window;
+    const canvas = makePopupWindow().popup;
+    const panel = makePopupWindow().popup;
+    const opened: any[] = [];
+    (globalThis as any).window = {
+        location: { href: "https://notebook.example.dev/lab", origin: "https://notebook.example.dev" },
+        // First open() is the canvas popup, second is the panel popup.
+        open: () => (opened.push(1), opened.length === 1 ? canvas : panel),
+        setInterval: () => 1,
+        clearInterval: (_id: number) => {},
+    };
+    const manager = new PopupHostManager({
+        source: "viewer-source",
+        viewerId: "view-a",
+        sessionId: "session-a",
+    });
 
-    popup.closed = true;
-    manager.send("molsysviewer-sync-op", { op: "ignored" });
-    assert.strictEqual(popup.posted.length, 1);
+    try {
+        await manager.open("canvas");
+        await manager.open("panel");
+        manager.isReady = true;
+        manager.isPanelReady = true;
+        canvas.posted.length = 0;
+        panel.posted.length = 0;
+
+        // A canvas bootstrap carries molecular data; it must not fan out.
+        assert.equal(manager.sendTo("canvas", "molsysviewer-initial-sync", { messages: ["molecular"] }), true);
+        assert.equal(canvas.posted.length, 1);
+        assert.equal(panel.posted.length, 0, "the panel popup must not receive the canvas bootstrap");
+
+        // And the panel's own bootstrap reaches only the panel.
+        assert.equal(manager.sendTo("panel", "molsysviewer-initial-sync", { messages: ["ui-only"] }), true);
+        assert.equal(panel.posted.length, 1);
+        assert.equal(canvas.posted.length, 1);
+
+        // send() remains the deliberate fan-out for shared projections.
+        canvas.posted.length = 0;
+        panel.posted.length = 0;
+        manager.send("molsysviewer-sync-op", { op: "shared" });
+        assert.equal(canvas.posted.length, 1);
+        assert.equal(panel.posted.length, 1);
+    } finally {
+        (globalThis as any).window = previousWindow;
+    }
+});
+
+test("sendTo reports failure instead of delivering when that endpoint is closed", async () => {
+    const previousWindow = (globalThis as any).window;
+    const { popup } = makePopupWindow();
+    (globalThis as any).window = {
+        location: { href: "https://notebook.example.dev/lab", origin: "https://notebook.example.dev" },
+        open: () => popup,
+        setInterval: () => 1,
+        clearInterval: (_id: number) => {},
+    };
+    const manager = new PopupHostManager({
+        source: "viewer-source",
+        viewerId: "view-a",
+        sessionId: "session-a",
+    });
+    try {
+        await manager.open("canvas");
+        manager.isReady = true;
+        popup.posted.length = 0;
+        // No panel popup was ever opened.
+        assert.equal(manager.sendTo("panel", "molsysviewer-initial-sync", { messages: [] }), false);
+        assert.equal(popup.posted.length, 0, "a panel-targeted message must not land on the canvas popup");
+    } finally {
+        (globalThis as any).window = previousWindow;
+    }
 });

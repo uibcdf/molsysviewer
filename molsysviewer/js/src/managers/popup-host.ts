@@ -1,4 +1,31 @@
+import {
+    createPopupChannelIdentity,
+    createSecureRuntimeId,
+    decodePopupEvent,
+    encodePopupMessage,
+    type PopupChannelIdentity,
+    type PopupMode,
+    type PopupWireMessage,
+} from "../messages/popup-channel";
+import {
+    RUNTIME_PROTOCOL_VERSION,
+    RuntimeMessageRouter,
+    type RuntimeDirection,
+    type RuntimeEnvelope,
+} from "../messages/runtime-router";
+
 type PopupSourceProvider = () => string | Promise<string>;
+
+type PopupHostOptions = {
+    source?: string;
+    moduleUrl?: string;
+    sourceProvider?: PopupSourceProvider;
+    viewerId?: string;
+    sessionId?: string;
+    /** Fired when a popup endpoint goes away, so the host can cancel work it
+     *  owns (pending requests, retained buffers) instead of leaking it. */
+    onEndpointClosed?: (mode: PopupMode) => void;
+};
 
 export class PopupHostManager {
     private popoutWin: Window | null = null;
@@ -9,15 +36,39 @@ export class PopupHostManager {
     private viewerJsSource: string;
     private readonly viewerModuleUrl?: string;
     private readonly viewerSourceProvider?: PopupSourceProvider;
+    private readonly viewerId: string;
+    private readonly sessionId: string;
+    private readonly authorityEndpointId: string;
+    private readonly hostEndpointId: string;
+    private readonly router: RuntimeMessageRouter;
+    private messageCounter = 0;
+    private readonly channels = new Map<PopupMode, PopupChannelIdentity>();
+    private readonly onEndpointClosed?: (mode: PopupMode) => void;
 
-    constructor(viewer: string | { source?: string; moduleUrl?: string; sourceProvider?: PopupSourceProvider }) {
+    /** Endpoint id of the live popup for `mode`, or null when none is open. */
+    popupEndpointId(mode: PopupMode): string | null {
+        return this.channels.get(mode)?.popupEndpointId ?? null;
+    }
+
+    constructor(viewer: string | PopupHostOptions) {
         if (typeof viewer === "string") {
             this.viewerJsSource = viewer;
+            this.viewerId = createSecureRuntimeId("view");
+            this.sessionId = createSecureRuntimeId("session");
+            this.authorityEndpointId = `python:${this.viewerId}`;
+            this.hostEndpointId = `widget-host:${this.sessionId}`;
+            this.router = this.createRouter();
             return;
         }
         this.viewerJsSource = viewer.source ?? "";
         this.viewerModuleUrl = viewer.moduleUrl;
         this.viewerSourceProvider = viewer.sourceProvider;
+        this.viewerId = viewer.viewerId || createSecureRuntimeId("view");
+        this.sessionId = viewer.sessionId || createSecureRuntimeId("session");
+        this.authorityEndpointId = `python:${this.viewerId}`;
+        this.hostEndpointId = `widget-host:${this.sessionId}`;
+        this.onEndpointClosed = viewer.onEndpointClosed;
+        this.router = this.createRouter();
     }
 
     private async resolveViewerJsSource(): Promise<string> {
@@ -69,6 +120,21 @@ export class PopupHostManager {
             this.panelWin = win;
             this.isPanelReady = false;
         }
+
+        const channel = createPopupChannelIdentity(
+            this.viewerId,
+            this.sessionId,
+            mode,
+            this.authorityEndpointId,
+            this.hostEndpointId,
+        );
+        this.channels.set(mode, channel);
+        this.router.registerEndpoint({
+            endpointId: channel.popupEndpointId,
+            role: mode === "canvas" ? "canvas-popup" : "panel-popup",
+        });
+        (win as Window & { molsysviewer_popup_channel?: PopupChannelIdentity })
+            .molsysviewer_popup_channel = channel;
 
         if (this.controller) {
             (win as any).molsysviewer_init_options = {
@@ -181,13 +247,19 @@ export class PopupHostManager {
                 if (!this.popoutWin || this.popoutWin.closed) {
                     this.popoutWin = null;
                     this.isReady = false;
+                    this.channels.delete("canvas");
+                    this.router.unregisterEndpoint(channel.popupEndpointId);
                     window.clearInterval(interval);
+                    this.onEndpointClosed?.("canvas");
                 }
             } else {
                 if (!this.panelWin || this.panelWin.closed) {
                     this.panelWin = null;
                     this.isPanelReady = false;
+                    this.channels.delete("panel");
+                    this.router.unregisterEndpoint(channel.popupEndpointId);
                     window.clearInterval(interval);
+                    this.onEndpointClosed?.("panel");
                     // Automatically restore host card when panel window is closed
                     if (this.controller) {
                         this.controller.restoreHostPanelState();
@@ -200,33 +272,154 @@ export class PopupHostManager {
     close(mode: "canvas" | "panel" = "canvas") {
         if (mode === "canvas") {
             if (this.popoutWin) {
+                const channel = this.channels.get("canvas");
                 this.popoutWin.close();
                 this.popoutWin = null;
                 this.isReady = false;
+                this.channels.delete("canvas");
+                if (channel) this.router.unregisterEndpoint(channel.popupEndpointId);
+                this.onEndpointClosed?.("canvas");
             }
         } else {
             if (this.panelWin) {
+                const channel = this.channels.get("panel");
                 this.panelWin.close();
                 this.panelWin = null;
                 this.isPanelReady = false;
+                this.channels.delete("panel");
+                if (channel) this.router.unregisterEndpoint(channel.popupEndpointId);
+                this.onEndpointClosed?.("panel");
             }
         }
     }
 
+    dispose(): void {
+        this.close("canvas");
+        this.close("panel");
+        this.channels.clear();
+    }
+
+    /**
+     * Deliver to exactly one popup endpoint.
+     *
+     * `send` fans out to every open popup, which is right for shared scene
+     * projections but wrong for anything endpoint-specific: a canvas bootstrap
+     * carries molecular data, and a panel popup must never receive it. Returns
+     * false when that endpoint is not open.
+     */
+    sendTo(mode: PopupMode, type: string, data: any): boolean {
+        const direction: RuntimeDirection =
+            type === "molsysviewer-sync-camera" ? "event" : "projection";
+        const target = mode === "canvas" ? this.popoutWin : this.panelWin;
+        const ready = mode === "canvas" ? this.isReady : this.isPanelReady;
+        const channel = this.channels.get(mode);
+        if (!ready || !target || target.closed || !channel) return false;
+        try {
+            this.postToPopup(target, channel, type, data, direction);
+            return true;
+        } catch (e) {
+            console.warn(`[MolSysViewer Host] ${mode} popup message failed`, e);
+            return false;
+        }
+    }
+
     send(type: string, data: any) {
+        const direction: RuntimeDirection =
+            type === "molsysviewer-sync-camera" ? "event" : "projection";
         if (this.isReady && this.popoutWin && !this.popoutWin.closed) {
             try {
-                this.popoutWin.postMessage({ type, data, from: "host" }, "*");
+                const channel = this.channels.get("canvas");
+                if (channel) {
+                    this.postToPopup(this.popoutWin, channel, type, data, direction);
+                }
             } catch (e) {
                 console.warn("[MolSysViewer Host] Popout message failed", e);
             }
         }
         if (this.isPanelReady && this.panelWin && !this.panelWin.closed) {
             try {
-                this.panelWin.postMessage({ type, data, from: "host" }, "*");
+                const channel = this.channels.get("panel");
+                if (channel) {
+                    this.postToPopup(this.panelWin, channel, type, data, direction);
+                }
             } catch (e) {
                 console.warn("[MolSysViewer Host] Panel message failed", e);
             }
         }
+    }
+
+    receive(event: MessageEvent): {
+        type: string;
+        data: unknown;
+        envelope: RuntimeEnvelope;
+        channel: PopupChannelIdentity;
+    } | null {
+        const mode =
+            event.source === this.popoutWin ? "canvas"
+            : event.source === this.panelWin ? "panel"
+            : null;
+        if (!mode) return null;
+        const channel = this.channels.get(mode);
+        const expectedSource = mode === "canvas" ? this.popoutWin : this.panelWin;
+        if (!channel || !expectedSource) return null;
+        const wire = decodePopupEvent(
+            event,
+            expectedSource,
+            channel,
+            new Set([channel.popupEndpointId]),
+        );
+        if (!wire) return null;
+        const routed = this.router.route(wire.envelope);
+        if (routed.status !== "accepted") return null;
+        return {
+            type: routed.envelope.action,
+            data: routed.envelope.payload,
+            envelope: routed.envelope,
+            channel,
+        };
+    }
+
+    private targetOrigin(): string {
+        const origin = window.location?.origin;
+        return origin && origin !== "null" ? origin : "*";
+    }
+
+    private createRouter(): RuntimeMessageRouter {
+        const router = new RuntimeMessageRouter(this.viewerId, this.sessionId);
+        router.registerEndpoint({ endpointId: this.authorityEndpointId, role: "python" });
+        router.registerEndpoint({ endpointId: this.hostEndpointId, role: "widget-host" });
+        return router;
+    }
+
+    private postToPopup(
+        target: Window,
+        channel: PopupChannelIdentity,
+        action: string,
+        payload: unknown,
+        direction: RuntimeDirection = "projection",
+    ): void {
+        const envelope: RuntimeEnvelope = {
+            protocolVersion: RUNTIME_PROTOCOL_VERSION,
+            viewerId: this.viewerId,
+            sessionId: this.sessionId,
+            endpointId:
+                direction === "projection"
+                    ? this.authorityEndpointId
+                    : this.hostEndpointId,
+            targetEndpointId: channel.popupEndpointId,
+            messageId: `${this.hostEndpointId}:${++this.messageCounter}`,
+            direction,
+            action,
+            payload,
+        };
+        const routed = this.router.route(envelope);
+        if (routed.status !== "accepted") {
+            const detail =
+                routed.status === "rejected"
+                    ? routed.detail
+                    : `duplicate message ${routed.envelope.messageId}`;
+            throw new Error(`Popup projection rejected: ${detail}`);
+        }
+        target.postMessage(encodePopupMessage(channel, envelope), this.targetOrigin());
     }
 }

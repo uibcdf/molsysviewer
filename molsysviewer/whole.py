@@ -7,6 +7,7 @@ from smonitor import signal
 
 from . import pyunitwizard as puw
 from ._private.arg_digestion import digest
+from ._private.exceptions import ArgumentError
 from .colors import expand_values_to_atoms, normalize_color
 from .scene_history import records_scene_history
 
@@ -238,6 +239,23 @@ class Whole:
         return puw.standardize(puw.quantity(centroid.tolist(), "nm"))
 
     # --- Scalar colour mapping ---
+
+    @records_scene_history
+    @signal(tags=["color", "whole"])
+    @digest()
+    def set_color(self, color: Any, skip_digestion: bool = False) -> None:
+        """Paint every atom in the whole/base color layer uniformly."""
+        if self._view._molsys is None:  # noqa: SLF001
+            raise ValueError("No molecular system loaded.")
+        try:
+            normalized = normalize_color(color)
+        except (TypeError, ValueError) as exc:
+            raise ArgumentError("color", value=color, caller="Whole.set_color") from exc
+        n_atoms = int(self._view._molsys.get_n_atoms())  # noqa: SLF001
+        self._view._set_atom_color_layer(  # noqa: SLF001
+            "whole",
+            {atom_index: normalized for atom_index in range(n_atoms)},
+        )
 
     @records_scene_history
     @signal(tags=["color", "whole"])
