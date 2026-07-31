@@ -3,7 +3,7 @@ from molsysviewer._private.exceptions import ArgumentError
 def digest_water_model(water_model, caller=None):
 
 
-    if caller=='molsysmt.basic.get.get':
+    if caller in ('molsysmt.basic.get.get', 'molsysviewer.viewer.get'):
         if isinstance(water_model, bool):
             return water_model
 

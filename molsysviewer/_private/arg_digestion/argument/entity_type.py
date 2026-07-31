@@ -26,7 +26,7 @@ def digest_entity_type(entity_type, caller=None):
         If the given `entity_type` has not of the correct type or value.
     """
 
-    if caller=='molsysmt.basic.get.get':
+    if caller in ('molsysmt.basic.get.get', 'molsysviewer.viewer.get'):
         if isinstance(entity_type, bool):
             return entity_type
     elif caller.startswith('molsysmt.form.') and caller.count('.to_')==2:

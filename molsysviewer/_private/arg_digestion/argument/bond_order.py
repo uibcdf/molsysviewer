@@ -2,7 +2,7 @@ from molsysviewer._private.exceptions import ArgumentError
 
 def digest_bond_order(bond_order, caller=None):
 
-    if caller=='molsysmt.basic.get.get':
+    if caller in ('molsysmt.basic.get.get', 'molsysviewer.viewer.get'):
         if isinstance(bond_order, bool):
             return bond_order
 

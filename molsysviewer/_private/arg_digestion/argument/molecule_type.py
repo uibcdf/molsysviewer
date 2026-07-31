@@ -26,7 +26,7 @@ def digest_molecule_type(molecule_type, caller=None):
         If the given `molecule_type` has not of the correct type or value.
     """
 
-    if caller=='molsysmt.basic.get.get':
+    if caller in ('molsysmt.basic.get.get', 'molsysviewer.viewer.get'):
         if isinstance(molecule_type, bool):
             return molecule_type
     elif caller.startswith('molsysmt.form.') and caller.count('.to_')==2:

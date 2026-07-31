@@ -2,7 +2,7 @@ from molsysviewer._private.exceptions import ArgumentError
 
 def digest_n_proteins(n_proteins, caller=None):
 
-    if caller=='molsysmt.basic.get.get':
+    if caller in ('molsysmt.basic.get.get', 'molsysviewer.viewer.get'):
         if isinstance(n_proteins, bool):
             return n_proteins
     elif caller in ('molsysmt.basic.contains.contains', 'molsysviewer.viewer.contains', 'molsysviewer.whole.contains', 'molsysviewer.regions.contains'):

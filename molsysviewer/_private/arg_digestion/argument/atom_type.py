@@ -4,6 +4,7 @@ from numpy import ndarray
 
 functions_with_boolean = (
         'molsysmt.basic.get.get',
+        'molsysviewer.viewer.get',
         'molsysmt.basic.compare.compare',
         )
 

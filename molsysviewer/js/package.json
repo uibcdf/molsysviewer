@@ -1,6 +1,6 @@
 {
   "name": "@uibcdf/molsysviewer",
-  "version": "0.14.0",
+  "version": "0.20.0",
   "private": false,
   "repository": {
     "type": "git",
@@ -67,5 +67,5 @@
     "playwright": "^1.57.0",
     "typescript": "^5.6.0"
   },
-  "pythonVersion": "0.14.0"
+  "pythonVersion": "0.20.0+60.gf023983e.dirty"
 }

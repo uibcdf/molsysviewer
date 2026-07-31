@@ -2,7 +2,7 @@ from molsysviewer._private.exceptions import ArgumentError
 
 def digest_n_bioassemblies(n_bioassemblies, caller=None):
 
-    if caller=='molsysmt.basic.get.get':
+    if caller in ('molsysmt.basic.get.get', 'molsysviewer.viewer.get'):
         if isinstance(n_bioassemblies, bool):
             return n_bioassemblies
 

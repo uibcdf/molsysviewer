@@ -3,7 +3,7 @@ import numpy as np
 
 def digest_bond_type(bond_type, caller=None):
 
-    if caller=='molsysmt.basic.get.get':
+    if caller in ('molsysmt.basic.get.get', 'molsysviewer.viewer.get'):
         if isinstance(bond_type, bool):
             return bond_type
 

@@ -3,6 +3,7 @@ from ...exceptions import ArgumentError
 
 functions_where_boolean = (
     'molsysmt.basic.get.get',
+    'molsysviewer.viewer.get',
     'molsysmt.basic.compare.compare',
     'molsysmt.basic.iterator.__init__',
     '.iterators.__init__',

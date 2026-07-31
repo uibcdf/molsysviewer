@@ -2,7 +2,7 @@ from molsysviewer._private.exceptions import ArgumentError
 
 def digest_forcefield(forcefield, caller=None):
 
-    if caller=='molsysmt.basic.get.get':
+    if caller in ('molsysmt.basic.get.get', 'molsysviewer.viewer.get'):
         if isinstance(forcefield, bool):
             return forcefield
 

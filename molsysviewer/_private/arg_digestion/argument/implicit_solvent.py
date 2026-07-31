@@ -2,7 +2,7 @@ from molsysviewer._private.exceptions import ArgumentError
 
 def digest_implicit_solvent(implicit_solvent, caller=None):
 
-    if caller=='molsysmt.basic.get.get':
+    if caller in ('molsysmt.basic.get.get', 'molsysviewer.viewer.get'):
         if isinstance(implicit_solvent, bool):
             return implicit_solvent
     elif caller=='molsysmt.basic.convert.convert':

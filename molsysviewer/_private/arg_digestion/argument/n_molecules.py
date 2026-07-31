@@ -4,6 +4,7 @@ from ..helpers import normalize_viewer_caller
 functions_with_boolean = (
         'molsysmt.basic.get.get',
         'molsysmt.basic.compare.compare',
+        'molsysviewer.viewer.get',
         )
 
 

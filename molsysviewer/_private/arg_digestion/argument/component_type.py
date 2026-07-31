@@ -26,7 +26,7 @@ def digest_component_type(component_type, caller=None):
         If the given `component_type` has not of the correct type or value.
     """
 
-    if caller=='molsysmt.basic.get.get':
+    if caller in ('molsysmt.basic.get.get', 'molsysviewer.viewer.get'):
         if isinstance(component_type, bool):
             return component_type
     elif caller.startswith('molsysmt.form.') and caller.count('.to_')==2:

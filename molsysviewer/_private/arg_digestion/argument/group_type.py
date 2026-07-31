@@ -26,7 +26,7 @@ def digest_group_type(group_type, caller=None):
         If the given `group_type` has not of the correct type or value.
     """
 
-    if caller=='molsysmt.basic.get.get':
+    if caller in ('molsysmt.basic.get.get', 'molsysviewer.viewer.get'):
         if isinstance(group_type, bool):
             return group_type
     elif caller.startswith('molsysmt.form.') and caller.count('.to_')==2:

@@ -4,7 +4,7 @@ from ...exceptions import ArgumentError
 
 def digest_box_volume(box_volume, caller=None):
 
-    if caller=='molsysmt.basic.get.get':
+    if caller in ('molsysmt.basic.get.get', 'molsysviewer.viewer.get'):
 
         if isinstance(box_volume, bool):
             return box_volume

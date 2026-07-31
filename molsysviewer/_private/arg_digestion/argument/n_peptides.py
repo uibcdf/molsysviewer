@@ -4,7 +4,7 @@ from ..helpers import normalize_viewer_caller
 def digest_n_peptides(n_peptides, caller=None):
     caller = normalize_viewer_caller(caller)
 
-    if caller=='molsysmt.basic.get.get':
+    if caller in ('molsysmt.basic.get.get', 'molsysviewer.viewer.get'):
         if isinstance(n_peptides, bool):
             return n_peptides
     elif caller in ('molsysmt.basic.contains.contains', 'molsysviewer.viewer.contains', 'molsysviewer.whole.contains', 'molsysviewer.regions.contains'):

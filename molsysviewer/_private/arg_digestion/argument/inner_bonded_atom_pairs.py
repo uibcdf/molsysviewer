@@ -25,7 +25,7 @@ def digest_inner_bonded_atom_pairs(inner_bonded_atom_pairs, caller=None):
         If the given `inner_bonded_atoms_pairs` has not of the correct type or value.
     """
 
-    if caller=='molsysmt.basic.get.get':
+    if caller in ('molsysmt.basic.get.get', 'molsysviewer.viewer.get'):
         if isinstance(inner_bonded_atom_pairs, bool):
             return inner_bonded_atom_pairs
 

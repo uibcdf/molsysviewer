@@ -3,7 +3,7 @@ import numpy as np
 
 def digest_bonded_atom_pairs(bonded_atom_pairs, caller=None):
 
-    if caller=='molsysmt.basic.get.get':
+    if caller in ('molsysmt.basic.get.get', 'molsysviewer.viewer.get'):
         if isinstance(bonded_atom_pairs, bool):
             return bonded_atom_pairs
     elif caller.endswith('add_bonds.add_bonds'):

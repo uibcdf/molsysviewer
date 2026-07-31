@@ -2,6 +2,7 @@ from molsysviewer._private.exceptions import ArgumentError
 
 functions_with_boolean = (
         'molsysmt.basic.get.get',
+        'molsysviewer.viewer.get',
         'molsysmt.basic.compare.compare',
         )
 
