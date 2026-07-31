@@ -24,7 +24,7 @@ async function run(): Promise<void> {
         );
 
         assert.deepEqual(result, {
-            type: "molsysviewer-probe-echo",
+            type: "molsysviewer-log-from-popout",
             viewerId: "e2e-popup-view",
             sessionId: "e2e-popup-session",
             mode: "canvas",

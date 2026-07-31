@@ -13,6 +13,7 @@ import {
     type RuntimeDirection,
     type RuntimeEnvelope,
 } from "../messages/runtime-router";
+import { popupActionAllows } from "../messages/runtime-actions";
 
 type PopupSourceProvider = () => string | Promise<string>;
 
@@ -371,6 +372,15 @@ export class PopupHostManager {
         if (!wire) return null;
         const routed = this.router.route(wire.envelope);
         if (routed.status !== "accepted") return null;
+        // Same guard inbound: a popup cannot invent an action, nor send one in a
+        // direction the manifest does not grant it.
+        if (!popupActionAllows(wire.envelope.action, wire.envelope.direction)) {
+            console.warn(
+                `[MolSysViewer Host] refused popup action ${wire.envelope.action} `
+                + `as ${wire.envelope.direction}: not declared in runtime_actions.json`,
+            );
+            return null;
+        }
         return {
             type: routed.envelope.action,
             data: routed.envelope.payload,
@@ -412,6 +422,15 @@ export class PopupHostManager {
             action,
             payload,
         };
+        // The popup channel now has the guard the widget seam already had: an
+        // action nobody declared, or one travelling in a direction it may not,
+        // is refused instead of being relayed on trust.
+        if (!popupActionAllows(action, direction)) {
+            throw new Error(
+                `Popup action ${action} may not travel as ${direction} `
+                + "(not declared in runtime_actions.json)",
+            );
+        }
         const routed = this.router.route(envelope);
         if (routed.status !== "accepted") {
             const detail =

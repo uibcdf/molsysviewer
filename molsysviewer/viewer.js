@@ -164853,6 +164853,141 @@ var ArrayNativeStreamReceiver = class {
   }
 };
 
+// ../runtime_actions.json
+var runtime_actions_default = {
+  protocol_version: 1,
+  comment: "Shared Python<->TypeScript action contract for the AnyWidget runtime seam (R1). Python (viewer/runtime_router.py) and TypeScript (js/src/messages/runtime-actions.ts) both load THIS file so every action is classified identically. `actions` are browser->Python; category is the RuntimeEnvelope direction the action must carry, and the envelope action must equal the payload `event`. `outbound_requests` are Python->browser requests and must never be accepted as browser-originated. `popup_actions` are the host<->popup wire actions, mapped to the directions each may legitimately carry; `molsysviewer-sync-op` is deliberately bidirectional (a projection from the host, a command from the popup), which is exactly why the direction must be declared in the envelope rather than inferred from the sender. `qt_transport` are delivery-level events the Qt bridge answers itself and never forwards to the view; the AnyWidget comm is reliable and has no equivalent. `raw` is the pre-runtime/source bootstrap (both directions), never enveloped in R1. `data_plane` travels on the array-native binary seam (both directions), not the control-plane envelope. Domain projection ops (Python->browser) are authored and trusted by the Python authority and are wrapped with direction 'projection'; they are intentionally not enumerated. NOTE: interaction_measurement_created and section_moved are still compatibility paths where the frontend acts before Python confirms; R1 protects and deduplicates them but does not yet fully normalize 'Python first, projection after' (a later slice).",
+  actions: {
+    interaction_active_selection_changed: "command",
+    interaction_context_action: "command",
+    interaction_measurement_created: "command",
+    addon_panel_action: "command",
+    section_moved: "command",
+    scene_history_undo: "command",
+    scene_history_redo: "command",
+    scene_history_coalescing_begin: "command",
+    scene_history_coalescing_end: "command",
+    interaction_hover: "event",
+    interaction_click: "event",
+    interaction_context_menu: "event",
+    interaction_tool_state: "event",
+    camera_snapshot: "event",
+    widget_resize: "event",
+    trajectory_frame_changed: "event",
+    shape_render_status: "event",
+    js_log: "event",
+    movie_frame: "event",
+    webgl_context_lost: "event",
+    webgl_context_restored: "event",
+    panel_mode_state: "event",
+    panel_navigate: "event",
+    panel_unmount: "event",
+    request_dynamic_region_evaluation: "request",
+    request_visibility_resync: "request",
+    selection_query_preview_request: "request",
+    request_popup_scene_snapshot: "request",
+    region_ack: "ack",
+    layer_ack: "ack",
+    registry_cleared: "ack",
+    region_deleted: "ack",
+    layer_deleted: "ack",
+    trajectory_frame_rendered: "ack",
+    image_export: "ack",
+    movie_export_done: "ack",
+    viewer_init_failed: "error"
+  },
+  outbound_requests: [
+    "request_camera_snapshot",
+    "request_image_export"
+  ],
+  popup_actions: {
+    "molsysviewer-initial-sync": ["projection"],
+    "molsysviewer-sync-ui": ["projection"],
+    "molsysviewer-sync-autohide": ["projection"],
+    "molsysviewer-structure-data": ["projection"],
+    "molsysviewer-sync-camera": ["event"],
+    "molsysviewer-pop-ready": ["event"],
+    "molsysviewer-panel-ready": ["event"],
+    "molsysviewer-log-from-popout": ["event"],
+    "molsysviewer-structure-data-ack": ["event"],
+    "molsysviewer-popup-interaction": ["command"],
+    "molsysviewer-sync-op": ["projection", "command"]
+  },
+  qt_transport: [
+    "message_ack",
+    "message_error",
+    "structure_ready",
+    "render_ready",
+    "frontend_error"
+  ],
+  raw: [
+    "request_widget_runtime_source",
+    "widget_runtime_source",
+    "request_popup_source",
+    "popup_source",
+    "ready"
+  ],
+  data_plane: [
+    "structure_data_begin",
+    "structure_data_chunk",
+    "structure_data_cancel",
+    "load_molsys_array_payload",
+    "structure_data_begin_ack",
+    "structure_data_chunk_ack",
+    "structure_data_complete",
+    "structure_data_error"
+  ]
+};
+
+// src/messages/runtime-actions.ts
+var RUNTIME_ACTIONS_PROTOCOL_VERSION = 1;
+var rawManifest = runtime_actions_default;
+if (rawManifest.protocol_version !== RUNTIME_ACTIONS_PROTOCOL_VERSION) {
+  throw new Error(
+    `runtime_actions.json protocol_version must be ${RUNTIME_ACTIONS_PROTOCOL_VERSION}`
+  );
+}
+var VALID = /* @__PURE__ */ new Set(["command", "event", "request", "ack", "error"]);
+var ACTION_CATEGORIES = new Map(
+  Object.entries(rawManifest.actions).map(([name, category]) => {
+    if (!VALID.has(category)) {
+      throw new Error(`runtime_actions.json action ${name} has invalid category ${category}`);
+    }
+    return [name, category];
+  })
+);
+var OUTBOUND_REQUESTS = new Set(rawManifest.outbound_requests);
+var POPUP_ACTIONS = new Map(
+  Object.entries(rawManifest.popup_actions ?? {}).map(
+    ([action, directions]) => [action, new Set(directions)]
+  )
+);
+function popupActionAllows(action, direction) {
+  return POPUP_ACTIONS.get(action)?.has(direction) ?? false;
+}
+var RAW_ACTIONS = new Set(rawManifest.raw);
+var DATA_PLANE_ACTIONS = new Set(rawManifest.data_plane);
+(() => {
+  const groups = [
+    new Set(ACTION_CATEGORIES.keys()),
+    OUTBOUND_REQUESTS,
+    RAW_ACTIONS,
+    DATA_PLANE_ACTIONS
+  ];
+  const seen = /* @__PURE__ */ new Set();
+  for (const group of groups) {
+    for (const name of group) {
+      if (seen.has(name)) {
+        throw new Error(`runtime_actions.json action appears in two groups: ${name}`);
+      }
+      seen.add(name);
+    }
+  }
+})();
+function categoryOf(action) {
+  return ACTION_CATEGORIES.get(action);
+}
+
 // src/popup/popup-logic.ts
 var bootPopup = async (loadedModule) => {
   const openerWin = window.opener;
@@ -165111,6 +165246,12 @@ var bootPopup = async (loadedModule) => {
     if (message.envelope.endpointId !== popupChannel.authorityEndpointId && message.envelope.endpointId !== popupChannel.hostEndpointId) return;
     const routed = runtimeRouter.route(message.envelope);
     if (routed.status !== "accepted") return;
+    if (!popupActionAllows(routed.envelope.action, routed.envelope.direction)) {
+      console.warn(
+        `[MolSysViewer Popup] refused host action ${routed.envelope.action} as ${routed.envelope.direction}: not declared in runtime_actions.json`
+      );
+      return;
+    }
     const type3 = routed.envelope.action;
     const data = routed.envelope.payload;
     const ctrl2 = await popControllerPromise;
@@ -165670,6 +165811,12 @@ var PopupHostManager = class {
     if (!wire) return null;
     const routed = this.router.route(wire.envelope);
     if (routed.status !== "accepted") return null;
+    if (!popupActionAllows(wire.envelope.action, wire.envelope.direction)) {
+      console.warn(
+        `[MolSysViewer Host] refused popup action ${wire.envelope.action} as ${wire.envelope.direction}: not declared in runtime_actions.json`
+      );
+      return null;
+    }
     return {
       type: routed.envelope.action,
       data: routed.envelope.payload,
@@ -165699,6 +165846,11 @@ var PopupHostManager = class {
       action,
       payload
     };
+    if (!popupActionAllows(action, direction)) {
+      throw new Error(
+        `Popup action ${action} may not travel as ${direction} (not declared in runtime_actions.json)`
+      );
+    }
     const routed = this.router.route(envelope);
     if (routed.status !== "accepted") {
       const detail = routed.status === "rejected" ? routed.detail : `duplicate message ${routed.envelope.messageId}`;
@@ -166997,120 +167149,6 @@ var PopupReplayLog = class {
     return this.entries.length;
   }
 };
-
-// ../runtime_actions.json
-var runtime_actions_default = {
-  protocol_version: 1,
-  comment: "Shared Python<->TypeScript action contract for the AnyWidget runtime seam (R1). Python (viewer/runtime_router.py) and TypeScript (js/src/messages/runtime-actions.ts) both load THIS file so every action is classified identically. `actions` are browser->Python; category is the RuntimeEnvelope direction the action must carry, and the envelope action must equal the payload `event`. `outbound_requests` are Python->browser requests and must never be accepted as browser-originated. `qt_transport` are delivery-level events the Qt bridge answers itself and never forwards to the view; the AnyWidget comm is reliable and has no equivalent. `raw` is the pre-runtime/source bootstrap (both directions), never enveloped in R1. `data_plane` travels on the array-native binary seam (both directions), not the control-plane envelope. Domain projection ops (Python->browser) are authored and trusted by the Python authority and are wrapped with direction 'projection'; they are intentionally not enumerated. NOTE: interaction_measurement_created and section_moved are still compatibility paths where the frontend acts before Python confirms; R1 protects and deduplicates them but does not yet fully normalize 'Python first, projection after' (a later slice).",
-  actions: {
-    interaction_active_selection_changed: "command",
-    interaction_context_action: "command",
-    interaction_measurement_created: "command",
-    addon_panel_action: "command",
-    section_moved: "command",
-    scene_history_undo: "command",
-    scene_history_redo: "command",
-    scene_history_coalescing_begin: "command",
-    scene_history_coalescing_end: "command",
-    interaction_hover: "event",
-    interaction_click: "event",
-    interaction_context_menu: "event",
-    interaction_tool_state: "event",
-    camera_snapshot: "event",
-    widget_resize: "event",
-    trajectory_frame_changed: "event",
-    shape_render_status: "event",
-    js_log: "event",
-    movie_frame: "event",
-    webgl_context_lost: "event",
-    webgl_context_restored: "event",
-    panel_mode_state: "event",
-    panel_navigate: "event",
-    panel_unmount: "event",
-    request_dynamic_region_evaluation: "request",
-    request_visibility_resync: "request",
-    selection_query_preview_request: "request",
-    request_popup_scene_snapshot: "request",
-    region_ack: "ack",
-    layer_ack: "ack",
-    registry_cleared: "ack",
-    region_deleted: "ack",
-    layer_deleted: "ack",
-    trajectory_frame_rendered: "ack",
-    image_export: "ack",
-    movie_export_done: "ack",
-    viewer_init_failed: "error"
-  },
-  outbound_requests: [
-    "request_camera_snapshot",
-    "request_image_export"
-  ],
-  qt_transport: [
-    "message_ack",
-    "message_error",
-    "structure_ready",
-    "render_ready",
-    "frontend_error"
-  ],
-  raw: [
-    "request_widget_runtime_source",
-    "widget_runtime_source",
-    "request_popup_source",
-    "popup_source",
-    "ready"
-  ],
-  data_plane: [
-    "structure_data_begin",
-    "structure_data_chunk",
-    "structure_data_cancel",
-    "load_molsys_array_payload",
-    "structure_data_begin_ack",
-    "structure_data_chunk_ack",
-    "structure_data_complete",
-    "structure_data_error"
-  ]
-};
-
-// src/messages/runtime-actions.ts
-var RUNTIME_ACTIONS_PROTOCOL_VERSION = 1;
-var rawManifest = runtime_actions_default;
-if (rawManifest.protocol_version !== RUNTIME_ACTIONS_PROTOCOL_VERSION) {
-  throw new Error(
-    `runtime_actions.json protocol_version must be ${RUNTIME_ACTIONS_PROTOCOL_VERSION}`
-  );
-}
-var VALID = /* @__PURE__ */ new Set(["command", "event", "request", "ack", "error"]);
-var ACTION_CATEGORIES = new Map(
-  Object.entries(rawManifest.actions).map(([name, category]) => {
-    if (!VALID.has(category)) {
-      throw new Error(`runtime_actions.json action ${name} has invalid category ${category}`);
-    }
-    return [name, category];
-  })
-);
-var OUTBOUND_REQUESTS = new Set(rawManifest.outbound_requests);
-var RAW_ACTIONS = new Set(rawManifest.raw);
-var DATA_PLANE_ACTIONS = new Set(rawManifest.data_plane);
-(() => {
-  const groups = [
-    new Set(ACTION_CATEGORIES.keys()),
-    OUTBOUND_REQUESTS,
-    RAW_ACTIONS,
-    DATA_PLANE_ACTIONS
-  ];
-  const seen = /* @__PURE__ */ new Set();
-  for (const group of groups) {
-    for (const name of group) {
-      if (seen.has(name)) {
-        throw new Error(`runtime_actions.json action appears in two groups: ${name}`);
-      }
-      seen.add(name);
-    }
-  }
-})();
-function categoryOf(action) {
-  return ACTION_CATEGORIES.get(action);
-}
 
 // src/messages/widget-envelope.ts
 var RUNTIME_PROTOCOL_VERSION2 = 1;

@@ -42,6 +42,20 @@ embeds that widget in its panel host area when the user navigates to that panel.
 - The same communication channel (JSON messages over the widget protocol)
   already exists between Python and the canvas. Panel ↔ Python uses the same
   model.
+
+*Clarification (2026-07-31):* "the same model" means the same anywidget
+transport, **not** the same wire format. Since the runtime envelope landed, the
+viewer's own channel wraps every message in a `RuntimeEnvelope` and routes it
+through `WidgetRuntimeRouter`, which owns identity, direction and command
+deduplication. The add-on panel channel is deliberately **not** enveloped: it
+carries a small `{type: "action" | "query"}` vocabulary and terminates in
+`handle_action(view, ...)`, which calls the **public Python API**. Authority is
+preserved for the reason `engineering_rules.md` §1 gives — a capability is a
+public Python method first — so an add-on mutates the viewer the same way a user
+does in a cell, and inherits history and checkpoints for free. Do not "upgrade"
+this channel to envelopes: enveloping exists to arbitrate a channel with several
+endpoints (canvas, popups, Qt) competing to mutate one viewer. A panel widget is
+a single endpoint talking to Python, and the envelope would buy it nothing.
 - anywidget works in every MolSysViewer host: Jupyter, JupyterLab, VS Code
   notebooks, and Qt WebEngine (standalone). The panel author does not need to
   know which host is active.

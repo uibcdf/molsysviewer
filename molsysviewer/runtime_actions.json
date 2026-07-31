@@ -1,6 +1,6 @@
 {
   "protocol_version": 1,
-  "comment": "Shared Python<->TypeScript action contract for the AnyWidget runtime seam (R1). Python (viewer/runtime_router.py) and TypeScript (js/src/messages/runtime-actions.ts) both load THIS file so every action is classified identically. `actions` are browser->Python; category is the RuntimeEnvelope direction the action must carry, and the envelope action must equal the payload `event`. `outbound_requests` are Python->browser requests and must never be accepted as browser-originated. `qt_transport` are delivery-level events the Qt bridge answers itself and never forwards to the view; the AnyWidget comm is reliable and has no equivalent. `raw` is the pre-runtime/source bootstrap (both directions), never enveloped in R1. `data_plane` travels on the array-native binary seam (both directions), not the control-plane envelope. Domain projection ops (Python->browser) are authored and trusted by the Python authority and are wrapped with direction 'projection'; they are intentionally not enumerated. NOTE: interaction_measurement_created and section_moved are still compatibility paths where the frontend acts before Python confirms; R1 protects and deduplicates them but does not yet fully normalize 'Python first, projection after' (a later slice).",
+  "comment": "Shared Python<->TypeScript action contract for the AnyWidget runtime seam (R1). Python (viewer/runtime_router.py) and TypeScript (js/src/messages/runtime-actions.ts) both load THIS file so every action is classified identically. `actions` are browser->Python; category is the RuntimeEnvelope direction the action must carry, and the envelope action must equal the payload `event`. `outbound_requests` are Python->browser requests and must never be accepted as browser-originated. `popup_actions` are the host<->popup wire actions, mapped to the directions each may legitimately carry; `molsysviewer-sync-op` is deliberately bidirectional (a projection from the host, a command from the popup), which is exactly why the direction must be declared in the envelope rather than inferred from the sender. `qt_transport` are delivery-level events the Qt bridge answers itself and never forwards to the view; the AnyWidget comm is reliable and has no equivalent. `raw` is the pre-runtime/source bootstrap (both directions), never enveloped in R1. `data_plane` travels on the array-native binary seam (both directions), not the control-plane envelope. Domain projection ops (Python->browser) are authored and trusted by the Python authority and are wrapped with direction 'projection'; they are intentionally not enumerated. NOTE: interaction_measurement_created and section_moved are still compatibility paths where the frontend acts before Python confirms; R1 protects and deduplicates them but does not yet fully normalize 'Python first, projection after' (a later slice).",
   "actions": {
     "interaction_active_selection_changed": "command",
     "interaction_context_action": "command",
@@ -48,6 +48,19 @@
     "request_camera_snapshot",
     "request_image_export"
   ],
+  "popup_actions": {
+    "molsysviewer-initial-sync": ["projection"],
+    "molsysviewer-sync-ui": ["projection"],
+    "molsysviewer-sync-autohide": ["projection"],
+    "molsysviewer-structure-data": ["projection"],
+    "molsysviewer-sync-camera": ["event"],
+    "molsysviewer-pop-ready": ["event"],
+    "molsysviewer-panel-ready": ["event"],
+    "molsysviewer-log-from-popout": ["event"],
+    "molsysviewer-structure-data-ack": ["event"],
+    "molsysviewer-popup-interaction": ["command"],
+    "molsysviewer-sync-op": ["projection", "command"]
+  },
   "qt_transport": [
     "message_ack",
     "message_error",

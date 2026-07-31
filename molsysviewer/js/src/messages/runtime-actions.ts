@@ -15,6 +15,8 @@ const rawManifest = manifest as {
     outbound_requests: string[];
     raw: string[];
     data_plane: string[];
+    qt_transport: string[];
+    popup_actions: Record<string, string[]>;
 };
 
 if (rawManifest.protocol_version !== RUNTIME_ACTIONS_PROTOCOL_VERSION) {
@@ -35,6 +37,23 @@ export const ACTION_CATEGORIES: ReadonlyMap<string, RuntimeActionCategory> = new
 );
 
 export const OUTBOUND_REQUESTS: ReadonlySet<string> = new Set(rawManifest.outbound_requests);
+
+/**
+ * Host<->popup wire actions and the directions each may carry. `sync-op` is
+ * bidirectional on purpose — a projection from the host, a command from the
+ * popup — which is precisely why direction is declared in the envelope instead
+ * of inferred from which window sent it, the defect this vocabulary had.
+ */
+export const POPUP_ACTIONS: ReadonlyMap<string, ReadonlySet<string>> = new Map(
+    Object.entries(rawManifest.popup_actions ?? {}).map(
+        ([action, directions]) => [action, new Set(directions)] as const,
+    ),
+);
+
+/** True when `action` may legitimately travel in `direction` on the popup channel. */
+export function popupActionAllows(action: string, direction: string): boolean {
+    return POPUP_ACTIONS.get(action)?.has(direction) ?? false;
+}
 export const RAW_ACTIONS: ReadonlySet<string> = new Set(rawManifest.raw);
 export const DATA_PLANE_ACTIONS: ReadonlySet<string> = new Set(rawManifest.data_plane);
 

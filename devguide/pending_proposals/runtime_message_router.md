@@ -517,24 +517,36 @@ what reaches `MolSysViewerController.handleMessage`, and asserts the valid
 projection arrives so the isolation check has something to contrast with.
 Mutation-verified: removing the session check fails it in the real browser.
 
-#### Open: the legacy popup vocabulary is wrapped, not migrated
+#### The legacy popup vocabulary, migrated to the manifest
 
-Thirteen actions still cross the host/popup channel under their original names:
-`molsysviewer-sync-op`, `sync-ui`, `sync-camera`, `sync-autohide`,
-`initial-sync`, `pop-ready`, `panel-ready`, `popup-interaction`,
-`log-from-popout`, `pop-slider-style`, `structure-data`,
-`structure-data-ack`, and `pop`.
+Eleven actions cross the host/popup channel under their original names. Wrapping
+them in a `RuntimeEnvelope` had already fixed the central defect — direction is
+declared in the message instead of inferred from which window sent it — but the
+names themselves were not in `runtime_actions.json`, so that channel had no
+equivalent of the guard that makes the widget seam refuse an unknown action. The
+manifest was the single source of truth for one channel and not the other.
 
-They now travel inside a `RuntimeEnvelope`, so the central defect is gone:
-direction is declared in the message instead of inferred from which window sent
-it. But they are **not enumerated in `runtime_actions.json`**, so this channel
-has no equivalent of the guard that makes the widget seam reject an unknown
-action. The manifest is the single source of truth for one channel and not the
-other.
+They are now declared in a `popup_actions` group that maps each action to the
+directions it may carry, and both ends validate against it: the host refuses to
+emit an undeclared action, and both the host and the popup refuse to accept one.
 
-Migrating them means classifying each as command/projection/event/request and
-adding the same validation the widget seam has. It is bounded work and it is
-what would let the manifest cover every channel rather than most of them.
+`molsysviewer-sync-op` is declared as **both** projection and command. That is
+not laxity: it is genuinely bidirectional — a projection from the host, a command
+from the popup — and it was the example the spec used to explain why direction
+must live in the message. Declaring both is what makes the ambiguity explicit
+instead of implicit.
+
+Two fixtures had to change, and both were wrong rather than inconvenient:
+
+- `popup-logic.test.ts` sent every action as a projection, including
+  `molsysviewer-sync-camera`, which production sends as an ephemeral event. The
+  test passed only because nothing validated direction.
+- The `popup-channel` E2E probe drove the channel with synthetic
+  `molsysviewer-probe` actions. It now uses declared ones, so it exercises the
+  channel the way production does and the guard applies to it too.
+
+Mutation-verified: removing the outbound check lets an undeclared action reach
+the popup and fails the test that pins it.
 
 ### R3. Qt parity
 

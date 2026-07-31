@@ -71,6 +71,18 @@ Git retains the plan.
 - [`smoke_test.md`](smoke_test.md)
 - [`benchmarks/README.md`](benchmarks/README.md)
 
+### Performance baselines
+
+Measured evidence, not estimates. Each records the command that reproduces it.
+
+- [`performance/trajectory_transport_baseline_2026_07.md`](performance/trajectory_transport_baseline_2026_07.md)
+  — AnyWidget trajectory transport.
+- [`performance/qt_transport_baseline_2026_07.md`](performance/qt_transport_baseline_2026_07.md)
+  — Qt standalone transport; why binary needs no new channel.
+- [`performance/message_path_regression_check_2026_07.md`](performance/message_path_regression_check_2026_07.md)
+  — the post-envelope message-path baseline required by
+  [`engineering_rules.md`](engineering_rules.md) §6.
+
 ### Standalone
 
 - [`standalone_direction.md`](standalone_direction.md)

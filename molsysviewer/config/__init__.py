@@ -69,7 +69,34 @@ def set_default_standard_units(standards: list[str] | None = None, skip_digestio
     from molsysviewer._pyunitwizard import puw
     puw.configure.set_standard_units(standards)
 
+# Scale budget for materialized structures.
+
+@signal(tags=["config", "performance"])
+@digest()
+def set_structure_scale_budget(budget_bytes: int, skip_digestion: bool = False):
+    """Set the coordinate budget above which a large load warns.
+
+    MolSysViewer materializes every selected structure, so this is an honest
+    ceiling rather than a limit: raise it when the machine can hold more, lower
+    it to be told sooner, or pass 0 to silence the warning. The budget is
+    measured in coordinate bytes (atoms x structures x 3 x float32).
+    """
+    from .._private import scale_budget
+
+    scale_budget.DEFAULT_COORDINATE_BUDGET_BYTES = int(budget_bytes)
+
+
+@signal(tags=["config", "query"])
+def get_structure_scale_budget() -> int:
+    """Current coordinate budget in bytes; 0 means the warning is silenced."""
+    from .._private import scale_budget
+
+    return int(scale_budget.DEFAULT_COORDINATE_BUDGET_BYTES)
+
+
 __all__.extend([
+    "set_structure_scale_budget",
+    "get_structure_scale_budget",
     "set_default_quantities_form",
     "set_default_quantities_parser",
     "set_default_standard_units",

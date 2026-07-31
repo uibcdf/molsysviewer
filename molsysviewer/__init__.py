@@ -149,23 +149,8 @@ def launch_standalone_qt0(*args, **kwargs):
     return _launch_standalone_qt0(*args, **kwargs)
 
 
-def set_structure_scale_budget(budget_bytes: int) -> None:
-    """Set the coordinate budget above which a large load warns.
-
-    MolSysViewer 1.0 materializes every selected structure, so the guard is an
-    honest ceiling rather than a limit: raise it when the machine can hold more,
-    or lower it to be told sooner. Pass 0 to silence the warning entirely.
-    """
-    from ._private import scale_budget
-
-    if not isinstance(budget_bytes, int) or isinstance(budget_bytes, bool) or budget_bytes < 0:
-        raise ValueError("budget_bytes must be a non-negative integer")
-    scale_budget.DEFAULT_COORDINATE_BUDGET_BYTES = budget_bytes
-
-
 __all__ = [
     "MolSysView",
-    "set_structure_scale_budget",
     "ViewerInfo",
     "new_view",
     "demo",

@@ -17,11 +17,11 @@ You treat these as public:
 - `molsysviewer.styles.Style`
 - `molsysviewer.styles.BUILTIN_SCENE_STYLES`
 - `molsysviewer.styles.BUILTIN_FOCUS_STYLES`
-- `molsysviewer.set_structure_scale_budget`
+- `molsysviewer.config.set_structure_scale_budget` / `get_structure_scale_budget`
 
 If you rename, remove, or change behavior here, you update docs and add tests.
 
-### `set_structure_scale_budget(budget_bytes)`
+### `config.set_structure_scale_budget(budget_bytes)`
 
 MolSysViewer materializes **every** selected structure: `view.molsys` is the
 complete selected system, and scientific operations, add-ons and measurements
@@ -35,8 +35,9 @@ ceiling is 256 MB of coordinates (`atoms x structures x 3 x float32`).
 ```python
 import molsysviewer as msv
 
-msv.set_structure_scale_budget(1024 * 1024 * 1024)  # allow up to 1 GB
-msv.set_structure_scale_budget(0)                   # silence the warning
+msv.config.set_structure_scale_budget(1024 * 1024 * 1024)  # allow up to 1 GB
+msv.config.set_structure_scale_budget(0)                   # silence the warning
+msv.config.get_structure_scale_budget()                   # current ceiling
 ```
 
 It **warns, never refuses** — only you know what your machine can hold. Note

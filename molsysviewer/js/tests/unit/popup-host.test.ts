@@ -378,3 +378,26 @@ test("sendTo reports failure instead of delivering when that endpoint is closed"
         (globalThis as any).window = previousWindow;
     }
 });
+
+
+test("the host refuses to emit an action the manifest does not declare", async () => {
+    const previousWindow = (globalThis as any).window;
+    const { popup } = makePopupWindow();
+    (globalThis as any).window = {
+        location: { href: "https://notebook.example.dev/lab", origin: "https://notebook.example.dev" },
+        open: () => popup,
+        setInterval: () => 1,
+        clearInterval: (_id: number) => {},
+    };
+    const manager = new PopupHostManager({ source: "viewer-source", viewerId: "view-a", sessionId: "session-a" });
+    try {
+        await manager.open("canvas");
+        manager.isReady = true;
+        popup.posted.length = 0;
+        // `send` swallows the throw and warns; what must hold is that nothing lands.
+        manager.send("molsysviewer-not-declared", { any: "payload" });
+        assert.equal(popup.posted.length, 0, "an undeclared action must not reach the popup");
+    } finally {
+        (globalThis as any).window = previousWindow;
+    }
+});

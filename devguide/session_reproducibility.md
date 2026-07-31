@@ -117,6 +117,20 @@ reproducible. Proposed for the future; not built. If pursued, it would sit
 alongside — not replace — the snapshot state, since a self-documenting *history*
 and a reloadable *snapshot* answer different questions (§Terminology).
 
+*Note (2026-07-31):* the runtime envelope makes this proposal materially
+cheaper without having been designed for it. Every message now carries
+`messageId`, `correlationId`, `action` and a `direction`, and
+`WidgetRuntimeRouter` already establishes the invariant a command log needs:
+**one `command` message → one public-API mutation → one history checkpoint**,
+with duplicates rejected rather than replayed. The raw material for a command
+log is therefore already on the wire and already deduplicated; what is still
+missing is only the *inverse* of each operation, which was always the expensive
+half of the objection above. This does not reopen the decision — Phase 8 stays
+snapshot-based — but a future attempt starts from a much better position than
+this section assumed. The router's command record is a bounded LRU for
+deduplication and is explicitly **not** a history: do not grow it into one
+without deciding the questions in this section first.
+
 ## Where the mechanism lives
 
 - `molsysviewer/viewer/state.py` — `export_state` / `import_state`, `STATE_VERSION`.

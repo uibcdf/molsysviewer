@@ -27,7 +27,9 @@ function hostWire(action: string, payload: unknown) {
             endpointId: TEST_CHANNEL.authorityEndpointId,
             targetEndpointId: TEST_CHANNEL.popupEndpointId,
             messageId: `host-test:${++hostMessageCounter}`,
-            direction: "projection",
+            // Mirror the host: camera sync is an ephemeral event, everything
+            // else a projection (see PopupHostManager.postToPopup).
+            direction: action === "molsysviewer-sync-camera" ? "event" : "projection",
             action,
             payload,
         },

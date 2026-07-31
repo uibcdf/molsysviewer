@@ -12,6 +12,7 @@ import {
     type RuntimeEnvelope,
 } from "../messages/runtime-router";
 import { ArrayNativeStreamReceiver } from "../messages/array-native-stream";
+import { popupActionAllows } from "../messages/runtime-actions";
 
 /**
  * This function contains the entire logic that runs INSIDE the popup window.
@@ -324,6 +325,13 @@ export const bootPopup = async (loadedModule?: any) => {
         ) return;
         const routed = runtimeRouter.route(message.envelope);
         if (routed.status !== "accepted") return;
+        if (!popupActionAllows(routed.envelope.action, routed.envelope.direction)) {
+            console.warn(
+                `[MolSysViewer Popup] refused host action ${routed.envelope.action} `
+                + `as ${routed.envelope.direction}: not declared in runtime_actions.json`,
+            );
+            return;
+        }
         const type = routed.envelope.action;
         const data: any = routed.envelope.payload;
         // We need to await the controller promise created above

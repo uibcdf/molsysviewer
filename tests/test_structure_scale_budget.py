@@ -79,11 +79,11 @@ def test_the_budget_is_publicly_configurable_and_can_be_silenced():
     original = scale_budget.DEFAULT_COORDINATE_BUDGET_BYTES
     try:
         # Lowering it makes the guard speak sooner...
-        msv.set_structure_scale_budget(1)
+        msv.config.set_structure_scale_budget(1)
         with pytest.warns(StructureScaleWarning):
             check_structure_scale(62, 5000, budget_bytes=scale_budget.DEFAULT_COORDINATE_BUDGET_BYTES)
         # ...and zero silences it entirely, for a machine that can hold anything.
-        msv.set_structure_scale_budget(0)
+        msv.config.set_structure_scale_budget(0)
         with warnings.catch_warnings():
             warnings.simplefilter("error")
             assert check_structure_scale(
@@ -96,7 +96,7 @@ def test_the_budget_is_publicly_configurable_and_can_be_silenced():
 @pytest.mark.parametrize("bad", [-1, 1.5, True, "256"])
 def test_the_public_setter_rejects_nonsense(bad):
     with pytest.raises(ValueError):
-        msv.set_structure_scale_budget(bad)
+        msv.config.set_structure_scale_budget(bad)
 
 
 def test_a_real_load_within_budget_does_not_warn():
@@ -114,7 +114,7 @@ def test_a_real_load_over_a_lowered_budget_warns():
 
     original = scale_budget.DEFAULT_COORDINATE_BUDGET_BYTES
     try:
-        msv.set_structure_scale_budget(1024)  # 1 KB: anything real exceeds it
+        msv.config.set_structure_scale_budget(1024)  # 1 KB: anything real exceeds it
         view = msv.MolSysView()
         with pytest.warns(StructureScaleWarning):
             view.load(msm.systems["pentalanine"]["traj_pentalanine.h5msm"])

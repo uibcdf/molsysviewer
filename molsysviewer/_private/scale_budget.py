@@ -101,7 +101,7 @@ def check_structure_scale(
         f"To stay under budget, load a subset, for example "
         f"structure_indices=range(0, {n_structures}, {stride}) "
         f"({kept} structures). Raise the ceiling with "
-        f"molsysviewer.set_structure_scale_budget(bytes) if this machine can hold it.",
+        f"molsysviewer.config.set_structure_scale_budget(bytes) if this machine can hold it.",
         StructureScaleWarning,
         stacklevel=stacklevel,
     )

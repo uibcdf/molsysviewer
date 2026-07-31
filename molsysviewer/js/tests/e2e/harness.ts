@@ -76,7 +76,7 @@ export async function probePopupChannel(): Promise<{
                     message.channel?.sessionId !== channel.sessionId ||
                     message.envelope?.endpointId !== channel.authorityEndpointId
                 ) return;
-                send("molsysviewer-probe-echo", message.envelope.payload);
+                send("molsysviewer-log-from-popout", message.envelope.payload);
             });
             send("molsysviewer-pop-ready", null);
         }
@@ -103,10 +103,12 @@ export async function probePopupChannel(): Promise<{
             if (!message) return;
             if (message.type === "molsysviewer-pop-ready") {
                 manager.isReady = true;
-                manager.send("molsysviewer-probe", { value: 7 });
+                // Real declared actions, so the probe exercises the channel as production
+                // uses it and the manifest guard applies to it too.
+                manager.send("molsysviewer-sync-ui", { value: 7 });
                 return;
             }
-            if (message.type === "molsysviewer-probe-echo") {
+            if (message.type === "molsysviewer-log-from-popout") {
                 const channel = message.channel;
                 cleanup();
                 resolve({

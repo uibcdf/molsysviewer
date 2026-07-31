@@ -156,3 +156,30 @@ test("an outbound request unwraps as a request-direction message", () => {
     }));
     assert.strictEqual(res.kind, "message");
 });
+
+// --- gate 25: the popup channel has the same guard as the widget seam -------
+
+test("every popup wire action is declared with the directions it may carry", () => {
+    const { POPUP_ACTIONS, popupActionAllows } = require("../../src/messages/runtime-actions");
+    assert.ok(POPUP_ACTIONS.size >= 11, "the popup vocabulary must be enumerated");
+
+    // sync-op is deliberately bidirectional: a projection from the host, a
+    // command from the popup. That ambiguity is the reason direction has to be
+    // declared in the envelope instead of inferred from the sender.
+    assert.equal(popupActionAllows("molsysviewer-sync-op", "projection"), true);
+    assert.equal(popupActionAllows("molsysviewer-sync-op", "command"), true);
+
+    // Camera sync is ephemeral and must never pass as a reproducible projection.
+    assert.equal(popupActionAllows("molsysviewer-sync-camera", "event"), true);
+    assert.equal(popupActionAllows("molsysviewer-sync-camera", "projection"), false);
+
+    // A readiness event is not a command.
+    assert.equal(popupActionAllows("molsysviewer-pop-ready", "event"), true);
+    assert.equal(popupActionAllows("molsysviewer-pop-ready", "command"), false);
+});
+
+test("an action nobody declared is refused on the popup channel", () => {
+    const { popupActionAllows } = require("../../src/messages/runtime-actions");
+    assert.equal(popupActionAllows("molsysviewer-made-up", "projection"), false);
+    assert.equal(popupActionAllows("", "event"), false);
+});
