@@ -173,7 +173,6 @@ Deciding release readiness against a stale plan is its own risk.
 | # | Gate | Notes |
 |---|---|---|
 | 20 | **Qt parity (R3) and its own benchmark** | ✅ done. The benchmark measured 4.3 s of Python preparation for 5,000 structures against 36 ms array-native, so Qt now serves raw arrays through the scheme handler it already had. R3 closed a real fork: an unknown action was rejected observably on AnyWidget and accepted in silence on Qt. |
-| 21 | **Qt render in CI (level 2)** | The render gate itself is **already closed**: validated on a real GPU (aleph, 2026-07-04), see [`standalone_qt_ci_and_gl_decisions.md`](standalone_qt_ci_and_gl_decisions.md). What is pending is automating it as a separate non-blocking job on a GPU runner. Software-GL under xvfb is the explicitly non-preferred Plan C. |
 | 22 | **Notebook execution in CI** | See [`pending_proposals/documentation_execution_in_ci.md`](pending_proposals/documentation_execution_in_ci.md). `docs/execute_notebooks.py` is the real check; Sphinx does not execute notebooks, which is how ten broken ones survived unnoticed. |
 | 25 | **Legacy popup vocabulary** | Thirteen host/popup actions travel inside an envelope but are not in the shared manifest, so that channel has no unknown-action guard. See the runtime router proposal. |
 | 23 | **Widget seam E2E** | ✅ done. `widget-seam.e2e.ts` drives the real `render()` in Chromium: raw `ready`, enveloped outbound, a valid projection reaching the controller, and a foreign session never reaching it. |
@@ -199,6 +198,7 @@ Tasks that extend the reach and automation of the project but do not block the i
 |---|---|---|---|
 | 11 | **Scientific Tutorials**: 3-5 case-driven notebooks | Focus on real problems (Pocket Contact Analysis, Conformational Comparison, Pharmacophore Model). Postponed to post-1.0 to wait until sibling tools (`elastnetmt`, `pharmacophoremt`, `molsysmt`, `topomt`) and their respective addons are fully mature and polished. | Postponed |
 | 16 | **E2E Playwright CI Automation** | `CI_e2e.yaml` runs `npm run test:e2e` on every pull request to `main` | ✅ done (this entry was stale) |
+| 21 | **Qt render check on a GPU runner** | Moved out of the 1.0 gates: the render itself is already validated on real GPU, and Decision 1 classifies the CI job as level 2, non-blocking. See [`pending_proposals/post_1.0/qt_render_check_on_a_gpu_runner.md`](pending_proposals/post_1.0/qt_render_check_on_a_gpu_runner.md). Needs a machine with a GPU **and a graphical session**. | Post-1.0 |
 | 17 | **macOS & Windows Standalone Support** | Build and publish PySide6/QtWebEngine conda recipes for macOS and Windows | Planned |
 | 18 | Add Windows to CI matrix | Standard runner compatibility verification | Planned |
 | 19 | Add Python 3.13 to CI matrix | Upgrade testing environment; local development already uses Python 3.13, CI currently covers 3.11-3.12 because the conda `smonitor` build set no longer resolves for Python 3.10 | Planned |

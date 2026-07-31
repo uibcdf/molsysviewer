@@ -49,3 +49,7 @@ changes, and includes serialization in the same slice for user-created state.
 Render claims require Mol* real; performance claims require recorded fixtures
 and commands. Once the work is implemented and documented durably, remove its
 proposal rather than leaving a completed plan in this directory.
+
+`qt_render_check_on_a_gpu_runner.md` is infrastructure rather than design: the
+Qt render gate is already closed on a real GPU, and what remains is a
+non-blocking CI job that needs a machine with a GPU and a graphical session.
