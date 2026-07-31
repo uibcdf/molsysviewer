@@ -1787,6 +1787,81 @@ damaged, destroyed — or, post-1.0, of another kind entirely
   Cheap and useful, but it is new API surface and this block has enough (§0.12).
   Deferred on purpose.
 
+### Contract S8 — A scene message never overtakes the structure it describes
+
+**Established 2026-07-31, after the defect below shipped and was found by hand.**
+
+Every handler that draws into the scene needs a `Structure` to draw on, and each
+one gives up silently when there is none — `addMeasurement` opens with
+`if (!structure) return;`, and the annotation and region handlers do the same. So
+the ordering guarantee is not a nicety: it is the only thing standing between a
+correct scene and a silently empty one.
+
+On the JSON path that guarantee was free. `index.ts` serialises inbound messages
+through a promise chain that **awaits** `handleMessage(load_molsys_payload)` before
+taking the next one, so nothing could arrive early. **The array-native data plane
+removed it without replacing it.** `_try_send_array_native_molsys` returns as soon
+as `structure_data_begin` is on the wire; the structure is built in the browser
+several ack round-trips later, when the last chunk lands and
+`array-native-stream.ts` awaits `onComplete` before notifying
+`structure_data_complete`. Everything Python sent in between reached a frontend
+with nothing to draw on.
+
+The damage was real and invisible in equal measure:
+
+```python
+v = demo["181L"]                    # queued in _message_history
+v.measurements.add_distance(...)    # queued too
+v                                   # displayed -> frontend says "ready"
+```
+
+On `ready` the whole history was replayed in one synchronous loop: the stream
+started, and the measurement went out **immediately behind `structure_data_begin`,
+before a single byte of coordinates**. The measurement existed, was correct,
+stored and queryable through the API — and was never drawn. No exception, no
+warning, a green suite. It survived two rounds of smoke testing looking like a
+Mol\* problem, because a measurement made from the Studio subpanel *did* render:
+that one is created interactively, long after the structure exists.
+
+`_answer_popup_scene_snapshot` was the second instance of the same defect: it
+streams the generation to the popup endpoint and then sent the entire projected
+scene at once, so a popped-out canvas showed the molecule and nothing else.
+
+**The rule.** `_send_widget_message` holds scene messages while a structure
+generation is in flight and flushes them, in order, once the frontend confirms the
+structure is applied (`structure_data_complete`, the JSON fallback, or a cancel).
+
+**The escape hatch is a different method, not a list of exempt op names.**
+Transport, bootstrap and blocking request/response traffic call
+`_transmit_widget_message` directly:
+
+- the data plane itself (`structure_data_begin` / `_chunk` / `_cancel`) — holding
+  it would deadlock the very completion the queue is waiting for;
+- `widget_runtime_source` / `popup_source` — the frontend is blocked on these to
+  exist at all, and cannot ack a stream until it does;
+- `request_camera_snapshot` / `request_image_export` — they busy-wait on the
+  kernel thread for an answer that deferral would prevent arriving.
+
+An allowlist of op names would have been the same defect in a new place: a list
+that must agree with reality, with nothing forcing it to (§0, and the digester and
+Qt-manifest drifts). A method boundary cannot silently fall out of date.
+
+**Order within the flush is part of the scene**, not an implementation detail:
+regions layer by arrival and colours resolve after their components, so the queue
+must be drained FIFO. If a newer generation starts mid-flush, the remainder waits
+for *it* rather than overtaking the structure it is about to replace.
+
+**Consequence for any future asynchronous delivery.** Anything that makes a
+message's *application* later than its *transmission* re-opens this hole. The
+receiver-side barrier (the frontend holding scene ops until its own structure is
+ready) is the more general answer and is filed as a post-1.0 proposal; until then,
+S8 is enforced on the Python side, where the timeout and fallback machinery that
+makes it safe already lives.
+
+Tested in `tests/test_structure_stream_ordering.py`, including the fallback path
+(the backlog must not be stranded, nor precede the JSON load) and the JSON-only
+frontend (no stream, so nothing is ever held).
+
 ---
 
 ## 4. How these contracts are tested

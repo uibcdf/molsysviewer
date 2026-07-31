@@ -41,3 +41,41 @@ def _close_molsysviewer_widgets_after_each_test():
     yield
 
     _close_registered_molsysviewer_widgets()
+
+
+@pytest.fixture
+def complete_structure_stream():
+    """Play the frontend's half of an array-native structure handshake.
+
+    Acknowledges begin and every chunk, then reports completion, exactly as
+    `array-native-stream.ts` does — it builds the structure and *only then*
+    notifies `structure_data_complete`. Tests that care about what the browser
+    can actually draw need that distinction, because Python's scene messages are
+    held until this point.
+    """
+
+    def _drive(view, max_steps: int = 512) -> None:
+        for _ in range(max_steps):
+            stream = view._binary_structure_stream  # noqa: SLF001
+            if stream is None:
+                return
+            awaiting = stream["awaiting"]
+            event = {
+                "viewer_id": view._binary_viewer_id,  # noqa: SLF001
+                "session_id": view._binary_session_id,  # noqa: SLF001
+                "stream_id": "structures:main",
+                "generation": stream["generation"],
+            }
+            if awaiting == "begin":
+                event["event"] = "structure_data_begin_ack"
+            elif isinstance(awaiting, tuple):
+                event["event"] = "structure_data_chunk_ack"
+                event["chunk_id"] = awaiting[1]
+            elif awaiting == "complete":
+                event["event"] = "structure_data_complete"
+            else:  # pragma: no cover — an unknown state must not spin silently
+                raise AssertionError(f"unexpected stream state {awaiting!r}")
+            view._handle_frontend_event(event)  # noqa: SLF001
+        raise AssertionError("the structure stream did not complete")
+
+    return _drive

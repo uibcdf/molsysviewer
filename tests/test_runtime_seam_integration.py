@@ -147,7 +147,9 @@ def test_raw_and_data_plane_messages_reach_the_wire_unwrapped():
     assert second == {"op": "widget_runtime_source", "source": "..."}  # bootstrap raw
 
 
-def test_a_canvas_popup_snapshot_streams_the_molecular_generation_to_its_endpoint():
+def test_a_canvas_popup_snapshot_streams_the_molecular_generation_to_its_endpoint(
+    complete_structure_stream,
+):
     """D4: the canvas popup gets typed buffers addressed to it, not JSON."""
     import molsysmt as msm
 
@@ -183,6 +185,16 @@ def test_a_canvas_popup_snapshot_streams_the_molecular_generation_to_its_endpoin
     begins = [m for m, _ in sent if m.get("op") == "structure_data_begin"]
     assert len(begins) == 1
     assert begins[0]["target_endpoint_id"] == "canvas-popup-7"
+
+    # ...and the snapshot does not overtake it. The popup builds its structure
+    # from the last chunk, so a scene projection that arrived first would be
+    # applied against an empty canvas and silently dropped — the same defect a
+    # human hit on the host path on 2026-07-31.
+    assert not [m for m, _ in sent if m.get("action") == "popup_scene_snapshot"], (
+        "the scene must not be projected before the popup has a structure"
+    )
+
+    complete_structure_stream(view)
 
     # The snapshot answer therefore carries no JSON molecular copy.
     answers = [m for m, _ in sent if m.get("action") == "popup_scene_snapshot"]

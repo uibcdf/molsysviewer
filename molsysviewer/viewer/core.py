@@ -282,6 +282,12 @@ class MolSysView(
         # connection is not mistaken for a dead one.
         self._binary_ack_timeout_s: float = 30.0
         self._monotonic = time.monotonic
+        # Scene messages waiting for the structure they describe. Streaming the
+        # molecular payload made its delivery asynchronous, so "handed to the
+        # transport" stopped meaning "applied in the browser"; see
+        # `_send_widget_message`.
+        self._deferred_widget_messages: list[tuple[Mapping[str, Any], Any]] = []
+        self._flushing_deferred_widget_messages = False
         self._message_history: list[dict] = []
         # The current materialized molecular projection ("current molecular
         # state"), updated on every load/rebuild. R2's canonical popup snapshot
@@ -1018,7 +1024,7 @@ class MolSysView(
                 "deadline": self._monotonic() + self._binary_ack_timeout_s,
                 "target_endpoint_id": target_endpoint_id,
             }
-            self._send_widget_message(begin)
+            self._transmit_widget_message(begin)
             return True
         except Exception as exc:
             self._binary_structure_stream = None
@@ -1080,7 +1086,10 @@ class MolSysView(
             }
             if stream.get("target_endpoint_id") is not None:
                 cancel["target_endpoint_id"] = stream["target_endpoint_id"]
-            self._send_widget_message(cancel)
+            # Not `_send_widget_message`: a cancel that flushed would release the
+            # deferred scene ahead of the replacement generation this cancel is
+            # making room for. They stay deferred and ride behind the new stream.
+            self._transmit_widget_message(cancel)
         except Exception:
             pass
 
@@ -1095,7 +1104,7 @@ class MolSysView(
             return
         message, buffers = chunks[next_chunk]
         try:
-            self._send_widget_message(message, buffers=buffers)
+            self._transmit_widget_message(message, buffers=buffers)
             stream["awaiting"] = ("chunk", next_chunk)
         except Exception as exc:
             self._fallback_binary_structure_stream(
@@ -1112,7 +1121,7 @@ class MolSysView(
         # Tell the receiver to drop its half too; a frontend that is merely slow
         # (rather than gone) must not apply a generation Python has abandoned.
         try:
-            self._send_widget_message({
+            self._transmit_widget_message({
                 "op": "structure_data_cancel",
                 "viewer_id": self._binary_viewer_id,
                 "session_id": self._binary_session_id,
@@ -1144,6 +1153,9 @@ class MolSysView(
             # already holds this structure; the JSON load carries the target so
             # the host relays it to the popup that was waiting for it.
             fallback = {**fallback, "target_endpoint_id": target_endpoint_id}
+        # `_send_widget_message`, so the JSON load goes out first and its
+        # post-transmit flush releases the scene behind it — the same ordering
+        # the binary path gets from `structure_data_complete`.
         self._send_widget_message(fallback)
 
     def _handle_binary_structure_event(self, content: Mapping[str, Any]) -> None:
@@ -1184,6 +1196,10 @@ class MolSysView(
         if event == "structure_data_complete":
             if stream["awaiting"] == "complete":
                 self._release_binary_structure_stream()
+                # The frontend builds the structure and *then* reports complete,
+                # so this is the first moment a scene message can land on
+                # something to draw on.
+                self._flush_deferred_widget_messages()
             return
         if event == "structure_data_error":
             error = content.get("error")
@@ -1192,11 +1208,45 @@ class MolSysView(
             )
 
     def _send_widget_message(self, message: Mapping[str, Any], buffers: Any = None) -> None:
-        """Single outbound chokepoint to the frontend connector.
+        """Single outbound chokepoint for scene messages.
 
         Every live send from ``MolSysView`` funnels through here with the domain
-        message. The connector owns its wire format: ``MolSysViewerWidget.send``
-        wraps control-plane messages in a RuntimeEnvelope (R1), while Qt and other
+        message, and everything sent here is **ordered behind the structure it
+        describes**.
+
+        That ordering used to be free. On the JSON path the frontend applies
+        ``load_molsys_payload`` to completion before it takes the next message off
+        its queue, so a scene op could never overtake its structure. The
+        array-native data plane broke that guarantee without anyone noticing:
+        `_try_send_array_native_molsys` returns as soon as ``structure_data_begin``
+        is on the wire, and the structure is only built in the browser several
+        ack round-trips later, when the last chunk lands. Everything sent in
+        between arrives at a frontend with no structure — and the handlers that
+        need one (`addMeasurement`, the annotation and region handlers) return
+        silently rather than fail. A measurement or a label created from Python
+        before the widget was displayed was simply never drawn.
+
+        So while a generation is in flight, scene messages wait here and are
+        flushed once the frontend confirms the structure is applied. Transport,
+        bootstrap and request/response traffic must not wait — it either drives
+        the handshake or is blocking a caller — and calls
+        ``_transmit_widget_message`` directly. That is the whole rule: the escape
+        hatch is a different method, not a list of exempt op names that would
+        drift out of date the moment a new one appeared.
+        """
+        if self._binary_structure_stream is not None:
+            self._deferred_widget_messages.append((message, buffers))
+            return
+        self._transmit_widget_message(message, buffers)
+        # Drains a backlog that outlived its stream even if some exit path forgot
+        # to flush, so a lost flush degrades to a late delivery, never a lost one.
+        self._flush_deferred_widget_messages()
+
+    def _transmit_widget_message(self, message: Mapping[str, Any], buffers: Any = None) -> None:
+        """Hand a message to the connector, bypassing the structure-stream gate.
+
+        The connector owns its wire format: ``MolSysViewerWidget.send`` wraps
+        control-plane messages in a RuntimeEnvelope (R1), while Qt and other
         transports keep raw messages. ``raw``/``data_plane`` messages and their
         buffers pass through unwrapped, and ``_message_history`` / the
         ``initial_messages`` trait keep domain messages because wrapping happens
@@ -1206,6 +1256,22 @@ class MolSysView(
             self.widget.send(message)
         else:
             self.widget.send(message, buffers=buffers)
+
+    def _flush_deferred_widget_messages(self) -> None:
+        """Send what waited for the structure, in the order it was produced."""
+        if self._flushing_deferred_widget_messages:
+            return
+        self._flushing_deferred_widget_messages = True
+        try:
+            while self._deferred_widget_messages:
+                if self._binary_structure_stream is not None:
+                    # A newer generation started mid-flush; the rest waits for it
+                    # rather than overtaking the structure it is about to replace.
+                    break
+                message, buffers = self._deferred_widget_messages.pop(0)
+                self._transmit_widget_message(message, buffers)
+        finally:
+            self._flushing_deferred_widget_messages = False
 
     def _handle_inbound_message(self, content: Any) -> None:
         """Validate + unwrap an inbound envelope, or pass raw messages through.
@@ -1231,7 +1297,7 @@ class MolSysView(
                 return
             self._handle_frontend_event(result.message)
         elif result.status == "duplicate":
-            self._send_widget_message(self._runtime_router.duplicate_ack(result.envelope))
+            self._transmit_widget_message(self._runtime_router.duplicate_ack(result.envelope))
         else:
             emit_suppressed_exception(
                 "MolSysView._handle_inbound_message",
@@ -1332,9 +1398,9 @@ class MolSysView(
             # `_send_runtime_only`, which drops messages while not ready) — the
             # frontend is listening because it just asked. Gating this on `_ready`
             # deadlocks: `_ready` only becomes True once this source has loaded.
-            self._send_widget_message({"op": "widget_runtime_source", "source": MolSysViewerWidget._viewer_js_source})
+            self._transmit_widget_message({"op": "widget_runtime_source", "source": MolSysViewerWidget._viewer_js_source})
         elif event == "request_popup_source":
-            self._send_widget_message({"op": "popup_source", "source": MolSysViewerWidget._viewer_js_source})
+            self._transmit_widget_message({"op": "popup_source", "source": MolSysViewerWidget._viewer_js_source})
         elif event == "region_ack":
             tag = content.get("tag")
             if tag and tag in self._regions:
@@ -2677,7 +2743,9 @@ class MolSysView(
             return False
         previous = self._last_camera_snapshot
         try:
-            self._send_widget_message({"op": "request_camera_snapshot"})
+            # Blocks the kernel waiting for the answer, so it must not be queued
+            # behind a stream whose acks that same wait would prevent arriving.
+            self._transmit_widget_message({"op": "request_camera_snapshot"})
         except Exception:
             return False
         if timeout_s <= 0:
@@ -2718,7 +2786,8 @@ class MolSysView(
         if camera_snapshot:
             payload["camera_snapshot"] = dict(camera_snapshot)
         try:
-            self._send_widget_message(payload)
+            # Same reason as `_request_camera_snapshot`: a blocking request.
+            self._transmit_widget_message(payload)
         except Exception:
             return None
         if timeout_s <= 0:
