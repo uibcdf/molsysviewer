@@ -4,6 +4,7 @@ from typing import Any
 
 import numpy as np
 import molsysmt as msm
+import pyunitwizard as puw
 from smonitor import signal
 
 from ._private.arg_digestion import digest
@@ -299,7 +300,14 @@ class MeasurementsManager:
             coords = result.get("coordinates")
             if coords is None:
                 return None
-            arr = np.asarray(coords, dtype=float)
+            # Convert explicitly rather than letting `np.asarray` strip the
+            # unit: this method's name promises nm, and a bare downcast returns
+            # whatever unit the source happened to use while warning about it.
+            # It works today only because MolSysMT standardizes to nm — an
+            # implicit dependency on someone else's convention, over a number
+            # that ends up in figures. `units_and_quantities.md` is explicit
+            # that the conversion belongs here, in the body, and is named.
+            arr = np.asarray(puw.get_value(coords, to_unit="nm"), dtype=float)
             if arr.ndim == 2:
                 arr = arr[np.newaxis, :, :]
             if arr.ndim != 3 or arr.shape[-1] != 3:

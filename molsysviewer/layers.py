@@ -1273,7 +1273,10 @@ class Measurement(SceneObject):
                 )
                 coords = result.get("coordinates")
                 if coords is not None:
-                    arr = _np.asarray(coords)
+                    # Convert explicitly: `asarray` on a quantity strips the
+                    # unit without converting it, so the "in nm" below was an
+                    # assumption about the source rather than a guarantee.
+                    arr = _np.asarray(puw.get_value(coords, to_unit="nm"))
                     # shape: (n_structures, n_atoms, 3) in nm
                     frame = arr[0]
                     points = [

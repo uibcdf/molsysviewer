@@ -125,7 +125,12 @@ def test_measurement_series_preserves_all_coordinate_frames(monkeypatch):
             frames = []
             for frame_index in range(2):
                 frames.append([coordinates_by_atom[atom][frame_index][0] for atom in atoms])
-            return {"coordinates": frames}
+            # The real `msm.get(..., coordinates=True)` returns a PyUnitWizard
+            # quantity in nm, not bare numbers. The double returned bare numbers
+            # and so did not exercise the unit conversion the production code
+            # performs; keeping it faithful is what lets that conversion be
+            # explicit instead of an implicit downcast.
+            return {"coordinates": puw.quantity(frames, "nanometer")}
         return {
             "atom_name": [f"A{atom}" for atom in atoms],
             "group_name": ["RES" for _atom in atoms],
