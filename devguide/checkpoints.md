@@ -6,11 +6,12 @@ project state changes.
 ## Repository state
 
 - Branch: `main`.
-- Base commit: `7a14fbfc`.
+- Base commit: `cb5fda56`.
 - Latest release checkpoint: `0.20.0`.
-- The working tree intentionally contains the uncommitted July 2026 devguide,
-  performance, array-native transport, runtime-router, popup, Qt, and API
-  cleanup round. Do not assume an untracked file is disposable.
+- The July 2026 devguide, performance, array-native transport, runtime-router,
+  popup, Qt, and API cleanup round is **committed** — ten commits on top of
+  `7a14fbfc`, pushed through `9512d02d`. *(Until 2026-07-30 this entry said the
+  round sat uncommitted in the working tree; it no longer does.)*
 - `sandbox/Smoke_Test.ipynb` is developer scratch state. Never include it in a
   product commit and do not use it as architectural evidence.
 - Generated `molsysviewer/viewer.js` was rebuilt with
@@ -76,10 +77,17 @@ project state changes.
 
 ## Validation observed
 
-- Python full suite (after R1): `1009 passed`, `3 skipped`, `0 failed` via
+- Python full suite (end of round): `1146 passed`, `3 skipped`, `0 failed` via
   `pytest --receptor=llm tests/`. The 3 skips are pre-existing environment gates
-  (X11/WebGL/Qt GPU), not R1.
-- JavaScript unit suite: `255 passed`, `0 failed`.
+  (X11/WebGL/Qt GPU). *(The `1009 passed` recorded here after R1 was the count
+  at that point in the round; R2, D3, D4, R3 and the guards added since brought
+  it to 1146.)*
+- JavaScript unit suite: `262 passed`, `0 failed`.
+- Performance harnesses (`npm run test:perf`), required by
+  `engineering_rules.md` §6 whenever the message path changes: unknown-message
+  toll `0.3 ms` at 95,000 atoms, dynamic-region evaluation `0.0008 ms` per
+  frame. Baseline recorded in
+  [`performance/message_path_regression_check_2026_07.md`](performance/message_path_regression_check_2026_07.md).
 - TypeScript: `npx tsc --noEmit`, exit `0`.
 - Runtime build: `npm run build:runtime`, exit `0`; R1 confirmed in the bundle.
 - E2E without skips: array-native (real-browser WebGL trajectory), popup-channel
@@ -200,7 +208,12 @@ absence of windowed residency, was the 1.0 defect — windowing changes what
 post-1.0. `_private/scale_budget.py` now warns with the measured size, the note
 that a canvas popup doubles the renderer cost, and a concrete
 `structure_indices=range(0, N, stride)` that fits. It warns and never refuses;
-`molsysviewer.set_structure_scale_budget(bytes)` tunes it, `0` silences it.
+`molsysviewer.config.set_structure_scale_budget(bytes)` tunes it, `0` silences
+it. *(It was briefly a bare top-level `molsysviewer.set_structure_scale_budget`.
+`development_mantra.md` asks every new public concept to fit the taxonomy, and
+`public_api.md` already names `molsysviewer.config.*` as the configuration
+surface, so it moved there with the module's `@signal` + `@digest()` pattern and
+a `budget_bytes` digester. No shim, per `engineering_rules.md` §2.)*
 
 Latent bug surfaced by wiring it: `load_from_molsysmt` called
 `structures.get_n_structures()`, which does not exist. The call always raised

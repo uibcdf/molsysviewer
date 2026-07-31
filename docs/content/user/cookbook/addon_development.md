@@ -278,5 +278,4 @@ The current goal is a small, explicit, stable extension contract.
 
 For the more normative version of this contract, also see:
 
-- [`standards/addons/README.md`](https://github.com/uibcdf/molsysviewer/blob/main/standards/addons/README.md)
-- [`standards/addons/IMPLEMENTATION_CONTRACT.md`](https://github.com/uibcdf/molsysviewer/blob/main/standards/addons/IMPLEMENTATION_CONTRACT.md)
+- [Developer Add-ons Guide](../../developer/addons.md) — the normative contract.

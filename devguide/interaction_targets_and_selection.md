@@ -144,6 +144,28 @@ Scalability note (opt-in hover telemetry):
   `view.enable_hover_telemetry = True`). This is its own small optimization, tracked
   here; it is not part of the selection-subpanel work
 
+**Status (2026-07-31): still open, and it is the better fix.** The July round
+attacked the same flooding from a different angle and only solved half of it.
+Mol\* re-emits hover on every resolved pick, storing `prevLoci` but never using
+it to suppress, so a mouse **resting** on one atom sent ~30 identical messages
+per second; `registerInteractionObservers` now deduplicates the Python-bound
+projection (local UI still sees every tick). That fixes the resting mouse and
+does nothing for a **moving** one: every tick is a different payload, so the
+~16 messages/s during real hovering still cross the Comm channel. Deduplication
+and opt-in are complementary, and opt-in is the one that addresses the case this
+note was written about.
+
+**What blocks a naive implementation, and is not in the note above:**
+`view.hover_target` became a public query object *after* this note was written,
+and it is populated *from* the forwarded events. Gating forwarding on
+`on_hover(cb)` alone would therefore leave `view.hover_target.info()` silently
+empty for anyone who queries it without registering a callback — trading a
+performance problem for a correctness one, and exactly the kind of silent
+staleness `scene_contracts.md` Contract S7 exists to forbid. Any implementation
+must decide what `hover_target` means when telemetry is off: an explicit
+"telemetry disabled" state is honest; an empty target that looks like "nothing
+hovered" is not. Not implemented pending that decision.
+
 ### `context_target`
 
 - defined by right click / context-menu invocation

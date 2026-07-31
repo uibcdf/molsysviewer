@@ -22,11 +22,19 @@ Do **not** combine it with `--tb=no` or `--tb=line`: those delete the frame
 evidence the compact report needs to point at the failure. In particular, drop
 the `--tb=no` from the rule-12 full-suite check when using `--receptor=llm`.
 
-## It is under evaluation — pytest stays the authority
+## Use it by default (updated 2026-07-31)
 
-`pytest-receptor` is pre-1.0 and its output format may still change. Use it in
-normal cycles, but **normal `pytest` remains the authority** for whether a run
-passed.
+**`--receptor=llm` is the default runner.** It saves a substantial amount of
+context, and its fidelity is now trusted. Do not cross-check every run against
+plain `pytest`.
+
+Run plain `pytest` **only when there is a specific suspicion** that the compact
+report is hiding or missing something. If the comparison shows the receptor was
+indeed at fault, that is a report worth filing upstream — see below.
+
+*(This section previously said "normal `pytest` remains the authority". That was
+the evaluation-period rule and is superseded: routine double-running costs
+tokens and buys nothing once the tool is trusted.)*
 
 ## Report anything wrong or missing
 

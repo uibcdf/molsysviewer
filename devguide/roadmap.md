@@ -26,13 +26,17 @@ This roadmap states current priorities. Release gating lives in
 
 These are the release gates:
 
-1. Array-native transport for all structures selected into `view.molsys`:
-   - no `ViewerJSON`/nested-list/text-JSON coordinate path when binary is
-     negotiated;
-   - behaviorally equivalent JSON fallback;
-   - representative atom-count and structure-count measurements.
-2. One typed runtime router across Python, widget/Qt hosts, embedded canvases,
-   and popups, with Python as the only reproducible mutation authority.
+1. ✅ **Closed 2026-07-30.** Array-native transport for all structures selected
+   into `view.molsys`: no `ViewerJSON`/nested-list/text-JSON coordinate path when
+   binary is negotiated; behaviorally equivalent JSON fallback; representative
+   atom-count and structure-count measurements. Qt serves raw arrays through the
+   `molsysviewer-payload` scheme handler it already had. Evidence in
+   [`performance/`](performance/); per-gate detail in `path_to_1_0.md`.
+2. ✅ **Closed 2026-07-30.** One typed runtime router across Python, widget/Qt
+   hosts, embedded canvases, and popups, with Python as the only reproducible
+   mutation authority. `runtime_actions.json` is the shared manifest both ends
+   validate against; `WidgetRuntimeRouter` owns identity, direction and command
+   deduplication.
 3. Scientific dogfooding on representative laboratory workflows.
 4. Real-window Qt/WebGL validation of load, interaction, context menu, and the
    implemented live-replacement regression.
@@ -42,8 +46,11 @@ These are the release gates:
 
 ## Active implementation candidates
 
-The active pre-1.0 architectural work is deliberately limited to scalable
-transport and routing foundations. See:
+*Obsolete since 2026-07-30*: this section described the transport and routing
+foundations as the remaining pre-1.0 architectural work. Both landed (gates 1
+and 2 above), so **no architectural work is open for 1.0** — what remains is
+verification, dogfooding and release hygiene. The two proposals stay as the
+design record of what was built and why, not as pending work:
 
 - [`pending_proposals/runtime_message_router.md`](pending_proposals/runtime_message_router.md);
 - [`pending_proposals/data_plane_architecture.md`](pending_proposals/data_plane_architecture.md).

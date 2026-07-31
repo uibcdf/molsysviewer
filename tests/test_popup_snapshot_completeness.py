@@ -65,21 +65,73 @@ def test_every_live_registry_is_represented_in_the_canvas_snapshot():
     assert {"show_whole", "hide_whole"} & ops
 
 
+def _summary_ops_the_view_can_push(view) -> set[str]:
+    """Derive the summary ops from the view's own `_sync_*_runtime` methods.
+
+    Discovered rather than listed on purpose. `scene_contracts.md` Contract S1
+    warns that a summary is `_send_runtime_only`, so it never enters
+    `_message_history` and a frontend that attaches later — the popup, a
+    re-attached widget, a rebuilt kernel, a standalone host — never receives it
+    by replay. A hardcoded list cannot notice a *new* domain: it would stay green
+    while that panel section rendered blank on popout. This is the same shape as
+    the digester-caller and Qt-manifest drifts: where two things must agree and
+    nothing mechanically forces them to, they drift in silence.
+
+    Each method is *invoked* and the op it actually emits is captured, rather
+    than derived from its name: `_sync_addons_runtime` emits
+    `set_addon_runtime_summary`, so a name-based rule would invent an op that
+    does not exist and fail for the wrong reason.
+    """
+    ops: set[str] = set()
+    original = view.widget.send
+    was_ready = view._ready
+    view._ready = True  # otherwise the sends are queued, not delivered
+    for name in sorted(dir(type(view))):
+        if not (name.startswith("_sync_") and name.endswith("_runtime")):
+            continue
+        captured: list[dict] = []
+        view.widget.send = lambda msg, *a, **k: captured.append(msg)  # type: ignore[assignment]
+        try:
+            getattr(view, name)()
+        finally:
+            view.widget.send = original  # type: ignore[assignment]
+        ops.update(m["op"] for m in captured if isinstance(m, dict) and "op" in m)
+    view._ready = was_ready
+    return ops
+
+
 def test_every_summary_projection_reaches_the_panel_snapshot():
     view = _populated_view()
     ops = {m.get("op") for m in view.build_popup_scene_snapshot("panel")}
-    # The panel is driven entirely by summaries; a new summary kind that the
-    # projector forgets would leave that panel section blank on popout.
-    for summary_op in (
-        "set_region_summaries",
-        "set_layer_summaries",
-        "set_annotation_summaries",
-        "set_measurement_summaries",
-        "set_shape_summaries",
-        "set_section_summaries",
-        "set_whole_summary",
-    ):
-        assert summary_op in ops, f"panel snapshot is missing {summary_op}"
+    expected = _summary_ops_the_view_can_push(view)
+    assert expected, "no summary sync methods discovered — the derivation broke"
+    for summary_op in sorted(expected):
+        assert summary_op in ops, (
+            f"panel snapshot is missing {summary_op}. Every "
+            f"_sync_<domain>_runtime the view can push must also be projected "
+            f"into the popup panel snapshot, or that section renders blank."
+        )
+
+
+def test_every_summary_projection_is_resent_on_ready():
+    """The other late-attaching frontend: a fresh canvas that emits `ready`.
+
+    Contract S1 §"a summary is runtime-only" requires the `ready` handler to
+    re-send every summary explicitly. Derived the same way as above so a new
+    domain cannot be added to one path and forgotten in the other.
+    """
+    view = _populated_view()
+    sent: list[dict] = []
+    view.widget.send = lambda msg, *a, **k: sent.append(msg)  # type: ignore[assignment]
+
+    view._handle_frontend_event({"event": "ready"})
+
+    ops = {m.get("op") for m in sent if isinstance(m, dict)}
+    for summary_op in sorted(_summary_ops_the_view_can_push(view)):
+        assert summary_op in ops, (
+            f"the ready handler does not re-send {summary_op}; a freshly "
+            f"attached frontend would render that panel section empty."
+        )
 
 
 def test_addon_context_items_reach_the_panel_without_breaking_purity():

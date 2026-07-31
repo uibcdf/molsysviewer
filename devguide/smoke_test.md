@@ -49,6 +49,7 @@ Current smoke scope:
 11. Figure-export baseline from `Workbench -> Scene`
 12. Reference add-on workspace behavior in the shared workbench
 13. Shared panel-mode behavior across `Core` and add-on workspaces
+14. Popup bootstrap: canvas popup and panel popup carry the current scene
 
 ## Recommended Test System
 
@@ -385,6 +386,76 @@ Expected:
 - the launcher hierarchy still feels like:
   - workspace first
   - local panel stack second
+
+### 15. Check popup bootstrap carries the current scene
+
+Added 2026-07-31. The July round rebuilt popup bootstrap end to end — the popup
+now asks Python for a canonical snapshot built from **live state** instead of
+replaying a journal — and this script had no step that opened a popup at all.
+The surface that changed most had no manual coverage.
+
+Workflow — build a scene *first*, then pop out, in this order (the point is that
+the popup inherits state it never saw created):
+
+```python
+view = demo["dialanine"]
+view.regions.add("molecule_type == 'peptide'", tag="prot")
+view.regions["prot"].set_representation("cartoon")
+view.annotations.add_annotation("site", atom_indices=[0], tag="note")
+view.measurements.add_distance(selection_a=[0], selection_b=[10], tag="d1")
+view.annotations.hide("note")
+view
+```
+
+Now open the **canvas popup** from the canvas control, and separately the
+**panel popup**.
+
+Expected, canvas popup:
+
+- the molecular system appears with the same representation as the host canvas;
+- the region `prot` is drawn as `cartoon`, not as a default;
+- the measurement `d1` is visible;
+- the annotation `note` is **hidden**, as it is in the host — a hidden object
+  arriving visible means the snapshot lost the hidden state;
+- the camera is host-local, so a differing camera is expected, not a defect.
+
+Expected, panel popup:
+
+- every Studio subpanel is **populated**, not blank. A blank section is the
+  classic failure of Contract S1 (`scene_contracts.md`): a summary is
+  `_send_runtime_only`, never enters `_message_history`, and a late-attaching
+  frontend only gets it because the snapshot projects it explicitly;
+- the panel popup shows **no molecular payload traffic** — it is a UI surface.
+
+Then check that the host and popup do not double-apply:
+
+- change a representation from the popup;
+- confirm in Python that it changed **once**:
+
+```python
+view.regions["prot"].representation   # changed once, to the value you chose
+view.annotations.info("note")["visible"]   # still False: hidden survived
+view.history.undo()                   # one undo returns to the pre-popup state
+view.history.can_undo()               # not still True for the same edit
+```
+
+(`view.history` is the public `SceneHistory`; its undo stack is bounded at 25 —
+see `scene_contracts.md` Contract S6 on why continuous gestures must coalesce
+rather than evict the user's history.)
+
+Expected:
+
+- one command produces one public-API mutation and one history checkpoint;
+- closing and reopening the popup reproduces the same scene.
+
+Automated counterparts exist (`tests/test_popup_snapshot*.py`,
+`js/tests/e2e/popup-channel.e2e.ts`, `structure-data-relay.e2e.ts`), but none of
+them proves it *looks* right, which is the whole point of a smoke test.
+
+**Not covered here: the Qt standalone host.** Its shell is built with
+`include_popout=False` (`standalone_qt/utils.py:_rebuild_qt_html`), so no popup
+can be opened there at all — see `standalone_v2_evolution_plan.md` Phase 1,
+which lists the `createWindow` handler as pending work.
 
 ## Automated Portion
 

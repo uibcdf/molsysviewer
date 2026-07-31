@@ -221,15 +221,19 @@ It is now validated through a combination of:
 
 - fake add-ons in tests
 - a small importable reference template:
-  - `molsysviewer.addon_templates.minimal_topomt`
+  - `molsysviewer.addon_templates.dummy_addon` (renamed from
+    `minimal_topomt` in `11283b57`, 2026-07-05)
 - public user/developer/cookbook docs that already describe the contract
-- normative references under:
-  - `standards/addons/README.md`
-  - `standards/addons/IMPLEMENTATION_CONTRACT.md`
+- the normative reference at
+  [`docs/content/developer/addons.md`](../docs/content/developer/addons.md)
 
-Those `standards/` files should now be treated as living contract documents.
-If the add-on contract changes in runtime, tests, cookbook, or developer docs,
-the corresponding standards files should be updated in the same slice.
+*Corrected 2026-07-31:* this list used to name
+`standards/addons/IMPLEMENTATION_CONTRACT.md` as a living contract document.
+**That file no longer exists** — `11283b57` (2026-07-05) deliberately
+centralized it into the developer guide, and `standards/addons/README.md` is now
+only a redirect. The rule it stated still holds, against the new location: if
+the add-on contract changes in runtime, tests, cookbook, or developer docs,
+`docs/content/developer/addons.md` is updated in the same slice.
 
 This is the right first step because it fixes the shape of the connection
 platform before real plugins start depending on it.

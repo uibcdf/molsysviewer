@@ -579,10 +579,11 @@ This keeps the canvas calm while still making export a first-class capability.
 
 These questions are worth tracking, but should not be answered too quickly:
 
-- what should be the first public image export API:
-  - `view.export.image(...)`
-  - `view.figures.export(...)`
-  - both eventually
+- ~~what should be the first public image export API~~ — **answered by what
+  shipped:** `view.export.image(...)`, alongside `view.export.figure(...)`,
+  `figure_variants(...)` and `figure_publication_set(...)`. `view.figures.export`
+  was not adopted. Left visible rather than deleted so the discarded branch stays
+  legible.
 - should the first export target be only PNG, or also SVG/PDF-friendly
   helper paths for labels/overlays later
 - how should transparent background interact with outlines and fog
@@ -593,8 +594,11 @@ These questions are worth tracking, but should not be answered too quickly:
   - camera snapshots
   - a future `FigureSpec`
 - how should export work in future standalone/CLI mode
-- whether MolSysViewer should support saved figure recipes as first-class
-  artifacts
+- ~~whether MolSysViewer should support saved figure recipes as first-class
+  artifacts~~ — **answered: yes.** `FigureSpec` exists, `FigureSpec.from_view()`
+  captures the current camera, `view.set_figure_spec()` anchors the recipe to the
+  workbench, and `build_variants()` derives named batches. See `smoke_test.md`
+  §12 for the exercised flow.
 
 ## Acceptance Criteria For The First Serious Export Slice
 

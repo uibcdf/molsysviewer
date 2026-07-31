@@ -360,12 +360,32 @@ That keeps v1 predictable and avoids mixing:
 Labels should survive replay and rebuild while their target can be remapped
 cleanly.
 
-If a rebuild or edit removes the target anchor in a way that cannot be remapped
-meaningfully, the label should:
+> **Obsolete since 2026-07-12 — superseded by `scene_contracts.md` Contract S7.**
+> This section used to say that a label whose anchor cannot be remapped should
+> "disappear deterministically". **That is now the opposite of the rule.** S7 is
+> normative and wins (`engineering_rules.md` §2): an object whose anchor is
+> destroyed **must not be silently deleted** — the user created it, and removing
+> it on their behalf without a word is losing their work. It survives carrying an
+> explicit `broken` state and its reason, it can be repaired with `set_anchor()`,
+> the `broken` flag is part of the summary and serialises, and the panel row
+> shows a warning marker while nothing renders for it.
+>
+> The implementation follows S7, not this paragraph: `broken` /
+> `broken_reason` live on `layers.py` and are reported by
+> `annotations.py:info()`. The old `return None` that dropped the object during
+> remapping is gone.
+>
+> The second half of S7 matters just as much and had no counterpart here: an
+> object whose anchor is merely *damaged* must not keep reporting its old value.
+> A value is derived from the recipe at the current frame, never a cached number
+> outliving the atoms that produced it. **A stale number is the worst outcome in
+> this codebase** — an error is loud, a deletion is at least detectable, but a
+> plausible wrong value propagates into a figure and into a paper.
 
-- be invalidated cleanly
-- disappear deterministically
-- and avoid leaving stale/corrupt annotation state behind
+The remaining requirement below still stands, and S7 satisfies it in a stronger
+form than "disappear":
+
+- avoid leaving stale/corrupt annotation state behind
 
 This should remain aligned with the element taxonomy used elsewhere in the
 interaction contract.

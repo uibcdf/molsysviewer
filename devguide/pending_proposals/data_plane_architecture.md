@@ -471,7 +471,7 @@ of coordinates.
 
 It **warns and never refuses**: only the caller knows whether their machine can
 hold it, and silently declining scientific data would be worse than a heavy
-load. `molsysviewer.set_structure_scale_budget(bytes)` raises or lowers it, and
+load. `molsysviewer.config.set_structure_scale_budget(bytes)` raises or lowers it, and
 `0` silences it.
 
 Surfaced by this work: `load_from_molsysmt` read the structure count through

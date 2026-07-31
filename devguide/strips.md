@@ -307,7 +307,9 @@ The current runtime slice now does the following:
 
 The current slice does **not** yet do:
 
-- range selection / drag selection
+- **drag** selection *(range selection by `Shift + Alt + click` **is** implemented
+  — see the list above. This entry used to read "range selection / drag
+  selection" and contradicted it; only the drag gesture is still missing.)*
 - region overlays
 - tool-pick overlays
 

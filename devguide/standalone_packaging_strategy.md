@@ -13,13 +13,23 @@ It should be read together with:
 **Option A2 was chosen and is complete.** A curated, source-built, suffix-named
 conda family is now published in the `uibcdf` channel:
 
-| Package | Version |
-|---------|---------|
-| `shiboken6-uibcdf` | `6.9.2=*_3` |
-| `pyside6-essentials-uibcdf` | `6.9.2=*_3` |
-| `pyside6-addons-uibcdf` | `6.9.2=*_3` |
-| `qt6-positioning-uibcdf` | `6.9.2` |
-| `qt6-webengine-uibcdf` | `6.9.2` |
+| Package |
+|---------|
+| `shiboken6-uibcdf` |
+| `pyside6-essentials-uibcdf` |
+| `pyside6-addons-uibcdf` |
+| `qt6-positioning-uibcdf` |
+| `qt6-webengine-uibcdf` |
+
+**Build numbers deliberately live in one place only:**
+[`standalone_supported_environment.md`](standalone_supported_environment.md),
+which is the supported recipe. *(This table used to pin `6.9.2=*_3` for all
+three binding packages and drifted: `pyside6-addons-uibcdf` was rebuilt past it,
+and a reader following this table would have installed a build too old to expose
+`QWebEngineUrlScheme.setFlags`, which MolSysViewer needs for fetchable custom
+schemes. Two documents stating the same build numbers with nothing forcing them
+to agree is the same failure this repo has hit in digesters, in the Qt action
+manifest and in the popup summaries.)*
 
 The Python import namespace is `PySide6_uibcdf` / `shiboken6_uibcdf`.
 `QFileDialog`, `QMessageBox`, `QWebEngineView` all work correctly.

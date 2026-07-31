@@ -1402,7 +1402,24 @@ parallel modes that coexist with the current defaults:
 - `panel_mode_style="floating"` — `FloatingPanelShell`: centered overlay,
   `~72% × 68%`, rounded card, backdrop-click-to-close, zero viewport shift
 
-The `"classic"` / `"drawer"` defaults are unchanged. The full coexistence plan,
+**Superseded since 2026-04-21 — the transition completed, and the defaults did
+change.** Verified against the running widget on 2026-07-31:
+
+| trait | value in this document | value today |
+|---|---|---|
+| `viewer_mode` | *(did not exist)* | `"integrated"` |
+| `controls_mode` | `"classic"` default, `"minimal"` opt-in | **`"minimal"`** |
+| `panel_mode_style` | `"drawer"` default, `"floating"` opt-in | **`"integrated"`** |
+
+The mode vocabulary also grew: the context menu now offers
+`["classic", "integrated", "cinema"]` (`js/src/ui/context-menu.ts`), and
+`controls.ts` branches on a `cinema` mode this section predates. What is
+recorded below is therefore the *transition plan as written*, kept per this
+file's own Documentation Rule ("preserve both direction and memory") rather than
+overwritten. **This section is history; it is not the current state.** The
+design target in the rest of the file still stands.
+
+The full coexistence plan,
 configuration seam, prerequisites before switching defaults, and the
 `0.16.x → 0.17.x` decision horizon are documented in:
 
