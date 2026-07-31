@@ -114,8 +114,78 @@ distribution, and onboarding README verification remain release gates as well.
 
 ---
 
+## Transport, routing and honest limits (2026-07-30/31)
+
+The round the reading above called for, delivered and verified by mutation.
+
+### Runtime envelopes and single authority (R0–R2)
+A shared manifest (`molsysviewer/runtime_actions.json`) classifies every
+browser-originated action; Python and TypeScript load the same file, so both
+classify identically by construction. Python is the only authority: identity,
+direction and action↔payload coherence are validated, and `command` messages are
+deduplicated so one accepted command yields one public-API mutation and one
+history checkpoint. Enveloping lives in the connector (`MolSysViewerWidget.send`),
+so Qt stays raw and history keeps domain messages.
+
+The popup no longer bootstraps from a replay journal: `build_popup_scene_snapshot`
+rebuilds the current scene from the live registries, pure with respect to history
+and transport. Inflating the journal with 10,000 unrelated ops leaves the
+snapshot byte-for-byte identical.
+
+### Array-native data plane (D0–D4)
+Coordinates travel in a planar layout so Mol\* frames are zero-copy views,
+removing a per-frame de-interleaving pass at no cost in Python. An
+acknowledgement deadline releases retained arrays and falls back observably
+without a timer thread, which would make `widget.send` unsafe off the kernel
+thread. A canvas popup receives its own typed molecular generation, relayed by
+the host without retaining anything, which lifted the restriction that disabled
+the binary path whenever popout was enabled.
+
+### Honest limits instead of silent failures
+1.0 deliberately keeps complete materialization, so a load large enough to
+exhaust the browser tab now warns with the measured size and a concrete
+`structure_indices` subset that fits (`set_structure_scale_budget`). Windowed
+residency stays post-1.0 because it changes what `view.molsys` means and its
+failure mode is silently wrong science. `SharedArrayBuffer` was reclassified
+from post-1.0 to **blocked on external preconditions**: COOP/COEP belong to the
+notebook host, and Mol\* reorders coordinate arrays in place.
+
+### Two guards for defect classes that hid under a green suite
+- **Digester callers.** The boundary audit asked whether a digester existed and
+  found 26 missing. It never asked whether the digester accepts the viewer
+  calling it. 58 of 81 query arguments rejected `molsysviewer.viewer.get`, so
+  `view.get(...)` was broken for nearly its whole surface, for months, with
+  every test green. Fixed and guarded.
+- **Documentation execution.** Sphinx does not execute notebooks, so a previous
+  API hardening broke ten documented notebooks unnoticed. All are green again;
+  putting `docs/execute_notebooks.py` in CI is still open (see gates below).
+
+### Correction to this document
+Item 16 (*E2E Playwright CI Automation*) was listed as `Planned`. `CI_e2e.yaml`
+already runs `npm run test:e2e` on every pull request to `main`. **Done.**
+Deciding release readiness against a stale plan is its own risk.
+
+---
+
+## Remaining `1.0.0` gates
+
+| # | Gate | Notes |
+|---|---|---|
+| 20 | **Qt parity (R3) and its own benchmark** | **In 1.0.** Qt still uses the JSON path and does not share envelope semantics. A green AnyWidget transport does not imply Qt: it needs its own measurement, per the data-plane proposal. |
+| 21 | **Real-window Qt/WebGL validation** | Requires a real display/GPU; the only Fase E item still open. |
+| 22 | **Notebook execution in CI** | `docs/execute_notebooks.py` is the real check; nothing runs it today, which is how ten broken notebooks survived. |
+| 23 | **Widget seam E2E** | The R1 tests mirror the seam's logic as units; the real `onCustomMsg` path has never run in a browser. |
+| 24 | **R2 tail** | Retire the `PopupReplayLog` fallback once the canonical path is exercised in real use, and extract a pure builder for addon context items. |
+| 14 | **Scientific dogfooding** | Unchanged: daily lab usage is what finds what audits cannot. |
+| 15 | **Bug resolution from dogfooding** | Unchanged. |
+
+---
+
 ## → Tag 1.0.0
-Released when the `0.19.0` dogfooding and validation produce no new surprises.
+Released when the gates above are closed and dogfooding produces no new
+surprises. Note before tagging: `_version.py` is a git-ignored artifact and
+`package.json` is generated from it, so both must be regenerated from the
+repository or the published version will be wrong.
 
 ---
 
@@ -126,7 +196,7 @@ Tasks that extend the reach and automation of the project but do not block the i
 | # | Task | Notes | Status |
 |---|---|---|---|
 | 11 | **Scientific Tutorials**: 3-5 case-driven notebooks | Focus on real problems (Pocket Contact Analysis, Conformational Comparison, Pharmacophore Model). Postponed to post-1.0 to wait until sibling tools (`elastnetmt`, `pharmacophoremt`, `molsysmt`, `topomt`) and their respective addons are fully mature and polished. | Postponed |
-| 16 | **E2E Playwright CI Automation** | Run the 10 Playwright E2E tests headlessly in GitHub Actions on every pull request | Planned |
+| 16 | **E2E Playwright CI Automation** | `CI_e2e.yaml` runs `npm run test:e2e` on every pull request to `main` | ✅ done (this entry was stale) |
 | 17 | **macOS & Windows Standalone Support** | Build and publish PySide6/QtWebEngine conda recipes for macOS and Windows | Planned |
 | 18 | Add Windows to CI matrix | Standard runner compatibility verification | Planned |
 | 19 | Add Python 3.13 to CI matrix | Upgrade testing environment; local development already uses Python 3.13, CI currently covers 3.11-3.12 because the conda `smonitor` build set no longer resolves for Python 3.10 | Planned |
