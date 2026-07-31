@@ -50,3 +50,29 @@ Los 5 paquetes (`shiboken6`, `pyside6-essentials`, `pyside6-addons`,
 `uibcdf`**, así que el standalone se instala/prueba sin compilar. El backend
 interactivo está validado en Qt real (ver
 `pending_proposals/standalone_qt_interactive_backend.md`).
+
+## Evidencia adicional sobre el Plan C (2026-07-31)
+
+Se volvió a intentar el Plan C en el env conda, con Mesa llvmpipe del sistema
+(`swrast_dri.so` presente) bajo `xvfb-run`. Resultado, que **confirma la
+Decisión 1 en lugar de discutirla**:
+
+- `test_qt_live_model_full_render_gpu` **pasó** lanzado en solitario con
+  `QTWEBENGINE_CHROMIUM_FLAGS="--disable-gpu-sandbox --no-sandbox
+  --ignore-gpu-blocklist --enable-unsafe-swiftshader"`, `LIBGL_ALWAYS_SOFTWARE=1`
+  y `GALLIUM_DRIVER=llvmpipe`.
+- El **mismo test falló** dentro de la suite completa y sin ese último flag, con
+  `Error: Could not create a WebGL rendering context`.
+
+Es decir, se reprodujo la fragilidad ya documentada: el contexto WebGL software
+depende de la combinación exacta de flags y del orden de ejecución. Un paso
+aislado no es una refutación.
+
+No se cambia nada: el Plan C sigue siendo la vía no preferida, y el camino es el
+runner con GPU (Nivel 2). Se registra por si alguien vuelve a intentarlo, para
+que no repita el experimento desde cero.
+
+Nota menor para quien lo intente: el docstring de
+`test_qt_live_model_full_render_gpu` recomienda `--use-gl=angle
+--use-angle=swiftshader`, pero **SwiftShader no está** en el build de
+`PySide6_uibcdf` (comprobado), de modo que esos flags no aplican aquí.

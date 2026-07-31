@@ -476,6 +476,28 @@ buffer transfer and retains nothing), which then allows lifting the
 `enable_popout` restriction that currently disables the binary path whenever a
 popout is possible. Qt keeps the JSON path and needs its own benchmark.
 
+#### The widget seam, measured in a real browser (2026-07-31)
+
+R1's tests mirrored the seam's decision logic as units; the actual
+`render({model, el})` entry point and its live `msg:custom` path had never run in
+a browser. `widget-seam.e2e.ts` now drives the real widget with a fake AnyWidget
+model and asserts, in Chromium:
+
+- `ready` leaves **raw**, outside the envelope. It has to: the adapter does not
+  exist yet when the bootstrap handshake is sent, and enveloping it would
+  deadlock.
+- `ready` advertises the binary capability with popout disabled.
+- Ordinary browser-to-Python traffic **is** enveloped.
+- A valid projection is unwrapped and reaches the controller.
+- A projection carrying another `sessionId` **never** reaches it.
+
+Worth recording how the test was written, because the first version passed for
+the wrong reason: it detected the effect through the DOM, and nothing was ever
+applied, so "a foreign session is not applied" held vacuously. It now records
+what reaches `MolSysViewerController.handleMessage`, and asserts the valid
+projection arrives so the isolation check has something to contrast with.
+Mutation-verified: removing the session check fails it in the real browser.
+
 ### R3. Qt parity
 
 - map Qt readiness, delivery acknowledgement, and errors to the same envelope;

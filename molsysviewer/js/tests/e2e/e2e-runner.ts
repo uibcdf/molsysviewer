@@ -12,6 +12,7 @@ const SUITES = [
     "array-native-load",
     "popup-channel",
     "structure-data-relay",
+    "widget-seam",
     "broken-anchors",
     "export-replay",
     "group-panel-interaction",

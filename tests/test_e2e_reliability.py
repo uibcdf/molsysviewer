@@ -25,7 +25,7 @@ def test_e2e_runner_inventory_matches_every_scientific_suite():
 
     # Hardcoded on purpose: adding an E2E file without registering it in the
     # runner (or vice versa) must be a deliberate, visible change.
-    assert len(expected) == 25
+    assert len(expected) == 26
     assert declared == expected
 
 

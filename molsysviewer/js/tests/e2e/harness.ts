@@ -36,6 +36,7 @@ declare global {
         loadArrayNativeFixture: typeof loadArrayNativeFixture;
         probePopupChannel: typeof probePopupChannel;
         probeStructureDataRelay: typeof probeStructureDataRelay;
+        probeWidgetSeam: typeof probeWidgetSeam;
     } | undefined;
 }
 
@@ -1437,6 +1438,7 @@ if (typeof window !== "undefined") {
         loadArrayNativeFixture,
         probePopupChannel,
         probeStructureDataRelay,
+        probeWidgetSeam,
     };
 }
 
@@ -1576,4 +1578,122 @@ export async function probeStructureDataRelay(): Promise<{
             reject(error);
         });
     });
+}
+
+/**
+ * The AnyWidget seam, exercised in a real browser.
+ *
+ * R1's unit tests mirror the seam's decision logic; this drives the actual
+ * `render({model, el})` entry point with a fake AnyWidget model and checks the
+ * live `msg:custom` path: that `ready` leaves raw with its capabilities, that an
+ * enveloped projection is unwrapped and applied, that a projection for another
+ * session never lands, and that an outbound event is enveloped.
+ */
+export async function probeWidgetSeam(): Promise<{
+    readyRaw: boolean;
+    readyAdvertisesBinary: boolean;
+    outboundEnveloped: boolean;
+    projectionApplied: boolean;
+    foreignSessionApplied: boolean;
+}> {
+    const viewerId = "e2e-seam-view";
+    const sessionId = "e2e-seam-session";
+    const traits: Record<string, unknown> = {
+        runtime_viewer_id: viewerId,
+        runtime_session_id: sessionId,
+        initial_messages: [],
+        enable_popout: false,
+        debug_js: false,
+        show_controls: false,
+        autohide_controls: true,
+        controls_mode: "classic",
+        panel_mode_style: "drawer",
+        viewer_mode: "integrated",
+        controls_position: ["top", "right"],
+        addon_states: {},
+    };
+    const sent: any[] = [];
+    let customHandler: ((msg: any, buffers?: DataView[]) => void) | null = null;
+    const model = {
+        get: (key: string) => traits[key],
+        set: () => {},
+        save_changes: () => {},
+        send: (msg: any) => sent.push(msg),
+        on: (event: string, cb: any) => {
+            if (event === "msg:custom") customHandler = cb;
+        },
+        off: () => {},
+    };
+
+    const el = document.createElement("div");
+    Object.assign(el.style, { width: "640px", height: "480px" });
+    document.body.appendChild(el);
+
+    // Record what actually reaches the controller. Detecting the effect through
+    // the DOM was tried first and made the test pass vacuously: nothing was
+    // applied either way, so "a foreign session is not applied" held for the
+    // wrong reason.
+    const delivered: string[] = [];
+    const controllerProto = MolSysViewerController.prototype as any;
+    const originalHandle = controllerProto.handleMessage;
+    controllerProto.handleMessage = function (msg: any, ...rest: any[]) {
+        if (msg?.op) delivered.push(String(msg.op));
+        return originalHandle.call(this, msg, ...rest);
+    };
+
+    const widget = (await import("../../src/index")).default;
+    widget.render({ model, el });
+
+    // `ready` is emitted once the runtime finished booting.
+    const deadline = Date.now() + 20000;
+    while (Date.now() < deadline && !sent.some(m => m?.event === "ready" || m?.payload?.event === "ready")) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    const readyMessage = sent.find(m => m?.event === "ready" || m?.payload?.event === "ready");
+    const readyRaw = !!readyMessage && readyMessage.event === "ready" && !("protocolVersion" in readyMessage);
+    const readyAdvertisesBinary =
+        Array.isArray(readyMessage?.capabilities?.binary_structure_data)
+        && readyMessage.capabilities.binary_structure_data.includes(1);
+
+    // An ordinary outbound event must leave enveloped.
+    sent.length = 0;
+    window.dispatchEvent(new Event("resize"));
+    await new Promise(resolve => setTimeout(resolve, 400));
+    const outboundEnveloped = sent.some(
+        m => m?.protocolVersion === 1 && m?.direction === "event" && m?.payload?.event,
+    );
+
+    const projection = (overrides: Record<string, unknown> = {}) => ({
+        protocolVersion: 1,
+        viewerId,
+        sessionId,
+        endpointId: `python:${viewerId}`,
+        targetEndpointId: `widget-host:${sessionId}`,
+        messageId: "py-seam-1",
+        direction: "projection",
+        action: "set_legend",
+        payload: { op: "set_legend", visible: true, title: "seam-probe" },
+        ...overrides,
+    });
+
+    delivered.length = 0;
+    customHandler?.(projection());
+    await new Promise(resolve => setTimeout(resolve, 600));
+    const projectionApplied = delivered.includes("set_legend");
+
+    // Same projection, wrong session: must never reach the controller.
+    delivered.length = 0;
+    customHandler?.(projection({ sessionId: "someone-elses-session" }));
+    await new Promise(resolve => setTimeout(resolve, 600));
+    const foreignSessionApplied = delivered.includes("set_legend");
+
+    controllerProto.handleMessage = originalHandle;
+
+    return {
+        readyRaw,
+        readyAdvertisesBinary,
+        outboundEnveloped,
+        projectionApplied,
+        foreignSessionApplied,
+    };
 }

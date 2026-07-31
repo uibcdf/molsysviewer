@@ -109,8 +109,9 @@ mutated twice. Lazy structure sources, eager/windowed modes, compression,
 workers, multiview, camera/movie expansion, and other product scope remain
 post-1.0.
 
-Real-window Qt/WebGL validation, scientific dogfooding (#14), end-user
-distribution, and onboarding README verification remain release gates as well.
+Scientific dogfooding (#14), end-user distribution, and onboarding README
+verification remain release gates as well. The Qt render gate is closed on a
+real GPU; only its CI automation is pending.
 
 ---
 
@@ -172,7 +173,7 @@ Deciding release readiness against a stale plan is its own risk.
 | # | Gate | Notes |
 |---|---|---|
 | 20 | **Qt parity (R3) and its own benchmark** | **In 1.0.** Qt still uses the JSON path and does not share envelope semantics. A green AnyWidget transport does not imply Qt: it needs its own measurement, per the data-plane proposal. |
-| 21 | **Real-window Qt/WebGL validation** | Requires a real display/GPU; the only Fase E item still open. |
+| 21 | **Qt render in CI (level 2)** | The render gate itself is **already closed**: validated on a real GPU (aleph, 2026-07-04), see [`standalone_qt_ci_and_gl_decisions.md`](standalone_qt_ci_and_gl_decisions.md). What is pending is automating it as a separate non-blocking job on a GPU runner. Software-GL under xvfb is the explicitly non-preferred Plan C. |
 | 22 | **Notebook execution in CI** | `docs/execute_notebooks.py` is the real check; nothing runs it today, which is how ten broken notebooks survived. |
 | 23 | **Widget seam E2E** | The R1 tests mirror the seam's logic as units; the real `onCustomMsg` path has never run in a browser. |
 | 24 | **R2 tail** | Retire the `PopupReplayLog` fallback once the canonical path is exercised in real use, and extract a pure builder for addon context items. |
