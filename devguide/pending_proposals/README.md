@@ -34,6 +34,10 @@ is also explicitly post-1.0.
 - [`documentation_execution_in_ci.md`](documentation_execution_in_ci.md): run
   `docs/execute_notebooks.py` in CI. Sphinx does not execute notebooks, which is
   how ten broken ones survived unnoticed. Postponed by decision, not closed.
+- [`lazy_json_fallback_payload.md`](lazy_json_fallback_payload.md): the
+  array-native path avoids *sending* the JSON payload but not *building* it, so
+  every load pays the ViewerJSON path (~10× the binary one) and discards it. The
+  fallback is sound; paying for it eagerly is not.
 - [`opt_in_hover_telemetry.md`](opt_in_hover_telemetry.md): stop forwarding hover
   to the kernel when nobody is listening. The July round deduplicated identical
   hovers, which fixes a resting mouse and not a moving one. **Blocked on one

@@ -69,12 +69,42 @@ Measured A/B in one process, three repeats each: **3,894 ms → 2,662 ms, a
 > The honest figure came from an A/B of the real edit. A benchmark that patches a
 > shared method measures the patch, not the change.
 
-The second half is **upstream and larger**. `MolSys → ViewerJSON` spends ~93% of
-its 5 s in two more redundant `to_dict()` deep copies of freshly built local
-objects (`molsysmt/form/molsysmt_MolSys/to_molsysmt_ViewerJSON.py`). Reported at
-`molsysmt/devguide/pending_bugs/viewer_json_conversion_deep_copies_twice.md`.
-**Re-run this baseline once that lands** — the `msm.convert` and `view.load` rows
-should both move.
+The second half was **upstream and larger**: `MolSys → ViewerJSON` made two more
+redundant `to_dict()` deep copies of freshly built local objects
+(`molsysmt/form/molsysmt_MolSys/to_molsysmt_ViewerJSON.py`). Reported upstream,
+**fixed the same day** in `b63a2f6c5`, with an aliasing test and the mutation
+check: restoring `copy=True` keeps the correctness test green and regresses the
+time, which is what proves the copy was redundant rather than load-bearing.
+MolSysMT measured **1.67 s → 0.32 s** on this case.
+
+> **A methodological warning, recorded because it produced a wrong retraction.**
+> This document first cited that upstream cost as "~93% of 5 s", taken from
+> cProfile. **That figure is profiler overhead**: 1.35M `deepcopy` calls are
+> cheap to run and very expensive to instrument, so cProfile inflated ~1.7 s of
+> real work into ~5 s. On noticing, an A/B was run against what was believed to
+> be the unfixed upstream — and it showed only 20 ms, prompting a retraction of
+> the whole finding. **That retraction was also wrong**: the upstream fix had
+> already landed in the working tree, so both arms of the A/B were running
+> `copy=False` and the 20 ms was noise.
+>
+> Two lessons, both cheap to apply. **Never quote a cProfile duration as a wall
+> time** when the hot path is millions of tiny calls — profile to find *where*,
+> then time unprofiled to find *how much*. And **pin the revision of a sibling
+> repository before an A/B against it**; a working tree someone else is editing
+> is not a control.
+
+## After both fixes (2026-07-31, same machine and case)
+
+| stage | before | after |
+|---|---:|---:|
+| `view.load(molsys)` | 2,619 ms | **1,434 ms** |
+| MolSysViewer's share | 3,953 ms | 2,729 ms |
+| MolSysMT's share | 5,100 ms | 4,949 ms |
+| **first canvas, total** | **9,053 ms** | **7,678 ms** |
+
+`msm.convert(file)` — reading the trajectory into a `MolSys` — is now **4,548 ms
+and by far the dominant cost**, untouched by either fix. Whatever is optimized
+next in this path, that is where the time is.
 
 ## Caveats that must travel with these numbers
 
