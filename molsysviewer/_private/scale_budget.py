@@ -17,6 +17,10 @@ large trajectory, and only the user knows their machine.
 
 import warnings
 
+from smonitor.integrations import context_extra, emit_from_catalog
+
+from .smonitor import CATALOG, META, PACKAGE_ROOT
+
 #: Coordinate bytes on the wire per atom per structure: float32 x, y, z.
 _BYTES_PER_ATOM_STRUCTURE = 3 * 4
 
@@ -73,6 +77,22 @@ def check_structure_scale(
 
     stride = suggested_structure_stride(n_atoms, n_structures, budget_bytes)
     kept = -(-n_structures // stride)
+    # The signal catalog is how this project reports conditions worth watching;
+    # the warning stays for the notebook user reading it inline.
+    emit_from_catalog(
+        CATALOG["structure_scale_over_budget"],
+        package_root=PACKAGE_ROOT,
+        meta=META,
+        extra=context_extra(
+            caller="molsysviewer.loaders.load_from_molsysmt",
+            operation="materialize-selected-structures",
+            failure_class="scale_over_budget",
+            last_failure_reason=(
+                f"{total} coordinate bytes for {n_structures} structures of "
+                f"{n_atoms} atoms exceed the {budget_bytes} byte budget"
+            ),
+        ),
+    )
     warnings.warn(
         f"This selection materializes {n_structures} structures of {n_atoms} atoms, "
         f"about {_human(total)} of coordinates, over the {_human(budget_bytes)} budget. "

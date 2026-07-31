@@ -1122,6 +1122,17 @@ class MolSysView(
             })
         except Exception:
             pass
+        emit_from_catalog(
+            CATALOG["structure_data_stream_fallback"],
+            package_root=PACKAGE_ROOT,
+            meta=META,
+            extra=context_extra(
+                caller="molsysviewer.viewer._fallback_binary_structure_stream",
+                operation="array-native-structure-stream",
+                failure_class="stream_fallback_to_json",
+                last_failure_reason=reason,
+            ),
+        )
         warnings.warn(
             f"Array-native stream failed; using JSON fallback: {reason}",
             RuntimeWarning,

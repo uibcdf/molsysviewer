@@ -115,6 +115,24 @@ CATALOG = {
         "category": "performance",
         "level": "WARNING",
     },
+    "structure_scale_over_budget": {
+        "code": "MOLSYSVIEWER-STRUCTURE-SCALE-OVER-BUDGET",
+        "source": "molsysviewer.loaders",
+        "category": "performance",
+        "level": "WARNING",
+    },
+    "structure_data_stream_fallback": {
+        "code": "MOLSYSVIEWER-STRUCTURE-DATA-STREAM-FALLBACK",
+        "source": "molsysviewer.viewer.transport",
+        "category": "transport",
+        "level": "WARNING",
+    },
+    "binary_transport_unsupported": {
+        "code": "MOLSYSVIEWER-BINARY-TRANSPORT-UNSUPPORTED",
+        "source": "molsysviewer.standalone_qt",
+        "category": "transport",
+        "level": "ERROR",
+    },
     "addon_load_failed": {
         "code": "MOLSYSVIEWER-ADDON-LOAD-FAILED",
         "source": "molsysviewer.addons",

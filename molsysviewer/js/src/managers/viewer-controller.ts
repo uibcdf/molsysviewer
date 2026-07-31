@@ -2102,13 +2102,14 @@ export class MolSysViewerController {
                                msg.op === "load_pdb_string" ||
                                msg.op === "load_molsys_payload" ||
                                msg.op === "load_molsys_payload_ref" ||
+                               (msg as any).op === "load_molsys_array_payload_ref" ||
                                msg.op === "load_structure_from_url" ||
                                msg.op === "load_pdb_id";
             if (isLoaderOp) {
                 this.hideWelcomeCard();
             }
 
-            if ((msg as any).op === "load_molsys_payload" || (msg as any).op === "load_molsys_payload_ref") {
+            if ((msg as any).op === "load_molsys_payload" || (msg as any).op === "load_molsys_payload_ref" || (msg as any).op === "load_molsys_array_payload_ref") {
                 const structures = (msg as any).payload?.structures;
                 if (Array.isArray(structures)) {
                     this.trajectory.setExpectedFrameCount(structures.length);
@@ -2125,6 +2126,7 @@ export class MolSysViewerController {
                 case "load_pdb_string": await this.loader.loadFromString(msg); break;
                 case "load_molsys_payload": await this.loader.loadMolSysPayload(msg); break;
                 case "load_molsys_payload_ref": await this.loader.loadMolSysPayloadRef(msg); break;
+                case "load_molsys_array_payload_ref": await this.loader.loadMolSysArrayPayloadRef(msg); break;
                 case "load_structure_from_url": await this.loader.loadFromUrl(msg); break;
                 case "load_pdb_id": await this.loader.loadPdbId(msg); break;
 

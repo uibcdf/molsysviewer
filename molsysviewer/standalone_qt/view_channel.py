@@ -19,6 +19,10 @@ from typing import Any, Callable
 
 from .utils import _frontend_event_validation_error
 
+from smonitor.integrations import context_extra, emit_from_catalog
+
+from .._private.smonitor import CATALOG, META, PACKAGE_ROOT
+
 
 logger = logging.getLogger(__name__)
 
@@ -64,6 +68,35 @@ class QtViewChannel:
     # -- outgoing (Python -> JS) ---------------------------------------------
 
     def send(self, msg: dict, buffers: Any = None) -> None:
+        """Deliver a control-plane message to the Qt frontend.
+
+        The Qt bridge carries JSON only. Accepting `buffers` and dropping them
+        would lose structural data silently, so this refuses instead: the
+        array-native path is gated on the AnyWidget connector, and if that gate
+        is ever widened the failure must be immediate and loud rather than a
+        viewer that renders an empty structure.
+        """
+        if buffers:
+            emit_from_catalog(
+                CATALOG["binary_transport_unsupported"],
+                package_root=PACKAGE_ROOT,
+                meta=META,
+                extra=context_extra(
+                    caller="molsysviewer.standalone_qt.QtViewChannel.send",
+                    operation="qt-control-plane-send",
+                    failure_class="binary_transport_unsupported",
+                    last_failure_reason=(
+                        f"{len(buffers)} buffer(s) for op {msg.get('op')!r} "
+                        "cannot cross the Qt JSON bridge"
+                    ),
+                ),
+            )
+            raise NotImplementedError(
+                "The Qt bridge has no binary transport: it would drop "
+                f"{len(buffers)} buffer(s) for op {msg.get('op')!r}. Qt keeps the "
+                "JSON path until a connector-specific binary mechanism is "
+                "benchmarked (see devguide data_plane_architecture.md, D4)."
+            )
         self._bridge.send(dict(msg))
 
     @property

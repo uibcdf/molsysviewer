@@ -15,6 +15,7 @@ import {
     loadStructureFromString,
     loadStructureFromUrl,
 } from "../../plugin/structure";
+import { decodeStructuralArraySet } from "../../messages/array-native-transport";
 
 export interface LoaderCallbacks {
     clearGlobalRepresentations: () => Promise<void>;
@@ -58,6 +59,66 @@ export class LoaderHandlers {
         }
         const payload = await response.json() as MolSysPayload;
         await this.loadFromMolSysPayloadInternal(payload, msg.label);
+    }
+
+    /**
+     * Qt standalone: the structural arrays arrive as one binary blob served by
+     * the `molsysviewer-payload` scheme, with the metadata in the message. The
+     * blob is the arrays concatenated in descriptor order, so it is sliced back
+     * apart here and decoded with the same validation the AnyWidget stream uses.
+     */
+    async loadMolSysArrayPayloadRef(msg: any) {
+        const url = msg?.ref?.url;
+        if (!url || typeof url !== "string") {
+            console.warn("[MolSysViewer] load_molsys_array_payload_ref without ref.url");
+            return;
+        }
+        const metadata = msg.metadata;
+        if (!metadata?.structural_arrays) {
+            console.warn("[MolSysViewer] load_molsys_array_payload_ref without metadata");
+            return;
+        }
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(
+                `Could not fetch MolSys array payload ref: ${response.status} ${response.statusText}`,
+            );
+        }
+        const blob = await response.arrayBuffer();
+
+        let offset = 0;
+        const views: DataView[] = [];
+        for (const descriptor of metadata.structural_arrays) {
+            const length = Number(descriptor.byte_length);
+            if (!Number.isFinite(length) || length < 0 || offset + length > blob.byteLength) {
+                throw new Error(
+                    `Array-native ref blob is inconsistent at ${descriptor.kind}: ` +
+                    `needs ${length} bytes at offset ${offset} of ${blob.byteLength}`,
+                );
+            }
+            views.push(new DataView(blob, offset, length));
+            offset += length;
+        }
+        if (offset !== blob.byteLength) {
+            throw new Error(
+                `Array-native ref blob has ${blob.byteLength - offset} trailing bytes`,
+            );
+        }
+
+        const decoded = decodeStructuralArraySet(
+            metadata.structural_arrays,
+            views,
+            metadata.n_atoms,
+            metadata.n_structures,
+        );
+        await this.loadArrayNativeMolSysPayload({
+            atoms: metadata.atoms,
+            bonds: metadata.bonds,
+            meta: metadata.meta,
+            nAtoms: metadata.n_atoms,
+            nStructures: metadata.n_structures,
+            ...decoded,
+        }, msg.label);
     }
 
     async loadArrayNativeMolSysPayload(payload: ArrayNativeMolSysPayload, label?: string) {

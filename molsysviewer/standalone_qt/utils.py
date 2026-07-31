@@ -11,6 +11,7 @@ import time
 from typing import Any, Sequence
 from urllib.parse import parse_qs, urlparse
 
+from .._private.smonitor_emit import emit_suppressed_exception
 from ..demo import demo
 from ..standalone import _resolve_view, build_standalone0_html
 
@@ -338,6 +339,8 @@ class QtMessageBridge:
         # MolSysViewerPayloadSchemeHandler) instead of a temp file + fetch(file://),
         # which Chromium blocks from a file:// page. Keyed by message id.
         self.payloads: dict[str, bytes] = {}
+        # Ids served as raw structural arrays instead of JSON text.
+        self.binary_payload_ids: set[str] = set()
 
     def on_load_started(self) -> None:
         self.ready = False
@@ -447,6 +450,15 @@ class QtMessageBridge:
         if len(payload_text.encode("utf-8")) < self.payload_ref_threshold_bytes:
             return None
         payload_id = str(message["id"])
+
+        # Prefer the array-native form: the same scheme handler serves the raw
+        # structural arrays, so the page skips ViewerJSON, nested lists and the
+        # JSON encode entirely. Measured 4.7x fewer bytes and up to 120x less
+        # preparation time (devguide/performance/qt_transport_baseline_2026_07.md).
+        array_message = self._array_native_ref_message(message, payload_id)
+        if array_message is not None:
+            return payload_id
+
         self.payloads[payload_id] = payload_text.encode("utf-8")
         n_structures = len(payload.get("structures") or []) if isinstance(payload.get("structures"), list) else None
         message.pop("payload", None)
@@ -456,6 +468,46 @@ class QtMessageBridge:
         if n_structures is not None:
             message["n_structures"] = n_structures
         return payload_id
+
+    def _array_native_ref_message(self, message: dict[str, Any], payload_id: str) -> dict | None:
+        """Rewrite a molecular load as an array-native reference, or give up.
+
+        Metadata (topology and the array descriptors) travels in the message, as
+        it does on the AnyWidget seam; the structural arrays are concatenated in
+        descriptor order and served as one binary blob over QT_PAYLOAD_SCHEME.
+
+        Returns None when there is no MolSys to serialize or anything fails, in
+        which case the caller keeps the JSON path. This must never be the reason
+        a structure fails to load.
+        """
+        molsys = getattr(getattr(self, "view", None), "_molsys", None)
+        if molsys is None:
+            return None
+        try:
+            from ..loaders.array_native_molsys import serialize_array_native_molsys
+
+            payload = serialize_array_native_molsys(molsys)
+            blob = b"".join(bytes(buffer) for buffer in payload.buffers)
+        except Exception:
+            emit_suppressed_exception(
+                "molsysviewer.standalone_qt.array_native_ref",
+                sys.exc_info()[1],
+                context={"payload_id": payload_id},
+            )
+            return None
+
+        self.payloads[payload_id] = blob
+        self.binary_payload_ids.add(payload_id)
+        message.pop("payload", None)
+        message["op"] = "load_molsys_array_payload_ref"
+        message["metadata"] = payload.metadata
+        message["n_structures"] = payload.metadata["n_structures"]
+        message["ref"] = {
+            "kind": "scheme",
+            "url": f"{QT_PAYLOAD_SCHEME}://payload/{payload_id}",
+            "content_type": "application/octet-stream",
+        }
+        return message
 
     def _coalesce_key(self, message: dict[str, Any]) -> str | None:
         op = message.get("op")
@@ -593,6 +645,7 @@ class QtMessageBridge:
         payload_id = entry.get("payload_id")
         if isinstance(payload_id, str):
             self.payloads.pop(payload_id, None)
+            self.binary_payload_ids.discard(payload_id)
 
     def _cleanup_queue(self) -> None:
         for entry in self.queue:
@@ -624,13 +677,20 @@ def _register_qt_url_schemes(QWebEngineUrlScheme) -> None:
         QWebEngineUrlScheme.registerScheme(scheme)
 
 
-def _make_payload_scheme_handler(QWebEngineUrlSchemeHandler, QBuffer, QByteArray, payloads: dict[str, bytes]):
+def _make_payload_scheme_handler(
+    QWebEngineUrlSchemeHandler,
+    QBuffer,
+    QByteArray,
+    payloads: dict[str, bytes],
+    binary_payload_ids: set[str] | None = None,
+):
     """Build a scheme handler that serves in-memory payloads over QT_PAYLOAD_SCHEME.
 
     The returned handler exposes a `served` list (payload ids actually served) so
     the round-trip can be asserted, e.g. by the real-Qt smoke test.
     """
     served: list[str] = []
+    binary_payload_ids = binary_payload_ids if binary_payload_ids is not None else set()
 
     class MolSysViewerPayloadSchemeHandler(QWebEngineUrlSchemeHandler):
         def requestStarted(self, job):  # noqa: N802
@@ -644,7 +704,16 @@ def _make_payload_scheme_handler(QWebEngineUrlSchemeHandler, QBuffer, QByteArray
             buffer = QBuffer(job)
             buffer.setData(QByteArray(data))
             buffer.open(QBuffer.OpenModeFlag.ReadOnly if hasattr(QBuffer, "OpenModeFlag") else QBuffer.ReadOnly)
-            job.reply(QByteArray(b"application/json"), buffer)
+            # The same handler serves both wire formats: JSON text for the
+            # compatibility payload, and raw structural arrays for the
+            # array-native one. `fetch(...).arrayBuffer()` needs the binary
+            # content type; nothing else about the channel changes.
+            content_type = (
+                b"application/octet-stream"
+                if payload_id in binary_payload_ids
+                else b"application/json"
+            )
+            job.reply(QByteArray(content_type), buffer)
             served.append(payload_id)
 
     handler = MolSysViewerPayloadSchemeHandler()

@@ -3,6 +3,7 @@ import type { ViewerMessage } from "./viewer-messages";
 const STRUCTURE_LOAD_OPS = new Set([
     "load_molsys_payload",
     "load_molsys_payload_ref",
+    "load_molsys_array_payload_ref",
     "load_structure_from_string",
     "load_pdb_string",
     "load_structure_from_url",

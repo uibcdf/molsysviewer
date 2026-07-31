@@ -7,6 +7,7 @@ class HistoryMixin:
     _MOLECULAR_LOAD_OPS = {
         "load_molsys_payload",
         "load_molsys_payload_ref",
+        "load_molsys_array_payload_ref",
         "load_structure_from_string",
         "load_pdb_string",
         "load_structure_from_url",
