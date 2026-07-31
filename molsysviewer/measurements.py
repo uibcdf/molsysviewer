@@ -92,7 +92,15 @@ class MeasurementsManager:
                     skip_digestion=True,
                 )
             ]
-        return list(arg)
+        # `int(i)` is not cosmetic. Digestion hands this a numpy array, so a bare
+        # `list(arg)` yields `np.int64` values, and those travel into the
+        # `add_*_measurement` options. `np.int64` is not JSON-serializable, so
+        # the message cannot cross the widget wire at all: the measurement is
+        # created and queryable in Python and never renders. Measurements made
+        # from the Studio subpanel were unaffected because their indices arrive
+        # from JS as plain numbers, which is what made the defect look like a
+        # Mol* problem rather than a serialization one.
+        return [int(i) for i in arg]
 
     def _normalize_endpoint_policy(self, endpoint_policy: str | None) -> str:
         policy = self._endpoint_policy_default if endpoint_policy is None else str(endpoint_policy).strip().lower()
