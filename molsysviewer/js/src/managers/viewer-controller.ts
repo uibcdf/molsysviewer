@@ -3502,6 +3502,17 @@ export class MolSysViewerController {
     }
 
     private updateWelcomeState(isInitPhase = false): void {
+        // A panel-only endpoint (the popped-out Studio/Add-ons window) has its
+        // canvas hidden and never loads a structure: the panel snapshot carries
+        // UI state and deliberately no geometry. "No structure" is therefore its
+        // normal, correct condition, not an empty viewer waiting to be filled.
+        // Showing the card there covers the panels that are the entire point of
+        // the window, and offers a "Load Crambin" button that would load into a
+        // canvas the user cannot see.
+        if (this.isPanelOnly) {
+            this.hideWelcomeCard();
+            return;
+        }
         const hasStructure = !!this.currentStructure || !!this.loadedStructure;
         if (hasStructure) {
             this.hideWelcomeCard();

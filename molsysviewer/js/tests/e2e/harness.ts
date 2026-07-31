@@ -926,13 +926,21 @@ async function setRegionVisibility(controller: ProfileController, tag: string, v
     return performance.now() - started;
 }
 
-export async function createController(targetId = "root") {
+export async function createController(
+    targetId = "root",
+    options?: { isPanelOnly?: boolean; panelModeStyle?: string },
+) {
     const target = document.getElementById(targetId) ?? document.body;
     (window as any).__messages = [];
-    const controller = await MolSysViewerController.create(target, msg => {
-        (window as any).__lastMessage = msg;
-        (window as any).__messages.push(msg);
-    });
+    const controller = await MolSysViewerController.create(
+        target,
+        msg => {
+            (window as any).__lastMessage = msg;
+            (window as any).__messages.push(msg);
+        },
+        undefined,
+        options,
+    );
     (window as any).__controller = controller;
     return controller;
 }

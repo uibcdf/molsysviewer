@@ -163957,6 +163957,10 @@ var MolSysViewerController = class _MolSysViewerController {
     document.head.appendChild(style);
   }
   updateWelcomeState(isInitPhase = false) {
+    if (this.isPanelOnly) {
+      this.hideWelcomeCard();
+      return;
+    }
     const hasStructure = !!this.currentStructure || !!this.loadedStructure;
     if (hasStructure) {
       this.hideWelcomeCard();
