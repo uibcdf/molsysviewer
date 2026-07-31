@@ -29,7 +29,7 @@ _MANIFEST_PATH = Path(__file__).resolve().parent / "runtime_actions.json"
 _VALID_CATEGORIES = {"command", "event", "request", "ack", "error"}
 
 
-def _load_manifest() -> tuple[dict[str, str], frozenset[str], frozenset[str], frozenset[str]]:
+def _load_manifest() -> tuple[dict[str, str], frozenset[str], frozenset[str], frozenset[str], frozenset[str]]:
     data = json.loads(_MANIFEST_PATH.read_text(encoding="utf-8"))
     if int(data.get("protocol_version", 0)) != RUNTIME_PROTOCOL_VERSION:
         raise ValueError(
@@ -42,17 +42,24 @@ def _load_manifest() -> tuple[dict[str, str], frozenset[str], frozenset[str], fr
     outbound_requests = frozenset(str(name) for name in data.get("outbound_requests", ()))
     raw = frozenset(str(name) for name in data.get("raw", ()))
     data_plane = frozenset(str(name) for name in data.get("data_plane", ()))
-    groups = [set(actions), set(outbound_requests), set(raw), set(data_plane)]
+    qt_transport = frozenset(str(name) for name in data.get("qt_transport", ()))
+    groups = [set(actions), set(outbound_requests), set(raw), set(data_plane), set(qt_transport)]
     seen: set[str] = set()
     for group in groups:
         clash = seen & group
         if clash:
             raise ValueError(f"runtime_actions.json action appears in two groups: {clash}")
         seen |= group
-    return actions, outbound_requests, raw, data_plane
+    return actions, outbound_requests, raw, data_plane, qt_transport
 
 
-ACTION_CATEGORIES, OUTBOUND_REQUESTS, RAW_ACTIONS, DATA_PLANE_ACTIONS = _load_manifest()
+(
+    ACTION_CATEGORIES,
+    OUTBOUND_REQUESTS,
+    RAW_ACTIONS,
+    DATA_PLANE_ACTIONS,
+    QT_TRANSPORT_ACTIONS,
+) = _load_manifest()
 
 
 def category_of(action: str) -> str | None:

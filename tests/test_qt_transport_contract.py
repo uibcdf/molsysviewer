@@ -6,6 +6,8 @@ must hold today is that this is *true by construction* and *loud when violated*,
 so the binary work can proceed on AnyWidget without leaving a trap behind.
 """
 
+from pathlib import Path
+
 import pytest
 
 from molsysviewer.standalone_qt.view_channel import QtViewChannel
@@ -150,3 +152,68 @@ def test_the_scheme_handler_serves_binary_and_json_by_id():
     handler.requestStarted(_FakeJob("/json-1"))
     handler.requestStarted(_FakeJob("/bin-1"))
     assert replies == [b"application/json", b"application/octet-stream"]
+
+
+# --- R3: the two connectors must not fork the protocol ---------------------
+
+def test_both_connectors_classify_from_the_same_manifest():
+    """Qt had a hardcoded set of transport events; now it reads the manifest.
+
+    A hardcoded list is how the two connectors drift: an action added to the
+    manifest would stay unknown to Qt, and one added to Qt's set would be
+    invisible to the shared contract.
+    """
+    from molsysviewer.runtime_contract import QT_TRANSPORT_ACTIONS
+    from molsysviewer.standalone_qt import utils
+
+    source = (Path(utils.__file__)).read_text(encoding="utf-8")
+    assert "QT_TRANSPORT_ACTIONS" in source
+    # The old hardcoded literal must not come back.
+    assert '{"message_ack", "message_error", "structure_ready", "render_ready"}' not in source
+    assert {"message_ack", "message_error", "structure_ready", "render_ready"} <= QT_TRANSPORT_ACTIONS
+
+
+def test_an_unknown_action_is_observable_on_qt_as_it_is_on_anywidget():
+    """The fork R3 closes: same event, silently ignored on one side only.
+
+    Before: AnyWidget rejected an unknown action observably, Qt forwarded it and
+    the handler ignored it without a trace. The handler ignores it either way,
+    so what had to match was the *visibility*.
+    """
+    from molsysviewer.standalone_qt import utils
+
+    bridge = utils.QtMessageBridge.__new__(utils.QtMessageBridge)
+    bridge.ready = True
+    forwarded: list = []
+    bridge._forward_to_view = forwarded.append  # noqa: SLF001
+
+    signalled: list = []
+    original = utils.emit_suppressed_exception
+    utils.emit_suppressed_exception = lambda *a, **k: signalled.append(a[0])
+    try:
+        assert bridge.handle_frontend_event({"event": "totally_unknown_event"}) is True
+    finally:
+        utils.emit_suppressed_exception = original
+
+    assert signalled, "an unknown action must leave a trace on Qt too"
+    assert "unknown_frontend_action" in signalled[0]
+
+
+def test_a_known_product_event_stays_silent_and_reaches_the_view():
+    from molsysviewer.standalone_qt import utils
+
+    bridge = utils.QtMessageBridge.__new__(utils.QtMessageBridge)
+    bridge.ready = True
+    forwarded: list = []
+    bridge._forward_to_view = forwarded.append  # noqa: SLF001
+
+    signalled: list = []
+    original = utils.emit_suppressed_exception
+    utils.emit_suppressed_exception = lambda *a, **k: signalled.append(a[0])
+    try:
+        bridge.handle_frontend_event({"event": "interaction_hover", "kind": "empty"})
+    finally:
+        utils.emit_suppressed_exception = original
+
+    assert not signalled, "a manifest-known event must not be reported as unknown"
+    assert [e["event"] for e in forwarded] == ["interaction_hover"]

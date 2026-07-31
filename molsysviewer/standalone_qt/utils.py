@@ -12,6 +12,12 @@ from typing import Any, Sequence
 from urllib.parse import parse_qs, urlparse
 
 from .._private.smonitor_emit import emit_suppressed_exception
+from ..runtime_contract import (
+    ACTION_CATEGORIES,
+    DATA_PLANE_ACTIONS,
+    QT_TRANSPORT_ACTIONS,
+    RAW_ACTIONS,
+)
 from ..demo import demo
 from ..standalone import _resolve_view, build_standalone0_html
 
@@ -34,6 +40,22 @@ QT_STATE_FILENAME = "standalone_qt0_state.json"
 #     (so the page fetches them without needing file:// access).
 QT_EVENT_SCHEME = "molsysviewer"
 QT_PAYLOAD_SCHEME = "molsysviewer-payload"
+
+
+def _is_known_frontend_action(name: Any) -> bool:
+    """True when the shared manifest knows this browser-originated action.
+
+    Both connectors classify from the same file, so a product event is a product
+    event on Qt and on AnyWidget alike, and neither can quietly invent one.
+    """
+    if not isinstance(name, str) or not name:
+        return False
+    return (
+        name in ACTION_CATEGORIES
+        or name in QT_TRANSPORT_ACTIONS
+        or name in RAW_ACTIONS
+        or name in DATA_PLANE_ACTIONS
+    )
 
 
 def _get_helper(name: str) -> Any:
@@ -382,7 +404,7 @@ class QtMessageBridge:
             self._flush()
             self._forward_to_view(event)  # the view also needs "ready"
             return True
-        if name in {"message_ack", "message_error", "structure_ready", "render_ready"}:
+        if name in QT_TRANSPORT_ACTIONS and name != "frontend_error":
             # Pure-transport events: handled here, not forwarded to the view.
             # Progress feedback for the current generation, so the user is never
             # left in front of a blank window during a long load.
@@ -397,7 +419,23 @@ class QtMessageBridge:
             self._show_status(f"Frontend error: {event.get('error', 'unknown error')}")
             return True
         # Any other frontend event (interaction_*, movie_*, region_ack, ...) is a
-        # product event for the persistent MolSysView.
+        # product event for the persistent MolSysView. It must be one the shared
+        # manifest knows: the AnyWidget seam rejects an unknown action
+        # observably, and Qt used to forward it and let the handler ignore it in
+        # silence. Same event, two behaviours, is exactly the semantic fork R3
+        # exists to prevent.
+        if not _is_known_frontend_action(name):
+            # The AnyWidget seam drops an unknown action observably; Qt used to
+            # forward it and let the handler ignore it in silence. The defect was
+            # the silence, not the forwarding: the handler ignores it either way,
+            # so the end state already matched. Signalling it makes both
+            # connectors equally observable without refusing out-of-band
+            # diagnostics, which a strict rejection would also kill.
+            emit_suppressed_exception(
+                "molsysviewer.standalone_qt.unknown_frontend_action",
+                ValueError(f"unknown frontend action {name!r} (not in runtime_actions.json)"),
+                context={"event": name},
+            )
         self._forward_to_view(event)
         return True
 

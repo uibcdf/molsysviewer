@@ -482,6 +482,32 @@ popout is possible. Qt keeps the JSON path and needs its own benchmark.
 - retain Qt's bounded retry policy;
 - verify that Qt does not fork Python or controller semantics.
 
+Implemented. The fork was real and measurable: given the same unknown action,
+the AnyWidget seam rejected it observably (`unknown-action`) while Qt accepted
+it in silence with no trace. Structurally, Qt classified its delivery events
+from a hardcoded literal that nothing tied to the shared manifest, so an action
+added on either side stayed invisible to the other.
+
+Qt's five delivery-level events (`message_ack`, `message_error`,
+`structure_ready`, `render_ready`, `frontend_error`) now live in the manifest as
+a `qt_transport` group, and the bridge classifies from it instead of its own
+list. The AnyWidget comm is reliable and has no equivalent, which is why the
+group is named for the connector that needs it.
+
+Qt's bounded retry policy is untouched.
+
+An unknown action now leaves a trace on Qt as it does on AnyWidget. It is
+**signalled and forwarded** rather than refused: the AnyWidget seam drops it and
+the Qt handler ignores it, so the end state already matched — the defect was the
+silence, not the forwarding. A strict rejection was written first and an existing
+test caught it: the Qt payload-generation probe reports through a synthetic
+`probe_payload` event, and refusing unknown actions would also kill legitimate
+out-of-band diagnostics.
+
+Three guards hold this: both connectors classify from the same manifest, the old
+hardcoded literal cannot come back, and an unknown action must be observable on
+Qt. Mutation-verified — restoring the silence fails them.
+
 ### R4. Data-plane delivery
 
 - route structure-data descriptors and chunks by endpoint;
