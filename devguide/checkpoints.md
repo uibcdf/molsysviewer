@@ -169,6 +169,26 @@ mechanism: the load path reads the real structure count
 mutation : restore structures.get_n_structures(), which always raises
 test     : a real load over a lowered budget warns
 result   : FAILS with mutation / PASSES restored
+
+mechanism: the Qt scheme handler serves binary as octet-stream
+mutation : always reply application/json
+test     : the scheme handler serves binary and json by id
+result   : FAILS with mutation / PASSES restored
+
+mechanism: Qt refuses buffers it cannot deliver
+mutation : drop them silently, as before
+test     : qt refuses buffers instead of dropping them
+result   : FAILS with mutation / PASSES restored
+
+mechanism: an unknown action is observable on Qt, not silent
+mutation : stop reporting unknown frontend actions
+test     : an unknown action is observable on qt as it is on anywidget
+result   : FAILS with mutation / PASSES restored
+
+mechanism: the widget seam rejects a projection from another session
+mutation : remove the session check in the inbound adapter
+test     : widget-seam E2E, in a real browser
+result   : FAILS with mutation / PASSES restored
 ```
 
 ## Pre-1.0 scale guard
@@ -235,9 +255,10 @@ and JSON fallback.
    host-local fields already in `molsysviewer-initial-sync` (camera, spin/swing,
    dark mode, autohide, viewer/controls/panel mode, ambient/split) serve as
    `endpointState`. `PopupReplayLog` survives only as a 5 s fallback.
-   Remaining: retire that fallback once the canonical path is exercised in
-   real use, and extract a pure builder for addon context items — the one panel
-   projection still missing, since the existing builder also sends.
+   Both closed: the journal is gone from the interactive path (kept only in
+   `bootDocsView`, where a static export has no Python to ask), and
+   `build_context_items` is the pure half that lets the panel snapshot carry
+   add-on context items.
    Treat `session_id` as immutable per attachment: kernel restart or
    widget reconstruction must close or visibly disconnect the old popup; it
    must reject the replacement session. A popup for the replacement widget

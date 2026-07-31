@@ -456,7 +456,11 @@ export default {
         // Avoid retaining superseded molecular generations and current-state
         // updates. Non-reducible scene operations remain replayable until a
         // canonical Python scene projection replaces this journal.
-        const popupReplay = new PopupReplayLog();
+        // R2: the interactive path bootstraps popups from Python's canonical
+        // snapshot, so it keeps no replay journal. Recording one cost memory that
+        // grew with the session, and falling back to it could have shown a popup a
+        // scene Python no longer had. bootDocsView still uses PopupReplayLog: a
+        // static HTML export has no Python to ask.
         // Serialize message handling to preserve order when many messages arrive at once
         // (e.g. flush of pending messages right after "ready").
         let messageQueue: Promise<void> = Promise.resolve();
@@ -582,7 +586,6 @@ export default {
             if (msg?.event === "interaction_measurement_created") {
                 const op = buildMeasurementOpFromInteractionEvent(msg);
                 if (op) {
-                    popupReplay.record(op);
                     popupMgr.send("molsysviewer-sync-op", op);
                 }
             }
@@ -773,8 +776,11 @@ export default {
                         );
                         // Endpoint-targeted: this bootstrap carries molecular data
                         // and must never reach a panel popup.
+                        if (!canvasSnapshot) {
+                            sendLog("error", "[MolSysViewer] canvas popup bootstrap: Python did not answer the scene snapshot request");
+                        }
                         popupMgr.sendTo("canvas", "molsysviewer-initial-sync", {
-                            messages: canvasSnapshot ?? popupReplay.snapshot("canvas"),
+                            messages: canvasSnapshot ?? [],
                             cameraSnapshot: controller.getCameraSnapshot(),
                             isSpinActive: controller.isSpinActive,
                             isSwingActive: controller.isSwingActive,
@@ -796,8 +802,11 @@ export default {
                             "panel",
                             popupMgr.popupEndpointId("panel"),
                         );
+                        if (!panelSnapshot) {
+                            sendLog("error", "[MolSysViewer] panel popup bootstrap: Python did not answer the scene snapshot request");
+                        }
                         popupMgr.sendTo("panel", "molsysviewer-initial-sync", {
-                            messages: panelSnapshot ?? popupReplay.snapshot("panel"),
+                            messages: panelSnapshot ?? [],
                             cameraSnapshot: controller.getCameraSnapshot(),
                             isSpinActive: controller.isSpinActive,
                             isSwingActive: controller.isSwingActive,
@@ -816,7 +825,6 @@ export default {
                         // The host applies a popup intent once, then projects the result
                         // to every popup endpoint, including the source.
                         if (data) await controller.handleMessage(data as ViewerMessage);
-                        if (data) popupReplay.record(data as ViewerMessage);
                         if (data) popupMgr.send("molsysviewer-sync-op", data);
                         break;
 
@@ -866,7 +874,6 @@ export default {
                     if (debug) sendLog("info", "[MolSysViewer] msg from Python:", msg);
                     const controller = await controllerPromise;
                     await controller.handleMessage(msg);
-                    popupReplay.record(msg);
                     if (opts?.syncToPopup) popupMgr.send("molsysviewer-sync-op", msg);
                 })
                 .catch((error) => {

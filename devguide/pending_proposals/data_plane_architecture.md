@@ -1,8 +1,13 @@
 # Array-native data plane for materialized structures
 
-**Status:** active pre-1.0 optimization. D0 is measured; D1, D2, D3, and D4 are
-implemented for the AnyWidget connector. Qt binary transport still requires its
-own benchmark and keeps the JSON path.
+**Status:** complete for pre-1.0. D0 through D4 are implemented and
+mutation-verified on the AnyWidget connector, and Qt now has both its own
+baseline (`../performance/qt_transport_baseline_2026_07.md`) and binary
+transport, served through the payload scheme handler it already had.
+
+Both connectors keep the JSON path as an observable fallback. Windowed
+residency stays post-1.0; `SharedArrayBuffer` is blocked on preconditions this
+project does not own.
 
 **Scope:** connector-neutral transport of large homogeneous numeric arrays
 between Python and TypeScript. MolSysViewer 1.0 continues to materialize every

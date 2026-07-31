@@ -1,9 +1,14 @@
 # Runtime router for Python, widget host, canvas, and popup
 
-**Status:** active pre-1.0 foundation. R0, R1, and the R2 popup-envelope/control
-slice are implemented. Popup molecular/high-frequency replay is compacted, but
-the canonical popup scene projection (the R2 remainder) is still open. Qt parity
-and data-plane endpoint routing remain pending.
+**Status:** complete for pre-1.0. R0 through R4 are implemented and
+mutation-verified: envelopes on the AnyWidget seam with Python as the only
+authority (R1), the canonical popup scene projection replacing the replay
+journal (R2), Qt no longer forking the protocol (R3), and structure data routed
+by endpoint (R4).
+
+What remains is not protocol work: automating the Qt render check on a GPU
+runner, and the thirteen legacy `molsysviewer-*` popup actions that now travel
+inside an envelope but are not yet enumerated in the shared manifest.
 
 **Scope:** identity, authority, routing, deduplication, acknowledgements, and
 lifecycle across Python, AnyWidget/Qt host adapters, embedded canvases, and
@@ -342,8 +347,22 @@ and current workspace/panel — and no molecular data. Ephemeral host-local UI
 (camera, open panel, scroll) travels in a separate `endpointState` section so
 Python does not become the authority for transient UI.
 
-`PopupReplayLog` stays as temporary compatibility until the projector is
-validated, then is removed. D4 replaces only the JSON molecular delivery with
+`PopupReplayLog` is gone from the interactive path. Two contexts used it, and
+only one could give it up:
+
+- **Widget (Jupyter)**: bootstraps from Python's canonical snapshot. It no longer
+  records a journal — that cost grew with the session — and no longer falls back
+  to one. The fallback was worse than absent: it could have shown a popup a scene
+  Python no longer had, and a silently wrong scene is the failure mode this
+  project least tolerates. If Python does not answer, the popup gets an empty
+  bootstrap and the host reports it.
+- **`bootDocsView` (docs HTML export, Qt)**: keeps it. A static export has no
+  Python to ask, so the journal is not a fallback there, it is the mechanism.
+
+Add-on context items were the last panel projection the projector could not
+carry, because the only builder also pushed to the frontend. `build_context_items`
+is now the pure half and `refresh_context_items` the one that pushes, so the
+panel snapshot is complete without the projector sending anything. D4 replaces only the JSON molecular delivery with
 typed buffers.
 
 **Size invariant test:** N vs 100k interactions producing the same scene must
@@ -498,6 +517,25 @@ what reaches `MolSysViewerController.handleMessage`, and asserts the valid
 projection arrives so the isolation check has something to contrast with.
 Mutation-verified: removing the session check fails it in the real browser.
 
+#### Open: the legacy popup vocabulary is wrapped, not migrated
+
+Thirteen actions still cross the host/popup channel under their original names:
+`molsysviewer-sync-op`, `sync-ui`, `sync-camera`, `sync-autohide`,
+`initial-sync`, `pop-ready`, `panel-ready`, `popup-interaction`,
+`log-from-popout`, `pop-slider-style`, `structure-data`,
+`structure-data-ack`, and `pop`.
+
+They now travel inside a `RuntimeEnvelope`, so the central defect is gone:
+direction is declared in the message instead of inferred from which window sent
+it. But they are **not enumerated in `runtime_actions.json`**, so this channel
+has no equivalent of the guard that makes the widget seam reject an unknown
+action. The manifest is the single source of truth for one channel and not the
+other.
+
+Migrating them means classifying each as command/projection/event/request and
+adding the same validation the widget seam has. It is bounded work and it is
+what would let the manifest cover every channel rather than most of them.
+
 ### R3. Qt parity
 
 - map Qt readiness, delivery acknowledgement, and errors to the same envelope;
@@ -535,6 +573,14 @@ Qt. Mutation-verified — restoring the silence fails them.
 - route structure-data descriptors and chunks by endpoint;
 - keep binary buffers outside command/history logs;
 - enforce cancellation when popups or views close.
+
+Implemented as part of D4. A message carrying `target_endpoint_id` is relayed by
+the widget host rather than consumed, so a canvas popup receives its own typed
+generation without any endpoint retaining a spare copy; buffers never enter
+`_message_history` or state v2; and closing a popup fires `onEndpointClosed`,
+which cancels that endpoint's pending scene-snapshot requests. See the
+data-plane proposal for the delivery details and
+`structure-data-relay.e2e.ts` for the real-browser verification.
 
 ## Tests and mutation targets
 

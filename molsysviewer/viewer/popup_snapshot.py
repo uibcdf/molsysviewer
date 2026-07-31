@@ -15,6 +15,8 @@ projection; they are ephemeral endpoint state supplied by the host.
 """
 
 from copy import deepcopy
+
+from .._private.smonitor_emit import emit_suppressed_exception
 from typing import Any
 
 # Deterministic order for the coalesced scene-look entries.
@@ -195,6 +197,23 @@ class PopupSnapshotMixin:
             },
             self._build_addon_runtime_summary_message(),
         ]
+        # Add-on context items: the only panel projection the projector could not
+        # carry, because the sole builder also pushed to the frontend. It is now
+        # split, so this stays pure.
+        addons = getattr(self, "addons", None)
+        if addons is not None and hasattr(addons, "build_context_items"):
+            try:
+                items = addons.build_context_items(
+                    dict(self._last_active_selection_event or {})
+                )
+            except Exception as exc:
+                emit_suppressed_exception(
+                    "molsysviewer.viewer.popup_snapshot.addon_context_items",
+                    exc,
+                    context={"mode": "panel"},
+                )
+            else:
+                messages.append({"op": "set_addon_context_items", "items": items})
         # Saved-selection records are complete `save_selection` messages.
         for record in self.selections.records(skip_digestion=True):
             messages.append(deepcopy(record))

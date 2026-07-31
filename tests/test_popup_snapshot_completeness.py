@@ -80,3 +80,31 @@ def test_every_summary_projection_reaches_the_panel_snapshot():
         "set_whole_summary",
     ):
         assert summary_op in ops, f"panel snapshot is missing {summary_op}"
+
+
+def test_addon_context_items_reach_the_panel_without_breaking_purity():
+    """The last panel projection the projector could not carry.
+
+    `refresh_context_items` computes *and* pushes, so using it would have made
+    the projector send. `build_context_items` is the pure half, split out for
+    exactly this.
+    """
+    view = _populated_view()
+    sent: list = []
+    view.widget.send = lambda content, buffers=None: sent.append(content)  # type: ignore[assignment]
+    view._ready = True  # noqa: SLF001
+
+    ops = {m.get("op") for m in view.build_popup_scene_snapshot("panel")}
+    assert "set_addon_context_items" in ops
+    assert sent == [], "building the snapshot must not send anything"
+
+
+def test_the_pure_builder_does_not_push_to_the_frontend():
+    view = _populated_view()
+    sent: list = []
+    view.widget.send = lambda content, buffers=None: sent.append(content)  # type: ignore[assignment]
+    view._ready = True  # noqa: SLF001
+
+    items = view.addons.build_context_items({"atom_indices": [0, 1]})
+    assert isinstance(items, list)
+    assert sent == [], "build_context_items must be pure; refresh_context_items is the one that pushes"

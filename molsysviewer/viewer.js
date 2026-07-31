@@ -140406,6 +140406,129 @@ function createBondColumns(bonds) {
   };
 }
 
+// src/messages/array-native-transport.ts
+var ARRAY_NATIVE_PROTOCOL_VERSION = 1;
+function isStructuralArrayKind(value) {
+  return value === "coordinates" || value === "box" || value === "time";
+}
+function requirePositiveInteger(value, name) {
+  if (!Number.isInteger(value) || Number(value) <= 0) {
+    throw new Error(`${name} must be a positive integer`);
+  }
+  return Number(value);
+}
+function product(shape) {
+  return shape.reduce((total, value) => total * value, 1);
+}
+function sameShape(actual, expected) {
+  return actual.length === expected.length && actual.every((value, index) => value === expected[index]);
+}
+function typedView(buffer, descriptor) {
+  const bytesPerElement = descriptor.dtype === "float32" ? 4 : 8;
+  const expectedBytes = product(descriptor.shape) * bytesPerElement;
+  if (descriptor.byte_length !== expectedBytes || buffer.byteLength !== expectedBytes) {
+    throw new Error(
+      `${descriptor.kind} byte length mismatch: descriptor=${descriptor.byte_length}, buffer=${buffer.byteLength}, expected=${expectedBytes}`
+    );
+  }
+  const length = expectedBytes / bytesPerElement;
+  if (buffer.byteOffset % bytesPerElement === 0) {
+    return descriptor.dtype === "float32" ? new Float32Array(buffer.buffer, buffer.byteOffset, length) : new Float64Array(buffer.buffer, buffer.byteOffset, length);
+  }
+  const copy = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
+  return descriptor.dtype === "float32" ? new Float32Array(copy) : new Float64Array(copy);
+}
+function decodeStructuralArraySet(descriptors, buffers, nAtoms, nStructures) {
+  if (!Array.isArray(descriptors)) {
+    throw new Error("Array-native metadata requires structural array descriptors");
+  }
+  const decoded = {};
+  const usedBufferIndices = /* @__PURE__ */ new Set();
+  for (const descriptor of descriptors) {
+    if (!isStructuralArrayKind(descriptor.kind)) {
+      throw new Error(`Unsupported structural array kind ${String(descriptor.kind)}`);
+    }
+    if (decoded[descriptor.kind]) {
+      throw new Error(`Duplicate structural array ${descriptor.kind}`);
+    }
+    const expectedLayout = descriptor.kind === "coordinates" ? "structure-planar-c" : "structure-major-c";
+    if (descriptor.layout !== expectedLayout || descriptor.endianness !== "little") {
+      throw new Error(`Unsupported ${descriptor.kind} layout or endianness`);
+    }
+    if (!Number.isInteger(descriptor.buffer_index) || descriptor.buffer_index < 0) {
+      throw new Error(`${descriptor.kind} has an invalid buffer index`);
+    }
+    if (usedBufferIndices.has(descriptor.buffer_index)) {
+      throw new Error(`Structural arrays share buffer index ${descriptor.buffer_index}`);
+    }
+    usedBufferIndices.add(descriptor.buffer_index);
+    const buffer = buffers[descriptor.buffer_index];
+    if (!(buffer instanceof DataView)) {
+      throw new Error(`${descriptor.kind} buffer ${descriptor.buffer_index} is missing`);
+    }
+    const expectedShape = descriptor.kind === "coordinates" ? [nStructures, 3, nAtoms] : descriptor.kind === "box" ? [nStructures, 3, 3] : [nStructures];
+    const expectedDtype = descriptor.kind === "time" ? "float64" : "float32";
+    const expectedUnits = descriptor.kind === "time" ? "ps" : "angstrom";
+    if (descriptor.dtype !== expectedDtype || descriptor.units !== expectedUnits || !sameShape(descriptor.shape, expectedShape)) {
+      throw new Error(`Invalid ${descriptor.kind} dtype, units, or shape`);
+    }
+    decoded[descriptor.kind] = typedView(buffer, descriptor);
+  }
+  if (!(decoded.coordinates instanceof Float32Array)) {
+    throw new Error("Array-native payload requires coordinates");
+  }
+  if (buffers.length !== descriptors.length || usedBufferIndices.size !== buffers.length) {
+    throw new Error("Array-native payload contains unreferenced or missing buffers");
+  }
+  return {
+    coordinates: decoded.coordinates,
+    box: decoded.box,
+    time: decoded.time
+  };
+}
+function decodeArrayNativeMolSys(message, buffers) {
+  if (message.protocol_version !== ARRAY_NATIVE_PROTOCOL_VERSION) {
+    throw new Error(`Unsupported array-native protocol version ${message.protocol_version}`);
+  }
+  if (!message.viewer_id || !message.session_id || !message.stream_id) {
+    throw new Error("Array-native envelope requires viewer, session, and stream identity");
+  }
+  if (!Number.isInteger(message.generation) || message.generation < 1) {
+    throw new Error("Array-native envelope requires a positive generation");
+  }
+  if (message.chunk_id !== 0 || message.structure_start !== 0) {
+    throw new Error("Array-native protocol D2a accepts one complete chunk only");
+  }
+  const metadata = message.metadata;
+  if (!metadata || metadata.protocol_version !== ARRAY_NATIVE_PROTOCOL_VERSION) {
+    throw new Error("Array-native metadata protocol does not match the envelope");
+  }
+  const nAtoms = requirePositiveInteger(metadata.n_atoms, "n_atoms");
+  const nStructures = requirePositiveInteger(metadata.n_structures, "n_structures");
+  if (message.structure_count !== nStructures) {
+    throw new Error("Array-native structure_count does not match metadata");
+  }
+  if (!metadata.atoms || metadata.atoms.atom_id?.length !== nAtoms) {
+    throw new Error("Array-native atom metadata does not match n_atoms");
+  }
+  const decoded = decodeStructuralArraySet(
+    metadata.structural_arrays,
+    buffers,
+    nAtoms,
+    nStructures
+  );
+  return {
+    atoms: metadata.atoms,
+    bonds: metadata.bonds,
+    meta: metadata.meta,
+    nAtoms,
+    nStructures,
+    coordinates: decoded.coordinates,
+    box: decoded.box,
+    time: decoded.time
+  };
+}
+
 // src/managers/handlers/loader-handlers.ts
 var LoaderHandlers = class {
   constructor(plugin, callbacks) {
@@ -140441,6 +140564,62 @@ var LoaderHandlers = class {
     }
     const payload = await response.json();
     await this.loadFromMolSysPayloadInternal(payload, msg.label);
+  }
+  /**
+   * Qt standalone: the structural arrays arrive as one binary blob served by
+   * the `molsysviewer-payload` scheme, with the metadata in the message. The
+   * blob is the arrays concatenated in descriptor order, so it is sliced back
+   * apart here and decoded with the same validation the AnyWidget stream uses.
+   */
+  async loadMolSysArrayPayloadRef(msg) {
+    const url = msg?.ref?.url;
+    if (!url || typeof url !== "string") {
+      console.warn("[MolSysViewer] load_molsys_array_payload_ref without ref.url");
+      return;
+    }
+    const metadata = msg.metadata;
+    if (!metadata?.structural_arrays) {
+      console.warn("[MolSysViewer] load_molsys_array_payload_ref without metadata");
+      return;
+    }
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(
+        `Could not fetch MolSys array payload ref: ${response.status} ${response.statusText}`
+      );
+    }
+    const blob = await response.arrayBuffer();
+    let offset3 = 0;
+    const views = [];
+    for (const descriptor of metadata.structural_arrays) {
+      const length = Number(descriptor.byte_length);
+      if (!Number.isFinite(length) || length < 0 || offset3 + length > blob.byteLength) {
+        throw new Error(
+          `Array-native ref blob is inconsistent at ${descriptor.kind}: needs ${length} bytes at offset ${offset3} of ${blob.byteLength}`
+        );
+      }
+      views.push(new DataView(blob, offset3, length));
+      offset3 += length;
+    }
+    if (offset3 !== blob.byteLength) {
+      throw new Error(
+        `Array-native ref blob has ${blob.byteLength - offset3} trailing bytes`
+      );
+    }
+    const decoded = decodeStructuralArraySet(
+      metadata.structural_arrays,
+      views,
+      metadata.n_atoms,
+      metadata.n_structures
+    );
+    await this.loadArrayNativeMolSysPayload({
+      atoms: metadata.atoms,
+      bonds: metadata.bonds,
+      meta: metadata.meta,
+      nAtoms: metadata.n_atoms,
+      nStructures: metadata.n_structures,
+      ...decoded
+    }, msg.label);
   }
   async loadArrayNativeMolSysPayload(payload, label2) {
     this.callbacks.setExpectedFrameCount?.(payload.nStructures);
@@ -149844,129 +150023,6 @@ function sameItems(a8, b8) {
     if (signature(a8[i]) !== signature(b8[i])) return false;
   }
   return true;
-}
-
-// src/messages/array-native-transport.ts
-var ARRAY_NATIVE_PROTOCOL_VERSION = 1;
-function isStructuralArrayKind(value) {
-  return value === "coordinates" || value === "box" || value === "time";
-}
-function requirePositiveInteger(value, name) {
-  if (!Number.isInteger(value) || Number(value) <= 0) {
-    throw new Error(`${name} must be a positive integer`);
-  }
-  return Number(value);
-}
-function product(shape) {
-  return shape.reduce((total, value) => total * value, 1);
-}
-function sameShape(actual, expected) {
-  return actual.length === expected.length && actual.every((value, index) => value === expected[index]);
-}
-function typedView(buffer, descriptor) {
-  const bytesPerElement = descriptor.dtype === "float32" ? 4 : 8;
-  const expectedBytes = product(descriptor.shape) * bytesPerElement;
-  if (descriptor.byte_length !== expectedBytes || buffer.byteLength !== expectedBytes) {
-    throw new Error(
-      `${descriptor.kind} byte length mismatch: descriptor=${descriptor.byte_length}, buffer=${buffer.byteLength}, expected=${expectedBytes}`
-    );
-  }
-  const length = expectedBytes / bytesPerElement;
-  if (buffer.byteOffset % bytesPerElement === 0) {
-    return descriptor.dtype === "float32" ? new Float32Array(buffer.buffer, buffer.byteOffset, length) : new Float64Array(buffer.buffer, buffer.byteOffset, length);
-  }
-  const copy = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
-  return descriptor.dtype === "float32" ? new Float32Array(copy) : new Float64Array(copy);
-}
-function decodeStructuralArraySet(descriptors, buffers, nAtoms, nStructures) {
-  if (!Array.isArray(descriptors)) {
-    throw new Error("Array-native metadata requires structural array descriptors");
-  }
-  const decoded = {};
-  const usedBufferIndices = /* @__PURE__ */ new Set();
-  for (const descriptor of descriptors) {
-    if (!isStructuralArrayKind(descriptor.kind)) {
-      throw new Error(`Unsupported structural array kind ${String(descriptor.kind)}`);
-    }
-    if (decoded[descriptor.kind]) {
-      throw new Error(`Duplicate structural array ${descriptor.kind}`);
-    }
-    const expectedLayout = descriptor.kind === "coordinates" ? "structure-planar-c" : "structure-major-c";
-    if (descriptor.layout !== expectedLayout || descriptor.endianness !== "little") {
-      throw new Error(`Unsupported ${descriptor.kind} layout or endianness`);
-    }
-    if (!Number.isInteger(descriptor.buffer_index) || descriptor.buffer_index < 0) {
-      throw new Error(`${descriptor.kind} has an invalid buffer index`);
-    }
-    if (usedBufferIndices.has(descriptor.buffer_index)) {
-      throw new Error(`Structural arrays share buffer index ${descriptor.buffer_index}`);
-    }
-    usedBufferIndices.add(descriptor.buffer_index);
-    const buffer = buffers[descriptor.buffer_index];
-    if (!(buffer instanceof DataView)) {
-      throw new Error(`${descriptor.kind} buffer ${descriptor.buffer_index} is missing`);
-    }
-    const expectedShape = descriptor.kind === "coordinates" ? [nStructures, 3, nAtoms] : descriptor.kind === "box" ? [nStructures, 3, 3] : [nStructures];
-    const expectedDtype = descriptor.kind === "time" ? "float64" : "float32";
-    const expectedUnits = descriptor.kind === "time" ? "ps" : "angstrom";
-    if (descriptor.dtype !== expectedDtype || descriptor.units !== expectedUnits || !sameShape(descriptor.shape, expectedShape)) {
-      throw new Error(`Invalid ${descriptor.kind} dtype, units, or shape`);
-    }
-    decoded[descriptor.kind] = typedView(buffer, descriptor);
-  }
-  if (!(decoded.coordinates instanceof Float32Array)) {
-    throw new Error("Array-native payload requires coordinates");
-  }
-  if (buffers.length !== descriptors.length || usedBufferIndices.size !== buffers.length) {
-    throw new Error("Array-native payload contains unreferenced or missing buffers");
-  }
-  return {
-    coordinates: decoded.coordinates,
-    box: decoded.box,
-    time: decoded.time
-  };
-}
-function decodeArrayNativeMolSys(message, buffers) {
-  if (message.protocol_version !== ARRAY_NATIVE_PROTOCOL_VERSION) {
-    throw new Error(`Unsupported array-native protocol version ${message.protocol_version}`);
-  }
-  if (!message.viewer_id || !message.session_id || !message.stream_id) {
-    throw new Error("Array-native envelope requires viewer, session, and stream identity");
-  }
-  if (!Number.isInteger(message.generation) || message.generation < 1) {
-    throw new Error("Array-native envelope requires a positive generation");
-  }
-  if (message.chunk_id !== 0 || message.structure_start !== 0) {
-    throw new Error("Array-native protocol D2a accepts one complete chunk only");
-  }
-  const metadata = message.metadata;
-  if (!metadata || metadata.protocol_version !== ARRAY_NATIVE_PROTOCOL_VERSION) {
-    throw new Error("Array-native metadata protocol does not match the envelope");
-  }
-  const nAtoms = requirePositiveInteger(metadata.n_atoms, "n_atoms");
-  const nStructures = requirePositiveInteger(metadata.n_structures, "n_structures");
-  if (message.structure_count !== nStructures) {
-    throw new Error("Array-native structure_count does not match metadata");
-  }
-  if (!metadata.atoms || metadata.atoms.atom_id?.length !== nAtoms) {
-    throw new Error("Array-native atom metadata does not match n_atoms");
-  }
-  const decoded = decodeStructuralArraySet(
-    metadata.structural_arrays,
-    buffers,
-    nAtoms,
-    nStructures
-  );
-  return {
-    atoms: metadata.atoms,
-    bonds: metadata.bonds,
-    meta: metadata.meta,
-    nAtoms,
-    nStructures,
-    coordinates: decoded.coordinates,
-    box: decoded.box,
-    time: decoded.time
-  };
 }
 
 // src/ui/panels/ui-helpers.ts
@@ -162544,11 +162600,11 @@ var MolSysViewerController = class _MolSysViewerController {
     }
     this.state?.ensureCameraInputTracking?.();
     try {
-      const isLoaderOp = msg.op === "load_structure_from_string" || msg.op === "load_pdb_string" || msg.op === "load_molsys_payload" || msg.op === "load_molsys_payload_ref" || msg.op === "load_structure_from_url" || msg.op === "load_pdb_id";
+      const isLoaderOp = msg.op === "load_structure_from_string" || msg.op === "load_pdb_string" || msg.op === "load_molsys_payload" || msg.op === "load_molsys_payload_ref" || msg.op === "load_molsys_array_payload_ref" || msg.op === "load_structure_from_url" || msg.op === "load_pdb_id";
       if (isLoaderOp) {
         this.hideWelcomeCard();
       }
-      if (msg.op === "load_molsys_payload" || msg.op === "load_molsys_payload_ref") {
+      if (msg.op === "load_molsys_payload" || msg.op === "load_molsys_payload_ref" || msg.op === "load_molsys_array_payload_ref") {
         const structures = msg.payload?.structures;
         if (Array.isArray(structures)) {
           this.trajectory.setExpectedFrameCount(structures.length);
@@ -162569,6 +162625,9 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         case "load_molsys_payload_ref":
           await this.loader.loadMolSysPayloadRef(msg);
+          break;
+        case "load_molsys_array_payload_ref":
+          await this.loader.loadMolSysArrayPayloadRef(msg);
           break;
         case "load_structure_from_url":
           await this.loader.loadFromUrl(msg);
@@ -166852,6 +166911,7 @@ var createLogger = (model, debug, send) => {
 var STRUCTURE_LOAD_OPS = /* @__PURE__ */ new Set([
   "load_molsys_payload",
   "load_molsys_payload_ref",
+  "load_molsys_array_payload_ref",
   "load_structure_from_string",
   "load_pdb_string",
   "load_structure_from_url",
@@ -166941,7 +167001,7 @@ var PopupReplayLog = class {
 // ../runtime_actions.json
 var runtime_actions_default = {
   protocol_version: 1,
-  comment: "Shared Python<->TypeScript action contract for the AnyWidget runtime seam (R1). Python (viewer/runtime_router.py) and TypeScript (js/src/messages/runtime-actions.ts) both load THIS file so every action is classified identically. `actions` are browser->Python; category is the RuntimeEnvelope direction the action must carry, and the envelope action must equal the payload `event`. `outbound_requests` are Python->browser requests and must never be accepted as browser-originated. `raw` is the pre-runtime/source bootstrap (both directions), never enveloped in R1. `data_plane` travels on the array-native binary seam (both directions), not the control-plane envelope. Domain projection ops (Python->browser) are authored and trusted by the Python authority and are wrapped with direction 'projection'; they are intentionally not enumerated. NOTE: interaction_measurement_created and section_moved are still compatibility paths where the frontend acts before Python confirms; R1 protects and deduplicates them but does not yet fully normalize 'Python first, projection after' (a later slice).",
+  comment: "Shared Python<->TypeScript action contract for the AnyWidget runtime seam (R1). Python (viewer/runtime_router.py) and TypeScript (js/src/messages/runtime-actions.ts) both load THIS file so every action is classified identically. `actions` are browser->Python; category is the RuntimeEnvelope direction the action must carry, and the envelope action must equal the payload `event`. `outbound_requests` are Python->browser requests and must never be accepted as browser-originated. `qt_transport` are delivery-level events the Qt bridge answers itself and never forwards to the view; the AnyWidget comm is reliable and has no equivalent. `raw` is the pre-runtime/source bootstrap (both directions), never enveloped in R1. `data_plane` travels on the array-native binary seam (both directions), not the control-plane envelope. Domain projection ops (Python->browser) are authored and trusted by the Python authority and are wrapped with direction 'projection'; they are intentionally not enumerated. NOTE: interaction_measurement_created and section_moved are still compatibility paths where the frontend acts before Python confirms; R1 protects and deduplicates them but does not yet fully normalize 'Python first, projection after' (a later slice).",
   actions: {
     interaction_active_selection_changed: "command",
     interaction_context_action: "command",
@@ -166984,6 +167044,13 @@ var runtime_actions_default = {
   outbound_requests: [
     "request_camera_snapshot",
     "request_image_export"
+  ],
+  qt_transport: [
+    "message_ack",
+    "message_error",
+    "structure_ready",
+    "render_ready",
+    "frontend_error"
   ],
   raw: [
     "request_widget_runtime_source",
@@ -167500,7 +167567,6 @@ var index_default = {
     });
     const initialMessages = model.get("initial_messages");
     const trajInfo = parseInitialTrajectoryInfo(initialMessages);
-    const popupReplay = new PopupReplayLog();
     let messageQueue = Promise.resolve();
     const target = document.createElement("div");
     target.tabIndex = 0;
@@ -167600,7 +167666,6 @@ var index_default = {
       if (msg?.event === "interaction_measurement_created") {
         const op4 = buildMeasurementOpFromInteractionEvent(msg);
         if (op4) {
-          popupReplay.record(op4);
           popupMgr.send("molsysviewer-sync-op", op4);
         }
       }
@@ -167755,8 +167820,11 @@ var index_default = {
               "canvas",
               popupMgr.popupEndpointId("canvas")
             );
+            if (!canvasSnapshot) {
+              sendLog("error", "[MolSysViewer] canvas popup bootstrap: Python did not answer the scene snapshot request");
+            }
             popupMgr.sendTo("canvas", "molsysviewer-initial-sync", {
-              messages: canvasSnapshot ?? popupReplay.snapshot("canvas"),
+              messages: canvasSnapshot ?? [],
               cameraSnapshot: controller.getCameraSnapshot(),
               isSpinActive: controller.isSpinActive,
               isSwingActive: controller.isSwingActive,
@@ -167776,8 +167844,11 @@ var index_default = {
               "panel",
               popupMgr.popupEndpointId("panel")
             );
+            if (!panelSnapshot) {
+              sendLog("error", "[MolSysViewer] panel popup bootstrap: Python did not answer the scene snapshot request");
+            }
             popupMgr.sendTo("panel", "molsysviewer-initial-sync", {
-              messages: panelSnapshot ?? popupReplay.snapshot("panel"),
+              messages: panelSnapshot ?? [],
               cameraSnapshot: controller.getCameraSnapshot(),
               isSpinActive: controller.isSpinActive,
               isSwingActive: controller.isSwingActive,
@@ -167793,7 +167864,6 @@ var index_default = {
           }
           case "molsysviewer-sync-op":
             if (data) await controller.handleMessage(data);
-            if (data) popupReplay.record(data);
             if (data) popupMgr.send("molsysviewer-sync-op", data);
             break;
           case "molsysviewer-structure-data-ack":
@@ -167830,7 +167900,6 @@ var index_default = {
         if (debug) sendLog("info", "[MolSysViewer] msg from Python:", msg);
         const controller = await controllerPromise;
         await controller.handleMessage(msg);
-        popupReplay.record(msg);
         if (opts?.syncToPopup) popupMgr.send("molsysviewer-sync-op", msg);
       }).catch((error2) => {
         console.error("[MolSysViewer] Error handling message:", msg, error2);

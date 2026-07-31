@@ -172,11 +172,12 @@ Deciding release readiness against a stale plan is its own risk.
 
 | # | Gate | Notes |
 |---|---|---|
-| 20 | **Qt parity (R3) and its own benchmark** | **In 1.0.** Qt still uses the JSON path and does not share envelope semantics. A green AnyWidget transport does not imply Qt: it needs its own measurement, per the data-plane proposal. |
+| 20 | **Qt parity (R3) and its own benchmark** | ✅ done. The benchmark measured 4.3 s of Python preparation for 5,000 structures against 36 ms array-native, so Qt now serves raw arrays through the scheme handler it already had. R3 closed a real fork: an unknown action was rejected observably on AnyWidget and accepted in silence on Qt. |
 | 21 | **Qt render in CI (level 2)** | The render gate itself is **already closed**: validated on a real GPU (aleph, 2026-07-04), see [`standalone_qt_ci_and_gl_decisions.md`](standalone_qt_ci_and_gl_decisions.md). What is pending is automating it as a separate non-blocking job on a GPU runner. Software-GL under xvfb is the explicitly non-preferred Plan C. |
-| 22 | **Notebook execution in CI** | `docs/execute_notebooks.py` is the real check; nothing runs it today, which is how ten broken notebooks survived. |
-| 23 | **Widget seam E2E** | The R1 tests mirror the seam's logic as units; the real `onCustomMsg` path has never run in a browser. |
-| 24 | **R2 tail** | Retire the `PopupReplayLog` fallback once the canonical path is exercised in real use, and extract a pure builder for addon context items. |
+| 22 | **Notebook execution in CI** | See [`pending_proposals/documentation_execution_in_ci.md`](pending_proposals/documentation_execution_in_ci.md). `docs/execute_notebooks.py` is the real check; Sphinx does not execute notebooks, which is how ten broken ones survived unnoticed. |
+| 25 | **Legacy popup vocabulary** | Thirteen host/popup actions travel inside an envelope but are not in the shared manifest, so that channel has no unknown-action guard. See the runtime router proposal. |
+| 23 | **Widget seam E2E** | ✅ done. `widget-seam.e2e.ts` drives the real `render()` in Chromium: raw `ready`, enveloped outbound, a valid projection reaching the controller, and a foreign session never reaching it. |
+| 24 | **R2 tail** | ✅ done. The journal is gone from the interactive path — kept only in `bootDocsView`, where a static export has no Python to ask — and `build_context_items` is the pure half that lets the panel snapshot carry add-on context items. |
 | 14 | **Scientific dogfooding** | Unchanged: daily lab usage is what finds what audits cannot. |
 | 15 | **Bug resolution from dogfooding** | Unchanged. |
 

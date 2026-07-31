@@ -1291,9 +1291,13 @@ class ViewAddonsManager(_AddonAggregationMixin):
         self._lifecycle_failures.pop(f"lifecycle:{addon}.on_context_action:{action_id}", None)
         return True
 
-    def refresh_context_items(self, selection: dict[str, Any]) -> list[dict[str, Any]]:
-        """Recompute selection-driven context-menu items from enabled add-ons and
-        push them to the frontend (model: push on every active-selection change).
+    def build_context_items(self, selection: dict[str, Any]) -> list[dict[str, Any]]:
+        """Compute selection-driven context-menu items without sending anything.
+
+        Split out of :meth:`refresh_context_items` so the canonical popup
+        snapshot can project add-on context items: the projector must be pure
+        with respect to transport, and the only builder available also pushed to
+        the frontend as a side effect.
 
         Each enabled add-on that defines ``on_active_selection_changed`` is called
         with ``(view, selection)`` and may return a list of dynamic item dicts. The
@@ -1325,6 +1329,15 @@ class ViewAddonsManager(_AddonAggregationMixin):
                         "payload": dict(entry.get("payload", {}) or {}),
                     }
                 )
+        return items
+
+    def refresh_context_items(self, selection: dict[str, Any]) -> list[dict[str, Any]]:
+        """Recompute the items and push them to the frontend.
+
+        The push model is unchanged: every active-selection change re-sends the
+        current items to the canvas context menu.
+        """
+        items = self.build_context_items(selection)
         send = getattr(self._view, "_send", None)
         if callable(send):
             send({"op": "set_addon_context_items", "items": items})

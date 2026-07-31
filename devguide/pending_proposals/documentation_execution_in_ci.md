@@ -1,0 +1,54 @@
+# Executing the documentation in CI
+
+**Status:** open pre-1.0 gate. The defect it prevents has already happened once.
+
+## What happened
+
+In July 2026, ten documented notebooks were broken and nothing reported it. They
+had been broken since an earlier round hardened the argument digesters
+(`84ede163`), which is exactly the kind of change that breaks examples.
+
+Four independent causes, found by running them:
+
+- digesters rejecting `molsysviewer.viewer.get` as a caller, which broke 58 of
+  the 81 query arguments and therefore most `view.get(...)` examples;
+- bare numbers where the API now requires explicit units;
+- cells that cannot run without a browser (camera snapshot, movie camera orbit);
+- errors in the documentation itself: an undefined alias, a `sidechain`
+  selection MolSysMT does not have, and five values for a seven-group system.
+
+## Why nothing caught it
+
+`docs/conf.py` sets `nb_execution_mode = "off"`, so Sphinx renders the stored
+outputs without running anything. **A green `make html` proves nothing about
+whether the documented code still works.** The real check is
+`docs/execute_notebooks.py`, and no workflow runs it.
+
+This is the same shape as two other defects found in the same round: the
+boundary audit asked whether a digester existed but never whether it accepted
+the viewer as caller, and Qt classified its transport events from a hardcoded
+literal nothing tied to the shared manifest. **Where two things must agree and
+nothing mechanically forces them to, they drift in silence.** Documentation and
+the API are two such things.
+
+## Proposal
+
+Run `docs/execute_notebooks.py` in CI. Points worth deciding before wiring it:
+
+- **Cost.** The 52 notebooks take a few minutes and load real molecular systems.
+  A separate workflow, or a path filter on `docs/**` plus the public API, keeps
+  it off the critical path.
+- **Headless honesty.** Some cells genuinely need a browser. The current fix
+  guards them and *explains why* rather than silencing them, which is the
+  pattern to keep: a skipped cell must say what it would have needed.
+- **Blocking or not.** Blocking is defensible — a broken example is a broken
+  public contract — but a flaky notebook must never gate an unrelated fix.
+  Starting non-blocking and promoting it once it proves stable is the safer
+  order.
+- **Where the outputs go.** The runner writes `.nbconvert.log` and
+  `.last_run` files next to each notebook; CI should not commit those back.
+
+## Acceptance
+
+- A workflow executes the documentation and fails visibly when a notebook does.
+- A change that breaks a documented example is reported by CI, not by a user.
