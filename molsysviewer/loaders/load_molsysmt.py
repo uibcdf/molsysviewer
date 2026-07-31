@@ -167,10 +167,23 @@ def _serialize_molsys_payload(
     group_types: Any = None,
 ) -> dict[str, Any] | None:
     """Convert MolSysMT ViewerJSON (new schema) into the MolSysPayload expected by the JS layer."""
-    # Accept ViewerJSON object or plain dict
+    # Accept ViewerJSON object or plain dict.
+    #
+    # `to_dict()` defaults to `copy=True`, which deep-copies the whole nested
+    # structure. For a 5,000-structure trajectory that is ~930,000 floats in
+    # Python lists and ~2.8 s of the load, measured — 69% of it. The copy buys
+    # nothing here: `viewer_json` is a fresh conversion, local to
+    # `load_from_molsysmt`, read once and discarded, and everything below builds
+    # a brand-new payload (`_column` and `_normalize_bonds` go through
+    # `np.asarray(...).tolist()`, `_extract_structures` builds new dicts). We
+    # never mutate `data`, and nothing we return aliases it.
     data: dict[str, Any]
     if hasattr(viewer_json, "to_dict"):
-        data = viewer_json.to_dict()
+        try:
+            data = viewer_json.to_dict(copy=False)
+        except TypeError:
+            # Older ViewerJSON without the `copy` keyword.
+            data = viewer_json.to_dict()
     else:
         data = dict(viewer_json)
 

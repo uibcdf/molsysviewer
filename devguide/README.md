@@ -82,6 +82,9 @@ Measured evidence, not estimates. Each records the command that reproduces it.
 - [`performance/message_path_regression_check_2026_07.md`](performance/message_path_regression_check_2026_07.md)
   — the post-envelope message-path baseline required by
   [`engineering_rules.md`](engineering_rules.md) §6.
+- [`performance/startup_baseline_2026_07.md`](performance/startup_baseline_2026_07.md)
+  — what a first canvas actually costs, split into one-time, per-viewer and
+  per-load. Replaces the retired Numba JIT figures.
 
 ### Standalone
 
