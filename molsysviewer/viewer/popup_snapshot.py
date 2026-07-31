@@ -67,7 +67,18 @@ class PopupSnapshotMixin:
                 messages.append(deepcopy(look))
 
         # 3. whole: representation, then visibility (separate ops).
-        messages.append(self._whole_representation_message())
+        #
+        # The representation op is emitted only when the whole actually carries
+        # one. "Python never expressed an opinion" and "Python explicitly says
+        # None" are the same state in the model and *different* on screen:
+        # `setWholeRepresentation` clears the baseline representations before
+        # applying anything, and with representation/preset both null it adds
+        # nothing back, so the whole goes invisible. A host that never sent the
+        # op keeps the default representation the frontend built on load.
+        # Reproducing the host means staying silent, exactly as it did.
+        whole_representation = self._whole_representation_message()
+        if self._whole_has_explicit_representation():
+            messages.append(whole_representation)
         messages.append(self._whole_visibility_message())
 
         # 4. user layers before their members.
@@ -228,6 +239,19 @@ class PopupSnapshotMixin:
         return deepcopy(messages)
 
     # -- helpers --------------------------------------------------------------
+
+    def _whole_has_explicit_representation(self) -> bool:
+        """True when the whole was actually configured from Python.
+
+        A pristine viewer has `representation`, `preset` and `params` all empty:
+        whatever is on screen came from the frontend's own default at load time,
+        and no `set_whole_representation` was ever sent.
+        """
+        return bool(
+            self.whole.representation is not None
+            or self.whole.preset is not None
+            or dict(self.whole.params)
+        )
 
     def _whole_representation_message(self) -> dict:
         return {

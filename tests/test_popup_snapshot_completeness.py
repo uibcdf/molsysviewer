@@ -60,9 +60,15 @@ def test_every_live_registry_is_represented_in_the_canvas_snapshot():
     assert view.selections.records(skip_digestion=True) and "save_selection" in ops
     assert view._current_molecular_projection is not None  # noqa: SLF001
     assert "load_molsys_payload" in ops
-    # Whole is two ops (there is no whole-colour op in the protocol).
-    assert "set_whole_representation" in ops
+    # Whole visibility always travels. The representation op travels only when
+    # the whole was actually configured — projecting a pristine whole as an
+    # explicit None clears the frontend's default and renders nothing. See
+    # test_popup_snapshot_fidelity.py::test_a_pristine_whole_is_not_projected_as_an_explicit_none
     assert {"show_whole", "hide_whole"} & ops
+    assert "set_whole_representation" not in ops
+    view.whole.set_representation("cartoon")
+    ops_configured = {m.get("op") for m in view.build_popup_scene_snapshot("canvas")}
+    assert "set_whole_representation" in ops_configured
 
 
 def _summary_ops_the_view_can_push(view) -> set[str]:

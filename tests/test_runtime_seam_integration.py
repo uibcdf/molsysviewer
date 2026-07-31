@@ -189,7 +189,10 @@ def test_a_canvas_popup_snapshot_streams_the_molecular_generation_to_its_endpoin
     assert len(answers) == 1
     ops = {msg.get("op") for msg in answers[0]["payload"]["messages"]}
     assert "load_molsys_payload" not in ops, "the molecular generation must not be duplicated as JSON"
-    assert "set_whole_representation" in ops, "the rest of the scene is still projected"
+    # The whole here is pristine, so its representation op is deliberately
+    # withheld (projecting an explicit None would blank the popup). Visibility
+    # still travels, which is what proves the rest of the scene is projected.
+    assert "show_whole" in ops, "the rest of the scene is still projected"
 
 
 def test_a_panel_popup_snapshot_never_starts_a_molecular_stream():

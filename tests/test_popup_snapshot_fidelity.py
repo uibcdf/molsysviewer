@@ -164,6 +164,10 @@ def test_absent_box_and_time_are_not_invented():
 
 def test_a_full_scene_keeps_canvas_and_panel_projections_separate():
     v = _view()
+    # The whole must be configured for `set_whole_representation` to belong in
+    # the snapshot at all; see
+    # `test_a_pristine_whole_is_not_projected_as_an_explicit_none`.
+    v.whole.set_representation("cartoon")
     v.regions.add("atom_index < 6", tag="a")
     v.shapes.add_sphere(
         center=puw.quantity([0.0, 0.0, 0.0], "nm"),
@@ -198,3 +202,44 @@ def test_a_full_scene_keeps_canvas_and_panel_projections_separate():
     # Camera is host-local ephemeral state in both modes.
     assert "set_camera_snapshot" not in canvas_ops
     assert "set_camera_snapshot" not in panel_ops
+
+
+def test_a_pristine_whole_is_not_projected_as_an_explicit_none():
+    """Silence and an explicit None are the same in the model, not on screen.
+
+    Found by smoke test on 2026-07-31, after eight fidelity tests missed it.
+    They all compared the snapshot against Python's *model*; this compares it
+    against what the host actually *sent*, which is the thing the popup has to
+    reproduce.
+
+    A pristine viewer never sends `set_whole_representation` — the frontend
+    applies its own default representation on receiving the payload. Python
+    records that as `representation=None, preset=None, params={}`, and a
+    projector that faithfully serialises the model emits
+    `set_whole_representation(null, null, {})`.
+
+    That op is not a no-op. `setWholeRepresentation` in `state-handlers.ts`
+    clears the baseline representation refs *before* applying anything, and with
+    both representation and preset null and no `user_preset` it adds nothing
+    back. The popup therefore renders an invisible whole while the host shows
+    the molecule — which is exactly what a human saw: "in the popup I only see a
+    sphere, I think it is one atom".
+    """
+    v = _view()
+    assert v.whole.representation is None
+    assert v.whole.preset is None
+    assert not dict(v.whole.params)
+
+    ops = [m.get("op") for m in v.build_popup_scene_snapshot("canvas")]
+    assert "set_whole_representation" not in ops, (
+        "a pristine whole must not be projected as an explicit None: the op "
+        "clears the frontend's default representation and puts nothing back."
+    )
+    # The whole is still shown; only the representation op is withheld.
+    assert "show_whole" in ops
+
+    # Once configured from Python, the op must travel — otherwise the popup
+    # would silently lose a representation the user did choose.
+    v.whole.set_representation("cartoon")
+    ops_after = [m.get("op") for m in v.build_popup_scene_snapshot("canvas")]
+    assert "set_whole_representation" in ops_after
