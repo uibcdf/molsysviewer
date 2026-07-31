@@ -3,24 +3,44 @@
 Only unresolved designs belong here. Implemented plans are promoted to durable
 documentation or removed; Git retains their development history.
 
-## Before 1.0
-
-Two accepted pre-1.0 improvements are active:
+## Implemented, retained as the design record
 
 - [`data_plane_architecture.md`](data_plane_architecture.md): typed buffers for
   already materialized structural arrays, with behaviorally equivalent JSON
-  fallback;
+  fallback. **Closed 2026-07-30.**
 - [`runtime_message_router.md`](runtime_message_router.md): one authority and a
   typed route across Python, widget/Qt hosts, canvases, and popups.
+  **Closed 2026-07-30.**
 
-They preserve the current 1.0 scientific model: `view.molsys` remains a complete
-selected `molsysmt.MolSys`. The data-plane work removes avoidable
+They preserve the 1.0 scientific model: `view.molsys` remains a complete selected
+`molsysmt.MolSys`. The data-plane work removed avoidable
 `ViewerJSON`/nested-list/text-JSON amplification without introducing partial
 residency.
+
+*These two are a deliberate exception to the triage rule "once implemented,
+remove the document from this directory."* They are the only written account of
+**why** the envelope, the shared manifest and the array-native layout are shaped
+the way they are, several documents link to them by path, and the decisions they
+record are still load-bearing. Read them as history, not as pending work. If they
+are ever moved, the links in `roadmap.md`, `checkpoints.md` and this file move
+with them.
 
 Structure windowing, eager/windowed modes, compression, workers, shared memory,
 BroadcastChannel, and multiview remain post-1.0. Camera acquisition/movie export
 is also explicitly post-1.0.
+
+## Open before 1.0
+
+- [`documentation_execution_in_ci.md`](documentation_execution_in_ci.md): run
+  `docs/execute_notebooks.py` in CI. Sphinx does not execute notebooks, which is
+  how ten broken ones survived unnoticed. Postponed by decision, not closed.
+- [`opt_in_hover_telemetry.md`](opt_in_hover_telemetry.md): stop forwarding hover
+  to the kernel when nobody is listening. The July round deduplicated identical
+  hovers, which fixes a resting mouse and not a moving one. **Blocked on one
+  product decision** — what `view.hover_target` means when telemetry is off.
+*(A JIT cold-start proposal was drafted here on 2026-07-31 and withdrawn the same
+day: MolSysMT no longer uses Numba. See
+[`../standalone_performance_and_depythonization.md`](../standalone_performance_and_depythonization.md).)*
 
 ## Deferred until after 1.0
 
@@ -32,7 +52,16 @@ See [`post_1.0/`](post_1.0/). It contains:
 - multiview synchronization;
 - advanced annotation, representation, and chemical-metadata work;
 - typing-generation and test-output studies;
-- deeper large-system rendering analysis.
+- deeper large-system rendering analysis;
+- [`qt_popout_parity.md`](post_1.0/qt_popout_parity.md): the Qt shell is built
+  with `include_popout=False`, so the entire popup control plane — manifest
+  validation, canonical snapshot, endpoint identity — is exercised only on
+  AnyWidget. Staged at Stage 4 of the host plan, not a defect;
+- [`scene_object_owner_field.md`](post_1.0/scene_object_owner_field.md): an
+  add-on's shape is indistinguishable from one the user drew;
+- [`qt_render_check_on_a_gpu_runner.md`](post_1.0/qt_render_check_on_a_gpu_runner.md):
+  the render gate is closed on real GPU; what is missing is a machine that proves
+  it again automatically.
 
 These remain useful, but they expand product scope or require benchmark and
 upstream decisions. They do not block the current release.

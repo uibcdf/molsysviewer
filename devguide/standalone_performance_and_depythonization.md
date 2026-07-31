@@ -1,5 +1,32 @@
 # Standalone Performance and De-pythonization Roadmap
 
+> **Overtaken by events (2026-07-31). Read the rest of this document as the
+> analysis that led to a decision, not as pending work.**
+>
+> **MolSysMT no longer uses Numba. It was rewritten in Rust for 1.0.** Verified
+> against the installed package: zero `.py` files under `molsysmt/` reference
+> `numba`, and it ships a compiled `_rust.abi3.so`.
+>
+> That means **Path B / Phase 2 has already happened**, years ahead of the
+> v2.0.0 target this roadmap assigned it — and it happened in MolSysMT rather
+> than as a separate `molsys_core` crate. The consequences for this document:
+>
+> | Section | Status |
+> |---|---|
+> | §1 "The Cold Start Problem" — the 3–5 s JIT freeze | **Gone.** The premise no longer exists. |
+> | Path A (Numba cache / AOT) | **Moot.** There are no `@jit` decorators left to cache. |
+> | Path B (Rust + PyO3) | **Done**, in MolSysMT itself. |
+> | Path C (WASM / de-pythonization) | **Still open**, and now much closer: the Rust core it presupposed exists. Its own preconditions — API parity between the Python library and a WASM/JS surface, and a Tauri-class shell — are untouched. |
+> | Phase 1 of the Recommended Roadmap | Withdrawn. |
+>
+> What is worth re-deriving rather than assumed: the standalone host's *actual*
+> startup cost today. This document's numbers all measured JIT compilation. Any
+> remaining startup latency now has a different cause — import cost, Qt WebEngine
+> initialization, or first-load serialization — and none of it has been measured
+> since the rewrite. **Do not quote the 3–5 seconds below as current.**
+>
+> Path C's evaluation stands and is the only part of this file still live.
+
 This document outlines the strategic roadmap for addressing the JIT compilation latency ("cold start" problem) in the `molsysmt` / `molsysviewer` backend, particularly for non-programmer desktop environments. It analyzes immediate workarounds and long-term architectural transitions to Rust and WebAssembly (WASM).
 
 ---

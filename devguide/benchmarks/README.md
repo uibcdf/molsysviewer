@@ -70,7 +70,7 @@ Measures fresh file loading duration (H5MSM structure files from demo package).
 | `1TCD` | 422.61 | 551.85 | 465.83 | 45.98 |
 | `chicken_villin_HP35` | 452.68 | 728.14 | 579.79 | 102.57 |
 
-*Note: The high maximum and standard deviation on the `dialanine` loading are caused by the initial python import, dynamic compiler JIT cache load (Numba/MolSysMT), and library warming during the first iteration.*
+*Note: The high maximum and standard deviation on the `dialanine` loading are caused by the initial python import and library warming during the first iteration. (This note used to also credit a "dynamic compiler JIT cache load (Numba/MolSysMT)". **MolSysMT was rewritten in Rust for 1.0 and no longer uses Numba**, so that component of the variance no longer exists and these figures predate the change.)*
 
 ### 🔄 2. Coordinate Transfer Performance
 Measures coordinate extraction (`get_coordinates`) and replacement/scene-rebuild (`set_coordinates`).

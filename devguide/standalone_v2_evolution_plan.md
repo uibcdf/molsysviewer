@@ -2,6 +2,38 @@
 
 This document outlines the architectural plan for the second version (v2) of the **MolSysViewer Standalone Application**. While Standalone v1 is designed as a developer-centric `PySide6` shell, Standalone v2 aims to deliver a native, high-performance, and zero-configuration desktop experience tailored specifically for **non-programmers** (biologists, chemists, and students who do not use the command line).
 
+> **Amended 2026-07-31 — one of this document's main arguments no longer holds.**
+>
+> **MolSysMT was rewritten in Rust for 1.0 and no longer uses Numba** (verified:
+> no `.py` file under `molsysmt/` references it, and it ships `_rust.abi3.so`).
+> Every claim below about JIT compilation lag is therefore obsolete:
+>
+> - §1.2 point 1 — "a JIT compiler (Numba)" is no longer bundled;
+> - Option 1 con — "still suffers from JIT compilation latency" is false;
+> - Option 3 pro — "no Numba JIT lag" is no longer a *differentiator*, because
+>   Option 1 does not have it either;
+> - the comparison matrix row **Startup Time** is corrected in place below;
+> - Phase 1 action 2, "Implement Numba JIT Caching", is withdrawn.
+>
+> **The rewrite moves Option 3 in both directions, and both must be said.**
+>
+> *Against it:* startup latency was the strongest argument for going to
+> Rust/WASM, and the Rust half already happened inside MolSysMT — delivering that
+> benefit **without** removing Python. What survives as a genuine advantage is
+> installer size, installation reliability and a single frontend codebase: real,
+> but a softer case than "instant versus a five-second freeze".
+>
+> *For it:* the **Development Cost** row is now too pessimistic. Option 3 was
+> priced as a full Rust rewrite of the parsers, selections and topology matching.
+> That rewrite is **done**. What remains is compiling an existing crate to a
+> `wasm32` target and building the JS surface over it — still substantial, and
+> still carrying the API-parity obligation, but no longer the same order of work.
+>
+> The remaining startup cost of Option 1 has **not been measured since the
+> rewrite**. It is now import cost plus Qt WebEngine initialization, not
+> compilation. Re-measure before this comparison is used to decide anything, in
+> either direction.
+
 ---
 
 ## 1. Context & The Challenge of Standalone v1
@@ -63,10 +95,10 @@ Re-write the core computational engine of `molsysmt` (parsers, selections, topol
 | Feature | Option 1: PySide6 Evolved | Option 2: Tauri + Python Sidecar | Option 3: Tauri + WASM (Target) |
 | :--- | :--- | :--- | :--- |
 | **Installer Size** | ~350 MB | ~300 MB | **~50 MB** |
-| **Startup Time** | Slow (3-5s JIT lag) | Medium (Python boot time) | **Instant** (<1s) |
+| **Startup Time** | Python boot + Qt WebEngine init — **unmeasured since the Rust rewrite**; the "3-5s JIT lag" recorded here no longer applies | Medium (Python boot time) | **Instant** (<1s) |
 | **UI Aesthetics** | Traditional Desktop | Modern / Premium | **Modern / Premium** |
 | **Installation Reliability**| Medium (Conda-dependent) | Medium (Sidecar-dependent) | **Very High** (Self-contained) |
-| **Development Cost** | Low | Medium | High (Rust rewrite) |
+| **Development Cost** | Low | Medium | ~~High (Rust rewrite)~~ → **Medium**: the Rust core exists in MolSysMT; what remains is a `wasm32` target plus the JS surface and API parity |
 
 ---
 
@@ -84,7 +116,7 @@ graph TD
 * **Goal**: Deliver a working desktop app to early testers using the current codebase.
 * **Actions**:
   1. Implement the `createWindow` handler in `standalone_qt` to support the three-window popout layout.
-  2. Implement Numba JIT Caching to hide compilation lag.
+  2. ~~Implement Numba JIT Caching to hide compilation lag.~~ **Withdrawn 2026-07-31:** MolSysMT is Rust; there is nothing left to cache. Replace with a measurement of what startup actually costs now.
   3. Use **Conda Constructor** to generate a single-click installer (`.exe`/`.pkg`) containing the PySide6 app.
 
 ### Phase 2: Decouple the UI via Tauri (Medium-Term)
