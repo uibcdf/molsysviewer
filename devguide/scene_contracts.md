@@ -2025,11 +2025,43 @@ a behaviour change and must be judged as one, not waved through. `minDistance`
 also reverts from `5` to `0.01`, letting the user zoom inside atoms; set it
 explicitly on the trackball props if that matters.
 
-One real obligation follows: `resolveCameraReset` clears `cameraResetRequested`
-whether or not it did anything, so a reset requested against an empty scene is
-*consumed and lost*. Request it when the scene has content, and re-request if
-`radiusMax` is still 0 afterwards — Mol\*'s own `syncVisibility` uses exactly that
-test. A bounded retry, not a transaction.
+One real obligation follows, and it is sharper than it looks: `resolveCameraReset`
+clears `cameraResetRequested` whether or not it did anything, so a reset requested
+against an empty scene is *consumed and lost*. Request it when the scene has
+content, and re-request if `radiusMax` is still 0 afterwards — Mol\*'s own
+`syncVisibility` uses exactly that test. A bounded retry, not a transaction.
+
+It is sharper because **`manualReset` also removes Mol\*'s own safety net**. Its
+auto-reset is what quietly rescued the camera in the harness, and it is why the
+first regression test passed with the fix removed. Once authority is taken, the
+explicit request is the *only* thing that frames the scene. Losing it has no
+fallback.
+
+#### Both levers are hidden parameters
+
+`camera.manualReset` and `trackball.autoAdjustMinMaxDistance` are both declared
+`isHidden: true`. They are typed in the `.d.ts`, so a Mol\* release that *removes*
+either breaks the build loudly. A release that changes their *semantics* — say,
+`manualReset` stops gating the `radiusMax` derivation — removes our protection
+**silently, with everything still compiling and every test still green**.
+
+That is what makes the detection signal (`CATALOG` + `CODES`) mandatory rather
+than defence in depth: a camera left inside the scene bounding sphere after a
+mutation is never a framing anyone chose, and it is the only thing that would
+distinguish "still works" from "stopped working at some upgrade". Detection, never
+repair — the camera is not moved behind the user; see above for why.
+
+#### This is arguably Mol\*'s defect, and worth reporting
+
+`checkDistances()` irreversibly relocates `camera.position` from a bound that is,
+at that instant, transient and meaningless. The root is one layer below:
+`getSceneRadius()` returns 0 for an empty scene, and everything downstream behaves
+as though the universe collapsed to a point.
+
+**An empty scene is not a scene of radius zero.** It is a scene about which
+nothing can be concluded. Treating "unknown" as "zero" is the underlying error,
+and it is not ours. Our configuration is the workaround we need now; an upstream
+report is what eventually makes it unnecessary rather than permanent.
 
 **Do not "repair" the camera afterwards.** That was the first fix attempted and it
 is the wrong shape: it cannot tell a clamp from Mol\*'s own legitimate re-framing

@@ -72,6 +72,12 @@ writes `camera.position`. Full chain and measurements: Contract S9.
    positive costs a log line instead of a camera that jumps. It also guards the
    guard, which depends on Mol\* internals that will change.
 
+7. **Report upstream to Mol\***: an empty scene is treated as a scene of radius
+   zero (`getSceneRadius()`), and `checkDistances()` then makes an irreversible
+   write to `camera.position` from that transient bound. Our configuration is a
+   workaround; this is the fix that would retire it. Precedent for the format:
+   the MolSysMT `viewer_json_conversion_deep_copies_twice` report.
+
 ## Still unknown
 
 In the headless harness Mol\* rescues the camera on its own: emptying the scene
