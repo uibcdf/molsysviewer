@@ -31,7 +31,7 @@ writes `camera.position`. Full chain and measurements: Contract S9.
 
 ## Work remaining
 
-1. **Take camera authority at plugin init** (S9 mechanism B):
+1. **DONE — take camera authority at plugin init** (S9 mechanism B):
    `camera.manualReset: true` and `trackball.autoAdjustMinMaxDistance: off`, plus
    one explicit `requestCameraReset()` once a load has content, with a re-request
    if `radiusMax` is still 0. Measured: trackball bound 1e150 instead of 305,
@@ -42,18 +42,23 @@ writes `camera.position`. Full chain and measurements: Contract S9.
    remembered at every call site, and did not close the `requestCameraReset` hole.
    Judge the behaviour change explicitly: Mol\*'s opportunistic re-framing is lost,
    and `minDistance` reverts from 5 to 0.01.
-2. **Layer 1 — in-place representation update.** Update the existing
+2. **DONE — in-place representation update.** Update the existing
    `StructureRepresentation3D` transform's `type` (with its colour and size
    themes) instead of removing and rebuilding, for the case where the state tree
    shape is unchanged: `msg.representation` set, no `preset`, no `user_preset`.
-   Measured at 0 ms empty in every condition tested, and it produced a scene
-   identical to the current path (bounding radius 31.142038731724032 from both).
-   Keep remove-then-add as the fallback for the preset branches.
-3. **Remove `repairCameraAfterSwap`** from `state-handlers.ts`. It was the first
-   attempt and is superseded by both layers above; S9 records why repair is the
-   wrong shape. The e2e `camera-survives-representation-swap.e2e.ts` should be
-   rewritten with it, asserting `radiusMax` during the window rather than where
-   the camera ended up.
+   Measured, both arms building *cartoon*: 760 ms empty rebuilding, **0 ms** in
+   place; by mutation, removing the branch takes that 0 back to 2960 ms.
+
+   **Its reach is narrower than it looked, and the shortfall is the reported case.**
+   The loader's preset registers **four** global representations (polymer, ligand,
+   water, …), so the *first* `set_whole_representation` after a load collapses four
+   nodes into one — a change of tree shape, which no parameter edit can express.
+   That first change still rebuilds and still blanks the viewport for ~760 ms. It is
+   harmless since camera authority landed, but it is still a visible blank.
+   **Closing it needs add-before-remove** (S9 mechanism A, one level up), which is
+   the remaining work here.
+3. **DONE — `repairCameraAfterSwap` was never committed.** Discarded once camera
+   authority made it unnecessary; S9 records why repair is the wrong shape.
 4. ~~Make camera resets wait for the scene.~~ **No longer needed** if item 1
    lands: with `autoAdjustMinMaxDistance` off, `resolveCameraReset` is a no-op on
    an empty scene, so a `reset_view` arriving mid-mutation is harmless instead of
@@ -64,7 +69,7 @@ writes `camera.position`. Full chain and measurements: Contract S9.
    Hiding matters as much as emptying: the `p.maxDistance` vector keys on
    `boundingSphereVisible`, so a scene that is fully present but fully hidden does
    the same damage.
-6. **Signal when the invariant breaks** (`CATALOG` + `CODES`). Not a repair — the
+6. **DONE — signal when the invariant breaks** (`CATALOG` + `CODES`). Not a repair — the
    camera is never moved behind the user — but a camera left inside the scene
    bounding sphere after a mutation is never a framing anyone chose, and saying so
    turns a silent, unexplainable viewer into a diagnosable one. The same imprecise

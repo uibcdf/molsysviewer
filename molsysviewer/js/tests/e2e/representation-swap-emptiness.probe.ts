@@ -1,20 +1,40 @@
 /**
- * Does an in-place representation update keep the scene populated?
+ * How long is the scene empty during a whole-representation change?
  *
- * `setWholeRepresentation` currently removes the old representations and then
- * builds the new ones, which leaves the scene empty for as long as the build
- * takes (~1.25s for 181L's cartoon). That empty window collapses
- * `camera.state.radiusMax` and the trackball then clamps the camera inside the
- * molecule — see
- * `devguide/pending_bugs/camera_zoom_out_blocked_after_scene_replay.md`.
+ * Contract S9 mechanism A. The rebuild path removes the old representations and
+ * then builds the new ones, and `commit()` returns long before the geometry
+ * arrives — a blank viewport the user sees, and (before camera authority was
+ * taken) the window in which Mol* collapsed the camera bounds.
+ * `applyWholeRepresentationInPlace` avoids it by editing the existing
+ * `StructureRepresentation3D` node's params instead, the same way
+ * `applyStructuralColorInPlace` has always edited its colour.
  *
- * The codebase already updates the *colour* of a representation in place
- * (`applyStructuralColorInPlace`), and colour changes visibly do not flash. The
- * representation type lives in the same transform's params, so the question is
- * whether swapping it the same way avoids the empty window entirely.
+ * **The measurement that matters is first change versus second**, because the
+ * fast path is not reachable for the first one and that is not obvious from
+ * reading the code. The initial representations come from the *loader's* preset,
+ * which builds **four** of them (polymer, ligand, water, …) — measured, not
+ * assumed, and not the "none yet" one might expect. Collapsing four nodes into one
+ * is a change of tree shape, no parameter edit can express it, and the rebuild is
+ * the only correct answer. Only from the second change on is there a single global
+ * node whose params describe the whole.
  *
- * Measures both paths on the same structure: minimum scene radius and how long
- * the scene stays empty.
+ * Measured on 181L, cartoon, with the change issued while the viewer is still
+ * settling — the condition that opens the window at all. A settled viewer never
+ * shows it, which is why changing representations by hand always looked clean:
+ *
+ * | | scene empty |
+ * |---|---:|
+ * | first change after load (rebuild) | ~740 ms |
+ * | second change, same representation (in place) | **0 ms** |
+ *
+ * Verified by mutation: removing the in-place branch takes that 0 ms to 2960 ms.
+ * Both arms build *cartoon* on purpose — an earlier version compared cartoon
+ * against spacefill and was measuring build times, not code paths.
+ *
+ * So mechanism A does **not** help the case that produced the bug report — the
+ * first cartoon after a load. That case is made harmless by mechanism B (camera
+ * authority) instead, and closing its blank window needs add-before-remove, which
+ * is tracked in `devguide/pending_bugs/`.
  */
 import process from "node:process";
 import { chromium } from "./e2e-browser";
@@ -38,123 +58,78 @@ async function run() {
     );
     await page.addScriptTag({ path: resolve(__dirname, "harness.bundle.js") });
     await page.waitForFunction(() => typeof (window as any).Harness !== "undefined");
-    const settleMs = Number(process.env.PROBE_SETTLE_MS ?? 1500);
-    await page.evaluate((v: number) => { (window as any).__settleMs = v; }, settleMs);
-    console.log("settleMs:", settleMs);
 
-    const out = await page.evaluate(async (pdb: string) => {
+    const settleMs = Number(process.env.PROBE_SETTLE_MS ?? 300);
+    const out = await page.evaluate(async (cfg: any) => {
         const controller = await (window as any).Harness.createController("root");
         const plugin = (controller as any).plugin;
         const c3d: any = plugin.canvas3d;
 
-        const sample = () => ({
-            radius: c3d.boundingSphere?.radius ?? 0,
-            reprCount: c3d.reprCount?.value ?? 0,
-            radiusMax: c3d.camera?.state?.radiusMax ?? 0,
-        });
-
-        /** Watch the scene while `action` runs, for `ms` total. */
+        /** Sample the scene while `action` runs; report how long it held nothing. */
         const watch = async (action: () => Promise<any>, ms: number) => {
-            const series: any[] = [];
-            let done = false;
+            const series: number[] = [];
+            const end = Date.now() + ms;
             const poll = (async () => {
-                const end = Date.now() + ms;
                 while (Date.now() < end) {
-                    series.push({ t: Date.now(), ...sample() });
+                    series.push(c3d.boundingSphere?.radius ?? 0);
                     await new Promise(r => setTimeout(r, 20));
-                    if (done && Date.now() > end - ms * 0.4) break;
                 }
             })();
             await action();
-            done = true;
             await poll;
-            const emptySamples = series.filter(s => s.radius <= 0).length;
             return {
-                minRadius: Math.min(...series.map(s => s.radius)),
-                minReprCount: Math.min(...series.map(s => s.reprCount)),
-                zeroReprSamples: series.filter(s => s.reprCount === 0).length,
-                minRadiusMax: Math.min(...series.map(s => s.radiusMax)),
-                emptyMs: emptySamples * 20,
+                emptyMs: series.filter(r => r <= 0).length * 20,
+                minRadius: Math.min(...series),
                 samples: series.length,
             };
         };
 
         await controller.handleMessage({
-            op: "load_structure_from_string", data: pdb, format: "pdb", label: "probe",
+            op: "load_structure_from_string", data: cfg.pdb, format: "pdb", label: "probe",
         });
         for (let i = 0; i < 80; i++) {
             const s = plugin.managers.structure.hierarchy.current.structures[0]?.cell.obj?.data;
             if (s && s.elementCount > 0) break;
             await new Promise(r => setTimeout(r, 100));
         }
-        await new Promise(r => setTimeout(r, Number((window as any).__settleMs ?? 1500)));
-        const baseline = sample();
+        await new Promise(r => setTimeout(r, cfg.settleMs));
 
-        // --- current path: remove, then add -------------------------------
-        const removeThenAdd = await watch(
+        // Four here, not zero: the loader preset already registered its
+        // representations, and collapsing four nodes into one is what makes this
+        // first change a rebuild.
+        const globalReprsBefore = ((controller as any).state?.globalReprs?.size) ?? -1;
+        const firstSwap = await watch(
             () => controller.handleMessage({
                 op: "set_whole_representation",
                 representation: "cartoon", preset: null, params: {},
             }),
             3000,
         );
-        // Back to a non-cartoon state so the second measurement builds the very
-        // same representation from the very same starting point.
+        const globalReprsAfter = ((controller as any).state?.globalReprs?.size) ?? -1;
+
+        // Both arms must build the *same* representation, or the comparison is
+        // between cartoon and spacefill build times rather than between the two
+        // code paths. Step out to spacefill (fast, not measured), then back to
+        // cartoon — which now has a single global node, so it goes in place.
         await controller.handleMessage({
             op: "set_whole_representation",
-            representation: "ball_and_stick", preset: null, params: {},
+            representation: "spacefill", preset: null, params: {},
         });
-        await new Promise(r => setTimeout(r, 2500));
-
-        // --- candidate path: update the existing transform in place -------
-        const reprRefs: string[] = [];
-        plugin.state.data.cells.forEach((cell: any, ref: string) => {
-            const id = String(cell?.transform?.transformer?.id ?? "");
-            if (id.includes("structure-representation-3d")) reprRefs.push(ref);
-        });
-
-        const inPlace = await watch(
-            async () => {
-                const update = plugin.state.data.build();
-                for (const ref of reprRefs) {
-                    update.to(ref).update((params: any) => {
-                        params.type = { name: "cartoon", params: {} };
-                    });
-                }
-                await update.commit({ doNotUpdateCurrent: true });
-            },
+        await new Promise(r => setTimeout(r, 2000));
+        const secondSwap = await watch(
+            () => controller.handleMessage({
+                op: "set_whole_representation",
+                representation: "cartoon", preset: null, params: {},
+            }),
             3000,
         );
 
-        // --- third arm: the current path, but with Mol* told not to re-derive
-        // the camera from a half-built scene while the mutation is in flight ---
-        await controller.handleMessage({
-            op: "set_whole_representation",
-            representation: "ball_and_stick", preset: null, params: {},
-        });
-        await new Promise(r => setTimeout(r, 2500));
-        const guarded = await watch(
-            async () => {
-                c3d.setProps({ camera: { manualReset: true } });
-                try {
-                    await controller.handleMessage({
-                        op: "set_whole_representation",
-                        representation: "cartoon", preset: null, params: {},
-                    });
-                    // Wait for the scene to come back before handing authority over.
-                    for (let i = 0; i < 200; i++) {
-                        if ((c3d.boundingSphere?.radius ?? 0) > 0 && (c3d.reprCount?.value ?? 0) > 0) break;
-                        await new Promise(r => setTimeout(r, 20));
-                    }
-                } finally {
-                    c3d.setProps({ camera: { manualReset: false } });
-                }
-            },
-            3000,
-        );
-
-        return { baseline, removeThenAdd, inPlace, guarded, reprRefCount: reprRefs.length };
-    }, readFileSync(process.env.PROBE_PDB!, "utf8"));
+        return {
+            settleMs: cfg.settleMs,
+            globalReprsBefore, globalReprsAfter,
+            firstSwap, secondSwap,
+        };
+    }, { pdb: readFileSync(process.env.PROBE_PDB!, "utf8"), settleMs });
 
     console.log(JSON.stringify(out, null, 1));
     if (errors.length) console.log("PAGE ERRORS:", errors);

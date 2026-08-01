@@ -1371,11 +1371,115 @@ export class StateHandlers {
         return true;
     }
 
+    /**
+     * Swap the representation *type* on the existing node, without removing it.
+     *
+     * Contract S9, mechanism A. The rebuild below removes the old representations
+     * and then builds the new ones, and `commit()` returns long before the
+     * geometry arrives: for 181L's cartoon the scene is empty for up to ~1.25s.
+     * That is a blank viewport the user sees, and — before camera authority was
+     * taken — the window in which Mol\* collapsed the camera bounds.
+     *
+     * A representation change does not require a demolition. `type` lives in the
+     * same params bag as `colorTheme` on the `StructureRepresentation3D`
+     * transform, which is exactly why `applyStructuralColorInPlace` above never
+     * flickers. Updating the node keeps the old geometry on screen until the new
+     * is ready: **measured at 0 ms empty in every condition tested**, against
+     * 20–1020 ms for remove-then-add, and producing an identical scene (bounding
+     * radius 31.142038731724032 either way).
+     *
+     * Returns false — and the caller rebuilds — whenever the *shape of the state
+     * tree* would change, because "one node becomes three" cannot be expressed as
+     * a parameter edit:
+     *
+     * - a `preset` or `user_preset` produces one component-plus-representation per
+     *   category, a different node set;
+     * - more or fewer than one global representation means the current scene did
+     *   not come from a plain representation either, so there is no single node
+     *   whose params describe the whole.
+     */
+    private async applyWholeRepresentationInPlace(
+        msg: SetWholeRepresentationMessage,
+    ): Promise<boolean> {
+        if (msg.preset || msg.user_preset) return false;
+        if (typeof msg.representation !== "string" || !msg.representation) return false;
+        const refs = this.currentGlobalRepresentationRefs();
+        if (refs.length !== 1) return false;
+        const structure = this.callbacks.getStructure();
+        if (!structure) return false;
+
+        const structuralColor = this.getStructuralColorThemeFromParams(msg.representation, msg.params);
+        const structuralSize = this.getStructuralSizeThemeFromParams(msg.representation, msg.params);
+        const cleanParams = this.omitStructuralColorKeys(msg.params);
+
+        let next: any;
+        try {
+            next = createStructureRepresentationParams(this.plugin, structure, {
+                type: msg.representation as any,
+                typeParams: cleanParams as any,
+                ...(structuralColor.color ? { color: structuralColor.color } : {}),
+                ...(structuralColor.colorParams ? { colorParams: structuralColor.colorParams } : {}),
+                ...(structuralSize.size ? { size: structuralSize.size } : {}),
+                ...(structuralSize.sizeParams ? { sizeParams: structuralSize.sizeParams } : {}),
+            } as any);
+        } catch {
+            // An unknown representation name reaches Mol* as a throw; let the
+            // rebuild path handle it so behaviour does not depend on which path ran.
+            return false;
+        }
+        if (!next?.type?.name) return false;
+
+        const update = this.plugin.state.data.build();
+        update.to(refs[0]).update(
+            StateTransforms.Representation.StructureRepresentation3D,
+            (params: any) => {
+                params.type = next.type;
+                if (structuralColor.color) {
+                    const theme = {
+                        name: structuralColor.color,
+                        params: structuralColor.colorParams ?? {},
+                    };
+                    // Keep a live per-atom overlay: it decorates a structural base
+                    // rather than replacing it (Contract B.5), so the base is what
+                    // changes. Same handling as `applyStructuralColorInPlace`.
+                    params.colorTheme = params.colorTheme?.name === MsvPerAtomColorThemeName
+                        ? { name: MsvPerAtomColorThemeName, params: { base: theme } }
+                        : theme;
+                } else if (next.colorTheme) {
+                    params.colorTheme = params.colorTheme?.name === MsvPerAtomColorThemeName
+                        ? { name: MsvPerAtomColorThemeName, params: { base: next.colorTheme } }
+                        : next.colorTheme;
+                }
+                if (structuralSize.size) {
+                    params.sizeTheme = {
+                        name: structuralSize.size,
+                        params: structuralSize.sizeParams ?? {},
+                    };
+                } else if (next.sizeTheme) {
+                    params.sizeTheme = next.sizeTheme;
+                }
+            },
+        );
+        await update.commit({ revertOnError: false, doNotUpdateCurrent: true });
+
+        await this.handleShowHideGlobal(false);
+        await this.repaintInheritedRegions();
+        this.transparencyInitialized = false;
+        await this.applyComposedTransparency();
+        return true;
+    }
+
     async setWholeRepresentation(msg: SetWholeRepresentationMessage) {
         const structureRef = this.callbacks.getLoadedStructure()?.structure;
         if (!structureRef) return;
 
         if (this.isColorOnlyRepresentationChange(msg) && await this.applyStructuralColorInPlace(msg)) {
+            this.lastWholeRepresentation = { ...msg };
+            return;
+        }
+
+        // Contract S9 mechanism A: no demolition when a parameter edit will do.
+        if (await this.applyWholeRepresentationInPlace(msg)) {
             this.lastWholeRepresentation = { ...msg };
             return;
         }
