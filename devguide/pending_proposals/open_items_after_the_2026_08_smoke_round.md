@@ -3,7 +3,7 @@
 **Written 2026-08-01, at the close of the JupyterLab smoke round that produced
 Contracts S8 and S9 and seven fixes (`e50b7403` … `34755fb9`).**
 
-Eighteen items. They are not one kind of thing, and the grouping is the point:
+Nineteen items. They are not one kind of thing, and the grouping is the point:
 one is **broken right now**, the next block is **verification the project's own
 rules require and that did not happen**, and the last is housekeeping.
 
@@ -18,7 +18,7 @@ uses what we changed".
 
 ---
 
-## Z. Broken right now (1)
+## Z. Broken right now (2)
 
 ### Z1. `molsysviewer-sync-hierarchy` is not declared in the action manifest
 
@@ -50,6 +50,43 @@ No test needs updating: the JS guard asserts `POPUP_ACTIONS.size >= 11`, which i
 itself part of why B3 exists — it can only notice deletions, and pins no action in
 particular. Verify by opening a panel pop-out, loading a second structure, and
 checking System follows.
+
+### Z2. `camera_stranded_inside_scene` is not declared either, so the signal never leaves the browser
+
+**What.** The Contract S9 detection signal is emitted by the frontend as a
+browser→Python event, and it was never declared in `actions` in
+`runtime_actions.json`. `wrapOutbound` rejects it before it is sent:
+
+```js
+const category = categoryOf(action);
+if (category === undefined) {
+    // The manifest is complete; an unknown action is a contract defect.
+    return { kind: "rejected", reason: "unknown-action", detail: action };
+}
+```
+
+Its closest precedent, `viewer_init_failed`, *is* declared — which is what makes
+this an omission rather than a design question.
+
+**Why.** Worse than Z1, because Z1 breaks an update path while this breaks the
+thing whole. The catalog entry, the Python handler and the frontend detector are
+all wired to each other and to nothing: **the signal cannot reach Python at all.**
+
+And it voids the argument that justified adding it. Camera authority rests on two
+`isHidden` Mol\* params whose semantics can change without breaking the build; the
+signal was to be the only thing that would notice. It would have noticed nothing.
+Read together with B1 — the signal also has no test — the alarm is not merely
+unverified, it is disconnected, and nothing would have said so.
+
+**How.** Declare it in `actions` with the same category as `viewer_init_failed`,
+then close B1, since a test would have caught this and a declaration without a test
+only moves the silence one step further out.
+
+**This is Z1 again, on the other seam, in the same session.** Two manifest-governed
+boundaries, two new actions, neither declared. Both times the runtime guard behaved
+correctly and refused; both times it refused into a console nobody was reading. That
+is the argument for B3, and it should now cover *both* manifests rather than just
+the popup one.
 
 ---
 
@@ -169,18 +206,22 @@ The size can silently revert to a fixed value with everything green.
 ### B3. Nothing pins the actions the code sends against the manifest
 
 **What.** The tests check specific, already-known actions
-(`popupActionAllows("molsysviewer-sync-op", …)`). **No guard cross-checks the
-`send`/`sendTo` call sites against `popup_actions`**, which is why Z1 passed 262 JS
-tests and 1158 Python tests.
+(`popupActionAllows("molsysviewer-sync-op", …)`). **No guard cross-checks the call
+sites against the manifest** — not for `popup_actions` and not for `actions` —
+which is why Z1 *and* Z2 passed 262 JS tests and 1158 Python tests.
 
 **Why.** The manifest exists so the two ends cannot diverge — and yet a new sender
 can be added without declaring it, with the divergence caught only at runtime, only
 with a panel pop-out open, and only if someone is watching the console. That is the
 §0 shape in the one place built to prevent it.
 
-**How.** A test that greps the source for host/popup send call sites and asserts
-every action string appears in `popup_actions` with a compatible direction. Mutation
-check: remove one declaration and it must go red.
+**How.** A test that greps the source for send call sites on **both** seams —
+`notify`/`sendToPython` for browser→Python, `send`/`sendTo` for host↔popup — and
+asserts every action string appears in the corresponding manifest section with a
+compatible direction. Mutation check: remove one declaration and it must go red.
+
+Two omissions in one session on two different seams is the measurement that says
+this guard is worth more than the two one-line fixes it would have replaced.
 
 ---
 
@@ -324,7 +365,7 @@ Recorded so they are not raised again.
 
 ## Suggested order
 
-**Z1 first** — it is one line, and it is the only item that is actually broken.
+**Z1 and Z2 first** — one line each, and the only items that are actually broken.
 
 **Then A1–A5.** They are minutes of runtime and could be hiding a break introduced
 during the round. Within them, **A3 and A4 matter most**: they are not missing tests
