@@ -743,8 +743,62 @@ export class MolSysViewerController {
             MolSysViewerController.showInitFailureOverlay(target, message);
             notify?.({ event: "viewer_init_failed", reason: "webgl", message });
         }
+        MolSysViewerController.takeCameraAuthority(plugin);
 
         return new MolSysViewerController(plugin, target, notify, canvasHost, options);
+    }
+
+    /**
+     * Stop Mol* deriving camera bounds from whatever the scene happens to be.
+     *
+     * `scene_contracts.md` Contract S9. A scene mutation leaves the scene
+     * transiently empty (a representation swap: up to ~1.25s for 181L's cartoon,
+     * because `commit()` returns long before the geometry arrives). Mol* then
+     * re-derives the camera bounds from nothing, and the trackball's
+     * `checkDistances()` — which runs on *every frame*, not only on input —
+     * clamps the camera to those bounds and writes `camera.position`. The bounds
+     * recover with the geometry; the camera does not. Measured: the camera moved
+     * from 79.79 to exactly 10, leaving the user inside the molecule with the
+     * wheel unable to zoom out.
+     *
+     * There are two bounds, and `checkDistances` takes the smaller:
+     *
+     * - `camera.state.radiusMax`, re-derived on every commit from
+     *   `scene.boundingSphere` (`canvas3d.js:744`) — keyed on the scene being
+     *   *empty*. `manualReset` gates that line, so the collapse stops being
+     *   something to avoid and becomes impossible by construction, whatever the
+     *   timing. That is the point: a guard held for the duration of a mutation
+     *   would have to be remembered at every present and future call site.
+     * - the trackball's own `p.maxDistance`, set from the *visible* bounding
+     *   sphere as `max(10 * radius, 20)` (`canvas3d.js:678-685`) — keyed on
+     *   nothing being *visible*, so hiding is as damaging as emptying, and not
+     *   guarded by the `radius > 0` its neighbour uses. Turning the auto-adjust
+     *   off leaves it at its `1e150` default and, as a bonus, makes
+     *   `resolveCameraReset` a no-op on an empty scene — which closes the hole
+     *   that `manualReset` cannot, since `requestCameraReset` sets the reset flag
+     *   directly and is reachable from our own "Reset view".
+     *
+     * The cost is deliberate and accepted: Mol* no longer re-frames
+     * opportunistically when geometry appears outside the view. That behaviour is
+     * the same species as this defect — Mol* moving the camera on its own reading
+     * of a scene we are in the middle of changing — so losing it is consistency,
+     * not a concession. Framing is now ours to ask for, in `frameLoadedStructure`.
+     *
+     * Both params are `isHidden` in Mol*. They are typed, so removal breaks the
+     * build; a change of *semantics* would remove this protection silently, which
+     * is why the invariant is also checked at runtime (`reportStrandedCamera`).
+     */
+    private static takeCameraAuthority(plugin: PluginContext): void {
+        try {
+            plugin.canvas3d?.setProps({
+                camera: { manualReset: true },
+                trackball: { autoAdjustMinMaxDistance: { name: "off", params: {} } },
+            } as any);
+        } catch (error) {
+            // Non-fatal: without this the viewer still works, it is just exposed
+            // to the defect above. Loud, because silence is how it was missed.
+            console.error("[MolSysViewer] could not take camera authority", error);
+        }
     }
 
     public readonly loader: LoaderHandlers;
@@ -2224,6 +2278,7 @@ export class MolSysViewerController {
                 }
                 case "clear_scene":
                         await this.scene.clearScene(msg);
+                        this.checkCameraAfterSceneMutation("clear_scene");
                     break;
                 case "clear_all": await this.scene.clearAll(); break;
                 case "clear_shapes_by_tag": await this.scene.clearShapesByTag(msg); break;
@@ -2238,7 +2293,10 @@ export class MolSysViewerController {
                     this.showToast(`Region '${tag}' created`);
                     break;
                 }
-                case "set_region_representation": await this.state.setRegionRepresentation(msg); break;
+                case "set_region_representation":
+                    await this.state.setRegionRepresentation(msg);
+                    this.checkCameraAfterSceneMutation("set_region_representation");
+                    break;
                 case "set_region_order": await this.state.setRegionOrder(msg as any); break;
                 case "show_region": await this.state.showRegion(msg); break;
                 case "show_only_region": await this.state.showOnlyRegion(msg); break;
@@ -2464,7 +2522,10 @@ export class MolSysViewerController {
                     await this.state.clearAtomColors(msg as any);
                     this.groupPanel.render();
                     break;
-                case "set_whole_representation": await this.state.setWholeRepresentation(msg); break;
+                case "set_whole_representation":
+                    await this.state.setWholeRepresentation(msg);
+                    this.checkCameraAfterSceneMutation("set_whole_representation");
+                    break;
                 case "show_whole":
                     await this.state.showWhole(msg);
                     this.refreshNavigatePanel(false);
@@ -2821,6 +2882,7 @@ export class MolSysViewerController {
             // Notify state handler that structure is ready so it can apply pending ops
             this.state.onStructureLoaded();
             this.trajectory.notifyListeners();
+            void this.frameLoadedStructure();
         } else {
             this.currentStructure = undefined;
             this.groupPanel.setStructure(undefined);
@@ -2828,6 +2890,130 @@ export class MolSysViewerController {
             this.activeSelection.setAllAvailableItems([]);
         }
         this.updateWelcomeState();
+    }
+
+    /**
+     * Frame a freshly loaded structure. Ours to do since `takeCameraAuthority`.
+     *
+     * Contract S9. With `manualReset` set, Mol* no longer frames anything by
+     * itself — **including the rescue that used to hide this whole class of
+     * defect**, which is why the first regression test written for it passed with
+     * the fix removed. This call is now the only thing that frames the scene, so
+     * it is a guarantee rather than a convenience.
+     *
+     * Two properties it has to have:
+     *
+     * - **Ask only once the scene has content.** `resolveCameraReset` clears
+     *   `cameraResetRequested` whether or not it acted, so a request made against
+     *   an empty scene is consumed and silently lost.
+     * - **Re-ask if it did not take.** `radiusMax` still being 0 afterwards is
+     *   exactly the test Mol*'s own `syncVisibility` uses for "never framed".
+     *
+     * The request also sets `radiusMax` from a *finished* scene on its way past
+     * (`canvas3d.js:691`, not gated by `manualReset`), so framing and the camera
+     * bound are established by the same call and cannot disagree.
+     */
+    private async frameLoadedStructure(timeoutMs = 10000): Promise<void> {
+        const canvas3d: any = this.plugin.canvas3d;
+        if (!canvas3d) return;
+        const token = ++this.frameRequestToken;
+        const deadline = Date.now() + timeoutMs;
+
+        const sceneHasContent = () => (canvas3d.boundingSphere?.radius ?? 0) > 0;
+
+        // The request is only *resolved* during a draw, so ask for one rather than
+        // waiting for something else to need it. A visible canvas draws anyway;
+        // an idle or offscreen one may not, and then the framing never happens.
+        const request = () => {
+            canvas3d.requestCameraReset?.({ durationMs: 0 });
+            canvas3d.requestDraw?.();
+        };
+
+        // "Did it land?" cannot be `radiusMax > 0`: Mol*'s *default* is 10
+        // (`camera.js:230`), so that test passes on a camera that has never framed
+        // anything — it reported success here while the viewer sat unframed at its
+        // initial position. `resolveCameraReset` sets `radiusMax = getSceneRadius()`,
+        // so agreeing with the scene radius is what actually distinguishes them.
+        const framed = () => {
+            const radiusMax = canvas3d.camera?.state?.radiusMax ?? 0;
+            const sceneRadius = (canvas3d.boundingSphere?.radius ?? 0)
+                * (canvas3d.props?.sceneRadiusFactor ?? 1);
+            if (sceneRadius <= 0) return false;
+            return Math.abs(radiusMax - sceneRadius) / sceneRadius < 0.1;
+        };
+
+        // Re-ask on every tick rather than on a slow retry cadence. The request is
+        // just a flag Mol* consumes at the next fully-committed frame, so asking
+        // again is free, and asking rarely costs the user a visibly unframed
+        // viewer: at a 120ms cadence this framed 1.3s later than Mol* did on its
+        // own, which is a regression the user would see as a late jump.
+        while (Date.now() < deadline) {
+            if (token !== this.frameRequestToken) return;
+            if (framed()) return;
+            if (sceneHasContent()) request();
+            await new Promise(resolve => setTimeout(resolve, 16));
+        }
+    }
+
+    /** Serialises framing so a newer load cannot be overtaken by an older one. */
+    private frameRequestToken = 0;
+
+    /**
+     * Say so when the camera ends up somewhere nobody chose.
+     *
+     * Contract S9's detection half. `takeCameraAuthority` is supposed to make
+     * this impossible, but it rests on two params Mol* declares `isHidden`: a
+     * release that *removes* them breaks the build, while one that changes their
+     * *semantics* would remove the protection with everything still compiling and
+     * every test still green. This is the only thing that would tell us.
+     *
+     * **Reported, never repaired.** The condition — the camera closer to its
+     * target than the scene's own radius, i.e. inside the structure — is sharp
+     * enough to diagnose and not sharp enough to act on: it cannot distinguish a
+     * clamp from a viewpoint the user deliberately flew into. As a repair a false
+     * positive yanks the camera; as a signal it costs a log line. That asymmetry
+     * is the whole argument, and it is why the earlier repair attempt was dropped.
+     */
+    /**
+     * Check the camera once a scene mutation has actually finished on screen.
+     *
+     * Not awaited by the caller: this must not delay the message queue, and the
+     * answer is not available yet anyway — `commit()` returns before the geometry
+     * arrives, which is the very gap Contract S9 is about. Waits for the scene to
+     * carry something again, then looks once.
+     */
+    private checkCameraAfterSceneMutation(after: string, timeoutMs = 10000): void {
+        const canvas3d: any = this.plugin.canvas3d;
+        if (!canvas3d) return;
+        void (async () => {
+            const deadline = Date.now() + timeoutMs;
+            while (Date.now() < deadline) {
+                if ((canvas3d.boundingSphere?.radius ?? 0) > 0) {
+                    this.reportStrandedCamera(after);
+                    return;
+                }
+                await new Promise(resolve => setTimeout(resolve, 50));
+            }
+        })();
+    }
+
+    private reportStrandedCamera(after: string): void {
+        const canvas3d: any = this.plugin.canvas3d;
+        const state = canvas3d?.camera?.state;
+        const sceneRadius = canvas3d?.boundingSphere?.radius ?? 0;
+        if (!state || sceneRadius <= 0) return;
+        const distance = Math.hypot(
+            state.position[0] - state.target[0],
+            state.position[1] - state.target[1],
+            state.position[2] - state.target[2],
+        );
+        if (distance >= sceneRadius) return;
+        this.notify?.({
+            event: "camera_stranded_inside_scene",
+            distance: Number(distance.toFixed(2)),
+            scene_radius: Number(sceneRadius.toFixed(2)),
+            after,
+        });
     }
 
     private async removeLoadedStructure() {

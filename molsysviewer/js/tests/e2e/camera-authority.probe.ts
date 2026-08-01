@@ -1,24 +1,37 @@
 /**
- * Can we own the camera bounds outright instead of guarding them per mutation?
+ * Camera authority (Contract S9): does the standing configuration hold the camera
+ * bounds through a scene mutation that would otherwise collapse them?
  *
- * Contract S9 currently proposes a per-mutation guard (`camera.manualReset` held
- * for the duration), which carries an unsolved question — when has the mutation
- * finished? — and a hole: `requestCameraReset` is not gated by that flag, so a
- * "Reset view" landing mid-mutation still pins the trackball bound.
+ * Runs the same scenario twice — swap the whole representation while the viewer is
+ * still settling from the load, the condition the S8 burst replay creates — once
+ * with the controller's configuration (`camera.manualReset`,
+ * `trackball.autoAdjustMinMaxDistance: off`) and once with it handed back to stock
+ * Mol*.
  *
- * This probes a standing configuration instead:
- *   - `camera.manualReset: true` — Mol* never re-derives `radiusMax` from a
- *     transient scene (`canvas3d.js:744` is gated on it);
- *   - `trackball.autoAdjustMinMaxDistance: off` — `p.maxDistance` stays at its
- *     1e150 default instead of being set from the *visible* bounding sphere
- *     (`canvas3d.js:678-685`), which also makes `resolveCameraReset` a no-op on an
- *     empty scene, closing the reset hole;
- *   - one explicit `requestCameraReset()` once the load has settled, which frames
- *     the structure *and* sets `radiusMax` from a finished scene
- *     (`canvas3d.js:691`, not gated by manualReset).
+ * **What it establishes.** Both bounds that `checkDistances` takes the smaller of:
  *
- * Compares default configuration against that one, both swapping while the viewer
- * is still settling — the condition that opens the empty window.
+ * | | `radiusMax` (min) | trackball `maxDistance` |
+ * |---|---:|---:|
+ * | stock Mol* | **0.01** | **20** |
+ * | authority taken | 10 (the untouched default) | **1e150** |
+ *
+ * Reproducible: three runs of three. The collapse is the precondition for the
+ * defect, and the configuration removes it.
+ *
+ * **What it does not establish.** That the collapsed bound then drags the camera.
+ * That half needs frames to land inside the window where the scene is *fully
+ * committed and empty*, and this harness coalesces the removal and addition
+ * commits so the window rarely exists as a drawn state. It was measured
+ * separately, on a settled scene with `radiusMax` forced to 0.01: the camera moved
+ * from 79.79 to exactly 10 — `radiusMax * 1000` — within five frames. That number
+ * is recorded in Contract S9.
+ *
+ * So: this probe covers the link the fix acts on, and S9 records the link that
+ * makes it matter. Neither is inferred.
+ *
+ * `framedAtMs` also tracks framing latency, because taking authority means Mol*
+ * no longer frames anything and `frameLoadedStructure` becomes the only thing
+ * that does: ~965ms here against ~1600ms for stock Mol*.
  */
 import process from "node:process";
 import { chromium } from "./e2e-browser";
@@ -36,10 +49,20 @@ async function measure(page: any, pdb: string, ownAuthority: boolean) {
         const plugin = (controller as any).plugin;
         const c3d: any = plugin.canvas3d;
 
-        if (cfg.ownAuthority) {
+        if (!cfg.ownAuthority) {
+            // The controller now takes authority at init (Contract S9), so the
+            // comparison arm has to hand it back to reproduce stock Mol* behaviour.
             c3d.setProps({
-                camera: { manualReset: true },
-                trackball: { autoAdjustMinMaxDistance: { name: "off", params: {} } },
+                camera: { manualReset: false },
+                trackball: {
+                    autoAdjustMinMaxDistance: {
+                        name: "on",
+                        params: {
+                            minDistanceFactor: 0, minDistancePadding: 5,
+                            maxDistanceFactor: 10, maxDistanceMin: 20,
+                        },
+                    },
+                },
             });
         }
 
@@ -57,6 +80,27 @@ async function measure(page: any, pdb: string, ownAuthority: boolean) {
             sceneRadius: +(c3d.boundingSphere?.radius ?? 0).toFixed(2),
         });
 
+        // A visible canvas draws continuously; this harness draws only when asked.
+        // Camera resets are *resolved* during a draw, so without a pump the framing
+        // sits pending and the measurement blames the code for the harness.
+        let pumping = true;
+        const pump = (async () => {
+            while (pumping) {
+                c3d.requestDraw?.();
+                await new Promise(r => setTimeout(r, 16));
+            }
+        })();
+        const framedAt = { ms: -1 };
+        const t0 = Date.now();
+        const watchFraming = (async () => {
+            while (Date.now() - t0 < 6000) {
+                if (framedAt.ms < 0 && dist() < 95 && (c3d.boundingSphere?.radius ?? 0) > 0) {
+                    framedAt.ms = Date.now() - t0;
+                }
+                await new Promise(r => setTimeout(r, 20));
+            }
+        })();
+
         await controller.handleMessage({
             op: "load_structure_from_string", data: cfg.pdb, format: "pdb", label: "probe",
         });
@@ -66,18 +110,12 @@ async function measure(page: any, pdb: string, ownAuthority: boolean) {
             await new Promise(r => setTimeout(r, 100));
         }
         // With authority taken, framing is ours to ask for, once, on a settled scene.
-        if (cfg.ownAuthority) {
-            for (let i = 0; i < 100; i++) {
-                if ((c3d.boundingSphere?.radius ?? 0) > 0) break;
-                await new Promise(r => setTimeout(r, 20));
-            }
-            c3d.requestCameraReset?.({ durationMs: 0 });
-        }
-        await new Promise(r => setTimeout(r, 1000));
+        // Framing is `frameLoadedStructure`'s job now, in the controller itself.
         const afterLoad = { distance: dist(), ...bounds() };
 
-        // The swap, issued while the viewer is still settling.
-        await new Promise(r => setTimeout(r, 300));
+        // The swap, issued while the viewer is still settling — the condition that
+        // opens the empty window, and the one the S8 burst replay creates.
+        await new Promise(r => setTimeout(r, Number((window as any).__swapDelayMs ?? 300)));
         const worst = { radiusMax: Infinity, trackballMax: Infinity, distance: Infinity };
         const watching = (async () => {
             for (let i = 0; i < 150; i++) {
@@ -94,7 +132,10 @@ async function measure(page: any, pdb: string, ownAuthority: boolean) {
         });
         await watching;
 
-        return { afterLoad, worst, final: { distance: dist(), ...bounds() } };
+        pumping = false;
+        await pump;
+        await watchFraming;
+        return { framedAtMs: framedAt.ms, afterLoad, worst, final: { distance: dist(), ...bounds() } };
     }, { pdb, ownAuthority });
 }
 
@@ -111,6 +152,8 @@ async function run() {
     );
     await page.addScriptTag({ path: resolve(__dirname, "harness.bundle.js") });
     await page.waitForFunction(() => typeof (window as any).Harness !== "undefined");
+    const swapDelayMs = Number(process.env.PROBE_SWAP_DELAY_MS ?? 300);
+    await page.evaluate((v: number) => { (window as any).__swapDelayMs = v; }, swapDelayMs);
 
     const pdb = readFileSync(process.env.PROBE_PDB!, "utf8");
     console.log("default config    :", JSON.stringify(await measure(page, pdb, false)));

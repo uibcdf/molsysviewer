@@ -127,6 +127,12 @@ CATALOG = {
         "category": "transport",
         "level": "WARNING",
     },
+    "camera_stranded_inside_scene": {
+        "code": "MOLSYSVIEWER-CAMERA-STRANDED-INSIDE-SCENE",
+        "source": "molsysviewer.viewer.camera",
+        "category": "rendering",
+        "level": "WARNING",
+    },
     "binary_transport_unsupported": {
         "code": "MOLSYSVIEWER-BINARY-TRANSPORT-UNSUPPORTED",
         "source": "molsysviewer.standalone_qt",
@@ -206,6 +212,16 @@ CODES = {
     "not_digested_argument": "The argument '{argument}' in '{caller}' has no digester. (Standard: ArgDigest style='package')",
     "structure_scale_over_budget": "This selection materializes {structures} structures of {atoms} atoms, about {size} of coordinates, over the {budget} budget.",
     "structure_data_stream_fallback": "The array-native structure stream failed and fell back to JSON: {reason}",
+    "camera_stranded_inside_scene": (
+        "The camera was left {distance} from its target, inside a scene of radius "
+        "{scene_radius} — a viewpoint nobody chose, and the signature of Mol* having "
+        "clamped it against bounds derived from a half-built scene "
+        "(scene_contracts.md Contract S9). The view will look zoomed into the middle "
+        "of the system and the wheel may refuse to zoom out; 'Reset view' recovers "
+        "it. Camera authority is meant to prevent this, so seeing it means the "
+        "protection is no longer effective — most likely a Mol* upgrade changed one "
+        "of the hidden params it relies on."
+    ),
     "binary_transport_unsupported": "This connector has no binary transport and cannot deliver the buffers for {operation}.",
     "viewer_init_failed": "Mol* viewer failed to initialize. Reason: {reason}. {message}",
     "frontend_action_failed": "Frontend action {action} failed while processing {event}: {error_type}: {error_message}",

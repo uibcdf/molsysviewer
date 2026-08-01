@@ -1732,6 +1732,21 @@ class MolSysView(
                 meta=META,
                 extra={"reason": reason, "message": message},
             )
+        elif event == "camera_stranded_inside_scene":
+            # Contract S9 detection. Reported, never repaired: the condition is
+            # sharp enough to diagnose but not to act on, and a false positive
+            # that moves the camera is worse than the defect it chases. Costs a
+            # log line instead.
+            emit_from_catalog(
+                CATALOG["camera_stranded_inside_scene"],
+                package_root=PACKAGE_ROOT,
+                meta=META,
+                extra={
+                    "distance": content.get("distance"),
+                    "scene_radius": content.get("scene_radius"),
+                    "after": content.get("after"),
+                },
+            )
 
     # --- Regions / Layers registry ---
 
