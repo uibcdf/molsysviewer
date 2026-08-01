@@ -3,7 +3,7 @@
 **Written 2026-08-01, at the close of the JupyterLab smoke round that produced
 Contracts S8 and S9 and seven fixes (`e50b7403` … `34755fb9`).**
 
-Seventeen items. They are not one kind of thing, and the grouping is the point:
+Eighteen items. They are not one kind of thing, and the grouping is the point:
 one is **broken right now**, the next block is **verification the project's own
 rules require and that did not happen**, and the last is housekeeping.
 
@@ -46,8 +46,10 @@ the manifest exists.
 "molsysviewer-sync-hierarchy": ["projection"],
 ```
 
-Then verify by opening a panel pop-out, loading a second structure, and checking
-System follows. See B3 — nothing stopped this from shipping.
+No test needs updating: the JS guard asserts `POPUP_ACTIONS.size >= 11`, which is
+itself part of why B3 exists — it can only notice deletions, and pins no action in
+particular. Verify by opening a panel pop-out, loading a second structure, and
+checking System follows.
 
 ---
 
@@ -237,7 +239,7 @@ detection that exists only to guard it. Until then both are permanent.
 
 ---
 
-## E. Housekeeping and drift (4)
+## E. Housekeeping and drift (5)
 
 Half an hour in total, and three of the four are documentation contradicting the
 code — the exact failure `feedback_devguide_accuracy` warns about.
@@ -284,6 +286,40 @@ session where things stand — and it omits the last fix of the round.
 
 **How.** Update the HEAD and add the eighth defect to the list.
 
+### E5. `checkpoints.md` does not know this round happened
+
+**What.** The resume document — the one with its own *Resume cautions* section —
+mentions neither Contract S8, nor S9, nor the smoke round. Its last recorded state
+reaches `9512d02d`; twenty-four commits after it are absent.
+
+**Why.** This is the same drift as the rest of the block, in **the one file whose
+entire job is preventing it**, so its consequence is different in kind. Whoever
+resumes from it will not know that two normative contracts now exist, will not know
+that Mol\* no longer governs the camera — and may spend time debugging why it does
+not re-frame on its own — and will read the collaborator's "validate Qt in a real
+window" as closed without knowing that global camera behaviour changed *after* that
+validation. That last one is A3, reached by reading a stale document rather than by
+overlooking scope.
+
+**How.** A new entry with the round, the two contracts, the eight defects and the
+verification state; plus a line in *Resume cautions* recording that camera authority
+has been ours since `75069724`.
+
+---
+
+## Checked, and not items
+
+Recorded so they are not raised again.
+
+- **`initial_messages` and the `ready` replay do not double-apply.** The trait is
+  populated only for the HTML export (`build_html`); in a live widget it stays empty
+  and Python's replay on `ready` is the only path. The suspicion was reasonable —
+  `index.ts` enqueues the trait and *then* sends `ready` — but the two never overlap.
+- **The Qt render check on a GPU runner is not missing**, it was deliberately moved
+  to post-1.0 in `9512d02d`: the render itself is validated on real GPU and the CI
+  job is classified non-blocking. A3 is about a *later* change invalidating that
+  validation, which is a different thing.
+
 ---
 
 ## Suggested order
@@ -295,5 +331,11 @@ during the round. Within them, **A3 and A4 matter most**: they are not missing t
 but unconsidered scope, and both are shipped surfaces.
 
 Then **B3**, because it is what would have caught Z1 and will catch the next one;
-then **B1 and C1**, real gaps in guarantees rather than in tidiness. Then **E**,
-which is cheap. **D** whenever Diego decides; two of the three are his.
+then **B1 and C1**, real gaps in guarantees rather than in tidiness.
+
+Then **E**, which is cheap — but **E5 first within it**, and not because it is
+urgent. The rest of E is a document contradicting the code, which wastes the reader
+a few minutes. E5 is the resume document missing an entire round, which sends the
+reader off in the wrong direction with confidence.
+
+**D** whenever Diego decides; two of the three are his.
