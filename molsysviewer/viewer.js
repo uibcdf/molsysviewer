@@ -146957,6 +146957,34 @@ var StateHandlers = class {
     });
     return Array.from(refs);
   }
+  /**
+   * Forget the whole's representations, before a load replaces the structure.
+   *
+   * `LoaderHandlers` calls this on all four load paths and it used to be wired
+   * to a no-op whose comment admitted the question was never settled
+   * (`/* handled by state via events usually, but direct call needed? *\/`).
+   * It was not: measured across two loads, `globalReprs` kept a ref whose cell
+   * no longer existed, and that has two consequences, the second worse than the
+   * first.
+   *
+   * `setSubtreeVisibility` walks the state tree from the ref it is given and
+   * throws on one that is gone — `TypeError: Cannot read properties of
+   * undefined (reading 'ref')` — so showing or hiding the whole after a second
+   * load crashed.
+   *
+   * And `captureInitialGlobalRepresentations` below adopts the loader preset's
+   * representations **only when the set is empty**. A single dead ref therefore
+   * kept it permanently non-empty, so the *new* structure's representations
+   * were never adopted at all and every read of `globalReprs` went on
+   * describing a structure that had been destroyed.
+   *
+   * Clearing is enough: the load replaces the structure and Mol\* removes its
+   * descendants with it. Removing the objects here as well would be redundant
+   * surgery in the middle of a load, for cells that are about to go anyway.
+   */
+  async clearGlobalRepresentations() {
+    this.globalReprs.clear();
+  }
   captureInitialGlobalRepresentations() {
     if (this.globalReprs.size > 0) return;
     const refs = this.collectBaselineGlobalRepresentationRefs();
@@ -161954,8 +161982,7 @@ var MolSysViewerController = class _MolSysViewerController {
       notify: (msg) => this.notify?.(msg)
     });
     this.loader = new LoaderHandlers(plugin, {
-      clearGlobalRepresentations: async () => {
-      },
+      clearGlobalRepresentations: () => this.state.clearGlobalRepresentations(),
       captureCurrentStructure: () => this.captureCurrentStructure(),
       setLoadedStructure: (ls) => {
         this.loadedStructure = ls;

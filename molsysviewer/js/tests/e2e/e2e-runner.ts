@@ -16,6 +16,7 @@ const SUITES = [
     "widget-seam",
     "broken-anchors",
     "export-replay",
+    "global-reprs-across-loads",
     "group-panel-interaction",
     "hierarchy-interaction",
     "history-coalescing",

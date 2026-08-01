@@ -27,7 +27,9 @@ def test_e2e_runner_inventory_matches_every_scientific_suite():
     # runner (or vice versa) must be a deliberate, visible change.
     # 27 since 2026-08-01: `panel-popup-welcome`, which pins that the popped-out
     # Studio/Add-ons window shows its panels rather than the welcome card.
-    assert len(expected) == 27
+    # 28 since 2026-08-01: `global-reprs-across-loads`, which pins that a second
+    # load does not leave the whole pointing at the structure it replaced.
+    assert len(expected) == 28
     assert declared == expected
 
 

@@ -1556,7 +1556,7 @@ export class MolSysViewerController {
         });
 
         this.loader = new LoaderHandlers(plugin, {
-            clearGlobalRepresentations: async () => { /* handled by state via events usually, but direct call needed? state handles globals */ },
+            clearGlobalRepresentations: () => this.state.clearGlobalRepresentations(),
             captureCurrentStructure: () => this.captureCurrentStructure(),
             setLoadedStructure: (ls) => { this.loadedStructure = ls; },
             getLoadedStructure: () => this.loadedStructure,
