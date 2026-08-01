@@ -36,12 +36,34 @@ async function run() {
     await page.waitForFunction(() => typeof (window as any).Harness !== "undefined");
 
     const snapshot = JSON.parse(readFileSync(process.env.PROBE_SNAPSHOT!, "utf8"));
+    // Derive the hierarchy the way a host does, in a throwaway viewer, then hand
+    // it to the panel-only controller exactly as the relay would.
+    await page.evaluate(async (pdb: string) => {
+        const host = document.createElement("div");
+        host.style.cssText = "width:800px;height:600px";
+        host.id = "tmphost";
+        document.body.appendChild(host);
+        const c = await (window as any).Harness.createController("tmphost");
+        await c.handleMessage({ op: "load_structure_from_string", data: pdb, format: "pdb", label: "h" });
+        for (let i = 0; i < 80; i++) {
+            const s = (c as any).plugin.managers.structure.hierarchy.current.structures[0]?.cell.obj?.data;
+            if (s && s.elementCount > 0) break;
+            await new Promise(r => setTimeout(r, 100));
+        }
+        (window as any).__hierarchy = JSON.parse(JSON.stringify(c.getHierarchyItems()));
+        host.remove();
+    }, readFileSync(process.env.PROBE_PDB!, "utf8"));
 
     const report = await page.evaluate(async (messages: any[]) => {
         const controller = await (window as any).Harness.createController("panel", {
             isPanelOnly: true,
             panelModeStyle: "split",
         });
+        // The host relays the hierarchy it derived; without it System has nothing,
+        // because the panel snapshot carries no geometry by design.
+        if ((window as any).__hierarchy) {
+            (controller as any).setHierarchyItems((window as any).__hierarchy);
+        }
         for (const msg of messages) {
             await controller.handleMessage(msg);
         }
@@ -99,7 +121,8 @@ async function run() {
                 const gp: any = (controller as any).groupPanel;
                 const out: Record<string, boolean> = {};
                 for (const [tab, needle] of [
-                    ["regions", "helice"], ["measures", "measurement visible"], ["annotations", "extremo"],
+                    ["regions", "helice"], ["measures", "measurement visible"],
+                    ["annotations", "extremo"], ["system", "chain"],
                 ] as Array<[string, string]>) {
                     gp?.switchTab?.(tab);
                     await new Promise(r => setTimeout(r, 250));
@@ -108,6 +131,7 @@ async function run() {
                     // version looked for the tag and reported a defect that was
                     // only a badly chosen string.
                     out[tab] = visibleText().includes(needle);
+                    if (tab === "system") (out as any).systemText = visibleText().replace(/\s+/g, " ").trim().slice(0, 420);
                 }
                 return out;
             })(),

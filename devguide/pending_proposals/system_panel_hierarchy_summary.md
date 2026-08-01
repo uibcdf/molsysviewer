@@ -1,4 +1,4 @@
-# Project the molecular hierarchy so the System subpanel obeys Contract S1
+# ~~Project the molecular hierarchy~~ — DONE, but not the way this proposed
 
 **Proposed 2026-08-01, from the panel pop-out smoke test: every Studio subpanel
 renders in the popped-out window except System, which is empty.**
@@ -53,7 +53,42 @@ reason the panel snapshot excludes geometry.
 Python already holds every field, through MolSysMT, and holding it is what
 Contract S1 says it should be doing.
 
-## Proposal
+## Implemented differently, and why
+
+**The host relays the hierarchy it already derived, instead of Python projecting
+it.** Same payload (one entry per group), same result on screen, and one decisive
+advantage found while reading the exact shape to reproduce:
+
+`chain_indices` and `entity_indices` in these items are **Mol\*'s internal
+indices**, not MolSysMT's. A Python projection would have been a second derivation
+of that shape with nothing forcing the two to agree — and the disagreement would
+have been silent, because those indices travel inside selection payloads rather
+than appearing on screen. The two-producer risk this proposal named as "the real
+work" turned out to be worse than described, and avoidable entirely.
+
+The host already sends its own derived state to its pop-outs (`cameraSnapshot`,
+`viewerMode`, `isSplit`). This is one more of those, not a parallel model: S1
+forbids the frontend *reconstructing* scene-object state from the message stream,
+which this is not — the hierarchy is derived from the structure Python sent, by
+the endpoint that has it, and shared with a window that does not.
+
+What shipped:
+
+- `getHierarchyItems()` / `setHierarchyItems()` on the controller, the latter
+  refusing to act on an endpoint that owns a structure, so a host can never be
+  told what it must derive.
+- The list rides in `molsysviewer-initial-sync`, plus a `molsysviewer-sync-hierarchy`
+  push when the host's structure changes while a panel window is open.
+- `SystemPanel` and `GroupStrip` key on having items rather than on owning a
+  structure. The `Structure` only ever fed `makeLociForItem`, whose loci drive
+  camera focus, hover highlight and the context menu — all local-canvas operations
+  a panel-only window has no canvas for. Those interactions already travel to the
+  host as events carrying `atom_indices`, so nothing the user can do is lost.
+
+Verified: the popped-out System renders `1 chain, 302 groups` with its strips and
+sequence, same as the floating panel. E2E asserts it, checked by mutation.
+
+## Original proposal (superseded)
 
 1. A `set_hierarchy_summary` op carrying the group-item list, added to
    `_build_panel_snapshot` and to the `_sync_*_runtime` family like every other

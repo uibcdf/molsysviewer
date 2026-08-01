@@ -254,8 +254,11 @@ export class GroupStrip {
 
     private render(): void {
         this.row.replaceChildren();
-        this.root.style.display = !this.structure || this.groupItems.length === 0 ? "none" : "block";
-        if (!this.structure || this.groupItems.length === 0) return;
+        // Keyed on the items, not the structure. A panel-only endpoint has the
+        // hierarchy relayed to it and no structure, and the strip draws entirely
+        // from the items — the structure only ever fed `focusItem`.
+        this.root.style.display = this.groupItems.length === 0 ? "none" : "block";
+        if (this.groupItems.length === 0) return;
 
         // Group items hierarchically: Molecule -> Component -> Residues
         const hierarchy = new Map<number, Map<number, GroupSelectionItem[]>>();

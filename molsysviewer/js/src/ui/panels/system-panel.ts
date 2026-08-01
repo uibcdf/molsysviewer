@@ -46,6 +46,8 @@ export class SystemPanel implements StudioPanel {
     readonly key = "system";
     private host: HTMLElement | null = null;
     private stripsRow: HTMLDivElement | null = null;
+    /** Hierarchy relayed from a host, used only when this endpoint has none. */
+    private relayedItems: GroupSelectionItem[] | null = null;
 
     private readonly strips = new Map<string, GroupStrip>();
     private structure?: Structure;
@@ -120,8 +122,26 @@ export class SystemPanel implements StudioPanel {
     setStructure(structure: Structure | undefined): void {
         if (this.structure === structure) return;
         this.structure = structure;
+        this.relayedItems = null;
         this.structureNeedsReconcile = true;
         if (!structure) this.annotationMessages.length = 0;
+        this.rebuild();
+    }
+
+    /**
+     * Render from a hierarchy derived elsewhere, for an endpoint that has no
+     * structure of its own — the popped-out Studio window.
+     *
+     * The strips are drawn from these items alone; the `Structure` only ever fed
+     * `makeLociForItem`, whose loci drive camera focus, hover highlighting and the
+     * context menu — all operations on a *local* 3D canvas, which a panel-only
+     * window does not have. Those interactions travel to the host as events
+     * carrying `atom_indices` instead, so nothing the user can do here is lost.
+     */
+    setHierarchyItems(items: GroupSelectionItem[]): void {
+        if (this.structure) return; // a real structure always wins over a relay
+        this.relayedItems = Array.isArray(items) ? items : [];
+        this.structureNeedsReconcile = true;
         this.rebuild();
     }
 
@@ -201,13 +221,17 @@ export class SystemPanel implements StudioPanel {
     rebuild(): void {
         if (!this.stripsRow) return;
         if (!this.structureNeedsReconcile && this.renderedStructure === this.structure) {
-            this.callbacks.onRebuilt(Boolean(this.structure) && this.strips.size > 0);
+            this.callbacks.onRebuilt(this.strips.size > 0);
             return;
         }
         this.captureCollapseState();
 
         const grouped = new Map<string, GroupSelectionItem[]>();
-        const items = this.structure ? buildGroupItemsFromStructure(this.structure) : [];
+        // Derive locally when there is a structure; otherwise use what the host
+        // relayed. Never both, so there is only ever one producer of this shape.
+        const items = this.structure
+            ? buildGroupItemsFromStructure(this.structure)
+            : (this.relayedItems ?? []);
         for (const item of items) {
             const chain = item.chain_name ?? "?";
             if (!grouped.has(chain)) grouped.set(chain, []);
@@ -222,7 +246,9 @@ export class SystemPanel implements StudioPanel {
             this.strips.delete(chain);
         }
 
-        const naturalVisible = Boolean(this.structure) && grouped.size > 0;
+        // Keyed on having a hierarchy to show, not on owning a structure: the
+        // panel-only window has the former and never the latter.
+        const naturalVisible = grouped.size > 0;
 
         this.ctx.setBadge(
             naturalVisible
@@ -230,7 +256,7 @@ export class SystemPanel implements StudioPanel {
                 : "Molecular Hierarchy & Sequence",
         );
 
-        if (this.structure && grouped.size > 0) {
+        if (grouped.size > 0) {
             for (const [chain, chainItems] of grouped.entries()) {
                 let strip = this.strips.get(chain);
                 if (!strip) {

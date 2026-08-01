@@ -149970,6 +149970,10 @@ var ActiveSelectionController = class {
   setAllAvailableItems(items) {
     this.allAvailableItems = items;
   }
+  /** The hierarchy as this endpoint derived it, for relaying to a pop-out. */
+  getAllAvailableItems() {
+    return this.allAvailableItems;
+  }
   handlePrimaryClick(ev) {
     const shift2 = !!ev?.modifiers?.shift;
     const alt = !!ev?.modifiers?.alt;
@@ -154053,8 +154057,8 @@ var GroupStrip = class {
   }
   render() {
     this.row.replaceChildren();
-    this.root.style.display = !this.structure || this.groupItems.length === 0 ? "none" : "block";
-    if (!this.structure || this.groupItems.length === 0) return;
+    this.root.style.display = this.groupItems.length === 0 ? "none" : "block";
+    if (this.groupItems.length === 0) return;
     const hierarchy = /* @__PURE__ */ new Map();
     const moleculeNames = /* @__PURE__ */ new Map();
     const componentNames = /* @__PURE__ */ new Map();
@@ -154365,6 +154369,8 @@ var SystemPanel = class {
     this.key = "system";
     this.host = null;
     this.stripsRow = null;
+    /** Hierarchy relayed from a host, used only when this endpoint has none. */
+    this.relayedItems = null;
     this.strips = /* @__PURE__ */ new Map();
     this.activeColorScheme = "neutral";
     this.currentContextTarget = null;
@@ -154426,8 +154432,25 @@ var SystemPanel = class {
   setStructure(structure) {
     if (this.structure === structure) return;
     this.structure = structure;
+    this.relayedItems = null;
     this.structureNeedsReconcile = true;
     if (!structure) this.annotationMessages.length = 0;
+    this.rebuild();
+  }
+  /**
+   * Render from a hierarchy derived elsewhere, for an endpoint that has no
+   * structure of its own — the popped-out Studio window.
+   *
+   * The strips are drawn from these items alone; the `Structure` only ever fed
+   * `makeLociForItem`, whose loci drive camera focus, hover highlighting and the
+   * context menu — all operations on a *local* 3D canvas, which a panel-only
+   * window does not have. Those interactions travel to the host as events
+   * carrying `atom_indices` instead, so nothing the user can do here is lost.
+   */
+  setHierarchyItems(items) {
+    if (this.structure) return;
+    this.relayedItems = Array.isArray(items) ? items : [];
+    this.structureNeedsReconcile = true;
     this.rebuild();
   }
   updateSelection(selection) {
@@ -154496,12 +154519,12 @@ var SystemPanel = class {
   rebuild() {
     if (!this.stripsRow) return;
     if (!this.structureNeedsReconcile && this.renderedStructure === this.structure) {
-      this.callbacks.onRebuilt(Boolean(this.structure) && this.strips.size > 0);
+      this.callbacks.onRebuilt(this.strips.size > 0);
       return;
     }
     this.captureCollapseState();
     const grouped = /* @__PURE__ */ new Map();
-    const items = this.structure ? buildGroupItemsFromStructure(this.structure) : [];
+    const items = this.structure ? buildGroupItemsFromStructure(this.structure) : this.relayedItems ?? [];
     for (const item2 of items) {
       const chain2 = item2.chain_name ?? "?";
       if (!grouped.has(chain2)) grouped.set(chain2, []);
@@ -154514,11 +154537,11 @@ var SystemPanel = class {
       strip.dispose();
       this.strips.delete(chain2);
     }
-    const naturalVisible = Boolean(this.structure) && grouped.size > 0;
+    const naturalVisible = grouped.size > 0;
     this.ctx.setBadge(
       naturalVisible ? `${grouped.size} chain${grouped.size === 1 ? "" : "s"}, ${items.length} groups` : "Molecular Hierarchy & Sequence"
     );
-    if (this.structure && grouped.size > 0) {
+    if (grouped.size > 0) {
       for (const [chain2, chainItems] of grouped.entries()) {
         let strip = this.strips.get(chain2);
         if (!strip) {
@@ -159728,6 +159751,10 @@ var GroupPanel = class {
   focusItem(item2) {
     return this.systemPanel.focusItem(item2);
   }
+  /** Hierarchy relayed from a host, for an endpoint with no structure. */
+  setHierarchyItems(items) {
+    this.systemPanel.setHierarchyItems(items);
+  }
   dispose() {
     this.systemPanel.dispose();
     if (!this.sharedShell) {
@@ -162194,6 +162221,36 @@ var MolSysViewerController = class _MolSysViewerController {
       width: Math.round(Math.max(420, Math.min(preferredWidth, screenWidth - 40))),
       height: Math.round(Math.max(560, Math.min(preferredHeight, screenHeight - 60)))
     };
+  }
+  /**
+   * The molecular hierarchy this endpoint derived, for relaying to a pop-out.
+   *
+   * The System subpanel is the one Studio section built from the structure
+   * rather than from a Python summary, so a panel-only window — which has no
+   * structure by design — rendered it empty. It used to work only because the
+   * pre-R2 pop-out replayed the whole command log and built a second full copy
+   * of the structure in a window with no canvas to draw it on.
+   *
+   * Relaying the derived list instead costs one entry per *group* (302 for
+   * 181L) and, more importantly, keeps a single producer:
+   * `buildGroupItemsFromStructure`. Projecting it from Python would have meant
+   * two derivations of one shape with nothing forcing them to agree — and the
+   * disagreement would be silent, because `chain_indices` and `entity_indices`
+   * here are Mol*'s internal indices, not MolSysMT's, and they travel in
+   * selection payloads.
+   */
+  getHierarchyItems() {
+    return this.activeSelection.getAllAvailableItems();
+  }
+  /**
+   * Adopt a hierarchy derived elsewhere. Only meaningful for an endpoint with
+   * no structure of its own: a host always derives its own and must not be
+   * told, or the two could disagree.
+   */
+  setHierarchyItems(items) {
+    if (!Array.isArray(items) || this.currentStructure) return;
+    this.activeSelection.setAllAvailableItems(items);
+    this.groupPanel.setHierarchyItems(items);
   }
   restoreHostPanelState() {
     if (this.sharedShell && this.savedHostPanelState) {
@@ -165542,6 +165599,9 @@ var bootPopup = async (loadedModule) => {
     try {
       switch (type3) {
         case "molsysviewer-initial-sync":
+          if (Array.isArray(data.hierarchyItems)) {
+            ctrl2.setHierarchyItems(data.hierarchyItems);
+          }
           if (Array.isArray(data.messages)) {
             for (const msg of data.messages) {
               await ctrl2.handleMessage(msg);
@@ -165578,6 +165638,9 @@ var bootPopup = async (loadedModule) => {
           break;
         case "molsysviewer-sync-op":
           await ctrl2.handleMessage(data);
+          break;
+        case "molsysviewer-sync-hierarchy":
+          if (Array.isArray(data?.items)) ctrl2.setHierarchyItems(data.items);
           break;
         case "molsysviewer-sync-camera":
           if (data && !isUserInteracting) {
@@ -168174,8 +168237,10 @@ var index_default = {
             if (!panelSnapshot) {
               sendLog("error", "[MolSysViewer] panel popup bootstrap: Python did not answer the scene snapshot request");
             }
+            lastRelayedHierarchy = controller.getHierarchyItems();
             popupMgr.sendTo("panel", "molsysviewer-initial-sync", {
               messages: panelSnapshot ?? [],
+              hierarchyItems: lastRelayedHierarchy,
               cameraSnapshot: controller.getCameraSnapshot(),
               isSpinActive: controller.isSpinActive,
               isSwingActive: controller.isSwingActive,
@@ -168221,6 +168286,7 @@ var index_default = {
       }
     };
     window.addEventListener("message", messageHandler);
+    let lastRelayedHierarchy = null;
     const enqueueMessage = (msg, opts) => {
       messageQueue = messageQueue.then(async () => {
         if (!msg || typeof msg !== "object") return;
@@ -168228,6 +168294,13 @@ var index_default = {
         const controller = await controllerPromise;
         await controller.handleMessage(msg);
         if (opts?.syncToPopup) popupMgr.send("molsysviewer-sync-op", msg);
+        if (popupMgr.isPanelOpen) {
+          const items = controller.getHierarchyItems();
+          if (items !== lastRelayedHierarchy) {
+            lastRelayedHierarchy = items;
+            popupMgr.sendTo("panel", "molsysviewer-sync-hierarchy", { items });
+          }
+        }
       }).catch((error2) => {
         console.error("[MolSysViewer] Error handling message:", msg, error2);
         sendLog("error", "[MolSysViewer] Error handling message:", msg, error2);

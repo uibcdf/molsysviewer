@@ -805,8 +805,15 @@ export default {
                         if (!panelSnapshot) {
                             sendLog("error", "[MolSysViewer] panel popup bootstrap: Python did not answer the scene snapshot request");
                         }
+                        // The System subpanel is the one Studio section built from
+                        // the structure rather than from a Python summary. The panel
+                        // snapshot carries no geometry by design, so the hierarchy
+                        // the host already derived is relayed instead — one entry per
+                        // group, and a single producer of the shape.
+                        lastRelayedHierarchy = controller.getHierarchyItems();
                         popupMgr.sendTo("panel", "molsysviewer-initial-sync", {
                             messages: panelSnapshot ?? [],
+                            hierarchyItems: lastRelayedHierarchy,
                             cameraSnapshot: controller.getCameraSnapshot(),
                             isSpinActive: controller.isSpinActive,
                             isSwingActive: controller.isSwingActive,
@@ -867,6 +874,10 @@ export default {
         
         window.addEventListener("message", messageHandler);
 
+        // Identity of the hierarchy last relayed to an open panel popup, so a
+        // structure change reaches it without re-sending on every message.
+        let lastRelayedHierarchy: unknown = null;
+
         const enqueueMessage = (msg: ViewerMessage, opts?: { syncToPopup?: boolean }) => {
             messageQueue = messageQueue
                 .then(async () => {
@@ -875,6 +886,13 @@ export default {
                     const controller = await controllerPromise;
                     await controller.handleMessage(msg);
                     if (opts?.syncToPopup) popupMgr.send("molsysviewer-sync-op", msg);
+                    if (popupMgr.isPanelOpen) {
+                        const items = controller.getHierarchyItems();
+                        if (items !== lastRelayedHierarchy) {
+                            lastRelayedHierarchy = items;
+                            popupMgr.sendTo("panel", "molsysviewer-sync-hierarchy", { items });
+                        }
+                    }
                 })
                 .catch((error) => {
                     console.error("[MolSysViewer] Error handling message:", msg, error);

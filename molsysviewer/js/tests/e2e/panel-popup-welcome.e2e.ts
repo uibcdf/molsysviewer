@@ -65,8 +65,33 @@ async function run() {
             .getElementById("viewer")!
             .querySelectorAll('[data-molsysviewer-welcome-card="true"]').length;
 
+        // System is the one Studio section built from the structure rather than
+        // from a Python summary, so the panel snapshot alone leaves it empty. The
+        // host relays the hierarchy it already derived; assert it lands.
+        const pdb = [
+            "ATOM      1  N   MET A   1      11.104  13.207   8.551  1.00 20.00           N",
+            "ATOM      2  CA  MET A   1      12.560  13.329   8.276  1.00 20.00           C",
+            "ATOM      3  N   ALA A   2      13.189  11.956   8.001  1.00 20.00           N",
+            "ATOM      4  CA  ALA A   2      12.589  10.935   8.353  1.00 20.00           C",
+            "END",
+        ].join("\n");
+        await viewer.handleMessage({
+            op: "load_structure_from_string", data: pdb, format: "pdb", label: "hier",
+        });
+        for (let i = 0; i < 60; i++) {
+            const st = (viewer as any).plugin.managers.structure.hierarchy.current.structures[0]?.cell.obj?.data;
+            if (st && st.elementCount > 0) break;
+            await new Promise(r => setTimeout(r, 100));
+        }
+        const relayed = (viewer as any).getHierarchyItems();
+        (panel as any).setHierarchyItems(JSON.parse(JSON.stringify(relayed)));
+        await new Promise(r => setTimeout(r, 400));
+        const panelText = (document.getElementById("panel")!.textContent ?? "");
+
         return {
             panelCards, viewerCards, panelReady: !!panel, viewerReady: !!viewer,
+            relayedCount: Array.isArray(relayed) ? relayed.length : -1,
+            panelShowsHierarchy: panelText.includes("MET") && panelText.includes("ALA"),
             panelStudioVisible: (panel as any).groupPanel?.isVisible?.() ?? null,
             panelAddonsVisible: (panel as any).addonsPanel?.isVisible?.() ?? null,
             // The pop-out window should open at the size of the panel it came out
@@ -108,6 +133,17 @@ async function run() {
     assert.ok(
         result.popupSize.width <= (result.screenWidth ?? Infinity),
         "the popup must still fit on the screen",
+    );
+    assert.ok(
+        result.relayedCount >= 2,
+        `the host derived ${result.relayedCount} hierarchy items; the relay has nothing to carry`,
+    );
+    assert.ok(
+        result.panelShowsHierarchy,
+        "the System subpanel must render from the relayed hierarchy: it is the one "
+        + "Studio section built from the structure, and a panel-only window has none "
+        + "by design, so without the relay it stays empty while every other subpanel "
+        + "populates from the snapshot",
     );
     assert.deepStrictEqual(errors, [], `page errors: ${errors.join(" | ")}`);
 

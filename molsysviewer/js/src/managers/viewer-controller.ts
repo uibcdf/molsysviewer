@@ -28,7 +28,7 @@ import { ToolStatusOverlay } from "../ui/tool-status";
 import { LegendOverlay } from "../ui/legend-overlay";
 import { TrajectoryPlotOverlay } from "../ui/trajectory-plot-overlay";
 import { WebGLStatusOverlay } from "../ui/webgl-status-overlay";
-import { ActiveSelectionController, ActiveSelectionItem, buildGroupItemsFromStructure, lociToGroupItems } from "./active-selection";
+import { ActiveSelectionController, ActiveSelectionItem, buildGroupItemsFromStructure, type GroupSelectionItem, lociToGroupItems } from "./active-selection";
 import type { ActiveSelectionPayload } from "./active-selection";
 import {
     decodeArrayNativeMolSys,
@@ -882,6 +882,38 @@ export class MolSysViewerController {
             width: Math.round(Math.max(420, Math.min(preferredWidth, screenWidth - 40))),
             height: Math.round(Math.max(560, Math.min(preferredHeight, screenHeight - 60))),
         };
+    }
+
+    /**
+     * The molecular hierarchy this endpoint derived, for relaying to a pop-out.
+     *
+     * The System subpanel is the one Studio section built from the structure
+     * rather than from a Python summary, so a panel-only window — which has no
+     * structure by design — rendered it empty. It used to work only because the
+     * pre-R2 pop-out replayed the whole command log and built a second full copy
+     * of the structure in a window with no canvas to draw it on.
+     *
+     * Relaying the derived list instead costs one entry per *group* (302 for
+     * 181L) and, more importantly, keeps a single producer:
+     * `buildGroupItemsFromStructure`. Projecting it from Python would have meant
+     * two derivations of one shape with nothing forcing them to agree — and the
+     * disagreement would be silent, because `chain_indices` and `entity_indices`
+     * here are Mol*'s internal indices, not MolSysMT's, and they travel in
+     * selection payloads.
+     */
+    getHierarchyItems(): GroupSelectionItem[] {
+        return this.activeSelection.getAllAvailableItems();
+    }
+
+    /**
+     * Adopt a hierarchy derived elsewhere. Only meaningful for an endpoint with
+     * no structure of its own: a host always derives its own and must not be
+     * told, or the two could disagree.
+     */
+    setHierarchyItems(items: GroupSelectionItem[]): void {
+        if (!Array.isArray(items) || this.currentStructure) return;
+        this.activeSelection.setAllAvailableItems(items);
+        this.groupPanel.setHierarchyItems(items);
     }
 
     public restoreHostPanelState(): void {

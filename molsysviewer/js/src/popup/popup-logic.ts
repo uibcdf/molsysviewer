@@ -340,6 +340,11 @@ export const bootPopup = async (loadedModule?: any) => {
         try {
             switch (type) {
                 case "molsysviewer-initial-sync":
+                    // Before the messages: the subpanels render as the summaries
+                    // arrive, and System needs its hierarchy to be there already.
+                    if (Array.isArray(data.hierarchyItems)) {
+                        ctrl.setHierarchyItems(data.hierarchyItems);
+                    }
                     if (Array.isArray(data.messages)) {
                         for (const msg of data.messages) {
                             await ctrl.handleMessage(msg);
@@ -383,6 +388,11 @@ export const bootPopup = async (loadedModule?: any) => {
 
                 case "molsysviewer-sync-op":
                     await ctrl.handleMessage(data);
+                    break;
+
+                case "molsysviewer-sync-hierarchy":
+                    // The host's structure changed; adopt the hierarchy it derived.
+                    if (Array.isArray(data?.items)) ctrl.setHierarchyItems(data.items);
                     break;
 
                 case "molsysviewer-sync-camera":

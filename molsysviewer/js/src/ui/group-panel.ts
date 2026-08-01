@@ -1,6 +1,6 @@
 import { Structure } from "molstar/lib/mol-model/structure";
 
-import { ActiveSelectionItem, ActiveSelectionPayload, ActiveSelectionSetOperation } from "../managers/active-selection";
+import { ActiveSelectionItem, ActiveSelectionPayload, ActiveSelectionSetOperation, type GroupSelectionItem } from "../managers/active-selection";
 import { AddLabelMessage } from "../messages/viewer-messages";
 import { ContextMenuTarget } from "./context-menu";
 import {
@@ -884,6 +884,11 @@ export class GroupPanel {
 
     focusItem(item: ActiveSelectionItem) {
         return this.systemPanel.focusItem(item);
+    }
+
+    /** Hierarchy relayed from a host, for an endpoint with no structure. */
+    setHierarchyItems(items: GroupSelectionItem[]): void {
+        this.systemPanel.setHierarchyItems(items);
     }
 
     dispose(): void {

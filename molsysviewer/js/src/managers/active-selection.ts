@@ -438,6 +438,11 @@ export class ActiveSelectionController {
         this.allAvailableItems = items;
     }
 
+    /** The hierarchy as this endpoint derived it, for relaying to a pop-out. */
+    getAllAvailableItems(): GroupSelectionItem[] {
+        return this.allAvailableItems;
+    }
+
     handlePrimaryClick(ev: any): void {
         const shift = !!ev?.modifiers?.shift;
         const alt = !!ev?.modifiers?.alt;
