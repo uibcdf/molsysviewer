@@ -1912,37 +1912,88 @@ It also survived three rounds of automated probing: the headless harness draws
 about **one frame** when idle, and the clamp needs frames. A defect that needs a
 continuously drawing canvas is invisible to every test we have.
 
+#### There are two damage vectors, not one
+
+The chain above is the one that was measured, but reading `canvas3d.js` afterwards
+turned up a **second, independent** way the same harm happens, with a *different*
+trigger. `checkDistances()` takes the smaller of two bounds:
+
+```js
+const maxDistance = Math.min(Math.max(camera.state.radiusMax * 1000, 0.01), p.maxDistance);
+```
+
+- **`camera.state.radiusMax`** — re-derived on every commit from
+  `scene.boundingSphere` (`canvas3d.js:744`). Trigger: the scene is **empty**.
+- **`p.maxDistance`** — the trackball's own bound, set by `resolveCameraReset`
+  from `scene.boundingSphereVisible` as
+  `max(maxDistanceFactor * radius, maxDistanceMin)` = `max(10 * radius, 20)`
+  (`canvas3d.js:678-685`). Trigger: nothing is **visible**.
+
+The second is nastier in two ways. It keys on *visibility*, not existence — so
+hiding the whole while its regions have not drawn yet can pin it without the scene
+ever being empty. And it is not guarded by `radius > 0`: the `camera.setState`
+below it is, but `controls.setProps({ minDistance, maxDistance })` runs
+regardless. A scene that commits with nothing visible leaves `p.maxDistance` at
+**20** — which then clamps the camera *even with a perfectly healthy
+`radiusMax`*.
+
+**Consequence for the guard.** `manualReset` covers both vectors through the same
+door, because `resolveCameraReset` returns early unless `cameraResetRequested`,
+which `commitScene` only sets when `!p.camera.manualReset`. But there are two
+other ways that flag gets set, and **neither is gated by `manualReset`**:
+`syncVisibility()` (only when `radiusMax === 0` exactly, which the guard prevents)
+and `requestCameraReset()` — which is a *public API we call*: `resetView()` →
+`PluginCommands.Camera.Reset`.
+
+So a "Reset view" that lands while a mutation is in flight pins `p.maxDistance` to
+20 and strands the user — the very action they reach for to escape. Not
+hypothetical now that S8 replays a burst: `reset_view` can sit in the message
+history like anything else.
+
 #### The rule
 
-**Two layers, and the second is the one that matters.**
+**One principle: never let Mol\* draw conclusions from a scene that is not
+finished.** Two mechanisms, chosen by which case you are in — they are not
+alternatives, and neither one covers the other's case.
 
-**1. Do not empty the scene when you do not have to.** A representation change is
-a *parameter* change, not a demolition: `type` lives in the same params bag as
-`colorTheme` on the `StructureRepresentation3D` transform, which is why
-`applyStructuralColorInPlace` never flickers. Updating the node in place keeps the
-old geometry on screen until the new is ready — measured at **0 ms empty in every
-condition tested**, against 20–1020 ms for remove-then-add.
+**A. When the mutation has a successor, keep the predecessor until it is ready.**
 
-This applies whenever the *shape of the state tree* is unchanged — same set of
-nodes, different params. It does **not** apply when the node set itself changes: a
-preset produces one component-plus-representation per category, so "one node
-becomes three" cannot be expressed as a param edit. Those paths must add before
-they remove, or accept the window and rely on layer 2.
+A representation change is a *parameter* change, not a demolition: `type` lives in
+the same params bag as `colorTheme` on the `StructureRepresentation3D` transform,
+which is why `applyStructuralColorInPlace` never flickers. Updating the node in
+place keeps the old geometry on screen until the new is ready — measured at **0 ms
+empty in every condition tested**, against 20–1020 ms for remove-then-add.
 
-**2. While a scene mutation is in flight, Mol\* must not re-derive camera
-authority from it.** Layer 1 fixes the operation we know about. Layer 2 is the
-invariant, and it is the one to reach for first, because *we will not enumerate
-every operation that empties the scene* — `clearGlobalRepresentations()` is on the
-load path too, and `clear_scene`, the rebuild after `apply_system_edit`, region
-representation changes and layer visibility are all candidates. This is the
-repo's recurring shape (§0): where two things must agree and nothing mechanically
-forces them to, they drift.
+This works whenever the *shape of the state tree* is unchanged: same set of nodes,
+different params. It does not when the node set itself changes — a preset produces
+one component-plus-representation per category, and "one node becomes three"
+cannot be expressed as a param edit. **Those paths add before they remove**, which
+is the same principle one level up, not a lesser fallback.
 
-Setting `camera.manualReset` for the duration of the mutation makes the empty
-window harmless: Mol\* only overwrites `radiusMax` when `!p.camera.manualReset`
-(`canvas3d.js:744`), so the healthy bound survives and the trackball never clamps.
-Measured: the scene still emptied, and `radiusMax` stayed at **31.14** instead of
-collapsing to 0.01.
+There is no memory argument for preferring one over the other: both hold the old
+geometry until the new exists, because that is what "no gap" *means*. The only
+difference is whether Mol\* manages the overlap (in-place) or we do
+(add-before-remove). Prefer in-place where it applies, for the smaller surface.
+
+**B. When there is genuinely nothing to show, suspend camera authority.**
+
+Some mutations have no successor to hold onto: `clear_scene`, replacing the
+structure, `clearGlobalRepresentations()` on the load path. Mechanism A cannot
+help; the scene *will* be empty. Setting `camera.manualReset` for the duration
+makes that harmless — measured: the scene still emptied and `radiusMax` stayed at
+**31.14** instead of collapsing to 0.01 — and, per the section above, it closes the
+`p.maxDistance` vector through the same door.
+
+**And camera resets must wait, exactly as scene ops wait for the structure.** A
+reset issued into a half-built scene pins `p.maxDistance` at 20, and `manualReset`
+does not stop it because `requestCameraReset` sets the flag directly. This is
+Contract S8's shape one level up: there, a scene op must not overtake its
+structure; here, a camera op must not overtake its scene.
+
+Reach for B first when adding *any* new operation. Not because it is better than
+A, but because **we will not enumerate every path that empties or hides the
+scene** — this is the repo's recurring shape (§0): where two things must agree and
+nothing mechanically forces them to, they drift.
 
 **Do not "repair" the camera afterwards.** That was the first fix attempted and it
 is the wrong shape: it cannot tell a clamp from Mol\*'s own legitimate re-framing

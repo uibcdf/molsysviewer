@@ -49,9 +49,23 @@ writes `camera.position`. Full chain and measurements: Contract S9.
    wrong shape. The e2e `camera-survives-representation-swap.e2e.ts` should be
    rewritten with it, asserting `radiusMax` during the window rather than where
    the camera ended up.
-4. **Audit the other scene-emptying paths** against layer 2:
+4. **Make camera resets wait for the scene**, the way scene ops wait for the
+   structure under S8. `requestCameraReset()` is not gated by `manualReset`, so a
+   `reset_view` landing mid-mutation pins the trackball's `p.maxDistance` at 20 —
+   stranding the user through the very action they use to escape.
+5. **Audit the other scene-emptying *and scene-hiding* paths**:
    `clearGlobalRepresentations()` on the load path, `clear_scene`, the rebuild
-   after `apply_system_edit`, region representation changes, layer visibility.
+   after `apply_system_edit`, region representation changes, and layer visibility.
+   Hiding matters as much as emptying: the `p.maxDistance` vector keys on
+   `boundingSphereVisible`, so a scene that is fully present but fully hidden does
+   the same damage.
+6. **Signal when the invariant breaks** (`CATALOG` + `CODES`). Not a repair — the
+   camera is never moved behind the user — but a camera left inside the scene
+   bounding sphere after a mutation is never a framing anyone chose, and saying so
+   turns a silent, unexplainable viewer into a diagnosable one. The same imprecise
+   condition that made *repair* unacceptable is fine for *detection*: a false
+   positive costs a log line instead of a camera that jumps. It also guards the
+   guard, which depends on Mol\* internals that will change.
 
 ## Still unknown
 
