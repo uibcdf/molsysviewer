@@ -3,15 +3,55 @@
 **Written 2026-08-01, at the close of the JupyterLab smoke round that produced
 Contracts S8 and S9 and seven fixes (`e50b7403` … `34755fb9`).**
 
-Fourteen items. They are not one kind of thing, and the grouping is the point: the
-first block is **verification the project's own rules require and that did not
-happen**, which is risk now rather than debt. The last block is housekeeping.
+Seventeen items. They are not one kind of thing, and the grouping is the point:
+one is **broken right now**, the next block is **verification the project's own
+rules require and that did not happen**, and the last is housekeeping.
 
 Ownership is marked where an item is a decision rather than a task.
 
+The count grew from fourteen on a later pass, and how it grew is worth recording.
+The first passes recalled *deferred tasks* — easy to list, because whoever deferred
+them wrote them down. What surfaced later was **unconsidered scope** (A3, A4) and
+**a defect introduced during the round** (Z1), neither of which appears on any list
+by construction. The useful question was not "what did we postpone" but "who else
+uses what we changed".
+
 ---
 
-## A. Verification the rules require, not done (4)
+## Z. Broken right now (1)
+
+### Z1. `molsysviewer-sync-hierarchy` is not declared in the action manifest
+
+**What.** The host→popup message added so the System subpanel follows a structure
+change (`adebbf4b`) was never declared in `popup_actions` in
+`molsysviewer/runtime_actions.json`. The popup refuses it:
+
+```
+[MolSysViewer Popup] refused host action molsysviewer-sync-hierarchy
+as projection: not declared in runtime_actions.json
+```
+
+**Why.** The relay works at bootstrap, because `molsysviewer-initial-sync` *is*
+declared. The **update path is dead**: open the panel pop-out, load a different
+structure in the notebook, and System keeps showing the previous hierarchy
+indefinitely — precisely what that push exists to prevent.
+
+Worth noting on the other side: the R1 guard did its job. It refused and warned
+rather than accepting an undeclared action in silence, which is the whole reason
+the manifest exists.
+
+**How.** One line:
+
+```json
+"molsysviewer-sync-hierarchy": ["projection"],
+```
+
+Then verify by opening a panel pop-out, loading a second structure, and checking
+System follows. See B3 — nothing stopped this from shipping.
+
+---
+
+## A. Verification the rules require, not done (5)
 
 These are cheap to run and could be hiding a break introduced during the round.
 
@@ -79,9 +119,22 @@ published artifact, so the failure ships.
 representation change. `tests/test_build_html_state.py` covers the state, not the
 render, so the check is by eye.
 
+### A5. The last fix of the round has not been seen by a human
+
+**What.** `34755fb9` — the `clearGlobalRepresentations` no-op — landed **after**
+Diego's confirmation that everything looked right.
+
+**Why.** It touches the load path, the most central path there is, and this round
+has already produced two cases where a fix arrived after the report it answered.
+The failure it fixes (a dead ref, a `TypeError` from inside Mol\*, and a whole that
+silently describes a destroyed structure) is exactly the kind the suites cannot see.
+
+**How.** Load a structure, then load a different one in the same view, hide and show
+the whole, and check the console is clean.
+
 ---
 
-## B. Coverage that is missing (2)
+## B. Coverage that is missing (3)
 
 ### B1. The `camera_stranded_inside_scene` signal has no test at all
 
@@ -110,6 +163,22 @@ The size can silently revert to a fixed value with everything green.
 
 **How.** Stub `window.open` in the e2e, open a panel popup, and assert the captured
 `features` string carries the computed width.
+
+### B3. Nothing pins the actions the code sends against the manifest
+
+**What.** The tests check specific, already-known actions
+(`popupActionAllows("molsysviewer-sync-op", …)`). **No guard cross-checks the
+`send`/`sendTo` call sites against `popup_actions`**, which is why Z1 passed 262 JS
+tests and 1158 Python tests.
+
+**Why.** The manifest exists so the two ends cannot diverge — and yet a new sender
+can be added without declaring it, with the divergence caught only at runtime, only
+with a panel pop-out open, and only if someone is watching the console. That is the
+§0 shape in the one place built to prevent it.
+
+**How.** A test that greps the source for host/popup send call sites and asserts
+every action string appears in `popup_actions` with a compatible direction. Mutation
+check: remove one declaration and it must go red.
 
 ---
 
@@ -219,9 +288,12 @@ session where things stand — and it omits the last fix of the round.
 
 ## Suggested order
 
-**A1–A4 first.** They are minutes of runtime and they are the only items that could
-be hiding something broken right now. Within them, **A3 and A4 matter most**: they
-are not missing tests but unconsidered scope, and both are shipped surfaces.
+**Z1 first** — it is one line, and it is the only item that is actually broken.
 
-Then **B1 and C1**, which are real gaps in guarantees rather than in tidiness. Then
-**E**, which is cheap. **D** whenever Diego decides; two of the three are his.
+**Then A1–A5.** They are minutes of runtime and could be hiding a break introduced
+during the round. Within them, **A3 and A4 matter most**: they are not missing tests
+but unconsidered scope, and both are shipped surfaces.
+
+Then **B3**, because it is what would have caught Z1 and will catch the next one;
+then **B1 and C1**, real gaps in guarantees rather than in tidiness. Then **E**,
+which is cheap. **D** whenever Diego decides; two of the three are his.
