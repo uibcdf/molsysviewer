@@ -431,10 +431,18 @@ export class GroupPanel {
             onContext: this.onContext,
             onAnnotationContext: this.onAnnotationContext,
             onRebuilt: (naturalVisible: boolean) => {
-                this.visible = this.runtimeVisibleOverride === false ? false : naturalVisible;
+                // The override is honoured in *both* directions, as its
+                // `boolean | null` type has always promised. It used to force only
+                // hidden, so a host that legitimately has no structure — the
+                // popped-out Studio window, whose panel snapshot carries UI state
+                // and deliberately no geometry — had no way to say "show anyway".
+                // The System subpanel having nothing to draw was silently read as
+                // the whole panel having nothing to draw, hiding Whole, Selections,
+                // Regions and the rest, which render from summaries alone.
+                this.visible = this.runtimeVisibleOverride ?? naturalVisible;
                 this.updateBodyDisplay();
                 if (!this.sharedShell && !this.visible && this.expanded) this.expanded = false;
-                if (naturalVisible) this.applyExpandedState();
+                if (this.visible) this.applyExpandedState();
             },
         });
         // Register the subpanels and build their tabs, mounting each into its
@@ -727,6 +735,18 @@ export class GroupPanel {
     setRuntimeVisible(visible: boolean | null): void {
         if (this.runtimeVisibleOverride === visible) return;
         this.runtimeVisibleOverride = visible;
+        // Apply it here rather than leaving it for the next `onRebuilt`. That
+        // callback fires when the System subpanel rebuilds, which needs a
+        // structure — so on a host that has none, setting the override alone
+        // changed nothing and the panel stayed hidden. Storing an instruction and
+        // waiting for an event that is not coming is the same shape as the bug
+        // this override exists to fix.
+        if (visible !== null) {
+            this.visible = visible;
+            this.updateBodyDisplay();
+            if (!this.sharedShell && !this.visible && this.expanded) this.expanded = false;
+            if (this.visible) this.applyExpandedState();
+        }
         this.render();
     }
 

@@ -159359,10 +159359,10 @@ var GroupPanel = class {
       onContext: this.onContext,
       onAnnotationContext: this.onAnnotationContext,
       onRebuilt: (naturalVisible) => {
-        this.visible = this.runtimeVisibleOverride === false ? false : naturalVisible;
+        this.visible = this.runtimeVisibleOverride ?? naturalVisible;
         this.updateBodyDisplay();
         if (!this.sharedShell && !this.visible && this.expanded) this.expanded = false;
-        if (naturalVisible) this.applyExpandedState();
+        if (this.visible) this.applyExpandedState();
       }
     });
     const registryMap = /* @__PURE__ */ new Map([
@@ -159613,6 +159613,12 @@ var GroupPanel = class {
   setRuntimeVisible(visible) {
     if (this.runtimeVisibleOverride === visible) return;
     this.runtimeVisibleOverride = visible;
+    if (visible !== null) {
+      this.visible = visible;
+      this.updateBodyDisplay();
+      if (!this.sharedShell && !this.visible && this.expanded) this.expanded = false;
+      if (this.visible) this.applyExpandedState();
+    }
     this.render();
   }
   setWorkspaces(items, currentId, onSelect) {
@@ -161602,6 +161608,8 @@ var MolSysViewerController = class _MolSysViewerController {
     this.addonsPanel = new AddonsPanel(host, addonsOptions);
     if (this.isPanelOnly) {
       this.groupPanel.setExpanded(true);
+      this.groupPanel.setRuntimeVisible(true);
+      this.addonsPanel.setVisible(true);
     }
     this.refreshPanelWorkspaceChrome();
     this.groupPanel.setOnExpandedChange((expanded) => {
@@ -162442,7 +162450,7 @@ var MolSysViewerController = class _MolSysViewerController {
       this.currentWorkspace = "core";
     }
     if (this.currentWorkspace === "core") {
-      this.groupPanel.setRuntimeVisible(null);
+      this.groupPanel.setRuntimeVisible(this.isPanelOnly ? true : null);
       this.groupPanel.setOnNavigateToWorkbench(() => {
         this.setPanelMode("addons", true);
       }, "Add-ons");

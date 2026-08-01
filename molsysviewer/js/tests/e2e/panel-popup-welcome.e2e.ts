@@ -5,6 +5,11 @@
  * Add-ons buttons in its header and nothing underneath them — only the welcome
  * card, which does not belong there at all.
  *
+ * The same premise, one level in, was hiding the panels themselves: both are
+ * revealed by `captureCurrentStructure`, which a panel-only endpoint never reaches,
+ * so the window showed its two header buttons over nothing. That is asserted here
+ * too, because the two defects are one mistake made twice.
+ *
  * The cause is a premise that holds for a viewer and not for this window.
  * `updateWelcomeState` reads "no structure" as "empty viewer, invite the user to
  * load something". A panel-only endpoint has its canvas hidden and never loads a
@@ -60,7 +65,11 @@ async function run() {
             .getElementById("viewer")!
             .querySelectorAll('[data-molsysviewer-welcome-card="true"]').length;
 
-        return { panelCards, viewerCards, panelReady: !!panel, viewerReady: !!viewer };
+        return {
+            panelCards, viewerCards, panelReady: !!panel, viewerReady: !!viewer,
+            panelStudioVisible: (panel as any).groupPanel?.isVisible?.() ?? null,
+            panelAddonsVisible: (panel as any).addonsPanel?.isVisible?.() ?? null,
+        };
     });
 
     assert.strictEqual(
@@ -73,6 +82,16 @@ async function run() {
         result.viewerCards,
         1,
         "an empty viewer must still show the welcome card",
+    );
+    assert.strictEqual(
+        result.panelStudioVisible, true,
+        "the Studio panel must be visible in a panel-only window: it is revealed by "
+        + "captureCurrentStructure, which never runs there, so it waited for a "
+        + "structure that is not coming and showed nothing",
+    );
+    assert.strictEqual(
+        result.panelAddonsVisible, true,
+        "the Add-ons panel must be visible in a panel-only window, for the same reason",
     );
     assert.deepStrictEqual(errors, [], `page errors: ${errors.join(" | ")}`);
 

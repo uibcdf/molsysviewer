@@ -1135,6 +1135,14 @@ export class MolSysViewerController {
         this.addonsPanel = new AddonsPanel(host, addonsOptions);
         if (this.isPanelOnly) {
             this.groupPanel.setExpanded(true);
+            // Both panels are normally revealed by `captureCurrentStructure`, and a
+            // panel-only endpoint never captures one: its snapshot carries UI state
+            // and deliberately no geometry. Waiting for a structure that is not
+            // coming left this window showing its two header buttons and nothing
+            // else — the summaries arrive and are stored, but nothing is on screen
+            // to put them in. Same premise error as the welcome card, one level in.
+            this.groupPanel.setRuntimeVisible(true);
+            this.addonsPanel.setVisible(true);
         }
         this.refreshPanelWorkspaceChrome();
         this.groupPanel.setOnExpandedChange((expanded) => {
@@ -1808,7 +1816,12 @@ export class MolSysViewerController {
         }
 
         if (this.currentWorkspace === "core") {
-            this.groupPanel.setRuntimeVisible(null);
+            // `null` means "follow the structure", which is the right default for a
+            // viewer and wrong for a panel-only endpoint: it has no structure by
+            // design, so following it means staying hidden forever. This runs on
+            // every chrome refresh, so setting the override once at construction
+            // would simply be wiped here.
+            this.groupPanel.setRuntimeVisible(this.isPanelOnly ? true : null);
             this.groupPanel.setOnNavigateToWorkbench(() => {
                 this.setPanelMode("addons", true);
             }, "Add-ons");
