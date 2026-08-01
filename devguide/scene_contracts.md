@@ -1862,6 +1862,112 @@ Tested in `tests/test_structure_stream_ordering.py`, including the fallback path
 (the backlog must not be stranded, nor precede the JSON load) and the JSON-only
 frontend (no stream, so nothing is ever held).
 
+### Contract S9 — A half-built scene must never be treated as the finished one
+
+**Established 2026-08-01, from a defect found by hand. Status: designed and
+measured; implementation pending (`devguide/pending_bugs/`).**
+
+Mol\* derives state from the scene *as it currently stands*, and some of what it
+derives is **not recoverable** once the scene is complete again. Any moment in
+which our scene is transiently empty or half-built is therefore not a cosmetic
+flicker — it is a window in which Mol\* records conclusions we cannot undo.
+
+#### The instance that taught us
+
+`whole.set_representation("cartoon")` opened the view *inside* the molecule, with
+the wheel unable to zoom back out; only "Reset view" recovered it. The chain,
+measured in a real browser rather than reasoned about:
+
+1. `setWholeRepresentation` **removes** the old global representations and *then*
+   builds the new ones. `commit()` returns long before the geometry arrives.
+2. While the scene is empty, `commitScene` re-derives the camera bound from a null
+   bounding sphere: `camera.state.radiusMax` collapses from 30.5 to **0.01**
+   (`canvas3d.js:744`).
+3. The trackball's `checkDistances()` runs on **every frame**, not only on input,
+   and clamps the camera to `radiusMax * 1000` (`controls/trackball.js:404`). The
+   bound becomes 10 where 181L needs ~80. Measured directly: with `radiusMax`
+   forced to 0.01 and the scene left untouched, the camera moved from 79.79 to
+   exactly 10 within five frames.
+4. `radiusMax` recovers with the geometry. **The camera does not** — the clamp
+   wrote `camera.position`.
+
+#### The condition that hid it
+
+The empty window only opens when the mutation lands while the viewer is *still
+settling from the load*:
+
+| swap issued | scene empty | lowest `radiusMax` |
+|---|---|---|
+| +300 ms after load (viewer still settling) | 20–1020 ms, varies per run | **0.01** |
+| +0 ms | ~100 ms | 10 |
+| +1500 ms (settled viewer) | never | 30.5 |
+
+Which is exactly why nobody caught it: changing a representation by hand on a
+quiet viewer is clean. Contract S8 then made the burst-after-load the *normal*
+case, because the whole scene now replays immediately behind the structure. **S8
+did not create this defect; it made a pre-existing one reachable.** Two correct
+changes can combine into a broken one, and only the combination is observable.
+
+It also survived three rounds of automated probing: the headless harness draws
+about **one frame** when idle, and the clamp needs frames. A defect that needs a
+continuously drawing canvas is invisible to every test we have.
+
+#### The rule
+
+**Two layers, and the second is the one that matters.**
+
+**1. Do not empty the scene when you do not have to.** A representation change is
+a *parameter* change, not a demolition: `type` lives in the same params bag as
+`colorTheme` on the `StructureRepresentation3D` transform, which is why
+`applyStructuralColorInPlace` never flickers. Updating the node in place keeps the
+old geometry on screen until the new is ready — measured at **0 ms empty in every
+condition tested**, against 20–1020 ms for remove-then-add.
+
+This applies whenever the *shape of the state tree* is unchanged — same set of
+nodes, different params. It does **not** apply when the node set itself changes: a
+preset produces one component-plus-representation per category, so "one node
+becomes three" cannot be expressed as a param edit. Those paths must add before
+they remove, or accept the window and rely on layer 2.
+
+**2. While a scene mutation is in flight, Mol\* must not re-derive camera
+authority from it.** Layer 1 fixes the operation we know about. Layer 2 is the
+invariant, and it is the one to reach for first, because *we will not enumerate
+every operation that empties the scene* — `clearGlobalRepresentations()` is on the
+load path too, and `clear_scene`, the rebuild after `apply_system_edit`, region
+representation changes and layer visibility are all candidates. This is the
+repo's recurring shape (§0): where two things must agree and nothing mechanically
+forces them to, they drift.
+
+Setting `camera.manualReset` for the duration of the mutation makes the empty
+window harmless: Mol\* only overwrites `radiusMax` when `!p.camera.manualReset`
+(`canvas3d.js:744`), so the healthy bound survives and the trackball never clamps.
+Measured: the scene still emptied, and `radiusMax` stayed at **31.14** instead of
+collapsing to 0.01.
+
+**Do not "repair" the camera afterwards.** That was the first fix attempted and it
+is the wrong shape: it cannot tell a clamp from Mol\*'s own legitimate re-framing
+without guessing, so it either under-fires or fights the user. Prevention has a
+crisp condition; repair only has heuristics.
+
+#### The open question in layer 2
+
+Handing camera authority back needs a definition of "the mutation has finished",
+and the obvious one does not work: while `manualReset` is true the observable that
+would tell us (`boundingSphere`) is itself not what it will be. Any implementation
+must answer this explicitly — a bounded wait on `reprCount` plus a deadline, and on
+exit compute the bound once from the finished scene
+(`camera.setState({ radiusMax: boundingSphere.radius * props.sceneRadiusFactor })`)
+rather than hoping a later commit will do it.
+
+#### Testing it
+
+The condition that reveals the defect is *the unsettled viewer*, so a test that
+swaps on a quiet one proves nothing. A test must also not congratulate itself for
+Mol\*'s own recovery: in the harness, emptying the scene makes `commitScene`
+request a camera reset that re-frames the structure, so the naive assertion passes
+with the fix removed. Assert on `radiusMax` during the window, not on where the
+camera ended up.
+
 ---
 
 ## 4. How these contracts are tested
