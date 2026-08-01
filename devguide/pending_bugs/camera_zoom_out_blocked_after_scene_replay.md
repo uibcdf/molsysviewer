@@ -95,9 +95,11 @@ writes `camera.position`. Full chain and measurements: Contract S9.
    positive costs a log line instead of a camera that jumps. It also guards the
    guard, which depends on Mol\* internals that will change.
 
-7. **DRAFTED — report upstream to Mol\*.** Ready to file at `molstar/molstar`:
-   `upstream_molstar_empty_scene_camera_bounds.md`, with both patches, the
-   measurements and runnable reproductions. The case is stronger than "we disagree with a
+7. **DRAFTED — report upstream to Mol\*.** The defect is theirs, not ours, so it
+   lives as a proposal rather than a bug of this repo:
+   `devguide/pending_proposals/report_molstar_empty_scene_camera_bounds.md`, with
+   the issue title and body ready to paste, a self-contained reproduction that
+   needs no code of ours, and both suggested patches. **Not yet submitted.** The case is stronger than "we disagree with a
    design choice": **Mol\* already encodes the right rule, in two places, and
    skips it in two others.**
 
