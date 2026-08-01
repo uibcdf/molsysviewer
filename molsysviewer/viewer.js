@@ -162167,6 +162167,34 @@ var MolSysViewerController = class _MolSysViewerController {
       };
     }
   }
+  /**
+   * How large a popped-out panel window should open.
+   *
+   * Reported by hand on 2026-08-01: the panel popup opened at a fixed 450x800,
+   * roughly half the width of the floating panel it is a pop-out *of*, so the
+   * same content arrived in a shape it was not laid out for.
+   *
+   * Uses the floating panel's own sizing rule rather than a second set of
+   * numbers — `FloatingPanelShell.centerPanel` sizes itself to
+   * `min(host * 0.75, 950)` by `min(host * 0.80, 780)`, so a popup built the
+   * same way opens looking like what the user just popped out. Two sets of
+   * constants meant to agree and nothing forcing them to is how they drift.
+   *
+   * Clamped to the screen, with a floor, so a small or oddly-shaped widget
+   * cannot produce a window too cramped to use.
+   */
+  getPanelPopupSize() {
+    const hostWidth = this.host.clientWidth || 0;
+    const hostHeight = this.host.clientHeight || 0;
+    const preferredWidth = hostWidth > 0 ? Math.min(hostWidth * 0.75, 950) : 950;
+    const preferredHeight = (hostHeight > 0 ? Math.min(hostHeight * 0.8, 780) : 780) + 60;
+    const screenWidth = window.screen?.availWidth ?? preferredWidth;
+    const screenHeight = window.screen?.availHeight ?? preferredHeight;
+    return {
+      width: Math.round(Math.max(420, Math.min(preferredWidth, screenWidth - 40))),
+      height: Math.round(Math.max(560, Math.min(preferredHeight, screenHeight - 60)))
+    };
+  }
   restoreHostPanelState() {
     if (this.sharedShell && this.savedHostPanelState) {
       this.sharedShell.setSplit(this.savedHostPanelState.isSplit);
@@ -165834,7 +165862,12 @@ var PopupHostManager = class {
         resolvedModuleUrl = null;
       }
     }
-    const win = window.open("", "_blank", mode === "canvas" ? "width=960,height=720" : "width=450,height=800");
+    let features = "width=960,height=720";
+    if (mode === "panel") {
+      const size4 = this.controller?.getPanelPopupSize?.() ?? { width: 950, height: 800 };
+      features = `width=${size4.width},height=${size4.height}`;
+    }
+    const win = window.open("", "_blank", features);
     if (!win) return;
     if (mode === "canvas") {
       this.popoutWin = win;

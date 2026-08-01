@@ -111,7 +111,15 @@ export class PopupHostManager {
             }
         }
 
-        const win = window.open("", "_blank", mode === "canvas" ? "width=960,height=720" : "width=450,height=800");
+        // The panel window opens at the size of the panel it came out of, rather
+        // than a fixed 450x800 that was about half its width. See
+        // `MolSysViewerController.getPanelPopupSize`.
+        let features = "width=960,height=720";
+        if (mode === "panel") {
+            const size = this.controller?.getPanelPopupSize?.() ?? { width: 950, height: 800 };
+            features = `width=${size.width},height=${size.height}`;
+        }
+        const win = window.open("", "_blank", features);
         if (!win) return;
 
         if (mode === "canvas") {

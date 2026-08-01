@@ -69,6 +69,12 @@ async function run() {
             panelCards, viewerCards, panelReady: !!panel, viewerReady: !!viewer,
             panelStudioVisible: (panel as any).groupPanel?.isVisible?.() ?? null,
             panelAddonsVisible: (panel as any).addonsPanel?.isVisible?.() ?? null,
+            // The pop-out window should open at the size of the panel it came out
+            // of. The viewer host here is 800x600, so the floating panel's own rule
+            // gives 800 * 0.75 = 600 wide.
+            popupSize: (viewer as any).getPanelPopupSize?.() ?? null,
+            floatingWidthRule: Math.min(800 * 0.75, 950),
+            screenWidth: window.screen?.availWidth ?? null,
         };
     });
 
@@ -92,6 +98,16 @@ async function run() {
     assert.strictEqual(
         result.panelAddonsVisible, true,
         "the Add-ons panel must be visible in a panel-only window, for the same reason",
+    );
+    assert.ok(
+        result.popupSize && result.popupSize.width >= result.floatingWidthRule,
+        `the panel popup opens ${result.popupSize?.width}px wide where the floating `
+        + `panel it came from is ${result.floatingWidthRule}px: the same content `
+        + "arrives in a shape it was not laid out for",
+    );
+    assert.ok(
+        result.popupSize.width <= (result.screenWidth ?? Infinity),
+        "the popup must still fit on the screen",
     );
     assert.deepStrictEqual(errors, [], `page errors: ${errors.join(" | ")}`);
 
