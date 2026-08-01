@@ -72,11 +72,30 @@ writes `camera.position`. Full chain and measurements: Contract S9.
    positive costs a log line instead of a camera that jumps. It also guards the
    guard, which depends on Mol\* internals that will change.
 
-7. **Report upstream to Mol\***: an empty scene is treated as a scene of radius
-   zero (`getSceneRadius()`), and `checkDistances()` then makes an irreversible
-   write to `camera.position` from that transient bound. Our configuration is a
-   workaround; this is the fix that would retire it. Precedent for the format:
-   the MolSysMT `viewer_json_conversion_deep_copies_twice` report.
+7. **Report upstream to Mol\*.** The case is stronger than "we disagree with a
+   design choice": **Mol\* already encodes the right rule, in two places, and
+   skips it in two others.**
+
+   - `Camera.update()` opens with `if (snapshot.radiusMax === 0) return false`
+     (`camera.js:22`) — an empty scene means *do not act*. The trackball's
+     `checkDistances()` (`controls/trackball.js:404`) does not honour it and
+     clamps anyway, writing `camera.position` irreversibly.
+   - In `resolveCameraReset`, `camera.setState` is guarded by `if (radius > 0)`
+     while `controls.setProps({ minDistance, maxDistance })` three lines above it
+     is not (`canvas3d.js:678-691`), so an empty scene still pins the trackball
+     bound at `maxDistanceMin` (20).
+
+   The fix to propose is **not** a `=== 0` test downstream — the bound reaches 0.01
+   rather than exactly 0, so such a test would miss this very case. It is to stop
+   deriving the bound from an empty scene at all: gate the `radiusMax` update in
+   `commitScene` (`canvas3d.js:744`) on the scene having content, and move the
+   `autoAdjustMinMaxDistance` block inside the `radius > 0` guard that its
+   neighbour already uses.
+
+   A patch with a reproduction lands far more often than prose, and the
+   reproduction exists: `probe:representation-swap-emptiness` and
+   `probe:camera-authority`. Precedent for the format: the MolSysMT
+   `viewer_json_conversion_deep_copies_twice` report.
 
 ## Still unknown
 
