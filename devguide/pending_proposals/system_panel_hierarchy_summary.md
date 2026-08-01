@@ -3,6 +3,25 @@
 **Proposed 2026-08-01, from the panel pop-out smoke test: every Studio subpanel
 renders in the popped-out window except System, which is empty.**
 
+## It is a regression, and knowing that changes the options
+
+**It used to work.** Before the R2 rework (`f023983e`), both pop-outs received
+`messages: [...commandLog]` — the whole command log, `load_molsys_payload`
+included. The panel window therefore built a complete structure into its hidden
+canvas, and System rendered there exactly as it does in the floating panel.
+
+R2 replaced that with the canonical Python-built snapshot, split into a canvas
+projection (with geometry) and a panel projection (UI state, no geometry). The
+split is right, and the rule it encodes — "no molecular payload, topology,
+coordinates, or structure-dependent visual operations may appear here" — is right
+too. What nobody reconciled is that **System is a structure-dependent panel
+section**, so the rule quietly excluded it from the window it lives in.
+
+So the old behaviour was not free: it worked by shipping a second full copy of the
+structure into a window with no canvas to draw it on, which is precisely the cost
+R2 stopped paying. Restoring it would undo a real improvement. The proposal below
+gets the function back *without* the cost.
+
 ## What is actually wrong
 
 It is not a rendering bug. **System is the only subpanel that does not obey
