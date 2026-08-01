@@ -1501,10 +1501,21 @@ export class StateHandlers {
         );
         const cleanParams = this.omitStructuralColorKeys(msg.params);
 
+        // Add before remove (Contract S9 mechanism A, one level up).
+        //
+        // Removing first is what blanks the viewport: `commit()` returns long
+        // before the new geometry arrives, so the scene holds nothing for as long
+        // as the build takes — measured at ~760 ms for 181L's cartoon, and that is
+        // the *reported* case, the first change after a load, where the node set
+        // genuinely changes shape (the loader's preset leaves four global
+        // representations behind and they collapse into one) so the in-place path
+        // above cannot apply.
+        //
+        // Holding the old geometry until the new exists costs a brief overlap
+        // instead. That is not extra memory over the in-place path — keeping the
+        // predecessor until the successor is ready is what "no gap" *means*, and
+        // Mol* does exactly the same internally when it updates a node.
         const refsToClear = this.collectBaselineGlobalRepresentationRefs();
-        if (refsToClear.length > 0) {
-            await Promise.all(refsToClear.map(ref => this.removeStateObject(ref)));
-        }
         this.globalReprs.clear();
         if (msg.user_preset) {
             const userPreset = msg.user_preset || {};
@@ -1604,6 +1615,13 @@ export class StateHandlers {
             await update.commit({ revertOnError: false });
             const reprRef = (repr as any)?.ref ?? (repr as any)?.selector?.ref;
             if (reprRef) this.globalReprs.add(reprRef);
+        }
+        // The new representation is committed; only now does the old one go, so
+        // the scene is never without one. Refs the build reused are excluded —
+        // removing those would delete what was just created.
+        const stillToClear = refsToClear.filter(ref => !this.globalReprs.has(ref));
+        if (stillToClear.length > 0) {
+            await Promise.all(stillToClear.map(ref => this.removeStateObject(ref)));
         }
         await this.handleShowHideGlobal(false);
 

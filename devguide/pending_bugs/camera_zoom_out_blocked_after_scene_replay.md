@@ -49,26 +49,44 @@ writes `camera.position`. Full chain and measurements: Contract S9.
    Measured, both arms building *cartoon*: 760 ms empty rebuilding, **0 ms** in
    place; by mutation, removing the branch takes that 0 back to 2960 ms.
 
-   **Its reach is narrower than it looked, and the shortfall is the reported case.**
-   The loader's preset registers **four** global representations (polymer, ligand,
-   water, …), so the *first* `set_whole_representation` after a load collapses four
-   nodes into one — a change of tree shape, which no parameter edit can express.
-   That first change still rebuilds and still blanks the viewport for ~760 ms. It is
-   harmless since camera authority landed, but it is still a visible blank.
-   **Closing it needs add-before-remove** (S9 mechanism A, one level up), which is
-   the remaining work here.
+   Its reach is narrower than it looked: the loader's preset registers **four**
+   global representations (polymer, ligand, water, …), so the *first*
+   `set_whole_representation` after a load collapses four nodes into one — a change
+   of tree shape no parameter edit can express, and the reported case. **Closed by
+   add-before-remove**, below.
 3. **DONE — `repairCameraAfterSwap` was never committed.** Discarded once camera
    authority made it unnecessary; S9 records why repair is the wrong shape.
 4. ~~Make camera resets wait for the scene.~~ **No longer needed** if item 1
    lands: with `autoAdjustMinMaxDistance` off, `resolveCameraReset` is a no-op on
    an empty scene, so a `reset_view` arriving mid-mutation is harmless instead of
    a trap. Kept here as a record of why the ordering machinery was dropped.
-5. **Audit the other scene-emptying *and scene-hiding* paths**:
-   `clearGlobalRepresentations()` on the load path, `clear_scene`, the rebuild
-   after `apply_system_edit`, region representation changes, and layer visibility.
-   Hiding matters as much as emptying: the `p.maxDistance` vector keys on
-   `boundingSphereVisible`, so a scene that is fully present but fully hidden does
-   the same damage.
+5. **DONE — audited the other scene-emptying and scene-hiding paths.**
+
+   The audit's answer is that there is nothing to fix, and *why* is the point:
+   camera authority is taken once per controller, at creation, so it covers every
+   path that exists and every path that will exist. Had the per-mutation guard been
+   chosen instead, this item would have been a list of call sites to edit and a
+   standing obligation to remember — which is the drift pattern S9 rejects.
+
+   Paths confirmed to empty or hide the scene, all now harmless: the four loader
+   entry points, `clear_scene` / `clearAll` / `clearShapesByTag`, region
+   representation changes, `handleShowHideGlobal` (hide the whole while its regions
+   have not drawn), layer and scene-object visibility, and annotation/measurement
+   removal. Hiding matters as much as emptying, because the `p.maxDistance` vector
+   keys on `boundingSphereVisible` rather than on existence.
+
+   One incidental finding, filed separately below: the loader's
+   `clearGlobalRepresentations` callback is a **no-op**
+   (`viewer-controller.ts:1487`), with a comment that admits it was never resolved
+   — `/* handled by state via events usually, but direct call needed? */`. It is
+   called on all four load paths. Harmless today, because replacing the structure
+   node removes its descendants and `currentGlobalRepresentationRefs()` filters
+   refs whose cells are gone. But a callback that does nothing, named for something
+   important, is a trap for whoever next assumes it works.
+
+8. **Resolve the no-op `clearGlobalRepresentations`.** Either implement it or delete
+   it and the callback from `LoaderHandlers`. Leaving a question mark in a comment
+   is not a decision.
 6. **DONE — signal when the invariant breaks** (`CATALOG` + `CODES`). Not a repair — the
    camera is never moved behind the user — but a camera left inside the scene
    bounding sphere after a mutation is never a framing anyone chose, and saying so
@@ -77,7 +95,9 @@ writes `camera.position`. Full chain and measurements: Contract S9.
    positive costs a log line instead of a camera that jumps. It also guards the
    guard, which depends on Mol\* internals that will change.
 
-7. **Report upstream to Mol\*.** The case is stronger than "we disagree with a
+7. **DRAFTED — report upstream to Mol\*.** Ready to file at `molstar/molstar`:
+   `upstream_molstar_empty_scene_camera_bounds.md`, with both patches, the
+   measurements and runnable reproductions. The case is stronger than "we disagree with a
    design choice": **Mol\* already encodes the right rule, in two places, and
    skips it in two others.**
 

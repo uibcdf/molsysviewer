@@ -146590,9 +146590,6 @@ var StateHandlers = class {
     );
     const cleanParams = this.omitStructuralColorKeys(msg.params);
     const refsToClear = this.collectBaselineGlobalRepresentationRefs();
-    if (refsToClear.length > 0) {
-      await Promise.all(refsToClear.map((ref) => this.removeStateObject(ref)));
-    }
     this.globalReprs.clear();
     if (msg.user_preset) {
       const userPreset = msg.user_preset || {};
@@ -146686,6 +146683,10 @@ var StateHandlers = class {
       await update10.commit({ revertOnError: false });
       const reprRef = repr?.ref ?? repr?.selector?.ref;
       if (reprRef) this.globalReprs.add(reprRef);
+    }
+    const stillToClear = refsToClear.filter((ref) => !this.globalReprs.has(ref));
+    if (stillToClear.length > 0) {
+      await Promise.all(stillToClear.map((ref) => this.removeStateObject(ref)));
     }
     await this.handleShowHideGlobal(false);
     if (cameraSnap && this.intentionalViewpoint && this.shouldRestoreCameraSnapshot(cameraSnap)) {
