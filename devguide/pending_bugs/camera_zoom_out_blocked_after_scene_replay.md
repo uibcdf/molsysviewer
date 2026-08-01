@@ -31,12 +31,17 @@ writes `camera.position`. Full chain and measurements: Contract S9.
 
 ## Work remaining
 
-1. **Layer 2 — the camera-authority guard.** Hold `camera.manualReset` for the
-   duration of a scene mutation, and on exit set the bound once from the finished
-   scene. Verified in a probe to keep `radiusMax` at 31.14 where it otherwise
-   collapses to 0.01. Needs a real answer to "when has the mutation finished"
-   (see S9, *The open question*), including a deadline so a failed mutation cannot
-   leave camera authority suspended forever.
+1. **Take camera authority at plugin init** (S9 mechanism B):
+   `camera.manualReset: true` and `trackball.autoAdjustMinMaxDistance: off`, plus
+   one explicit `requestCameraReset()` once a load has content, with a re-request
+   if `radiusMax` is still 0. Measured: trackball bound 1e150 instead of 305,
+   `radiusMax` immovable at 30.534 through a swap that otherwise collapses it, and
+   framing after load identical to the default configuration (79.79).
+   Supersedes the per-mutation guard, which was the third wrong-shaped answer to
+   this defect: it needed a definition of "finished" nothing supplies, had to be
+   remembered at every call site, and did not close the `requestCameraReset` hole.
+   Judge the behaviour change explicitly: Mol\*'s opportunistic re-framing is lost,
+   and `minDistance` reverts from 5 to 0.01.
 2. **Layer 1 — in-place representation update.** Update the existing
    `StructureRepresentation3D` transform's `type` (with its colour and size
    themes) instead of removing and rebuilding, for the case where the state tree
@@ -49,10 +54,10 @@ writes `camera.position`. Full chain and measurements: Contract S9.
    wrong shape. The e2e `camera-survives-representation-swap.e2e.ts` should be
    rewritten with it, asserting `radiusMax` during the window rather than where
    the camera ended up.
-4. **Make camera resets wait for the scene**, the way scene ops wait for the
-   structure under S8. `requestCameraReset()` is not gated by `manualReset`, so a
-   `reset_view` landing mid-mutation pins the trackball's `p.maxDistance` at 20 —
-   stranding the user through the very action they use to escape.
+4. ~~Make camera resets wait for the scene.~~ **No longer needed** if item 1
+   lands: with `autoAdjustMinMaxDistance` off, `resolveCameraReset` is a no-op on
+   an empty scene, so a `reset_view` arriving mid-mutation is harmless instead of
+   a trap. Kept here as a record of why the ordering machinery was dropped.
 5. **Audit the other scene-emptying *and scene-hiding* paths**:
    `clearGlobalRepresentations()` on the load path, `clear_scene`, the rebuild
    after `apply_system_edit`, region representation changes, and layer visibility.

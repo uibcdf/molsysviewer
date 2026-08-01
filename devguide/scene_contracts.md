@@ -1975,25 +1975,61 @@ geometry until the new exists, because that is what "no gap" *means*. The only
 difference is whether Mol\* manages the overlap (in-place) or we do
 (add-before-remove). Prefer in-place where it applies, for the smaller surface.
 
-**B. When there is genuinely nothing to show, suspend camera authority.**
+**B. Camera bounds are ours, not derived from whatever the scene happens to be.**
 
 Some mutations have no successor to hold onto: `clear_scene`, replacing the
 structure, `clearGlobalRepresentations()` on the load path. Mechanism A cannot
-help; the scene *will* be empty. Setting `camera.manualReset` for the duration
-makes that harmless — measured: the scene still emptied and `radiusMax` stayed at
-**31.14** instead of collapsing to 0.01 — and, per the section above, it closes the
-`p.maxDistance` vector through the same door.
+help; the scene *will* be empty.
 
-**And camera resets must wait, exactly as scene ops wait for the structure.** A
-reset issued into a half-built scene pins `p.maxDistance` at 20, and `manualReset`
-does not stop it because `requestCameraReset` sets the flag directly. This is
-Contract S8's shape one level up: there, a scene op must not overtake its
-structure; here, a camera op must not overtake its scene.
+The tempting answer is a per-mutation guard — hold `camera.manualReset` while the
+mutation runs. **It is the wrong shape, for the third time on this defect.** It
+needs a definition of "the mutation has finished" that nothing supplies; it must
+be threaded through every current and future scene-emptying path; and it does not
+close the `requestCameraReset` hole, because that sets `cameraResetRequested`
+directly. A guard that must be remembered at every call site is the drift pattern
+(§0) with extra steps.
 
-Reach for B first when adding *any* new operation. Not because it is better than
-A, but because **we will not enumerate every path that empties or hides the
-scene** — this is the repo's recurring shape (§0): where two things must agree and
-nothing mechanically forces them to, they drift.
+**Take the authority instead, once, and never negotiate over a window again:**
+
+```ts
+canvas3d.setProps({
+    camera: { manualReset: true },
+    trackball: { autoAdjustMinMaxDistance: { name: "off", params: {} } },
+});
+```
+
+- `manualReset: true` — `commitScene` never touches `radiusMax`
+  (`canvas3d.js:744` is gated on it). The collapse is not *avoided*, it is
+  **impossible by construction**, whatever the timing.
+- `autoAdjustMinMaxDistance: off` — `p.maxDistance` keeps its `1e150` default
+  instead of `max(10 * visibleRadius, 20)`. The visibility vector disappears, and
+  `resolveCameraReset` becomes a no-op on an empty scene (its `setProps` is
+  skipped, its `camera.setState` is already behind `radius > 0`), which **closes
+  the `requestCameraReset` hole without having to order camera ops at all**.
+
+Framing then costs one explicit `requestCameraReset()` once the load has content —
+and it is not extra bookkeeping, because that call sets `radiusMax` from a
+*finished* scene on its way past (`canvas3d.js:691`, not gated by `manualReset`).
+
+Measured, default configuration versus this one, swapping on an unsettled viewer:
+
+| | trackball bound | `radiusMax` through the swap | distance after load |
+|---|---:|---:|---:|
+| default | 305 (= 10 × radius) | can collapse to 0.01 | 79.79 |
+| authority taken | **1e150** | **30.534, immovable** | 79.79 |
+
+**What this gives up, stated plainly.** Mol\* also re-frames opportunistically when
+geometry appears outside the current view (`shouldResetCamera`). We lose that. It
+is arguably the *source* of surprise camera moves rather than a feature, but it is
+a behaviour change and must be judged as one, not waved through. `minDistance`
+also reverts from `5` to `0.01`, letting the user zoom inside atoms; set it
+explicitly on the trackball props if that matters.
+
+One real obligation follows: `resolveCameraReset` clears `cameraResetRequested`
+whether or not it did anything, so a reset requested against an empty scene is
+*consumed and lost*. Request it when the scene has content, and re-request if
+`radiusMax` is still 0 afterwards — Mol\*'s own `syncVisibility` uses exactly that
+test. A bounded retry, not a transaction.
 
 **Do not "repair" the camera afterwards.** That was the first fix attempted and it
 is the wrong shape: it cannot tell a clamp from Mol\*'s own legitimate re-framing
