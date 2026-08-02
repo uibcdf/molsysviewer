@@ -218,7 +218,6 @@ class StateMixin:
         ordered_records = self._topologically_ordered_regions(region_records)
         if not clear_first and on_conflict == "raise":
             self._preflight_import_conflicts(state)
-        history_start = len(self._message_history)
         with self.history.suspended() as already_suspended:
             self._restore_high_water_marks(state)
             if clear_first:
@@ -273,8 +272,6 @@ class StateMixin:
             self._send_resolved_atom_colors(replay=True)
             self._sync_whole_summary_runtime()
 
-        if clear_first:
-            self._message_history = list(self._message_history[history_start:])
         if not already_suspended:
             self.history.clear()
 

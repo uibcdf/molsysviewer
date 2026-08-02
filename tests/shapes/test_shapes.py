@@ -47,7 +47,7 @@ def test_empty_shape_focus_warns_and_zooms_scene_center():
     with pytest.warns(UserWarning, match="empty shape .empty."):
         shape.focus(duration_ms=0, extra_radius=0.5)
 
-    assert view._message_history[-1] == {  # noqa: SLF001
+    assert view._test_message_log[-1] == {  # noqa: SLF001
         "op": "zoom_to_position",
         "center": [0.0, 0.0, 0.0],
         "radius": 45.0,
@@ -184,12 +184,12 @@ def test_shared_shape_layer_retag_rewrites_history_and_live_members():
     ]
     assert shape_layer_tags == ["active_site", "active_site"]
 
-    replay_layer_tags = [
+    projected_layer_tags = [
         msg["options"].get("layer_tag")
-        for msg in view._message_history  # noqa: SLF001
+        for msg in view.build_popup_scene_snapshot("canvas")
         if msg.get("op") == "add_sphere"
     ]
-    assert replay_layer_tags == ["active_site", "active_site"]
+    assert projected_layer_tags == ["active_site", "active_site"]
 
 
 def test_shapes_manager_can_move_shape_between_layers():

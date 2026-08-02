@@ -37,7 +37,7 @@ audit.
 | 2 | Transfer state machine | ● | 100% | working tree from `6362914c` | 1178 Python, 3 documented skips; 39 focused transport + 44 Qt; mutation-verified; awaiting audit |
 | 3 | Direct lazy JSON fallback and deadline hardening | ◐ | 95% | working tree from `21027309` | 1186 Python passed, 3 environmental skips; tsc 0; four mechanisms mutation-verified; wall-clock/RSS measured; real-Mol* JSON E2E blocked by sandbox Chrome SIGTRAP |
 | 4a | Canonical static export | ● | 100% | working tree from `d7768ab1` | 1190 Python passed, 3 environmental skips; 265 JS; tsc 0; generated Python projection passed in real Chromium/Mol*; mutation-verified; awaiting audit |
-| 4b | Live `ready`/reconnect closure | ○ | 0% | Closure choice required when opened | — |
+| 4b | Live `ready`/reconnect closure | ● | 100% | working tree from `2b504d77` | Canonical ready projection; generic journal removed; 1191 Python + 3 environmental skips, 265 JS, tsc 0, perf and real widget-seam E2E green; three mechanisms mutation-verified; awaiting audit |
 | 5 | Endpoint isolation and lifecycle | ○ | 0% | — | — |
 | 6 | Ownership audit and limited consolidation | ○ | 0% | — | — |
 | 7 | Missing seam evidence | ○ | 0% | — | — |
@@ -914,6 +914,18 @@ cost already incurred or fatigue would bias the waiver decision:
   give the remaining live journal a measured bound/compaction policy, document
   that reconnect still uses it, and move canonical live bootstrap plus any
   public add-on projection hook to post-1.0.
+
+**Opening decision (2026-08-02): canonical closure.** The static and popup
+projectors demonstrate that live registries already reconstruct the current
+scene. Retaining an append-only command journal for `ready` would preserve a
+second authority, memory growth proportional to interaction count and a
+different reconnect path without a pre-1.0 benefit. The embedded-runtime target
+will combine the canvas scene with authoritative panel/runtime projections,
+without camera (endpoint-local) or duplicate selection/measurement-setting
+messages. Once `ready` no longer reads `_message_history`, the remaining product
+uses will be audited: obsolete generic-journal bookkeeping is removed rather
+than bounded if no behavior consumes it. Coalesced per-domain records and
+`SceneHistory` remain because they own current state and undo respectively.
 
 Under either closure, replace tests that pin private history layout with
 state/wire/render assertions where they do not protect an intentionally retained

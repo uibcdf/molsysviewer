@@ -862,7 +862,7 @@ def test_addon_templates_helper_can_build_reference_demo_view():
         assert view._dummy_addon_enabled is True
         assert view._dummy_addon_runtime["workspace"] == "dummy"
         assert view._dummy_addon_runtime["panels"] == ["main", "secondary"]
-        messages = view._message_history  # noqa: SLF001
+        messages = view._test_message_log  # noqa: SLF001
         assert next(msg for msg in reversed(messages) if msg.get("op") == "set_panel_mode") == {
             "op": "set_panel_mode",
             "panel": "addons",

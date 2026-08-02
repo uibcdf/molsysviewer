@@ -36,7 +36,7 @@ def test_hidden_region_stays_sticky_after_rebuild_and_global_show():
     assert rebuilt._hidden is True  # noqa: SLF001
     assert not any(
         m.get("op") == "show_region" and m.get("tag") == "pocket"
-        for m in view._message_history  # noqa: SLF001
+        for m in view._test_message_log  # noqa: SLF001
     ), "show_region must not appear for a persistently hidden region after global show"
 
 
@@ -51,14 +51,14 @@ def test_global_hide_after_rebuild_does_not_duplicate_hide_region():
     apply_remove(view, selection="atom_index < 2")
 
     pre_hide_count = sum(
-        1 for m in view._message_history  # noqa: SLF001
+        1 for m in view._test_message_log  # noqa: SLF001
         if m.get("op") == "hide_region" and m.get("tag") == "site"
     )
 
     view.hide(skip_digestion=True)
 
     post_hide_count = sum(
-        1 for m in view._message_history  # noqa: SLF001
+        1 for m in view._test_message_log  # noqa: SLF001
         if m.get("op") == "hide_region" and m.get("tag") == "site"
     )
     assert post_hide_count == pre_hide_count, "view.hide() must not re-emit hide_region for already-hidden region"
@@ -79,7 +79,7 @@ def test_scene_look_state_survives_rebuild_and_export():
 
     apply_remove(view, selection=[0])
 
-    by_op = {msg.get("op"): msg for msg in view._message_history}  # noqa: SLF001
+    by_op = {msg.get("op"): msg for msg in view._test_message_log}  # noqa: SLF001
     assert by_op["set_background_color"]["color"] == 0xFFFFFF
     assert by_op["set_fog"] == {"op": "set_fog", "enable": True, "intensity": 0.35}
     assert by_op["set_lighting"]["ambient"] == 0.25
@@ -107,10 +107,14 @@ def test_scene_focus_fade_is_dropped_when_focus_atoms_are_removed():
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
     view.focus_with_fade([0], fade=0.7, skip_digestion=True)
+    before_rebuild = len(view._test_message_log)  # noqa: SLF001
     apply_remove(view, selection=[0])
 
     assert "focus_fade" not in view._scene_look  # noqa: SLF001
-    assert not any(msg.get("op") == "set_focus_fade" for msg in view._message_history)  # noqa: SLF001
+    assert not any(  # noqa: SLF001
+        msg.get("op") == "set_focus_fade"
+        for msg in view._test_message_log[before_rebuild:]
+    )
 
 
 def test_player_state_survives_rebuild_and_export():
@@ -123,13 +127,13 @@ def test_player_state_survives_rebuild_and_export():
     apply_remove(view, selection="atom_index < 2")
 
     frame_msg = next(
-        msg for msg in view._message_history  # noqa: SLF001
+        msg for msg in view._test_message_log  # noqa: SLF001
         if msg.get("op") == "set_trajectory_frame"
     )
     assert frame_msg["index"] == 2
 
     playback_msg = next(
-        msg for msg in reversed(view._message_history)  # noqa: SLF001
+        msg for msg in reversed(view._test_message_log)  # noqa: SLF001
         if msg.get("op") == "set_trajectory_playback"
     )
     assert playback_msg == {
@@ -203,9 +207,9 @@ def test_annotation_retag_survives_rebuild():
     # Trigger rebuild
     apply_remove(view, selection="atom_index < 2")
 
-    # After rebuild the add_label message in _message_history must carry the updated layer_tag
+    # After rebuild the add_label message in _test_message_log must carry the updated layer_tag
     replayed = next(
-        m for m in view._message_history  # noqa: SLF001
+        m for m in view._test_message_log  # noqa: SLF001
         if m.get("op") == "add_label" and m.get("tag") == "res0"
     )
     assert replayed["options"]["layer_tag"] == "updated_layer"
@@ -227,7 +231,7 @@ def test_selection_history_remapped_after_rebuild():
     apply_remove(view, selection="atom_index < 3")
 
     save_msg = next(
-        m for m in view._message_history  # noqa: SLF001
+        m for m in view._test_message_log  # noqa: SLF001
         if m.get("op") == "save_selection" and m.get("tag") == "pair"
     )
     assert save_msg["atom_indices"] == [7, 8], (
@@ -250,7 +254,7 @@ def test_set_whole_representation_replayed_across_two_rebuilds():
     apply_remove(view, selection="atom_index < 2")
 
     repr_after_first = [
-        m for m in view._message_history  # noqa: SLF001
+        m for m in view._test_message_log  # noqa: SLF001
         if m.get("op") == "set_whole_representation"
     ]
     assert len(repr_after_first) >= 1
@@ -260,7 +264,7 @@ def test_set_whole_representation_replayed_across_two_rebuilds():
     apply_remove(view, selection="atom_index < 2")
 
     repr_after_second = [
-        m for m in view._message_history  # noqa: SLF001
+        m for m in view._test_message_log  # noqa: SLF001
         if m.get("op") == "set_whole_representation"
     ]
     assert len(repr_after_second) >= 1

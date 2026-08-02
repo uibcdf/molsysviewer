@@ -9,7 +9,7 @@ def test_frontend_context_action_error_sends_runtime_ack_and_smonitor(monkeypatc
     view._ready = True  # noqa: SLF001
     sent: list[dict] = []
     emitted: list[dict] = []
-    history_len = len(view._message_history)  # noqa: SLF001
+    history_len = len(view._test_message_log)  # noqa: SLF001
     view.widget.send = lambda msg: sent.append(dict(msg))  # type: ignore[attr-defined]
 
     def fake_emit(entry, *, package_root=None, meta=None, extra=None):
@@ -33,7 +33,7 @@ def test_frontend_context_action_error_sends_runtime_ack_and_smonitor(monkeypatc
             "error_message": "No region found with tag 'missing-region'.",
         }
     ]
-    assert len(view._message_history) == history_len  # noqa: SLF001
+    assert len(view._test_message_log) == history_len  # noqa: SLF001
     assert emitted[0]["entry"]["code"] == "MOLSYSVIEWER-FRONTEND-ACTION-FAILED"
     assert emitted[0]["extra"]["operation"] == "frontend-interaction-action"
     assert emitted[0]["extra"]["failure_class"] == "frontend_backend_desync"

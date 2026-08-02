@@ -30,7 +30,7 @@ def test_anywidget_binary_capability_never_builds_the_json_fallback(monkeypatch)
     sent = _capture_widget_send(view)
     recorded_load = next(
         message
-        for message in view._message_history  # noqa: SLF001
+        for message in view._test_message_log  # noqa: SLF001
         if message.get("op") == "load_molsys_payload"
     )
 
@@ -82,10 +82,10 @@ def test_anywidget_binary_capability_never_builds_the_json_fallback(monkeypatch)
     })
     assert json_builds == []
     assert not recorded_load.is_materialized
-    assert recorded_load in view._message_history  # noqa: SLF001
+    assert recorded_load in view._test_message_log  # noqa: SLF001
     assert all(
         message.get("op") not in {"structure_data_begin", "structure_data_chunk"}
-        for message in view._message_history  # noqa: SLF001
+        for message in view._test_message_log  # noqa: SLF001
     )
     view.close()
 
@@ -143,7 +143,7 @@ def test_anywidget_stream_sends_one_bounded_chunk_per_ack_and_releases_on_comple
     }
     recorded_load = next(
         message
-        for message in view._message_history  # noqa: SLF001
+        for message in view._test_message_log  # noqa: SLF001
         if message.get("op") == "load_molsys_payload"
     )
     view._deliver_transport_message(recorded_load)  # noqa: SLF001

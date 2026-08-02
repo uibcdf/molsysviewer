@@ -15,12 +15,12 @@ def _normalized(messages: list[dict]) -> list[dict]:
     return result
 
 
-def test_static_export_content_and_size_ignore_one_hundred_thousand_history_entries():
+def test_static_export_content_and_size_ignore_one_hundred_thousand_trace_entries():
     view = demo["dialanine"]
     view.regions.add("group_index==0", tag="current")
     before = view._build_export_messages()  # noqa: SLF001
 
-    view._message_history.extend(  # noqa: SLF001
+    view._test_message_log.extend(  # noqa: SLF001
         {"op": "irrelevant_interaction", "index": index}
         for index in range(100_000)
     )
@@ -51,14 +51,14 @@ def test_static_export_embeds_hostless_state_that_live_popup_excludes():
     assert "set_camera_snapshot" not in popup_ops
 
 
-def test_static_export_does_not_consult_the_append_only_journal():
+def test_static_export_does_not_consult_the_test_protocol_trace():
     view = MolSysView()
 
-    class HistoryMustNotBeRead:
+    class TraceMustNotBeRead:
         def __iter__(self):
-            raise AssertionError("static export read _message_history")
+            raise AssertionError("static export read the test protocol trace")
 
-    view._message_history = HistoryMustNotBeRead()  # type: ignore[assignment]  # noqa: SLF001
+    view._test_message_log = TraceMustNotBeRead()  # type: ignore[assignment]  # noqa: SLF001
     messages = view._build_export_messages()  # noqa: SLF001
 
     assert any(message.get("op") == "set_sections" for message in messages)

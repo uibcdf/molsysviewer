@@ -36,6 +36,36 @@ def _close_registered_molsysviewer_widgets() -> None:
 
 
 @pytest.fixture(autouse=True)
+def _capture_domain_protocol_for_tests(monkeypatch):
+    """Capture domain sends for assertions without a production replay journal."""
+    from molsysviewer import MolSysView
+    from molsysviewer.viewer.history import HistoryMixin
+
+    original_init = MolSysView.__init__
+    original_send = HistoryMixin._send
+    original_send_replay = HistoryMixin._send_replay
+
+    def instrumented_init(self, *args, **kwargs):
+        self._test_message_log = []
+        original_init(self, *args, **kwargs)
+
+    def instrumented_send(self, message):
+        if message.get("op") == "clear_all":
+            self._test_message_log.clear()
+        self._test_message_log.append(message)
+        return original_send(self, message)
+
+    def instrumented_send_replay(self, message):
+        self._test_message_log.append(message)
+        return original_send_replay(self, message)
+
+    monkeypatch.setattr(MolSysView, "__init__", instrumented_init)
+    monkeypatch.setattr(HistoryMixin, "_send", instrumented_send)
+    monkeypatch.setattr(HistoryMixin, "_send_replay", instrumented_send_replay)
+    yield
+
+
+@pytest.fixture(autouse=True)
 def _close_molsysviewer_widgets_after_each_test():
     """Keep open AnyWidgets from retaining complete views between tests."""
     yield

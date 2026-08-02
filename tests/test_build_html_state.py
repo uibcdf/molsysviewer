@@ -17,15 +17,15 @@ def _extract_state_json(html: str) -> dict:
     return json.loads(match.group(1))
 
 
-def test_build_html_uses_canonical_state_instead_of_message_history(monkeypatch):
+def test_build_html_uses_canonical_state_instead_of_test_message_log(monkeypatch):
     view = MolSysView(debug_js=True)
     view.widget.send = lambda _msg: None  # type: ignore
 
     class HistoryMustNotBeRead:
         def __iter__(self):
-            raise AssertionError("static export read _message_history")
+            raise AssertionError("static export read _test_message_log")
 
-    view._message_history = HistoryMustNotBeRead()  # type: ignore[assignment]  # noqa: SLF001
+    view._test_message_log = HistoryMustNotBeRead()  # type: ignore[assignment]  # noqa: SLF001
 
     # Avoid inlining huge bundle in this test
     monkeypatch.setattr(view, "_load_anywidget_bundle", lambda: "")
@@ -98,7 +98,7 @@ def test_build_export_messages_project_current_scene_and_append_camera_snapshot(
     view = demo["dialanine"]
     view.widget.send = lambda _msg: None  # type: ignore
     view.whole.hide(skip_digestion=True)
-    view._message_history.extend({"op": "noise", "n": i} for i in range(100))  # noqa: SLF001
+    view._test_message_log.extend({"op": "noise", "n": i} for i in range(100))  # noqa: SLF001
     view._last_camera_snapshot = {"target": [1, 2, 3]}
 
     messages = view._build_export_messages()

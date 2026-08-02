@@ -76,8 +76,8 @@ def test_molsysmt_loaded_subselection():
     
     # Activating persistent selection sends loaded-system index 0 to frontend.
     selection.activate()
-    assert view._message_history[-1]["op"] == "set_active_selection"
-    assert view._message_history[-1]["atom_indices"] == [0]
+    assert view._test_message_log[-1]["op"] == "set_active_selection"
+    assert view._test_message_log[-1]["atom_indices"] == [0]
 
 def test_molsysmt_loaded_structures_subselection():
     # Load pentalanine (has structures)
@@ -99,8 +99,8 @@ def test_molsysmt_loaded_structures_subselection():
     assert view.player.index == 1
     
     # Check that set_trajectory_frame with loaded-system index 1 was sent to frontend.
-    assert view._message_history[-1]["op"] == "set_trajectory_frame"
-    assert view._message_history[-1]["index"] == 1
+    assert view._test_message_log[-1]["op"] == "set_trajectory_frame"
+    assert view._test_message_log[-1]["index"] == 1
     
     # Front-end updates active structure index to loaded-system frame 0.
     event = {

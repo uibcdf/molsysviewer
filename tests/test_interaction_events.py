@@ -299,7 +299,7 @@ def test_set_region_representation_context_action():
     }
     view._handle_frontend_event(event)  # noqa: SLF001
 
-    sent_msgs = [msg for msg in view._message_history if msg.get("op") == "set_region_representation"]  # noqa: SLF001
+    sent_msgs = [msg for msg in view._test_message_log if msg.get("op") == "set_region_representation"]  # noqa: SLF001
     assert len(sent_msgs) == 1
     assert sent_msgs[0]["tag"] == "ligand"
     assert sent_msgs[0]["representation"] == "ball-and-stick"

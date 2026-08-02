@@ -51,39 +51,39 @@ def test_set_workspace_panel_sends_message():
     ]
 
 
-def test_set_panel_mode_is_kept_in_message_history():
+def test_set_panel_mode_is_kept_in_test_message_log():
     view = MolSysView(debug_js=True)
 
     view.set_panel_mode("navigate")
     view.set_panel_mode("addons")
     view.set_panel_mode(None, expanded=False)
 
-    assert view._message_history[-3:] == [  # noqa: SLF001
+    assert view._test_message_log[-3:] == [  # noqa: SLF001
         {"op": "set_panel_mode", "panel": "navigate", "expanded": True},
         {"op": "set_panel_mode", "panel": "addons", "expanded": True},
         {"op": "set_panel_mode", "panel": None, "expanded": False},
     ]
 
 
-def test_set_workspace_is_kept_in_message_history():
+def test_set_workspace_is_kept_in_test_message_log():
     view = MolSysView(debug_js=True)
 
     view.set_workspace("core")
     view.set_workspace("topomt")
 
-    assert view._message_history[-2:] == [  # noqa: SLF001
+    assert view._test_message_log[-2:] == [  # noqa: SLF001
         {"op": "set_workspace", "workspace": "core"},
         {"op": "set_workspace", "workspace": "topomt"},
     ]
 
 
-def test_set_workspace_panel_is_kept_in_message_history():
+def test_set_workspace_panel_is_kept_in_test_message_log():
     view = MolSysView(debug_js=True)
 
     view.set_workspace_panel("topo", workspace="topomt")
     view.set_workspace_panel("overview")
 
-    assert view._message_history[-2:] == [  # noqa: SLF001
+    assert view._test_message_log[-2:] == [  # noqa: SLF001
         {"op": "set_workspace_panel", "panel": "topo", "workspace": "topomt"},
         {"op": "set_workspace_panel", "panel": "overview", "workspace": None},
     ]

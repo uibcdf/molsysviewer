@@ -32,6 +32,12 @@ _SCENE_LOOK_ORDER = (
     "trajectory_plot",
 )
 
+_PANEL_OPS_ALREADY_IN_CANVAS = frozenset({
+    "save_selection",
+    "set_active_selection",
+    "set_measurement_settings",
+})
+
 
 class PopupSnapshotMixin:
     def build_popup_scene_snapshot(
@@ -262,6 +268,28 @@ class PopupSnapshotMixin:
                 "snapshot": deepcopy(self._last_camera_snapshot),
                 "duration_ms": 0,
             })
+        return messages
+
+    def _build_embedded_runtime_snapshot(
+        self,
+        *,
+        include_molecular: bool = True,
+    ) -> list[dict]:
+        """Build current state for a live widget attaching or reconnecting.
+
+        The embedded host needs both the renderable canvas scene and Python's
+        authoritative panel projections. Camera stays endpoint-local. Panel
+        messages already represented by the canvas profile are filtered by op
+        so one ready event applies each current-state projection once.
+        """
+        messages = self._build_canvas_snapshot(include_molecular=include_molecular)
+        if self._current_figure_spec:
+            messages.append(deepcopy(self._current_figure_spec))
+        messages.extend(
+            message
+            for message in self._build_panel_snapshot()
+            if message.get("op") not in _PANEL_OPS_ALREADY_IN_CANVAS
+        )
         return messages
 
     # -- helpers --------------------------------------------------------------

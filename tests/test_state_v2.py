@@ -144,7 +144,7 @@ def test_old_v2_document_without_additive_scene_object_keys_imports_cleanly():
     assert target.layers.count() == 0
 
 
-def test_import_clears_scene_history_and_does_not_grow_replay_history():
+def test_import_clears_scene_history_without_recreating_a_replay_journal():
     source = _mute(demo["dialanine"])
     source.annotations.add("site", atom_indices=[0], tag="note1")
     state = source.export_state()
@@ -154,11 +154,12 @@ def test_import_clears_scene_history_and_does_not_grow_replay_history():
     assert target.history.can_undo() is True
 
     target.import_state(state)
-    first_size = len(target._message_history)  # noqa: SLF001
+    first_state = target.export_state()
     assert target.history.can_undo() is False
+    assert not hasattr(target, "_message_history")
     target.import_state(state)
 
-    assert len(target._message_history) == first_size  # noqa: SLF001
+    assert target.export_state() == first_state
     assert target.history.can_undo() is False
 
 

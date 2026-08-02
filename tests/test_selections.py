@@ -74,8 +74,8 @@ def test_persistent_selection_supports_focus_region_and_label():
     selection = view.active_selection.save("picked")
 
     selection.focus(duration_ms=50)
-    assert view._message_history[-1]["op"] == "zoom"  # noqa: SLF001
-    assert view._message_history[-1]["atom_indices"] == atom_indices  # noqa: SLF001
+    assert view._test_message_log[-1]["op"] == "zoom"  # noqa: SLF001
+    assert view._test_message_log[-1]["atom_indices"] == atom_indices  # noqa: SLF001
 
     region = selection.new_region(tag="picked-region", representation="ball_and_stick")
     assert region.tag == "picked-region"
@@ -98,7 +98,7 @@ def test_persistent_selection_can_restore_itself_as_active_selection():
     assert view.active_selection.info()["source_kind"] == "element"
     assert view.active_selection.group_indices == [1]
     assert view._active_selection_recipe[0]["atom_indices"] == selection.atom_indices  # noqa: SLF001
-    assert view._message_history[-1]["op"] == "set_active_selection"  # noqa: SLF001
+    assert view._test_message_log[-1]["op"] == "set_active_selection"  # noqa: SLF001
 
 
 def test_selections_manager_can_activate_by_tag():

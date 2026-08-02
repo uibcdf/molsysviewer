@@ -46,24 +46,24 @@ def test_tools_basic_merge_merges_scene_state_and_resolves_tag_collisions():
     assert result.layers["analysis"]._hidden is True  # noqa: SLF001
     assert result.layers["pocket__2"]._hidden is True  # noqa: SLF001
 
-    ops = [msg.get("op") for msg in result._message_history]  # noqa: SLF001
+    ops = [msg.get("op") for msg in result._test_message_log]  # noqa: SLF001
     assert "load_molsys_payload" in ops
     assert "set_whole_representation" in ops
     assert "hide_whole" in ops
 
     region_b_msg = next(
-        msg for msg in result._message_history if msg.get("op") == "create_region" and msg.get("tag") == "frag__2"  # noqa: SLF001
+        msg for msg in result._test_message_log if msg.get("op") == "create_region" and msg.get("tag") == "frag__2"  # noqa: SLF001
     )
     assert region_b_msg["atom_indices"] == [22, 23]
 
     links_msg = next(
         msg
-        for msg in result._message_history  # noqa: SLF001
+        for msg in result._test_message_log  # noqa: SLF001
         if msg.get("op") == "add_network_links" and msg.get("options", {}).get("tag") == "pocket__2"
     )
     assert links_msg["options"]["atom_pairs"] == [[22, 23]]
 
-    visibility_msg = next(msg for msg in reversed(result._message_history) if msg.get("op") == "update_visibility")  # noqa: SLF001
+    visibility_msg = next(msg for msg in reversed(result._test_message_log) if msg.get("op") == "update_visibility")  # noqa: SLF001
     assert visibility_msg["options"]["visible_atom_indices"] == [
         0,
         1,

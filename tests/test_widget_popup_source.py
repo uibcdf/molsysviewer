@@ -20,14 +20,14 @@ def test_popup_source_request_sends_before_ready_without_recording(monkeypatch):
     # Do NOT force _ready: the source-request handshake happens before the
     # runtime loads, so _ready is still False. The source must be sent anyway.
     assert view._ready is False  # noqa: SLF001
-    history_len = len(view._message_history)  # noqa: SLF001
+    history_len = len(view._test_message_log)  # noqa: SLF001
     shape_history_len = len(view._shape_history)  # noqa: SLF001
 
     view._handle_frontend_event({"event": "request_popup_source"})  # noqa: SLF001
 
     assert sent == [{"op": "popup_source", "source": "export const popup = true;"}]
     # Runtime-only: the 6 MB source must never bloat the reproducible history.
-    assert len(view._message_history) == history_len  # noqa: SLF001
+    assert len(view._test_message_log) == history_len  # noqa: SLF001
     assert len(view._shape_history) == shape_history_len  # noqa: SLF001
 
 
@@ -41,11 +41,11 @@ def test_widget_runtime_source_request_sends_before_ready_without_recording(monk
     sent = []
     view.widget.send = sent.append  # type: ignore[method-assign]
     assert view._ready is False  # noqa: SLF001
-    history_len = len(view._message_history)  # noqa: SLF001
+    history_len = len(view._test_message_log)  # noqa: SLF001
     shape_history_len = len(view._shape_history)  # noqa: SLF001
 
     view._handle_frontend_event({"event": "request_widget_runtime_source"})  # noqa: SLF001
 
     assert sent == [{"op": "widget_runtime_source", "source": "export default { render() {} };"}]
-    assert len(view._message_history) == history_len  # noqa: SLF001
+    assert len(view._test_message_log) == history_len  # noqa: SLF001
     assert len(view._shape_history) == shape_history_len  # noqa: SLF001

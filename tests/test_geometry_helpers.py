@@ -17,7 +17,7 @@ def test_show_orientation_axes_sends_set_region_representation():
 
     view.show_orientation_axes(tag="axes-test")
 
-    ops = [m for m in view._message_history if m.get("op") == "set_region_representation"]  # noqa: SLF001
+    ops = [m for m in view._test_message_log if m.get("op") == "set_region_representation"]  # noqa: SLF001
     assert any(m.get("representation") == "orientation" and m.get("tag") == "axes-test" for m in ops)
 
 
@@ -35,7 +35,7 @@ def test_show_orientation_axes_alpha_forwarded():
 
     view.show_orientation_axes(tag="axes-alpha", alpha=0.4)
 
-    ops = [m for m in view._message_history  # noqa: SLF001
+    ops = [m for m in view._test_message_log  # noqa: SLF001
            if m.get("op") == "set_region_representation" and m.get("tag") == "axes-alpha"]
     assert len(ops) == 1
     assert ops[0].get("params", {}).get("alpha") == 0.4
@@ -75,7 +75,7 @@ def test_show_best_fit_plane_sends_set_region_representation():
 
     view.show_best_fit_plane(tag="plane-test")
 
-    ops = [m for m in view._message_history if m.get("op") == "set_region_representation"]  # noqa: SLF001
+    ops = [m for m in view._test_message_log if m.get("op") == "set_region_representation"]  # noqa: SLF001
     assert any(m.get("representation") == "plane" and m.get("tag") == "plane-test" for m in ops)
 
 
@@ -93,7 +93,7 @@ def test_show_best_fit_plane_alpha_forwarded():
 
     view.show_best_fit_plane(tag="plane-alpha", alpha=0.6)
 
-    ops = [m for m in view._message_history  # noqa: SLF001
+    ops = [m for m in view._test_message_log  # noqa: SLF001
            if m.get("op") == "set_region_representation" and m.get("tag") == "plane-alpha"]
     assert len(ops) == 1
     assert ops[0].get("params", {}).get("alpha") == 0.6

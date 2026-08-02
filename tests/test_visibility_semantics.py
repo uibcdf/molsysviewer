@@ -16,12 +16,12 @@ def test_whole_hide_stays_sticky_across_show_all():
 
     assert view._global_hidden is True  # noqa: SLF001
     assert view.visible_atom_indices == list(range(22))
-    assert [msg.get("op") for msg in view._message_history[-3:]] == [
+    assert [msg.get("op") for msg in view._test_message_log[-3:]] == [
         "update_visibility",
         "show_whole",
         "hide_whole",
     ]
-    assert view._message_history[-1] == {"op": "hide_whole", "target": "whole"}  # noqa: SLF001
+    assert view._test_message_log[-1] == {"op": "hide_whole", "target": "whole"}  # noqa: SLF001
 
 
 def test_hidden_region_and_layer_survive_global_hide_show_cycle():
@@ -49,14 +49,14 @@ def test_hidden_region_and_layer_survive_global_hide_show_cycle():
     assert view.regions["frag"]._hidden is True  # noqa: SLF001
     assert view.layers["pocket"]._hidden is True  # noqa: SLF001
     assert view.visible_atom_indices == list(range(22))
-    assert not any(msg.get("op") == "show_region" and msg.get("tag") == "frag" for msg in view._message_history)
-    assert not any(msg.get("op") == "show_layer" and msg.get("tag") == "pocket" for msg in view._message_history)
-    assert [msg.get("op") for msg in view._message_history[-3:]] == [
+    assert not any(msg.get("op") == "show_region" and msg.get("tag") == "frag" for msg in view._test_message_log)
+    assert not any(msg.get("op") == "show_layer" and msg.get("tag") == "pocket" for msg in view._test_message_log)
+    assert [msg.get("op") for msg in view._test_message_log[-3:]] == [
         "update_visibility",
         "show_whole",
         "show_whole",
     ]
-    assert view._message_history[-1] == {"op": "show_whole", "target": "whole"}  # noqa: SLF001
+    assert view._test_message_log[-1] == {"op": "show_whole", "target": "whole"}  # noqa: SLF001
 
 
 def test_show_all_resets_partial_atom_visibility_without_clearing_hidden_region_state():
@@ -78,8 +78,8 @@ def test_show_all_resets_partial_atom_visibility_without_clearing_hidden_region_
 
     assert bool(view.atom_mask[5]) is True
     assert view.regions["frag"]._hidden is True  # noqa: SLF001
-    assert not any(msg.get("op") == "show_region" and msg.get("tag") == "frag" for msg in view._message_history)
-    visibility_msg = next(msg for msg in reversed(view._message_history) if msg.get("op") == "update_visibility")
+    assert not any(msg.get("op") == "show_region" and msg.get("tag") == "frag" for msg in view._test_message_log)
+    visibility_msg = next(msg for msg in reversed(view._test_message_log) if msg.get("op") == "update_visibility")
     assert visibility_msg["options"]["visible_atom_indices"] == list(range(22))
 
 @pytest.mark.parametrize(
@@ -95,12 +95,12 @@ def test_visibility_rejects_per_structure_visibility_until_supported(operation):
     view = demo["chicken_villin_HP35"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
     mask_before = None if view.atom_mask is None else view.atom_mask.copy()
-    history_len = len(view._message_history)  # noqa: SLF001
+    history_len = len(view._test_message_log)  # noqa: SLF001
 
     with pytest.raises(NotImplementedError, match="Per-structure visibility is not supported"):
         operation(view)
 
-    assert len(view._message_history) == history_len  # noqa: SLF001
+    assert len(view._test_message_log) == history_len  # noqa: SLF001
     if mask_before is not None:
         assert view.atom_mask is not None
         assert view.atom_mask.tolist() == mask_before.tolist()

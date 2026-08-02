@@ -90,16 +90,19 @@ def test_the_deferred_scene_keeps_the_order_python_produced_it_in(complete_struc
     view.regions.add("atom_index < 6", tag="low")
     view.regions.add("atom_index < 12", tag="high")
     view.measurements.add_distance(selection_a=[0], selection_b=[10], tag="d1")
-    expected = [
-        m.get("op") for m in view._message_history  # noqa: SLF001
-        if m.get("op") != "load_molsys_payload"
-    ]
+    expected = view._build_embedded_runtime_snapshot(  # noqa: SLF001
+        include_molecular=False
+    )
 
     sent = _capture(view)
     view._handle_frontend_event({"event": "ready", "capabilities": BINARY_CAPABILITIES})  # noqa: SLF001
     complete_structure_stream(view)
 
-    delivered = [op for op in _ops(sent) if op in set(expected)]
+    delivered = [
+        message
+        for message in sent
+        if not str(message.get("op", "")).startswith("structure_data_")
+    ]
     assert delivered == expected
 
 

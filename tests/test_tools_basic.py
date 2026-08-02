@@ -55,20 +55,20 @@ def test_focus_selection_focus_region_and_region_focus_emit_zoom_messages():
     region = view.regions.add(atom_indices=[0, 1, 2], tag="frag", skip_digestion=True)
 
     view.focus_selection(selection=[0, 1], duration_ms=0, extra_radius="2 angstroms", min_radius="1 angstrom")
-    first_zoom = next(msg for msg in reversed(view._message_history) if msg.get("op") == "zoom")  # noqa: SLF001
+    first_zoom = next(msg for msg in reversed(view._test_message_log) if msg.get("op") == "zoom")  # noqa: SLF001
     assert first_zoom["atom_indices"] == [0, 1]
     assert first_zoom["options"]["duration_ms"] == 0
 
     view.focus_region("frag", duration_ms=0)
-    second_zoom = next(msg for msg in reversed(view._message_history) if msg.get("op") == "zoom")  # noqa: SLF001
+    second_zoom = next(msg for msg in reversed(view._test_message_log) if msg.get("op") == "zoom")  # noqa: SLF001
     assert second_zoom["atom_indices"] == [0, 1, 2]
 
     region.focus(duration_ms=0)
-    third_zoom = next(msg for msg in reversed(view._message_history) if msg.get("op") == "zoom")  # noqa: SLF001
+    third_zoom = next(msg for msg in reversed(view._test_message_log) if msg.get("op") == "zoom")  # noqa: SLF001
     assert third_zoom["atom_indices"] == [0, 1, 2]
 
     view.whole.focus(selection=[3, 4], duration_ms=0)
-    fourth_zoom = next(msg for msg in reversed(view._message_history) if msg.get("op") == "zoom")  # noqa: SLF001
+    fourth_zoom = next(msg for msg in reversed(view._test_message_log) if msg.get("op") == "zoom")  # noqa: SLF001
     assert fourth_zoom["atom_indices"] == [3, 4]
 
 
@@ -104,7 +104,7 @@ def test_region_show_only_uses_ownership_without_mutating_user_visibility():
     assert view.visible_atom_indices == list(range(22))
     assert region._hidden is False  # noqa: SLF001
     assert other._hidden is True  # noqa: SLF001
-    assert view._message_history[-1] == {"op": "show_only_region", "tag": "frag"}  # noqa: SLF001
+    assert view._test_message_log[-1] == {"op": "show_only_region", "tag": "frag"}  # noqa: SLF001
 
 
 def test_tools_basic_extract_returns_subset_view():

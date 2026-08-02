@@ -81,39 +81,10 @@ class HistoryMixin:
             self._annotation_history = self._rewrite_history_layer_tag(self._annotation_history, old_tag, new_tag)
         if kind in {"layer", "measurement"}:
             self._measurement_history = self._rewrite_history_layer_tag(self._measurement_history, old_tag, new_tag)
-        self._message_history = self._rewrite_history_layer_tag(
-            self._message_history,
-            old_tag,
-            new_tag,
-            kind=kind,
-        )
-
-    _REGION_OPS = frozenset({
-        "create_region", "set_region_representation",
-        "show_region", "hide_region", "delete_region",
-    })
 
     def _record_shape_message(self, msg: dict) -> None:
         op = msg.get("op")
         if not isinstance(op, str):
-            return
-
-        if op == "rename_region":
-            old_tag = msg.get("tag")
-            new_tag = msg.get("new_tag")
-            if not isinstance(old_tag, str) or not isinstance(new_tag, str) or old_tag == new_tag:
-                self._message_history.pop()
-                return
-            def _rewrite_region(item: dict) -> dict:
-                if self._tag_from_message(item) != old_tag:
-                    return item
-                if item.get("op") not in self._REGION_OPS:
-                    return item
-                updated = dict(item)
-                updated["tag"] = new_tag
-                return updated
-            # Rewrite all previous entries; drop the rename_region msg itself (last entry).
-            self._message_history = [_rewrite_region(m) for m in self._message_history[:-1]]
             return
 
         if op == "delete_layer":
@@ -362,7 +333,6 @@ class HistoryMixin:
         return updated
 
     def _send(self, msg: dict) -> None:
-        self._message_history.append(msg)
         if msg.get("op") in self._MOLECULAR_LOAD_OPS:
             self._current_molecular_projection = msg
         self._record_shape_message(msg)
@@ -379,7 +349,6 @@ class HistoryMixin:
             self._send_widget_message(msg)
 
     def _send_replay(self, msg: dict) -> None:
-        self._message_history.append(msg)
         if msg.get("op") in self._MOLECULAR_LOAD_OPS:
             self._current_molecular_projection = msg
         if self._ready:
@@ -411,7 +380,6 @@ class HistoryMixin:
             return rewritten
 
         self._shape_history = rewrite(self._shape_history)
-        self._message_history = rewrite(self._message_history)
 
 
 __all__ = ["HistoryMixin"]

@@ -21,7 +21,7 @@ def load_message(source: Path) -> dict:
         )
         return next(
             message
-            for message in reversed(view._message_history)  # noqa: SLF001
+            for message in view.build_popup_scene_snapshot("canvas")
             if message.get("op") == "load_molsys_payload"
         )
     finally:

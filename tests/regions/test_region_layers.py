@@ -186,7 +186,7 @@ def test_context_action_remove_region_from_layer():
     assert view.regions["A"].layer is None
 
 
-def test_layer_summary_contains_only_intrinsic_layer_state_and_ready_resends_it():
+def test_layer_summary_contains_only_intrinsic_state_and_ready_projects_it():
     view = _mute(demo["dialanine"])
     view.layers.add("empty", skip_digestion=True)
     sent = []
@@ -199,6 +199,7 @@ def test_layer_summary_contains_only_intrinsic_layer_state_and_ready_resends_it(
     }
 
     sent.clear()
+    view.widget.send = lambda message: sent.append(dict(message))  # type: ignore[method-assign]
     view._handle_frontend_event({"event": "ready"})  # noqa: SLF001
     assert any(message.get("op") == "set_layer_summaries" for message in sent)
 

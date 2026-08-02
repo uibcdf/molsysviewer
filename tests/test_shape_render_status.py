@@ -3,7 +3,7 @@ from molsysviewer import MolSysView
 
 def test_shape_render_status_is_runtime_only_and_queryable():
     view = MolSysView()
-    history_len = len(view._message_history)  # noqa: SLF001
+    history_len = len(view._test_message_log)  # noqa: SLF001
     shape_history_len = len(view._shape_history)  # noqa: SLF001
 
     event = {
@@ -21,7 +21,7 @@ def test_shape_render_status_is_runtime_only_and_queryable():
     assert view.shapes.render_status() == {"site": event}
     assert "shape_render_status" not in view.export_state()
     assert all("render_status" not in record for record in view._shape_summary_records())  # noqa: SLF001
-    assert len(view._message_history) == history_len  # noqa: SLF001
+    assert len(view._test_message_log) == history_len  # noqa: SLF001
     assert len(view._shape_history) == shape_history_len  # noqa: SLF001
 
 

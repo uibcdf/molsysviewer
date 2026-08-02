@@ -16,7 +16,7 @@ def test_reset_viewer_sends_clear_all_op():
 
     view.reset_viewer(skip_digestion=True)
 
-    ops = [m.get("op") for m in view._message_history]  # noqa: SLF001
+    ops = [m.get("op") for m in view._test_message_log]  # noqa: SLF001
     assert "clear_all" in ops
 
 
@@ -46,9 +46,9 @@ def test_reset_viewer_last_message_is_clear_all():
 
     view.reset_viewer(skip_digestion=True)
 
-    # _message_history is an append-only log; reset appends clear_all last
-    assert view._message_history[-1]["op"] == "clear_all"  # noqa: SLF001
-    assert "delete_layer" not in [message.get("op") for message in view._message_history]  # noqa: SLF001
+    # _test_message_log is an append-only log; reset appends clear_all last
+    assert view._test_message_log[-1]["op"] == "clear_all"  # noqa: SLF001
+    assert "delete_layer" not in [message.get("op") for message in view._test_message_log]  # noqa: SLF001
 
 
 # ---------------------------------------------------------------------------
@@ -61,7 +61,7 @@ def test_clear_decorations_sends_clear_scene_op_with_correct_flags():
 
     view.clear_decorations(shapes=True, styles=False, labels=False, skip_digestion=True)
 
-    last = view._message_history[-1]  # noqa: SLF001
+    last = view._test_message_log[-1]  # noqa: SLF001
     assert last["op"] == "clear_scene"
     assert last["options"]["shapes"] is True
     assert last["options"]["styles"] is False
@@ -74,7 +74,7 @@ def test_clear_decorations_all_flags_true():
 
     view.clear_decorations(shapes=True, styles=True, labels=True, skip_digestion=True)
 
-    last = view._message_history[-1]  # noqa: SLF001
+    last = view._test_message_log[-1]  # noqa: SLF001
     assert last["op"] == "clear_scene"
     assert last["options"] == {"shapes": True, "styles": True, "labels": True}
 
@@ -135,7 +135,7 @@ def test_annotation_set_layer_tag_rewrites_annotation_history():
     assert updated["options"]["layer_tag"] == "new_group"
 
     # No `retag_layer` op emitted — layer_tag is a pure history rewrite
-    ops = [m.get("op") for m in view._message_history]  # noqa: SLF001
+    ops = [m.get("op") for m in view._test_message_log]  # noqa: SLF001
     assert "retag_layer" not in ops
 
 
@@ -168,12 +168,12 @@ def test_set_whole_representation_survives_rebuild():
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
     view.styles.apply(representation="cartoon", skip_digestion=True)
-    before_ops = [m.get("op") for m in view._message_history]  # noqa: SLF001
+    before_ops = [m.get("op") for m in view._test_message_log]  # noqa: SLF001
     assert "set_whole_representation" in before_ops
 
     apply_remove(view, selection="atom_index < 3")
 
-    repr_msgs = [m for m in view._message_history if m.get("op") == "set_whole_representation"]  # noqa: SLF001
+    repr_msgs = [m for m in view._test_message_log if m.get("op") == "set_whole_representation"]  # noqa: SLF001
     assert len(repr_msgs) >= 1, "set_whole_representation must appear in replayed history"
     assert repr_msgs[0]["representation"] == "cartoon"
 
@@ -188,7 +188,7 @@ def test_global_hidden_state_replayed_after_rebuild():
     apply_remove(view, selection="atom_index < 2")
 
     assert view._global_hidden is True  # noqa: SLF001
-    hide_ops = [m for m in view._message_history if m.get("op") == "hide_whole"]  # noqa: SLF001
+    hide_ops = [m for m in view._test_message_log if m.get("op") == "hide_whole"]  # noqa: SLF001
     assert len(hide_ops) >= 1, "hide_whole must be re-emitted after rebuild"
 
 

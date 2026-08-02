@@ -75,11 +75,10 @@ def _summary_ops_the_view_can_push(view) -> set[str]:
     """Derive the summary ops from the view's own `_sync_*_runtime` methods.
 
     Discovered rather than listed on purpose. `scene_contracts.md` Contract S1
-    warns that a summary is `_send_runtime_only`, so it never enters
-    `_message_history` and a frontend that attaches later — the popup, a
-    re-attached widget, a rebuilt kernel, a standalone host — never receives it
-    by replay. A hardcoded list cannot notice a *new* domain: it would stay green
-    while that panel section rendered blank on popout. This is the same shape as
+    warns that a summary is `_send_runtime_only`, so a frontend that attaches
+    later depends on canonical panel coverage rather than replay. A hardcoded
+    list cannot notice a *new* domain: it would stay green while that panel
+    section rendered blank on popout. This is the same shape as
     the digester-caller and Qt-manifest drifts: where two things must agree and
     nothing mechanically forces them to, they drift in silence.
 
@@ -122,9 +121,9 @@ def test_every_summary_projection_reaches_the_panel_snapshot():
 def test_every_summary_projection_is_resent_on_ready():
     """The other late-attaching frontend: a fresh canvas that emits `ready`.
 
-    Contract S1 §"a summary is runtime-only" requires the `ready` handler to
-    re-send every summary explicitly. Derived the same way as above so a new
-    domain cannot be added to one path and forgotten in the other.
+    Contract S1 is outcome-based: the embedded-runtime profile must contain
+    every summary. Derived the same way as above so a new domain cannot be
+    added to one path and forgotten in the other.
     """
     view = _populated_view()
     sent: list[dict] = []
@@ -135,7 +134,7 @@ def test_every_summary_projection_is_resent_on_ready():
     ops = {m.get("op") for m in sent if isinstance(m, dict)}
     for summary_op in sorted(_summary_ops_the_view_can_push(view)):
         assert summary_op in ops, (
-            f"the ready handler does not re-send {summary_op}; a freshly "
+            f"the ready projection does not include {summary_op}; a freshly "
             f"attached frontend would render that panel section empty."
         )
 

@@ -1387,37 +1387,35 @@ change invalidates only the *measurement* values, and a combined op would
 re-push every shape and annotation on every frame. This repo has already paid a
 ~3-second-per-message toll once (`scene_contracts.md` §0).
 
-#### A summary is runtime-only — **so it must be re-sent on `ready`**
+#### A summary is runtime-only — **so the canonical `ready` projection must cover it**
 
 This is the corollary that is easiest to miss and most expensive to miss.
 
-Because a summary is sent with `_send_runtime_only`, it **never enters
-`_message_history`** — which is exactly what we want (it is a projection of state,
-not a command, and putting it in the history would corrupt the replay). But it means
-**a frontend that attaches later never receives it by replay.**
-
-That is why the `ready` handler re-sends them explicitly (`core.py:789-790`):
+Because a summary is sent with `_send_runtime_only`, it is an immediate
+projection of state, not stored command history. A frontend that attaches later
+therefore receives it from the embedded-runtime canonical snapshot:
 
 ```python
 elif event == "ready":
     self._ready = True
-    self._pending_messages.clear()
-    self._sync_region_summaries_runtime()
-    self._sync_whole_summary_runtime()
+    messages = self._build_embedded_runtime_snapshot(...)
+    for message in messages:
+        self._deliver_transport_message(message)
 ```
 
-**Every new `_sync_<domain>_summaries_runtime()` must be added there.** Forget it and
-the panel renders **empty** — while the canvas happily shows the objects — whenever
-the frontend attaches fresh: **the popup window, a re-attached widget, a rebuilt
-kernel, a standalone host**. It will look fine in the notebook you developed it in
-and be broken everywhere else.
+**Every summary op that Python can publish must be present in the canonical
+panel/embedded projection.** Forget it and the panel renders **empty** while the
+canvas happily shows the objects whenever the frontend attaches fresh. Coverage
+is derived from the registered `_sync_<domain>_runtime` surface and asserted by
+result; the contract no longer requires a parallel list of explicit calls in
+the `ready` handler.
 
 There must be a test that opens a fresh frontend and asserts the panel is populated.
 
 Two more rules that the region implementation earned the hard way:
 
-- Use **`_send_runtime_only`**: a summary is a projection of state, not a
-  command. It must not enter `_message_history` or it will corrupt the replay.
+- Use **`_send_runtime_only`** for live updates: a summary is a projection of
+  state, not a command. Late attachment is owned by the canonical projector.
 - **Every mutation of a scene object must re-sync the summary**, including
   mutations that arrive indirectly (a layer hide that hides its members; a
   rebuild after `apply_system_edit`). The counter-staleness trap in Phase 12 was

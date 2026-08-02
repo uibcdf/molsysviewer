@@ -301,11 +301,9 @@ class MolSysView(
         # `_send_widget_message`.
         self._deferred_widget_messages: list[tuple[Mapping[str, Any], Any]] = []
         self._flushing_deferred_widget_messages = False
-        self._message_history: list[dict] = []
         # The current molecular projection ("current molecular state"), updated
         # on every load/rebuild. Its portable JSON body may remain lazy until a
-        # compatibility/export consumer asks for it. R2 references this instead
-        # of scanning _message_history for the last load.
+        # compatibility/export consumer asks for it.
         self._current_molecular_projection: dict | None = None
         self._molecular_projection_revision = 0
         self._last_camera_snapshot: dict | None = None
@@ -326,9 +324,10 @@ class MolSysView(
         self._last_tool_state_event: dict | None = None
         self._webgl_context_lost: bool = False
         # Visibility wire protocol: the frontend keeps a versioned visible-atom set
-        # and we send small deltas live; the full state is always recorded for
-        # replay. `_last_visibility_mask` is the last mask we computed a delta
-        # against; `_visibility_version` is the monotonic version both sides track.
+        # and we send small deltas live. Canonical projectors regenerate the full
+        # state from atom_mask. `_last_visibility_mask` is the last mask we
+        # computed a delta against; `_visibility_version` is the monotonic version
+        # both sides track.
         self._last_visibility_mask = None
         self._visibility_version: int = 0
         self._last_measurement_created_event: dict | None = None
@@ -1248,9 +1247,9 @@ class MolSysView(
         The connector owns its wire format: ``MolSysViewerWidget.send`` wraps
         control-plane messages in a RuntimeEnvelope (R1), while Qt and other
         transports keep raw messages. ``raw``/``data_plane`` messages and their
-        buffers pass through unwrapped, and ``_message_history`` / the
-        ``initial_messages`` trait keep domain messages because wrapping happens
-        below this chokepoint, at the widget.
+        buffers pass through unwrapped. The ``initial_messages`` trait keeps
+        domain messages because wrapping happens below this chokepoint, at the
+        widget.
         """
         if buffers is None:
             self.widget.send(message)
@@ -1375,15 +1374,16 @@ class MolSysView(
                 dict(capabilities) if isinstance(capabilities, Mapping) else {}
             )
             self._ready = True
-            for message in list(self._message_history):
+            binary_delivered = False
+            if self._current_molecular_projection is not None:
+                binary_delivered = self._try_send_array_native_molsys(
+                    self._current_molecular_projection
+                )
+            messages = self._build_embedded_runtime_snapshot(
+                include_molecular=not binary_delivered,
+            )
+            for message in messages:
                 self._deliver_transport_message(message)
-            self._sync_region_summaries_runtime()
-            self._sync_whole_summary_runtime()
-            self._sync_annotation_summaries_runtime()
-            self._sync_measurement_summaries_runtime()
-            self._sync_shape_summaries_runtime()
-            self._sync_layer_summaries_runtime()
-            self._sync_section_summaries_runtime()
         elif event in {
             "structure_data_begin_ack",
             "structure_data_chunk_ack",
@@ -2333,8 +2333,6 @@ class MolSysView(
 
         self._clear_dynamic_region_cache()
 
-        # Rebuild the message history to reflect the new state (important for HTML exports).
-        self._message_history = []
         # Force the next visibility update to send a full state (the frontend is
         # reset by the rebuild, so a delta against the old mask would be wrong).
         self._last_visibility_mask = None
@@ -2644,13 +2642,11 @@ class MolSysView(
                 }
 
         if delta_msg is not None:
-            # Record the authoritative full state for replay/export (stateless and
-            # reproducible), but only put the small delta on the wire.
-            self._message_history.append(full_msg)
+            # The atom mask is authoritative; put only the smaller delta on the
+            # live wire. Canonical snapshots regenerate the full state from it.
             self._send_runtime_only(delta_msg)
         else:
-            # First send, post-rebuild, not-ready, or a delta that is not smaller:
-            # send and record the full state.
+            # First send, post-rebuild, not-ready, or a delta that is not smaller.
             self._send(full_msg)
 
     def _resend_full_visibility(self):

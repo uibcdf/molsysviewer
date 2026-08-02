@@ -12,19 +12,18 @@ def _ready_view_with_capture(n_atoms: int = 10):
     return view, sent
 
 
-def test_first_visibility_send_is_full_and_versioned_and_recorded():
+def test_first_visibility_send_is_full_and_versioned():
     view, sent = _ready_view_with_capture()
     view._update_visibility_in_frontend()  # noqa: SLF001
 
     assert sent[-1]["op"] == "update_visibility"
     assert sent[-1]["options"]["version"] == 1
     assert sent[-1]["options"]["visible_atom_indices"] == list(range(10))
-    # Full state is recorded in the reproducible message history.
-    recorded = [m for m in view._message_history if m.get("op") == "update_visibility"]  # noqa: SLF001
+    recorded = [m for m in view._test_message_log if m.get("op") == "update_visibility"]  # noqa: SLF001
     assert recorded and recorded[-1]["options"]["version"] == 1
 
 
-def test_small_change_sends_delta_but_records_full_state():
+def test_small_change_sends_delta_but_projects_full_current_state():
     view, sent = _ready_view_with_capture()
     view._update_visibility_in_frontend()  # noqa: SLF001  (full, v1)
 
@@ -39,10 +38,13 @@ def test_small_change_sends_delta_but_records_full_state():
     assert sent[-1]["options"]["hidden"] == [3]
     assert sent[-1]["options"]["shown"] == []
 
-    # The authoritative full state is still recorded for replay/export.
-    recorded = [m for m in view._message_history if m.get("op") == "update_visibility"]  # noqa: SLF001
-    assert recorded[-1]["options"]["version"] == 2
-    assert 3 not in recorded[-1]["options"]["visible_atom_indices"]
+    projected = next(
+        message
+        for message in view._build_canvas_snapshot(include_molecular=False)  # noqa: SLF001
+        if message.get("op") == "update_visibility"
+    )
+    assert projected["options"]["version"] == 2
+    assert 3 not in projected["options"]["visible_atom_indices"]
 
 
 def test_no_change_sends_nothing():

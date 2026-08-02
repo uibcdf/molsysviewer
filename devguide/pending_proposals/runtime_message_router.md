@@ -252,9 +252,9 @@ authority with bounded per-session command deduplication); TypeScript through
 Python is the sole authority; the widget host is a single 1:1 endpoint and does
 not run a browser-side router (unlike the popup topology). The envelope wrapping
 lives in `MolSysViewerWidget.send` — the connector owns its wire format — so Qt
-and other transports stay raw, `initial_messages` and `_message_history` keep
-domain messages, and tests that replace `view.widget.send` observe the domain
-message. `MolSysView._send_widget_message` is the single outbound chokepoint;
+and other transports stay raw, `initial_messages` keeps domain messages, and
+tests that replace `view.widget.send` observe the domain message.
+`MolSysView._send_widget_message` is the single outbound chokepoint;
 `_handle_inbound_message` validates identity, direction, and action↔payload
 coherence, deduplicates commands (a duplicate yields an observable
 `command_duplicate_ack` and is not re-applied), and unwraps to exactly the
@@ -281,18 +281,12 @@ exact target origin. Duplicate popup commands are rejected by the shared
 router. Popup runtime controls emit one intent and wait for the host projection
 instead of mutating locally and then asking the host to repeat the mutation.
 
-The former raw `commandLog` is replaced by `PopupReplayLog`. It retains only
-the current molecular generation, coalesces current-state/high-frequency
-projections, and supplies panel popups from an explicit UI-only allowlist.
-Panel bootstrap therefore contains no topology, coordinates, or visual
-operations that require a molecular structure. Canvas bootstrap still uses one
-current JSON molecular projection until D4 adds binary endpoint delivery.
-
-This is a bounded-data safety step, not yet the final canonical scene
-projection. Non-reducible scene operations still form a replay journal and can
-grow during a very long session. Closing R2 therefore still requires replacing
-that journal with a Python/controller-derived current scene projection whose
-size depends on current scene content, not interaction history.
+The first bounded-data step replaced the raw `commandLog` with
+`PopupReplayLog`. That intermediate journal was subsequently removed from the
+interactive path by the canonical Python scene projector described below.
+Panel bootstrap contains no topology, coordinates, or visual operations that
+require a molecular structure; canvas bootstrap receives its addressed typed
+molecular generation through D4.
 
 Control-plane close/dispose revokes the channel, reopening creates a fresh
 token, and widget disposal closes both canvas and panel popups.
@@ -307,7 +301,7 @@ session, and must not receive or originate mutations for the replacement
 viewer. A newly opened popup must authenticate under the new session and
 bootstrap from the canonical snapshot. R2 does not add implicit popup rebind.
 
-#### R2 canonical snapshot — approved design (in implementation)
+#### R2 canonical snapshot — implemented
 
 The remaining R2 work replaces the `PopupReplayLog` journal with a
 Python-originated **current-scene projector**. Approved decisions:

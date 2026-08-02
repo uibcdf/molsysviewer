@@ -97,7 +97,7 @@ def test_region_reset_colors_reveals_whole_layer_underneath():
     assert view._atom_color_layers["A"] == {}  # noqa: SLF001
     assert view._atom_color_map[0] == 0x111111  # noqa: SLF001
     assert view._atom_color_map[1] == 0x111111  # noqa: SLF001
-    assert view._message_history[-1] == {  # noqa: SLF001
+    assert view._test_message_log[-1] == {  # noqa: SLF001
         "op": "set_atom_colors",
         "atom_indices": [0, 1],
         "colors": [0x111111, 0x111111],
@@ -127,7 +127,7 @@ def test_whole_reset_colors_preserves_region_layer_and_delete_reveals_beneath():
 
     assert "A" not in view._atom_color_layers  # noqa: SLF001
     assert view._atom_color_map == {}  # noqa: SLF001
-    assert view._message_history[-1] == {  # noqa: SLF001
+    assert view._test_message_log[-1] == {  # noqa: SLF001
         "op": "clear_atom_colors",
         "atom_indices": [0, 1],
     }
@@ -163,7 +163,7 @@ def test_region_raise_to_front_reorders_color_and_notifies_frontend():
 
     assert a.order > b.order
     assert view._atom_color_map[1] == 0x111111  # noqa: SLF001
-    assert view._message_history[-1] == {"op": "set_region_order", "tag": "A", "order": a.order}  # noqa: SLF001
+    assert view._test_message_log[-1] == {"op": "set_region_order", "tag": "A", "order": a.order}  # noqa: SLF001
 
 
 def test_regions_manager_send_to_back_reorders_color_and_notifies_frontend():
@@ -179,7 +179,7 @@ def test_regions_manager_send_to_back_reorders_color_and_notifies_frontend():
 
     assert b.order < a.order
     assert view._atom_color_map[1] == 0x111111  # noqa: SLF001
-    assert view._message_history[-1] == {"op": "set_region_order", "tag": "B", "order": b.order}  # noqa: SLF001
+    assert view._test_message_log[-1] == {"op": "set_region_order", "tag": "B", "order": b.order}  # noqa: SLF001
 
 
 def test_region_rename_and_duplicate_preserve_color_layer_lifecycle():

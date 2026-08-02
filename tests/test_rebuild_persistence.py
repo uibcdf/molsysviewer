@@ -36,7 +36,7 @@ def test_rebuild_persistence_and_hierarchy():
     assert new_n_atoms == initial_n_atoms - 5
 
     # 4. Verify hierarchy in the new payload
-    load_msg = next(m for m in view._message_history if m.get('op') == 'load_molsys_payload')
+    load_msg = next(m for m in view._test_message_log if m.get('op') == 'load_molsys_payload')
     payload_atoms = load_msg.get('payload', {}).get('atoms', {})
     
     assert 'molecule_id' in payload_atoms
@@ -52,7 +52,7 @@ def test_rebuild_persistence_and_hierarchy():
     
     def get_history_msg(op, tag):
         msgs = []
-        for msg in view._message_history:
+        for msg in view._test_message_log:
             msg_op = msg.get('op')
             msg_tag = msg.get('tag') or msg.get('options', {}).get('tag')
             if msg_op == op and msg_tag == tag:

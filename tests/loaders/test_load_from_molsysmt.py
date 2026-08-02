@@ -23,7 +23,7 @@ def test_load_from_molsysmt_creates_a_lazy_direct_molsys_projection(monkeypatch)
     result = load_from_molsysmt(molecular_system=source, view=view)
 
     assert result is view
-    message = next(msg for msg in view._message_history if msg.get("op") == "load_molsys_payload")  # noqa: SLF001
+    message = next(msg for msg in view._test_message_log if msg.get("op") == "load_molsys_payload")  # noqa: SLF001
     assert isinstance(message, LazyMolecularMessage)
     assert not message.is_materialized
     assert viewer_json_calls == []
@@ -40,7 +40,7 @@ def test_load_from_molsysmt_creates_view_when_missing():
     result = load_from_molsysmt(molecular_system=source_view.molsys)
 
     assert isinstance(result, MolSysView)
-    assert any(msg.get("op") == "load_molsys_payload" for msg in result._message_history)  # noqa: SLF001
+    assert any(msg.get("op") == "load_molsys_payload" for msg in result._test_message_log)  # noqa: SLF001
 
 
 def test_product_python_never_requests_a_viewerjson_intermediate():

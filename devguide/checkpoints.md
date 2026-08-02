@@ -58,8 +58,8 @@ project state changes.
   classifies every action for Python (`runtime_contract.py` +
   `viewer/runtime_router.py`) and TypeScript (`runtime-actions.ts` +
   `widget-envelope.ts`). Enveloping lives in `MolSysViewerWidget.send` (the
-  connector owns the wire), so Qt stays raw and `initial_messages` /
-  `_message_history` keep domain messages. `_handle_inbound_message` validates
+  connector owns the wire), so Qt stays raw and `initial_messages` keeps domain
+  messages. `_handle_inbound_message` validates
   identity/direction/action↔payload coherence and deduplicates commands (a
   duplicate yields `command_duplicate_ack`, not a re-apply). Bootstrap source
   and binary buffers stay off the control-plane envelope.
@@ -74,8 +74,17 @@ project state changes.
   explicit UI projection allowlist. Panel bootstrap receives no molecular or
   structure-dependent visual operations.
 - Camera synchronization is an endpoint event, not a Python projection.
+- Embedded `ready`/reconnect now consumes the same canonical current-state
+  projector family as popups and static export. The generic append-only
+  `_message_history` has been removed; coalesced domain records and
+  `SceneHistory` remain as current-state and undo authorities respectively.
 
 ## Validation observed
+
+- Phase 4b canonical embedded readiness: `1191 passed`, `3 skipped` Python;
+  `265` JS; TypeScript `0`; message-path performance green; real Chrome widget
+  seam green. Returning readiness to an emitted-message trace, omitting one
+  summary domain, or reintroducing the generic journal each fails its guard.
 
 - Python full suite (end of round): `1146 passed`, `3 skipped`, `0 failed` via
   `pytest --receptor=llm tests/`. The 3 skips are pre-existing environment gates

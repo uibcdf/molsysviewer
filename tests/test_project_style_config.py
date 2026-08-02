@@ -56,8 +56,8 @@ def test_styles_load_project_config_can_apply_default_explicitly(tmp_path):
     summary = view.styles.load_project_config(str(config_path), apply_default=True)
 
     assert summary["applied_default"] is True
-    assert view._message_history[-1]["op"] == "set_whole_representation"  # noqa: SLF001
-    assert view._message_history[-1]["preset"] == "polymer-cartoon"  # noqa: SLF001
+    assert view._test_message_log[-1]["op"] == "set_whole_representation"  # noqa: SLF001
+    assert view._test_message_log[-1]["preset"] == "polymer-cartoon"  # noqa: SLF001
     current = view.styles.current()
     assert current is not None
     assert current.preset == "polymer-cartoon"

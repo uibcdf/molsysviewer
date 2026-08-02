@@ -14,7 +14,7 @@ def test_focus_with_fade_emits_set_focus_fade_for_atom_list():
 
     view.focus_with_fade([0, 1, 2], fade=0.8, skip_digestion=True)
 
-    last = view._message_history[-1]  # noqa: SLF001
+    last = view._test_message_log[-1]  # noqa: SLF001
     assert last["op"] == "set_focus_fade"
     assert last["options"]["focus_atom_indices"] == [0, 1, 2]
     assert last["options"]["fade"] == 0.8
@@ -27,7 +27,7 @@ def test_focus_with_fade_all_clears():
 
     view.focus_with_fade("all", skip_digestion=True)
 
-    last = view._message_history[-1]  # noqa: SLF001
+    last = view._test_message_log[-1]  # noqa: SLF001
     assert last["op"] == "set_focus_fade"
     assert last["options"]["focus_atom_indices"] is None
     assert last["options"]["fade"] == 0.0
@@ -40,6 +40,6 @@ def test_focus_with_fade_zero_fade_clears():
 
     view.focus_with_fade([0, 1], fade=0.0, skip_digestion=True)
 
-    last = view._message_history[-1]  # noqa: SLF001
+    last = view._test_message_log[-1]  # noqa: SLF001
     assert last["op"] == "set_focus_fade"
     assert last["options"]["focus_atom_indices"] is None

@@ -93,7 +93,7 @@ def test_context_action_create_region_from_selection_executes_python_bridge():
     )  # noqa: SLF001
 
     assert "region1" in view.regions
-    created = next(msg for msg in view._message_history if msg.get("op") == "create_region")  # noqa: SLF001
+    created = next(msg for msg in view._test_message_log if msg.get("op") == "create_region")  # noqa: SLF001
     assert created["tag"] == "region1"
     assert created["atom_indices"] == event["atom_indices"]
 
@@ -156,7 +156,7 @@ def test_context_action_remove_selection_is_noop_without_molsysmt_addon():
     n_atoms_after = int(msm.get(view._molsys, element="system", n_atoms=True, skip_digestion=True))  # noqa: SLF001
     assert n_atoms_after == n_atoms_before
     assert view.active_selection.is_empty(skip_digestion=True) is True
-    assert view._message_history[-1]["op"] == "clear_active_selection"  # noqa: SLF001
+    assert view._test_message_log[-1]["op"] == "clear_active_selection"  # noqa: SLF001
 
 
 def test_context_action_remove_selection_prefers_molsysmt_addon_bridge():
@@ -253,7 +253,7 @@ def test_context_action_activate_selection_executes_python_bridge():
     )
 
     assert view.active_selection.group_indices == [1]
-    assert view._message_history[-1]["op"] == "set_active_selection"  # noqa: SLF001
+    assert view._test_message_log[-1]["op"] == "set_active_selection"  # noqa: SLF001
 
 
 def test_add_label_from_active_selection_creates_replayable_annotation():

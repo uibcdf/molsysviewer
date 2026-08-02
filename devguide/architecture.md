@@ -11,8 +11,12 @@ We use `anywidget` to embed Mol* inside Jupyter environments.
 - **Runtime envelope (2026-07)**: those ops now travel inside a `RuntimeEnvelope` carrying viewer, session and endpoint identity, a declared direction, and the action name. Python is the single authority: it validates identity and direction, deduplicates commands so one accepted command means one public-API mutation and one history checkpoint, and only it emits projections. A shared manifest, `molsysviewer/runtime_actions.json`, classifies every action and is loaded by both Python and TypeScript, so neither side can drift. See [`pending_proposals/runtime_message_router.md`](pending_proposals/runtime_message_router.md).
 - **Structural data plane**: coordinates for a materialized `MolSys` travel as typed binary buffers, planar per structure, so Mol\* frames are zero-copy views. JSON remains as an observable fallback. See [`pending_proposals/data_plane_architecture.md`](pending_proposals/data_plane_architecture.md).
 - **MolSys payload vocabulary**: `residue_id` / `residue_name` are intentional in the Python → TypeScript payload. The TS loader materializes them as Mol*/mmCIF `atom_site` columns (`label_seq_id`, `auth_seq_id`, `label_comp_id`, `auth_comp_id`). This is only a wire-boundary translation from MolSysSuite `group_id` / `group_name`; public Python APIs and interaction payloads keep the `group_*` vocabulary.
-- **Latency Handling**: if the frontend is not ready, messages are queued in `MolSysView._pending_messages` and flushed upon the `ready` event.
-- **Projection**: popup and static HTML bootstrap rebuild current state from live registries. Their size depends on the scene, not on how long the session has run. `_message_history` remains a live-runtime implementation detail while Phase 4b decides its bounded reconnect contract; it is not static-export authority.
+- **Readiness**: live mutations are sent only after the frontend is ready. A new
+  or reattached frontend receives the embedded-runtime canonical projection;
+  array-native structure delivery remains ahead of its deferred scene through S8.
+- **Projection**: popup, embedded-runtime reconnect and static HTML bootstrap
+  rebuild current state from live registries. Their size depends on the scene,
+  not on how long the session has run. There is no generic replay journal.
 
 ## Frontend Components (TypeScript)
 
@@ -32,7 +36,7 @@ The Python side is intentionally layered:
 
 - **`MolSysView`**:
   - orchestration facade for loading, visibility, editing, export, and camera control.
-  - owns replay state and viewer-facing registries.
+  - owns current molecular projection and viewer-facing registries.
 - **`Whole`, `Region`, `Layer`**:
   - small domain wrappers around global representation, structural subsets, and non-structural visual groups.
 - **`ShapesManager` + shape modules**:
@@ -88,7 +92,8 @@ When `apply_system_edit` runs:
 - visibility is restored;
 - atom-index based state is remapped when topology changes;
 - the rebuilt live registries must remain sufficient for canonical popup and static-export projection;
-- any intentionally retained `_message_history` use belongs to the separate live reconnect contract, not export correctness.
+- reconnect and export are regenerated from those registries, not from commands
+  emitted before the rebuild.
 
 This rebuild path is a regression-tested contract, not an implementation detail.
 

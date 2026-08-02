@@ -51,12 +51,12 @@ def test_apply_system_edit_reconciles_external_molsysmt_edit():
     assert bool(view.atom_mask[0]) is True
     assert bool(view.atom_mask[1]) is False
 
-    payload_msg = next(msg for msg in view._message_history if msg.get("op") == "load_molsys_payload")
+    payload_msg = next(msg for msg in view._test_message_log if msg.get("op") == "load_molsys_payload")
     assert len(payload_msg["payload"]["atoms"]["atom_id"]) == 21
 
     links_msg = next(
         msg
-        for msg in view._message_history
+        for msg in view._test_message_log
         if msg.get("op") == "add_network_links" and msg.get("options", {}).get("tag") == "links"
     )
     assert links_msg["options"]["atom_pairs"] == [[0, 1]]
@@ -95,26 +95,26 @@ def test_append_structures_rebuild_preserves_state_and_sets_multiple_structures(
     assert len(view.atom_mask) == 22
     assert view.atom_mask.all()
 
-    ops = [msg.get("op") for msg in view._message_history]
+    ops = [msg.get("op") for msg in view._test_message_log]
     assert ops[:2] == ["clear_all", "load_molsys_payload"]
 
-    payload_msg = next(msg for msg in view._message_history if msg.get("op") == "load_molsys_payload")
+    payload_msg = next(msg for msg in view._test_message_log if msg.get("op") == "load_molsys_payload")
     assert payload_msg["multiple_structures"] is True
     assert len(payload_msg["payload"]["structures"]) == 2
 
-    create_region_msg = next(msg for msg in view._message_history if msg.get("op") == "create_region")
+    create_region_msg = next(msg for msg in view._test_message_log if msg.get("op") == "create_region")
     assert create_region_msg["tag"] == "frag"
     assert create_region_msg["atom_indices"] == [0, 1, 2]
 
     pocket_msg = next(
         msg
-        for msg in view._message_history
+        for msg in view._test_message_log
         if msg.get("op") == "add_pocket_surface" and msg.get("options", {}).get("tag") == "pocket"
     )
     assert pocket_msg["options"]["atom_indices"] == [0, 1, 2]
 
-    assert {"op": "hide_layer", "tag": "pocket", "kind": "shape"} in view._message_history
-    assert {"op": "hide_region", "tag": "frag"} in view._message_history
+    assert {"op": "hide_layer", "tag": "pocket", "kind": "shape"} in view._test_message_log
+    assert {"op": "hide_region", "tag": "frag"} in view._test_message_log
 
 
 def test_load_mode_append_structures_delegates_to_append_path():
@@ -123,7 +123,7 @@ def test_load_mode_append_structures_delegates_to_append_path():
 
     view.load(demo["dialanine"]._molsys, mode="append_structures", skip_digestion=True)  # noqa: SLF001
 
-    payload_msg = next(msg for msg in view._message_history if msg.get("op") == "load_molsys_payload")
+    payload_msg = next(msg for msg in view._test_message_log if msg.get("op") == "load_molsys_payload")
     assert payload_msg["multiple_structures"] is True
     assert len(payload_msg["payload"]["structures"]) == 2
     assert len(view._load_blocks) == 1  # noqa: SLF001
@@ -153,7 +153,7 @@ def test_load_mode_append_structures_supports_topology_only_view():
 
     view.load(demo["dialanine"]._molsys, mode="append_structures", skip_digestion=True)  # noqa: SLF001
 
-    payload_msg = next(msg for msg in view._message_history if msg.get("op") == "load_molsys_payload")
+    payload_msg = next(msg for msg in view._test_message_log if msg.get("op") == "load_molsys_payload")
     assert payload_msg["multiple_structures"] is False
     assert len(payload_msg["payload"]["structures"]) == 1
 
@@ -164,7 +164,7 @@ def test_load_mode_auto_replaces_on_empty_view():
 
     view.load(demo["dialanine"]._molsys, mode="auto", skip_digestion=True)  # noqa: SLF001
 
-    payload_msg = next(msg for msg in view._message_history if msg.get("op") == "load_molsys_payload")
+    payload_msg = next(msg for msg in view._test_message_log if msg.get("op") == "load_molsys_payload")
     assert payload_msg["multiple_structures"] is False
     assert len(payload_msg["payload"]["atoms"]["atom_id"]) == 22
     assert len(view._load_blocks) == 1  # noqa: SLF001
@@ -176,7 +176,7 @@ def test_load_mode_auto_appends_when_input_has_same_atom_count_and_no_topology()
 
     view.load(demo["dialanine"]._molsys.structures.copy(), mode="auto", skip_digestion=True)  # noqa: SLF001
 
-    payload_msg = next(msg for msg in view._message_history if msg.get("op") == "load_molsys_payload")
+    payload_msg = next(msg for msg in view._test_message_log if msg.get("op") == "load_molsys_payload")
     assert payload_msg["multiple_structures"] is True
     assert len(payload_msg["payload"]["structures"]) == 2
     assert len(view._load_blocks) == 1  # noqa: SLF001
@@ -222,29 +222,29 @@ def test_add_rebuild_preserves_state_and_expands_atom_payload(monkeypatch):
     assert view.atom_mask[:22].all()
     assert not view.atom_mask[22:].any()
 
-    ops = [msg.get("op") for msg in view._message_history]
+    ops = [msg.get("op") for msg in view._test_message_log]
     assert ops[:2] == ["clear_all", "load_molsys_payload"]
 
-    payload_msg = next(msg for msg in view._message_history if msg.get("op") == "load_molsys_payload")
+    payload_msg = next(msg for msg in view._test_message_log if msg.get("op") == "load_molsys_payload")
     assert payload_msg["multiple_structures"] is False
     assert len(payload_msg["payload"]["atoms"]["atom_id"]) == 44
     assert len(payload_msg["payload"]["structures"]) == 1
 
-    create_region_msg = next(msg for msg in view._message_history if msg.get("op") == "create_region")
+    create_region_msg = next(msg for msg in view._test_message_log if msg.get("op") == "create_region")
     assert create_region_msg["tag"] == "frag"
     assert create_region_msg["atom_indices"] == [0, 1, 2]
 
     pocket_msg = next(
         msg
-        for msg in view._message_history
+        for msg in view._test_message_log
         if msg.get("op") == "add_pocket_surface" and msg.get("options", {}).get("tag") == "pocket"
     )
     assert pocket_msg["options"]["atom_indices"] == [0, 1, 2]
 
-    assert {"op": "hide_layer", "tag": "pocket", "kind": "shape"} in view._message_history
-    assert {"op": "hide_region", "tag": "frag"} in view._message_history
+    assert {"op": "hide_layer", "tag": "pocket", "kind": "shape"} in view._test_message_log
+    assert {"op": "hide_region", "tag": "frag"} in view._test_message_log
 
-    visibility_msg = next(msg for msg in reversed(view._message_history) if msg.get("op") == "update_visibility")
+    visibility_msg = next(msg for msg in reversed(view._test_message_log) if msg.get("op") == "update_visibility")
     assert visibility_msg["options"]["visible_atom_indices"] == list(range(22))
 
 
@@ -271,11 +271,11 @@ def test_set_rebuild_updates_group_name_and_preserves_hidden_state():
 
     assert view.regions["frag"].atom_indices == (0, 1, 2)
 
-    payload_msg = next(msg for msg in view._message_history if msg.get("op") == "load_molsys_payload")
+    payload_msg = next(msg for msg in view._test_message_log if msg.get("op") == "load_molsys_payload")
     assert payload_msg["payload"]["atoms"]["residue_name"][:5] == ["ACE2"] * 5
 
-    assert {"op": "hide_layer", "tag": "pocket", "kind": "shape"} in view._message_history
-    assert {"op": "hide_region", "tag": "frag"} in view._message_history
+    assert {"op": "hide_layer", "tag": "pocket", "kind": "shape"} in view._test_message_log
+    assert {"op": "hide_region", "tag": "frag"} in view._test_message_log
 
 
 def test_apply_system_edit_replays_visual_region_as_bare_create_then_style():
@@ -293,7 +293,7 @@ def test_apply_system_edit_replays_visual_region_as_bare_create_then_style():
     apply_set(view, element="group", selection=[0], group_name="ACE2")
 
     region_ops = [
-        msg for msg in view._message_history  # noqa: SLF001
+        msg for msg in view._test_message_log  # noqa: SLF001
         if msg.get("tag") == "frag"
         and msg.get("op") in {"create_region", "set_region_representation"}
     ]
@@ -321,7 +321,7 @@ def test_set_rebuild_updates_coordinates_with_quantity():
     )
     region.hide(skip_digestion=True)
 
-    original_payload = next(msg for msg in view._message_history if msg.get("op") == "load_molsys_payload")
+    original_payload = next(msg for msg in view._test_message_log if msg.get("op") == "load_molsys_payload")
     original_first = original_payload["payload"]["structures"][0]["coordinates"][0]
 
     apply_set(
@@ -331,13 +331,13 @@ def test_set_rebuild_updates_coordinates_with_quantity():
         coordinates=puw.quantity([[[0.1, 0.2, 0.3]]], "nm"),
     )
 
-    payload_msg = next(msg for msg in view._message_history if msg.get("op") == "load_molsys_payload")
+    payload_msg = next(msg for msg in view._test_message_log if msg.get("op") == "load_molsys_payload")
     updated_first = payload_msg["payload"]["structures"][0]["coordinates"][0]
 
     assert updated_first != original_first
     assert updated_first == pytest.approx([1.0, 2.0, 3.0])
     assert view.regions["frag"].atom_indices == (0, 1, 2)
-    assert {"op": "hide_region", "tag": "frag"} in view._message_history
+    assert {"op": "hide_region", "tag": "frag"} in view._test_message_log
 
 
 def test_load_first_block_does_not_create_automatic_regions():
@@ -427,7 +427,7 @@ def test_consecutive_live_edits_keep_replay_state_consistent(monkeypatch):
     apply_append_structures(view, demo["dialanine"]._molsys)  # noqa: SLF001
     apply_remove(view, selection=[0])
 
-    ops = [msg.get("op") for msg in view._message_history]
+    ops = [msg.get("op") for msg in view._test_message_log]
     assert ops == [
         "clear_all",
         "load_molsys_payload",
@@ -439,24 +439,24 @@ def test_consecutive_live_edits_keep_replay_state_consistent(monkeypatch):
         "update_visibility",
     ]
 
-    payload_msg = next(msg for msg in view._message_history if msg.get("op") == "load_molsys_payload")
+    payload_msg = next(msg for msg in view._test_message_log if msg.get("op") == "load_molsys_payload")
     assert payload_msg["multiple_structures"] is True
     assert len(payload_msg["payload"]["structures"]) == 2
     assert len(payload_msg["payload"]["atoms"]["atom_id"]) == 21
     assert payload_msg["payload"]["atoms"]["residue_name"][:5] == ["ACE2"] * 5
 
-    create_region_msg = next(msg for msg in view._message_history if msg.get("op") == "create_region")
+    create_region_msg = next(msg for msg in view._test_message_log if msg.get("op") == "create_region")
     assert create_region_msg["atom_indices"] == [0, 1]
     assert view.regions["frag"].atom_indices == (0, 1)
 
     pocket_msg = next(
         msg
-        for msg in view._message_history
+        for msg in view._test_message_log
         if msg.get("op") == "add_pocket_surface" and msg.get("options", {}).get("tag") == "pocket"
     )
     assert pocket_msg["options"]["atom_indices"] == [0, 1]
 
-    visibility_msg = next(msg for msg in reversed(view._message_history) if msg.get("op") == "update_visibility")
+    visibility_msg = next(msg for msg in reversed(view._test_message_log) if msg.get("op") == "update_visibility")
     assert visibility_msg["options"]["visible_atom_indices"] == list(range(21))
 
 
@@ -480,10 +480,10 @@ def test_remove_rebuild_drops_orphaned_regions_and_shapes_but_keeps_anchored_obj
     assert view.annotations.info("orphan-label")["broken"] is True
     assert view.measurements.info("orphan-distance")["broken"] is True
 
-    assert not any(msg.get("tag") == "orphan-region" for msg in view._message_history)  # noqa: SLF001
+    assert not any(msg.get("tag") == "orphan-region" for msg in view._test_message_log)  # noqa: SLF001
     assert not any(
         msg.get("options", {}).get("tag") in {"orphan-shape", "orphan-label", "orphan-distance"}
-        for msg in view._message_history  # noqa: SLF001
+        for msg in view._test_message_log  # noqa: SLF001
     )
 
 
@@ -679,16 +679,16 @@ def test_remove_rebuild_remaps_regions_shapes_and_visibility():
     assert bool(view.atom_mask[0]) is True
     assert bool(view.atom_mask[1]) is False
 
-    ops = [msg.get("op") for msg in view._message_history]
+    ops = [msg.get("op") for msg in view._test_message_log]
     assert ops[:3] == ["clear_all", "load_molsys_payload", "hide_whole"]
 
-    create_region_msg = next(msg for msg in view._message_history if msg.get("op") == "create_region")
+    create_region_msg = next(msg for msg in view._test_message_log if msg.get("op") == "create_region")
     assert create_region_msg["tag"] == "frag"
     assert create_region_msg["atom_indices"] == [0, 1]
 
     pocket_msg = next(
         msg
-        for msg in view._message_history
+        for msg in view._test_message_log
         if msg.get("op") == "add_pocket_surface" and msg.get("options", {}).get("tag") == "pocket"
     )
     assert pocket_msg["options"]["atom_indices"] == [0, 1]
@@ -696,18 +696,18 @@ def test_remove_rebuild_remaps_regions_shapes_and_visibility():
 
     links_msg = next(
         msg
-        for msg in view._message_history
+        for msg in view._test_message_log
         if msg.get("op") == "add_network_links" and msg.get("options", {}).get("tag") == "links"
     )
     assert links_msg["options"]["atom_pairs"] == [[1, 2]]
 
-    assert {"op": "hide_layer", "tag": "pocket", "kind": "shape"} in view._message_history
+    assert {"op": "hide_layer", "tag": "pocket", "kind": "shape"} in view._test_message_log
     assert not any(
         msg.get("op") == "add_pocket_surface" and msg.get("options", {}).get("tag") == "dropme"
-        for msg in view._message_history
+        for msg in view._test_message_log
     )
 
-    visibility_msg = next(msg for msg in reversed(view._message_history) if msg.get("op") == "update_visibility")
+    visibility_msg = next(msg for msg in reversed(view._test_message_log) if msg.get("op") == "update_visibility")
     assert visibility_msg["options"]["visible_atom_indices"] == [
         0,
         2,
@@ -754,7 +754,7 @@ def test_remove_rebuild_remaps_and_replays_per_atom_colors():
     }
     assert view._atom_color_map == expected_colors  # noqa: SLF001
 
-    color_msg = next(msg for msg in view._message_history if msg.get("op") == "set_atom_colors")
+    color_msg = next(msg for msg in view._test_message_log if msg.get("op") == "set_atom_colors")
     assert color_msg["replace"] is True
     assert color_msg["atom_indices"] == list(expected_colors.keys())
     assert color_msg["colors"] == list(expected_colors.values())
@@ -770,7 +770,7 @@ def test_remove_rebuild_preserves_hidden_styled_whole():
     apply_remove(view, selection=[0])
 
     assert view.whole.visible is False
-    ops = [msg.get("op") for msg in view._message_history]
+    ops = [msg.get("op") for msg in view._test_message_log]
     assert ops[:2] == ["clear_all", "load_molsys_payload"]
     assert "set_whole_representation" in ops
     assert ops.index("hide_whole") > ops.index("set_whole_representation")

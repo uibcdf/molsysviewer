@@ -59,7 +59,7 @@ def test_molsysview_load_uses_molsysmt_payload():
     # The scene is retained for the ready handshake, but not sent before the widget is ready.
     msg = next(  # noqa: SLF001
         message
-        for message in reversed(view._message_history)
+        for message in reversed(view._test_message_log)
         if message.get("op") == "load_molsys_payload"
     )
     assert sent == []

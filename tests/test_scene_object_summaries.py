@@ -201,7 +201,7 @@ def test_shape_panel_capability_matrix_only_exposes_working_mutators():
             view._scene_objects[("shape", "shape")] = shape  # noqa: SLF001
             message = {"op": op, "options": dict(generic_options)}
             view._shape_history = [message]  # noqa: SLF001
-            view._message_history = [message]  # noqa: SLF001
+            view._test_message_log = [message]  # noqa: SLF001
 
             getattr(shape, capability)(argument[capability], skip_digestion=True)
 
@@ -237,17 +237,14 @@ def test_adding_rings_publishes_the_authoritative_summary():
     assert summaries[-1]["shapes"][0]["op"] == "add_rings"
 
 
-def test_ready_resends_all_scene_object_summaries_runtime_only(monkeypatch):
+def test_ready_projects_all_scene_object_summaries():
     view = _view()
-    sent_ops = []
-    monkeypatch.setattr(
-        view,
-        "_send_runtime_only",
-        lambda message: sent_ops.append(message["op"]),
-    )
+    sent = []
+    view.widget.send = lambda message: sent.append(dict(message))  # type: ignore[method-assign]
 
     view._handle_frontend_event({"event": "ready"})  # noqa: SLF001
 
+    sent_ops = [message.get("op") for message in sent]
     assert "set_annotation_summaries" in sent_ops
     assert "set_measurement_summaries" in sent_ops
     assert "set_shape_summaries" in sent_ops
@@ -375,7 +372,7 @@ def test_measurement_series_panel_request_uses_runtime_only_transport():
     view.measurements.add_distance([0], [1], tag="d1")
     sent = []
     view._send_runtime_only = lambda message: sent.append(message)  # type: ignore[method-assign]
-    history_size = len(view._message_history)  # noqa: SLF001
+    history_size = len(view._test_message_log)  # noqa: SLF001
 
     view._handle_frontend_event({  # noqa: SLF001
         "event": "interaction_context_action",
@@ -386,7 +383,7 @@ def test_measurement_series_panel_request_uses_runtime_only_transport():
 
     assert sent[-1]["op"] == "measurement_series"
     assert sent[-1]["request_id"] == 17
-    assert len(view._message_history) == history_size  # noqa: SLF001
+    assert len(view._test_message_log) == history_size  # noqa: SLF001
 
 
 def test_measurement_settings_round_trip_with_scene_state():

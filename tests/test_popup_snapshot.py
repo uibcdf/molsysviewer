@@ -10,7 +10,7 @@ from copy import deepcopy
 
 import pytest
 
-from molsysviewer import MolSysView
+from molsysviewer import FigureSpec, MolSysView
 
 MOLECULAR_OR_STRUCTURAL_OPS = {
     "load_molsys_payload",
@@ -72,23 +72,23 @@ def test_panel_snapshot_contains_no_molecular_or_structural_ops():
 
 def test_projector_is_pure_with_respect_to_history_and_state():
     v = _view_with_scene()
-    history_len = len(v._message_history)  # noqa: SLF001
+    history_len = len(v._test_message_log)  # noqa: SLF001
     mol_before = deepcopy(v._current_molecular_projection)  # noqa: SLF001
     v.build_popup_scene_snapshot("canvas")
     v.build_popup_scene_snapshot("panel")
-    assert len(v._message_history) == history_len  # noqa: SLF001  no checkpoints
+    assert len(v._test_message_log) == history_len  # noqa: SLF001  no checkpoints
     assert v._current_molecular_projection == mol_before  # noqa: SLF001  unchanged
 
 
-# -- invariance (mutation: build from _message_history) ----------------------
+# -- invariance under emitted-traffic growth ---------------------------------
 
-def test_snapshot_is_byte_for_byte_identical_under_history_growth():
+def test_snapshot_is_byte_for_byte_identical_under_protocol_trace_growth():
     v = _view_with_scene()
     before = v.build_popup_scene_snapshot("canvas")
-    # Inflate the journal with thousands of unrelated ops.
-    v._message_history.extend({"op": "noise", "n": i} for i in range(10_000))  # noqa: SLF001
+    # Inflate pytest's protocol trace with thousands of unrelated ops.
+    v._test_message_log.extend({"op": "noise", "n": i} for i in range(10_000))  # noqa: SLF001
     after = v.build_popup_scene_snapshot("canvas")
-    assert before == after  # a history-derived projector would grow here
+    assert before == after  # a trace-derived projector would grow here
 
 
 def test_size_depends_only_on_live_state_not_interaction_count():
@@ -101,6 +101,23 @@ def test_size_depends_only_on_live_state_not_interaction_count():
     snap2 = v.build_popup_scene_snapshot("canvas")
     assert len(snap1) == len(snap2)
     assert _normalize(snap1) == _normalize(snap2)
+
+
+def test_embedded_runtime_combines_canvas_and_panel_without_duplicate_state_ops():
+    v = _view_with_scene()
+    v.set_figure_spec(FigureSpec())
+
+    snapshot = v._build_embedded_runtime_snapshot()  # noqa: SLF001
+    ops = [message.get("op") for message in snapshot]
+
+    assert "load_molsys_payload" in ops
+    assert "create_region" in ops
+    assert "set_region_summaries" in ops
+    assert "set_addon_runtime_summary" in ops
+    assert "set_figure_spec" in ops
+    assert "set_camera_snapshot" not in ops
+    assert ops.count("set_active_selection") == 1
+    assert ops.count("set_measurement_settings") == 1
 
 
 # -- defensive copies (mutation: return internal references) -----------------

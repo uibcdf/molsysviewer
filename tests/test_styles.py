@@ -18,8 +18,8 @@ def test_styles_apply_representation_delegates_to_whole_message_flow():
     style = view.styles.apply(representation="cartoon")
 
     assert style.representation == "cartoon"
-    assert view._message_history[-1]["op"] == "set_whole_representation"  # noqa: SLF001
-    assert view._message_history[-1]["representation"] == "cartoon"  # noqa: SLF001
+    assert view._test_message_log[-1]["op"] == "set_whole_representation"  # noqa: SLF001
+    assert view._test_message_log[-1]["representation"] == "cartoon"  # noqa: SLF001
     current = view.styles.current()
     assert current is not None
     assert current.representation == "cartoon"
@@ -33,9 +33,9 @@ def test_styles_apply_style_object_tracks_name_and_params():
     applied = view.styles.apply(style=style)
 
     assert applied == style
-    assert view._message_history[-1]["op"] == "set_whole_representation"  # noqa: SLF001
-    assert view._message_history[-1]["preset"] == "polymer-cartoon"  # noqa: SLF001
-    assert view._message_history[-1]["params"] == {"quality": "auto"}  # noqa: SLF001
+    assert view._test_message_log[-1]["op"] == "set_whole_representation"  # noqa: SLF001
+    assert view._test_message_log[-1]["preset"] == "polymer-cartoon"  # noqa: SLF001
+    assert view._test_message_log[-1]["params"] == {"quality": "auto"}  # noqa: SLF001
     info = view.styles.info()
     assert info is not None
     assert info["name"] == "Polymers"
@@ -49,7 +49,7 @@ def test_styles_apply_representation_preserves_structural_color_scheme_param():
     style = view.styles.apply(representation="cartoon", color_scheme="secondary_structure_default")
 
     assert style.representation == "cartoon"
-    assert view._message_history[-1]["params"] == {"color_scheme": "secondary_structure_default"}  # noqa: SLF001
+    assert view._test_message_log[-1]["params"] == {"color_scheme": "secondary_structure_default"}  # noqa: SLF001
     current = view.styles.current()
     assert current is not None
     assert current.params["color_scheme"] == "secondary_structure_default"
@@ -61,7 +61,7 @@ def test_styles_apply_representation_preserves_structural_size_scheme_param():
     style = view.styles.apply(representation="cartoon", size_scheme="physical")
 
     assert style.representation == "cartoon"
-    assert view._message_history[-1]["params"] == {"size_scheme": "physical"}  # noqa: SLF001
+    assert view._test_message_log[-1]["params"] == {"size_scheme": "physical"}  # noqa: SLF001
     current = view.styles.current()
     assert current is not None
     assert current.params["size_scheme"] == "physical"
@@ -77,7 +77,7 @@ def test_styles_apply_representation_preserves_advanced_molstar_theme_params():
     )
 
     assert style.representation == "cartoon"
-    assert view._message_history[-1]["params"] == {  # noqa: SLF001
+    assert view._test_message_log[-1]["params"] == {  # noqa: SLF001
         "molstar_color_theme": {"name": "residue-name", "params": {"saturation": 0}},
         "molstar_size_theme": {"name": "uniform", "params": {"value": 2.0}},
     }
@@ -96,7 +96,7 @@ def test_styles_curated_scheme_has_priority_over_advanced_molstar_theme_param():
         molstar_color_theme="residue-name",
     )
 
-    assert view._message_history[-1]["params"] == {  # noqa: SLF001
+    assert view._test_message_log[-1]["params"] == {  # noqa: SLF001
         "color_scheme": "secondary_structure_default",
         "molstar_color_theme": "residue-name",
     }
@@ -142,8 +142,8 @@ def test_styles_apply_by_tag_uses_registered_style():
     applied = view.styles.apply(tag="publication")
 
     assert applied.preset == "polymer-cartoon"
-    assert view._message_history[-1]["op"] == "set_whole_representation"  # noqa: SLF001
-    assert view._message_history[-1]["preset"] == "polymer-cartoon"  # noqa: SLF001
+    assert view._test_message_log[-1]["op"] == "set_whole_representation"  # noqa: SLF001
+    assert view._test_message_log[-1]["preset"] == "polymer-cartoon"  # noqa: SLF001
 
 
 def test_styles_builtin_catalog_exposes_canonical_tags():
@@ -253,8 +253,8 @@ def test_styles_apply_by_tag_falls_back_to_builtin_catalog():
     applied = view.styles.apply(tag="atomic-detail")
 
     assert applied.preset == "atomic-detail"
-    assert view._message_history[-1]["op"] == "set_whole_representation"  # noqa: SLF001
-    assert view._message_history[-1]["preset"] == "atomic-detail"  # noqa: SLF001
+    assert view._test_message_log[-1]["op"] == "set_whole_representation"  # noqa: SLF001
+    assert view._test_message_log[-1]["preset"] == "atomic-detail"  # noqa: SLF001
 
 
 def test_styles_registry_overrides_builtin_with_same_tag():
@@ -265,7 +265,7 @@ def test_styles_registry_overrides_builtin_with_same_tag():
     applied = view.styles.apply(tag="default")
 
     assert applied == override
-    assert view._message_history[-1]["representation"] == "cartoon"  # noqa: SLF001
+    assert view._test_message_log[-1]["representation"] == "cartoon"  # noqa: SLF001
 
 
 # ---------------------------------------------------------------------------
@@ -339,7 +339,7 @@ def test_styles_focus_builtin_tag_creates_region():
     assert focus_tag in view.regions
     assert focus_tag in view.styles.focus_tags()
     # region should have a representation message
-    region_ops = [m["op"] for m in view._message_history if m.get("op") == "set_region_representation"]  # noqa: SLF001
+    region_ops = [m["op"] for m in view._test_message_log if m.get("op") == "set_region_representation"]  # noqa: SLF001
     assert len(region_ops) >= 1
 
 

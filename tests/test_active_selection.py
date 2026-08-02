@@ -52,7 +52,7 @@ def test_active_selection_clear_resets_python_state_and_emits_frontend_message()
 
     assert view.active_selection.is_empty() is True
     assert view.get_last_active_selection_event()["source_kind"] == "empty"
-    assert view._message_history[-1]["op"] == "clear_active_selection"  # noqa: SLF001
+    assert view._test_message_log[-1]["op"] == "clear_active_selection"  # noqa: SLF001
 
 
 def test_active_selection_focus_new_region_and_add_label_delegate_to_reproducible_apis():
@@ -60,8 +60,8 @@ def test_active_selection_focus_new_region_and_add_label_delegate_to_reproducibl
     atom_indices = _seed_group_selection(view, 1)
 
     view.active_selection.focus(duration_ms=50)
-    assert view._message_history[-1]["op"] == "zoom"  # noqa: SLF001
-    assert view._message_history[-1]["atom_indices"] == atom_indices  # noqa: SLF001
+    assert view._test_message_log[-1]["op"] == "zoom"  # noqa: SLF001
+    assert view._test_message_log[-1]["atom_indices"] == atom_indices  # noqa: SLF001
 
     region = view.active_selection.new_region(tag="picked", representation="ball_and_stick")
     assert region.tag == "picked"
@@ -81,7 +81,7 @@ def test_active_selection_set_selects_atoms_and_emits_frontend_message():
     assert result is view.active_selection
     assert sorted(view.active_selection.atom_indices) == expected
     assert view.active_selection.is_empty() is False
-    assert view._message_history[-1]["op"] == "set_active_selection"  # noqa: SLF001
+    assert view._test_message_log[-1]["op"] == "set_active_selection"  # noqa: SLF001
 
 
 def test_active_selection_set_with_empty_match_clears():
@@ -229,7 +229,7 @@ def test_context_action_apply_selection_query_records_composable_recipe():
 
 def test_context_action_preview_selection_query_is_runtime_only():
     view = demo["dialanine"]
-    before = len(view._message_history)  # noqa: SLF001
+    before = len(view._test_message_log)  # noqa: SLF001
     sent = []
     view._ready = True  # noqa: SLF001
     view.widget.send = sent.append
@@ -243,7 +243,7 @@ def test_context_action_preview_selection_query_is_runtime_only():
         }
     )
 
-    assert len(view._message_history) == before  # noqa: SLF001
+    assert len(view._test_message_log) == before  # noqa: SLF001
     assert sent[-1]["op"] == "selection_query_preview"
     assert sent[-1]["request_id"] == 7
     assert sent[-1]["ok"] is True
@@ -276,7 +276,7 @@ def test_context_action_apply_selection_query_error_keeps_active_selection():
 
 def test_context_action_preview_selection_query_error_is_inline_runtime_only():
     view = demo["dialanine"]
-    before = len(view._message_history)  # noqa: SLF001
+    before = len(view._test_message_log)  # noqa: SLF001
     sent = []
     view._ready = True  # noqa: SLF001
     view.widget.send = sent.append
@@ -290,7 +290,7 @@ def test_context_action_preview_selection_query_error_is_inline_runtime_only():
         }
     )
 
-    assert len(view._message_history) == before  # noqa: SLF001
+    assert len(view._test_message_log) == before  # noqa: SLF001
     assert sent[-1]["op"] == "selection_query_preview"
     assert sent[-1]["request_id"] == 8
     assert sent[-1]["ok"] is False
@@ -409,8 +409,8 @@ def test_context_action_expand_selection_uses_loaded_index_space_for_subset():
     assert view._structure_index_mapper is None  # noqa: SLF001
 
     view.active_selection.set([0])
-    assert view._message_history[-1]["op"] == "set_active_selection"  # noqa: SLF001
-    assert view._message_history[-1]["atom_indices"] == [0]  # noqa: SLF001
+    assert view._test_message_log[-1]["op"] == "set_active_selection"  # noqa: SLF001
+    assert view._test_message_log[-1]["atom_indices"] == [0]  # noqa: SLF001
 
     view._handle_frontend_event(  # noqa: SLF001
         {
@@ -421,5 +421,5 @@ def test_context_action_expand_selection_uses_loaded_index_space_for_subset():
     )
 
     assert view.active_selection.atom_indices == list(range(10))
-    assert view._message_history[-1]["op"] == "set_active_selection"  # noqa: SLF001
-    assert view._message_history[-1]["atom_indices"] == list(range(10))  # noqa: SLF001
+    assert view._test_message_log[-1]["op"] == "set_active_selection"  # noqa: SLF001
+    assert view._test_message_log[-1]["atom_indices"] == list(range(10))  # noqa: SLF001

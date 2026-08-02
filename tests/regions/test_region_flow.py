@@ -75,7 +75,7 @@ def test_region_boolean_composition_from_atom_indices():
         msg.get("op") == "create_region"
         and msg.get("tag") == "left-minus-right"
         and msg.get("atom_indices") == [0, 1]
-        for msg in view._message_history  # noqa: SLF001
+        for msg in view._test_message_log  # noqa: SLF001
     )
 
 
@@ -141,7 +141,7 @@ def test_region_reset_representation_removes_own_visual_state():
     assert region.representation is None
     assert region.preset is None
     assert region.repr_params == {}
-    assert view._message_history[-1] == {  # noqa: SLF001
+    assert view._test_message_log[-1] == {  # noqa: SLF001
         "op": "set_region_representation",
         "tag": "styled",
         "order": region.order,
@@ -155,14 +155,14 @@ def test_region_reset_representation_removes_own_visual_state():
 def test_none_region_hide_and_show_warn_without_frontend_visibility_message():
     view = _empty_view()
     region = view.regions.add(atom_indices=[0, 1, 2], tag="logical", skip_digestion=True)
-    before = len(view._message_history)  # noqa: SLF001
+    before = len(view._test_message_log)  # noqa: SLF001
 
     with pytest.warns(UserWarning, match="no own representation to hide"):
         region.hide(skip_digestion=True)
     with pytest.warns(UserWarning, match="no own representation to show"):
         region.show(skip_digestion=True)
 
-    assert len(view._message_history) == before  # noqa: SLF001
+    assert len(view._test_message_log) == before  # noqa: SLF001
     assert region._hidden is False  # noqa: SLF001
 
 
@@ -179,7 +179,7 @@ def test_new_region_with_visual_spec_preserves_representation_semantics():
 
     operations = [
         message
-        for message in view._message_history  # noqa: SLF001
+        for message in view._test_message_log  # noqa: SLF001
         if message.get("tag") == "one-build"
         and message.get("op") in {"create_region", "set_region_representation"}
     ]
@@ -218,7 +218,7 @@ def test_new_region_with_visual_params_preserves_none_representation():
     assert region.repr_params == {}
     operations = [
         message
-        for message in view._message_history  # noqa: SLF001
+        for message in view._test_message_log  # noqa: SLF001
         if message.get("tag") == "styled-default"
         and message.get("op") in {"create_region", "set_region_representation"}
     ]
@@ -242,7 +242,7 @@ def test_rebuild_replays_visual_region_as_bare_create_then_style():
         alpha=0.4,
         skip_digestion=True,
     )
-    view._message_history.clear()  # noqa: SLF001
+    view._test_message_log.clear()  # noqa: SLF001
 
     for region in list(view._regions.values()):  # noqa: SLF001
         if not getattr(region, "_active", True):
@@ -260,7 +260,7 @@ def test_rebuild_replays_visual_region_as_bare_create_then_style():
 
     operations = [
         message
-        for message in view._message_history  # noqa: SLF001
+        for message in view._test_message_log  # noqa: SLF001
         if message.get("tag") == "rebuild-region"
         and message.get("op") in {"create_region", "set_region_representation"}
     ]
@@ -333,7 +333,7 @@ def test_regions_manager_show_all_and_hide_all_update_every_region():
     view.regions.hide_all(skip_digestion=True)
     assert first._hidden is True  # noqa: SLF001
     assert second._hidden is True  # noqa: SLF001
-    assert view._message_history[-1] == {  # noqa: SLF001
+    assert view._test_message_log[-1] == {  # noqa: SLF001
         "op": "set_regions_visibility",
         "tags": ["first", "second"],
         "hidden": True,
@@ -342,7 +342,7 @@ def test_regions_manager_show_all_and_hide_all_update_every_region():
     view.regions.show_all(skip_digestion=True)
     assert first._hidden is False  # noqa: SLF001
     assert second._hidden is False  # noqa: SLF001
-    assert view._message_history[-1] == {  # noqa: SLF001
+    assert view._test_message_log[-1] == {  # noqa: SLF001
         "op": "set_regions_visibility",
         "tags": ["first", "second"],
         "hidden": False,
@@ -363,7 +363,7 @@ def test_region_set_color_by_real_b_factor_attribute():
 
     region.set_color_by_attribute("bfactor", palette="viridis", skip_digestion=True)
 
-    message = view._message_history[-1]  # noqa: SLF001
+    message = view._test_message_log[-1]  # noqa: SLF001
     assert message["op"] == "set_atom_colors"
     assert message["atom_indices"] == [0, 1, 2]
     assert len(message["colors"]) == 3
@@ -421,7 +421,7 @@ def test_region_frontend_actions_route_through_public_api():
             "action": "hide_all_regions",
         }
     )
-    assert view._message_history[-1]["op"] == "set_regions_visibility"  # noqa: SLF001
+    assert view._test_message_log[-1]["op"] == "set_regions_visibility"  # noqa: SLF001
     assert all(region._hidden for region in view.regions.values())  # noqa: SLF001
 
 
@@ -627,12 +627,12 @@ def test_set_region_representation_action_supports_preset_and_params():
 
 def test_make_regions_by_batches_operations_and_supports_api_only_levels():
     view = demo["dialanine"]
-    before = len(view._message_history)  # noqa: SLF001
+    before = len(view._test_message_log)  # noqa: SLF001
 
     groups = view.make_regions_by("group", representation="line", skip_digestion=True)
 
     assert len(groups) >= 2
-    messages = view._message_history[before:]  # noqa: SLF001
+    messages = view._test_message_log[before:]  # noqa: SLF001
     assert len(messages) == 1
     assert messages[0]["op"] == "batch_region_operations"
     operations = messages[0]["operations"]
@@ -641,7 +641,7 @@ def test_make_regions_by_batches_operations_and_supports_api_only_levels():
 
     components = view.make_regions_by("component", skip_digestion=True)
     assert len(components) >= 1
-    assert view._message_history[-1]["op"] == "batch_region_operations"  # noqa: SLF001
+    assert view._test_message_log[-1]["op"] == "batch_region_operations"  # noqa: SLF001
 
 
 def test_region_operations_stay_in_loaded_subset_index_space():
@@ -664,7 +664,7 @@ def test_region_operations_stay_in_loaded_subset_index_space():
     assert sorted(index for item in split.values() for index in item.atom_indices or ()) == list(range(n_atoms))
     create_operations = [
         operation
-        for operation in view._message_history[-1]["operations"]  # noqa: SLF001
+        for operation in view._test_message_log[-1]["operations"]  # noqa: SLF001
         if operation["op"] == "create_region"
     ]
     assert sorted(index for operation in create_operations for index in operation["atom_indices"]) == list(range(n_atoms))
