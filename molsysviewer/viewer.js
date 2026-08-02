@@ -151954,11 +151954,11 @@ var RegionsPanel = class extends BasePanel {
   }
   setCurrentSelection(selection) {
     this.currentSelection = selection;
-    this.scheduleRender();
+    this.scheduleExternalRender();
   }
   setSavedSelections(items) {
     this.savedSelections = [...items];
-    this.scheduleRender();
+    this.scheduleExternalRender();
   }
   /** Whether a region with this tag currently exists (used by the Selection -> Region bridge). */
   hasRegion(tag) {
@@ -165250,6 +165250,8 @@ var runtime_actions_default = {
     panel_mode_state: "event",
     panel_navigate: "event",
     panel_unmount: "event",
+    addon_panel_state_changed: "event",
+    movie_playback_done: "event",
     request_dynamic_region_evaluation: "request",
     request_visibility_resync: "request",
     selection_query_preview_request: "request",
@@ -165258,11 +165260,14 @@ var runtime_actions_default = {
     layer_ack: "ack",
     registry_cleared: "ack",
     region_deleted: "ack",
+    region_renamed: "ack",
     layer_deleted: "ack",
     trajectory_frame_rendered: "ack",
     image_export: "ack",
     movie_export_done: "ack",
-    viewer_init_failed: "error"
+    viewer_init_failed: "error",
+    camera_stranded_inside_scene: "error",
+    runtime_contract_rejected: "error"
   },
   outbound_requests: [
     "request_camera_snapshot",
@@ -165279,7 +165284,9 @@ var runtime_actions_default = {
     "molsysviewer-log-from-popout": ["event"],
     "molsysviewer-structure-data-ack": ["event"],
     "molsysviewer-popup-interaction": ["command"],
-    "molsysviewer-sync-op": ["projection", "command"]
+    "molsysviewer-sync-op": ["projection", "command"],
+    "molsysviewer-sync-hierarchy": ["projection"],
+    "molsysviewer-runtime-contract-rejected": ["event"]
   },
   qt_transport: [
     "message_ack",
@@ -165287,6 +165294,9 @@ var runtime_actions_default = {
     "structure_ready",
     "render_ready",
     "frontend_error"
+  ],
+  qt_test_actions: [
+    "qt_payload_probe"
   ],
   raw: [
     "request_widget_runtime_source",
@@ -165615,6 +165625,11 @@ var bootPopup = async (loadedModule) => {
     const routed = runtimeRouter.route(message.envelope);
     if (routed.status !== "accepted") return;
     if (!popupActionAllows(routed.envelope.action, routed.envelope.direction)) {
+      sendToHost("molsysviewer-runtime-contract-rejected", {
+        seam: "popup-inbound",
+        reason: "undeclared-popup-action",
+        detail: `${routed.envelope.action}:${routed.envelope.direction}`
+      });
       console.warn(
         `[MolSysViewer Popup] refused host action ${routed.envelope.action} as ${routed.envelope.direction}: not declared in runtime_actions.json`
       );
@@ -165914,6 +165929,7 @@ var PopupHostManager = class {
     this.authorityEndpointId = `python:${this.viewerId}`;
     this.hostEndpointId = `widget-host:${this.sessionId}`;
     this.onEndpointClosed = viewer.onEndpointClosed;
+    this.onContractRejection = viewer.onContractRejection;
     this.router = this.createRouter();
   }
   /** Endpoint id of the live popup for `mode`, or null when none is open. */
@@ -166191,6 +166207,11 @@ var PopupHostManager = class {
     const routed = this.router.route(wire.envelope);
     if (routed.status !== "accepted") return null;
     if (!popupActionAllows(wire.envelope.action, wire.envelope.direction)) {
+      this.onContractRejection?.({
+        seam: "popup-host-inbound",
+        reason: "undeclared-popup-action",
+        detail: `${wire.envelope.action}:${wire.envelope.direction}`
+      });
       console.warn(
         `[MolSysViewer Host] refused popup action ${wire.envelope.action} as ${wire.envelope.direction}: not declared in runtime_actions.json`
       );
@@ -166226,6 +166247,11 @@ var PopupHostManager = class {
       payload
     };
     if (!popupActionAllows(action, direction)) {
+      this.onContractRejection?.({
+        seam: "popup-host-outbound",
+        reason: "undeclared-popup-action",
+        detail: `${action}:${direction}`
+      });
       throw new Error(
         `Popup action ${action} may not travel as ${direction} (not declared in runtime_actions.json)`
       );
@@ -167940,6 +167966,16 @@ var index_default = {
       String(model.get("runtime_viewer_id") || ""),
       String(model.get("runtime_session_id") || "")
     );
+    const reportContractRejection = (seam, reason, detail) => {
+      console.error(`[MolSysViewer] runtime contract rejected ${seam} (${reason}): ${detail}`);
+      const diagnostic = envelopeAdapter.wrapOutbound({
+        event: "runtime_contract_rejected",
+        seam,
+        reason,
+        detail
+      });
+      if (diagnostic.kind === "send") model.send(diagnostic.message);
+    };
     let sendLog;
     const sendToPython = (message) => {
       const result2 = envelopeAdapter.wrapOutbound(message);
@@ -167947,10 +167983,7 @@ var index_default = {
         model.send(result2.message);
         return result2.message.messageId ?? null;
       }
-      try {
-        sendLog?.("error", `[MolSysViewer] outbound envelope rejected (${result2.reason}): ${result2.detail}`);
-      } catch {
-      }
+      reportContractRejection("widget-outbound", result2.reason, result2.detail);
       return null;
     };
     sendLog = createLogger(model, debug, sendToPython);
@@ -168074,7 +168107,12 @@ var index_default = {
       sourceProvider: requestPopupSource,
       viewerId: model.get("runtime_viewer_id"),
       sessionId: model.get("runtime_session_id"),
-      onEndpointClosed: (mode) => cancelSceneSnapshotsFor(mode)
+      onEndpointClosed: (mode) => cancelSceneSnapshotsFor(mode),
+      onContractRejection: (rejection) => reportContractRejection(
+        rejection.seam,
+        rejection.reason,
+        rejection.detail
+      )
     });
     const enablePopout = !!model.get("enable_popout");
     const panelModeStyle = model.get("panel_mode_style") || "drawer";
@@ -168307,6 +168345,14 @@ var index_default = {
           case "molsysviewer-log-from-popout":
             if (debug) sendLog("info", "[Popout Log]:", data?.msg);
             break;
+          case "molsysviewer-runtime-contract-rejected":
+            sendToPython({
+              event: "runtime_contract_rejected",
+              seam: data?.seam ?? "popup",
+              reason: data?.reason ?? "unknown",
+              detail: data?.detail ?? "unknown"
+            });
+            break;
         }
       } catch (e) {
         console.error("[MolSysViewer Host] Error handling popout message:", e);
@@ -168363,7 +168409,7 @@ var index_default = {
     const onCustomMsg = (msg, buffers) => {
       const inbound = envelopeAdapter.unwrapInbound(msg);
       if (inbound.kind === "rejected") {
-        sendLog("error", `[MolSysViewer] inbound envelope rejected (${inbound.reason}): ${inbound.detail}`);
+        reportContractRejection("widget-inbound", inbound.reason, inbound.detail);
         return;
       }
       if (inbound.kind === "message") {

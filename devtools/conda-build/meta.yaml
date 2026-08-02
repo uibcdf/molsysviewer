@@ -12,10 +12,28 @@ requirements:
   host:
     - python
     - pip
+    - setuptools >=64
+    - versioningit >=3
+    - wheel
     - nodejs  # for npm and building viewer.js
   run:
     - python
     - anywidget
+    - argdigest
+    - depdigest
+    - molsysmt
+    - numpy
+    - packaging
+    - pyunitwizard
+    - smonitor
+    - traitlets
+
+test:
+  imports:
+    - molsysviewer
+    - molsysviewer.runtime_contract
+  commands:
+    - python -c "from importlib.resources import files; assert files('molsysviewer').joinpath('runtime_actions.json').is_file()"
 
 about:
   home: "https://github.com/uibcdf/molsysviewer"

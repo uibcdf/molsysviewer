@@ -12,11 +12,15 @@ npm ci || npm install
 npm run build
 popd
 
-# Sanity check: runtime bundle must exist for packaging
+# Sanity check: runtime resources must exist for packaging
 if [ ! -f "molsysviewer/viewer.js" ]; then
   echo "ERROR: molsysviewer/viewer.js was not generated. JS build failed or output path changed." >&2
   exit 1
 fi
+if [ ! -f "molsysviewer/runtime_actions.json" ]; then
+  echo "ERROR: molsysviewer/runtime_actions.json is missing." >&2
+  exit 1
+fi
 
-# 2) Install Python package (which now includes viewer.js as package-data)
-$PYTHON -m pip install . --no-deps --ignore-installed -vv
+# 2) Install Python package with build requirements supplied by the host env.
+$PYTHON -m pip install . --no-deps --no-build-isolation --ignore-installed -vv

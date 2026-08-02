@@ -16,6 +16,7 @@ const rawManifest = manifest as {
     raw: string[];
     data_plane: string[];
     qt_transport: string[];
+    qt_test_actions: string[];
     popup_actions: Record<string, string[]>;
 };
 

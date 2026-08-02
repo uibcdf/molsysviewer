@@ -13,12 +13,14 @@ dependencies = [
   "anywidget>=0.9.15",
   "argdigest",
   "depdigest",
+  "molsysmt",
+  "numpy",
   "packaging>=23",
   "pyunitwizard",
   "smonitor",
   "traitlets>=5",
 ]
-license = { text = "MIT" }
+license = "MIT"
 keywords = [
   "molecular visualization",
   "molecular viewer",
@@ -32,7 +34,6 @@ keywords = [
 classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Science/Research",
-  "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.10",
@@ -50,6 +51,7 @@ Issues = "https://github.com/uibcdf/molsysviewer/issues"
 
 [project.optional-dependencies]
 dev = [
+  "build",
   "ruff",
   "pytest",
   "pytest-cov",
@@ -73,9 +75,10 @@ include-package-data = false
 [tool.setuptools.packages.find]
 namespaces = true
 include = ["molsysviewer", "molsysviewer.*"]
+exclude = ["molsysviewer.js", "molsysviewer.js.*"]
 
 [tool.setuptools.package-data]
-"molsysviewer" = ["viewer.js"]
+"molsysviewer" = ["runtime_actions.json", "viewer.js"]
 
 [tool.ruff]
 line-length = 120

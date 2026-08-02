@@ -45,6 +45,8 @@ export async function probePopupChannel(): Promise<{
     viewerId: string;
     sessionId: string;
     mode: string;
+    action: string;
+    hierarchyItemCount: number;
 }> {
     const popupModule = `
         export function bootPopup() {
@@ -76,7 +78,11 @@ export async function probePopupChannel(): Promise<{
                     message.channel?.sessionId !== channel.sessionId ||
                     message.envelope?.endpointId !== channel.authorityEndpointId
                 ) return;
-                send("molsysviewer-log-from-popout", message.envelope.payload);
+                send("molsysviewer-log-from-popout", {
+                    action: message.envelope.action,
+                    hierarchyItemCount: Array.isArray(message.envelope.payload?.items)
+                        ? message.envelope.payload.items.length : -1,
+                });
             });
             send("molsysviewer-pop-ready", null);
         }
@@ -105,7 +111,7 @@ export async function probePopupChannel(): Promise<{
                 manager.isReady = true;
                 // Real declared actions, so the probe exercises the channel as production
                 // uses it and the manifest guard applies to it too.
-                manager.send("molsysviewer-sync-ui", { value: 7 });
+                manager.send("molsysviewer-sync-hierarchy", { items: [{ tag: "MET" }, { tag: "ALA" }] });
                 return;
             }
             if (message.type === "molsysviewer-log-from-popout") {
@@ -116,6 +122,8 @@ export async function probePopupChannel(): Promise<{
                     viewerId: channel.viewerId,
                     sessionId: channel.sessionId,
                     mode: channel.mode,
+                    action: (message.data as any)?.action,
+                    hierarchyItemCount: (message.data as any)?.hierarchyItemCount,
                 });
             }
         };
@@ -1467,6 +1475,9 @@ export async function probeStructureDataRelay(): Promise<{
     bytesMatch: boolean;
     chunkId: number;
     ackAction: string;
+    cancelReceived: number;
+    cancelGeneration: number;
+    cancelReason: string;
 }> {
     const popupModule = `
         export function bootPopup() {
@@ -1497,9 +1508,18 @@ export async function probeStructureDataRelay(): Promise<{
                     message.envelope?.endpointId !== channel.authorityEndpointId
                 ) return;
                 if (message.envelope.action !== "molsysviewer-structure-data") return;
+                const payload = message.envelope.payload;
+                if (payload.message.op === "structure_data_cancel") {
+                    send("molsysviewer-structure-data-ack", {
+                        event: "relay_probe_cancel",
+                        mode: channel.mode,
+                        generation: payload.message.generation,
+                        reason: payload.message.reason,
+                    });
+                    return;
+                }
                 // Report what actually crossed the seam: the chunk identity and
                 // the bytes, so a corrupted or empty relay cannot pass.
-                const payload = message.envelope.payload;
                 const view = payload.buffers[0];
                 const bytes = new Uint8Array(
                     view.buffer ?? view, view.byteOffset ?? 0, view.byteLength,
@@ -1525,7 +1545,8 @@ export async function probeStructureDataRelay(): Promise<{
     const source = new Uint8Array([1, 2, 3, 250, 251, 252]);
 
     return new Promise((resolve, reject) => {
-        const counts = { canvas: 0, panel: 0 };
+        const counts = { canvas: 0, panel: 0, cancel: 0 };
+        let chunkReport: any = null;
         const timeout = window.setTimeout(() => {
             cleanup();
             reject(new Error("Timed out waiting for the relayed structure-data ack"));
@@ -1570,15 +1591,35 @@ export async function probeStructureDataRelay(): Promise<{
             }
             if (message.type === "molsysviewer-structure-data-ack") {
                 const data: any = message.data;
+                if (data.event === "relay_probe") {
+                    chunkReport = data;
+                    const canvasEndpoint = manager.popupEndpointId("canvas");
+                    counts.cancel += manager.sendTo("canvas", "molsysviewer-structure-data", {
+                        message: {
+                            op: "structure_data_cancel",
+                            viewer_id: "e2e-relay-view",
+                            session_id: "e2e-relay-session",
+                            stream_id: "structures:main",
+                            generation: 1,
+                            reason: "fallback-to-json",
+                            target_endpoint_id: canvasEndpoint,
+                        },
+                        buffers: [],
+                    }) ? 1 : 0;
+                    return;
+                }
                 cleanup();
                 resolve({
                     canvasReceived: counts.canvas,
                     panelReceived: counts.panel,
-                    bytesMatch: Array.isArray(data.bytes)
-                        && data.bytes.length === source.length
-                        && data.bytes.every((b: number, i: number) => b === source[i]),
-                    chunkId: data.chunk_id,
+                    bytesMatch: Array.isArray(chunkReport?.bytes)
+                        && chunkReport.bytes.length === source.length
+                        && chunkReport.bytes.every((b: number, i: number) => b === source[i]),
+                    chunkId: chunkReport?.chunk_id,
                     ackAction: message.type,
+                    cancelReceived: counts.cancel,
+                    cancelGeneration: data.generation,
+                    cancelReason: data.reason,
                 });
             }
         };
@@ -1605,6 +1646,7 @@ export async function probeWidgetSeam(): Promise<{
     outboundEnveloped: boolean;
     projectionApplied: boolean;
     foreignSessionApplied: boolean;
+    foreignSessionRejectedObservably: boolean;
 }> {
     const viewerId = "e2e-seam-view";
     const sessionId = "e2e-seam-session";
@@ -1696,6 +1738,11 @@ export async function probeWidgetSeam(): Promise<{
     customHandler?.(projection({ sessionId: "someone-elses-session" }));
     await new Promise(resolve => setTimeout(resolve, 600));
     const foreignSessionApplied = delivered.includes("set_legend");
+    const foreignSessionRejectedObservably = sent.some(
+        m => m?.action === "runtime_contract_rejected"
+            && m?.direction === "error"
+            && m?.payload?.reason === "session-mismatch",
+    );
 
     controllerProto.handleMessage = originalHandle;
 
@@ -1705,5 +1752,6 @@ export async function probeWidgetSeam(): Promise<{
         outboundEnveloped,
         projectionApplied,
         foreignSessionApplied,
+        foreignSessionRejectedObservably,
     };
 }

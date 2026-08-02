@@ -389,6 +389,16 @@ export default {
             String(model.get("runtime_viewer_id") || ""),
             String(model.get("runtime_session_id") || ""),
         );
+        const reportContractRejection = (seam: string, reason: string, detail: string) => {
+            console.error(`[MolSysViewer] runtime contract rejected ${seam} (${reason}): ${detail}`);
+            const diagnostic = envelopeAdapter.wrapOutbound({
+                event: "runtime_contract_rejected",
+                seam,
+                reason,
+                detail,
+            });
+            if (diagnostic.kind === "send") model.send(diagnostic.message);
+        };
         let sendLog: ReturnType<typeof createLogger>;
         /** Sends to Python; returns the envelope messageId so a request can be
          *  correlated to its answer, or null when the adapter rejected it. */
@@ -398,11 +408,7 @@ export default {
                 model.send(result.message);
                 return (result.message as { messageId?: string }).messageId ?? null;
             }
-            try {
-                sendLog?.("error", `[MolSysViewer] outbound envelope rejected (${result.reason}): ${result.detail}`);
-            } catch {
-                /* no-op */
-            }
+            reportContractRejection("widget-outbound", result.reason, result.detail);
             return null;
         };
         sendLog = createLogger(model, debug, sendToPython);
@@ -573,6 +579,11 @@ export default {
             viewerId: model.get("runtime_viewer_id"),
             sessionId: model.get("runtime_session_id"),
             onEndpointClosed: mode => cancelSceneSnapshotsFor(mode),
+            onContractRejection: rejection => reportContractRejection(
+                rejection.seam,
+                rejection.reason,
+                rejection.detail,
+            ),
         });
         const enablePopout = !!model.get("enable_popout");
 
@@ -866,6 +877,15 @@ export default {
                     case "molsysviewer-log-from-popout":
                         if (debug) sendLog("info", "[Popout Log]:", data?.msg);
                         break;
+
+                    case "molsysviewer-runtime-contract-rejected":
+                        sendToPython({
+                            event: "runtime_contract_rejected",
+                            seam: data?.seam ?? "popup",
+                            reason: data?.reason ?? "unknown",
+                            detail: data?.detail ?? "unknown",
+                        });
+                        break;
                 }
             } catch (e) {
                 console.error("[MolSysViewer Host] Error handling popout message:", e);
@@ -947,7 +967,7 @@ export default {
             // observable and dropped; the command-duplicate ack is consumed here.
             const inbound = envelopeAdapter.unwrapInbound(msg);
             if (inbound.kind === "rejected") {
-                sendLog("error", `[MolSysViewer] inbound envelope rejected (${inbound.reason}): ${inbound.detail}`);
+                reportContractRejection("widget-inbound", inbound.reason, inbound.detail);
                 return;
             }
             if (inbound.kind === "message") {

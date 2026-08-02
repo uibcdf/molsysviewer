@@ -173,7 +173,7 @@ def test_both_connectors_classify_from_the_same_manifest():
     assert {"message_ack", "message_error", "structure_ready", "render_ready"} <= QT_TRANSPORT_ACTIONS
 
 
-def test_an_unknown_action_is_observable_on_qt_as_it_is_on_anywidget():
+def test_an_unknown_action_is_observable_and_refused_on_qt_as_on_anywidget():
     """The fork R3 closes: same event, silently ignored on one side only.
 
     Before: AnyWidget rejected an unknown action observably, Qt forwarded it and
@@ -191,12 +191,25 @@ def test_an_unknown_action_is_observable_on_qt_as_it_is_on_anywidget():
     original = utils.emit_suppressed_exception
     utils.emit_suppressed_exception = lambda *a, **k: signalled.append(a[0])
     try:
-        assert bridge.handle_frontend_event({"event": "totally_unknown_event"}) is True
+        assert bridge.handle_frontend_event({"event": "totally_unknown_event"}) is False
     finally:
         utils.emit_suppressed_exception = original
 
     assert signalled, "an unknown action must leave a trace on Qt too"
     assert "unknown_frontend_action" in signalled[0]
+    assert forwarded == []
+
+
+def test_the_explicit_qt_payload_probe_reaches_the_test_sink_without_weakening_product_actions():
+    from molsysviewer.standalone_qt import utils
+
+    bridge = utils.QtMessageBridge.__new__(utils.QtMessageBridge)
+    bridge.ready = True
+    forwarded: list = []
+    bridge._forward_to_view = forwarded.append  # noqa: SLF001
+
+    assert bridge.handle_frontend_event({"event": "qt_payload_probe", "atoms": 2}) is True
+    assert forwarded == [{"event": "qt_payload_probe", "atoms": 2}]
 
 
 def test_a_known_product_event_stays_silent_and_reaches_the_view():

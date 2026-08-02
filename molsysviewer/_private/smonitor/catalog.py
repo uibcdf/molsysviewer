@@ -103,6 +103,12 @@ CATALOG = {
         "category": "frontend",
         "level": "WARNING",
     },
+    "runtime_contract_rejected": {
+        "code": "MOLSYSVIEWER-RUNTIME-CONTRACT-REJECTED",
+        "source": "molsysviewer.viewer.transport",
+        "category": "transport",
+        "level": "ERROR",
+    },
     "frontend_action_failed": {
         "code": "MOLSYSVIEWER-FRONTEND-ACTION-FAILED",
         "source": "molsysviewer.viewer",
@@ -224,6 +230,7 @@ CODES = {
     ),
     "binary_transport_unsupported": "This connector has no binary transport and cannot deliver the buffers for {operation}.",
     "viewer_init_failed": "Mol* viewer failed to initialize. Reason: {reason}. {message}",
+    "runtime_contract_rejected": "Runtime contract rejected a message on {seam}: {reason} ({detail}).",
     "frontend_action_failed": "Frontend action {action} failed while processing {event}: {error_type}: {error_message}",
     "addon_load_failed": "Failed to load add-on module '{module}': {reason}.",
     "payload_invalid_coordinates": "Invalid coordinates in payload: {detail}",

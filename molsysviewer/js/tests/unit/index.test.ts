@@ -30,3 +30,4 @@ import "./addons-panel.test";
 import "./addon-panel-lifecycle.test";
 import "./webgl-status-overlay.test";
 import "./trajectory-plot-overlay.test";
+import "./runtime-action-manifest.test";

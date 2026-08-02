@@ -96,3 +96,33 @@ test("viewer controller does not request dynamic-region evaluation without frame
 
     assert.deepStrictEqual(messages, []);
 });
+
+test("camera S9 diagnostic reports an inside-scene camera and ignores an outside one", () => {
+    const messages: unknown[] = [];
+    const controller = Object.create(MolSysViewerController.prototype);
+    Object.defineProperties(controller, {
+        plugin: {
+            value: {
+                canvas3d: {
+                    boundingSphere: { radius: 10 },
+                    camera: { state: { position: [0, 0, 2], target: [0, 0, 0] } },
+                },
+            },
+            writable: true,
+        },
+        notify: { value: (message: unknown) => messages.push(message) },
+    });
+    const report = Reflect.get(controller, "reportStrandedCamera") as (after: string) => void;
+
+    report.call(controller, "load");
+    assert.deepStrictEqual(messages, [{
+        event: "camera_stranded_inside_scene",
+        distance: 2,
+        scene_radius: 10,
+        after: "load",
+    }]);
+
+    Reflect.get(controller, "plugin").canvas3d.camera.state.position = [0, 0, 20];
+    report.call(controller, "representation-change");
+    assert.strictEqual(messages.length, 1, "an ordinary outside-scene camera must stay silent");
+});

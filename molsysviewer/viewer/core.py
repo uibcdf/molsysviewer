@@ -30,6 +30,13 @@ from ..loaders.array_native_molsys import (
     ARRAY_NATIVE_PROTOCOL_VERSION,
     serialize_array_native_molsys,
 )
+from ..transport import (
+    AckDisposition,
+    StructureTransfer,
+    StructureTransferManager,
+    TransferChunk,
+    TransferTermination,
+)
 from .runtime_router import WidgetRuntimeRouter, is_envelope
 from ..annotations import AnnotationsManager
 from ..active_selection import ActiveSelection, _combine
@@ -262,7 +269,6 @@ class MolSysView(
 
         self._ready = False
         self._frontend_capabilities: dict[str, Any] = {}
-        self._binary_structure_generation = 0
         self._binary_viewer_id = f"view-{uuid.uuid4()}"
         self._binary_session_id = f"session-{uuid.uuid4()}"
         # R1 envelope authority: only the AnyWidget connector uses envelopes; Qt and
@@ -274,14 +280,18 @@ class MolSysView(
             self._runtime_router = WidgetRuntimeRouter(
                 self._binary_viewer_id, self._binary_session_id
             )
-        self._binary_structure_stream: dict[str, Any] | None = None
         # D3 backpressure: a frontend that never acknowledges must not pin the
         # retained float32 arrays forever. The deadline is checked on main-thread
         # entry points only (never from a timer thread, which would make
         # `widget.send` unsafe for AnyWidget). Generous by default so a slow
         # connection is not mistaken for a dead one.
-        self._binary_ack_timeout_s: float = 30.0
         self._monotonic = time.monotonic
+        self._structure_transfers = StructureTransferManager(
+            self._binary_viewer_id,
+            self._binary_session_id,
+            timeout_s=30.0,
+            monotonic=lambda: self._monotonic(),
+        )
         # Scene messages waiting for the structure they describe. Streaming the
         # molecular payload made its delivery asynchronous, so "handed to the
         # transport" stopped meaning "applied in the browser"; see
@@ -943,6 +953,7 @@ class MolSysView(
         if max_buffer_bytes is None:
             return False
 
+        transfer: StructureTransfer | None = None
         try:
             payload = serialize_array_native_molsys(self._molsys)
             metadata = payload.metadata
@@ -953,9 +964,6 @@ class MolSysView(
             structures_per_chunk = max_buffer_bytes // bytes_per_structure
             if structures_per_chunk < 1:
                 return False
-            self._cancel_binary_structure_stream("replaced by newer generation")
-            self._binary_structure_generation += 1
-            generation = self._binary_structure_generation
             chunks: list[tuple[dict[str, Any], list[memoryview]]] = []
             for chunk_id, structure_start in enumerate(
                 range(0, n_structures, structures_per_chunk)
@@ -983,17 +991,11 @@ class MolSysView(
                 chunk_message: dict[str, Any] = {
                     "op": "structure_data_chunk",
                     "protocol_version": ARRAY_NATIVE_PROTOCOL_VERSION,
-                    "viewer_id": self._binary_viewer_id,
-                    "session_id": self._binary_session_id,
-                    "stream_id": "structures:main",
-                    "generation": generation,
                     "chunk_id": chunk_id,
                     "structure_start": structure_start,
                     "structure_count": structure_count,
                     "structural_arrays": descriptors,
                 }
-                if target_endpoint_id is not None:
-                    chunk_message["target_endpoint_id"] = target_endpoint_id
                 chunks.append((
                     chunk_message,
                     [memoryview(array).cast("B") for array in arrays],
@@ -1002,59 +1004,33 @@ class MolSysView(
             begin = {
                 "op": "structure_data_begin",
                 "protocol_version": ARRAY_NATIVE_PROTOCOL_VERSION,
-                "viewer_id": self._binary_viewer_id,
-                "session_id": self._binary_session_id,
-                "stream_id": "structures:main",
-                "generation": generation,
                 "chunk_count": len(chunks),
                 "metadata": metadata,
                 "label": message.get("label"),
                 "multiple_structures": bool(message.get("multiple_structures")),
             }
-            if target_endpoint_id is not None:
-                begin["target_endpoint_id"] = target_endpoint_id
-            self._binary_structure_stream = {
-                "generation": generation,
-                "chunks": chunks,
-                "next_chunk": 0,
-                "awaiting": "begin",
-                "fallback": dict(message),
+            self._cancel_binary_structure_stream("replaced by newer generation")
+            transfer = self._structure_transfers.start(
+                begin_message=begin,
+                chunks=chunks,
+                fallback_message=message,
                 # Keep the parent ndarrays alive while chunk memoryviews are in flight.
-                "payload": payload,
-                "deadline": self._monotonic() + self._binary_ack_timeout_s,
-                "target_endpoint_id": target_endpoint_id,
-            }
-            self._transmit_widget_message(begin)
+                payload=payload,
+                target_endpoint_id=target_endpoint_id,
+            )
+            self._transmit_widget_message(transfer.begin_message)
             return True
         except Exception as exc:
-            self._binary_structure_stream = None
+            if transfer is not None:
+                self._structure_transfers.fallback(
+                    f"connector failed while starting structure transfer: {exc}"
+                )
             warnings.warn(
                 f"Array-native AnyWidget delivery failed; using JSON fallback: {exc}",
                 RuntimeWarning,
                 stacklevel=2,
             )
             return False
-
-    def _release_binary_structure_stream(self) -> dict[str, Any] | None:
-        """Drop the retained arrays and clear the stream, returning what it held.
-
-        The chunk memoryviews and their parent ndarrays are released explicitly
-        rather than waiting for the dict to fall out of scope, so the transient
-        transfer memory is observably returned even while the view stays alive.
-        """
-        stream = self._binary_structure_stream
-        self._binary_structure_stream = None
-        if stream is not None:
-            stream["chunks"] = []
-            stream["payload"] = None
-        return stream
-
-    def _binary_structure_stream_expired(self) -> bool:
-        stream = self._binary_structure_stream
-        if stream is None or stream.get("awaiting") == "complete":
-            return False
-        deadline = stream.get("deadline")
-        return deadline is not None and self._monotonic() >= deadline
 
     def _check_binary_structure_ack_timeout(self) -> None:
         """Release a stream whose acknowledgement never arrived.
@@ -1063,74 +1039,82 @@ class MolSysView(
         thread: `widget.send` is not safe to call off the kernel thread for
         AnyWidget, so the deadline is evaluated when the kernel next does work.
         """
-        if not self._binary_structure_stream_expired():
-            return
-        stream = self._binary_structure_stream
-        awaiting = stream.get("awaiting") if stream else None
-        self._fallback_binary_structure_stream(
-            f"no acknowledgement within {self._binary_ack_timeout_s:g}s while awaiting {awaiting!r}"
-        )
+        termination = self._structure_transfers.expire_if_due()
+        if termination is not None:
+            self._deliver_binary_structure_fallback(termination)
 
     def _cancel_binary_structure_stream(self, reason: str) -> None:
-        stream = self._release_binary_structure_stream()
-        if stream is None:
+        termination = self._structure_transfers.cancel(reason)
+        if termination is None:
             return
+        self._transmit_binary_structure_cancel(
+            termination.transfer,
+            reason,
+            caller="MolSysView._cancel_binary_structure_stream",
+        )
+
+    def _transmit_binary_structure_cancel(
+        self,
+        transfer: StructureTransfer,
+        reason: str,
+        *,
+        caller: str,
+    ) -> None:
+        """Tell the exact receiver to discard a released stream generation."""
         try:
             cancel: dict[str, Any] = {
                 "op": "structure_data_cancel",
-                "viewer_id": self._binary_viewer_id,
-                "session_id": self._binary_session_id,
-                "stream_id": "structures:main",
-                "generation": stream["generation"],
+                "viewer_id": transfer.viewer_id,
+                "session_id": transfer.session_id,
+                "stream_id": transfer.stream_id,
+                "generation": transfer.generation,
                 "reason": reason,
             }
-            if stream.get("target_endpoint_id") is not None:
-                cancel["target_endpoint_id"] = stream["target_endpoint_id"]
+            if transfer.target_endpoint_id is not None:
+                cancel["target_endpoint_id"] = transfer.target_endpoint_id
             # Not `_send_widget_message`: a cancel that flushed would release the
             # deferred scene ahead of the replacement generation this cancel is
             # making room for. They stay deferred and ride behind the new stream.
             self._transmit_widget_message(cancel)
-        except Exception:
-            pass
+        except Exception as exc:
+            emit_suppressed_exception(
+                caller,
+                exc,
+                context={
+                    "generation": transfer.generation,
+                    "target_endpoint_id": transfer.target_endpoint_id,
+                    "reason": reason,
+                },
+            )
 
-    def _send_next_binary_structure_chunk(self) -> None:
-        stream = self._binary_structure_stream
-        if stream is None:
-            return
-        next_chunk = int(stream["next_chunk"])
-        chunks = stream["chunks"]
-        if next_chunk >= len(chunks):
-            stream["awaiting"] = "complete"
-            return
-        message, buffers = chunks[next_chunk]
+    def _transmit_binary_structure_chunk(self, chunk: TransferChunk) -> None:
         try:
-            self._transmit_widget_message(message, buffers=buffers)
-            stream["awaiting"] = ("chunk", next_chunk)
+            self._transmit_widget_message(chunk.message, buffers=chunk.buffers)
         except Exception as exc:
             self._fallback_binary_structure_stream(
-                f"connector failed while sending chunk {next_chunk}: {exc}"
+                f"connector failed while sending chunk {chunk.message['chunk_id']}: {exc}"
             )
 
     def _fallback_binary_structure_stream(self, reason: str) -> None:
-        stream = self._binary_structure_stream
-        if stream is None:
+        termination = self._structure_transfers.fallback(reason)
+        if termination is None:
             return
-        fallback = stream["fallback"]
-        generation = stream["generation"]
-        self._release_binary_structure_stream()
+        self._deliver_binary_structure_fallback(termination)
+
+    def _deliver_binary_structure_fallback(
+        self,
+        termination: TransferTermination,
+    ) -> None:
+        transfer = termination.transfer
+        reason = termination.reason
+        fallback = transfer.fallback_message
         # Tell the receiver to drop its half too; a frontend that is merely slow
         # (rather than gone) must not apply a generation Python has abandoned.
-        try:
-            self._transmit_widget_message({
-                "op": "structure_data_cancel",
-                "viewer_id": self._binary_viewer_id,
-                "session_id": self._binary_session_id,
-                "stream_id": "structures:main",
-                "generation": generation,
-                "reason": reason,
-            })
-        except Exception:
-            pass
+        self._transmit_binary_structure_cancel(
+            transfer,
+            reason,
+            caller="MolSysView._fallback_binary_structure_stream.cancel",
+        )
         emit_from_catalog(
             CATALOG["structure_data_stream_fallback"],
             package_root=PACKAGE_ROOT,
@@ -1147,7 +1131,7 @@ class MolSysView(
             RuntimeWarning,
             stacklevel=2,
         )
-        target_endpoint_id = stream.get("target_endpoint_id")
+        target_endpoint_id = transfer.target_endpoint_id
         if target_endpoint_id is not None:
             # A popup-targeted stream must not fall back into the host, which
             # already holds this structure; the JSON load carries the target so
@@ -1162,50 +1146,27 @@ class MolSysView(
         # An acknowledgement that arrives after the deadline belongs to a stream
         # Python has already given up on; release it before looking at the event.
         self._check_binary_structure_ack_timeout()
-        stream = self._binary_structure_stream
-        if stream is None:
-            return
-        if (
-            content.get("viewer_id") != self._binary_viewer_id
-            or content.get("session_id") != self._binary_session_id
-            or content.get("stream_id") != "structures:main"
-            or content.get("generation") != stream["generation"]
-        ):
+        result = self._structure_transfers.handle_event(content)
+        if result.disposition is AckDisposition.FOREIGN:
             warnings.warn(
                 "Ignored array-native acknowledgement for another endpoint or generation.",
                 RuntimeWarning,
                 stacklevel=2,
             )
             return
-
-        event = content.get("event")
-        if event == "structure_data_begin_ack":
-            if stream["awaiting"] == "begin":
-                # Progress: the peer is alive, so the deadline starts again.
-                stream["deadline"] = self._monotonic() + self._binary_ack_timeout_s
-                self._send_next_binary_structure_chunk()
-            return
-        if event == "structure_data_chunk_ack":
-            chunk_id = content.get("chunk_id")
-            if stream["awaiting"] != ("chunk", chunk_id):
-                return
-            stream["next_chunk"] = int(chunk_id) + 1
-            stream["deadline"] = self._monotonic() + self._binary_ack_timeout_s
-            self._send_next_binary_structure_chunk()
-            return
-        if event == "structure_data_complete":
-            if stream["awaiting"] == "complete":
-                self._release_binary_structure_stream()
-                # The frontend builds the structure and *then* reports complete,
-                # so this is the first moment a scene message can land on
-                # something to draw on.
-                self._flush_deferred_widget_messages()
-            return
-        if event == "structure_data_error":
-            error = content.get("error")
-            self._fallback_binary_structure_stream(
-                f"frontend rejected generation {stream['generation']}: {error}"
-            )
+        if result.disposition is AckDisposition.SEND_CHUNK:
+            if result.chunk is None:
+                raise RuntimeError("transfer manager requested a missing chunk")
+            self._transmit_binary_structure_chunk(result.chunk)
+        elif result.disposition is AckDisposition.COMPLETED:
+            # The frontend builds the structure and *then* reports complete,
+            # so this is the first moment a scene message can land on
+            # something to draw on.
+            self._flush_deferred_widget_messages()
+        elif result.disposition is AckDisposition.FALLBACK:
+            if result.termination is None:
+                raise RuntimeError("transfer manager returned fallback without termination")
+            self._deliver_binary_structure_fallback(result.termination)
 
     def _send_widget_message(self, message: Mapping[str, Any], buffers: Any = None) -> None:
         """Single outbound chokepoint for scene messages.
@@ -1234,7 +1195,7 @@ class MolSysView(
         hatch is a different method, not a list of exempt op names that would
         drift out of date the moment a new one appeared.
         """
-        if self._binary_structure_stream is not None:
+        if self._structure_transfers.has_active:
             self._deferred_widget_messages.append((message, buffers))
             return
         self._transmit_widget_message(message, buffers)
@@ -1264,7 +1225,7 @@ class MolSysView(
         self._flushing_deferred_widget_messages = True
         try:
             while self._deferred_widget_messages:
-                if self._binary_structure_stream is not None:
+                if self._structure_transfers.has_active:
                     # A newer generation started mid-flush; the rest waits for it
                     # rather than overtaking the structure it is about to replace.
                     break
@@ -1731,6 +1692,17 @@ class MolSysView(
                 package_root=PACKAGE_ROOT,
                 meta=META,
                 extra={"reason": reason, "message": message},
+            )
+        elif event == "runtime_contract_rejected":
+            emit_from_catalog(
+                CATALOG["runtime_contract_rejected"],
+                package_root=PACKAGE_ROOT,
+                meta=META,
+                extra={
+                    "seam": content.get("seam", "runtime"),
+                    "reason": content.get("reason", "unknown"),
+                    "detail": content.get("detail", "unknown"),
+                },
             )
         elif event == "camera_stranded_inside_scene":
             # Contract S9 detection. Reported, never repaired: the condition is

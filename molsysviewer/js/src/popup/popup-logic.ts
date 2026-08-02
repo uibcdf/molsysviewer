@@ -326,6 +326,11 @@ export const bootPopup = async (loadedModule?: any) => {
         const routed = runtimeRouter.route(message.envelope);
         if (routed.status !== "accepted") return;
         if (!popupActionAllows(routed.envelope.action, routed.envelope.direction)) {
+            sendToHost("molsysviewer-runtime-contract-rejected", {
+                seam: "popup-inbound",
+                reason: "undeclared-popup-action",
+                detail: `${routed.envelope.action}:${routed.envelope.direction}`,
+            });
             console.warn(
                 `[MolSysViewer Popup] refused host action ${routed.envelope.action} `
                 + `as ${routed.envelope.direction}: not declared in runtime_actions.json`,

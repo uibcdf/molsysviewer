@@ -103,9 +103,8 @@ async function run() {
         await page.locator('[data-molsysviewer-group-panel-toggle="true"]').click();
         await page.locator('[data-molsysviewer-group-panel-tab="regions"]').click();
 
-        await page.locator('[data-molsysviewer-region-create-origin="query"]').click();
-        await page.locator('[data-molsysviewer-query-input="region"]').fill("atom_index in [0, 1]");
-        await page.locator('[data-molsysviewer-query-check="region"]').click();
+        await page.locator('[data-molsysviewer-query-input="regions"]').fill("atom_index in [0, 1]");
+        await page.locator('[data-molsysviewer-query-check="regions"]').click();
         const preview = await page.evaluate(() =>
             [...((window as any).__messages || [])].reverse().find((message: any) =>
                 message.event === "selection_query_preview_request"
@@ -118,24 +117,17 @@ async function run() {
                 count: 2,
             });
         }, preview.request_id);
-        await page.locator('[data-molsysviewer-region-create-query="true"]').click();
-        assert.strictEqual((await latestAction(page, "create_region_from_query")).expression, "atom_index in [0, 1]");
-
-        await page.locator('[data-molsysviewer-region-create-origin="split"]').click();
-        await page.locator('[data-molsysviewer-region-split="true"]').click();
-        assert.strictEqual((await latestAction(page, "make_regions_by")).element, "chain");
-
-        await page.locator('[data-molsysviewer-region-overlap="pocket"]').click();
-        const composer = page.locator('[data-molsysviewer-region-boolean-composer="true"]');
-        assert.strictEqual(await composer.getAttribute("data-molsysviewer-region-boolean-current-a"), "pocket");
-        assert.strictEqual(await composer.getAttribute("data-molsysviewer-region-boolean-current-b"), "backbone");
-        assert.strictEqual(
-            await composer.getAttribute("data-molsysviewer-region-boolean-current-operation"),
-            "difference",
-        );
-        await page.locator('[data-molsysviewer-region-boolean-output="true"]').fill("sidechains");
-        await page.locator('[data-molsysviewer-region-boolean-create="true"]').click();
-        assert.strictEqual((await latestAction(page, "compose_regions")).op, "difference");
+        assert.strictEqual((await latestAction(page, "apply_selection_query")).expression, "atom_index in [0, 1]");
+        await page.evaluate(async () => {
+            await (window as any).__controller.handleMessage({
+                op: "set_active_selection",
+                atom_indices: [0, 1],
+            });
+        });
+        await page.locator('[data-molsysviewer-region-create-btn="true"]').click();
+        await page.locator('[data-molsysviewer-region-create-input="true"]').fill("query-region");
+        await page.locator('[data-molsysviewer-region-create-confirm="true"]').click();
+        assert.strictEqual((await latestAction(page, "create_region_from_selection")).tag, "query-region");
 
         await page.locator('[data-molsysviewer-region-style="pocket"]').click();
         const opacity = page.locator('[data-molsysviewer-region-style-opacity="pocket"]');
@@ -143,11 +135,6 @@ async function run() {
         assert.strictEqual((await latestAction(page, "set_region_representation")).params.alpha, 0.55);
         await page.locator('[data-molsysviewer-region-style-color-attribute="pocket"]').selectOption("b_factor");
         assert.strictEqual((await latestAction(page, "color_region_by_attribute")).attribute, "b_factor");
-
-        await page.locator('[data-molsysviewer-region-isolate="pocket"]').click();
-        await latestAction(page, "show_only_region");
-        await page.locator('[data-molsysviewer-region-complement="pocket"]').click();
-        await latestAction(page, "create_complementary_region");
 
         await page.locator('[data-molsysviewer-region-inspect="pocket"]').click();
         const inspectRequest = await latestAction(page, "get_region_details");

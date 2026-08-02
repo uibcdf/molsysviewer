@@ -26,6 +26,12 @@ type PopupHostOptions = {
     /** Fired when a popup endpoint goes away, so the host can cancel work it
      *  owns (pending requests, retained buffers) instead of leaking it. */
     onEndpointClosed?: (mode: PopupMode) => void;
+    /** Reports a manifest refusal through the host's observable diagnostic seam. */
+    onContractRejection?: (rejection: {
+        seam: "popup-host-inbound" | "popup-host-outbound";
+        reason: string;
+        detail: string;
+    }) => void;
 };
 
 export class PopupHostManager {
@@ -45,6 +51,7 @@ export class PopupHostManager {
     private messageCounter = 0;
     private readonly channels = new Map<PopupMode, PopupChannelIdentity>();
     private readonly onEndpointClosed?: (mode: PopupMode) => void;
+    private readonly onContractRejection?: PopupHostOptions["onContractRejection"];
 
     /** Endpoint id of the live popup for `mode`, or null when none is open. */
     popupEndpointId(mode: PopupMode): string | null {
@@ -69,6 +76,7 @@ export class PopupHostManager {
         this.authorityEndpointId = `python:${this.viewerId}`;
         this.hostEndpointId = `widget-host:${this.sessionId}`;
         this.onEndpointClosed = viewer.onEndpointClosed;
+        this.onContractRejection = viewer.onContractRejection;
         this.router = this.createRouter();
     }
 
@@ -383,6 +391,11 @@ export class PopupHostManager {
         // Same guard inbound: a popup cannot invent an action, nor send one in a
         // direction the manifest does not grant it.
         if (!popupActionAllows(wire.envelope.action, wire.envelope.direction)) {
+            this.onContractRejection?.({
+                seam: "popup-host-inbound",
+                reason: "undeclared-popup-action",
+                detail: `${wire.envelope.action}:${wire.envelope.direction}`,
+            });
             console.warn(
                 `[MolSysViewer Host] refused popup action ${wire.envelope.action} `
                 + `as ${wire.envelope.direction}: not declared in runtime_actions.json`,
@@ -434,6 +447,11 @@ export class PopupHostManager {
         // action nobody declared, or one travelling in a direction it may not,
         // is refused instead of being relayed on trust.
         if (!popupActionAllows(action, direction)) {
+            this.onContractRejection?.({
+                seam: "popup-host-outbound",
+                reason: "undeclared-popup-action",
+                detail: `${action}:${direction}`,
+            });
             throw new Error(
                 `Popup action ${action} may not travel as ${direction} `
                 + "(not declared in runtime_actions.json)",

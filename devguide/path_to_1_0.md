@@ -177,6 +177,7 @@ Deciding release readiness against a stale plan is its own risk.
 | 25 | **Legacy popup vocabulary** | ✅ done. The eleven host/popup actions are declared in a `popup_actions` group with the directions each may carry, and both ends validate against it. `molsysviewer-sync-op` is declared bidirectional, which makes explicit the ambiguity that motivated the envelope in the first place. |
 | 23 | **Widget seam E2E** | ✅ done. `widget-seam.e2e.ts` drives the real `render()` in Chromium: raw `ready`, enveloped outbound, a valid projection reaching the controller, and a foreign session never reaching it. |
 | 24 | **R2 tail** | ✅ done. The journal is gone from the interactive path — kept only in `bootDocsView`, where a static export has no Python to ask — and `build_context_items` is the pure half that lets the panel snapshot carry add-on context items. |
+| 26 | **Architecture rework and hardening** | Open. Preserve the closed R1/R2/D3/D4/S8/S9 contracts while replacing the untyped transfer lifecycle, making JSON fallback lazy, moving static export to canonical current-state projection, extracting explicit owners, and closing the seam/performance evidence. See [`pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md`](pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md). |
 | 14 | **Scientific dogfooding** | Unchanged: daily lab usage is what finds what audits cannot. |
 | 15 | **Bug resolution from dogfooding** | Unchanged. |
 

@@ -1,6 +1,6 @@
 # Development roadmap
 
-**Updated:** 2026-07-29
+**Updated:** 2026-08-01
 
 This roadmap states current priorities. Release gating lives in
 [`path_to_1_0.md`](path_to_1_0.md), normative behavior in
@@ -46,11 +46,15 @@ These are the release gates:
 
 ## Active implementation candidates
 
-*Obsolete since 2026-07-30*: this section described the transport and routing
-foundations as the remaining pre-1.0 architectural work. Both landed (gates 1
-and 2 above), so **no architectural work is open for 1.0** — what remains is
-verification, dogfooding and release hygiene. The two proposals stay as the
-design record of what was built and why, not as pending work:
+The transport and routing contracts landed in gates 1 and 2. Subsequent
+repository audit and JupyterLab smoke testing found that some implementations
+beneath those contracts should be replaced before 1.0: the untyped transfer
+lifecycle, eager JSON fallback, journal-based static export, and concentrated
+orchestration ownership. The canonical execution order is
+[`pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md`](pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md).
+
+The completed proposals remain the design record of what was built and why;
+the master plan preserves their contracts while replacing weaker internals:
 
 - [`pending_proposals/runtime_message_router.md`](pending_proposals/runtime_message_router.md);
 - [`pending_proposals/data_plane_architecture.md`](pending_proposals/data_plane_architecture.md).

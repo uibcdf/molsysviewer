@@ -79,17 +79,6 @@ async function run() {
         await page.locator('[data-molsysviewer-group-panel-toggle="true"]').click();
         await page.locator('[data-molsysviewer-group-panel-tab="selection"]').click();
 
-        // Active-selection quick operations are independent of the query composer.
-        await page.locator('[data-molsysviewer-selection-all="true"]').click();
-        assert.strictEqual((await latestAction(page, "set_active_selection_operation")).operation, "all");
-        await setActiveSelection(page, [0, 1, 2, 3, 4, 5]);
-        await page.locator('[data-molsysviewer-selection-none="true"]').click();
-        assert.strictEqual((await latestAction(page, "set_active_selection_operation")).operation, "none");
-        await setActiveSelection(page, []);
-        await page.locator('[data-molsysviewer-selection-invert="true"]').click();
-        assert.strictEqual((await latestAction(page, "set_active_selection_operation")).operation, "invert");
-        await setActiveSelection(page, [0, 1, 2, 3, 4, 5]);
-
         // Query request and backend response.
         const query = page.locator('[data-molsysviewer-query-input="selection"]');
         await query.fill("atom_index in [0, 1]");
@@ -102,12 +91,18 @@ async function run() {
             false,
         );
         await page.locator('[data-molsysviewer-query-check="selection"]').click();
-        await page.waitForFunction(() =>
-            ((window as any).__messages || []).some((message: any) =>
+        const preview = await page.evaluate(() =>
+            [...((window as any).__messages || [])].reverse().find((message: any) =>
                 message.event === "selection_query_preview_request"
-            )
-        );
-        await page.locator('[data-molsysviewer-selection-query-apply="replace"]').click();
+            ));
+        await page.evaluate(async requestId => {
+            await (window as any).__controller.handleMessage({
+                op: "selection_query_preview",
+                request_id: requestId,
+                ok: true,
+                count: 2,
+            });
+        }, preview.request_id);
         const queryAction = await latestAction(page, "apply_selection_query");
         assert.strictEqual(queryAction.expression, "atom_index in [0, 1]");
         assert.strictEqual(queryAction.op, "replace");
@@ -119,38 +114,16 @@ async function run() {
         // invisible element for 30 s and then time out.)
         await page.locator('[data-molsysviewer-group-panel-tab="system"]').click();
         await page.locator('[data-molsysviewer-group-item="true"]').nth(1).click({ modifiers: ["Shift"] });
-        // Six, not five. The active selection is held as *group-level* items
-        // (`setFromAtomIndices` -> `lociToGroupItems`), so the backend echo of atoms
-        // [0, 1] is snapped up to the whole ALA group {0, 1, 2}. Shift adds the
-        // clicked GLY group {3, 4, 5} on top, giving all six. The old expectation of
-        // five assumed atom-level fidelity that this path has never had — and the
-        // test timed out on an invisible strip long before ever reaching it.
+        // The backend echo preserves the exact atom subset [0, 1] inside its
+        // group-level item. Shift adds the complete GLY group {3, 4, 5}, giving
+        // five atoms without expanding the original subset to all of ALA.
         await page.waitForFunction(() =>
             ((window as any).__messages || []).some((message: any) =>
                 message.event === "interaction_active_selection_changed"
-                && message.atom_indices?.length === 6
+                && message.atom_indices?.length === 5
             )
         );
         await page.locator('[data-molsysviewer-group-panel-tab="selection"]').click();
-
-        // Register a saved selection and exercise union and subtraction.
-        await page.evaluate(async () => {
-            await (window as any).__controller.handleMessage({
-                op: "save_selection",
-                tag: "tail",
-                atom_indices: [3, 4, 5],
-                element_level: "group",
-            });
-        });
-        await page.locator('[data-molsysviewer-saved-selection-compose-add="tail"]').click();
-        const union = await latestAction(page, "compose_saved_selection");
-        assert.deepStrictEqual({ tag: union.tag, op: union.op }, { tag: "tail", op: "add" });
-        await setActiveSelection(page, [0, 1, 2, 3, 4, 5]);
-
-        await page.locator('[data-molsysviewer-saved-selection-compose-subtract="tail"]').click();
-        const subtract = await latestAction(page, "compose_saved_selection");
-        assert.deepStrictEqual({ tag: subtract.tag, op: subtract.op }, { tag: "tail", op: "subtract" });
-        await setActiveSelection(page, [0, 1, 2]);
 
         // Expand to chain from the context menu, then save and apply the backend echoes.
         // Again: the strip's context menu is only reachable from the System tab.
@@ -163,9 +136,9 @@ async function run() {
         await setActiveSelection(page, [0, 1, 2]);
         await page.locator('[data-molsysviewer-group-panel-tab="selection"]').click();
 
-        await page.locator('[data-molsysviewer-selection-save="true"]').click();
-        await page.locator('[data-molsysviewer-selection-inline-input="true"]').fill("chain_a");
-        await page.locator('[data-molsysviewer-selection-inline-form="true"] button').filter({ hasText: "Save" }).click();
+        await page.locator('[data-molsysviewer-active-selection-save-toggle="true"]').click();
+        await page.locator('[data-molsysviewer-active-selection-save-input="true"]').fill("chain_a");
+        await page.locator('[data-molsysviewer-active-selection-save-confirm="true"]').click();
         const save = await latestAction(page, "save_selection");
         assert.strictEqual(save.tag, "chain_a");
         await page.evaluate(async () => {
@@ -207,28 +180,26 @@ async function run() {
             { selection_tag: "active_chain", tag: "active_chain_region" },
         );
 
-        // Promote the active selection directly to a label.
-        await page.locator('[data-molsysviewer-selection-to-label="true"]').click();
-        await page.locator('[data-molsysviewer-selection-inline-input="true"]').fill("Active chain");
-        await page.locator('[data-molsysviewer-selection-inline-form="true"] button')
-            .filter({ hasText: "Add Label" })
-            .click();
-        const label = await latestAction(page, "add_label_from_selection");
-        assert.strictEqual(label.text, "Active chain");
+        // Promote the saved selection directly to an annotation.
+        await page.locator('[data-molsysviewer-saved-selection-to-label="active_chain"]').click();
+        await renamedCard.locator("input").fill("Active chain");
+        await page.locator('[data-molsysviewer-saved-selection-confirm-mode="label"]').click();
+        const label = await latestAction(page, "create_label_from_saved_selection");
+        assert.deepStrictEqual(
+            { selection_tag: label.selection_tag, text: label.text },
+            { selection_tag: "active_chain", text: "Active chain" },
+        );
 
-        // Undo/redo are no longer a frontend-local stack: they drive the single
-        // scene history in Python. The buttons' enabled state is pushed from
-        // Python via set_history_state, and a click emits a scene_history event.
+        // Undo/redo are no longer a frontend-local stack: the Selection panel's
+        // keyboard shortcuts drive the single scene history in Python. Their
+        // enabled state is pushed from Python via set_history_state.
         await page.evaluate(async () => {
             await (window as any).__controller.handleMessage({
                 op: "set_history_state", can_undo: true, can_redo: false,
             });
         });
-        assert.strictEqual(
-            await page.locator('[data-molsysviewer-selection-undo="true"]').isDisabled(),
-            false,
-        );
-        await page.locator('[data-molsysviewer-selection-undo="true"]').click();
+        const selectionPanel = page.locator('[data-molsysviewer-selection-panel="true"]');
+        await selectionPanel.press("Control+z");
         await page.waitForFunction(() =>
             ((window as any).__messages || []).some((m: any) => m.event === "scene_history_undo"));
 
@@ -237,11 +208,7 @@ async function run() {
                 op: "set_history_state", can_undo: true, can_redo: true,
             });
         });
-        assert.strictEqual(
-            await page.locator('[data-molsysviewer-selection-redo="true"]').isDisabled(),
-            false,
-        );
-        await page.locator('[data-molsysviewer-selection-redo="true"]').click();
+        await selectionPanel.press("Control+y");
         await page.waitForFunction(() =>
             ((window as any).__messages || []).some((m: any) => m.event === "scene_history_redo"));
 

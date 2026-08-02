@@ -389,7 +389,13 @@ test("the host refuses to emit an action the manifest does not declare", async (
         setInterval: () => 1,
         clearInterval: (_id: number) => {},
     };
-    const manager = new PopupHostManager({ source: "viewer-source", viewerId: "view-a", sessionId: "session-a" });
+    const rejections: unknown[] = [];
+    const manager = new PopupHostManager({
+        source: "viewer-source",
+        viewerId: "view-a",
+        sessionId: "session-a",
+        onContractRejection: rejection => rejections.push(rejection),
+    });
     try {
         await manager.open("canvas");
         manager.isReady = true;
@@ -397,6 +403,11 @@ test("the host refuses to emit an action the manifest does not declare", async (
         // `send` swallows the throw and warns; what must hold is that nothing lands.
         manager.send("molsysviewer-not-declared", { any: "payload" });
         assert.equal(popup.posted.length, 0, "an undeclared action must not reach the popup");
+        assert.deepStrictEqual(rejections, [{
+            seam: "popup-host-outbound",
+            reason: "undeclared-popup-action",
+            detail: "molsysviewer-not-declared:projection",
+        }]);
     } finally {
         (globalThis as any).window = previousWindow;
     }

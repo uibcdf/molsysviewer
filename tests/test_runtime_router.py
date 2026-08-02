@@ -12,6 +12,7 @@ from molsysviewer.viewer.runtime_router import (
     ACTION_CATEGORIES,
     DATA_PLANE_ACTIONS,
     OUTBOUND_REQUESTS,
+    QT_TEST_ACTIONS,
     RAW_ACTIONS,
     RUNTIME_PROTOCOL_VERSION,
     WidgetRuntimeRouter,
@@ -45,8 +46,14 @@ def envelope(action, direction, *, payload=None, message_id="m1", viewer=VIEWER,
 def test_manifest_categories_are_all_valid():
     assert ACTION_CATEGORIES  # non-empty
     assert set(ACTION_CATEGORIES.values()) <= {"command", "event", "request", "ack", "error"}
-    # all four groups are pairwise disjoint
-    groups = [set(ACTION_CATEGORIES), set(OUTBOUND_REQUESTS), set(RAW_ACTIONS), set(DATA_PLANE_ACTIONS)]
+    # All public and test-only groups are pairwise disjoint.
+    groups = [
+        set(ACTION_CATEGORIES),
+        set(OUTBOUND_REQUESTS),
+        set(RAW_ACTIONS),
+        set(DATA_PLANE_ACTIONS),
+        set(QT_TEST_ACTIONS),
+    ]
     union = set().union(*groups)
     assert sum(len(g) for g in groups) == len(union)
 

@@ -15,6 +15,7 @@ from .._private.smonitor_emit import emit_suppressed_exception
 from ..runtime_contract import (
     ACTION_CATEGORIES,
     DATA_PLANE_ACTIONS,
+    QT_TEST_ACTIONS,
     QT_TRANSPORT_ACTIONS,
     RAW_ACTIONS,
 )
@@ -55,6 +56,7 @@ def _is_known_frontend_action(name: Any) -> bool:
         or name in QT_TRANSPORT_ACTIONS
         or name in RAW_ACTIONS
         or name in DATA_PLANE_ACTIONS
+        or name in QT_TEST_ACTIONS
     )
 
 
@@ -425,17 +427,12 @@ class QtMessageBridge:
         # silence. Same event, two behaviours, is exactly the semantic fork R3
         # exists to prevent.
         if not _is_known_frontend_action(name):
-            # The AnyWidget seam drops an unknown action observably; Qt used to
-            # forward it and let the handler ignore it in silence. The defect was
-            # the silence, not the forwarding: the handler ignores it either way,
-            # so the end state already matched. Signalling it makes both
-            # connectors equally observable without refusing out-of-band
-            # diagnostics, which a strict rejection would also kill.
             emit_suppressed_exception(
                 "molsysviewer.standalone_qt.unknown_frontend_action",
                 ValueError(f"unknown frontend action {name!r} (not in runtime_actions.json)"),
                 context={"event": name},
             )
+            return False
         self._forward_to_view(event)
         return True
 

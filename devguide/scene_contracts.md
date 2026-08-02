@@ -1864,8 +1864,10 @@ frontend (no stream, so nothing is ever held).
 
 ### Contract S9 — A half-built scene must never be treated as the finished one
 
-**Established 2026-08-01, from a defect found by hand. Status: designed and
-measured; implementation pending (`devguide/pending_bugs/`).**
+**Established 2026-08-01, from a defect found by hand. Status: implemented and
+measured (`75069724`, `34da6066`, `d0e6013c`). Delivery of the mandatory
+diagnostic signal is tracked separately as active defect Z2 in
+`pending_proposals/open_items_after_the_2026_08_smoke_round.md`.**
 
 Mol\* derives state from the scene *as it currently stands*, and some of what it
 derives is **not recoverable** once the scene is complete again. Any moment in

@@ -31,6 +31,18 @@ is also explicitly post-1.0.
 
 ## Open before 1.0
 
+- [`pre_1_0_architecture_rework_and_hardening_master_plan.md`](pre_1_0_architecture_rework_and_hardening_master_plan.md):
+  canonical execution plan for the corrections, transport/export rework,
+  architectural extraction, seam hardening, representative performance work
+  and release gates required before 1.0. The audit documents below remain its
+  evidence, not competing execution plans.
+- [`transport_popup_audit_followups_2026_08.md`](transport_popup_audit_followups_2026_08.md):
+  focused follow-up from the post-R2/D3/D4 audit. It records one targeted-stream
+  cancellation defect, missing lifecycle evidence, documentation drift, the
+  lazy-fallback priority, and measured improvement candidates without reopening
+  the completed architecture. Read it together with
+  [`open_items_after_the_2026_08_smoke_round.md`](open_items_after_the_2026_08_smoke_round.md);
+  the union of both is the complete current audit inventory.
 - [`documentation_execution_in_ci.md`](documentation_execution_in_ci.md): run
   `docs/execute_notebooks.py` in CI. Sphinx does not execute notebooks, which is
   how ten broken ones survived unnoticed. Postponed by decision, not closed.
@@ -85,9 +97,9 @@ upstream decisions. They do not block the current release.
 - **Done:** the router inventory/AnyWidget seam and the array-native serializer,
   negotiated buffer delivery, chunking, acknowledgement, cancellation, JSON
   fallback, and embedded-canvas E2E are implemented.
-- **Now:** finish R2's canonical popup snapshot, then close D3 timeout/memory
-  evidence, then implement D4 binary canvas-popup parity. Continue dogfooding
-  and real-window Qt validation in parallel.
+- **Now:** execute the staged pre-1.0 rework and hardening master plan. R2, D3
+  and D4 remain closed as contracts; their transfer implementation is being
+  replaced where the audit demonstrated weak state ownership.
 - **Preserve 1.0 semantics:** all selected structures remain materialized in
   `view.molsys`; binary is a transport choice, not a new scientific model.
 - **Session lifecycle:** kernel restart or widget reconstruction creates a new

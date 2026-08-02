@@ -67,9 +67,11 @@ async function run() {
 
         await page.locator('[data-molsysviewer-group-panel-toggle="true"]').click();
         await page.locator('[data-molsysviewer-group-panel-tab="shapes"]').click();
+        await page.locator('[data-molsysviewer-shape-more="alpha-set"]').click();
         assert.strictEqual(await page.locator('[data-molsysviewer-shape-no-style="alpha-set"]').count(), 1);
         assert.strictEqual(await page.locator('[data-molsysviewer-shape-style="alpha-set"] input').count(), 0);
 
+        await page.locator('[data-molsysviewer-shape-more="site"]').click();
         const color = page.locator('[data-molsysviewer-shape-color="site"]');
         await color.fill("#336699");
         await page.locator('[data-molsysviewer-shape-visibility="site"]').click();

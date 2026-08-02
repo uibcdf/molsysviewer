@@ -276,6 +276,30 @@ test("bootPopup replays initial sync and enables autohide listeners", async () =
 
         env.windowObj.dispatch("message", {
             source: env.windowObj.opener,
+            data: hostWire("molsysviewer-not-declared", { ignored: true }),
+        });
+        await flushAsync();
+        assert.deepStrictEqual(
+            env.postedToHost.at(-1)?.envelope,
+            {
+                protocolVersion: 1,
+                viewerId: TEST_CHANNEL.viewerId,
+                sessionId: TEST_CHANNEL.sessionId,
+                endpointId: TEST_CHANNEL.popupEndpointId,
+                targetEndpointId: TEST_CHANNEL.hostEndpointId,
+                messageId: `${TEST_CHANNEL.popupEndpointId}:2`,
+                direction: "event",
+                action: "molsysviewer-runtime-contract-rejected",
+                payload: {
+                    seam: "popup-inbound",
+                    reason: "undeclared-popup-action",
+                    detail: "molsysviewer-not-declared:projection",
+                },
+            },
+        );
+
+        env.windowObj.dispatch("message", {
+            source: env.windowObj.opener,
             data: hostWire(
                 "molsysviewer-initial-sync",
                 {

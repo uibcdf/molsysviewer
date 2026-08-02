@@ -32,6 +32,11 @@ async function run(): Promise<void> {
         assert.equal(result.projectionApplied, true, "a valid projection must reach the controller");
         // A projection for another session must never reach the controller.
         assert.equal(result.foreignSessionApplied, false, "a foreign session must not be applied");
+        assert.equal(
+            result.foreignSessionRejectedObservably,
+            true,
+            "a rejected envelope must emit a runtime diagnostic even with debug disabled",
+        );
 
         console.log("[E2E widget seam] real render(): raw ready, enveloped outbound, session isolation held");
     } finally {

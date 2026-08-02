@@ -623,7 +623,7 @@ test("GroupPanel renders the selection modifier legend without changing callback
     }
 });
 
-test("GroupPanel exposes active selection undo redo buttons and scoped shortcuts", () => {
+test("GroupPanel exposes scene-history buttons in Whole and scoped shortcuts in Selection", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;

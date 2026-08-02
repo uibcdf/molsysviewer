@@ -1371,7 +1371,7 @@ window.__molsysviewerDocsHandleMessage = async function(message) {
     if (!response.ok) throw new Error("payload ref failed: " + response.status);
     const payload = await response.json();
     await postHost({
-      event:"probe_payload",
+      event:"qt_payload_probe",
       id:message.id,
       generation:message.generation,
       atoms:payload.atoms.atom_id.length,
@@ -1419,7 +1419,7 @@ def send_generation(label, atom_count):
         lambda: bridge.inflight is None
         and not bridge.queue
         and any(
-            event.get("event") == "probe_payload"
+            event.get("event") == "qt_payload_probe"
             and event.get("generation") == generation
             for event in received
         )
@@ -1428,7 +1428,7 @@ def send_generation(label, atom_count):
 
 first_generation, first_ok = send_generation("first", 1)
 second_generation, second_ok = send_generation("second", 2)
-probes = [event for event in received if event.get("event") == "probe_payload"]
+probes = [event for event in received if event.get("event") == "qt_payload_probe"]
 handler = view._molsysviewer_qt_payload_handler
 print(json.dumps({
     "first_ok": first_ok,

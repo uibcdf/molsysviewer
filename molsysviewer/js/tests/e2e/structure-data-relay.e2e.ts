@@ -33,8 +33,12 @@ async function run(): Promise<void> {
         assert.equal(result.bytesMatch, true);
         // ...and the popup's acknowledgement came back through the host.
         assert.equal(result.ackAction, "molsysviewer-structure-data-ack");
+        // The same addressed seam carries cancellation before JSON fallback.
+        assert.equal(result.cancelReceived, 1);
+        assert.equal(result.cancelGeneration, 1);
+        assert.equal(result.cancelReason, "fallback-to-json");
         assert.deepEqual(errors, []);
-        console.log("[E2E structure-data relay] host relayed buffers to the addressed popup and got its ack");
+        console.log("[E2E structure-data relay] host relayed buffers and targeted cancellation to the addressed popup");
     } finally {
         await browser.close();
     }

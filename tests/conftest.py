@@ -55,26 +55,27 @@ def complete_structure_stream():
     """
 
     def _drive(view, max_steps: int = 512) -> None:
+        from molsysviewer.transport import TransferState
+
         for _ in range(max_steps):
-            stream = view._binary_structure_stream  # noqa: SLF001
-            if stream is None:
+            transfer = view._structure_transfers.active  # noqa: SLF001
+            if transfer is None:
                 return
-            awaiting = stream["awaiting"]
             event = {
                 "viewer_id": view._binary_viewer_id,  # noqa: SLF001
                 "session_id": view._binary_session_id,  # noqa: SLF001
-                "stream_id": "structures:main",
-                "generation": stream["generation"],
+                "stream_id": transfer.stream_id,
+                "generation": transfer.generation,
             }
-            if awaiting == "begin":
+            if transfer.state is TransferState.WAITING_BEGIN_ACK:
                 event["event"] = "structure_data_begin_ack"
-            elif isinstance(awaiting, tuple):
+            elif transfer.state is TransferState.WAITING_CHUNK_ACK:
                 event["event"] = "structure_data_chunk_ack"
-                event["chunk_id"] = awaiting[1]
-            elif awaiting == "complete":
+                event["chunk_id"] = transfer.awaited_chunk
+            elif transfer.state is TransferState.WAITING_COMPLETE:
                 event["event"] = "structure_data_complete"
             else:  # pragma: no cover — an unknown state must not spin silently
-                raise AssertionError(f"unexpected stream state {awaiting!r}")
+                raise AssertionError(f"unexpected stream state {transfer.state!r}")
             view._handle_frontend_event(event)  # noqa: SLF001
         raise AssertionError("the structure stream did not complete")
 

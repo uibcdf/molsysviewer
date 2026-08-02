@@ -15,7 +15,7 @@
     "sync:pyversion": "node scripts/sync-python-version.mjs",
     "build:runtime": "node scripts/build-runtime.mjs",
     "build": "npm run sync:pyversion && npm run build:runtime",
-    "build:test:js": "npx esbuild tests/unit/index.test.ts --bundle --platform=node --format=esm --outfile=tests/unit/dist-index.js",
+    "build:test:js": "npx esbuild tests/unit/index.test.ts --bundle --platform=node --format=esm --outfile=tests/unit/dist-index.js --external:typescript",
     "test:js": "npm run build:test:js && node --test tests/unit/dist-index.js",
     "coverage:js": "npm run build:test:js && npx c8 --reporter=lcov --report-dir=coverage-js node --test tests/unit/dist-index.js",
     "test:perf": "npm run build:harness && npx esbuild tests/perf/message-toll.perf.ts tests/perf/dynamic-region-frame.perf.ts --bundle --platform=node --format=esm --outdir=tests/perf --external:playwright --external:chromium-bidi/* && node tests/perf/message-toll.perf.js && node tests/perf/dynamic-region-frame.perf.js",

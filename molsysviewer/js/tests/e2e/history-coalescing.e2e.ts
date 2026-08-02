@@ -67,8 +67,7 @@ async function run() {
         await page.evaluate(async () => {
             await (window as any).__controller.handleMessage({ op: "set_history_state", can_undo: true, can_redo: false });
         });
-        await page.locator('[data-molsysviewer-group-panel-tab="selection"]').click();
-        await page.locator('[data-molsysviewer-selection-undo="true"]').click();
+        await page.locator('[data-molsysviewer-region-style-undo="pocket"]').click();
 
         const events = await page.evaluate(() => ((window as any).__messages || []).filter((message: any) =>
             message.event === "scene_history_coalescing_begin"

@@ -28,9 +28,11 @@ async function run(): Promise<void> {
             viewerId: "e2e-popup-view",
             sessionId: "e2e-popup-session",
             mode: "canvas",
+            action: "molsysviewer-sync-hierarchy",
+            hierarchyItemCount: 2,
         });
         assert.deepEqual(errors, []);
-        console.log("[E2E popup channel] authenticated postMessage round-trip passed");
+        console.log("[E2E popup channel] authenticated hierarchy round-trip passed");
     } finally {
         await browser.close();
     }

@@ -128,12 +128,12 @@ export class RegionsPanel extends BasePanel {
 
     setCurrentSelection(selection: ActiveSelectionPayload): void {
         this.currentSelection = selection;
-        this.scheduleRender();
+        this.scheduleExternalRender();
     }
 
     setSavedSelections(items: SavedSelectionSummary[]): void {
         this.savedSelections = [...items];
-        this.scheduleRender();
+        this.scheduleExternalRender();
     }
 
     /** Whether a region with this tag currently exists (used by the Selection -> Region bridge). */

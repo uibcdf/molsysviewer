@@ -10,6 +10,7 @@ from __future__ import annotations
 from unittest.mock import patch
 
 import anywidget
+import pytest
 
 from molsysviewer import MolSysView
 
@@ -132,6 +133,63 @@ def test_an_invalid_popup_snapshot_mode_answers_nothing():
     assert sent == []
 
 
+@pytest.mark.parametrize(
+    ("action", "payload", "catalog_key"),
+    [
+        (
+            "camera_stranded_inside_scene",
+            {
+                "event": "camera_stranded_inside_scene",
+                "distance": 2.0,
+                "scene_radius": 10.0,
+                "after": "load",
+            },
+            "camera_stranded_inside_scene",
+        ),
+        (
+            "runtime_contract_rejected",
+            {
+                "event": "runtime_contract_rejected",
+                "seam": "widget-inbound",
+                "reason": "session-mismatch",
+                "detail": "other-session",
+            },
+            "runtime_contract_rejected",
+        ),
+    ],
+)
+def test_frontend_transport_diagnostics_cross_the_envelope_and_reach_smonitor(
+    monkeypatch,
+    action,
+    payload,
+    catalog_key,
+):
+    import molsysviewer.viewer.core as core_module
+
+    view = MolSysView()
+    emitted: list[tuple[dict, dict]] = []
+    monkeypatch.setattr(
+        core_module,
+        "emit_from_catalog",
+        lambda catalog, **kwargs: emitted.append((catalog, kwargs)),
+    )
+    router = view._runtime_router  # noqa: SLF001
+    view._handle_inbound_message({  # noqa: SLF001
+        "protocolVersion": 1,
+        "viewerId": view._binary_viewer_id,  # noqa: SLF001
+        "sessionId": view._binary_session_id,  # noqa: SLF001
+        "endpointId": router.widget_host_endpoint,
+        "targetEndpointId": router.python_endpoint,
+        "messageId": f"diagnostic-{action}",
+        "direction": "error",
+        "action": action,
+        "payload": payload,
+    })
+
+    assert len(emitted) == 1
+    assert emitted[0][0] is core_module.CATALOG[catalog_key]
+
+
 def test_raw_and_data_plane_messages_reach_the_wire_unwrapped():
     view = MolSysView()
     view._ready = True  # noqa: SLF001
@@ -205,6 +263,73 @@ def test_a_canvas_popup_snapshot_streams_the_molecular_generation_to_its_endpoin
     # withheld (projecting an explicit None would blank the popup). Visibility
     # still travels, which is what proves the rest of the scene is projected.
     assert "show_whole" in ops, "the rest of the scene is still projected"
+
+
+def test_a_popup_targeted_stream_fallback_cancels_and_loads_the_same_endpoint():
+    import molsysmt as msm
+
+    view = MolSysView()
+    view.load(msm.systems["pentalanine"]["traj_pentalanine.h5msm"])
+    view._ready = True  # noqa: SLF001
+    view._frontend_capabilities = {  # noqa: SLF001
+        "binary_structure_data": [1],
+        "max_buffer_bytes": 16 * 1024 * 1024,
+    }
+    sent: list[tuple[dict, list]] = []
+    view.widget.send = lambda content, buffers=None: sent.append((content, list(buffers or [])))  # type: ignore[assignment]
+
+    assert view._try_send_array_native_molsys(  # noqa: SLF001
+        view._current_molecular_projection,  # noqa: SLF001
+        target_endpoint_id="canvas-popup-7",
+    )
+    sent.clear()
+
+    with pytest.warns(RuntimeWarning, match="using JSON fallback"):
+        view._fallback_binary_structure_stream("forced test fallback")  # noqa: SLF001
+
+    cancel = next(message for message, _ in sent if message.get("op") == "structure_data_cancel")
+    fallback = next(message for message, _ in sent if message.get("op") == "load_molsys_payload")
+    assert cancel["target_endpoint_id"] == "canvas-popup-7"
+    assert fallback["target_endpoint_id"] == "canvas-popup-7"
+
+
+def test_a_failed_stream_cancel_is_reported_without_masking_the_json_fallback(monkeypatch):
+    import molsysmt as msm
+    import molsysviewer.viewer.core as core_module
+
+    view = MolSysView()
+    view.load(msm.systems["pentalanine"]["traj_pentalanine.h5msm"])
+    view._ready = True  # noqa: SLF001
+    view._frontend_capabilities = {  # noqa: SLF001
+        "binary_structure_data": [1],
+        "max_buffer_bytes": 16 * 1024 * 1024,
+    }
+    sent: list[dict] = []
+
+    def transmit(message, buffers=None):
+        if message.get("op") == "structure_data_cancel":
+            raise OSError("cancel wire failed")
+        sent.append(dict(message))
+
+    view.widget.send = transmit  # type: ignore[assignment]
+    assert view._try_send_array_native_molsys(  # noqa: SLF001
+        view._current_molecular_projection,  # noqa: SLF001
+        target_endpoint_id="canvas-popup-7",
+    )
+    diagnostics: list[tuple[tuple, dict]] = []
+    monkeypatch.setattr(
+        core_module,
+        "emit_suppressed_exception",
+        lambda *args, **kwargs: diagnostics.append((args, kwargs)),
+    )
+
+    with pytest.warns(RuntimeWarning, match="using JSON fallback"):
+        view._fallback_binary_structure_stream("forced test fallback")  # noqa: SLF001
+
+    assert diagnostics
+    assert diagnostics[0][0][0] == "MolSysView._fallback_binary_structure_stream.cancel"
+    assert diagnostics[0][1]["context"]["target_endpoint_id"] == "canvas-popup-7"
+    assert any(message.get("op") == "load_molsys_payload" for message in sent)
 
 
 def test_a_panel_popup_snapshot_never_starts_a_molecular_stream():

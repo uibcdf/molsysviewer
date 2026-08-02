@@ -1,10 +1,14 @@
 # Open items after the 2026-08 smoke-test round
 
+**Status:** audit evidence and item inventory. Its execution order is superseded
+by
+[`pre_1_0_architecture_rework_and_hardening_master_plan.md`](pre_1_0_architecture_rework_and_hardening_master_plan.md).
+
 **Written 2026-08-01, at the close of the JupyterLab smoke round that produced
 Contracts S8 and S9 and seven fixes (`e50b7403` … `34755fb9`).**
 
 Nineteen items. They are not one kind of thing, and the grouping is the point:
-one is **broken right now**, the next block is **verification the project's own
+two are **broken right now**, the next block is **verification the project's own
 rules require and that did not happen**, and the last is housekeeping.
 
 Ownership is marked where an item is a decision rather than a task.
@@ -12,9 +16,9 @@ Ownership is marked where an item is a decision rather than a task.
 The count grew from fourteen on a later pass, and how it grew is worth recording.
 The first passes recalled *deferred tasks* — easy to list, because whoever deferred
 them wrote them down. What surfaced later was **unconsidered scope** (A3, A4) and
-**a defect introduced during the round** (Z1), neither of which appears on any list
-by construction. The useful question was not "what did we postpone" but "who else
-uses what we changed".
+**two defects introduced or exposed during the round** (Z1, Z2), none of which
+appears on a deferral list by construction. The useful question was not "what did
+we postpone" but "who else uses what we changed".
 
 ---
 
@@ -40,16 +44,17 @@ Worth noting on the other side: the R1 guard did its job. It refused and warned
 rather than accepting an undeclared action in silence, which is the whole reason
 the manifest exists.
 
-**How.** One line:
+**How.** Declare the action:
 
 ```json
 "molsysviewer-sync-hierarchy": ["projection"],
 ```
 
-No test needs updating: the JS guard asserts `POPUP_ACTIONS.size >= 11`, which is
-itself part of why B3 exists — it can only notice deletions, and pins no action in
-particular. Verify by opening a panel pop-out, loading a second structure, and
-checking System follows.
+The declaration alone does not close the defect. Add a test through the real
+host-to-popup seam that opens or simulates the panel pop-out, loads a second
+structure and proves that System follows. Mutation-verify it by removing the
+declaration. The existing `POPUP_ACTIONS.size >= 11` assertion is insufficient:
+it can notice some deletions but pins neither this action nor its direction.
 
 ### Z2. `camera_stranded_inside_scene` is not declared either, so the signal never leaves the browser
 
@@ -282,7 +287,8 @@ detection that exists only to guard it. Until then both are permanent.
 
 ## E. Housekeeping and drift (5)
 
-Half an hour in total, and three of the four are documentation contradicting the
+Half an hour in total, and four of the five are documentation or handoff records
+contradicting the
 code — the exact failure `feedback_devguide_accuracy` warns about.
 
 ### E1. An orphan report left uncommitted in MolSysMT
