@@ -71,7 +71,8 @@ def _atom_attribute(molsys: Any, attribute: str) -> Any:
         return None
 
 
-def _serialize_static_payload(molsys: Any, n_atoms: int) -> dict[str, Any]:
+def serialize_static_molsys_payload(molsys: Any, n_atoms: int) -> dict[str, Any]:
+    """Return the canonical JSON-compatible topology shared by both encoders."""
     atoms = {
         "atom_id": _column(_atom_attribute(molsys, "atom_id"), n_atoms, default=lambda i: i + 1, cast=int),
         "atom_name": _column(_atom_attribute(molsys, "atom_name"), n_atoms, default=lambda i: f"A{i + 1}", cast=str),
@@ -205,7 +206,7 @@ def serialize_array_native_molsys(molsys: Any) -> ArrayNativeMolSysPayload:
         "protocol_version": ARRAY_NATIVE_PROTOCOL_VERSION,
         "n_atoms": n_atoms,
         "n_structures": n_structures,
-        **_serialize_static_payload(molsys, n_atoms),
+        **serialize_static_molsys_payload(molsys, n_atoms),
         "structural_arrays": descriptors,
     }
     return ArrayNativeMolSysPayload(metadata=metadata, arrays=tuple(arrays))

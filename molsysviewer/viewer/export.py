@@ -98,7 +98,7 @@ class ExportMixin:
                     continue
                 if isinstance(vis, list) and vis == list(range(len(vis))):
                     continue
-            cleaned.append(msg)
+            cleaned.append(self._materialize_molecular_projection(msg))
         return cleaned
 
     def _json_for_html_script(self, obj: Any) -> str:

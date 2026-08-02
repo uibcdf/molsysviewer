@@ -1,181 +1,58 @@
-import math
+import ast
+from pathlib import Path
 
+from molsysviewer import MolSysView, demo
 from molsysviewer.loaders import load_from_molsysmt
-from molsysviewer.loaders.load_molsysmt import _serialize_molsys_payload
+from molsysviewer.transport import LazyMolecularMessage
 
 
-class DummyView:
-    def __init__(self) -> None:
-        self.messages = []
-        self.molecular_system = None
-        self.selection = None
-        self.structure_indices = None
-        self._molsys = None
-        self.atom_mask = None
+def test_load_from_molsysmt_creates_a_lazy_direct_molsys_projection(monkeypatch):
+    source_view = demo["dialanine"]
+    source = source_view.molsys
+    original_to_form = type(source).to_form
+    viewer_json_calls: list[str] = []
 
-    def _send(self, message):
-        self.messages.append(message)
+    def reject_viewer_json(self, target, *args, **kwargs):
+        if target == "molsysmt.ViewerJSON":
+            viewer_json_calls.append(target)
+            raise AssertionError("ViewerJSON must not be used by the loader")
+        return original_to_form(self, target, *args, **kwargs)
 
-
-def test_load_from_molsysmt_uses_viewer_json(monkeypatch):
-    """Ensure ViewerJSON conversion path yields a MolSys payload message."""
-    view = DummyView()
-
-    class DummyMolSys:
-        def __init__(self, payload):
-            self.payload = payload
-
-        def get(self, *, element=None, n_atoms=False, **_kwargs):
-            if element == "atom" and n_atoms:
-                return 1
-            raise AssertionError("Unexpected get request")
-
-        def get_n_atoms(self):
-            return 1
-
-        def to_form(self, target):
-            if target == "molsysmt.ViewerJSON":
-                return self.payload
-            raise AssertionError("Unexpected to_form target")
-
-    viewer_json = {
-        "atoms": {
-            "atom_id": [1],
-            "atom_name": ["CA"],
-            "group_id": [10],
-            "group_name": ["MET"],
-            "chain_id": ["A"],
-            "entity_id": ["1"],
-            "element_symbol": ["C"],
-            "formal_charge": [0],
-        },
-        "bonds": {"atom_pairs": [[0, 0]], "order": [1], "type": ["single"]},
-        "structures": [
-            {
-                "coordinates": [[1.0, 2.0, 3.0]],
-                "time": 5,
-                "box": {
-                    "v0": [1.0, 0.0, 0.0],
-                    "v1": [0.0, 2.0, 0.0],
-                    "v2": [0.0, 0.0, 3.0],
-                },
-            }
-        ],
-    }
-
-    def fake_convert(item, *, to_form=None, **_kwargs):
-        if to_form == "molsysmt.MolSys":
-            return DummyMolSys(viewer_json)
-        raise AssertionError("Unexpected conversion request")
-
-    import molsysviewer.loaders.load_molsysmt as loader_mod
-
-    monkeypatch.setattr(loader_mod.msm, "convert", fake_convert)
-
-    result = load_from_molsysmt(molecular_system="dummy", view=view)
+    monkeypatch.setattr(type(source), "to_form", reject_viewer_json)
+    view = MolSysView()
+    result = load_from_molsysmt(molecular_system=source, view=view)
 
     assert result is view
-    assert view.messages, "No message was sent to the frontend"
-    message = view.messages[0]
-    assert message["op"] == "load_molsys_payload"
+    message = next(msg for msg in view._message_history if msg.get("op") == "load_molsys_payload")  # noqa: SLF001
+    assert isinstance(message, LazyMolecularMessage)
+    assert not message.is_materialized
+    assert viewer_json_calls == []
+
     payload = message["payload"]
-    assert payload["atoms"]["atom_id"] == [1]
-    assert payload["atoms"]["atom_name"] == ["CA"]
-    assert payload["atoms"]["residue_id"] == [10]
-    assert payload["atoms"]["residue_name"] == ["MET"]
-    assert payload["atoms"]["chain_id"] == ["A"]
-    assert payload["atoms"]["entity_id"] == ["1"]
-    assert payload["atoms"]["element_symbol"] == ["C"]
-    # Coordinates arrive in angstroms (ViewerJSON provides nm)
-    assert payload["structures"][0]["coordinates"] == [[10.0, 20.0, 30.0]]
-    assert payload["structures"][0]["box"] == [
-        [10.0, 0.0, 0.0],
-        [0.0, 20.0, 0.0],
-        [0.0, 0.0, 30.0],
-    ]
-    assert payload["bonds"] == {"indexA": [0], "indexB": [0], "order": [1], "type": ["single"]}
+    assert payload["atoms"]["atom_name"][:3] == ["H1", "CH3", "H2"]
+    assert payload["structures"]
+    assert viewer_json_calls == []
 
 
+def test_load_from_molsysmt_creates_view_when_missing():
+    source_view = demo["dialanine"]
 
-def test_serialize_molsys_payload_column_fast_path_preserves_fallbacks():
-    viewer_json = {
-        "atoms": {
-            "atom_id": [1, 2, 3],
-            "atom_name": ["N", "CA", "C"],
-            "group_id": [10.0, float("nan"), 12.0],
-            "group_name": ["ALA"],
-            "chain_id": ["A", "A", "A"],
-            "entity_id": [1, 1, 1],
-            "element_symbol": ["N", "C", "C"],
-            "formal_charge": [0, 1, -1],
-        },
-        "structures": [{"coordinates": [[0.0, 0.0, 0.0], [0.1, 0.0, 0.0], [0.2, 0.0, 0.0]]}],
-    }
+    result = load_from_molsysmt(molecular_system=source_view.molsys)
 
-    payload = _serialize_molsys_payload(
-        viewer_json,
-        molecule_indices=[0, 0, 1],
-        component_indices=[0, 1, 1],
-        molecule_names=["Protein", "Protein", "Ligand"],
-        component_names=["Backbone"],
-        group_types=["amino acid", "amino acid", "other"],
-    )
+    assert isinstance(result, MolSysView)
+    assert any(msg.get("op") == "load_molsys_payload" for msg in result._message_history)  # noqa: SLF001
 
-    assert payload is not None
-    atoms = payload["atoms"]
-    assert atoms["atom_id"] == [1, 2, 3]
-    assert atoms["atom_name"] == ["N", "CA", "C"]
-    assert atoms["residue_id"] == [10, 1, 12]
-    assert atoms["residue_name"] == ["RES", "RES", "RES"]
-    assert atoms["chain_id"] == ["A", "A", "A"]
-    assert atoms["entity_id"] == ["1", "1", "1"]
-    assert atoms["element_symbol"] == ["N", "C", "C"]
-    assert atoms["formal_charge"] == [0, 1, -1]
-    assert atoms["molecule_id"] == [0, 0, 1]
-    assert atoms["molecule_name"] == ["Protein", "Protein", "Ligand"]
-    assert atoms["component_id"] == [0, 1, 1]
-    assert atoms["component_name"] == ["Component", "Component", "Component"]
-    assert atoms["group_type"] == ["amino acid", "amino acid", "other"]
 
-def test_load_from_molsysmt_creates_view_when_missing(monkeypatch):
-    class DummyMolSys:
-        def __init__(self, payload):
-            self.payload = payload
+def test_product_python_never_requests_a_viewerjson_intermediate():
+    package_root = Path(__file__).parents[2] / "molsysviewer"
+    offenders: list[str] = []
+    for path in package_root.rglob("*.py"):
+        tree = ast.parse(path.read_text(), filename=str(path))
+        if any(
+            isinstance(node, ast.Constant)
+            and node.value == "molsysmt.ViewerJSON"
+            for node in ast.walk(tree)
+        ):
+            offenders.append(str(path.relative_to(package_root)))
 
-        def get(self, *, element=None, n_atoms=False, **_kwargs):
-            if element == "atom" and n_atoms:
-                return 1
-            raise AssertionError("Unexpected get request")
-
-        def get_n_atoms(self):
-            return 1
-
-        def to_form(self, target):
-            if target == "molsysmt.ViewerJSON":
-                return self.payload
-            raise AssertionError("Unexpected to_form target")
-
-    viewer_json = {
-        "atoms": {"atom_id": [1]},
-        "structures": [
-            {
-                "coordinates": [[1.0, 2.0, 3.0]],
-            }
-        ],
-    }
-
-    def fake_convert(item, *, to_form=None, **_kwargs):
-        if to_form == "molsysmt.MolSys":
-            return DummyMolSys(viewer_json)
-        raise AssertionError("Unexpected conversion request")
-
-    import molsysviewer.loaders.load_molsysmt as loader_mod
-
-    created_view = DummyView()
-    monkeypatch.setattr(loader_mod, "ensure_view", lambda view=None: created_view if view is None else view)
-    monkeypatch.setattr(loader_mod.msm, "convert", fake_convert)
-
-    result = load_from_molsysmt(molecular_system="dummy")
-
-    assert result is created_view
-    assert created_view.messages
+    assert offenders == []

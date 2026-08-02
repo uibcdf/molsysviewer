@@ -39,7 +39,7 @@ def make_manager(*, target: str | None = "canvas-popup-1"):
             {"op": "structure_data_chunk", "chunk_id": 0},
             [memoryview(b"coordinates")],
         )],
-        fallback_message={"op": "load_molsys_payload"},
+        fallback_factory=lambda _generation: {"op": "load_molsys_payload", "payload": {}},
         payload=payload,
         target_endpoint_id=target,
     )
@@ -115,7 +115,7 @@ def test_start_allocates_monotonic_generations_and_stamps_the_exact_destination(
     second = manager.start(
         begin_message={"op": "structure_data_begin"},
         chunks=[],
-        fallback_message={"op": "load_molsys_payload"},
+        fallback_factory=lambda _generation: {"op": "load_molsys_payload", "payload": {}},
         payload=object(),
         target_endpoint_id=None,
     )
@@ -128,6 +128,36 @@ def test_start_allocates_monotonic_generations_and_stamps_the_exact_destination(
     assert second.state is TransferState.WAITING_BEGIN_ACK
 
 
+def test_fallback_factory_is_bound_to_the_transfer_generation():
+    manager, first, _, _ = make_manager()
+    observed: list[int] = []
+    manager.cancel("replace")
+
+    second = manager.start(
+        begin_message={"op": "structure_data_begin"},
+        chunks=[],
+        fallback_factory=lambda generation: (
+            observed.append(generation) or {"generation": generation}
+        ),
+        payload=object(),
+        target_endpoint_id=None,
+    )
+    manager.fallback("failed")
+    # A detached transfer remains self-contained even if the manager allocates
+    # later generations before a caller materializes its fallback.
+    second_generation = second.generation
+    third = manager.start(
+        begin_message={"op": "structure_data_begin"},
+        chunks=[],
+        fallback_factory=lambda generation: {"generation": generation},
+        payload=object(),
+        target_endpoint_id=None,
+    )
+    assert third.generation > second_generation
+    assert second.materialize_fallback() == {"generation": second_generation}
+    assert observed == [second_generation]
+
+
 def test_start_refuses_to_overwrite_an_active_transfer():
     manager, first, _, _ = make_manager()
 
@@ -135,7 +165,7 @@ def test_start_refuses_to_overwrite_an_active_transfer():
         manager.start(
             begin_message={"op": "structure_data_begin"},
             chunks=[],
-            fallback_message={"op": "load_molsys_payload"},
+            fallback_factory=lambda _generation: {"op": "load_molsys_payload", "payload": {}},
             payload=object(),
             target_endpoint_id=None,
         )

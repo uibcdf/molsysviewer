@@ -9,6 +9,11 @@ from .transfer import (
     TransferState,
     TransferTermination,
 )
+from .lazy_molecular import (
+    LazyMolecularMessage,
+    StaleMolecularProjectionError,
+    is_lazy_molecular_message,
+)
 
 __all__ = [
     "AckDisposition",
@@ -18,4 +23,7 @@ __all__ = [
     "TransferChunk",
     "TransferState",
     "TransferTermination",
+    "LazyMolecularMessage",
+    "StaleMolecularProjectionError",
+    "is_lazy_molecular_message",
 ]

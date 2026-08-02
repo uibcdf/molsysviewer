@@ -58,7 +58,9 @@ class PopupSnapshotMixin:
 
         # 1. current molecular projection (box/time absent stay absent).
         if include_molecular and self._current_molecular_projection is not None:
-            messages.append(deepcopy(self._current_molecular_projection))
+            messages.append(
+                self._materialize_molecular_projection(self._current_molecular_projection)
+            )
 
         # 2. scene look, deterministic order.
         for key in _SCENE_LOOK_ORDER:

@@ -180,6 +180,43 @@ benchmark runs. Values are median across runs; parenthesized values are MAD.
 The memory figures include the process import baseline and therefore are
 comparison points, not a claim that the payload alone retains that memory.
 
+### Phase 3 direct-encoder measurement (2026-08-02)
+
+Phase 3 removed the ViewerJSON intermediate and made portable JSON an on-demand
+compatibility/export product. Wall-clock measurements used `perf_counter`, not
+`cProfile`. The startup case was measured with three repetitions after one
+MolSysMT conversion; the JSON memory case used three fresh worker processes.
+
+`pentalanine`, 62 atoms x 5,000 structures:
+
+| Live load path | Median |
+|---|---:|
+| register generation-bound lazy projection before frontend `ready` | 32 ms |
+| negotiated array-native load | 66 ms |
+| direct portable-JSON load | 1,459 ms |
+
+The successful binary path is also guarded structurally: its complete transfer
+builds portable JSON zero times. Therefore the roughly 1.4 s compatibility
+cost is absent rather than merely hidden inside the binary timing.
+
+The direct-JSON worker produced an 18,370,953-byte message. Across three fresh
+processes:
+
+| Metric | Median | Observed range |
+|---|---:|---:|
+| direct JSON serialization | 335.4 ms | 332.2-336.3 ms |
+| JSON text encoding | 637.5 ms | 634.7-640.8 ms |
+| peak RSS growth, including MolSys load | 474.2 MiB | 473.4-475.9 MiB |
+| retained RSS growth, including MolSys + returned message | 456.7 MiB | 455.8-458.4 MiB |
+| transient part of peak | 17.6 MiB | 17.4-17.7 MiB |
+
+These memory figures intentionally retain the returned JSON message and loaded
+MolSys; they characterize the compatibility path, not binary-transfer retained
+memory. Compared with the original row above, the encoder removes ViewerJSON
+and the second list-normalization stage. Dependency and host variance means the
+current ranges, not a subtraction against July's run, are the acceptance
+evidence.
+
 ### Chrome JSON/Mol* path
 
 Five independent Chrome runs consumed the 18.37 MB pentalanine payload.

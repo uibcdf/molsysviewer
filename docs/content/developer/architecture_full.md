@@ -79,8 +79,10 @@ Current interaction contract
 
 1. You call `MolSysView.load(molecular_system, ...)`.
 2. MolSysMT converts to `molsysmt.MolSys`.
-3. ViewerJSON is serialized into the MolSys payload.
-4. Python sends `load_molsys_payload`.
+3. Python records a generation-bound lazy molecular projection.
+4. The normal path serializes topology and structures directly from MolSys as
+   array-native metadata and typed buffers. A non-binary consumer or static
+   export materializes `load_molsys_payload` JSON directly from the same MolSys.
 5. TS builds Mol* `Topology`, `Coordinates`, `Trajectory` and applies a preset.
 6. The controller captures the structure and notifies state/trajectory handlers.
 
@@ -91,7 +93,8 @@ system and creates a `selection` region for the requested selection.
 ### String/URL loads
 
 String, ID, and URL inputs are handled through MolSysMT in Python.
-The Python layer sends `load_molsys_payload` for these inputs too.
+The Python layer ultimately uses the same MolSys-backed projection for these
+inputs too.
 
 ## Visibility model
 

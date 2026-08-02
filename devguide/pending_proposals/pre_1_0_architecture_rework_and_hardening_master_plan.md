@@ -34,7 +34,7 @@ audit.
 | 0b | Green baseline and thresholds | ● | 100% | `main` working tree | 1160 Python, 262 JS, 28/28 E2E; timing/RSS and unavailable real-window surfaces recorded; awaiting audit |
 | 1 | Immediate correctness and transversal guards | ● | 100% | working tree from `6362914c` | 1165 Python, 265 JS, 28/28 E2E; seams and guards mutation-verified; awaiting audit |
 | 2 | Transfer state machine | ● | 100% | working tree from `6362914c` | 1178 Python, 3 documented skips; 39 focused transport + 44 Qt; mutation-verified; awaiting audit |
-| 3 | Lazy fallback and deadline hardening | ○ | 0% | — | — |
+| 3 | Direct lazy JSON fallback and deadline hardening | ◐ | 95% | working tree from `21027309` | 1186 Python passed, 3 environmental skips; tsc 0; four mechanisms mutation-verified; wall-clock/RSS measured; real-Mol* JSON E2E blocked by sandbox Chrome SIGTRAP |
 | 4a | Canonical static export | ○ | 0% | — | — |
 | 4b | Live `ready`/reconnect closure | ○ | 0% | Closure choice required when opened | — |
 | 5 | Endpoint isolation and lifecycle | ○ | 0% | — | — |
@@ -336,15 +336,16 @@ Destination is part of transfer identity, not optional metadata added at send
 time. Begin, chunks, complete, cancel and fallback all derive their target from
 the same object. A popup transfer cannot fall back into the host.
 
-### 5.5 Lazy fallback
+### 5.5 Direct lazy JSON fallback
 
 The fallback is a callable bound to the molecular generation being transferred.
 It must not read whichever `view.molsys` happens to be current later. A newer
 load may replace the view while the older transfer is awaiting an ack.
 
-The successful binary path must never call
-`to_form("molsysmt.ViewerJSON")`. Refusal, timeout and connector failure still
-produce behaviorally equivalent JSON.
+ViewerJSON is not an internal MolSysViewer representation. The successful
+binary path must perform no portable-JSON construction. Refusal, timeout and
+connector failure build the existing wire JSON directly from the transfer's
+bound `molsysmt.MolSys` revision.
 
 ### 5.6 Deadline policy
 
@@ -739,18 +740,79 @@ separate ordered payload queue by design. No frontend orchestrator was split,
 no dependency version was pinned, and no developer notebook was used or
 modified by this phase.
 
-### Phase 3 — Lazy fallback and deadline hardening
+### Phase 3 — Direct lazy JSON fallback and deadline hardening
 
 1. Bind a lazy fallback to the transfer's molecular generation.
-2. Prove successful binary delivery never constructs ViewerJSON.
-3. Prove refusal, failure and timeout construct and deliver equivalent JSON.
-4. Preserve S8 ordering across fallback.
-5. Evaluate safe event-loop expiry; retain and document cooperative expiry if
+2. Remove ViewerJSON from product Python; share canonical topology extraction
+   between direct JSON and array-native encoders.
+3. Prove successful binary delivery never constructs portable JSON.
+4. Prove refusal, failure and timeout construct and deliver equivalent direct
+   JSON exactly once.
+5. Preserve S8 ordering across fallback.
+6. Evaluate safe event-loop expiry; retain and document cooperative expiry if
    portability is not demonstrated.
-6. Re-run load and memory benchmarks.
+7. Re-run load and memory benchmarks.
 
 **Exit:** eager fallback cost is absent from the success path and timeout
 semantics are both tested and accurately documented.
+
+Implementation note (2026-08-02): no portable owning-loop handle is exposed by
+the supported AnyWidget hosts. The cooperative deadline remains the deliberate
+closure: expiry occurs on the first relevant kernel-thread entry after the
+deadline. A timer thread remains forbidden because it could call `widget.send`
+off the connector's safe thread. The injected-clock tests cover deterministic
+release on that next entry.
+
+Implementation report (working tree from `21027309`):
+
+- ViewerJSON was removed from product Python rather than retained as a lazy
+  intermediate. `json_molsys.py` and the array-native encoder share one
+  canonical topology extractor and read structures directly from MolSys.
+- Loads and rebuilds register a memoized `LazyMolecularMessage` bound to a
+  molecular revision. Successful binary delivery never materializes it;
+  non-binary delivery, timeout, connector failure, popup JSON and static export
+  materialize ordinary dictionaries at their explicit boundary.
+- Transfer fallback factories capture their exact allocated generation. Reset
+  and rebuild cancel an older stream before replacing its projection.
+- Missing box/time remain missing. Present coordinates/box/time are converted
+  explicitly to angstrom/angstrom/ps at the JSON boundary.
+- The startup and trajectory benchmark tools now measure the live direct-JSON
+  and array-native paths instead of importing the removed serializer.
+
+Observed validation:
+
+| Check | Result |
+|---|---|
+| focused lazy/transfer/load/export set | 33 passed |
+| `python -m pytest --receptor=llm -n 12 tests/` | 1186 passed, 3 documented environmental skips |
+| benchmark/tool Python syntax | exit 0 |
+| `npx tsc --noEmit` | exit 0 |
+| direct-JSON E2E build | exit 0 |
+| direct-JSON E2E browser launch | blocked before test: sandbox denied Chrome crashpad socket (`SIGTRAP`) |
+
+Mutation ledger:
+
+| Mechanism | Mutation | Test that failed | Restored result |
+|---|---|---|---|
+| molecular revision guard | accept a stale revision | `test_lazy_projection_rejects_a_stale_molecular_revision_before_building` | pass |
+| exact fallback generation | read the manager's later generation | `test_fallback_factory_is_bound_to_the_transfer_generation` | pass |
+| zero JSON on binary success | force materialization before array serialization | `test_anywidget_binary_capability_never_builds_the_json_fallback` | pass |
+| lazy marker containment | return the internal marker from export | `test_build_export_messages_captures_reproducible_workbench_state_end_to_end` | pass |
+
+Not done: the real-Mol* JSON assertion has been added to
+`export-replay.e2e.ts`, but this executor cannot launch Chrome. Run it with the
+Python-generated payload in the established browser/WebGL environment before
+moving this row to implemented/awaiting audit. No dependency versions were
+pinned, no general frontend refactor was started, and the sandbox notebook was
+not used or modified by this phase.
+
+```bash
+python devtools/benchmarks/trajectory_transport_baseline.py emit-payload \
+  --case dialanine-1 --output /tmp/molsysviewer-phase3-direct-json.json
+cd molsysviewer/js
+MSV_E2E_MOLSYS_PAYLOAD=/tmp/molsysviewer-phase3-direct-json.json \
+  npm run test:e2e:export
+```
 
 ### Phase 4 — Canonical static export and bounded live bootstrap
 
@@ -863,6 +925,9 @@ Close the companion smoke inventory:
   summary resend if deferred;
 - wire-serialization coverage for NumPy scalars, quantities and optional
   box/time.
+- audit standalone E2E failure cleanup: a failed assertion must close Chromium
+  in `finally` or terminate immediately. Remove remaining `process.exitCode = 1`
+  paths that can leave a live browser and turn a real failure into a timeout.
 
 **Exit:** each claim that depends on composition has at least one complete-seam
 test, not only destination-level units.
@@ -978,7 +1043,7 @@ Minimum mutation cases:
 | Qt unknown-action guard | restore forwarding after diagnostic | Qt authority-boundary test |
 | terminal release | skip retained-buffer release | lifecycle/memory assertion |
 | generation guard | accept stale ack | stale-generation test |
-| lazy fallback | construct ViewerJSON eagerly | no-eager-ViewerJSON test |
+| lazy fallback | construct portable JSON eagerly | zero-build binary-success test |
 | session boundary | accept old `session_id` | reconstruction E2E |
 | S8 | flush scene before structure completion | ordering test/E2E |
 | canonical export | rebuild from journal | interaction-count invariance test |
@@ -1040,7 +1105,8 @@ The rework is not accepted merely because correctness tests pass.
 
 - Unknown-message and ordinary interaction toll must not materially regress
   from the recorded sub-millisecond baseline.
-- A successful binary load performs zero ViewerJSON conversions.
+- A successful binary load performs zero portable-JSON builds and product
+  Python performs zero ViewerJSON conversions.
 - Historical ViewerJSON timings are context, not acceptance values: profiler
   overhead and the upstream MolSysMT deep-copy fix changed their meaning. Repeat
   current wall-clock A/B measurements on the pinned dependency version before

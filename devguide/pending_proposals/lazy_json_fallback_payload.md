@@ -1,99 +1,71 @@
-# Build the JSON payload only when it is actually needed
+# Remove ViewerJSON and build portable JSON only on demand
 
-**Status:** open, pre-1.0 candidate. Found 2026-07-31 while measuring startup.
+**Status:** implemented in the Phase 3 working tree; validation and measurement
+pending.
 
-## The question that surfaced it
+## Decision
 
-*"I thought we were no longer going to use ViewerJSON, since MolSys is enough."*
+MolSysViewer no longer uses `molsysmt.ViewerJSON` as an internal representation.
+The authoritative scientific object remains `molsysmt.MolSys`.
 
-Half right, and the half that is wrong is costing a second per load.
+The two delivery encoders read that object directly:
 
-**MolSys is enough — that half is settled.** `loaders/array_native_molsys.py`
-does not contain the string `ViewerJSON` at all. D1 serializes the topology once
-and the structural arrays directly from `molsysmt.MolSys`, which is exactly the
-point of the data plane.
+- the normal array-native path emits topology metadata plus typed structural
+  buffers;
+- the compatibility/static path emits the existing `load_molsys_payload` JSON
+  schema only when a non-binary consumer, fallback, popup snapshot or static
+  export actually needs it.
 
-**But ViewerJSON was never removed from the load path.** It is still built on
-**every** load, before the binary path can intervene.
+This removes an intermediate model without removing the portable JSON boundary.
+The latter is still required for compatibility and self-contained exports.
 
-## What actually happens on a load
+## Previous defect
 
-`loaders/load_molsysmt.py:load_from_molsysmt`, in this order and
-unconditionally:
+Every load used to convert `MolSys -> ViewerJSON`, normalize it into nested
+Python lists, and retain that complete message before binary capability
+negotiation. Successful binary delivery therefore paid for a JSON payload that
+was never sent and temporarily retained both representations.
 
-1. `viewer_json = view._molsys.to_form("molsysmt.ViewerJSON")`
-2. `payload = _serialize_molsys_payload(viewer_json, …)`
-3. `view._send({"op": "load_molsys_payload", "payload": payload, …})`
+Historical timings in this document were useful to locate the defect but are
+not acceptance evidence: profiler overhead and an upstream MolSysMT deep-copy
+fix changed their magnitude. Phase 3 uses current wall-clock measurements.
 
-Only in step 3 does `core.py:_try_send_array_native_molsys` intercept: it matches
-on `op == "load_molsys_payload"`, re-serializes from `self._molsys` as typed
-buffers, and streams those **instead**.
+## Implemented design
 
-So the array-native path does not avoid the JSON work. **It avoids sending it.**
-The payload is built in full and then discarded.
+`load_from_molsysmt` converts the input once to `molsysmt.MolSys` and records a
+`LazyMolecularMessage`. Its producer is:
 
-## Why it is built anyway — the reason is good
+- memoized;
+- bound to a molecular revision;
+- rejected if that revision is no longer current;
+- deliberately non-JSON-serializable until an explicit transport/export seam
+  materializes it.
 
-`_try_send_array_native_molsys` stores `"fallback": dict(message)` in the stream
-state. If the stream is refused, times out (30 s), or the connector has no binary
-transport, that retained JSON message is delivered instead. Roadmap gate 1
-required a *behaviorally equivalent JSON fallback*, and this is how that promise
-is kept.
+`StructureTransfer` owns a fallback factory bound to its exact transfer
+generation. Binary completion never invokes it. Refusal, timeout and connector
+failure invoke it once and deliver direct JSON with the same target identity.
 
-The design is sound. What is wasteful is that the insurance is paid **eagerly**,
-on every load, including the overwhelming majority where it is never claimed.
-
-## The cost, measured
-
-`pentalanine`, 62 atoms × 5,000 structures, after both July deep-copy fixes:
-
-| | |
-|---|---:|
-| `to_form("molsysmt.ViewerJSON")` — JSON path only | **381 ms** |
-| `serialize_array_native_molsys(molsys)` — binary path | **37 ms** |
-| whole `view.load(molsys)` | 1,434 ms |
-
-The JSON path costs **~10×** the binary one, and `to_form` is only its first
-stage — `_serialize_molsys_payload` then rebuilds every column through
-`np.asarray(...).tolist()` on top of it.
-
-## The proposal
-
-Make the fallback **lazy**: pass a thunk rather than a built payload.
-
-- `load_from_molsysmt` decides whether binary is available *before* serializing
-  (the capability is already known — `_binary_structure_transport_limit()`
-  returns `None` when there is none).
-- When binary is available, send a message carrying a *callable* that would
-  produce the JSON payload, and let `_try_send_array_native_molsys` retain that
-  callable as its fallback instead of a dict.
-- `_fallback_binary_structure_stream` invokes it at the moment it is needed —
-  which is a path that already tolerates being slow, because it is an error path.
-
-Nothing about the fallback's *behaviour* changes; only when it is computed.
-
-## What to be careful about
-
-- **The fallback must still be reproducible at the moment it is claimed.** If the
-  thunk closes over `self._molsys` and the system was replaced meanwhile, it
-  would serialize the wrong generation. The stream already carries a
-  `generation` counter for exactly this class of bug — the thunk must be bound to
-  the same generation and refuse to run against a newer one.
-- **The scale guard and the hierarchy queries** (`_safe_get_atom_attribute` for
-  molecule/component indices and names) currently run in the same function.
-  Decide deliberately which of those are needed for the binary path — the scale
-  warning must still fire, since it is about memory the binary path also uses.
-- **`n_structures` is derived from the payload** when MolSysMT does not report
-  it (`len(payload.get("structures"))`). That fallback path must not force the
-  payload to be built. It already reads `structures.n_structures` first.
+Both encoders share one static topology extractor. The JSON encoder reads
+coordinates and optional box/time from `MolSys.structures`, converts units at
+the boundary (angstrom and ps), and never invents missing box or time.
 
 ## Acceptance
 
-- On a negotiated-binary load, `to_form("molsysmt.ViewerJSON")` is **not
-  called** — asserted by spying on it, not by timing.
-- The JSON fallback still delivers a byte-identical payload when the stream is
-  refused or times out, covered by the existing timeout tests.
-- Mutation check: force the thunk to build eagerly and the "not called"
-  assertion must fail.
-- Re-run `devtools/benchmarks/startup_baseline.py`; `view.load` should drop by
-  roughly the JSON path's share.
+- Product Python contains no request for `molsysmt.ViewerJSON`.
+- A complete negotiated-binary load performs zero JSON builds.
+- A non-binary load and a failed/timed-out stream build JSON exactly once.
+- A fallback cannot serialize a newer molecular revision under an older
+  transfer generation.
+- Popup and export seams return ordinary serializable dictionaries; the lazy
+  marker never crosses the wire.
+- Direct JSON and array-native encoders expose the same topology and preserve
+  optional structure metadata.
+- Wall-clock and retained-memory measurements are repeated after the change.
+
+## Mutation evidence required
+
+- Remove the molecular-revision guard: the stale-projection test fails.
+- Bind fallback to the manager's current generation: the exact-generation test
+  fails.
+- Force JSON construction on binary success: the zero-build test fails.
+- Return the lazy marker from export: JSON serialization of the export fails.

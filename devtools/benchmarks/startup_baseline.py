@@ -37,8 +37,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
 CASES = {
-    "pentalanine-5000": ("pentalanine", "traj_pentalanine.h5msm"),
-    "dialanine": ("dialanine", "dialanine.h5msm"),
+    "pentalanine-5000": "pentalanine",
+    "dialanine": "dialanine",
 }
 
 
@@ -61,8 +61,9 @@ def main() -> int:
     import molsysmt as msm
     import_molsysmt_ms = _ms(t0)
 
-    system_name, file_key = CASES[args.case]
-    source = msm.systems[system_name][file_key]
+    from molsysviewer.systems import systems
+
+    source = getattr(systems, CASES[args.case]).path
 
     # Stage 2 — MolSysMT's own share: reading the file into a MolSys.
     t0 = time.perf_counter()
@@ -77,28 +78,55 @@ def main() -> int:
     t0 = time.perf_counter()
     first_view = molsysviewer.MolSysView()
     first_view_ms = _ms(t0)
+    first_view.close()
 
     warm_view_ms = []
     for _ in range(args.repeats):
         t0 = time.perf_counter()
-        molsysviewer.MolSysView()
+        warm_view_instance = molsysviewer.MolSysView()
         warm_view_ms.append(_ms(t0))
+        warm_view_instance.close()
 
     # Stage 4 — the load, on an already-converted object so this is *our* cost.
-    # `send` is stubbed: with no frontend there is no binary negotiation, so this
-    # measures the JSON fallback path. That is the honest worst case and the one
-    # a cold notebook cell hits before capability negotiation completes.
-    load_ms = []
+    # Separate registration from each negotiated delivery path. A load before
+    # `ready` now records a lazy molecular projection and must not be mislabeled
+    # as JSON preparation.
+    register_ms = []
+    binary_load_ms = []
+    json_load_ms = []
     for _ in range(args.repeats):
         view = molsysviewer.MolSysView()
         view.widget.send = lambda *a, **k: None  # type: ignore[assignment]
         t0 = time.perf_counter()
         view.load(molsys)
-        load_ms.append(_ms(t0))
+        register_ms.append(_ms(t0))
+        view.close()
+
+        view = molsysviewer.MolSysView()
+        view.widget.send = lambda *a, **k: None  # type: ignore[assignment]
+        view._ready = True
+        view._frontend_capabilities = {
+            "binary_structure_data": [1],
+            "max_buffer_bytes": 1024 * 1024 * 1024,
+        }
+        t0 = time.perf_counter()
+        view.load(molsys)
+        binary_load_ms.append(_ms(t0))
+        view.close()
+
+        view = molsysviewer.MolSysView()
+        view.widget.send = lambda *a, **k: None  # type: ignore[assignment]
+        view._ready = True
+        t0 = time.perf_counter()
+        view.load(molsys)
+        json_load_ms.append(_ms(t0))
+        view.close()
 
     warm_view = statistics.median(warm_view_ms)
-    load = statistics.median(load_ms)
-    ours = first_view_ms + load
+    register = statistics.median(register_ms)
+    binary_load = statistics.median(binary_load_ms)
+    json_load = statistics.median(json_load_ms)
+    ours = first_view_ms + binary_load
     theirs = import_molsysmt_ms + convert_ms
 
     print(f"case                  {args.case}  ({n_atoms} atoms x {n_structures} structures)")
@@ -109,7 +137,9 @@ def main() -> int:
     print(f"msm.convert(file)     {convert_ms:9.0f} ms   per file, MolSysMT")
     print(f"MolSysView() first    {first_view_ms:9.0f} ms   one-time (lazy imports)")
     print(f"MolSysView() warm     {warm_view:9.0f} ms   per viewer")
-    print(f"view.load(molsys)     {load:9.0f} ms   PER LOAD -- scales with the data")
+    print(f"load, register lazy   {register:9.0f} ms   before frontend ready")
+    print(f"load, array-native    {binary_load:9.0f} ms   normal negotiated path")
+    print(f"load, direct JSON     {json_load:9.0f} ms   compatibility path")
     print()
     print(f"MolSysViewer's share  {ours:9.0f} ms")
     print(f"MolSysMT's share      {theirs:9.0f} ms")

@@ -30,12 +30,15 @@ from ..loaders.array_native_molsys import (
     ARRAY_NATIVE_PROTOCOL_VERSION,
     serialize_array_native_molsys,
 )
+from ..loaders.json_molsys import build_json_molsys_message
 from ..transport import (
     AckDisposition,
+    LazyMolecularMessage,
     StructureTransfer,
     StructureTransferManager,
     TransferChunk,
     TransferTermination,
+    is_lazy_molecular_message,
 )
 from .runtime_router import WidgetRuntimeRouter, is_envelope
 from ..annotations import AnnotationsManager
@@ -299,10 +302,12 @@ class MolSysView(
         self._deferred_widget_messages: list[tuple[Mapping[str, Any], Any]] = []
         self._flushing_deferred_widget_messages = False
         self._message_history: list[dict] = []
-        # The current materialized molecular projection ("current molecular
-        # state"), updated on every load/rebuild. R2's canonical popup snapshot
-        # references this instead of scanning _message_history for the last load.
+        # The current molecular projection ("current molecular state"), updated
+        # on every load/rebuild. Its portable JSON body may remain lazy until a
+        # compatibility/export consumer asks for it. R2 references this instead
+        # of scanning _message_history for the last load.
         self._current_molecular_projection: dict | None = None
+        self._molecular_projection_revision = 0
         self._last_camera_snapshot: dict | None = None
         self._current_figure_spec: dict | None = None
         self._last_image_export_event: dict | None = None
@@ -933,6 +938,34 @@ class MolSysView(
             return None
         return max_buffer_bytes
 
+    def _new_lazy_molecular_projection(
+        self,
+        *,
+        label: str | None,
+    ) -> LazyMolecularMessage:
+        if self._molsys is None:
+            raise ValueError("No molecular system is available for projection.")
+        self._molecular_projection_revision += 1
+        revision = self._molecular_projection_revision
+        molsys = self._molsys
+        return LazyMolecularMessage(
+            label=label,
+            multiple_structures=int(molsys.structures.n_structures) > 1,
+            molecular_revision=revision,
+            current_revision=lambda: self._molecular_projection_revision,
+            builder=lambda: build_json_molsys_message(molsys, label=label),
+        )
+
+    def _materialize_molecular_projection(
+        self,
+        message: Mapping[str, Any],
+        *,
+        transfer_generation: int | None = None,
+    ) -> dict[str, Any]:
+        if is_lazy_molecular_message(message):
+            return message.materialize(transfer_generation=transfer_generation)
+        return dict(message)
+
     def _try_send_array_native_molsys(
         self,
         message: Mapping[str, Any],
@@ -1013,7 +1046,10 @@ class MolSysView(
             transfer = self._structure_transfers.start(
                 begin_message=begin,
                 chunks=chunks,
-                fallback_message=message,
+                fallback_factory=lambda generation: self._materialize_molecular_projection(
+                    message,
+                    transfer_generation=generation,
+                ),
                 # Keep the parent ndarrays alive while chunk memoryviews are in flight.
                 payload=payload,
                 target_endpoint_id=target_endpoint_id,
@@ -1107,7 +1143,6 @@ class MolSysView(
     ) -> None:
         transfer = termination.transfer
         reason = termination.reason
-        fallback = transfer.fallback_message
         # Tell the receiver to drop its half too; a frontend that is merely slow
         # (rather than gone) must not apply a generation Python has abandoned.
         self._transmit_binary_structure_cancel(
@@ -1115,6 +1150,10 @@ class MolSysView(
             reason,
             caller="MolSysView._fallback_binary_structure_stream.cancel",
         )
+        # Materialize only after the abandoned receiver has been cancelled. If
+        # the molecular revision changed unexpectedly, the lazy projection
+        # raises instead of sending coordinates from a different generation.
+        fallback = transfer.materialize_fallback()
         emit_from_catalog(
             CATALOG["structure_data_stream_fallback"],
             package_root=PACKAGE_ROOT,
@@ -1318,7 +1357,7 @@ class MolSysView(
 
     def _deliver_transport_message(self, message: dict[str, Any]) -> None:
         if not self._try_send_array_native_molsys(message):
-            self._send_widget_message(message)
+            self._send_widget_message(self._materialize_molecular_projection(message))
 
     def _handle_frontend_event(self, content: Mapping[str, Any]) -> None:
         event = content.get("event")
@@ -2263,30 +2302,12 @@ class MolSysView(
         if self._molsys is None:
             raise ValueError("No molecular system loaded. Load a system before mutating the view.")
 
-        from ..loaders.load_molsysmt import _serialize_molsys_payload
-        import molsysmt as msm
-
-        viewer_json = self._molsys.to_form("molsysmt.ViewerJSON")
-
-        # Extract hierarchy indices from MolSysMT to enrich the payload during rebuild
-        molecule_indices = msm.get(self._molsys, element="atom", molecule_index=True, skip_digestion=True)
-        component_indices = msm.get(self._molsys, element="atom", component_index=True, skip_digestion=True)
-        molecule_names = msm.get(self._molsys, element="atom", molecule_name=True, skip_digestion=True)
-        component_names = msm.get(self._molsys, element="atom", component_name=True, skip_digestion=True)
-
-        payload = _serialize_molsys_payload(
-            viewer_json,
-            molecule_indices=molecule_indices,
-            component_indices=component_indices,
-            molecule_names=molecule_names,
-            component_names=component_names
-        )
-        if payload is None:
-            raise ValueError("Unable to serialize MolSysMT viewer payload")
-
         n_atoms = int(self._molsys.get_n_atoms())
-        n_structures = len(payload.get("structures") or [])
-        multiple_structures = n_structures > 1
+        # A rebuild supersedes any in-flight generation before replacing its
+        # lazy fallback. This makes it impossible for an old timeout to
+        # serialize the newly edited MolSys under the old generation.
+        self._cancel_binary_structure_stream("molecular system rebuilt")
+        molecular_projection = self._new_lazy_molecular_projection(label=label)
         self.atom_mask = np.ones(n_atoms, dtype=bool)
         if visible_atom_indices is not None:
             self.atom_mask[:] = False
@@ -2324,14 +2345,7 @@ class MolSysView(
             history.clear()
 
         self._send({"op": "clear_all"})
-        self._send(
-            {
-                "op": "load_molsys_payload",
-                "payload": payload,
-                "label": label,
-                "multiple_structures": multiple_structures,
-            }
-        )
+        self._send(molecular_projection)
 
         if self.whole.preset is not None or self.whole.representation is not None:
             self.whole.set_representation(

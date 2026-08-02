@@ -4,10 +4,9 @@ The AnyWidget connector was measured before it was optimized, and the planar
 layout came out of looking at the numbers rather than at intuition. Qt is in
 scope for 1.0 and has never been measured, so this is its baseline.
 
-What Qt does today for a large structure: `_materialize_payload_ref` serializes
-the molecular payload to JSON text, keeps those bytes in memory, and rewrites the
-message to `load_molsys_payload_ref` pointing at a `molsysviewer-payload://`
-URL. The page then fetches that URL and receives `application/json`.
+This benchmark compares the direct portable-JSON encoder with the array-native
+payload used by the Qt schema bridge. ViewerJSON is no longer an intermediate
+in either path.
 
 The candidate is to serve the same generation as `application/octet-stream`
 through the *same* scheme handler, which the transport diagnostic already proved
@@ -40,7 +39,7 @@ sys.path.insert(0, str(REPO_ROOT))
 from molsysviewer.loaders.array_native_molsys import (  # noqa: E402
     serialize_array_native_molsys,
 )
-from molsysviewer.loaders.load_molsysmt import _serialize_molsys_payload  # noqa: E402
+from molsysviewer.loaders.json_molsys import serialize_json_molsys  # noqa: E402
 
 CASES = {
     "pentalanine-1000": (("pentalanine", "traj_pentalanine.h5msm"), 1000),
@@ -68,13 +67,6 @@ def _timed(call):
     return value, (time.perf_counter() - started) * 1000.0
 
 
-def _atom_attribute(molsys, **kwargs):
-    try:
-        return msm.get(molsys, element="atom", skip_digestion=True, **kwargs)
-    except Exception:
-        return None
-
-
 def measure(case_name: str) -> dict:
     (system_name, resource_name), frame_count = CASES[case_name]
     source = msm.systems[system_name][resource_name]
@@ -90,24 +82,12 @@ def measure(case_name: str) -> dict:
         )
     )
 
-    # --- what Qt does today -------------------------------------------------
-    viewer_json, viewer_json_ms = _timed(lambda: molsys.to_form("molsysmt.ViewerJSON"))
-    payload, payload_ms = _timed(
-        lambda: _serialize_molsys_payload(
-            viewer_json,
-            molecule_indices=_atom_attribute(molsys, molecule_index=True),
-            component_indices=_atom_attribute(molsys, component_index=True),
-            molecule_names=_atom_attribute(molsys, molecule_name=True),
-            component_names=_atom_attribute(molsys, component_name=True),
-            group_types=_atom_attribute(molsys, group_type=True),
-        )
-    )
-    # `_materialize_payload_ref` serializes and keeps these bytes resident until
-    # the page fetches the URL.
+    # --- direct portable JSON ----------------------------------------------
+    payload, payload_ms = _timed(lambda: serialize_json_molsys(molsys))
     payload_bytes, json_ms = _timed(
         lambda: json.dumps(payload, separators=(",", ":")).encode("utf-8")
     )
-    json_total_ms = viewer_json_ms + payload_ms + json_ms
+    json_total_ms = payload_ms + json_ms
     json_peak = _peak_rss_mb()
 
     # --- the candidate ------------------------------------------------------
@@ -129,8 +109,7 @@ def measure(case_name: str) -> dict:
             "wire_bytes": len(payload_bytes),
             "prepare_ms": round(json_total_ms, 1),
             "breakdown_ms": {
-                "viewer_json": round(viewer_json_ms, 1),
-                "payload_normalize": round(payload_ms, 1),
+                "direct_json_serialize": round(payload_ms, 1),
                 "json_encode": round(json_ms, 1),
             },
         },

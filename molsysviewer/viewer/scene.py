@@ -386,6 +386,9 @@ class SceneMixin:
     @digest()
     def reset_viewer(self, skip_digestion: bool = False) -> None:
         """Fully clear the viewer and reset internal state (requires a new `load(...)`)."""
+        self._cancel_binary_structure_stream("viewer reset")
+        self._molecular_projection_revision += 1
+        self._current_molecular_projection = None
         self.molecular_system = None
         self.selection = None
         self.structure_indices = None

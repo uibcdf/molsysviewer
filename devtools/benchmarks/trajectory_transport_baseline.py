@@ -15,7 +15,7 @@ from typing import Any
 
 import molsysmt as msm
 
-from molsysviewer.loaders.load_molsysmt import _serialize_molsys_payload
+from molsysviewer.loaders.json_molsys import serialize_json_molsys
 from molsysviewer.systems import systems
 
 
@@ -59,13 +59,6 @@ def _timed(call):
     return value, (time.perf_counter() - started) * 1000.0
 
 
-def _safe_atom_attribute(molsys, **kwargs):
-    try:
-        return msm.get(molsys, element="atom", skip_digestion=True, **kwargs)
-    except Exception:
-        return None
-
-
 def _case_payload(case_name: str) -> tuple[dict[str, Any], dict[str, Any]]:
     system_name, frame_count = CASES[case_name]
     source = getattr(systems, system_name).path
@@ -84,25 +77,7 @@ def _case_payload(case_name: str) -> tuple[dict[str, Any], dict[str, Any]]:
             structure_indices=structure_indices,
         )
     )
-    viewer_json, viewer_json_ms = _timed(
-        lambda: molsys.to_form("molsysmt.ViewerJSON")
-    )
-
-    def hierarchy_columns():
-        return {
-            "molecule_indices": _safe_atom_attribute(molsys, molecule_index=True),
-            "component_indices": _safe_atom_attribute(molsys, component_index=True),
-            "molecule_names": _safe_atom_attribute(molsys, molecule_name=True),
-            "component_names": _safe_atom_attribute(molsys, component_name=True),
-            "group_types": _safe_atom_attribute(molsys, group_type=True),
-        }
-
-    hierarchy, hierarchy_ms = _timed(hierarchy_columns)
-    payload, normalize_ms = _timed(
-        lambda: _serialize_molsys_payload(viewer_json, **hierarchy)
-    )
-    if payload is None:
-        raise RuntimeError(f"{case_name}: MolSysViewer payload serialization failed")
+    payload, direct_json_ms = _timed(lambda: serialize_json_molsys(molsys))
 
     message = {
         "op": "load_molsys_payload",
@@ -132,9 +107,7 @@ def _case_payload(case_name: str) -> tuple[dict[str, Any], dict[str, Any]]:
         "payload_bytes": len(payload_text.encode("utf-8")),
         "timings_ms": {
             "molsysmt_convert": convert_ms,
-            "viewer_json_extract": viewer_json_ms,
-            "hierarchy_extract": hierarchy_ms,
-            "python_list_normalize": normalize_ms,
+            "direct_json_serialize": direct_json_ms,
             "json_encode": json_ms,
         },
         "python_memory_mb": _memory_report(rss_before_mb, current_rss_before_mb),
@@ -209,7 +182,7 @@ def _run_all() -> dict[str, Any]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Measure the current JSON trajectory transport preparation path."
+        description="Measure direct portable-JSON trajectory preparation."
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
     subparsers.add_parser("run")

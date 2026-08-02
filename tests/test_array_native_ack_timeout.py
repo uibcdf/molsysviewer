@@ -11,7 +11,9 @@ import threading
 import pytest
 
 from molsysviewer.demo import demo
+from molsysviewer.loaders.json_molsys import serialize_json_molsys
 from molsysviewer.transport import TransferState
+import molsysviewer.viewer.core as viewer_core
 
 
 def _capture_widget_send(view):
@@ -53,8 +55,16 @@ def _view_with_pending_stream():
     return view, clock, sent
 
 
-def test_a_stream_whose_ack_never_arrives_releases_its_arrays_and_falls_back():
+def test_a_stream_whose_ack_never_arrives_releases_arrays_and_builds_json_once(monkeypatch):
     view, clock, sent = _view_with_pending_stream()
+    json_builds: list[int] = []
+    original_build = viewer_core.build_json_molsys_message
+
+    def recording_build(*args, **kwargs):
+        json_builds.append(1)
+        return original_build(*args, **kwargs)
+
+    monkeypatch.setattr(viewer_core, "build_json_molsys_message", recording_build)
     transfer = view._structure_transfers.active  # noqa: SLF001
     assert transfer.payload is not None, "arrays are retained while in flight"
 
@@ -75,6 +85,9 @@ def test_a_stream_whose_ack_never_arrives_releases_its_arrays_and_falls_back():
     # The receiver is told to drop its half, and the JSON path is used instead.
     assert "structure_data_cancel" in ops
     assert "load_molsys_payload" in ops
+    fallback = next(m for m, _ in sent if m.get("op") == "load_molsys_payload")
+    assert fallback["payload"] == serialize_json_molsys(view.molsys)
+    assert json_builds == [1]
 
 
 def test_a_stream_that_is_acknowledged_in_time_is_not_dropped():

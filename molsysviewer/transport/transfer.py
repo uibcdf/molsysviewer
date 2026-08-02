@@ -69,7 +69,7 @@ class StructureTransfer:
     generation: int
     begin_message: dict[str, Any]
     chunks: list[TransferChunk]
-    fallback_message: dict[str, Any]
+    fallback_factory: Callable[[], dict[str, Any]]
     payload: Any
     target_endpoint_id: str | None
     timeout_s: float
@@ -129,6 +129,9 @@ class StructureTransfer:
         self._release()
         return TransferTermination(self, state, reason)
 
+    def materialize_fallback(self) -> dict[str, Any]:
+        return self.fallback_factory()
+
     def _release(self) -> None:
         if self.release_count:
             return
@@ -170,7 +173,7 @@ class StructureTransferManager:
         *,
         begin_message: Mapping[str, Any],
         chunks: Sequence[tuple[Mapping[str, Any], Sequence[memoryview]]],
-        fallback_message: Mapping[str, Any],
+        fallback_factory: Callable[[int], dict[str, Any]],
         payload: Any,
         target_endpoint_id: str | None,
     ) -> StructureTransfer:
@@ -192,6 +195,7 @@ class StructureTransferManager:
             begin["target_endpoint_id"] = target_endpoint_id
             for chunk in prepared_chunks:
                 chunk.message["target_endpoint_id"] = target_endpoint_id
+        generation = self._generation
         transfer = StructureTransfer(
             viewer_id=self.viewer_id,
             session_id=self.session_id,
@@ -199,7 +203,7 @@ class StructureTransferManager:
             generation=self._generation,
             begin_message=begin,
             chunks=prepared_chunks,
-            fallback_message=dict(fallback_message),
+            fallback_factory=lambda: fallback_factory(generation),
             payload=payload,
             target_endpoint_id=target_endpoint_id,
             timeout_s=self.timeout_s,

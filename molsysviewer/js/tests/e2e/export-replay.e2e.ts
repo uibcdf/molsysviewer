@@ -3,13 +3,14 @@ import process from "node:process";
 import { chromium } from "./e2e-browser";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
+import { readFileSync } from "node:fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Minimal MolSys payload matching the schema expected by loadStructureFromMolSysPayload.
 // Mirrors what _build_export_messages() embeds in load_molsys_payload.
-const MOLSYS_PAYLOAD = {
+const DEFAULT_MOLSYS_PAYLOAD = {
     atoms: {
         atom_id: [1, 2, 3, 4],
         element_symbol: ["N", "C", "C", "O"],
@@ -21,6 +22,14 @@ const MOLSYS_PAYLOAD = {
         { coordinates: [[11.1, 13.2, 8.6], [12.6, 13.3, 8.3], [13.2, 12.0, 8.0], [12.6, 10.9, 8.4]] },
     ],
 };
+
+const externalPayloadPath = process.env.MSV_E2E_MOLSYS_PAYLOAD;
+const externalMessage = externalPayloadPath
+    ? JSON.parse(readFileSync(externalPayloadPath, "utf8"))
+    : undefined;
+const MOLSYS_PAYLOAD = externalMessage?.op === "load_molsys_payload"
+    ? externalMessage.payload
+    : (externalMessage ?? DEFAULT_MOLSYS_PAYLOAD);
 
 // A minimal export replay sequence: load → region → hide → label → global_rep → camera.
 // This mirrors the ordering guaranteed by _build_export_messages() in Python.
@@ -100,7 +109,11 @@ async function run() {
         const c = (window as any).__controller;
         return (c as any).plugin?.managers?.structure?.hierarchy?.current?.structures?.[0]?.cell?.obj?.data?.elementCount ?? 0;
     });
-    assert.ok(elementCount > 0, "structure should be loaded after replay");
+    assert.strictEqual(
+        elementCount,
+        MOLSYS_PAYLOAD.atoms.atom_id.length,
+        "Mol* should render every atom produced by the Python JSON serializer",
+    );
 
     // 1b. Annotation registered
     const hasLabel = await page.evaluate(() => {
@@ -177,5 +190,5 @@ async function run() {
 
 run().catch(err => {
     console.error(err);
-    process.exitCode = 1;
+    process.exit(1);
 });

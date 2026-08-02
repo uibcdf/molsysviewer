@@ -57,8 +57,10 @@ In practice, `MolSysView` plays multiple “logical module” roles:
 Modules
 
 - `load_molsysmt.py`
-  - Converts inputs to `molsysmt.MolSys`, creates `atom_mask`, serializes `ViewerJSON` into a MolSys payload.
-  - Sends `{"op": "load_molsys_payload", "payload": ...}` to the frontend.
+  - Converts inputs to `molsysmt.MolSys`, creates `atom_mask`, and records a
+    generation-bound lazy molecular projection.
+  - The array-native and portable-JSON encoders both read MolSys directly;
+    portable JSON is materialized only for compatibility or export consumers.
 - `load_pdb_string.py`, `load_mmcif_string.py`
   - Load structures from strings.
   - Build `_molsys` + masks and send a load operation.

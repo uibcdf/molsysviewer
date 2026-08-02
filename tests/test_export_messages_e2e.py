@@ -1,6 +1,7 @@
 from molsysviewer import demo
 from molsysviewer import addons, AddonExportHelperSpec, AddonPanelSpec, AddonSpec, AddonSectionSpec, AddonWorkspaceSpec
 from types import ModuleType
+import json
 import sys
 
 
@@ -56,6 +57,7 @@ def test_build_export_messages_captures_reproducible_workbench_state_end_to_end(
     )
 
     messages = view._build_export_messages()  # noqa: SLF001
+    json.dumps(messages)
     ops = [msg["op"] for msg in messages]
 
     assert "load_molsys_payload" in ops

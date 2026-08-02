@@ -3,7 +3,7 @@ import pytest
 msm = pytest.importorskip("molsysmt")
 
 from molsysviewer import MolSysView
-from molsysviewer.loaders.load_molsysmt import _serialize_molsys_payload
+from molsysviewer.loaders.json_molsys import serialize_json_molsys
 
 
 PDB_TEXT = """\
@@ -25,11 +25,10 @@ def test_load_string_uses_molsysmt():
     assert any(msg.get("op") == "load_molsys_payload" for msg in view._message_history)
 
 
-def test_load_molsys_payload_or_fallback():
+def test_load_molsys_payload_or_direct_json_fallback():
     molsys = msm.convert(PDB_TEXT, to_form="molsysmt.MolSys")
-    viewer_json = molsys.to_form("molsysmt.ViewerJSON")
-    payload = _serialize_molsys_payload(viewer_json)
-    assert payload is not None
+    payload = serialize_json_molsys(molsys)
+    assert payload["structures"]
 
     view = MolSysView(debug_js=True)
     view.load(molsys)
