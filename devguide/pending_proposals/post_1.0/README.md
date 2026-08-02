@@ -22,6 +22,19 @@ upstream-dependent ideas.
 5. Advanced annotations, representations, chemical metadata, typing generation,
    and test-output studies as their use cases or upstream contracts mature.
 
+`proteinview_external_review_and_ideas.md` is an idea inventory rather than a
+design, so it has no place in that order. Read it before opening any proposal in
+the interaction, pocket, or agent-integration space: its §1 records which of
+those features are already designed here, and its §9 records concrete defects
+found in the reviewed codebase that our own code could reproduce.
+
+`viewing_in_the_terminal.md` is a real proposal and is self-contained: the pixel
+source and the CLI argument parsing already exist, so it adds one component and
+two triggers. Schedule it independently — it blocks nothing and nothing blocks
+it. Its interactive tier is deliberately not specified there; it is the same
+machine as the agent control surface and is deferred into the review document
+above.
+
 The array-native transport for fully materialized structures and the runtime
 router moved to active pre-1.0 proposals. Lazy structure sources, partial
 residency, and cache eviction remain deferred because they change the meaning of
@@ -41,6 +54,8 @@ second transport specification.
 | Advanced representations | a scientific workflow selects a concrete representation and acceptance fixture |
 | Generated mixin typing | public API churn is low enough for generated declarations to remain useful |
 | Test-output study | measured token cost shows a meaningful iteration penalty |
+| ProteinView-inspired ideas | per-item gates in that document; none are approved designs |
+| Viewing in the terminal | 1.0 API freeze has ended; no upstream or benchmark dependency |
 
 ## Completion discipline
 

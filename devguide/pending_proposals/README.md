@@ -65,7 +65,17 @@ See [`post_1.0/`](post_1.0/). It contains:
   add-on's shape is indistinguishable from one the user drew;
 - [`qt_render_check_on_a_gpu_runner.md`](post_1.0/qt_render_check_on_a_gpu_runner.md):
   the render gate is closed on real GPU; what is missing is a machine that proves
-  it again automatically.
+  it again automatically;
+- [`proteinview_external_review_and_ideas.md`](post_1.0/proteinview_external_review_and_ideas.md):
+  an idea inventory drawn from reading an external terminal viewer. It is not a
+  design. Its first section records which of the ideas it raises are **already**
+  covered by approved documents here, so read it before opening a proposal about
+  interactions, pockets, or agent integration;
+- [`viewing_in_the_terminal.md`](post_1.0/viewing_in_the_terminal.md): show the
+  scene as pixels in a terminal, from the existing CLI and from Python. The
+  headless pixel source and the CLI argument parsing already exist, so this is
+  one new component plus two triggers. It also records an unbounded dimension
+  argument in today's image export that it does not own.
 
 These remain useful, but they expand product scope or require benchmark and
 upstream decisions. They do not block the current release.
