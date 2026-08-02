@@ -10,8 +10,10 @@ It reuses the same live records ``export_state()`` reads, plus the runtime state
 that method omits (molecular projection, visibility, frame, scene look). Every
 value that leaves the viewer is defensively copied so a consumer cannot mutate
 internal state (records, ``_current_molecular_projection``) through the result.
-Camera and host-local UI (open panel, scroll) are never part of the Python
-projection; they are ephemeral endpoint state supplied by the host.
+Camera and host-local UI (open panel, scroll) are never part of a live popup
+projection; they are ephemeral endpoint state supplied by the host. Static
+export is the deliberate exception: Python captures the last live camera before
+the host disappears and embeds it in the exported artifact.
 """
 
 from copy import deepcopy
@@ -239,6 +241,28 @@ class PopupSnapshotMixin:
             if isinstance(workspace, str) and workspace:
                 messages.append({"op": "set_workspace", "workspace": workspace})
         return deepcopy(messages)
+
+    # -- static export --------------------------------------------------------
+
+    def _build_static_export_snapshot(self) -> list[dict]:
+        """Build the canonical, self-contained static-export projection.
+
+        The renderable scene is shared with the canvas-popup projector. Static
+        files additionally need the current figure/add-on projections and the
+        camera captured from the live host, because no endpoint exists to supply
+        them when the file is opened later.
+        """
+        messages = self._build_canvas_snapshot(include_molecular=True)
+        if self._current_figure_spec:
+            messages.append(deepcopy(self._current_figure_spec))
+        messages.append(deepcopy(self._build_addon_runtime_summary_message()))
+        if self._last_camera_snapshot:
+            messages.append({
+                "op": "set_camera_snapshot",
+                "snapshot": deepcopy(self._last_camera_snapshot),
+                "duration_ms": 0,
+            })
+        return messages
 
     # -- helpers --------------------------------------------------------------
 

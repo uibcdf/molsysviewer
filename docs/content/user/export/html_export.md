@@ -36,9 +36,9 @@ view.export.html("report.html", mode="standalone")
 
 ### `mode="lite"`
 
-Produces a lighter HTML that loads the viewer runtime from the CDN and replays
-the message history. Suitable for embedding in documentation or sharing via a
-web URL.
+Produces a lighter HTML that loads the viewer runtime from the CDN and applies
+the canonical current-scene snapshot. Suitable for embedding in documentation
+or sharing via a web URL.
 
 ```python
 view.export.html("docs-embed.html", mode="lite")
@@ -69,13 +69,14 @@ view.export.html("minimal.html", include_controls=False, include_popout=False)
 
 ## Reproducing the scene
 
-The exported HTML replays all scene-building messages in order: loads, region
-creations, shape overlays, visibility changes. The final scene always matches
-what was in the viewer at export time, regardless of the order the Python calls
-were made.
+The exported HTML embeds the current molecular payload and one canonical
+projection of the live scene: regions, objects, visibility, frame, colours,
+selections, figure settings, supported add-on projections, and camera. It does
+not embed the append-only interaction journal, so file size depends on the
+current scene rather than on how many intermediate edits produced it.
 
 This means you can build a complex scene over many notebook cells and export it
-at any point — the replay will reconstruct the scene from scratch.
+at any point; opening the file reconstructs the final scene from scratch.
 
 ## Other export formats
 

@@ -279,6 +279,7 @@ class CameraManager:
             if puw.is_quantity(duration_ms)
             else int(duration_ms)
         )
+        self._view._last_camera_snapshot = dict(snapshot)  # noqa: SLF001
         self._view._send(  # noqa: SLF001
             {
                 "op": "set_camera_snapshot",

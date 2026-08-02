@@ -17,15 +17,15 @@ def _extract_state_json(html: str) -> dict:
     return json.loads(match.group(1))
 
 
-def test_build_html_filters_visibility(monkeypatch):
+def test_build_html_uses_canonical_state_instead_of_message_history(monkeypatch):
     view = MolSysView(debug_js=True)
     view.widget.send = lambda _msg: None  # type: ignore
 
-    # Add redundant visibility message (full range) that should be stripped
-    view._message_history = [
-        {"op": "dummy"},
-        {"op": "update_visibility", "options": {"visible_atom_indices": [0, 1, 2]}},
-    ]
+    class HistoryMustNotBeRead:
+        def __iter__(self):
+            raise AssertionError("static export read _message_history")
+
+    view._message_history = HistoryMustNotBeRead()  # type: ignore[assignment]  # noqa: SLF001
 
     # Avoid inlining huge bundle in this test
     monkeypatch.setattr(view, "_load_anywidget_bundle", lambda: "")
@@ -33,8 +33,10 @@ def test_build_html_filters_visibility(monkeypatch):
     html = view._build_standalone_html("Test", include_controls=True)
     state = _extract_state_json(html)
     widget_state = state["state"][view.widget.model_id]["state"]
-    content_msgs = [m for m in widget_state["initial_messages"] if m.get("op") != "set_addon_runtime_summary"]
-    assert content_msgs == [{"op": "dummy"}]
+    ops = [m.get("op") for m in widget_state["initial_messages"]]
+    assert "show_whole" in ops
+    assert "set_sections" in ops
+    assert "set_addon_runtime_summary" in ops
 
 
 @pytest.mark.parametrize("include_bundle", [True, False])
@@ -74,28 +76,42 @@ def test_build_html_includes_camera_snapshot(monkeypatch):
     }
 
 
-def test_build_export_messages_keeps_replay_order_and_appends_camera_snapshot():
-    view = MolSysView(debug_js=True)
+def test_standalone_html_embeds_the_exact_canonical_static_snapshot(monkeypatch):
+    from molsysviewer.demo import demo
+
+    view = demo["dialanine"]
+    view.regions.add("group_index==0", tag="exported")
+    view._last_camera_snapshot = {"target": [1, 2, 3]}  # noqa: SLF001
+    expected = view._build_export_messages()  # noqa: SLF001
+    monkeypatch.setattr(view, "_load_anywidget_bundle", lambda: "")
+
+    html = view._build_standalone_html("Test", include_controls=True)
+    state = _extract_state_json(html)
+    widget_state = state["state"][view.widget.model_id]["state"]
+
+    assert widget_state["initial_messages"] == expected
+
+
+def test_build_export_messages_project_current_scene_and_append_camera_snapshot():
+    from molsysviewer.demo import demo
+
+    view = demo["dialanine"]
     view.widget.send = lambda _msg: None  # type: ignore
-    view._message_history = [
-        {"op": "load_molsys_payload", "payload": {"atoms": {"atom_id": [1, 2, 3]}, "structures": []}},
-        {"op": "update_visibility", "options": {"visible_atom_indices": [0, 1, 2]}},
-        {"op": "hide_whole", "target": "whole"},
-    ]
+    view.whole.hide(skip_digestion=True)
+    view._message_history.extend({"op": "noise", "n": i} for i in range(100))  # noqa: SLF001
     view._last_camera_snapshot = {"target": [1, 2, 3]}
 
     messages = view._build_export_messages()
 
-    content_msgs = [m for m in messages if m.get("op") != "set_addon_runtime_summary"]
-    assert content_msgs == [
-        {"op": "load_molsys_payload", "payload": {"atoms": {"atom_id": [1, 2, 3]}, "structures": []}},
-        {"op": "hide_whole", "target": "whole"},
-        {
-            "op": "set_camera_snapshot",
-            "snapshot": {"target": [1, 2, 3]},
-            "duration_ms": 0,
-        },
-    ]
+    ops = [message.get("op") for message in messages]
+    assert ops[0] == "load_molsys_payload"
+    assert "hide_whole" in ops
+    assert "noise" not in ops
+    assert messages[-1] == {
+        "op": "set_camera_snapshot",
+        "snapshot": {"target": [1, 2, 3]},
+        "duration_ms": 0,
+    }
 
 
 def test_export_messages_include_hide_region_for_hidden_region():
@@ -103,12 +119,13 @@ def test_export_messages_include_hide_region_for_hidden_region():
     view = MolSysView(debug_js=True)
     view.widget.send = lambda _msg: None  # type: ignore
 
-    # Inject a minimal history simulating load + region + hide_region
-    view._message_history = [  # noqa: SLF001
-        {"op": "load_molsys_payload", "payload": {}},
-        {"op": "create_region", "tag": "pocket", "atom_indices": [0, 1, 2]},
-        {"op": "hide_region", "tag": "pocket"},
-    ]
+    view.regions.add(
+        atom_indices=[0, 1, 2],
+        tag="pocket",
+        representation="cartoon",
+        skip_digestion=True,
+    )
+    view.regions["pocket"].hide(skip_digestion=True)
 
     messages = view._build_export_messages()  # noqa: SLF001
     ops = [m["op"] for m in messages if m.get("op") != "set_addon_runtime_summary"]
@@ -123,10 +140,7 @@ def test_export_messages_include_hide_whole_when_view_is_hidden():
     view = MolSysView(debug_js=True)
     view.widget.send = lambda _msg: None  # type: ignore
 
-    view._message_history = [  # noqa: SLF001
-        {"op": "load_molsys_payload", "payload": {}},
-        {"op": "hide_whole", "target": "whole"},
-    ]
+    view.whole.hide(skip_digestion=True)
 
     messages = view._build_export_messages()  # noqa: SLF001
     ops = [m["op"] for m in messages if m.get("op") != "set_addon_runtime_summary"]

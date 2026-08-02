@@ -581,7 +581,7 @@ def test_a_broken_object_becomes_valid_again_after_undo_snapshot_restore():
     assert record["value"] == original_value
 
 
-def test_export_messages_after_live_edit_chain_remain_replay_safe(monkeypatch):
+def test_canonical_export_after_live_edit_chain_reflects_current_state(monkeypatch):
     monkeypatch.setenv("NUMBA_CACHE_DIR", "/tmp/numba_cache")
 
     view = demo["dialanine"]
@@ -606,17 +606,17 @@ def test_export_messages_after_live_edit_chain_remain_replay_safe(monkeypatch):
     apply_append_structures(view, demo["dialanine"]._molsys)  # noqa: SLF001
     apply_remove(view, selection=[0])
 
-    exported = view._clean_message_history()  # noqa: SLF001
+    exported = view._build_export_messages()  # noqa: SLF001
+    ops = [msg.get("op") for msg in exported]
 
-    assert [msg.get("op") for msg in exported] == [
-        "clear_all",
-        "load_molsys_payload",
-        "hide_layer",
-        "create_region",
-        "set_region_representation",
-        "hide_region",
-        "add_pocket_surface",
-    ]
+    assert ops.count("load_molsys_payload") == 1
+    assert ops.count("create_region") == 1
+    assert "set_region_representation" not in ops
+    assert "hide_region" in ops
+    assert "add_pocket_surface" in ops
+    assert "hide_layer" in ops
+    assert ops.index("create_region") < ops.index("hide_region")
+    assert ops.index("add_pocket_surface") < ops.index("hide_layer")
 
     payload_msg = next(msg for msg in exported if msg.get("op") == "load_molsys_payload")
     assert payload_msg["multiple_structures"] is True
@@ -633,7 +633,8 @@ def test_export_messages_after_live_edit_chain_remain_replay_safe(monkeypatch):
     )
     assert pocket_msg["options"]["atom_indices"] == [0, 1]
 
-    assert not any(msg.get("op") == "update_visibility" for msg in exported)
+    visibility = next(msg for msg in exported if msg.get("op") == "update_visibility")
+    assert visibility["options"]["visible_atom_indices"] == view.visible_atom_indices
 
 
 def test_remove_rebuild_remaps_regions_shapes_and_visibility():

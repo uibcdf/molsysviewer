@@ -8,8 +8,8 @@ import { readFileSync } from "node:fs";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Minimal MolSys payload matching the schema expected by loadStructureFromMolSysPayload.
-// Mirrors what _build_export_messages() embeds in load_molsys_payload.
+// Minimal fallback payload. The Phase 4a closure passes a complete canonical
+// Python projection through MSV_E2E_EXPORT_MESSAGES instead.
 const DEFAULT_MOLSYS_PAYLOAD = {
     atoms: {
         atom_id: [1, 2, 3, 4],
@@ -31,9 +31,7 @@ const MOLSYS_PAYLOAD = externalMessage?.op === "load_molsys_payload"
     ? externalMessage.payload
     : (externalMessage ?? DEFAULT_MOLSYS_PAYLOAD);
 
-// A minimal export replay sequence: load → region → hide → label → global_rep → camera.
-// This mirrors the ordering guaranteed by _build_export_messages() in Python.
-const EXPORT_SEQUENCE = [
+const DEFAULT_EXPORT_SEQUENCE = [
     {
         op: "load_molsys_payload",
         payload: MOLSYS_PAYLOAD,
@@ -63,6 +61,24 @@ const EXPORT_SEQUENCE = [
         duration_ms: 0,
     },
 ];
+
+const exportFixturePath = process.env.MSV_E2E_EXPORT_MESSAGES;
+const exportFixture = exportFixturePath
+    ? JSON.parse(readFileSync(exportFixturePath, "utf8"))
+    : undefined;
+const EXPORT_SEQUENCE = Array.isArray(exportFixture?.messages)
+    ? exportFixture.messages
+    : DEFAULT_EXPORT_SEQUENCE;
+const EXPECTED = exportFixture?.expected ?? {
+    atomCount: MOLSYS_PAYLOAD.atoms.atom_id.length,
+    frame: 0,
+    wholeRepresentation: null,
+    regionRepresentation: "ball-and-stick",
+    regionHidden: true,
+    annotationTag: "exported-label",
+    measurementTag: null,
+    shapeTag: null,
+};
 
 async function run() {
     const envBin = process.env.PW_CHROMIUM_BIN || "/usr/bin/google-chrome";
@@ -111,15 +127,15 @@ async function run() {
     });
     assert.strictEqual(
         elementCount,
-        MOLSYS_PAYLOAD.atoms.atom_id.length,
+        EXPECTED.atomCount,
         "Mol* should render every atom produced by the Python JSON serializer",
     );
 
     // 1b. Annotation registered
-    const hasLabel = await page.evaluate(() => {
+    const hasLabel = await page.evaluate((tag) => {
         const c = (window as any).__controller;
-        return (c as any).annotations?.hasTag?.("exported-label") === true;
-    });
+        return (c as any).annotations?.hasTag?.(tag) === true;
+    }, EXPECTED.annotationTag);
     assert.ok(hasLabel, "annotation 'exported-label' should be registered after replay");
 
     // 1c. Camera snapshot was applied (controller stores it)
@@ -129,6 +145,47 @@ async function run() {
         return snap !== null && snap !== undefined;
     });
     assert.ok(cameraApplied, "camera snapshot should be applied after set_camera_snapshot op");
+
+    // 1d. The canonical projection drives the real Mol* render tree.
+    const renderedScene = await page.evaluate(() => {
+        const c = (window as any).__controller;
+        return (window as any).Harness.inspectScene(c);
+    });
+    const renderedRegion = renderedScene.regions["exported-region"];
+    assert.ok(renderedRegion, "canonical export should create exported-region");
+    assert.strictEqual(renderedRegion.hidden, EXPECTED.regionHidden);
+    assert.strictEqual(renderedRegion.reprs[0]?.name, EXPECTED.regionRepresentation);
+    if (EXPECTED.wholeRepresentation) {
+        assert.strictEqual(renderedScene.wholeReprs[0]?.name, EXPECTED.wholeRepresentation);
+    }
+
+    await page.waitForFunction((expectedFrame) => {
+        const c = (window as any).__controller;
+        return (c as any).trajectory?.getTrajectoryState?.()?.currentFrame === expectedFrame;
+    }, EXPECTED.frame);
+    const currentFrame = await page.evaluate(() => {
+        const c = (window as any).__controller;
+        return (c as any).trajectory?.getTrajectoryState?.()?.currentFrame ?? -1;
+    });
+    assert.strictEqual(currentFrame, EXPECTED.frame, "canonical export should restore the current structure index");
+
+    if (EXPECTED.measurementTag) {
+        const hasMeasurement = await page.evaluate((tag) => {
+            const c = (window as any).__controller;
+            return (c as any).measurements?.hasTag?.(tag) === true;
+        }, EXPECTED.measurementTag);
+        assert.ok(hasMeasurement, `measurement '${EXPECTED.measurementTag}' should survive static export`);
+    }
+    if (EXPECTED.shapeTag) {
+        const shapeRefs = await page.evaluate((tag) => {
+            const c = (window as any).__controller;
+            return (window as any).Harness.inspectTaggedRefs(c, "shape", tag);
+        }, EXPECTED.shapeTag);
+        assert.ok(
+            shapeRefs.some((ref: any) => ref.exists && !ref.hidden),
+            `shape '${EXPECTED.shapeTag}' should exist and be visible in Mol*`,
+        );
+    }
 
     // ── Scenario 2: replay order — load_molsys_payload must precede other ops ─
     console.log("[E2E export-replay] Scenario: replay order preserved");
@@ -162,16 +219,13 @@ async function run() {
         }
     }, EXPORT_SEQUENCE);
 
-    const hasLabelAfterReload = await page.evaluate(() => {
+    const hasLabelAfterReload = await page.evaluate((tag) => {
         const c = (window as any).__controller;
-        return (c as any).annotations?.hasTag?.("exported-label") === true;
-    });
+        return (c as any).annotations?.hasTag?.(tag) === true;
+    }, EXPECTED.annotationTag);
     assert.ok(hasLabelAfterReload, "annotation should be present after second replay (standalone reload)");
 
-    // ── Scenario 4: export message cleaning — update_visibility stripped ──────
-    // This scenario exercises the JS dispatch of update_visibility to confirm it
-    // does not cause errors (even though Python strips it from exports, the controller
-    // must handle it gracefully if it ever arrives).
+    // ── Scenario 4: canonical full visibility is accepted ────────────────────
     console.log("[E2E export-replay] Scenario: update_visibility handled gracefully");
 
     await page.evaluate(async () => {

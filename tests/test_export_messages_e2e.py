@@ -64,9 +64,8 @@ def test_build_export_messages_captures_reproducible_workbench_state_end_to_end(
     assert ops.index("load_molsys_payload") < ops.index("create_region")
     assert "create_region" in ops
     assert "save_selection" in ops
-    assert "set_region_representation" in ops
+    assert "set_region_representation" not in ops
     assert "add_label" in ops
-    assert "update_label" in ops
     assert "add_distance_measurement" in ops
     assert "add_angle_measurement" in ops
     assert "add_dihedral_measurement" in ops
@@ -79,19 +78,13 @@ def test_build_export_messages_captures_reproducible_workbench_state_end_to_end(
     assert selection_msg["atom_indices"] == atom_indices
     assert selection_msg["group_indices"] == [1]
 
-    region_repr_msg = next(
-        msg for msg in messages if msg.get("op") == "set_region_representation" and msg.get("tag") == "picked"
-    )
-    assert region_repr_msg["representation"] == "ball-and-stick"
+    assert region_msg["representation"] == "ball-and-stick"
 
     label_msgs = [msg for msg in messages if msg.get("tag") == "notes"]
-    assert [msg["op"] for msg in label_msgs] == ["add_label", "update_label"]
+    assert [msg["op"] for msg in label_msgs] == ["add_label"]
     assert label_msgs[0]["options"]["layer_tag"] == "analysis"
-    assert label_msgs[1]["options"]["layer_tag"] == "analysis"
-    assert label_msgs[0]["options"]["text"] == "Seed"
-    assert label_msgs[1]["options"]["text"] == "Edited"
+    assert label_msgs[0]["options"]["text"] == "Edited"
     assert label_msgs[0]["options"]["atom_indices"] == atom_indices
-    assert label_msgs[1]["options"]["atom_indices"] == atom_indices
 
     distance_msg = next(msg for msg in messages if msg.get("tag") == "dist")
     angle_msg = next(msg for msg in messages if msg.get("tag") == "ang")
@@ -115,7 +108,7 @@ def test_build_export_messages_captures_reproducible_workbench_state_end_to_end(
             "position": [4.0, 5.0, 6.0],
             "up": [0.0, 1.0, 0.0],
         },
-        "duration_ms": 125,
+        "duration_ms": 0,
     }
 
 

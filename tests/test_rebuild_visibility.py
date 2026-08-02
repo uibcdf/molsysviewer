@@ -141,15 +141,20 @@ def test_player_state_survives_rebuild_and_export():
         "step": 2,
     }
 
-    exported_playback = next(
-        msg for msg in reversed(view._build_export_messages())  # noqa: SLF001
+    exported_playback = [
+        msg for msg in view._build_export_messages()  # noqa: SLF001
         if msg.get("op") == "set_trajectory_playback"
-    )
-    assert exported_playback["fps"] == 10
-    assert exported_playback["mode"] == "ping-pong"
-    assert exported_playback["direction"] == "backward"
-    assert exported_playback["step"] == 2
-    assert exported_playback["action"] == "play"
+    ]
+    assert exported_playback == [
+        {
+            "op": "set_trajectory_playback",
+            "fps": 10,
+            "mode": "ping-pong",
+            "direction": "backward",
+            "step": 2,
+        },
+        {"op": "set_trajectory_playback", "action": "play"},
+    ]
 
 
 def test_player_settings_export_without_autoplay_when_paused():

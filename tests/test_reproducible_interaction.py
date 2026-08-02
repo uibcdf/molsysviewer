@@ -57,9 +57,11 @@ def test_new_region_from_active_selection_creates_replayable_region():
     assert region.tag == "picked"
     assert tuple(region.atom_indices) == tuple(event["atom_indices"])
     assert "picked" in view.regions
-    ops = [msg["op"] for msg in view._build_export_messages()]  # noqa: SLF001
+    messages = view._build_export_messages()  # noqa: SLF001
+    ops = [msg["op"] for msg in messages]
     assert "create_region" in ops
-    assert "set_region_representation" in ops
+    created = next(msg for msg in messages if msg.get("op") == "create_region")
+    assert created["representation"] == "ball-and-stick"
 
 
 def test_context_action_create_region_from_selection_executes_python_bridge():
@@ -633,12 +635,12 @@ def test_scientific_workflow_region_rename_styled_label_measurement_export():
     messages = view._build_export_messages()  # noqa: SLF001
     ops = [msg["op"] for msg in messages]
     assert "create_region" in ops
-    assert "set_region_representation" in ops
     assert "add_label" in ops
     assert "add_distance_measurement" in ops
 
     region_msg = next(msg for msg in messages if msg.get("op") == "create_region")
     assert region_msg["tag"] == "n-term"
+    assert region_msg["representation"] == "ball-and-stick"
 
     label_msg = next(msg for msg in messages if msg.get("op") == "add_label")
     assert label_msg["options"]["text"] == "N-Cα backbone"
@@ -677,10 +679,12 @@ def test_full_reproducible_workflow_exports_region_selection_label_and_measureme
     messages = view._build_export_messages()  # noqa: SLF001
     ops = [msg["op"] for msg in messages]
     assert "create_region" in ops
-    assert "set_region_representation" in ops
     assert "save_selection" in ops
     assert "add_label" in ops
     assert "add_distance_measurement" in ops
+
+    region_msg = next(msg for msg in messages if msg.get("op") == "create_region")
+    assert region_msg["representation"] == "ball-and-stick"
 
     selection_msg = next(msg for msg in messages if msg.get("op") == "save_selection")
     assert selection_msg["tag"] == "picked"

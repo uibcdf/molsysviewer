@@ -174,6 +174,13 @@ To implement this:
 ### Reference Implementation
 Refer to the **`dummy`** reference add-on (`view.addons.dummy`) or **`topomt`** add-on (`view.addons.topomt`) for a complete, fully tested example of this state factory pattern.
 
+`state_factory` creates live, per-view runtime state; it does not by itself make
+that arbitrary state serializable or part of static HTML export. Static export
+preserves add-on output registered through core scene domains (regions, layers,
+shapes, annotations, and measurements) and materialized runtime/export-helper
+specifications. Add-ons must not claim persistence for other runtime fields
+until a versioned opt-in projection/state contract is introduced.
+
 ---
 
 ## Frontend Panel Guidelines

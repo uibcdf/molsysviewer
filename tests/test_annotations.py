@@ -166,7 +166,7 @@ def test_annotation_manager_clear_tag_and_global_clear():
     assert view.annotations.count() == 0
 
 
-def test_annotation_manager_can_update_label_text_replay_safely():
+def test_annotation_manager_can_update_label_text_in_canonical_export():
     view = demo["dialanine"]
     view.annotations.add_annotation(text="Before", selection="group_index==0", tag="notes")
 
@@ -175,8 +175,8 @@ def test_annotation_manager_can_update_label_text_replay_safely():
     assert view.annotations.info("notes")["text"] == "After"
     assert view.annotations.records()[0]["options"]["text"] == "After"
     exported = [msg for msg in view._build_export_messages() if msg.get("tag") == "notes"]  # noqa: SLF001
-    assert [msg["op"] for msg in exported] == ["add_label", "update_label"]
-    assert exported[-1]["options"]["text"] == "After"
+    assert [msg["op"] for msg in exported] == ["add_label"]
+    assert exported[0]["options"]["text"] == "After"
 
 
 def test_annotation_manager_set_style_preserves_identity_layer_and_replay():
@@ -205,7 +205,7 @@ def test_annotation_manager_set_style_preserves_identity_layer_and_replay():
     assert view.annotations.records()[0]["options"]["layer_tag"] == "analysis"
 
 
-def test_annotation_manager_set_anchor_reanchors_by_selection_replay_safely():
+def test_annotation_manager_set_anchor_reanchors_in_canonical_export():
     view = demo["dialanine"]
     view.annotations.add_annotation(text="Anchor", selection="group_index==0", tag="notes")
 
@@ -215,8 +215,8 @@ def test_annotation_manager_set_anchor_reanchors_by_selection_replay_safely():
     assert view.annotations.info("notes")["atom_indices"] == expected_atom_indices
     assert view.annotations.records()[0]["options"]["atom_indices"] == expected_atom_indices
     exported = [msg for msg in view._build_export_messages() if msg.get("tag") == "notes"]  # noqa: SLF001
-    assert [msg["op"] for msg in exported] == ["add_label", "update_label"]
-    assert exported[-1]["options"]["atom_indices"] == expected_atom_indices
+    assert [msg["op"] for msg in exported] == ["add_label"]
+    assert exported[0]["options"]["atom_indices"] == expected_atom_indices
 
 
 def test_annotation_manager_set_anchor_accepts_explicit_atom_indices():

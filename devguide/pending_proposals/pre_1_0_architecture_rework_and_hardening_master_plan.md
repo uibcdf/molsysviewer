@@ -1,7 +1,8 @@
 # Pre-1.0 architecture rework and hardening master plan
 
-**Status:** active master execution plan. Phase 0a, Phase 0b and Phase 1 are
-implemented and awaiting independent audit.
+**Status:** active master execution plan. Phases 0a through 2 and Phase 4a are
+implemented and awaiting independent audit; Phase 3 is implemented except for
+its browser validation in the restricted executor.
 
 **Purpose:** turn the current, functionally strong viewer into a pre-1.0 base
 that is robust under real connector lifecycles, efficient for scientifically
@@ -35,7 +36,7 @@ audit.
 | 1 | Immediate correctness and transversal guards | ● | 100% | working tree from `6362914c` | 1165 Python, 265 JS, 28/28 E2E; seams and guards mutation-verified; awaiting audit |
 | 2 | Transfer state machine | ● | 100% | working tree from `6362914c` | 1178 Python, 3 documented skips; 39 focused transport + 44 Qt; mutation-verified; awaiting audit |
 | 3 | Direct lazy JSON fallback and deadline hardening | ◐ | 95% | working tree from `21027309` | 1186 Python passed, 3 environmental skips; tsc 0; four mechanisms mutation-verified; wall-clock/RSS measured; real-Mol* JSON E2E blocked by sandbox Chrome SIGTRAP |
-| 4a | Canonical static export | ○ | 0% | — | — |
+| 4a | Canonical static export | ● | 100% | working tree from `d7768ab1` | 1190 Python passed, 3 environmental skips; 265 JS; tsc 0; generated Python projection passed in real Chromium/Mol*; mutation-verified; awaiting audit |
 | 4b | Live `ready`/reconnect closure | ○ | 0% | Closure choice required when opened | — |
 | 5 | Endpoint isolation and lifecycle | ○ | 0% | — | — |
 | 6 | Ownership audit and limited consolidation | ○ | 0% | — | — |
@@ -837,6 +838,66 @@ MSV_E2E_MOLSYS_PAYLOAD=/tmp/molsysviewer-phase3-direct-json.json \
 **4a exit:** static export no longer reads an append-only journal, its camera
 semantics are normative, and its size is invariant to irrelevant interaction
 count.
+
+**Implementation report (2026-08-02).** `_build_export_messages()` now delegates
+to a dedicated static target built on the canonical canvas projection. It
+reconstructs the current molecular generation, scene look, whole, layers,
+regions, shapes, annotations, measurements, sections, visibility, colours,
+selections, frame and player state from live registries; it never reads
+`_message_history`. The static target then adds current figure state, the
+materialized add-on runtime/export-helper summary and the captured camera, in
+that order, with camera last. Live popup targets continue to exclude camera.
+
+The old history cleaner was removed rather than retained as a compatibility
+fork. HTML standalone/lite, headless image paths and the Qt bootstrap already
+share `_build_export_messages()`, so they now consume the same canonical static
+projection. A latent authority defect exposed by the migration was fixed:
+`CameraManager.set_snapshot()` now records the applied snapshot in Python, so
+static export does not depend on finding the command in a journal.
+
+Shipped add-on output that enters core scene registries remains covered, and
+the existing materialized section/export-helper summary remains present.
+Arbitrary `state_factory` fields still have no persistence or static-export
+guarantee; this is now stated in the developer add-on guide. No hypothetical
+third-party projection API was added.
+
+Validation observed:
+
+- `pytest --receptor=llm tests/ -n 12`: **1190 passed, 3 skipped**;
+- `npm run test:js`: **265 passed**;
+- `npx tsc --noEmit`: **exit 0**;
+- focused canonical/export files: **79 passed**, plus the static snapshot and
+  exact standalone-wrapper checks;
+- a Python fixture containing two structures, a styled/hidden region, shape,
+  annotation, measurement, saved selection, frame 1, whole representation and
+  camera was replayed in Chromium against real Mol\*: **passed**. The browser
+  asserted the Mol\* structure atom count, whole/region representation cells,
+  region visibility, tagged shape ref, annotation, measurement, frame and
+  camera. Reproduce with:
+
+```bash
+python devtools/e2e/build_static_export_fixture.py /tmp/molsysviewer-phase4a-export.json
+cd molsysviewer/js
+npm run build:harness
+npx esbuild tests/e2e/export-replay.e2e.ts --bundle --platform=node --format=esm \
+  --outfile=tests/e2e/export-replay.e2e.js --external:playwright \
+  --external:chromium-bidi/\*
+MSV_E2E_EXPORT_MESSAGES=/tmp/molsysviewer-phase4a-export.json \
+  node tests/e2e/export-replay.e2e.js
+```
+
+Mutation ledger:
+
+| mechanism | mutation | test | observed result |
+|---|---|---|---|
+| static export ignores the append-only journal | return `list(_message_history)` from `_build_export_messages()` | `test_static_export_content_and_size_ignore_one_hundred_thousand_history_entries` | fails with 100,000 extra messages; passes restored |
+| hostless export embeds camera while live popup does not | suppress the static camera append | `test_static_export_embeds_hostless_state_that_live_popup_excludes` | fails because add-on summary becomes final op; passes restored |
+
+Not done: Phase 4b was not opened, no choice between canonical live bootstrap
+and bounded-journal waiver was made, Contract S1 and ready/reconnect behavior
+were not changed, and no public add-on state/projection hook was introduced.
+Generated `viewer.js` was not rebuilt because no runtime TypeScript source
+changed. The dirty sandbox notebook was not read or included.
 
 #### Phase 4b — Live `ready`/reconnect (waiver candidate)
 

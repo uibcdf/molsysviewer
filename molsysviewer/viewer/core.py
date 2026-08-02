@@ -2717,8 +2717,8 @@ class MolSysView(
         messages = self._build_export_messages()
 
         if mode == "standalone":
-            # Serialize the message history so the exported HTML can replay all
-            # actions (loads/shapes/visibility) without needing a live Python kernel.
+            # Embed the canonical current-state projection so the HTML can
+            # reconstruct the scene without a live Python kernel.
             self.widget.initial_messages = messages
             html = self._build_standalone_html(
                 title=title,

@@ -6,14 +6,13 @@ MolSysViewer is built as a hybrid Python/TypeScript application that bridges the
 
 We use `anywidget` to embed Mol* inside Jupyter environments.
 
-- **State Management**: Python is the source of truth for the loaded molecular system, regions, layers, live-edit state, and exportable message history.
+- **State Management**: Python is the source of truth for the loaded molecular system, regions, layers, live-edit state, and canonical export projections.
 - **Messaging**: communication is asynchronous and operation-based (`op`). Python sends commands like `load_molsys_payload`, `set_region_representation`, `update_visibility`, or shape ops.
 - **Runtime envelope (2026-07)**: those ops now travel inside a `RuntimeEnvelope` carrying viewer, session and endpoint identity, a declared direction, and the action name. Python is the single authority: it validates identity and direction, deduplicates commands so one accepted command means one public-API mutation and one history checkpoint, and only it emits projections. A shared manifest, `molsysviewer/runtime_actions.json`, classifies every action and is loaded by both Python and TypeScript, so neither side can drift. See [`pending_proposals/runtime_message_router.md`](pending_proposals/runtime_message_router.md).
 - **Structural data plane**: coordinates for a materialized `MolSys` travel as typed binary buffers, planar per structure, so Mol\* frames are zero-copy views. JSON remains as an observable fallback. See [`pending_proposals/data_plane_architecture.md`](pending_proposals/data_plane_architecture.md).
 - **MolSys payload vocabulary**: `residue_id` / `residue_name` are intentional in the Python → TypeScript payload. The TS loader materializes them as Mol*/mmCIF `atom_site` columns (`label_seq_id`, `auth_seq_id`, `label_comp_id`, `auth_comp_id`). This is only a wire-boundary translation from MolSysSuite `group_id` / `group_name`; public Python APIs and interaction payloads keep the `group_*` vocabulary.
 - **Latency Handling**: if the frontend is not ready, messages are queued in `MolSysView._pending_messages` and flushed upon the `ready` event.
-- **Replayability**: Python keeps `_message_history` and `_shape_history` so standalone HTML exports and rebuild flows can replay externally visible state.
-  - *Obsolete since 2026-07-30*: this list used to include **popup bootstrap**. A popup no longer replays history. It asks Python for `build_popup_scene_snapshot(...)`, which rebuilds the current scene from the live registries, so its size depends on the scene and not on how long the session has run. The change was not only about size: replaying a journal could show a popup a scene Python no longer had, and a silently wrong scene is worse than a visible absence.
+- **Projection**: popup and static HTML bootstrap rebuild current state from live registries. Their size depends on the scene, not on how long the session has run. `_message_history` remains a live-runtime implementation detail while Phase 4b decides its bounded reconnect contract; it is not static-export authority.
 
 ## Frontend Components (TypeScript)
 
@@ -88,7 +87,8 @@ When `apply_system_edit` runs:
 - regions/layers/tags are replayed;
 - visibility is restored;
 - atom-index based state is remapped when topology changes;
-- the resulting `_message_history` must remain replay-safe for export and rebuild flows (popup bootstrap no longer depends on it; see the note on replayability above).
+- the rebuilt live registries must remain sufficient for canonical popup and static-export projection;
+- any intentionally retained `_message_history` use belongs to the separate live reconnect contract, not export correctness.
 
 This rebuild path is a regression-tested contract, not an implementation detail.
 
@@ -188,13 +188,12 @@ MolSysViewer supports high-fidelity static HTML exports:
 
 - **Standalone**:
   - embeds widget state and manager state;
-  - carries replay messages and optional popup support.
+  - carries a canonical current-scene projection and optional popup support.
 - **Lite**:
   - documentation-oriented mode;
-  - loads runtime assets externally and replays cleaned message history.
+  - loads runtime assets externally and applies the same canonical projection.
 
-Export correctness depends on:
-
-- deterministic replay ordering,
-- visibility-cleaning rules,
-- and appending camera snapshot state at the correct point in the replay stream.
+Export correctness depends on deterministic projection ordering, complete live
+registries, and appending the captured camera after the renderable scene. The
+static artifact deliberately carries camera state because no live host remains
+to supply endpoint-local state when it is opened.

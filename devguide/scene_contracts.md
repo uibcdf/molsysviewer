@@ -1869,6 +1869,12 @@ measured (`75069724`, `34da6066`, `d0e6013c`). Delivery of the mandatory
 diagnostic signal is tracked separately as active defect Z2 in
 `pending_proposals/open_items_after_the_2026_08_smoke_round.md`.**
 
+Camera authority is target-specific. In a live widget or popup, camera remains
+ephemeral endpoint-local state and is not part of Python's popup snapshot. A
+static HTML export is the deliberate exception: Python requests and captures the
+current camera while the host still exists, then embeds it after the canonical
+scene projection because the exported artifact has no host to query later.
+
 Mol\* derives state from the scene *as it currently stands*, and some of what it
 derives is **not recoverable** once the scene is complete again. Any moment in
 which our scene is transiently empty or half-built is therefore not a cosmetic
