@@ -318,6 +318,21 @@ and JSON fallback.
    Python suite for the final implementation task. Use `pytest-receptor` for
    agent-facing Python output.
 
+## Phase 5 endpoint isolation (in progress, 2026-08-02)
+
+- Per-destination structure managers and deferred queues replace the view-wide
+  popup barrier. A pending 95,000-atom popup stream leaves embedded-host
+  projection latency at 0.0088 ms against a predeclared 100 ms threshold.
+- Popup acknowledgements carry and validate `target_endpoint_id`; a different
+  popup cannot advance the generation.
+- Closing a popup notifies Python, releases begin/chunk/completion-wait buffers
+  immediately, and discards only that endpoint's deferred projections.
+- `PopupHostManager` queues live projections per bootstrapping popup and flushes
+  them after its canonical initial snapshot, preserving request-time snapshot
+  order without blocking another endpoint.
+- Remaining before closure: complete the endpoint evidence matrix, real-browser
+  relay/reconstruction checks, full suites and runtime rebuild.
+
 ## Resume cautions
 
 - Read `devguide/pending_proposals/runtime_message_router.md` and

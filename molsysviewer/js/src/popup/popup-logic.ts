@@ -316,7 +316,7 @@ export const bootPopup = async (loadedModule?: any) => {
     })();
 
     // Logic to handle incoming messages
-    window.addEventListener("message", async (ev) => {
+    const handlePopupMessage = async (ev: MessageEvent) => {
         const message = decodePopupEvent(ev, openerWin, popupChannel);
         if (!message) return;
         if (
@@ -411,12 +411,25 @@ export const bootPopup = async (loadedModule?: any) => {
                 // generation; the host only relays. Acknowledgements travel back
                 // the same way, so the stream stays flow-controlled end to end.
                 case "molsysviewer-structure-data":
-                    await arrayNativeStream.handle(data?.message, relayedBuffers(data));
+                    if (data?.message?.op === "load_molsys_payload") {
+                        await ctrl.handleMessage(data.message);
+                        sendToHost("molsysviewer-structure-data-ack", {
+                            event: "structure_data_json_complete",
+                        });
+                    } else {
+                        await arrayNativeStream.handle(data?.message, relayedBuffers(data));
+                    }
                     break;
             }
         } catch (e) {
             console.error("Popout sync error", e);
         }
+    };
+    let popupInboundQueue = Promise.resolve();
+    window.addEventListener("message", (ev) => {
+        popupInboundQueue = popupInboundQueue
+            .then(() => handlePopupMessage(ev))
+            .catch(error => console.error("Popout message queue error", error));
     });
 
     // Re-implement button making helper inside popup scope

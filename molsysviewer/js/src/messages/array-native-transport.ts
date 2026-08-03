@@ -54,6 +54,7 @@ export type StructureDataBeginMessage = {
     session_id: string;
     stream_id: string;
     generation: number;
+    target_endpoint_id?: string;
     chunk_count: number;
     metadata: ArrayNativeMolSysMetadata;
     label?: string;
@@ -67,6 +68,7 @@ export type StructureDataChunkMessage = {
     session_id: string;
     stream_id: string;
     generation: number;
+    target_endpoint_id?: string;
     chunk_id: number;
     structure_start: number;
     structure_count: number;
@@ -79,6 +81,7 @@ export type StructureDataCancelMessage = {
     session_id: string;
     stream_id: string;
     generation: number;
+    target_endpoint_id?: string;
     reason?: string;
 };
 

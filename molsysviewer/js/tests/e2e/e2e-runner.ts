@@ -11,6 +11,7 @@ const SUITES = [
     "annotations-subpanel",
     "array-native-load",
     "popup-channel",
+    "endpoint-lifecycle",
     "panel-popup-welcome",
     "structure-data-relay",
     "widget-seam",

@@ -25,7 +25,7 @@ type PopupHostOptions = {
     sessionId?: string;
     /** Fired when a popup endpoint goes away, so the host can cancel work it
      *  owns (pending requests, retained buffers) instead of leaking it. */
-    onEndpointClosed?: (mode: PopupMode) => void;
+    onEndpointClosed?: (mode: PopupMode, endpointId: string) => void;
     /** Reports a manifest refusal through the host's observable diagnostic seam. */
     onContractRejection?: (rejection: {
         seam: "popup-host-inbound" | "popup-host-outbound";
@@ -50,12 +50,27 @@ export class PopupHostManager {
     private readonly router: RuntimeMessageRouter;
     private messageCounter = 0;
     private readonly channels = new Map<PopupMode, PopupChannelIdentity>();
-    private readonly onEndpointClosed?: (mode: PopupMode) => void;
+    private readonly onEndpointClosed?: (mode: PopupMode, endpointId: string) => void;
     private readonly onContractRejection?: PopupHostOptions["onContractRejection"];
+    private readonly bootstrapping = new Set<PopupMode>();
+    private readonly bootstrapQueues = new Map<PopupMode, Array<{ type: string; data: any }>>();
 
     /** Endpoint id of the live popup for `mode`, or null when none is open. */
     popupEndpointId(mode: PopupMode): string | null {
         return this.channels.get(mode)?.popupEndpointId ?? null;
+    }
+
+    beginBootstrap(mode: PopupMode): void {
+        if (this.bootstrapping.has(mode)) return;
+        this.bootstrapping.add(mode);
+        this.bootstrapQueues.set(mode, []);
+    }
+
+    completeBootstrap(mode: PopupMode): void {
+        this.bootstrapping.delete(mode);
+        const queued = this.bootstrapQueues.get(mode) ?? [];
+        this.bootstrapQueues.delete(mode);
+        for (const { type, data } of queued) this.sendTo(mode, type, data);
     }
 
     constructor(viewer: string | PopupHostOptions) {
@@ -262,21 +277,31 @@ export class PopupHostManager {
         const interval = window.setInterval(() => {
             if (mode === "canvas") {
                 if (!this.popoutWin || this.popoutWin.closed) {
+                    const current = this.channels.get("canvas");
                     this.popoutWin = null;
                     this.isReady = false;
                     this.channels.delete("canvas");
                     this.router.unregisterEndpoint(channel.popupEndpointId);
                     window.clearInterval(interval);
-                    this.onEndpointClosed?.("canvas");
+                    this.bootstrapping.delete("canvas");
+                    this.bootstrapQueues.delete("canvas");
+                    if (current?.popupEndpointId === channel.popupEndpointId) {
+                        this.onEndpointClosed?.("canvas", channel.popupEndpointId);
+                    }
                 }
             } else {
                 if (!this.panelWin || this.panelWin.closed) {
+                    const current = this.channels.get("panel");
                     this.panelWin = null;
                     this.isPanelReady = false;
                     this.channels.delete("panel");
                     this.router.unregisterEndpoint(channel.popupEndpointId);
                     window.clearInterval(interval);
-                    this.onEndpointClosed?.("panel");
+                    this.bootstrapping.delete("panel");
+                    this.bootstrapQueues.delete("panel");
+                    if (current?.popupEndpointId === channel.popupEndpointId) {
+                        this.onEndpointClosed?.("panel", channel.popupEndpointId);
+                    }
                     // Automatically restore host card when panel window is closed
                     if (this.controller) {
                         this.controller.restoreHostPanelState();
@@ -295,7 +320,9 @@ export class PopupHostManager {
                 this.isReady = false;
                 this.channels.delete("canvas");
                 if (channel) this.router.unregisterEndpoint(channel.popupEndpointId);
-                this.onEndpointClosed?.("canvas");
+                this.bootstrapping.delete("canvas");
+                this.bootstrapQueues.delete("canvas");
+                if (channel) this.onEndpointClosed?.("canvas", channel.popupEndpointId);
             }
         } else {
             if (this.panelWin) {
@@ -305,7 +332,9 @@ export class PopupHostManager {
                 this.isPanelReady = false;
                 this.channels.delete("panel");
                 if (channel) this.router.unregisterEndpoint(channel.popupEndpointId);
-                this.onEndpointClosed?.("panel");
+                this.bootstrapping.delete("panel");
+                this.bootstrapQueues.delete("panel");
+                if (channel) this.onEndpointClosed?.("panel", channel.popupEndpointId);
             }
         }
     }
@@ -331,6 +360,14 @@ export class PopupHostManager {
         const ready = mode === "canvas" ? this.isReady : this.isPanelReady;
         const channel = this.channels.get(mode);
         if (!ready || !target || target.closed || !channel) return false;
+        if (
+            this.bootstrapping.has(mode)
+            && type !== "molsysviewer-initial-sync"
+            && type !== "molsysviewer-structure-data"
+        ) {
+            this.bootstrapQueues.get(mode)?.push({ type, data });
+            return true;
+        }
         try {
             this.postToPopup(target, channel, type, data, direction);
             return true;
@@ -341,28 +378,8 @@ export class PopupHostManager {
     }
 
     send(type: string, data: any) {
-        const direction: RuntimeDirection =
-            type === "molsysviewer-sync-camera" ? "event" : "projection";
-        if (this.isReady && this.popoutWin && !this.popoutWin.closed) {
-            try {
-                const channel = this.channels.get("canvas");
-                if (channel) {
-                    this.postToPopup(this.popoutWin, channel, type, data, direction);
-                }
-            } catch (e) {
-                console.warn("[MolSysViewer Host] Popout message failed", e);
-            }
-        }
-        if (this.isPanelReady && this.panelWin && !this.panelWin.closed) {
-            try {
-                const channel = this.channels.get("panel");
-                if (channel) {
-                    this.postToPopup(this.panelWin, channel, type, data, direction);
-                }
-            } catch (e) {
-                console.warn("[MolSysViewer Host] Panel message failed", e);
-            }
-        }
+        this.sendTo("canvas", type, data);
+        this.sendTo("panel", type, data);
     }
 
     receive(event: MessageEvent): {

@@ -252,7 +252,7 @@ def test_a_canvas_popup_snapshot_streams_the_molecular_generation_to_its_endpoin
         "the scene must not be projected before the popup has a structure"
     )
 
-    complete_structure_stream(view)
+    complete_structure_stream(view, target_endpoint_id="canvas-popup-7")
 
     # The snapshot answer therefore carries no JSON molecular copy.
     answers = [m for m, _ in sent if m.get("action") == "popup_scene_snapshot"]
@@ -285,7 +285,10 @@ def test_a_popup_targeted_stream_fallback_cancels_and_loads_the_same_endpoint():
     sent.clear()
 
     with pytest.warns(RuntimeWarning, match="using JSON fallback"):
-        view._fallback_binary_structure_stream("forced test fallback")  # noqa: SLF001
+        view._fallback_binary_structure_stream(  # noqa: SLF001
+            "forced test fallback",
+            target_endpoint_id="canvas-popup-7",
+        )
 
     cancel = next(message for message, _ in sent if message.get("op") == "structure_data_cancel")
     fallback = next(message for message, _ in sent if message.get("op") == "load_molsys_payload")
@@ -324,7 +327,10 @@ def test_a_failed_stream_cancel_is_reported_without_masking_the_json_fallback(mo
     )
 
     with pytest.warns(RuntimeWarning, match="using JSON fallback"):
-        view._fallback_binary_structure_stream("forced test fallback")  # noqa: SLF001
+        view._fallback_binary_structure_stream(  # noqa: SLF001
+            "forced test fallback",
+            target_endpoint_id="canvas-popup-7",
+        )
 
     assert diagnostics
     assert diagnostics[0][0][0] == "MolSysView._fallback_binary_structure_stream.cancel"
@@ -361,3 +367,129 @@ def test_a_panel_popup_snapshot_never_starts_a_molecular_stream():
         },
     })
     assert not [m for m, _ in sent if m.get("op") == "structure_data_begin"]
+
+
+def test_popup_transfer_does_not_block_the_embedded_host_and_close_releases_it():
+    import molsysmt as msm
+
+    view = MolSysView()
+    view.load(msm.systems["pentalanine"]["traj_pentalanine.h5msm"])
+    view._ready = True  # noqa: SLF001
+    view._frontend_capabilities = {  # noqa: SLF001
+        "binary_structure_data": [1],
+        "max_buffer_bytes": 16 * 1024 * 1024,
+    }
+    sent: list[dict] = []
+    view.widget.send = lambda content, buffers=None: sent.append(content)  # type: ignore[assignment]
+
+    assert view._try_send_array_native_molsys(  # noqa: SLF001
+        view._current_molecular_projection,  # noqa: SLF001
+        target_endpoint_id="canvas-popup-7",
+    )
+    manager = view._structure_transfer_manager("canvas-popup-7")  # noqa: SLF001
+    transfer = manager.active
+    assert transfer is not None
+
+    view._send_widget_message({"op": "set_region_summaries", "summaries": []})  # noqa: SLF001
+    view._send_widget_message(  # noqa: SLF001
+        {"op": "popup-only-scene"},
+        defer_for_endpoint="canvas-popup-7",
+    )
+    assert any(message.get("op") == "set_region_summaries" for message in sent)
+    assert not any(message.get("op") == "popup-only-scene" for message in sent)
+
+    sent.clear()
+    view._handle_frontend_event({  # noqa: SLF001
+        "event": "popup_endpoint_closed",
+        "mode": "canvas",
+        "popup_endpoint_id": "canvas-popup-7",
+    })
+
+    assert transfer.release_count == 1
+    assert transfer.payload is None
+    assert view._structure_transfer_manager("canvas-popup-7") is None  # noqa: SLF001
+    assert "canvas-popup-7" not in view._deferred_widget_messages  # noqa: SLF001
+    assert not any(message.get("op") == "structure_data_cancel" for message in sent)
+    assert not any(message.get("op") == "popup-only-scene" for message in sent)
+
+
+@pytest.mark.parametrize("state", ["begin", "chunk", "completion_wait"])
+def test_popup_close_releases_every_active_transfer_state(state):
+    from molsysviewer.transport import AckDisposition
+
+    view = MolSysView()
+    endpoint_id = "canvas-popup-close"
+    manager = view._structure_transfer_manager(endpoint_id, create=True)  # noqa: SLF001
+    transfer = manager.start(
+        begin_message={"op": "structure_data_begin", "chunk_count": 1},
+        chunks=[(
+            {"op": "structure_data_chunk", "chunk_id": 0},
+            [memoryview(b"coordinates")],
+        )],
+        fallback_factory=lambda _generation: {"op": "load_molsys_payload"},
+        payload=object(),
+        target_endpoint_id=endpoint_id,
+    )
+    identity = {
+        "viewer_id": transfer.viewer_id,
+        "session_id": transfer.session_id,
+        "stream_id": transfer.stream_id,
+        "generation": transfer.generation,
+        "target_endpoint_id": endpoint_id,
+    }
+    if state in {"chunk", "completion_wait"}:
+        result = manager.handle_event({"event": "structure_data_begin_ack", **identity})
+        assert result.disposition is AckDisposition.SEND_CHUNK
+    if state == "completion_wait":
+        result = manager.handle_event({
+            "event": "structure_data_chunk_ack",
+            "chunk_id": 0,
+            **identity,
+        })
+        assert result.disposition is AckDisposition.WAIT_COMPLETE
+
+    view._handle_frontend_event({  # noqa: SLF001
+        "event": "popup_endpoint_closed",
+        "mode": "canvas",
+        "popup_endpoint_id": endpoint_id,
+    })
+
+    assert transfer.release_count == 1
+    assert transfer.payload is None
+    assert view._structure_transfer_manager(endpoint_id) is None  # noqa: SLF001
+
+
+def test_live_molecular_reload_starts_independent_host_and_canvas_generations(
+    complete_structure_stream,
+):
+    import molsysmt as msm
+
+    view = MolSysView()
+    view.load(msm.systems["pentalanine"]["traj_pentalanine.h5msm"])
+    view._ready = True  # noqa: SLF001
+    view._frontend_capabilities = {  # noqa: SLF001
+        "binary_structure_data": [1],
+        "max_buffer_bytes": 16 * 1024 * 1024,
+    }
+    view._popup_endpoint_modes["canvas-popup-live"] = "canvas"  # noqa: SLF001
+    view._popup_endpoint_modes["panel-popup-live"] = "panel"  # noqa: SLF001
+    sent: list[dict] = []
+    view.widget.send = lambda content, buffers=None: sent.append(content)  # type: ignore[assignment]
+
+    view._deliver_transport_message(view._current_molecular_projection)  # noqa: SLF001
+
+    begins = [message for message in sent if message.get("op") == "structure_data_begin"]
+    assert len(begins) == 2
+    assert {message.get("target_endpoint_id") for message in begins} == {
+        None,
+        "canvas-popup-live",
+    }
+    assert not any(
+        message.get("target_endpoint_id") == "panel-popup-live" for message in begins
+    )
+
+    complete_structure_stream(view)
+    assert view._structure_transfer_manager("canvas-popup-live").has_active  # noqa: SLF001
+    complete_structure_stream(view, target_endpoint_id="canvas-popup-live")
+    assert not view._structure_transfers.has_active  # noqa: SLF001
+    assert view._structure_transfer_manager("canvas-popup-live") is None  # noqa: SLF001

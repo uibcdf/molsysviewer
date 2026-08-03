@@ -84,11 +84,12 @@ def complete_structure_stream():
     held until this point.
     """
 
-    def _drive(view, max_steps: int = 512) -> None:
+    def _drive(view, max_steps: int = 512, target_endpoint_id=None) -> None:
         from molsysviewer.transport import TransferState
 
         for _ in range(max_steps):
-            transfer = view._structure_transfers.active  # noqa: SLF001
+            manager = view._structure_transfer_manager(target_endpoint_id)  # noqa: SLF001
+            transfer = manager.active if manager is not None else None
             if transfer is None:
                 return
             event = {
@@ -97,6 +98,8 @@ def complete_structure_stream():
                 "stream_id": transfer.stream_id,
                 "generation": transfer.generation,
             }
+            if transfer.target_endpoint_id is not None:
+                event["target_endpoint_id"] = transfer.target_endpoint_id
             if transfer.state is TransferState.WAITING_BEGIN_ACK:
                 event["event"] = "structure_data_begin_ack"
             elif transfer.state is TransferState.WAITING_CHUNK_ACK:

@@ -35,6 +35,7 @@ declare global {
         inspectTaggedRefs: typeof inspectTaggedRefs;
         loadArrayNativeFixture: typeof loadArrayNativeFixture;
         probePopupChannel: typeof probePopupChannel;
+        probePopupReconstruction: typeof probePopupReconstruction;
         probeStructureDataRelay: typeof probeStructureDataRelay;
         probeWidgetSeam: typeof probeWidgetSeam;
     } | undefined;
@@ -129,6 +130,93 @@ export async function probePopupChannel(): Promise<{
         };
         window.addEventListener("message", onMessage);
         void manager.open().catch(error => {
+            cleanup();
+            reject(error);
+        });
+    });
+}
+
+export async function probePopupReconstruction(): Promise<{
+    oldEndpointClosed: boolean;
+    endpointChanged: boolean;
+    replacementSessionId: string;
+    closeNotificationMatched: boolean;
+}> {
+    const popupModule = `
+        export function bootPopup() {
+            const channel = window.molsysviewer_popup_channel;
+            const targetOrigin = window.location.origin && window.location.origin !== "null"
+                ? window.location.origin : "*";
+            window.opener.postMessage({
+                channel,
+                envelope: {
+                    protocolVersion: 1,
+                    viewerId: channel.viewerId,
+                    sessionId: channel.sessionId,
+                    endpointId: channel.popupEndpointId,
+                    targetEndpointId: channel.hostEndpointId,
+                    messageId: channel.popupEndpointId + ":ready",
+                    direction: "event",
+                    action: "molsysviewer-pop-ready",
+                    payload: null,
+                },
+            }, targetOrigin);
+        }
+    `;
+    const moduleUrl = `data:text/javascript;charset=utf-8,${encodeURIComponent(popupModule)}`;
+    let closedEndpoint: string | null = null;
+    const first = new PopupHostManager({
+        moduleUrl,
+        viewerId: "e2e-reconstructed-view",
+        sessionId: "e2e-old-session",
+        onEndpointClosed: (_mode, endpointId) => { closedEndpoint = endpointId; },
+    });
+    const second = new PopupHostManager({
+        moduleUrl,
+        viewerId: "e2e-reconstructed-view",
+        sessionId: "e2e-new-session",
+    });
+
+    return new Promise((resolve, reject) => {
+        let oldEndpoint = "";
+        let oldEndpointClosed = false;
+        const timeout = window.setTimeout(() => {
+            cleanup();
+            reject(new Error("Timed out reconstructing popup endpoint"));
+        }, 8000);
+        const cleanup = () => {
+            window.clearTimeout(timeout);
+            window.removeEventListener("message", onMessage);
+            first.dispose();
+            second.dispose();
+        };
+        const onMessage = (event: MessageEvent) => {
+            const firstMessage = first.receive(event);
+            if (firstMessage?.type === "molsysviewer-pop-ready") {
+                oldEndpoint = firstMessage.channel.popupEndpointId;
+                first.dispose();
+                oldEndpointClosed = !first.isCanvasOpen;
+                void second.open("canvas").catch(error => {
+                    cleanup();
+                    reject(error);
+                });
+                return;
+            }
+            const secondMessage = second.receive(event);
+            if (secondMessage?.type !== "molsysviewer-pop-ready") return;
+            const newEndpoint = secondMessage.channel.popupEndpointId;
+            const replacementSessionId = secondMessage.channel.sessionId;
+            const closeNotificationMatched = closedEndpoint === oldEndpoint;
+            cleanup();
+            resolve({
+                oldEndpointClosed,
+                endpointChanged: oldEndpoint !== newEndpoint,
+                replacementSessionId,
+                closeNotificationMatched,
+            });
+        };
+        window.addEventListener("message", onMessage);
+        void first.open("canvas").catch(error => {
             cleanup();
             reject(error);
         });
@@ -1455,6 +1543,7 @@ if (typeof window !== "undefined") {
         inspectTaggedRefs,
         loadArrayNativeFixture,
         probePopupChannel,
+        probePopupReconstruction,
         probeStructureDataRelay,
         probeWidgetSeam,
     };

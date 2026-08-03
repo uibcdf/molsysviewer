@@ -191,6 +191,18 @@ system. Only if the delay is material should the design evolve to endpoint-aware
 delivery or per-endpoint queues. Any change must preserve S8 independently for
 every receiver; sending early to the host must not let the popup receive early.
 
+**Resolved in Phase 5 (2026-08-02).** The measurement threshold was fixed at
+100 ms before execution. With a physically spaced synthetic 95,000-atom system
+and the popup generation deliberately left in flight, the embedded-host
+projection reached its connector in **0.0088 ms**. The implementation now owns
+one transfer gate and deferred queue per destination. Popup scene projections
+remain behind that popup's S8 barrier; host and panel projections do not wait.
+The reproducible command is:
+
+```bash
+python devtools/benchmarks/endpoint_isolation.py
+```
+
 ### 8. Measure copies and peak memory in the Qt binary scheme
 
 Qt's payload-scheme transport is a sensible connector-specific implementation,

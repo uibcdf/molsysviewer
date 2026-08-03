@@ -12,7 +12,10 @@ import type {
     StructureDataCancelMessage,
     StructureDataChunkMessage,
 } from "./messages/array-native-transport";
-import { ArrayNativeStreamReceiver } from "./messages/array-native-stream";
+import {
+    ArrayNativeStreamReceiver,
+    bindStreamEventToEndpoint,
+} from "./messages/array-native-stream";
 import { PopupReplayLog } from "./messages/popup-replay-log";
 import { WidgetEnvelopeAdapter } from "./messages/widget-envelope";
 
@@ -578,7 +581,14 @@ export default {
             sourceProvider: requestPopupSource,
             viewerId: model.get("runtime_viewer_id"),
             sessionId: model.get("runtime_session_id"),
-            onEndpointClosed: mode => cancelSceneSnapshotsFor(mode),
+            onEndpointClosed: (mode, endpointId) => {
+                cancelSceneSnapshotsFor(mode);
+                sendToPython({
+                    event: "popup_endpoint_closed",
+                    mode,
+                    popup_endpoint_id: endpointId,
+                });
+            },
             onContractRejection: rejection => reportContractRejection(
                 rejection.seam,
                 rejection.reason,
@@ -779,6 +789,7 @@ export default {
                 switch (type) {
                     case "molsysviewer-pop-ready": {
                         popupMgr.isReady = true;
+                        popupMgr.beginBootstrap("canvas");
                         // R2: bootstrap from Python's canonical current-scene
                         // projection; the replay journal is the fallback only.
                         const canvasSnapshot = await requestPopupSceneSnapshot(
@@ -790,24 +801,29 @@ export default {
                         if (!canvasSnapshot) {
                             sendLog("error", "[MolSysViewer] canvas popup bootstrap: Python did not answer the scene snapshot request");
                         }
-                        popupMgr.sendTo("canvas", "molsysviewer-initial-sync", {
-                            messages: canvasSnapshot ?? [],
-                            cameraSnapshot: controller.getCameraSnapshot(),
-                            isSpinActive: controller.isSpinActive,
-                            isSwingActive: controller.isSwingActive,
-                            isDarkMode: controller.isDarkMode,
-                            autohide: !!model.get("autohide_controls"),
-                            viewerMode: controller.getViewerMode(),
-                            controlsMode: controller.getControlsMode(),
-                            panelModeStyle: controller.getPanelModeStyle(),
-                            isAmbient: controller.sharedShell?.isAmbient,
-                            isSplit: controller.sharedShell?.isSplit,
-                        });
+                        try {
+                            popupMgr.sendTo("canvas", "molsysviewer-initial-sync", {
+                                messages: canvasSnapshot ?? [],
+                                cameraSnapshot: controller.getCameraSnapshot(),
+                                isSpinActive: controller.isSpinActive,
+                                isSwingActive: controller.isSwingActive,
+                                isDarkMode: controller.isDarkMode,
+                                autohide: !!model.get("autohide_controls"),
+                                viewerMode: controller.getViewerMode(),
+                                controlsMode: controller.getControlsMode(),
+                                panelModeStyle: controller.getPanelModeStyle(),
+                                isAmbient: controller.sharedShell?.isAmbient,
+                                isSplit: controller.sharedShell?.isSplit,
+                            });
+                        } finally {
+                            popupMgr.completeBootstrap("canvas");
+                        }
                         break;
                     }
 
                     case "molsysviewer-panel-ready": {
                         popupMgr.isPanelReady = true;
+                        popupMgr.beginBootstrap("panel");
                         // R2: canonical UI-only projection from Python.
                         const panelSnapshot = await requestPopupSceneSnapshot(
                             "panel",
@@ -822,20 +838,24 @@ export default {
                         // the host already derived is relayed instead — one entry per
                         // group, and a single producer of the shape.
                         lastRelayedHierarchy = controller.getHierarchyItems();
-                        popupMgr.sendTo("panel", "molsysviewer-initial-sync", {
-                            messages: panelSnapshot ?? [],
-                            hierarchyItems: lastRelayedHierarchy,
-                            cameraSnapshot: controller.getCameraSnapshot(),
-                            isSpinActive: controller.isSpinActive,
-                            isSwingActive: controller.isSwingActive,
-                            isDarkMode: controller.isDarkMode,
-                            autohide: !!model.get("autohide_controls"),
-                            viewerMode: controller.getViewerMode(),
-                            controlsMode: controller.getControlsMode(),
-                            panelModeStyle: controller.getPanelModeStyle(),
-                            isAmbient: controller.sharedShell?.isAmbient,
-                            isSplit: controller.sharedShell?.isSplit,
-                        });
+                        try {
+                            popupMgr.sendTo("panel", "molsysviewer-initial-sync", {
+                                messages: panelSnapshot ?? [],
+                                hierarchyItems: lastRelayedHierarchy,
+                                cameraSnapshot: controller.getCameraSnapshot(),
+                                isSpinActive: controller.isSpinActive,
+                                isSwingActive: controller.isSwingActive,
+                                isDarkMode: controller.isDarkMode,
+                                autohide: !!model.get("autohide_controls"),
+                                viewerMode: controller.getViewerMode(),
+                                controlsMode: controller.getControlsMode(),
+                                panelModeStyle: controller.getPanelModeStyle(),
+                                isAmbient: controller.sharedShell?.isAmbient,
+                                isSplit: controller.sharedShell?.isSplit,
+                            });
+                        } finally {
+                            popupMgr.completeBootstrap("panel");
+                        }
                         break;
                     }
 
@@ -849,7 +869,20 @@ export default {
                     case "molsysviewer-structure-data-ack":
                         // The popup acknowledges its own stream; Python drives the
                         // next chunk from these, so they must reach the authority.
-                        if (data) sendToPython(data);
+                        if (data) {
+                            const sourceMode = popupMessage.channel.mode;
+                            if (data.event === "structure_data_json_complete") {
+                                popupMgr.completeBootstrap(sourceMode);
+                                break;
+                            }
+                            const endpointId = popupMgr.popupEndpointId(sourceMode);
+                            if (endpointId) {
+                                sendToPython(bindStreamEventToEndpoint(data, endpointId));
+                            }
+                            if (data.event === "structure_data_complete") {
+                                popupMgr.completeBootstrap(sourceMode);
+                            }
+                        }
                         break;
 
                     case "molsysviewer-sync-camera":
@@ -996,6 +1029,7 @@ export default {
                     sendLog("error", `[MolSysViewer] relay target is not an open endpoint: ${relayTarget}`);
                     return;
                 }
+                if (msg.op === "structure_data_begin") popupMgr.beginBootstrap(mode);
                 popupMgr.sendTo(mode, "molsysviewer-structure-data", {
                     message: msg,
                     buffers: buffers ?? [],

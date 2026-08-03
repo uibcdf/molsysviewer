@@ -38,7 +38,7 @@ audit.
 | 3 | Direct lazy JSON fallback and deadline hardening | ◐ | 95% | working tree from `21027309` | 1186 Python passed, 3 environmental skips; tsc 0; four mechanisms mutation-verified; wall-clock/RSS measured; real-Mol* JSON E2E blocked by sandbox Chrome SIGTRAP |
 | 4a | Canonical static export | ● | 100% | working tree from `d7768ab1` | 1190 Python passed, 3 environmental skips; 265 JS; tsc 0; generated Python projection passed in real Chromium/Mol*; mutation-verified; awaiting audit |
 | 4b | Live `ready`/reconnect closure | ● | 100% | working tree from `2b504d77` | Canonical ready projection; generic journal removed; 1191 Python + 3 environmental skips, 265 JS, tsc 0, perf and real widget-seam E2E green; three mechanisms mutation-verified; awaiting audit |
-| 5 | Endpoint isolation and lifecycle | ○ | 0% | — | — |
+| 5 | Endpoint isolation and lifecycle | ◐ | 60% | working tree from `06131cae` | Per-destination transfer managers and deferred queues; endpoint-scoped acks and close cleanup; host latency 0.0088 ms against the predeclared 100 ms threshold (`devtools/benchmarks/endpoint_isolation.py`). Endpoint evidence matrix, real-browser relay/reconstruction checks, full suites and runtime rebuild still open |
 | 6 | Ownership audit and limited consolidation | ○ | 0% | — | — |
 | 7 | Missing seam evidence | ○ | 0% | — | — |
 | 8 | Representative performance and memory gate | ○ | 0% | — | — |
@@ -936,6 +936,12 @@ with each other and are mutation-verified. Deferral is recorded as a waiver, not
 reported as canonicalization.
 
 ### Phase 5 — Endpoint isolation and lifecycle
+
+The responsiveness threshold is fixed before measurement: while a canvas popup
+has a large molecular generation in flight, a projection for the already-loaded
+embedded host must be handed to its connector in less than **100 ms**. This is
+the human-feedback boundary for the authority/transport seam, not a claim about
+Mol* load or render time; the latter belongs to the Phase 8 scale matrix.
 
 1. Measure host latency while a large canvas popup bootstraps.
 2. If material, enable per-destination transfer progress and deferred queues.

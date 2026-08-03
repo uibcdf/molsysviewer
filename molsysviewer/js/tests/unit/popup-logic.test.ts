@@ -349,6 +349,27 @@ test("bootPopup replays initial sync and enables autohide listeners", async () =
         });
         await flushAsync();
         assert.deepStrictEqual(calls.handled.at(-1), { op: "reset_view" });
+
+        env.windowObj.dispatch("message", {
+            source: env.windowObj.opener,
+            data: hostWire("molsysviewer-structure-data", {
+                message: { op: "load_molsys_payload", payload: { structures: [] } },
+                buffers: [],
+            }),
+        });
+        await flushAsync();
+        assert.deepStrictEqual(
+            calls.handled.at(-1),
+            { op: "load_molsys_payload", payload: { structures: [] } },
+        );
+        assert.equal(
+            env.postedToHost.at(-1)?.envelope.action,
+            "molsysviewer-structure-data-ack",
+        );
+        assert.deepStrictEqual(
+            env.postedToHost.at(-1)?.envelope.payload,
+            { event: "structure_data_json_complete" },
+        );
     } finally {
         (globalThis as any).window = previousWindow;
         (globalThis as any).document = previousDocument;

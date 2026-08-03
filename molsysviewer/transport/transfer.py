@@ -90,6 +90,7 @@ class StructureTransfer:
             and event.get("session_id") == self.session_id
             and event.get("stream_id") == self.stream_id
             and event.get("generation") == self.generation
+            and event.get("target_endpoint_id") == self.target_endpoint_id
         )
 
     def acknowledge_begin(self, now: float) -> TransferAck:

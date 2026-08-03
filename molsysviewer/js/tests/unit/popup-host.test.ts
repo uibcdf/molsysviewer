@@ -379,6 +379,82 @@ test("sendTo reports failure instead of delivering when that endpoint is closed"
     }
 });
 
+test("popup bootstrap queues only that endpoint and flushes after initial sync", async () => {
+    const previousWindow = (globalThis as any).window;
+    const canvas = makePopupWindow().popup;
+    const panel = makePopupWindow().popup;
+    const popups = [canvas, panel];
+    (globalThis as any).window = {
+        location: { href: "https://notebook.example.dev/lab", origin: "https://notebook.example.dev" },
+        open: () => popups.shift(),
+        setInterval: () => 1,
+        clearInterval: (_id: number) => {},
+    };
+    const manager = new PopupHostManager({
+        source: "viewer-source",
+        viewerId: "view-a",
+        sessionId: "session-a",
+    });
+    try {
+        await manager.open("canvas");
+        await manager.open("panel");
+        manager.isReady = true;
+        manager.isPanelReady = true;
+        canvas.posted.length = 0;
+        panel.posted.length = 0;
+
+        manager.beginBootstrap("canvas");
+        manager.send("molsysviewer-sync-op", { op: "live-after-request" });
+        // The targeted structure_data_begin can arrive after popup ready. It
+        // marks the same bootstrap and must not erase work queued meanwhile.
+        manager.beginBootstrap("canvas");
+        assert.equal(canvas.posted.length, 0, "canvas live state must wait behind its snapshot");
+        assert.equal(panel.posted.length, 1, "another endpoint must remain responsive");
+
+        manager.sendTo("canvas", "molsysviewer-initial-sync", { messages: [{ op: "snapshot" }] });
+        manager.completeBootstrap("canvas");
+        assert.deepStrictEqual(
+            canvas.posted.map((entry: any) => entry.message.envelope.action),
+            ["molsysviewer-initial-sync", "molsysviewer-sync-op"],
+        );
+        assert.deepStrictEqual(
+            canvas.posted[1].message.envelope.payload,
+            { op: "live-after-request" },
+        );
+    } finally {
+        manager.dispose();
+        (globalThis as any).window = previousWindow;
+    }
+});
+
+test("closing a popup reports its exact endpoint once", async () => {
+    const previousWindow = (globalThis as any).window;
+    const { popup } = makePopupWindow();
+    (globalThis as any).window = {
+        location: { href: "https://notebook.example.dev/lab", origin: "https://notebook.example.dev" },
+        open: () => popup,
+        setInterval: () => 1,
+        clearInterval: (_id: number) => {},
+    };
+    const closed: Array<{ mode: string; endpointId: string }> = [];
+    const manager = new PopupHostManager({
+        source: "viewer-source",
+        viewerId: "view-a",
+        sessionId: "session-a",
+        onEndpointClosed: (mode, endpointId) => closed.push({ mode, endpointId }),
+    });
+    try {
+        await manager.open("canvas");
+        const endpointId = manager.popupEndpointId("canvas");
+        manager.close("canvas");
+        manager.close("canvas");
+        assert.deepStrictEqual(closed, [{ mode: "canvas", endpointId }]);
+    } finally {
+        manager.dispose();
+        (globalThis as any).window = previousWindow;
+    }
+});
+
 
 test("the host refuses to emit an action the manifest does not declare", async () => {
     const previousWindow = (globalThis as any).window;

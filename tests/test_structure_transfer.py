@@ -47,12 +47,15 @@ def make_manager(*, target: str | None = "canvas-popup-1"):
 
 
 def identity(transfer):
-    return {
+    value = {
         "viewer_id": transfer.viewer_id,
         "session_id": transfer.session_id,
         "stream_id": transfer.stream_id,
         "generation": transfer.generation,
     }
+    if transfer.target_endpoint_id is not None:
+        value["target_endpoint_id"] = transfer.target_endpoint_id
+    return value
 
 
 def complete(manager, transfer):
@@ -126,6 +129,27 @@ def test_start_allocates_monotonic_generations_and_stamps_the_exact_destination(
     assert stale.disposition is AckDisposition.FOREIGN
     assert manager.active is second
     assert second.state is TransferState.WAITING_BEGIN_ACK
+
+
+def test_acknowledgement_must_belong_to_the_transfer_target_endpoint():
+    manager, transfer, _, _ = make_manager(target="canvas-popup-1")
+
+    foreign = manager.handle_event({
+        **identity(transfer),
+        "event": "structure_data_begin_ack",
+        "target_endpoint_id": "canvas-popup-2",
+    })
+
+    assert foreign.disposition is AckDisposition.FOREIGN
+    assert manager.active is transfer
+    assert transfer.state is TransferState.WAITING_BEGIN_ACK
+
+    accepted = manager.handle_event({
+        "event": "structure_data_begin_ack",
+        "target_endpoint_id": "canvas-popup-1",
+        **identity(transfer),
+    })
+    assert accepted.disposition is AckDisposition.SEND_CHUNK
 
 
 def test_fallback_factory_is_bound_to_the_transfer_generation():

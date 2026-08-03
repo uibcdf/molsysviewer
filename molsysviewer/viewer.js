@@ -165024,6 +165024,9 @@ var ValueError = class extends Error {
 };
 
 // src/messages/array-native-stream.ts
+function bindStreamEventToEndpoint(event, endpointId) {
+  return { ...event, target_endpoint_id: endpointId };
+}
 function positiveInteger(value, name) {
   if (!Number.isInteger(value) || Number(value) <= 0) {
     throw new Error(`${name} must be a positive integer`);
@@ -165071,6 +165074,9 @@ function metadataKinds(metadata) {
 function identity2(message) {
   return `${message.viewer_id}\0${message.session_id}\0${message.stream_id}`;
 }
+function targetIdentity(message) {
+  return message.target_endpoint_id ? { target_endpoint_id: message.target_endpoint_id } : {};
+}
 var ArrayNativeStreamReceiver = class {
   constructor(notify, onComplete) {
     this.notify = notify;
@@ -165098,6 +165104,7 @@ var ArrayNativeStreamReceiver = class {
         session_id: message.session_id,
         stream_id: message.stream_id,
         generation: message.generation,
+        ...targetIdentity(message),
         chunk_id: message.op === "structure_data_chunk" ? message.chunk_id : void 0,
         error: errorMessage
       });
@@ -165143,7 +165150,8 @@ var ArrayNativeStreamReceiver = class {
       viewer_id: message.viewer_id,
       session_id: message.session_id,
       stream_id: message.stream_id,
-      generation: message.generation
+      generation: message.generation,
+      ...targetIdentity(message)
     });
   }
   cancel(message) {
@@ -165194,7 +165202,8 @@ var ArrayNativeStreamReceiver = class {
       session_id: message.session_id,
       stream_id: message.stream_id,
       generation: message.generation,
-      chunk_id: message.chunk_id
+      chunk_id: message.chunk_id,
+      ...targetIdentity(message)
     });
     if (active.nextChunkId !== active.begin.chunk_count) return;
     if (active.nextStructureStart !== active.begin.metadata.n_structures) {
@@ -165216,7 +165225,8 @@ var ArrayNativeStreamReceiver = class {
       viewer_id: message.viewer_id,
       session_id: message.session_id,
       stream_id: message.stream_id,
-      generation: message.generation
+      generation: message.generation,
+      ...targetIdentity(message)
     });
   }
 };
@@ -165224,7 +165234,7 @@ var ArrayNativeStreamReceiver = class {
 // ../runtime_actions.json
 var runtime_actions_default = {
   protocol_version: 1,
-  comment: "Shared Python<->TypeScript action contract for the AnyWidget runtime seam (R1). Python (viewer/runtime_router.py) and TypeScript (js/src/messages/runtime-actions.ts) both load THIS file so every action is classified identically. `actions` are browser->Python; category is the RuntimeEnvelope direction the action must carry, and the envelope action must equal the payload `event`. `outbound_requests` are Python->browser requests and must never be accepted as browser-originated. `popup_actions` are the host<->popup wire actions, mapped to the directions each may legitimately carry; `molsysviewer-sync-op` is deliberately bidirectional (a projection from the host, a command from the popup), which is exactly why the direction must be declared in the envelope rather than inferred from the sender. `qt_transport` are delivery-level events the Qt bridge answers itself and never forwards to the view; the AnyWidget comm is reliable and has no equivalent. `raw` is the pre-runtime/source bootstrap (both directions), never enveloped in R1. `data_plane` travels on the array-native binary seam (both directions), not the control-plane envelope. Domain projection ops (Python->browser) are authored and trusted by the Python authority and are wrapped with direction 'projection'; they are intentionally not enumerated. NOTE: interaction_measurement_created and section_moved are still compatibility paths where the frontend acts before Python confirms; R1 protects and deduplicates them but does not yet fully normalize 'Python first, projection after' (a later slice).",
+  comment: "Shared Python<->TypeScript action contract for the AnyWidget runtime seam (R1). Python (viewer/runtime_router.py) and TypeScript (js/src/messages/runtime-actions.ts) both load THIS file so every action is classified identically. `actions` are browser->Python; category is the RuntimeEnvelope direction the action must carry, and the envelope action must equal the payload `event`. `outbound_requests` are Python->browser requests and must never be accepted as browser-originated. `popup_actions` are the host<->popup wire actions, mapped to the directions each may legitimately carry; `molsysviewer-sync-op` is deliberately bidirectional (a projection from the host, a command from the popup), which is exactly why the direction must be declared in the envelope rather than inferred from the sender. `qt_transport` are delivery-level events the Qt bridge answers itself and never forwards to the view; `qt_test_actions` are explicit test-only events forwarded by Qt without weakening the product-action boundary. The AnyWidget comm has no equivalent transport probe. `raw` is the pre-runtime/source bootstrap (both directions), never enveloped in R1. `data_plane` travels on the array-native binary seam (both directions), not the control-plane envelope. Domain projection ops (Python->browser) are authored and trusted by the Python authority and are wrapped with direction 'projection'; they are intentionally not enumerated. NOTE: interaction_measurement_created and section_moved are still compatibility paths where the frontend acts before Python confirms; R1 protects and deduplicates them but does not yet fully normalize 'Python first, projection after' (a later slice).",
   actions: {
     interaction_active_selection_changed: "command",
     interaction_context_action: "command",
@@ -165256,6 +165266,7 @@ var runtime_actions_default = {
     request_visibility_resync: "request",
     selection_query_preview_request: "request",
     request_popup_scene_snapshot: "request",
+    popup_endpoint_closed: "event",
     region_ack: "ack",
     layer_ack: "ack",
     registry_cleared: "ack",
@@ -165618,7 +165629,7 @@ var bootPopup = async (loadedModule) => {
     });
     return ctrl2;
   })();
-  window.addEventListener("message", async (ev) => {
+  const handlePopupMessage = async (ev) => {
     const message = decodePopupEvent(ev, openerWin, popupChannel);
     if (!message) return;
     if (message.envelope.endpointId !== popupChannel.authorityEndpointId && message.envelope.endpointId !== popupChannel.hostEndpointId) return;
@@ -165693,12 +165704,23 @@ var bootPopup = async (loadedModule) => {
         // generation; the host only relays. Acknowledgements travel back
         // the same way, so the stream stays flow-controlled end to end.
         case "molsysviewer-structure-data":
-          await arrayNativeStream.handle(data?.message, relayedBuffers(data));
+          if (data?.message?.op === "load_molsys_payload") {
+            await ctrl2.handleMessage(data.message);
+            sendToHost("molsysviewer-structure-data-ack", {
+              event: "structure_data_json_complete"
+            });
+          } else {
+            await arrayNativeStream.handle(data?.message, relayedBuffers(data));
+          }
           break;
       }
     } catch (e) {
       console.error("Popout sync error", e);
     }
+  };
+  let popupInboundQueue = Promise.resolve();
+  window.addEventListener("message", (ev) => {
+    popupInboundQueue = popupInboundQueue.then(() => handlePopupMessage(ev)).catch((error2) => console.error("Popout message queue error", error2));
   });
   const makeBtn = (label3, onClick) => {
     const btn = document.createElement("button");
@@ -165912,6 +165934,8 @@ var PopupHostManager = class {
     this.isPanelReady = false;
     this.messageCounter = 0;
     this.channels = /* @__PURE__ */ new Map();
+    this.bootstrapping = /* @__PURE__ */ new Set();
+    this.bootstrapQueues = /* @__PURE__ */ new Map();
     if (typeof viewer === "string") {
       this.viewerJsSource = viewer;
       this.viewerId = createSecureRuntimeId("view");
@@ -165935,6 +165959,17 @@ var PopupHostManager = class {
   /** Endpoint id of the live popup for `mode`, or null when none is open. */
   popupEndpointId(mode) {
     return this.channels.get(mode)?.popupEndpointId ?? null;
+  }
+  beginBootstrap(mode) {
+    if (this.bootstrapping.has(mode)) return;
+    this.bootstrapping.add(mode);
+    this.bootstrapQueues.set(mode, []);
+  }
+  completeBootstrap(mode) {
+    this.bootstrapping.delete(mode);
+    const queued = this.bootstrapQueues.get(mode) ?? [];
+    this.bootstrapQueues.delete(mode);
+    for (const { type: type3, data } of queued) this.sendTo(mode, type3, data);
   }
   async resolveViewerJsSource() {
     if (this.viewerJsSource) return this.viewerJsSource;
@@ -166096,21 +166131,31 @@ var PopupHostManager = class {
     const interval = window.setInterval(() => {
       if (mode === "canvas") {
         if (!this.popoutWin || this.popoutWin.closed) {
+          const current2 = this.channels.get("canvas");
           this.popoutWin = null;
           this.isReady = false;
           this.channels.delete("canvas");
           this.router.unregisterEndpoint(channel.popupEndpointId);
           window.clearInterval(interval);
-          this.onEndpointClosed?.("canvas");
+          this.bootstrapping.delete("canvas");
+          this.bootstrapQueues.delete("canvas");
+          if (current2?.popupEndpointId === channel.popupEndpointId) {
+            this.onEndpointClosed?.("canvas", channel.popupEndpointId);
+          }
         }
       } else {
         if (!this.panelWin || this.panelWin.closed) {
+          const current2 = this.channels.get("panel");
           this.panelWin = null;
           this.isPanelReady = false;
           this.channels.delete("panel");
           this.router.unregisterEndpoint(channel.popupEndpointId);
           window.clearInterval(interval);
-          this.onEndpointClosed?.("panel");
+          this.bootstrapping.delete("panel");
+          this.bootstrapQueues.delete("panel");
+          if (current2?.popupEndpointId === channel.popupEndpointId) {
+            this.onEndpointClosed?.("panel", channel.popupEndpointId);
+          }
           if (this.controller) {
             this.controller.restoreHostPanelState();
           }
@@ -166127,7 +166172,9 @@ var PopupHostManager = class {
         this.isReady = false;
         this.channels.delete("canvas");
         if (channel) this.router.unregisterEndpoint(channel.popupEndpointId);
-        this.onEndpointClosed?.("canvas");
+        this.bootstrapping.delete("canvas");
+        this.bootstrapQueues.delete("canvas");
+        if (channel) this.onEndpointClosed?.("canvas", channel.popupEndpointId);
       }
     } else {
       if (this.panelWin) {
@@ -166137,7 +166184,9 @@ var PopupHostManager = class {
         this.isPanelReady = false;
         this.channels.delete("panel");
         if (channel) this.router.unregisterEndpoint(channel.popupEndpointId);
-        this.onEndpointClosed?.("panel");
+        this.bootstrapping.delete("panel");
+        this.bootstrapQueues.delete("panel");
+        if (channel) this.onEndpointClosed?.("panel", channel.popupEndpointId);
       }
     }
   }
@@ -166160,6 +166209,10 @@ var PopupHostManager = class {
     const ready = mode === "canvas" ? this.isReady : this.isPanelReady;
     const channel = this.channels.get(mode);
     if (!ready || !target || target.closed || !channel) return false;
+    if (this.bootstrapping.has(mode) && type3 !== "molsysviewer-initial-sync" && type3 !== "molsysviewer-structure-data") {
+      this.bootstrapQueues.get(mode)?.push({ type: type3, data });
+      return true;
+    }
     try {
       this.postToPopup(target, channel, type3, data, direction);
       return true;
@@ -166169,27 +166222,8 @@ var PopupHostManager = class {
     }
   }
   send(type3, data) {
-    const direction = type3 === "molsysviewer-sync-camera" ? "event" : "projection";
-    if (this.isReady && this.popoutWin && !this.popoutWin.closed) {
-      try {
-        const channel = this.channels.get("canvas");
-        if (channel) {
-          this.postToPopup(this.popoutWin, channel, type3, data, direction);
-        }
-      } catch (e) {
-        console.warn("[MolSysViewer Host] Popout message failed", e);
-      }
-    }
-    if (this.isPanelReady && this.panelWin && !this.panelWin.closed) {
-      try {
-        const channel = this.channels.get("panel");
-        if (channel) {
-          this.postToPopup(this.panelWin, channel, type3, data, direction);
-        }
-      } catch (e) {
-        console.warn("[MolSysViewer Host] Panel message failed", e);
-      }
-    }
+    this.sendTo("canvas", type3, data);
+    this.sendTo("panel", type3, data);
   }
   receive(event) {
     const mode = event.source === this.popoutWin ? "canvas" : event.source === this.panelWin ? "panel" : null;
@@ -168107,7 +168141,14 @@ var index_default = {
       sourceProvider: requestPopupSource,
       viewerId: model.get("runtime_viewer_id"),
       sessionId: model.get("runtime_session_id"),
-      onEndpointClosed: (mode) => cancelSceneSnapshotsFor(mode),
+      onEndpointClosed: (mode, endpointId) => {
+        cancelSceneSnapshotsFor(mode);
+        sendToPython({
+          event: "popup_endpoint_closed",
+          mode,
+          popup_endpoint_id: endpointId
+        });
+      },
       onContractRejection: (rejection) => reportContractRejection(
         rejection.seam,
         rejection.reason,
@@ -168271,6 +168312,7 @@ var index_default = {
         switch (type3) {
           case "molsysviewer-pop-ready": {
             popupMgr.isReady = true;
+            popupMgr.beginBootstrap("canvas");
             const canvasSnapshot = await requestPopupSceneSnapshot(
               "canvas",
               popupMgr.popupEndpointId("canvas")
@@ -168278,23 +168320,28 @@ var index_default = {
             if (!canvasSnapshot) {
               sendLog("error", "[MolSysViewer] canvas popup bootstrap: Python did not answer the scene snapshot request");
             }
-            popupMgr.sendTo("canvas", "molsysviewer-initial-sync", {
-              messages: canvasSnapshot ?? [],
-              cameraSnapshot: controller.getCameraSnapshot(),
-              isSpinActive: controller.isSpinActive,
-              isSwingActive: controller.isSwingActive,
-              isDarkMode: controller.isDarkMode,
-              autohide: !!model.get("autohide_controls"),
-              viewerMode: controller.getViewerMode(),
-              controlsMode: controller.getControlsMode(),
-              panelModeStyle: controller.getPanelModeStyle(),
-              isAmbient: controller.sharedShell?.isAmbient,
-              isSplit: controller.sharedShell?.isSplit
-            });
+            try {
+              popupMgr.sendTo("canvas", "molsysviewer-initial-sync", {
+                messages: canvasSnapshot ?? [],
+                cameraSnapshot: controller.getCameraSnapshot(),
+                isSpinActive: controller.isSpinActive,
+                isSwingActive: controller.isSwingActive,
+                isDarkMode: controller.isDarkMode,
+                autohide: !!model.get("autohide_controls"),
+                viewerMode: controller.getViewerMode(),
+                controlsMode: controller.getControlsMode(),
+                panelModeStyle: controller.getPanelModeStyle(),
+                isAmbient: controller.sharedShell?.isAmbient,
+                isSplit: controller.sharedShell?.isSplit
+              });
+            } finally {
+              popupMgr.completeBootstrap("canvas");
+            }
             break;
           }
           case "molsysviewer-panel-ready": {
             popupMgr.isPanelReady = true;
+            popupMgr.beginBootstrap("panel");
             const panelSnapshot = await requestPopupSceneSnapshot(
               "panel",
               popupMgr.popupEndpointId("panel")
@@ -168303,20 +168350,24 @@ var index_default = {
               sendLog("error", "[MolSysViewer] panel popup bootstrap: Python did not answer the scene snapshot request");
             }
             lastRelayedHierarchy = controller.getHierarchyItems();
-            popupMgr.sendTo("panel", "molsysviewer-initial-sync", {
-              messages: panelSnapshot ?? [],
-              hierarchyItems: lastRelayedHierarchy,
-              cameraSnapshot: controller.getCameraSnapshot(),
-              isSpinActive: controller.isSpinActive,
-              isSwingActive: controller.isSwingActive,
-              isDarkMode: controller.isDarkMode,
-              autohide: !!model.get("autohide_controls"),
-              viewerMode: controller.getViewerMode(),
-              controlsMode: controller.getControlsMode(),
-              panelModeStyle: controller.getPanelModeStyle(),
-              isAmbient: controller.sharedShell?.isAmbient,
-              isSplit: controller.sharedShell?.isSplit
-            });
+            try {
+              popupMgr.sendTo("panel", "molsysviewer-initial-sync", {
+                messages: panelSnapshot ?? [],
+                hierarchyItems: lastRelayedHierarchy,
+                cameraSnapshot: controller.getCameraSnapshot(),
+                isSpinActive: controller.isSpinActive,
+                isSwingActive: controller.isSwingActive,
+                isDarkMode: controller.isDarkMode,
+                autohide: !!model.get("autohide_controls"),
+                viewerMode: controller.getViewerMode(),
+                controlsMode: controller.getControlsMode(),
+                panelModeStyle: controller.getPanelModeStyle(),
+                isAmbient: controller.sharedShell?.isAmbient,
+                isSplit: controller.sharedShell?.isSplit
+              });
+            } finally {
+              popupMgr.completeBootstrap("panel");
+            }
             break;
           }
           case "molsysviewer-sync-op":
@@ -168324,7 +168375,20 @@ var index_default = {
             if (data) popupMgr.send("molsysviewer-sync-op", data);
             break;
           case "molsysviewer-structure-data-ack":
-            if (data) sendToPython(data);
+            if (data) {
+              const sourceMode = popupMessage.channel.mode;
+              if (data.event === "structure_data_json_complete") {
+                popupMgr.completeBootstrap(sourceMode);
+                break;
+              }
+              const endpointId = popupMgr.popupEndpointId(sourceMode);
+              if (endpointId) {
+                sendToPython(bindStreamEventToEndpoint(data, endpointId));
+              }
+              if (data.event === "structure_data_complete") {
+                popupMgr.completeBootstrap(sourceMode);
+              }
+            }
             break;
           case "molsysviewer-sync-camera":
             if (data && !isUserInteracting) {
@@ -168432,6 +168496,7 @@ var index_default = {
           sendLog("error", `[MolSysViewer] relay target is not an open endpoint: ${relayTarget}`);
           return;
         }
+        if (msg.op === "structure_data_begin") popupMgr.beginBootstrap(mode);
         popupMgr.sendTo(mode, "molsysviewer-structure-data", {
           message: msg,
           buffers: buffers ?? []

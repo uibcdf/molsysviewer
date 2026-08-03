@@ -210,6 +210,9 @@ class MolSysView(
         self._unmount_addon_panel()
         self.addons._close_runtime()  # noqa: SLF001
         self._cancel_binary_structure_stream("view closed")
+        self._popup_structure_transfers.clear()
+        self._popup_endpoint_modes.clear()
+        self._deferred_widget_messages.clear()
 
         widget = self.widget
         layout = getattr(widget, "layout", None)
@@ -295,12 +298,16 @@ class MolSysView(
             timeout_s=30.0,
             monotonic=lambda: self._monotonic(),
         )
+        self._popup_structure_transfers: dict[str, StructureTransferManager] = {}
+        self._popup_endpoint_modes: dict[str, str] = {}
         # Scene messages waiting for the structure they describe. Streaming the
         # molecular payload made its delivery asynchronous, so "handed to the
         # transport" stopped meaning "applied in the browser"; see
         # `_send_widget_message`.
-        self._deferred_widget_messages: list[tuple[Mapping[str, Any], Any]] = []
-        self._flushing_deferred_widget_messages = False
+        self._deferred_widget_messages: dict[
+            str | None, list[tuple[Mapping[str, Any], Any]]
+        ] = {}
+        self._flushing_deferred_widget_messages: set[str | None] = set()
         # The current molecular projection ("current molecular state"), updated
         # on every load/rebuild. Its portable JSON body may remain lazy until a
         # compatibility/export consumer asks for it.
@@ -965,6 +972,31 @@ class MolSysView(
             return message.materialize(transfer_generation=transfer_generation)
         return dict(message)
 
+    def _structure_transfer_manager(
+        self,
+        target_endpoint_id: str | None,
+        *,
+        create: bool = False,
+    ) -> StructureTransferManager | None:
+        if target_endpoint_id is None:
+            return self._structure_transfers
+        manager = self._popup_structure_transfers.get(target_endpoint_id)
+        if manager is None and create:
+            manager = StructureTransferManager(
+                self._binary_viewer_id,
+                self._binary_session_id,
+                timeout_s=30.0,
+                monotonic=lambda: self._monotonic(),
+                stream_id=f"structures:{target_endpoint_id}",
+            )
+            self._popup_structure_transfers[target_endpoint_id] = manager
+            self._deferred_widget_messages.setdefault(target_endpoint_id, [])
+        return manager
+
+    def _iter_structure_transfer_managers(self):
+        yield None, self._structure_transfers
+        yield from self._popup_structure_transfers.items()
+
     def _try_send_array_native_molsys(
         self,
         message: Mapping[str, Any],
@@ -974,8 +1006,8 @@ class MolSysView(
 
         With ``target_endpoint_id`` the stream is addressed to a popup endpoint:
         the widget host relays each chunk to that popup instead of consuming it,
-        so no endpoint keeps a spare full copy of the coordinates. Only one
-        stream is in flight at a time, matching the one-chunk-in-flight rule.
+        so no endpoint keeps a spare full copy of the coordinates. Each endpoint
+        owns one independent one-chunk-in-flight stream.
         """
         # Main-thread entry point: a stalled previous stream is released here.
         self._check_binary_structure_ack_timeout()
@@ -986,6 +1018,7 @@ class MolSysView(
             return False
 
         transfer: StructureTransfer | None = None
+        manager: StructureTransferManager | None = None
         try:
             payload = serialize_array_native_molsys(self._molsys)
             metadata = payload.metadata
@@ -1041,8 +1074,14 @@ class MolSysView(
                 "label": message.get("label"),
                 "multiple_structures": bool(message.get("multiple_structures")),
             }
-            self._cancel_binary_structure_stream("replaced by newer generation")
-            transfer = self._structure_transfers.start(
+            manager = self._structure_transfer_manager(target_endpoint_id, create=True)
+            if manager is None:
+                raise RuntimeError("structure transfer manager was not created")
+            self._cancel_binary_structure_stream(
+                "replaced by newer generation",
+                target_endpoint_id=target_endpoint_id,
+            )
+            transfer = manager.start(
                 begin_message=begin,
                 chunks=chunks,
                 fallback_factory=lambda generation: self._materialize_molecular_projection(
@@ -1056,8 +1095,8 @@ class MolSysView(
             self._transmit_widget_message(transfer.begin_message)
             return True
         except Exception as exc:
-            if transfer is not None:
-                self._structure_transfers.fallback(
+            if transfer is not None and manager is not None:
+                manager.fallback(
                     f"connector failed while starting structure transfer: {exc}"
                 )
             warnings.warn(
@@ -1074,19 +1113,35 @@ class MolSysView(
         thread: `widget.send` is not safe to call off the kernel thread for
         AnyWidget, so the deadline is evaluated when the kernel next does work.
         """
-        termination = self._structure_transfers.expire_if_due()
-        if termination is not None:
-            self._deliver_binary_structure_fallback(termination)
+        for _target_endpoint_id, manager in tuple(
+            self._iter_structure_transfer_managers()
+        ):
+            termination = manager.expire_if_due()
+            if termination is not None:
+                self._deliver_binary_structure_fallback(termination)
 
-    def _cancel_binary_structure_stream(self, reason: str) -> None:
-        termination = self._structure_transfers.cancel(reason)
-        if termination is None:
-            return
-        self._transmit_binary_structure_cancel(
-            termination.transfer,
-            reason,
-            caller="MolSysView._cancel_binary_structure_stream",
+    def _cancel_binary_structure_stream(
+        self,
+        reason: str,
+        *,
+        target_endpoint_id: str | None | object = ...,
+        notify_receiver: bool = True,
+    ) -> None:
+        managers = (
+            tuple(self._iter_structure_transfer_managers())
+            if target_endpoint_id is ...
+            else ((target_endpoint_id, self._structure_transfer_manager(target_endpoint_id)),)
         )
+        for endpoint_id, manager in managers:
+            if manager is None:
+                continue
+            termination = manager.cancel(reason)
+            if termination is not None and notify_receiver:
+                self._transmit_binary_structure_cancel(
+                    termination.transfer,
+                    reason,
+                    caller="MolSysView._cancel_binary_structure_stream",
+                )
 
     def _transmit_binary_structure_cancel(
         self,
@@ -1127,11 +1182,18 @@ class MolSysView(
             self._transmit_widget_message(chunk.message, buffers=chunk.buffers)
         except Exception as exc:
             self._fallback_binary_structure_stream(
-                f"connector failed while sending chunk {chunk.message['chunk_id']}: {exc}"
+                f"connector failed while sending chunk {chunk.message['chunk_id']}: {exc}",
+                target_endpoint_id=chunk.message.get("target_endpoint_id"),
             )
 
-    def _fallback_binary_structure_stream(self, reason: str) -> None:
-        termination = self._structure_transfers.fallback(reason)
+    def _fallback_binary_structure_stream(
+        self,
+        reason: str,
+        *,
+        target_endpoint_id: str | None = None,
+    ) -> None:
+        manager = self._structure_transfer_manager(target_endpoint_id)
+        termination = manager.fallback(reason) if manager is not None else None
         if termination is None:
             return
         self._deliver_binary_structure_fallback(termination)
@@ -1178,13 +1240,29 @@ class MolSysView(
         # `_send_widget_message`, so the JSON load goes out first and its
         # post-transmit flush releases the scene behind it — the same ordering
         # the binary path gets from `structure_data_complete`.
-        self._send_widget_message(fallback)
+        self._send_widget_message(
+            fallback,
+            defer_for_endpoint=target_endpoint_id,
+        )
+        if target_endpoint_id is not None:
+            self._popup_structure_transfers.pop(target_endpoint_id, None)
 
     def _handle_binary_structure_event(self, content: Mapping[str, Any]) -> None:
         # An acknowledgement that arrives after the deadline belongs to a stream
         # Python has already given up on; release it before looking at the event.
         self._check_binary_structure_ack_timeout()
-        result = self._structure_transfers.handle_event(content)
+        target_endpoint_id = content.get("target_endpoint_id")
+        if not isinstance(target_endpoint_id, str):
+            target_endpoint_id = None
+        manager = self._structure_transfer_manager(target_endpoint_id)
+        if manager is None:
+            warnings.warn(
+                "Ignored array-native acknowledgement for a closed endpoint.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            return
+        result = manager.handle_event(content)
         if result.disposition is AckDisposition.FOREIGN:
             warnings.warn(
                 "Ignored array-native acknowledgement for another endpoint or generation.",
@@ -1200,18 +1278,27 @@ class MolSysView(
             # The frontend builds the structure and *then* reports complete,
             # so this is the first moment a scene message can land on
             # something to draw on.
-            self._flush_deferred_widget_messages()
+            self._flush_deferred_widget_messages(target_endpoint_id)
+            if target_endpoint_id is not None:
+                self._popup_structure_transfers.pop(target_endpoint_id, None)
         elif result.disposition is AckDisposition.FALLBACK:
             if result.termination is None:
                 raise RuntimeError("transfer manager returned fallback without termination")
             self._deliver_binary_structure_fallback(result.termination)
 
-    def _send_widget_message(self, message: Mapping[str, Any], buffers: Any = None) -> None:
+    def _send_widget_message(
+        self,
+        message: Mapping[str, Any],
+        buffers: Any = None,
+        *,
+        defer_for_endpoint: str | None = None,
+    ) -> None:
         """Single outbound chokepoint for scene messages.
 
         Every live send from ``MolSysView`` funnels through here with the domain
-        message, and everything sent here is **ordered behind the structure it
-        describes**.
+        message. Each message is ordered behind the structure of the destination
+        named by ``defer_for_endpoint``; the default destination is the embedded
+        host.
 
         That ordering used to be free. On the JSON path the frontend applies
         ``load_molsys_payload`` to completion before it takes the next message off
@@ -1233,13 +1320,16 @@ class MolSysView(
         hatch is a different method, not a list of exempt op names that would
         drift out of date the moment a new one appeared.
         """
-        if self._structure_transfers.has_active:
-            self._deferred_widget_messages.append((message, buffers))
+        manager = self._structure_transfer_manager(defer_for_endpoint)
+        if manager is not None and manager.has_active:
+            self._deferred_widget_messages.setdefault(defer_for_endpoint, []).append(
+                (message, buffers)
+            )
             return
         self._transmit_widget_message(message, buffers)
         # Drains a backlog that outlived its stream even if some exit path forgot
         # to flush, so a lost flush degrades to a late delivery, never a lost one.
-        self._flush_deferred_widget_messages()
+        self._flush_deferred_widget_messages(defer_for_endpoint)
 
     def _transmit_widget_message(self, message: Mapping[str, Any], buffers: Any = None) -> None:
         """Hand a message to the connector, bypassing the structure-stream gate.
@@ -1256,21 +1346,28 @@ class MolSysView(
         else:
             self.widget.send(message, buffers=buffers)
 
-    def _flush_deferred_widget_messages(self) -> None:
+    def _flush_deferred_widget_messages(
+        self,
+        target_endpoint_id: str | None = None,
+    ) -> None:
         """Send what waited for the structure, in the order it was produced."""
-        if self._flushing_deferred_widget_messages:
+        if target_endpoint_id in self._flushing_deferred_widget_messages:
             return
-        self._flushing_deferred_widget_messages = True
+        self._flushing_deferred_widget_messages.add(target_endpoint_id)
         try:
-            while self._deferred_widget_messages:
-                if self._structure_transfers.has_active:
+            queue = self._deferred_widget_messages.setdefault(target_endpoint_id, [])
+            while queue:
+                manager = self._structure_transfer_manager(target_endpoint_id)
+                if manager is not None and manager.has_active:
                     # A newer generation started mid-flush; the rest waits for it
                     # rather than overtaking the structure it is about to replace.
                     break
-                message, buffers = self._deferred_widget_messages.pop(0)
+                message, buffers = queue.pop(0)
                 self._transmit_widget_message(message, buffers)
+            if not queue:
+                self._deferred_widget_messages.pop(target_endpoint_id, None)
         finally:
-            self._flushing_deferred_widget_messages = False
+            self._flushing_deferred_widget_messages.discard(target_endpoint_id)
 
     def _handle_inbound_message(self, content: Any) -> None:
         """Validate + unwrap an inbound envelope, or pass raw messages through.
@@ -1314,6 +1411,8 @@ class MolSysView(
         payload = request.payload if isinstance(request.payload, Mapping) else {}
         mode = payload.get("mode")
         popup_endpoint_id = payload.get("popup_endpoint_id")
+        if mode in {"canvas", "panel"} and isinstance(popup_endpoint_id, str) and popup_endpoint_id:
+            self._popup_endpoint_modes[popup_endpoint_id] = mode
         # D4: a canvas popup gets its molecular generation as typed buffers,
         # streamed straight to its endpoint, so neither the host nor Python keeps
         # a spare copy. Only then is the JSON load left out of the snapshot.
@@ -1351,12 +1450,32 @@ class MolSysView(
                     "popup_endpoint_id": popup_endpoint_id,
                     "messages": messages,
                 },
-            )
+            ),
+            defer_for_endpoint=(
+                popup_endpoint_id
+                if isinstance(popup_endpoint_id, str) and popup_endpoint_id
+                else None
+            ),
         )
 
     def _deliver_transport_message(self, message: dict[str, Any]) -> None:
+        is_molecular = message.get("op") in self._MOLECULAR_LOAD_OPS
         if not self._try_send_array_native_molsys(message):
             self._send_widget_message(self._materialize_molecular_projection(message))
+        if not is_molecular:
+            return
+        for endpoint_id, mode in tuple(self._popup_endpoint_modes.items()):
+            if mode != "canvas":
+                continue
+            if not self._try_send_array_native_molsys(
+                message,
+                target_endpoint_id=endpoint_id,
+            ):
+                fallback = self._materialize_molecular_projection(message)
+                self._send_widget_message({
+                    **fallback,
+                    "target_endpoint_id": endpoint_id,
+                })
 
     def _handle_frontend_event(self, content: Mapping[str, Any]) -> None:
         event = content.get("event")
@@ -1391,6 +1510,23 @@ class MolSysView(
             "structure_data_error",
         }:
             self._handle_binary_structure_event(content)
+        elif event == "popup_endpoint_closed":
+            endpoint_id = content.get("popup_endpoint_id")
+            if not isinstance(endpoint_id, str) or not endpoint_id:
+                warnings.warn(
+                    "Ignored popup close event without a valid endpoint id.",
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
+                return
+            self._cancel_binary_structure_stream(
+                "popup endpoint closed",
+                target_endpoint_id=endpoint_id,
+                notify_receiver=False,
+            )
+            self._popup_structure_transfers.pop(endpoint_id, None)
+            self._popup_endpoint_modes.pop(endpoint_id, None)
+            self._deferred_widget_messages.pop(endpoint_id, None)
         elif event == "request_widget_runtime_source":
             # This is the lazy-load bootstrap handshake: the frontend requests the
             # runtime source BEFORE the real runtime has loaded, so `_ready` is

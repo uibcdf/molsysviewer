@@ -25,6 +25,13 @@ type StreamMessage =
     | StructureDataChunkMessage
     | StructureDataCancelMessage;
 
+export function bindStreamEventToEndpoint(
+    event: Record<string, unknown>,
+    endpointId: string,
+): Record<string, unknown> {
+    return { ...event, target_endpoint_id: endpointId };
+}
+
 function positiveInteger(value: unknown, name: string): number {
     if (!Number.isInteger(value) || Number(value) <= 0) {
         throw new Error(`${name} must be a positive integer`);
@@ -98,6 +105,12 @@ function identity(message: StreamMessage): string {
     return `${message.viewer_id}\u0000${message.session_id}\u0000${message.stream_id}`;
 }
 
+function targetIdentity(message: StreamMessage): Record<string, unknown> {
+    return message.target_endpoint_id
+        ? { target_endpoint_id: message.target_endpoint_id }
+        : {};
+}
+
 export class ArrayNativeStreamReceiver {
     private endpointIdentity: string | null = null;
     private latestGeneration = 0;
@@ -130,6 +143,7 @@ export class ArrayNativeStreamReceiver {
                 session_id: message.session_id,
                 stream_id: message.stream_id,
                 generation: message.generation,
+                ...targetIdentity(message),
                 chunk_id: message.op === "structure_data_chunk" ? message.chunk_id : undefined,
                 error: errorMessage,
             });
@@ -181,6 +195,7 @@ export class ArrayNativeStreamReceiver {
             session_id: message.session_id,
             stream_id: message.stream_id,
             generation: message.generation,
+            ...targetIdentity(message),
         });
     }
 
@@ -251,6 +266,7 @@ export class ArrayNativeStreamReceiver {
             stream_id: message.stream_id,
             generation: message.generation,
             chunk_id: message.chunk_id,
+            ...targetIdentity(message),
         });
 
         if (active.nextChunkId !== active.begin.chunk_count) return;
@@ -275,6 +291,7 @@ export class ArrayNativeStreamReceiver {
             session_id: message.session_id,
             stream_id: message.stream_id,
             generation: message.generation,
+            ...targetIdentity(message),
         });
     }
 }

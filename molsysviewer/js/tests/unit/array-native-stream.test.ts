@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { ArrayNativeStreamReceiver } from "../../src/messages/array-native-stream";
+import {
+    ArrayNativeStreamReceiver,
+    bindStreamEventToEndpoint,
+} from "../../src/messages/array-native-stream";
 import type {
     StructureDataBeginMessage,
     StructureDataChunkMessage,
@@ -94,6 +97,37 @@ test("array-native stream assembles contiguous chunks, acknowledges, and release
     await assert.rejects(
         receiver.handle(...second),
         /Late array-native chunk has no active generation/,
+    );
+});
+
+test("array-native acknowledgements preserve popup endpoint identity", async () => {
+    const events: Record<string, unknown>[] = [];
+    const receiver = new ArrayNativeStreamReceiver(
+        event => events.push(event),
+        async () => undefined,
+    );
+    const targetedBegin = begin();
+    targetedBegin.target_endpoint_id = "canvas-popup-7";
+    const targetedChunk = chunk(0, 0, [0, 1, 2, 3, 4, 5]);
+    targetedChunk[0].target_endpoint_id = "canvas-popup-7";
+
+    await receiver.handle(targetedBegin);
+    await receiver.handle(...targetedChunk);
+
+    assert.equal(events[0].target_endpoint_id, "canvas-popup-7");
+    assert.equal(events[1].target_endpoint_id, "canvas-popup-7");
+});
+
+test("the host binds a popup acknowledgement to its authenticated source endpoint", () => {
+    assert.deepEqual(
+        bindStreamEventToEndpoint(
+            { event: "structure_data_begin_ack", target_endpoint_id: "forged-popup" },
+            "authenticated-popup",
+        ),
+        {
+            event: "structure_data_begin_ack",
+            target_endpoint_id: "authenticated-popup",
+        },
     );
 });
 
