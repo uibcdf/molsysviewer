@@ -18,6 +18,11 @@ from pathlib import Path
 
 RUNTIME_ASSET_NAME = "viewer.js"
 
+# esbuild writes this banner at the top of every bundle it produces for us
+# (`js/scripts/build-runtime.mjs`). It is how a file we may overwrite is told
+# apart from a file that merely shares a very common name.
+RUNTIME_ASSET_MARKER = b"// This file is generated from js/src/index.ts"
+
 
 def runtime_asset_source() -> Path:
     """Absolute path of the runtime that ships with this installation."""
@@ -61,8 +66,20 @@ def place_runtime_asset(directory: str | os.PathLike[str]) -> Path:
 
     target = target_dir / RUNTIME_ASSET_NAME
     payload = source.read_bytes()
-    if target.is_file() and target.read_bytes() == payload:
-        return target.resolve()
+    if target.is_file():
+        existing = target.read_bytes()
+        if existing == payload:
+            return target.resolve()
+        if RUNTIME_ASSET_MARKER not in existing[:512]:
+            # `viewer.js` is a very common name. Overwriting a file that is not
+            # ours would destroy somebody's own bundle with no warning and no
+            # copy, so refuse and say where. An older or newer MolSysViewer
+            # runtime carries the marker and is replaced normally.
+            raise FileExistsError(
+                f"{target} exists and was not written by MolSysViewer, so it will not be "
+                "overwritten. Choose another directory for the shared runtime, or remove "
+                "that file if it is no longer needed."
+            )
     target.write_bytes(payload)
     return target.resolve()
 

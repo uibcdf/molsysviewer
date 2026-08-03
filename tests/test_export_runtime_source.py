@@ -17,6 +17,7 @@ import pytest
 
 import molsysviewer as msv
 from molsysviewer._private.runtime_asset import (
+    RUNTIME_ASSET_MARKER,
     RUNTIME_ASSET_NAME,
     is_release_version,
     place_runtime_asset,
@@ -96,16 +97,32 @@ def test_lite_export_addresses_the_asset_relatively(tmp_path):
 # --- version coherence of a shared asset -------------------------------------
 
 
-def test_placing_the_asset_replaces_a_different_version(tmp_path):
+def test_placing_the_asset_replaces_an_older_runtime(tmp_path):
     """Guard. Mutate `place_runtime_asset` to skip when the file merely exists
     and this must fail: several views sharing one stale runtime is the one
     incoherence the local path can produce."""
     stale = tmp_path / RUNTIME_ASSET_NAME
-    stale.write_bytes(b"// a runtime from another version\n")
+    stale.write_bytes(RUNTIME_ASSET_MARKER + b"\n// an older MolSysViewer build\n")
 
     placed = place_runtime_asset(tmp_path)
 
     assert placed.read_bytes() == runtime_asset_source().read_bytes()
+
+
+def test_placing_the_asset_refuses_to_clobber_a_foreign_file(tmp_path):
+    """Guard. `viewer.js` is a very common name.
+
+    A user pointing shared_runtime at a directory that already holds their own
+    bundle would lose it, with no warning and no copy. Only a file carrying our
+    generated-bundle marker may be replaced.
+    """
+    theirs = tmp_path / RUNTIME_ASSET_NAME
+    theirs.write_bytes(b"// somebody else's viewer, hand written\n")
+
+    with pytest.raises(FileExistsError, match="not written by MolSysViewer"):
+        place_runtime_asset(tmp_path)
+
+    assert theirs.read_bytes() == b"// somebody else's viewer, hand written\n"
 
 
 def test_placing_the_asset_twice_is_idempotent(tmp_path):
