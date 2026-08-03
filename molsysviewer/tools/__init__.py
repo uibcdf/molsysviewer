@@ -10,7 +10,7 @@ from .benchmark import run_benchmarks
 from . import runtime_asset
 from .runtime_asset import export_runtime_asset
 from . import embed
-from .embed import embed_iframe
+from .embed import IframeMarkup, embed_iframe
 
 __all__ = [
     "basic",
@@ -24,4 +24,5 @@ __all__ = [
     "export_runtime_asset",
     "embed",
     "embed_iframe",
+    "IframeMarkup",
 ]

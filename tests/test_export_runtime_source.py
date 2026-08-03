@@ -232,6 +232,21 @@ def test_embed_iframe_marks_a_sibling_path_as_relative(tmp_path):
     assert 'src="./1tcd.html"' in markup
 
 
+def test_embed_iframe_renders_in_a_notebook_and_is_still_a_string(tmp_path):
+    """One call for both ways of embedding.
+
+    Plain text would force `print()` on the notebook path; a display object alone
+    would make pasting into a Markdown page awkward. Both must keep working.
+    """
+    markup = msv.tools.embed_iframe(
+        str(tmp_path / "v.html"), path=str(tmp_path / "p.ipynb"), skip_digestion=True
+    )
+
+    assert isinstance(markup, str), "the result stopped behaving as a string"
+    assert markup._repr_html_() == str(markup), "the result no longer renders"
+    assert markup.startswith("<iframe")
+
+
 def test_embed_iframe_honours_the_requested_size(tmp_path):
     markup = msv.tools.embed_iframe(
         str(tmp_path / "v.html"), path=str(tmp_path / "p.md"),
