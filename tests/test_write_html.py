@@ -17,17 +17,15 @@ def test_export_html_namespace_delegates(monkeypatch, tmp_path):
     monkeypatch.setattr(view, "_write_html_impl", fake_impl)
 
     outfile = tmp_path / "out.html"
-    view.export.html(str(outfile), title="TestTitle", include_controls=False, include_popout=False, mode="lite")
+    view.export.html(str(outfile), title="TestTitle", include_controls=False, include_popout=False, shared_runtime=str(tmp_path))
 
     assert called["output_filename"] == str(outfile)
     assert called["kwargs"] == {
         "title": "TestTitle",
         "include_controls": False,
         "include_popout": False,
-        "mode": "lite",
-        "inline_messages": True,
-        # Forwarded as given, so the runtime selection is resolved by the
+        # Forwarded as given, so the runtime choice is resolved by the
         # implementation and never quietly defaulted in the public wrapper.
-        "runtime": None,
-        "runtime_assets_dir": None,
+        "shared_runtime": str(tmp_path),
+        "inline_messages": True,
     }

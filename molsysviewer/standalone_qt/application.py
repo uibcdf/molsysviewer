@@ -78,7 +78,6 @@ def create_standalone_qt0_window(
         addon_modules=addon_modules,
         apply_project_config=apply_project_config,
         debug_js=debug_js,
-        mode="lite",
         runtime_urls=_get_helper("_qt_runtime_urls")(),
         host_event_transport="url-scheme",
         show_empty_host_overlay=False,

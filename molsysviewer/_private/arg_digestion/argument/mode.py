@@ -22,14 +22,6 @@ def digest_mode(mode, caller=None):
             if mode in ["add", "replace", "append_structures", "auto"]:
                 return mode
         if caller in {
-            "molsysviewer.viewer.write_html",
-            "molsysviewer.viewer.MolSysView.write_html",
-            "molsysviewer.exports.html",
-            "molsysviewer.exports.ExportManager.html",
-        }:
-            if mode in ["standalone", "lite"]:
-                return mode
-        if caller in {
             "molsysviewer.viewer.camera.CameraManager.set_mode",
         }:
             if mode in ["perspective", "orthographic"]:

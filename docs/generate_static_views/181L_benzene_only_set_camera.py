@@ -19,4 +19,4 @@ camera_snapshot = {
 }
 view.set_camera_snapshot(camera_snapshot)
 view.show()
-view.export.html("../_static/views/181L_benzene_only_set_camera.html", title="181L", mode="lite", runtime_assets_dir="../_static")
+view.export.html("../_static/views/181L_benzene_only_set_camera.html", title="181L", shared_runtime="../_static")

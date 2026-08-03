@@ -54,7 +54,7 @@ def test_lite_export_from_any_installation_points_at_a_runtime_that_exists(tmp_p
     that produced the scene.
     """
     output = tmp_path / "view.html"
-    _view().export.html(str(output), mode="lite", skip_digestion=True)
+    _view().export.html(str(output), shared_runtime=str(output.parent), skip_digestion=True)
 
     candidates = _runtime_candidates(output)
     assert candidates, "no runtime candidate was written"
@@ -65,13 +65,13 @@ def test_lite_export_from_any_installation_points_at_a_runtime_that_exists(tmp_p
     )
 
 
-def test_lite_export_default_needs_no_network(tmp_path):
+def test_shared_runtime_directory_needs_no_network(tmp_path):
     output = tmp_path / "view.html"
-    _view().export.html(str(output), mode="lite", skip_digestion=True)
+    _view().export.html(str(output), shared_runtime=str(output.parent), skip_digestion=True)
 
     for candidate in _runtime_candidates(output):
         assert not candidate.startswith(("http://", "https://")), (
-            f"the default export reaches the network: {candidate}"
+            f"a shared-directory export reaches the network: {candidate}"
         )
 
 
@@ -84,9 +84,7 @@ def test_lite_export_addresses_the_asset_relatively(tmp_path):
     output = views / "view.html"
     _view().export.html(
         str(output),
-        mode="lite",
-        runtime="local",
-        runtime_assets_dir=str(assets),
+        shared_runtime=str(assets),
         skip_digestion=True,
     )
 
@@ -137,14 +135,14 @@ def test_cdn_export_refuses_a_development_version(tmp_path, monkeypatch):
 
     output = tmp_path / "view.html"
     with pytest.raises(ValueError, match="released version"):
-        _view().export.html(str(output), mode="lite", runtime="cdn", skip_digestion=True)
+        _view().export.html(str(output), shared_runtime="cdn", skip_digestion=True)
 
 
 def test_cdn_export_from_a_release_writes_the_pinned_url(tmp_path, monkeypatch):
     monkeypatch.setattr("molsysviewer._version.__version__", "0.7.0")
 
     output = tmp_path / "view.html"
-    _view().export.html(str(output), mode="lite", runtime="cdn", skip_digestion=True)
+    _view().export.html(str(output), shared_runtime="cdn", skip_digestion=True)
 
     assert _runtime_candidates(output) == [
         "https://cdn.jsdelivr.net/npm/@uibcdf/molsysviewer@0.7.0/dist/viewer.js"
@@ -171,20 +169,59 @@ def test_explicit_candidates_are_preserved_in_order(tmp_path):
     output = tmp_path / "view.html"
     explicit = ["./viewer.js", "https://example.org/viewer.js"]
     _view().export.html(
-        str(output), mode="lite", runtime=explicit, skip_digestion=True
+        str(output), shared_runtime=explicit, skip_digestion=True
     )
 
     assert _runtime_candidates(output) == explicit
 
 
-def test_standalone_refuses_a_runtime_selection(tmp_path):
-    """Guard. A standalone export embeds the runtime, so accepting an argument
-    that selects one would promise something the output cannot honour."""
+def test_without_shared_runtime_the_file_stands_alone(tmp_path):
+    """The default carries everything, so it declares no external runtime at all."""
     output = tmp_path / "view.html"
-    with pytest.raises(ValueError, match="mode='lite'"):
-        _view().export.html(
-            str(output), mode="standalone", runtime="local", skip_digestion=True
-        )
+    _view().export.html(str(output), skip_digestion=True)
+
+    assert "molsysviewer-runtime-candidates" not in output.read_text(encoding="utf-8")
+    assert not (tmp_path / RUNTIME_ASSET_NAME).exists(), (
+        "a self-contained export placed a shared asset it does not use"
+    )
+
+
+# --- computing the embed path ------------------------------------------------
+
+
+def test_embed_iframe_computes_the_path_from_the_page(tmp_path):
+    """The one step of embedding that fails silently: counting `../` by hand.
+
+    The export succeeds, the build succeeds, and the reader gets an empty frame.
+    """
+    markup = msv.tools.embed_iframe(
+        str(tmp_path / "_static" / "views" / "1tcd.html"),
+        path=str(tmp_path / "content" / "user" / "page.md"),
+        skip_digestion=True,
+    )
+
+    assert 'src="../../_static/views/1tcd.html"' in markup
+    assert "<iframe" in markup and "</iframe>" in markup
+
+
+def test_embed_iframe_marks_a_sibling_path_as_relative(tmp_path):
+    """A bare name would be read as a URL fragment by some renderers."""
+    markup = msv.tools.embed_iframe(
+        str(tmp_path / "1tcd.html"),
+        path=str(tmp_path / "page.md"),
+        skip_digestion=True,
+    )
+
+    assert 'src="./1tcd.html"' in markup
+
+
+def test_embed_iframe_honours_the_requested_size(tmp_path):
+    markup = msv.tools.embed_iframe(
+        str(tmp_path / "v.html"), path=str(tmp_path / "p.md"),
+        height="640px", width="80%", skip_digestion=True,
+    )
+
+    assert 'height="640px"' in markup and 'width="80%"' in markup
 
 
 def test_tools_export_runtime_asset_places_the_bundled_runtime(tmp_path):

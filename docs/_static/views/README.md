@@ -1,1 +1,1 @@
-Place exported MolSysViewer HTML views here (generated via `MolSysView.write_html(..., mode="lite")`) for embedding in docs notebooks.
+Place exported MolSysViewer HTML views here (generated via `view.export.html(..., shared_runtime=...)`) for embedding in docs notebooks.

@@ -8,7 +8,7 @@ Recipes for common tasks (to be filled with concrete examples):
 - Pharmacophore glyph overlays with standard colors and transparency.
 - Anisotropy ellipsoids/disks from ANM tensors/eigenvectors.
 
-Each recipe will include: minimal code, expected visuals (static HTML via `view.export.html(..., mode="lite")`), and option tweaks.
+Each recipe will include: minimal code, expected visuals (static HTML via `view.export.html(..., shared_runtime=...)`), and option tweaks.
 
 Scientific tutorials (provisional):
 

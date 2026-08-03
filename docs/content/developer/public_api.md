@@ -18,6 +18,7 @@ You treat these as public:
 - `molsysviewer.styles.BUILTIN_SCENE_STYLES`
 - `molsysviewer.styles.BUILTIN_FOCUS_STYLES`
 - `molsysviewer.config.set_structure_scale_budget` / `get_structure_scale_budget`
+- `molsysviewer.tools.export_runtime_asset` / `molsysviewer.tools.embed_iframe`
 
 If you rename, remove, or change behavior here, you update docs and add tests.
 
@@ -409,7 +410,7 @@ It is still intentionally modest and should be treated as the first step toward
 the future richer `figure` export contract, not as the final publication export
 system.
 
-`view.export.html(..., mode="lite")` is a public, user-facing export mode.
+`view.export.html(..., shared_runtime=...)` is a public, user-facing export mode.
 It must remain reproducible.
 
 ## Standalone 0 bridge

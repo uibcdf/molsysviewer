@@ -39,7 +39,7 @@ def camera_snapshot_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict
 def write_html_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
     return {
         "output_filename": _signal_value(args, kwargs, 1, "output_filename"),
-        "mode": _signal_value(args, kwargs, 5, "mode"),
+        "shared_runtime": _signal_value(args, kwargs, 5, "shared_runtime") is not None,
         "include_popout": _signal_value(args, kwargs, 4, "include_popout"),
     }
 

@@ -10,6 +10,15 @@ from ._private.arg_digestion import digest
 from .figures import FigureSpec
 
 
+def _shared_runtime_kind(value: Any) -> str:
+    """Classify the runtime choice for telemetry without leaking a filesystem path."""
+    if value is None:
+        return "standalone"
+    if isinstance(value, str):
+        return "cdn" if value == "cdn" else "shared-directory"
+    return "explicit-urls"
+
+
 def _export_html_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
     def value(index: int, name: str) -> Any:
         if name in kwargs:
@@ -20,7 +29,7 @@ def _export_html_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> 
 
     return {
         "output_filename": value(1, "output_filename"),
-        "mode": value(5, "mode"),
+        "shared_runtime": _shared_runtime_kind(value(5, "shared_runtime")),
         "include_popout": value(4, "include_popout"),
     }
 
@@ -106,30 +115,34 @@ class ExportManager:
         title: str = "MolSysViewer",
         include_controls: bool = True,
         include_popout: bool = True,
-        mode: str = "standalone",
+        shared_runtime: str | Sequence[str] | None = None,
         inline_messages: bool = True,
-        runtime: str | Sequence[str] | None = None,
-        runtime_assets_dir: str | None = None,
         skip_digestion: bool = False,
     ) -> None:
         """Export the current viewer scene to an HTML file.
 
-        With ``mode="lite"`` the page loads a shared runtime instead of carrying
-        one. ``runtime`` selects where it comes from — by default the runtime
-        installed with this package, copied next to the export and addressed by
-        relative path, so the result keeps working offline and does not depend on
-        a registry entry surviving. See
-        ``MolSysView._write_html_impl`` for the full argument documentation.
+        One question decides the shape of the output: **do several views share a
+        runtime, or does this file stand alone?**
+
+        - ``shared_runtime=None`` (default) — a single self-contained file. Send
+          it to someone, attach it to a paper, open it anywhere.
+        - ``shared_runtime="<directory>"`` — a small file that loads the runtime
+          from a copy placed in that directory. This is what a website with more
+          than one view wants: the runtime is downloaded once and cached across
+          every page.
+
+        Two further values exist for the shared case. ``"cdn"`` addresses the
+        published package instead of hosting anything, and a list of URLs gives
+        explicit candidates tried in order. See ``MolSysView._write_html_impl``
+        for the full argument documentation.
         """
         self._view._write_html_impl(  # noqa: SLF001
             output_filename,
             title=title,
             include_controls=include_controls,
             include_popout=include_popout,
-            mode=mode,
+            shared_runtime=shared_runtime,
             inline_messages=inline_messages,
-            runtime=runtime,
-            runtime_assets_dir=runtime_assets_dir,
         )
 
     @signal(tags=["export", "image"], extra_factory=_export_image_signal_extra)

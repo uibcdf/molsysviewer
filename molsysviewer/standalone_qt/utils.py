@@ -899,7 +899,6 @@ def _rebuild_qt_html(
         title=title,
         include_popout=False,
         prepare_addons=False,
-        mode="lite",
         runtime_urls=_get_helper("_qt_runtime_urls")(),
         host_event_transport="url-scheme",
     )

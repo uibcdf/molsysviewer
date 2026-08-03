@@ -36,7 +36,6 @@ def test_build_standalone0_html_supports_lite_runtime_urls(tmp_path):
         view,
         str(outfile),
         include_popout=False,
-        mode="lite",
         runtime_urls=["file:///tmp/molsysviewer-viewer.js", "https://example.invalid/viewer.js"],
     )
 

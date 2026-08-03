@@ -70,14 +70,14 @@ their control, and having seen it before publishing.
 
 ## 3. Decisions
 
-1. **`mode="lite"` sources the runtime from a local asset by default.** Behaviour
-   change, declared per `engineering_rules.md` §2. No shim.
-2. **`mode`'s own default stays `"standalone"`.** It is the right default for
-   "one self-contained file to send someone". Only what `lite` *means* changes.
-   This keeps the change to one behaviour, not two.
-3. **Three public entry points, with distinct jobs**: the export parameter for
-   the common case, a standalone asset accessor for build systems, and the
-   explicit candidate list as an escape hatch.
+1. **A shared runtime comes from the installed package, not from a registry.**
+   Behaviour change, declared per `engineering_rules.md` §2. No shim.
+2. **The self-contained file stays the default.** It is the right default for
+   "one file to send someone"; sharing is what you ask for.
+3. **One argument expresses the choice**, plus two `tools` helpers — an asset
+   accessor for build systems and an iframe builder that computes the path. See
+   §4; the first implementation had three arguments and was simplified before
+   any external adopter.
 4. **The asset copy is idempotent by version, not by existence.** A shared asset
    with N views introduces a skew the CDN did not have — regenerate one view
    after upgrading and scene and runtime diverge. Overwriting on version
@@ -109,45 +109,46 @@ their control, and having seen it before publishing.
 7. **The `conf.py` rewrite hook is removed** and our own docs move to the
    documented path. What we tell third parties must be what we run.
 
-## 4. Proposed surface
+## 4. Public surface
 
-Names confirmed 2026-08-03.
-
-```python
-view.export.html(
-    "docs/_static/views/1tcd.html",
-    mode="lite",
-    runtime="local",                    # "local" (default) | "cdn" | [urls...]
-    runtime_assets_dir="docs/_static",  # where the shared runtime lives
-)
-```
-
-- `runtime="local"` — ensure `viewer.js` is present in `runtime_assets_dir` at
-  the installed version, and write a **relative** URL from the HTML to it. The
-  relative path is computed by the code, never by the user: today's cookbook
-  spends three paragraphs explaining `../../../_static/views/`, and a wrong path
-  fails only when a reader opens the page.
-- `runtime="cdn"` — today's behaviour, pinned exact.
-- `runtime=[...]` — explicit candidates, tried in order. This is the existing
-  `runtime_urls`, promoted to public. It also expresses "local first, CDN as
-  backup" for anyone who wants both.
-
-Plus, for build systems that want the asset without constructing a scene:
+Simplified 2026-08-03, before the first external adopter. The first
+implementation exposed `mode`, `runtime` and `runtime_assets_dir` — three
+arguments for what is one question. Collapsed into one:
 
 ```python
-molsysviewer.tools.export_runtime_asset("docs/_static") -> Path
+view.export.html(path)                                  # self-contained
+view.export.html(path, shared_runtime="docs/_static")   # shared with your other views
+view.export.html(path, shared_runtime="cdn")            # hosted by the registry
+view.export.html(path, shared_runtime=[url, url])       # explicit candidates
 ```
 
-`molsysviewer.tools.*` is already declared public in `public_api.md`.
+`mode` is **gone** from the export surface: sharing a runtime is what a lite
+export *is*, so it is derived rather than asked for. A docs author no longer has
+to learn an internal distinction of ours to answer a question that was never
+about modes. `"cdn"` is the one reserved string; a directory of that name is
+written `"./cdn"`.
 
-**Validation:** `runtime` is meaningless when `mode="standalone"`, where the
-runtime is inlined. Passing both must raise, not be ignored.
+Two helpers in `molsysviewer.tools`, already public per `public_api.md`:
+
+```python
+msv.tools.export_runtime_asset("docs/_static")      # place the asset alone
+msv.tools.embed_iframe(view, path=page)             # the <iframe>, path computed
+```
+
+`embed_iframe` exists because counting `../` by hand is the one step of embedding
+that fails silently — the export succeeds, the build succeeds, and the reader
+gets an empty frame.
 
 **No CLI for now.** `engineering_rules.md` §1 orders public Python method first,
 and the existing console scripts (`molsysviewer`, `molsysviewer-qt`) are flat
 argparse launchers with no subcommands — adding one means restructuring a public
 entry point. `python -m` over the public function covers the build-system case
 until someone asks for more.
+
+*(The simplification was done before writing to the MolSysMT team, deliberately:
+`engineering_rules.md` §2 allows breaking changes because there are no external
+users, and that is true today and stops being true the moment they adopt. A
+tighter surface costs an afternoon now and two repositories later.)*
 
 ## 5. Execution order
 

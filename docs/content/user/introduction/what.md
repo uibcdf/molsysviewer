@@ -54,7 +54,7 @@ Here are the main things you will do in day-to-day use:
 - **Manage visibility and scene state** (show/hide/isolate, camera, reset and cleanup).
 - **Add overlays (shapes)** such as pockets, channels, pharmacophore features, links,
   anisotropy glyphs, and meshes, and organize them with tags and layers.
-- **Export reproducible views** as lightweight HTML with `view.export.html(..., mode="lite")`,
+- **Export reproducible views** as lightweight HTML with `view.export.html(..., shared_runtime=...)`,
   which is especially useful for documentation, reports, and sharing results.
 
 ## What MolSysViewer is not

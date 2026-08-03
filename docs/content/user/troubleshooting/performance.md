@@ -73,9 +73,9 @@ view.layers["hbonds"].show()
 
 ## HTML export file size
 
-`mode="standalone"` embeds the full runtime (~3 MB). Use `mode="lite"` for
+Without `shared_runtime` the file embeds the full runtime. Pass a directory for
 smaller files that load the runtime from a CDN:
 
 ```python
-view.export.html("figure.html", mode="lite")
+view.export.html("figure.html", shared_runtime="_static")
 ```

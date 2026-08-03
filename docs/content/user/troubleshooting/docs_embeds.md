@@ -3,7 +3,7 @@
 
 ## Iframe stays blank
 
-HTML lite views (`view.export.html(..., mode="lite")`) are embedded as iframes
+HTML lite views (`view.export.html(..., shared_runtime=...)`) are embedded as iframes
 in Sphinx docs. If the iframe is blank:
 
 **1. Serve the docs — don't open `index.html` directly.**
@@ -24,7 +24,7 @@ The URL should match the installed version of MolSysViewer. If it points to an
 old version, regenerate the file with the current install:
 
 ```python
-view.export.html("docs/_static/views/figure.html", mode="lite")
+view.export.html("docs/_static/views/figure.html", shared_runtime="docs/_static")
 ```
 
 **3. Check for Content Security Policy errors.**
