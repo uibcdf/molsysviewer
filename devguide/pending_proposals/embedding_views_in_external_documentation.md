@@ -153,8 +153,12 @@ until someone asks for more.
 
 1. **The Python primitive** — the export parameter, the asset accessor, version
    coherence, tests with mutations.
-2. **The runtime handshake (TypeScript)** — declared version, checked and
-   reported. `npm run build:runtime` last, per `engineering_rules.md` §3.
+2. ~~**The runtime handshake (TypeScript)**~~ — **deferred 2026-08-03** to
+   [`exported_page_self_declaration.md`](exported_page_self_declaration.md),
+   together with a second item raised in the same conversation: an exported page
+   offers controls it cannot honour without an authority. Neither blocks
+   MolSysMT, and both guard failures that are not active yet. That file records
+   what ends the deferral for each.
 3. **Dogfood** — move our own docs to the documented path, delete the `conf.py`
    rewrite hook and the vestigial `require.js` / `nglview-js-widgets`
    registrations, regenerate the committed views. **The pending bug closes
@@ -186,8 +190,17 @@ until someone asks for more.
 - The runtime reports a scene/runtime version mismatch visibly, verified by
   pairing a scene with a deliberately mismatched runtime.
 - MolSysViewer's own documentation builds with no rewrite hook in `conf.py`, and
-  every file under `docs/_static/views/` loads from the committed tree without a
-  build step.
+  every file under `docs/_static/views/` addresses the runtime that the build
+  places, by a relative path, with no network URL anywhere.
+
+  *(Amended during execution, 2026-08-03. This criterion first read "loads from
+  the committed tree without a build step", which would have required committing
+  a second 6.1 MB copy of `viewer.js` beside the one already tracked at
+  `molsysviewer/viewer.js` — doubling the blob churn of every runtime rebuild for
+  a repository whose documentation is meant to be built. Our own asset is
+  therefore generated at build time and gitignored, and `tests/test_docs_static_views.py`
+  checks the declared target rather than a placed file. For third parties both
+  policies remain presented without prescribing one; see §7.)*
 - `mode="standalone"` plus `runtime=` raises.
 - `runtime="cdn"` from a development or local version raises at export time,
   naming the version. Mutation: remove that check and the test must go red —

@@ -2,4 +2,4 @@ import molsysviewer as viewer
 
 view = viewer.demo["1TCD"]
 view.show()
-view.export.html("../_static/views/demo_1TCD.html", title="1TCD", mode="lite")
+view.export.html("../_static/views/demo_1TCD.html", title="1TCD", mode="lite", runtime_assets_dir="../_static")

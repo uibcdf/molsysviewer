@@ -137,3 +137,6 @@ record.txt
 molsysviewer/_version.py
 !*.nbconvert.log
 codex_session.sh
+
+# Placed from the installed package by docs/conf.py at build time.
+docs/_static/viewer.js

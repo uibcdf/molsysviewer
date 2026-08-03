@@ -7,7 +7,6 @@
 # http://www.sphinx-doc.org/en/master/config
 
 import os
-import re
 import sys
 from pathlib import Path
 
@@ -201,33 +200,31 @@ html_css_files = [
 
 
 # Custom css for tabs
-def _update_docs_light_runtime_links(app):
-    version = molsysviewer.__version__.split('+')[0]
-    target = f"https://cdn.jsdelivr.net/npm/@uibcdf/molsysviewer@{version}/dist/viewer.js"
-    views_dir = Path(__file__).parent / "_static" / "views"
-    if not views_dir.exists():
-        return
-    pattern = re.compile(r"https://cdn\.jsdelivr\.net/npm/@uibcdf/molsysviewer@[^/]+/dist/viewer\.js")
-    updated_files = 0
-    for html_path in views_dir.glob("*.html"):
-        try:
-            content = html_path.read_text(encoding="utf-8")
-        except UnicodeDecodeError:
-            content = html_path.read_text(encoding="utf-8", errors="ignore")
-        updated = pattern.sub(target, content)
-        if updated != content:
-            html_path.write_text(updated, encoding="utf-8")
-            updated_files += 1
-    if updated_files:
-        logger.info("Updated docs-light runtime links in %s HTML files.", updated_files)
+def _place_docs_light_runtime(app):
+    """Put the installed runtime where the exported lite views address it.
+
+    This replaces a rewriter that used to substitute a jsDelivr version string
+    inside every exported HTML on each build. That approach wrote a link to
+    whatever version this installation reported, without checking the package had
+    ever been published — and npm stopped at 0.7.0 while Python reached 0.20.0,
+    so the next deploy would have broken every view with a green build. See
+    `devguide/pending_bugs/docs_lite_views_pinned_to_unpublished_npm_version.md`.
+
+    The views now address `../viewer.js` relative to themselves, and this places
+    it from the installed package: version-exact with the scenes by construction,
+    and no registry, CDN or network involved. It is deliberately the same public
+    call the documentation tells third parties to use.
+    """
+    from molsysviewer.tools import export_runtime_asset
+
+    placed = export_runtime_asset(str(Path(__file__).parent / "_static"))
+    logger.info("Placed the MolSysViewer docs-light runtime at %s", placed)
 
 
 def setup(app):
     app.add_css_file('sphinx_tabs.css')
     app.add_css_file('custom.css')
-    app.add_js_file('https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js')
-    app.add_js_file('https://cdn.jsdelivr.net/npm/nglview-js-widgets@3.1.0/dist/index.js')
-    app.connect('builder-inited', _update_docs_light_runtime_links)
+    app.connect('builder-inited', _place_docs_light_runtime)
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
