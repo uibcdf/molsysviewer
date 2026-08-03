@@ -101,6 +101,11 @@ It keeps notebooks small and makes embeds stable.
 
 ### How HTML lite views are generated (source of truth)
 
+The mechanism itself — export options, where the runtime comes from, and how to
+embed the result — is documented once, for everyone, in
+{doc}`../../../user/export/sphinx_html_embedding`. This section covers only the
+editorial conventions of *this* repository, which uses that mechanism unchanged.
+
 Treat `docs/_static/views/*.html` as build artifacts. The source of truth is a small Python script under:
 
 - `docs/generate_static_views/`

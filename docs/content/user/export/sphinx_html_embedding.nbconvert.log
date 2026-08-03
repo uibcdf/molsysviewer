@@ -1,3 +1,4 @@
 
-[NbConvertApp] Converting notebook docs/content/user/export/sphinx_html_embedding.ipynb to notebook
-[NbConvertApp] Writing 1830074 bytes to docs/content/user/export/sphinx_html_embedding.ipynb
+[NbConvertApp] Converting notebook sphinx_html_embedding.ipynb to notebook
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+[NbConvertApp] Writing 18794 bytes to sphinx_html_embedding.ipynb

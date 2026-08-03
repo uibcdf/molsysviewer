@@ -155,7 +155,7 @@ python docs/execute_notebooks.py -f -r docs/content/
 
 For 3D visuals, prefer HTML lite exports:
 
-- Export with `view.export.html(..., mode="lite")` into `docs/_static/views/`.
+- Export into `docs/_static/views/` as described in {doc}`../user/export/sphinx_html_embedding`.
 - Embed via iframe or `molsysviewer.thirds.jupyter.load_html_in_notebook`.
 
 ## Troubleshooting

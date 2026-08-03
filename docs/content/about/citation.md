@@ -10,14 +10,14 @@ We recommend citing both:
 
 Both DOIs are available on the MolSysViewer Zenodo page.
 
-````{tabs}
+::::{tab-set}
 
-```{tab} Paper
+:::{tab-item} Paper
 
 Coming soon...
 
-```
-```{tab} Software
+:::
+:::{tab-item} Software
 
 Concept DOI (all versions): *TODO: add the immutable Zenodo concept DOI here.*
 
@@ -25,6 +25,7 @@ Diego Prada-Gracia & Liliana M. Moreno-Vargas. (2023). uibcdf/MolSysViewer: 0.8.
 
 {download}`BibTeX <../../_static/bibtex/software.bib>`
 
-```
+:::
 
-```` 
+::::
+

@@ -12,7 +12,8 @@ Use this page when you need to change the documentation build, the Sphinx config
 ## Build & tooling
 
 - Sphinx with `pydata_sphinx_theme`.
-- Extensions: autodoc, autosummary, napoleon, viewcode, intersphinx, mathjax, todo, bibtex, extlinks, copybutton, remove_toctrees, sphinx_design, sphinx_tabs, sphinx_favicon, myst_nb.
+- Extensions: autodoc, autosummary, napoleon, viewcode, intersphinx, mathjax, todo, bibtex, extlinks, copybutton, remove_toctrees, sphinx_design, sphinx_favicon, myst_nb.
+- Tabs come from `sphinx_design` (`tab-set` / `tab-item`), matching MolSysMT. `sphinx-tabs` was removed on 2026-08-03; do not reintroduce it.
 - MyST config: `dollarmath`, `amsmath`, `colon_fence`, `deflist`; heading anchors to level 3.
 - Notebook execution: `nb_execution_mode = "off"` (do not run during build).
 - When you want frozen outputs, execute notebooks manually with `docs/execute_notebooks.py` (see {doc}`editorial_guidelines`).

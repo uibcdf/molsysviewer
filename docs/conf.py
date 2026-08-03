@@ -64,7 +64,6 @@ extensions = [
     'sphinx_design',
     'sphinx_favicon',
     'myst_nb',
-    'sphinx_tabs.tabs', # Do not move from the last position
 ]
 
 
@@ -222,7 +221,6 @@ def _place_docs_light_runtime(app):
 
 
 def setup(app):
-    app.add_css_file('sphinx_tabs.css')
     app.add_css_file('custom.css')
     app.connect('builder-inited', _place_docs_light_runtime)
 

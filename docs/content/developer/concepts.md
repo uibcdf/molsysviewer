@@ -32,4 +32,4 @@
 - `MolSysViewerController` (JS): initializes Mol\*, routes messages, manages refs/tags, clears shapes/styles.
 - `js/src/shapes/`: geometry helpers (spheres, pockets, blobs, tubes, ellipsoids, pharmacophore, etc.).
 - `js/src/managers/` and `plugin/`: message handling and structure loading.
-- Static docs embeds: export with `view.export.html(..., mode="lite")` into `_static/views/`; embed with `molsysviewer.thirds.jupyter.load_html_in_notebook`.
+- Static docs embeds: see {doc}`../user/export/sphinx_html_embedding`, which is the single description of this mechanism.
