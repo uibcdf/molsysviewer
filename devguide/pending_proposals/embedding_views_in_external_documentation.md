@@ -1,8 +1,8 @@
 # Embedding views in external documentation
 
-**Status:** approved in criterion, open in detail. The governing decision below
-is taken; the parameter names and one default are marked as pending and belong
-to the maintainer.
+**Status:** approved. The governing decision, the proposed names and the fate of
+the CDN path are all confirmed (2026-08-03). Ready to execute in the order of
+§5.
 
 **Origin:** MolSysMT collaborators are blocked on publishing views in their
 documentation. Investigating why produced
@@ -85,15 +85,33 @@ their control, and having seen it before publishing.
 5. **The exported HTML declares the runtime version it expects, and the runtime
    checks it**, reporting visibly through the same channel that already reports
    a failed load. Mismatch must not be silent.
-6. **CDN remains available, opt-in, pinned exact.** If it stays a supported
-   path, the npm publish becomes a release gate (`path_to_1_0.md` task 7) — we
-   either sustain it or stop offering it.
+6. **CDN remains a supported path, opt-in, pinned exact** — confirmed, for
+   authors who do not want to host a runtime at all. Support costs two things,
+   and both are part of the decision:
+
+   - **Publishing to npm becomes a standing release gate**, not a packaging
+     chore (`path_to_1_0.md` task 7). Every release, or that release's users get
+     dead views. Thirteen unpublished versions is how the present defect
+     happened.
+   - **The export refuses to write a URL it can predict is dead.** A version
+     that is not a publishable release — any development or local version, which
+     is what every git checkout produces — raises at export time naming the
+     problem. No network call: inspecting the exporting version is free and
+     catches the common case. A remote check belongs to the build, not to the
+     export.
+
+   Note that the case usually given for the CDN — *not wanting a 6.4 MB blob in
+   my repository* — has a better answer than the CDN. The asset can be generated
+   at build time and gitignored: any CI that builds the views already has
+   MolSysViewer installed, so copying the runtime is one more line in the same
+   script. That leaves the CDN for the genuinely narrow case: a standalone page
+   with no build step, or deliberate cache sharing across separate sites.
 7. **The `conf.py` rewrite hook is removed** and our own docs move to the
    documented path. What we tell third parties must be what we run.
 
 ## 4. Proposed surface
 
-Names are provisional and are the maintainer's call; the shape is the proposal.
+Names confirmed 2026-08-03.
 
 ```python
 view.export.html(
@@ -171,6 +189,13 @@ until someone asks for more.
   every file under `docs/_static/views/` loads from the committed tree without a
   build step.
 - `mode="standalone"` plus `runtime=` raises.
+- `runtime="cdn"` from a development or local version raises at export time,
+  naming the version. Mutation: remove that check and the test must go red —
+  today the export writes the dead URL without complaint, which is the whole
+  defect.
+- Generating the asset at build time into a gitignored directory produces a
+  working site, so the documentation can present it as the alternative to
+  committing the runtime.
 
 ## 7. Out of scope
 
