@@ -10,6 +10,11 @@ archive only after the implementation and regression tests are complete.
 
 ## Current triage
 
+- [`docs_lite_views_pinned_to_unpublished_npm_version.md`](docs_lite_views_pinned_to_unpublished_npm_version.md):
+  the docs build rewrites every lite view's CDN link to the current version
+  without checking that it exists. npm stops at `0.7.0`, Python is at `0.20.0`,
+  so the next docs deploy breaks all twelve interactive views at once — with a
+  green Sphinx build. Verified against the deployed site and the registries.
 - [`standalone_qt_live_demo_reload.md`](standalone_qt_live_demo_reload.md):
   replacing a loaded demo does not update the real Qt scene. It requires a real
   Qt/WebGL window for the next diagnostic pass.

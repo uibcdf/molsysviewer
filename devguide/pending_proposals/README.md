@@ -50,6 +50,24 @@ is also explicitly post-1.0.
   array-native path avoids *sending* the JSON payload but not *building* it, so
   every load pays the ViewerJSON path (~10× the binary one) and discards it. The
   fallback is sound; paying for it eagerly is not.
+- [`embedding_views_in_external_documentation.md`](embedding_views_in_external_documentation.md):
+  how a third party publishes views on their own website. Criterion decided —
+  **reproducibility over freshness**: `mode="lite"` sources the runtime from a
+  local asset copied from the installed package, not from a CDN pinned to a
+  version that may never have been published. Closes the pending lite-view bug
+  as a consequence. MolSysMT collaborators are blocked on this.
+- [`first_read_comprehension_gaps_2026_08.md`](first_read_comprehension_gaps_2026_08.md):
+  what one uninterrupted first read of this repository concluded wrongly, with
+  the document that caused each wrong turn and the artifact that disproved it.
+  Two findings are README-facing and affect prospective users; four are
+  contributor-facing. Perishable evidence — a maintainer cannot produce it about
+  their own project.
+- [`whole_representation_succession_semantics.md`](whole_representation_succession_semantics.md):
+  audit only. `areas_of_opportunity_analysis.md` §2 records the whole's global
+  representation as deliberately **additive**; the runtime reads as **replace**
+  (add-then-remove) and the Python model is single-valued. No test pins either,
+  and `scene_contracts.md` is silent. Decide which is true, then make the
+  normative document say it.
 - [`opt_in_hover_telemetry.md`](opt_in_hover_telemetry.md): stop forwarding hover
   to the kernel when nobody is listening. The July round deduplicated identical
   hovers, which fixes a resting mouse and not a moving one. **Blocked on one

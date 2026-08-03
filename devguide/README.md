@@ -64,6 +64,11 @@ Git retains the plan.
 
 ### Product surfaces
 
+- [`competitive_positioning.md`](competitive_positioning.md) — what the project
+  competes on, what it concedes, and which concession is structural. Includes
+  the agent-facing reading of the reproducibility thesis, and the two distinct
+  design targets it implies — the agent operating the viewer, and the assisted
+  human operating it.
 - [`canvas_minimal_ux.md`](canvas_minimal_ux.md)
 - [`image_export_direction.md`](image_export_direction.md)
 - [`addon_panel_widget_contract.md`](addon_panel_widget_contract.md)
