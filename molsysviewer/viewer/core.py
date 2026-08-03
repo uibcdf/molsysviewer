@@ -2812,6 +2812,8 @@ class MolSysView(
         include_popout: bool = True,
         mode: str = "standalone",
         inline_messages: bool = True,
+        runtime: str | Sequence[str] | None = None,
+        runtime_assets_dir: str | None = None,
         runtime_urls: Sequence[str] | None = None,
         host_event_transport: str | None = None,
         skip_digestion: bool = False,
@@ -2834,13 +2836,47 @@ class MolSysView(
             If ``True`` (default), include the popout button and allow opening a popout window.
         mode:
             - ``"standalone"`` (default): produce a self-contained HTML using the widget embed machinery.
-            - ``"lite"``: produce a lightweight HTML that loads the runtime from the CDN
-              and replays messages (suitable for embedded docs-light views).
+            - ``"lite"``: produce a lightweight HTML that loads a shared runtime and
+              replays messages (suitable for embedded docs-light views).
         inline_messages:
             Only used when ``mode="lite"``. If ``True`` (default), embed the replay messages inline in the HTML.
+        runtime:
+            Only used when ``mode="lite"``. Where the exported page finds the runtime.
+
+            - ``"local"`` (default): place the runtime that ships with this
+              installation next to the export and address it by relative path.
+              Version-exact with the scene by construction, and it needs no
+              network when the page is opened.
+            - ``"cdn"``: address the published package on jsDelivr, pinned to this
+              exact version. Smaller output, at the cost of depending on that
+              version existing in the registry for as long as the page is read.
+            - a sequence of URLs: explicit candidates, tried in order until one
+              loads. Use it to express, for example, a local asset with the CDN
+              as a fallback.
+        runtime_assets_dir:
+            Only used when ``runtime="local"``. Directory that holds the shared
+            runtime. Defaults to the directory of ``output_filename``, so a lone
+            export is self-sufficient; point several views at one directory to
+            share a single copy.
         """
         if mode not in {"standalone", "lite"}:
             raise ValueError("view.export.html(mode=...) must be 'standalone' or 'lite'.")
+
+        if mode == "standalone" and (runtime is not None or runtime_assets_dir is not None):
+            # Refused rather than ignored: a standalone export carries the runtime
+            # inside it, so accepting an argument that selects one would promise
+            # something the output cannot honour.
+            raise ValueError(
+                "view.export.html(runtime=..., runtime_assets_dir=...) applies to mode='lite'. "
+                "A standalone export embeds the runtime, so there is nothing to point at."
+            )
+
+        if mode == "lite" and runtime_urls is None:
+            runtime_urls = self._resolve_lite_runtime_urls(
+                output_filename,
+                runtime=runtime,
+                runtime_assets_dir=runtime_assets_dir,
+            )
 
         # If the frontend is live, request a fresh camera snapshot so exports
         # reflect the latest user view (best-effort, no hard dependency).
@@ -2869,6 +2905,55 @@ class MolSysView(
             )
         with open(output_filename, "w", encoding="utf-8") as f:
             f.write(html)
+
+    def _resolve_lite_runtime_urls(
+        self,
+        output_filename: str,
+        *,
+        runtime: str | Sequence[str] | None,
+        runtime_assets_dir: str | None,
+    ) -> list[str]:
+        """Turn the public ``runtime`` selection into runtime candidate URLs."""
+        from pathlib import Path
+
+        from .._private.runtime_asset import (
+            is_release_version,
+            place_runtime_asset,
+            relative_runtime_url,
+        )
+
+        if runtime is not None and not isinstance(runtime, str):
+            return list(runtime)
+
+        if runtime == "cdn":
+            from .._version import __version__ as _pkg_version
+
+            if not is_release_version(_pkg_version):
+                # The URL would be written now and fail months later, on somebody
+                # else's website. Development versions are never published, so this
+                # is knowable here and costs no network call.
+                raise ValueError(
+                    f"view.export.html(runtime='cdn') needs a released version, and this "
+                    f"installation reports {_pkg_version!r}. Export from a release, or use "
+                    "runtime='local' to carry the runtime that is already installed."
+                )
+            return [self._lite_runtime_cdn_url()]
+
+        # Default, and the explicit "local": the runtime shipped in this package.
+        assets_dir = (
+            Path(runtime_assets_dir)
+            if runtime_assets_dir is not None
+            else Path(output_filename).resolve().parent
+        )
+        asset = place_runtime_asset(assets_dir)
+        return [relative_runtime_url(output_filename, asset)]
+
+    @staticmethod
+    def _lite_runtime_cdn_url() -> str:
+        from .._version import __version__ as _pkg_version
+
+        base_version = _pkg_version.split("+", 1)[0]
+        return f"https://cdn.jsdelivr.net/npm/@uibcdf/molsysviewer@{base_version}/dist/viewer.js"
 
     def _request_camera_snapshot(self, timeout_s: float = 0.35) -> bool:
         """Ask the frontend for a camera snapshot (best-effort)."""
@@ -3428,12 +3513,11 @@ class MolSysView(
         host_event_transport: str | None = None,
     ) -> str:
         """Create a lightweight HTML that loads a shared runtime and replays messages."""
-        # This HTML is meant to be embedded and load the runtime from the CDN
-        # (jsDelivr). Keep it independent from the widget manager to avoid
-        # bundling megabytes per example.
-        from .._version import __version__ as _pkg_version
-        base_version = _pkg_version.split("+", 1)[0]
-        runtime_cdn = f"https://cdn.jsdelivr.net/npm/@uibcdf/molsysviewer@{base_version}/dist/viewer.js"
+        # This HTML is meant to be embedded and load a *shared* runtime, rather
+        # than bundling megabytes per example. `_write_html_impl` resolves which
+        # one from the public `runtime` argument; the CDN remains the fallback
+        # only for internal callers that pass no candidates of their own.
+        runtime_cdn = self._lite_runtime_cdn_url()
 
         ui_config = {
             "show_controls": bool(include_controls),

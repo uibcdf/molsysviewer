@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
@@ -107,9 +108,19 @@ class ExportManager:
         include_popout: bool = True,
         mode: str = "standalone",
         inline_messages: bool = True,
+        runtime: str | Sequence[str] | None = None,
+        runtime_assets_dir: str | None = None,
         skip_digestion: bool = False,
     ) -> None:
-        """Export the current viewer scene to an HTML file."""
+        """Export the current viewer scene to an HTML file.
+
+        With ``mode="lite"`` the page loads a shared runtime instead of carrying
+        one. ``runtime`` selects where it comes from — by default the runtime
+        installed with this package, copied next to the export and addressed by
+        relative path, so the result keeps working offline and does not depend on
+        a registry entry surviving. See
+        ``MolSysView._write_html_impl`` for the full argument documentation.
+        """
         self._view._write_html_impl(  # noqa: SLF001
             output_filename,
             title=title,
@@ -117,6 +128,8 @@ class ExportManager:
             include_popout=include_popout,
             mode=mode,
             inline_messages=inline_messages,
+            runtime=runtime,
+            runtime_assets_dir=runtime_assets_dir,
         )
 
     @signal(tags=["export", "image"], extra_factory=_export_image_signal_extra)

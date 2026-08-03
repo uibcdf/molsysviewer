@@ -7,6 +7,8 @@ from .basic import (
 )
 from . import benchmark
 from .benchmark import run_benchmarks
+from . import runtime_asset
+from .runtime_asset import export_runtime_asset
 
 __all__ = [
     "basic",
@@ -16,4 +18,6 @@ __all__ = [
     "merge",
     "benchmark",
     "run_benchmarks",
+    "runtime_asset",
+    "export_runtime_asset",
 ]

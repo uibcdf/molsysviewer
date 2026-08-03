@@ -29,7 +29,9 @@ def test_e2e_runner_inventory_matches_every_scientific_suite():
     # Studio/Add-ons window shows its panels rather than the welcome card.
     # 28 since 2026-08-01: `global-reprs-across-loads`, which pins that a second
     # load does not leave the whole pointing at the structure it replaced.
-    assert len(expected) == 28
+    # 29 since 2026-08-02: `endpoint-lifecycle`, which pins that closing a popup
+    # releases only that endpoint's transfer state (Phase 5).
+    assert len(expected) == 29
     assert declared == expected
 
 

@@ -26,4 +26,8 @@ def test_export_html_namespace_delegates(monkeypatch, tmp_path):
         "include_popout": False,
         "mode": "lite",
         "inline_messages": True,
+        # Forwarded as given, so the runtime selection is resolved by the
+        # implementation and never quietly defaulted in the public wrapper.
+        "runtime": None,
+        "runtime_assets_dir": None,
     }
