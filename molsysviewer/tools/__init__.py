@@ -11,6 +11,8 @@ from . import runtime_asset
 from .runtime_asset import export_runtime_asset
 from . import embed
 from .embed import IframeMarkup, embed_iframe
+from . import preview as preview_module
+from .preview import preview
 
 __all__ = [
     "basic",
@@ -25,4 +27,5 @@ __all__ = [
     "embed",
     "embed_iframe",
     "IframeMarkup",
+    "preview",
 ]

@@ -26,7 +26,7 @@ def test_write_html_requests_camera_snapshot_when_ready(monkeypatch, tmp_path):
         return True
 
     monkeypatch.setattr(view, "_request_camera_snapshot", fake_request)
-    monkeypatch.setattr(view, "_build_standalone_html", lambda *args, **kwargs: "HTML")
+    monkeypatch.setattr(view, "_build_lite_html", lambda *args, **kwargs: "HTML")
 
     outfile = tmp_path / "out.html"
     view.export.html(str(outfile))

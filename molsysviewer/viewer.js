@@ -167835,13 +167835,14 @@ async function bootDocsView(opts) {
     panelModeStyle,
     hasInitialStructures: trajInfo.hasStructures
   });
+  const runtimeSource = typeof opts.runtimeSource === "string" ? opts.runtimeSource : "";
   const popupMgr = new PopupHostManager({
     moduleUrl: typeof opts.runtimeUrl === "string" ? opts.runtimeUrl : void 0,
-    source: "",
+    source: runtimeSource,
     viewerId: typeof ui.runtime_viewer_id === "string" ? ui.runtime_viewer_id : void 0,
     sessionId: typeof ui.runtime_session_id === "string" ? ui.runtime_session_id : void 0
   });
-  const enablePopout = !!ui.enable_popout && !!opts.runtimeUrl;
+  const enablePopout = !!ui.enable_popout && (!!opts.runtimeUrl || !!runtimeSource);
   const model = {
     get: (k) => k in ui ? ui[k] : void 0,
     on: (_, __) => {

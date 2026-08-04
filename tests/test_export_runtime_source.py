@@ -43,6 +43,17 @@ def _runtime_candidates(html_path: Path) -> list[str]:
     return json.loads(match.group(1))
 
 
+def _embedded_runtime(html_path: Path) -> str:
+    html = html_path.read_text(encoding="utf-8")
+    match = re.search(
+        r'<script id="molsysviewer-runtime-source" type="application/json">(.*?)</script>',
+        html,
+        re.DOTALL,
+    )
+    assert match is not None, "the exported page has no slot for an embedded runtime"
+    return json.loads(match.group(1))
+
+
 # --- the headline acceptance -------------------------------------------------
 
 
@@ -179,6 +190,37 @@ def test_release_version_detection(version, released):
     assert is_release_version(version) is released
 
 
+# --- the tail that rescues a shared view opened from disk ---------------------
+
+
+def test_a_released_export_keeps_the_registry_as_a_last_resort(tmp_path, monkeypatch):
+    """Local first, always. The CDN answers only where the local copy cannot.
+
+    A shared view opened straight from disk cannot import its sibling runtime —
+    opaque origin — and the network is the only road left. Pinned exact, so it is
+    the same runtime, not a newer one.
+    """
+    monkeypatch.setattr("molsysviewer._version.__version__", "0.20.0")
+    output = tmp_path / "view.html"
+    _view().export.html(str(output), shared_runtime=str(tmp_path), skip_digestion=True)
+
+    candidates = _runtime_candidates(output)
+
+    assert candidates[0] == f"./{RUNTIME_ASSET_NAME}", "the local copy stopped being first"
+    assert candidates[-1] == (
+        "https://cdn.jsdelivr.net/npm/@uibcdf/molsysviewer@0.20.0/dist/viewer.js"
+    )
+
+
+def test_a_development_export_gets_no_registry_tail(tmp_path, monkeypatch):
+    """The URL would be dead: no development version is ever published."""
+    monkeypatch.setattr("molsysviewer._version.__version__", "0.20.0+96.g6362914c.dirty")
+    output = tmp_path / "view.html"
+    _view().export.html(str(output), shared_runtime=str(tmp_path), skip_digestion=True)
+
+    assert _runtime_candidates(output) == [f"./{RUNTIME_ASSET_NAME}"]
+
+
 # --- explicit candidates and refusals ----------------------------------------
 
 
@@ -193,14 +235,24 @@ def test_explicit_candidates_are_preserved_in_order(tmp_path):
 
 
 def test_without_shared_runtime_the_file_stands_alone(tmp_path):
-    """The default carries everything, so it declares no external runtime at all."""
+    """The default carries everything, so it addresses nothing.
+
+    Not one URL, not one candidate, not one sibling file: what makes this export
+    openable from a disk with no network is that there is nothing left to fetch.
+    """
     output = tmp_path / "view.html"
     _view().export.html(str(output), skip_digestion=True)
+    html = output.read_text(encoding="utf-8")
 
-    assert "molsysviewer-runtime-candidates" not in output.read_text(encoding="utf-8")
+    assert _runtime_candidates(output) == []
+    assert _embedded_runtime(output).startswith("// @generated"), (
+        "the self-contained export does not carry the runtime it needs"
+    )
     assert not (tmp_path / RUNTIME_ASSET_NAME).exists(), (
         "a self-contained export placed a shared asset it does not use"
     )
+    for host in ("cdn.jsdelivr.net", "cdnjs.cloudflare.com", "unpkg.com"):
+        assert host not in html, f"a self-contained export still reaches {host}"
 
 
 # --- computing the embed path ------------------------------------------------

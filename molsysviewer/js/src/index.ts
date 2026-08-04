@@ -88,6 +88,7 @@ export async function bootDocsView(opts: {
     initialMessages?: ViewerMessage[];
     ui?: any;
     runtimeUrl?: string;
+    runtimeSource?: string;
 }) {
     const debug = !!opts.ui?.debug_js;
     const sendLog = (level: string, ...args: any[]) => {
@@ -190,15 +191,21 @@ export async function bootDocsView(opts: {
         hasInitialStructures: trajInfo.hasStructures,
     });
 
-    // Popup manager: prefer runtime URL (docs-light), otherwise disable popout.
+    // Popup manager: an exported page hands over whichever way it got the
+    // runtime. A shared page knows a URL; a self-contained one carries the
+    // source, and the popup window builds its own blob from it — a URL to a
+    // blob made here would not resolve there when the page came from disk.
+    const runtimeSource = typeof opts.runtimeSource === "string" ? opts.runtimeSource : "";
     const popupMgr = new PopupHostManager({
         moduleUrl: typeof opts.runtimeUrl === "string" ? opts.runtimeUrl : undefined,
-        source: "",
+        source: runtimeSource,
         viewerId: typeof ui.runtime_viewer_id === "string" ? ui.runtime_viewer_id : undefined,
         sessionId: typeof ui.runtime_session_id === "string" ? ui.runtime_session_id : undefined,
     });
 
-    const enablePopout = !!ui.enable_popout && !!opts.runtimeUrl;
+    // Without one of the two the popup has no runtime to boot, and a button that
+    // opens an empty window is worse than no button.
+    const enablePopout = !!ui.enable_popout && (!!opts.runtimeUrl || !!runtimeSource);
 
     // Minimal model stub for buildControls
     const model = {

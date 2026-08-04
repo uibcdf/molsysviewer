@@ -82,10 +82,6 @@ from .interaction import InteractionMixin
 
 from .utils import quantity_value_in_unit as _quantity_value_in_unit
 
-_HTML_MANAGER_VERSION = "1.0.1"
-_WIDGETS_BASE_VERSION = "2.0.0"
-
-
 class ViewerInfo:
     """Wrapper for the dual-section output of ``MolSysView.info(source='all')``.
 
@@ -2870,25 +2866,22 @@ class MolSysView(
 
         messages = self._build_export_messages()
 
-        if not shares_runtime:
-            # Embed the canonical current-state projection so the HTML can
-            # reconstruct the scene without a live Python kernel.
-            self.widget.initial_messages = messages
-            html = self._build_standalone_html(
-                title=title,
-                include_controls=include_controls,
-                include_popout=include_popout,
-            )
-        else:
-            html = self._build_lite_html(
-                title=title,
-                include_controls=include_controls,
-                include_popout=include_popout,
-                messages=messages,
-                inline_messages=inline_messages,
-                runtime_urls=runtime_urls,
-                host_event_transport=host_event_transport,
-            )
+        # One page shape for both answers. A self-contained export carries the
+        # runtime in the file; a shared one addresses a copy. Everything else —
+        # the replayed scene, the controls, the popout — is identical, so it is
+        # built by the same template.
+        html = self._build_lite_html(
+            title=title,
+            include_controls=include_controls,
+            include_popout=include_popout,
+            messages=messages,
+            # A self-contained file that had to fetch its own scene would not be
+            # self-contained.
+            inline_messages=inline_messages if shares_runtime else True,
+            runtime_urls=runtime_urls if shares_runtime else None,
+            runtime_source=None if shares_runtime else MolSysViewerWidget._viewer_js_source,
+            host_event_transport=host_event_transport,
+        )
         with open(output_filename, "w", encoding="utf-8") as f:
             f.write(html)
 
@@ -2933,7 +2926,19 @@ class MolSysView(
             else Path(output_filename).resolve().parent
         )
         asset = place_runtime_asset(assets_dir)
-        return [relative_runtime_url(output_filename, asset)]
+        candidates = [relative_runtime_url(output_filename, asset)]
+
+        from .._version import __version__ as _pkg_version
+
+        if is_release_version(_pkg_version):
+            # A tail, never a head. The local copy is tried first and answers on
+            # any served site, so this is only reached when the page was opened
+            # straight from a disk: browsers refuse a module import across the
+            # opaque origin of a `file://` page, and there the network is the one
+            # way left. Pinned to this exact version, so it is the same runtime
+            # arriving by another road — freshness is not being smuggled in.
+            candidates.append(self._shared_runtime_cdn_url())
+        return candidates
 
     @staticmethod
     def _shared_runtime_cdn_url() -> str:
@@ -3373,121 +3378,6 @@ class MolSysView(
             skip_digestion=True,
         )
 
-    def _load_anywidget_bundle(self) -> str:
-        """Return the JS bundle for anywidget if available to inline in exports."""
-        try:
-            import anywidget  # type: ignore
-        except Exception:
-            return ""
-
-        from pathlib import Path
-
-        locations = [
-            Path(anywidget.__file__).parent / "nbextension" / "index.js",
-            Path(anywidget.__file__).parent / "labextension" / "index.js",
-        ]
-
-        sources: list[str] = []
-        for path in locations:
-            if path.exists():
-                try:
-                    src = path.read_text(encoding="utf-8")
-                    # If this bundle ends with an anonymous AMD define, give it a name
-                    # so requirejs can register it when inlined.
-                    src = src.replace(
-                        'define(["@jupyter-widgets/base"], widget_default);',
-                        'define("anywidget-inline", ["@jupyter-widgets/base"], widget_default);\n'
-                        'define("anywidget", ["anywidget-inline"], function(m){return m;});',
-                    )
-                    sources.append(src)
-                except Exception:
-                    continue
-
-        return "\n".join(sources)
-
-    def _build_standalone_html(
-        self,
-        title: str,
-        include_controls: bool = True,
-        include_popout: bool = True,
-    ) -> str:
-        """Create a minimal standalone HTML embedding only this widget."""
-        # Ensure initial_messages is in sync before exporting
-        self.widget.initial_messages = self._build_export_messages()
-
-        layout_state = self.widget.layout.get_state(drop_defaults=False)
-        widget_state = self.widget.get_state(drop_defaults=False)
-        # Override toolbar visibility for the exported HTML without mutating
-        # the live widget trait in notebooks.
-        widget_state["show_controls"] = bool(include_controls)
-        widget_state["layout"] = f"IPY_MODEL_{self.widget.layout.model_id}"
-        # Standalone exports have no live Python backend to answer the bootstrap
-        # runtime request, so inline the full runtime only in exported HTML.
-        widget_state["_esm"] = MolSysViewerWidget._viewer_js_source
-        if "popup_js_source" in widget_state:
-            widget_state["popup_js_source"] = ""
-        widget_state["enable_popout"] = bool(include_popout)
-
-        state_json = {
-            "version_major": 2,
-            "version_minor": 0,
-            "state": {
-                self.widget.layout.model_id: {
-                    "model_name": "LayoutModel",
-                    "model_module": "@jupyter-widgets/base",
-                    "model_module_version": _WIDGETS_BASE_VERSION,
-                    "state": layout_state,
-                },
-                self.widget.model_id: {
-                    "model_name": self.widget._model_name,  # type: ignore[attr-defined]
-                    "model_module": self.widget._model_module,  # type: ignore[attr-defined]
-                    "model_module_version": self.widget._model_module_version,  # type: ignore[attr-defined]
-                    "state": widget_state,
-                },
-            },
-        }
-        view_spec = {
-            "version_major": 2,
-            "version_minor": 0,
-            "model_id": self.widget.model_id,
-        }
-
-        inline_anywidget = self._load_anywidget_bundle()
-        anywidget_script = ""
-        if inline_anywidget:
-            anywidget_script = (
-                "<script>\n"
-                "requirejs.config({\n"
-                "  map: {'*': {'anywidget': 'anywidget-inline'}},\n"
-                f"  paths: {{'@jupyter-widgets/base': 'https://cdn.jsdelivr.net/npm/@jupyter-widgets/base@{_WIDGETS_BASE_VERSION}/dist/index'}}\n"
-                "});\n"
-                "</script>\n"
-                f"<script>\n{inline_anywidget}\n</script>\n"
-            )
-
-        template = f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>{title}</title>
-</head>
-<body>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@{_HTML_MANAGER_VERSION}/dist/embed-amd.js" crossorigin="anonymous"></script>
-{anywidget_script}
-<script type="application/vnd.jupyter.widget-state+json">
-{json.dumps(state_json, separators=(',', ':'))}
-</script>
-<script type="application/vnd.jupyter.widget-view+json">
-{json.dumps(view_spec, separators=(',', ':'))}
-</script>
-
-</body>
-</html>
-"""
-        return template
-
     def _build_lite_html(
         self,
         *,
@@ -3497,13 +3387,20 @@ class MolSysView(
         messages: list[dict],
         inline_messages: bool,
         runtime_urls: Sequence[str] | None = None,
+        runtime_source: str | None = None,
         host_event_transport: str | None = None,
     ) -> str:
-        """Create a lightweight HTML that loads a shared runtime and replays messages."""
-        # This HTML is meant to be embedded and load a *shared* runtime, rather
-        # than bundling megabytes per example. `_write_html_impl` resolves which
-        # one from the public `runtime` argument; the CDN remains the fallback
-        # only for internal callers that pass no candidates of their own.
+        """Create an HTML page that boots the runtime and replays the scene.
+
+        The runtime arrives one of two ways. ``runtime_source`` carries it inside
+        the file, which is what a self-contained export is; ``runtime_urls``
+        addresses copies of it, which is what a website with several views wants.
+        Carrying it wins when both are given, because a page that already holds
+        its runtime has nothing to gain from the network.
+        """
+        # `_write_html_impl` resolves the candidates from the public
+        # `shared_runtime` argument; the CDN remains the fallback only for
+        # internal callers that pass neither source nor candidates of their own.
         runtime_cdn = self._shared_runtime_cdn_url()
 
         ui_config = {
@@ -3524,8 +3421,17 @@ class MolSysView(
         messages_json = self._json_for_html_script(messages) if inline_messages else "[]"
         ui_json = self._json_for_html_script(ui_config)
 
-        runtime_candidates = list(runtime_urls or [runtime_cdn])
+        if runtime_source is not None:
+            runtime_candidates: list[str] = []
+        else:
+            runtime_candidates = list(runtime_urls or [runtime_cdn])
         runtime_candidates_json = self._json_for_html_script(runtime_candidates)
+
+        # Embedded as JSON rather than as script text: the runtime may contain
+        # `</script>` in a string literal, and `_json_for_html_script` escapes
+        # what would otherwise end the block early. One copy serves both the boot
+        # and the popout window, which builds its own blob from the same text.
+        runtime_source_json = self._json_for_html_script(runtime_source or "")
 
         template = f"""<!DOCTYPE html>
 <html lang="en">
@@ -3543,38 +3449,66 @@ class MolSysView(
   <script id="molsysviewer-ui" type="application/json">{ui_json}</script>
   <script id="molsysviewer-messages" type="application/json">{messages_json}</script>
   <script id="molsysviewer-runtime-candidates" type="application/json">{runtime_candidates_json}</script>
+  <script id="molsysviewer-runtime-source" type="application/json">{runtime_source_json}</script>
   <script type="module">
     const el = document.getElementById("molsysviewer-root");
     const ui = JSON.parse(document.getElementById("molsysviewer-ui").textContent || "{{}}");
     const messages = JSON.parse(document.getElementById("molsysviewer-messages").textContent || "[]");
     const candidates = JSON.parse(document.getElementById("molsysviewer-runtime-candidates").textContent || "[]");
+    const inlineSource = JSON.parse(document.getElementById("molsysviewer-runtime-source").textContent || '""');
+
+    const bootFrom = async (mod, moduleUrl) => {{
+      const boot = mod.bootDocsView || mod.boot_docs_view || mod.default?.bootDocsView;
+      if (typeof boot !== "function") {{
+        throw new Error("bootDocsView not found in runtime: " + (moduleUrl || "the embedded source"));
+      }}
+      await boot({{
+        el,
+        initialMessages: messages,
+        ui,
+        runtimeUrl: moduleUrl,
+        runtimeSource: inlineSource || undefined,
+      }});
+      // Allow Mol* to finish rendering all queued frames before signalling
+      // headless screenshot tools (e.g. playwright) that the scene is ready.
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      el.setAttribute("data-molsysviewer-rendered", "true");
+    }};
 
     let lastError = null;
-    for (const rel of candidates) {{
+    let booted = false;
+
+    if (inlineSource) {{
+      // A blob, not a data: or file: URL. A page opened straight from disk is an
+      // opaque origin, and importing a module across one is refused; a blob the
+      // page makes itself belongs to the page, so this is what lets a
+      // self-contained export work with no server and no network.
+      const blobUrl = URL.createObjectURL(new Blob([inlineSource], {{ type: "text/javascript" }}));
       try {{
-        const moduleUrl = new URL(rel, window.location.href).href;
-        const mod = await import(moduleUrl);
-        const boot = mod.bootDocsView || mod.boot_docs_view || mod.default?.bootDocsView;
-        if (typeof boot !== "function") {{
-          throw new Error("bootDocsView not found in runtime: " + moduleUrl);
-        }}
-        await boot({{
-          el,
-          initialMessages: messages,
-          ui,
-          runtimeUrl: moduleUrl,
-        }});
-        // Allow Mol* to finish rendering all queued frames before signalling
-        // headless screenshot tools (e.g. playwright) that the scene is ready.
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        el.setAttribute("data-molsysviewer-rendered", "true");
-        lastError = null;
-        break;
+        await bootFrom(await import(blobUrl), undefined);
+        booted = true;
       }} catch (e) {{
         lastError = e;
+      }} finally {{
+        URL.revokeObjectURL(blobUrl);
       }}
     }}
-    if (lastError) {{
+
+    if (!booted) {{
+      for (const rel of candidates) {{
+        try {{
+          const moduleUrl = new URL(rel, window.location.href).href;
+          await bootFrom(await import(moduleUrl), moduleUrl);
+          lastError = null;
+          booted = true;
+          break;
+        }} catch (e) {{
+          lastError = e;
+        }}
+      }}
+    }}
+
+    if (!booted) {{
       console.error("[MolSysViewer docs] Failed to load runtime.", lastError);
       el.textContent = "MolSysViewer failed to load. See console for details.";
     }}
