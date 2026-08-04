@@ -117,6 +117,7 @@ class ExportManager:
         include_popout: bool = True,
         shared_runtime: str | Sequence[str] | None = None,
         inline_messages: bool = True,
+        background: str = "auto",
         skip_digestion: bool = False,
     ) -> None:
         """Export the current viewer scene to an HTML file.
@@ -135,6 +136,16 @@ class ExportManager:
         published package instead of hosting anything, and a list of URLs gives
         explicit candidates tried in order. See ``MolSysView._write_html_impl``
         for the full argument documentation.
+
+        ``background`` decides what the page sits on, which matters because it is
+        read somewhere you cannot see:
+
+        - ``"auto"`` (default) — follow the reader's light/dark preference.
+        - ``"transparent"`` — clear the canvas with alpha so an embedded view
+          shows the host page's own background, whatever colour that is. The right
+          answer for a site whose theme the reader can switch by hand, which no
+          preference query reports.
+        - ``"white"`` / ``"dark"`` — fix it, and ignore both.
         """
         self._view._write_html_impl(  # noqa: SLF001
             output_filename,
@@ -143,6 +154,7 @@ class ExportManager:
             include_popout=include_popout,
             shared_runtime=shared_runtime,
             inline_messages=inline_messages,
+            background=background,
         )
 
     @signal(tags=["export", "image"], extra_factory=_export_image_signal_extra)

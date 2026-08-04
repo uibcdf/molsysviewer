@@ -2810,6 +2810,7 @@ class MolSysView(
         inline_messages: bool = True,
         runtime_urls: Sequence[str] | None = None,
         host_event_transport: str | None = None,
+        background: str = "auto",
         skip_digestion: bool = False,
     ) -> None:
         """Export this viewer widget to an HTML file.
@@ -2880,6 +2881,7 @@ class MolSysView(
             inline_messages=inline_messages if shares_runtime else True,
             runtime_urls=runtime_urls if shares_runtime else None,
             runtime_source=None if shares_runtime else MolSysViewerWidget._viewer_js_source,
+            background=background,
             host_event_transport=host_event_transport,
         )
         with open(output_filename, "w", encoding="utf-8") as f:
@@ -3384,6 +3386,7 @@ class MolSysView(
         inline_messages: bool,
         runtime_urls: Sequence[str] | None = None,
         runtime_source: str | None = None,
+        background: str = "auto",
         host_event_transport: str | None = None,
     ) -> str:
         """Create an HTML page that boots the runtime and replays the scene.
@@ -3410,6 +3413,10 @@ class MolSysView(
             "debug_js": bool(getattr(self.widget, "debug_js", False)),
             "runtime_viewer_id": self._binary_viewer_id,
             "runtime_session_id": self._binary_session_id,
+            # "auto": the canvas takes the reader's light/dark preference.
+            # "transparent": it also clears with alpha, so an embedded view shows
+            # the host page's own background instead of our nearest colour.
+            "background_mode": str(background),
         }
         if host_event_transport:
             ui_config["host_event_transport"] = str(host_event_transport)
@@ -3429,6 +3436,38 @@ class MolSysView(
         # and the popout window, which builds its own blob from the same text.
         runtime_source_json = self._json_for_html_script(runtime_source or "")
 
+        # A page cannot ask CSS whether it is inside somebody else's page, and the
+        # answer decides whether its background should exist at all: embedded, the
+        # host's belongs there; alone, ours does. This runs before anything is
+        # painted, so the transparent case never shows a colour it then removes.
+        # The page's own background, so a reader on a dark site does not watch a
+        # white rectangle for the seconds the runtime takes to boot. The colours
+        # are the ones the canvas itself uses, so there is no seam once it lands.
+        _LIGHT, _DARK = "#fcfbf9", "#101010"
+        if background == "white":
+            background_css = f"    html, body {{{{ background: {_LIGHT}; }}}}"
+        elif background == "dark":
+            background_css = f"    html, body {{{{ background: {_DARK}; }}}}"
+        else:
+            background_css = (
+                f"    html, body {{{{ background: {_LIGHT}; }}}}\n"
+                "    @media (prefers-color-scheme: dark) {{\n"
+                f"      html, body {{{{ background: {_DARK}; }}}}\n"
+                "    }}"
+            )
+
+        background_head = ""
+        if background == "transparent":
+            background_head = """
+  <script>
+    if (window.self !== window.top) {
+      document.documentElement.style.background = "transparent";
+      document.addEventListener("DOMContentLoaded", function () {
+        document.body.style.background = "transparent";
+      });
+    }
+  </script>"""
+
         template = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -3438,7 +3477,8 @@ class MolSysView(
   <style>
     html, body {{ margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }}
     #molsysviewer-root {{ width: 100%; height: 100%; min-height: 300px; position: relative; }}
-  </style>
+{background_css}
+  </style>{background_head}
 </head>
 <body>
   <div id="molsysviewer-root"></div>

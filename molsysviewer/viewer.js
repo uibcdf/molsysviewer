@@ -167854,6 +167854,7 @@ async function bootDocsView(opts) {
     if (trajInfo.frameCount !== void 0) {
       c8.trajectory.setExpectedFrameCount(trajInfo.frameCount);
     }
+    applyExportedBackground(c8, typeof ui.background_mode === "string" ? ui.background_mode : "auto");
     const sendSync = (msg) => {
       if (!msg) return;
       popupReplay.record(msg);
@@ -167940,6 +167941,32 @@ async function bootDocsView(opts) {
       notifyHost({ event: "frontend_error", phase: "init", error: message });
     }
   })();
+}
+function applyExportedBackground(controller, mode) {
+  const transparent = mode === "transparent";
+  const clearWithAlpha = () => {
+    if (transparent) controller.plugin?.canvas3d?.setProps({ transparentBackground: true });
+  };
+  const apply = (dark) => {
+    void Promise.resolve(controller.toggleBackground(dark ? "dark" : "light")).then(clearWithAlpha);
+  };
+  if (mode === "white" || mode === "dark") {
+    apply(mode === "dark");
+    return;
+  }
+  const query2 = window.matchMedia?.("(prefers-color-scheme: dark)");
+  if (!query2) {
+    clearWithAlpha();
+    return;
+  }
+  clearWithAlpha();
+  if (query2.matches) apply(true);
+  const onChange = (event) => apply(event.matches);
+  if (typeof query2.addEventListener === "function") {
+    query2.addEventListener("change", onChange);
+  } else if (typeof query2.addListener === "function") {
+    query2.addListener(onChange);
+  }
 }
 function setupWidgetResizer(host, target, onResize) {
   host.style.position = "relative";

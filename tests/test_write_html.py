@@ -28,4 +28,7 @@ def test_export_html_namespace_delegates(monkeypatch, tmp_path):
         # implementation and never quietly defaulted in the public wrapper.
         "shared_runtime": str(tmp_path),
         "inline_messages": True,
+        # Forwarded as given for the same reason: what the page sits on is
+        # resolved by the implementation, not defaulted twice.
+        "background": "auto",
     }

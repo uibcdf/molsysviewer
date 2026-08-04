@@ -222,6 +222,8 @@ export async function bootDocsView(opts: {
             c.trajectory.setExpectedFrameCount(trajInfo.frameCount);
         }
 
+        applyExportedBackground(c, typeof ui.background_mode === "string" ? ui.background_mode : "auto");
+
         const sendSync = (msg: ViewerMessage) => {
             if (!msg) return;
             popupReplay.record(msg);
@@ -314,6 +316,78 @@ export async function bootDocsView(opts: {
             notifyHost({ event: "frontend_error", phase: "init", error: message });
         }
     })();
+}
+
+/**
+ * Make an exported view follow the reader's light/dark preference.
+ *
+ * A published view is read inside somebody else's page, and a bright white box
+ * on a dark documentation site is the complaint that brought this up. The page
+ * cannot ask the host what theme it is in — an iframe is a separate document,
+ * and reaching across is either blocked or requires the host to cooperate — but
+ * it can ask the *reader*, and that is the same signal the host itself uses by
+ * default: `prefers-color-scheme` follows the browser or the operating system.
+ *
+ * So no protocol, no configuration, and no export-time decision baked into a
+ * file that may be read years later on a screen nobody has seen. It also works
+ * for a self-contained file opened on its own, where there is no host at all.
+ *
+ * What it does **not** cover: a site whose theme was switched by hand against
+ * the reader's system preference. That needs the host to say so, and is the
+ * `postMessage` half of MolSysMT's proposal — not implemented, because it needs
+ * cooperation from every host and this needs none.
+ *
+ * Only exported pages call this. In a notebook the surrounding application owns
+ * the theme, and JupyterLab's own dark mode is not this media query.
+ */
+function applyExportedBackground(controller: any, mode: string) {
+    const transparent = mode === "transparent";
+
+    // Transparency does not depend on the colour scheme, and `toggleBackground`
+    // rewrites the renderer props, so it has to be re-asserted after every change
+    // rather than set once at boot.
+    const clearWithAlpha = () => {
+        if (transparent) controller.plugin?.canvas3d?.setProps({ transparentBackground: true });
+    };
+    const apply = (dark: boolean) => {
+        void Promise.resolve(controller.toggleBackground(dark ? "dark" : "light"))
+            .then(clearWithAlpha);
+    };
+
+    // Fixed by the author: the reader's preference is not consulted at all.
+    if (mode === "white" || mode === "dark") {
+        apply(mode === "dark");
+        return;
+    }
+
+    const query = window.matchMedia?.("(prefers-color-scheme: dark)");
+    if (!query) {
+        clearWithAlpha();
+        return;
+    }
+
+    // The page around the canvas is the exported HTML's own media query, so it is
+    // already right before this runs — a 6 MB runtime takes long enough to boot
+    // that doing it here would show a white flash on a dark page. This owns the
+    // canvas only.
+    //
+    // `transparent` is the other half of the same question. Clearing the canvas
+    // with alpha instead of a colour lets an embedded view show the host page's
+    // exact background, whatever it is, rather than our closest guess. It does
+    // not remove the need for this function: dark mode is also a *lighting*
+    // change — a white key light — and no amount of transparency tells us which
+    // way the page around us reads.
+    clearWithAlpha();
+    if (query.matches) apply(true);
+
+    // Readers do switch while reading, and a view that stays bright afterwards is
+    // the same complaint one theme change later.
+    const onChange = (event: MediaQueryListEvent) => apply(event.matches);
+    if (typeof query.addEventListener === "function") {
+        query.addEventListener("change", onChange);
+    } else if (typeof (query as any).addListener === "function") {
+        (query as any).addListener(onChange);
+    }
 }
 
 function setupWidgetResizer(

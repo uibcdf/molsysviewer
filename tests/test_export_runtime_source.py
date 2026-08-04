@@ -326,3 +326,77 @@ def test_tools_export_runtime_asset_places_the_bundled_runtime(tmp_path):
 
     assert placed == (tmp_path / RUNTIME_ASSET_NAME).resolve()
     assert placed.read_bytes() == runtime_asset_source().read_bytes()
+
+
+# --- what the page sits on ----------------------------------------------------
+
+
+def _page(tmp_path, **kwargs) -> str:
+    output = tmp_path / "view.html"
+    _view().export.html(str(output), skip_digestion=True, **kwargs)
+    return output.read_text(encoding="utf-8")
+
+
+def _page_css(html: str) -> str:
+    """The page's own stylesheet.
+
+    Not the whole file: a self-contained export carries the runtime inside it,
+    and the runtime mentions `prefers-color-scheme` itself. Asserting over the
+    whole document would pass, or fail, for the wrong reason.
+    """
+    match = re.search(r"<style>(.*?)</style>", html, re.DOTALL)
+    assert match is not None, "the exported page has no stylesheet"
+    return match.group(1)
+
+
+def test_the_default_page_follows_the_reader(tmp_path):
+    """An exported view is read on a screen its author never sees.
+
+    So the default asks the reader, through the one signal every browser
+    reports, and asks it in CSS as well as at runtime: the runtime is megabytes
+    and takes seconds, and a white rectangle on a dark site for those seconds is
+    the complaint this exists to answer.
+    """
+    html = _page(tmp_path)
+
+    assert "prefers-color-scheme: dark" in _page_css(html)
+    assert '"background_mode":"auto"' in html
+    assert "window.self !== window.top" not in html, (
+        "the default page gave away its background to whatever embeds it"
+    )
+
+
+def test_a_transparent_page_defers_to_the_host_only_when_embedded(tmp_path):
+    """Alone it must still have a background; embedded it must have none.
+
+    No CSS selector distinguishes the two, so the page decides it in a script
+    that runs before anything is painted — otherwise the transparent case shows
+    a colour and then takes it away.
+    """
+    html = _page(tmp_path, background="transparent")
+
+    assert '"background_mode":"transparent"' in html
+    assert "window.self !== window.top" in html
+    assert "prefers-color-scheme: dark" in _page_css(html), (
+        "a transparent page opened on its own would have no background at all"
+    )
+
+
+@pytest.mark.parametrize("fixed", ["white", "dark"])
+def test_a_fixed_page_ignores_the_reader(tmp_path, fixed):
+    html = _page(tmp_path, background=fixed)
+
+    assert f'"background_mode":"{fixed}"' in html
+    assert "prefers-color-scheme" not in _page_css(html), (
+        f"background={fixed!r} still consulted the reader's preference"
+    )
+
+
+def test_the_html_export_refuses_a_background_it_cannot_honour(tmp_path):
+    """`"current"` is an image-export answer: there is no current anything here."""
+    from molsysviewer._private.exceptions import ArgumentError
+
+    with pytest.raises(ArgumentError):
+        _view().export.html(str(tmp_path / "v.html"), background="current")
+    with pytest.raises(ArgumentError):
+        _view().export.html(str(tmp_path / "v.html"), background="#ffffff")
