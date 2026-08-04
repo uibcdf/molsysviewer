@@ -10,23 +10,18 @@ archive only after the implementation and regression tests are complete.
 
 ## Current triage
 
-- [`standalone_export_mutates_live_widget_state.md`](standalone_export_mutates_live_widget_state.md):
-  `export.html(mode="standalone")` writes the scene projection into the live
-  widget's synced state, so any notebook that exports while executing carries it
-  — 719 KB measured for 1TCD, and it can never render without a kernel. The same
-  function already overrides three other fields in the exported dictionary
-  instead; `initial_messages` is the exception.
-- [`docs_lite_views_pinned_to_unpublished_npm_version.md`](docs_lite_views_pinned_to_unpublished_npm_version.md):
-  the docs build rewrites every lite view's CDN link to the current version
-  without checking that it exists. npm stops at `0.7.0`, Python is at `0.20.0`,
-  so the next docs deploy breaks all twelve interactive views at once — with a
-  green Sphinx build. Verified against the deployed site and the registries.
 - [`standalone_qt_live_demo_reload.md`](standalone_qt_live_demo_reload.md):
   replacing a loaded demo does not update the real Qt scene. It requires a real
   Qt/WebGL window for the next diagnostic pass.
 
 The movie camera-snapshot defect is confirmed but explicitly deferred under
 [`post_1.0/`](post_1.0/README.md).
+
+Two reports were resolved on 2026-08-04 by the export rework and moved to
+[`../archive/`](../archive/README.md): the docs-lite views pinned to an
+unpublished npm version, and the standalone export mutating live widget state.
+Both disappeared as consequences of collapsing the two export templates into one,
+not as separate patches.
 
 The former color-digester finding is resolved: `value_range.py` and
 `replace.py` exist, their public surfaces are covered by

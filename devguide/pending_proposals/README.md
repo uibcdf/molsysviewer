@@ -52,10 +52,17 @@ is also explicitly post-1.0.
   fallback is sound; paying for it eagerly is not.
 - [`embedding_views_in_external_documentation.md`](embedding_views_in_external_documentation.md):
   how a third party publishes views on their own website. Criterion decided —
-  **reproducibility over freshness**: `mode="lite"` sources the runtime from a
-  local asset copied from the installed package, not from a CDN pinned to a
-  version that may never have been published. Closes the pending lite-view bug
-  as a consequence. MolSysMT collaborators are blocked on this.
+  **reproducibility over freshness**: a shared runtime is copied from the
+  installed package, not addressed on a CDN pinned to a version that may never
+  have been published. Executed but for the MolSysMT port. §8 records the
+  2026-08-04 amendment: the export called self-contained fetched three CDNs and
+  did not render offline, and the shared one could not be opened from a disk at
+  all; both now come from one template. Two filed defects closed as consequences.
+- [`classic_script_runtime_for_offline_bundles.md`](classic_script_runtime_for_offline_bundles.md):
+  **not to be implemented yet.** Building the runtime as a classic script instead
+  of ESM, which would let many shared views open from a disk with no server. The
+  research and the browser measurements are done and recorded; the trigger is a
+  real user with that need.
 - [`first_read_comprehension_gaps_2026_08.md`](first_read_comprehension_gaps_2026_08.md):
   what one uninterrupted first read of this repository concluded wrongly, with
   the document that caused each wrong turn and the artifact that disproved it.

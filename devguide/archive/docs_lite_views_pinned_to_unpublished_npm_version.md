@@ -1,5 +1,20 @@
 # Docs lite views are rewritten to an npm version that was never published
 
+**RESOLVED 2026-08-04.** Kept for the evidence, which is still the clearest
+account of how a green build produced a dead site.
+
+The pinned-CDN mechanism this describes no longer exists. A shared runtime is
+copied from the installed package and addressed relatively
+(`_private/runtime_asset.py`), the `conf.py` rewrite hook is gone, and
+`tests/test_docs_static_views.py` fails if any committed view reaches the
+network. The CDN survives only as an opt-in (`shared_runtime="cdn"`, which
+refuses to write a URL from an unpublishable version) and as a last-resort tail
+candidate on released exports, which is reached only when a page is opened from
+a disk. Recommendation 2 stands and is unfinished: publishing to npm is a release
+gate, `path_to_1_0.md` task 7.
+
+---
+
 **Status:** confirmed against the deployed site and the public registries on
 2026-08-03. Not yet visible to users, because the published site is frozen at
 the last version that reached npm. It breaks on the next docs deploy.

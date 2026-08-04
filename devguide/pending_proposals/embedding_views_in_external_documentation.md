@@ -1,12 +1,12 @@
 # Embedding views in external documentation
 
-**Status:** approved. The governing decision, the proposed names and the fate of
-the CDN path are all confirmed (2026-08-03). Ready to execute in the order of
-§5.
+**Status:** executed except for §5.5 (port to MolSysMT) and §5.6 (Sphinx
+extension, deferred). Steps 1, 3 and 4 landed 2026-08-03; the export rework of
+2026-08-04 is recorded in §8 and changed what "self-contained" means.
 
 **Origin:** MolSysMT collaborators are blocked on publishing views in their
 documentation. Investigating why produced
-[`../pending_bugs/docs_lite_views_pinned_to_unpublished_npm_version.md`](../pending_bugs/docs_lite_views_pinned_to_unpublished_npm_version.md)
+[`../archive/docs_lite_views_pinned_to_unpublished_npm_version.md`](../archive/docs_lite_views_pinned_to_unpublished_npm_version.md)
 and the documentation findings in
 [`first_read_comprehension_gaps_2026_08.md`](first_read_comprehension_gaps_2026_08.md).
 This proposal is the design that closes both.
@@ -133,7 +133,11 @@ Two helpers in `molsysviewer.tools`, already public per `public_api.md`:
 ```python
 msv.tools.export_runtime_asset("docs/_static")      # place the asset alone
 msv.tools.embed_iframe(view, path=page)             # the <iframe>, path computed
+msv.tools.preview("docs/_build/html")               # serve it, so a browser will render it
 ```
+
+*(`preview` added 2026-08-04; see §8. Also `python -m molsysviewer.tools.preview
+docs/_build/html`, which is the form a docs author actually types.)*
 
 `embed_iframe` exists because counting `../` by hand is the one step of embedding
 that fails silently — the export succeeds, the build succeeds, and the reader
@@ -220,3 +224,52 @@ tighter surface costs an afternoon now and two repositories later.)*
 - Whether the copied asset is committed or generated at build time. That is the
   adopting project's repository policy, and the documentation should present
   both without prescribing.
+
+## 8. Amendment, 2026-08-04: what "self-contained" was hiding
+
+Executing §5.3 exposed a question this proposal never asked: **can the reader
+open the file?**
+
+Measured on real exports:
+
+- a **shared** view cannot be opened from a disk at all. A page with no origin
+  may not import the runtime beside it — see
+  [`classic_script_runtime_for_offline_bundles.md`](classic_script_runtime_for_offline_bundles.md)
+  for the browser evidence. On a served site the question never arises, which is
+  why it went unnoticed;
+- the **self-contained** export, meanwhile, fetched `require.js` from cdnjs and
+  two `@jupyter-widgets` bundles from jsDelivr at open time. It opened from a
+  disk, but only with a network. Six and a half megabytes that did not render on
+  a plane.
+
+So the default that this proposal chose for "one file to send someone" (§3.2) was
+right about the shape and wrong about the file.
+
+**Decided and done.** Both shapes are now built by `_build_lite_html`. A
+self-contained export embeds the runtime in the page and boots it from a blob the
+page makes itself — a blob belongs to the page, so it survives an opaque origin —
+and reaches no third-party host at all. The ipywidgets template, the three CDN
+dependencies and the second export path are gone.
+
+Three consequences worth carrying forward:
+
+1. **The recommendation in §3.2 is now defensible.** Self-contained means: opens
+   with a double click, no server, no network. Shared means: for a served site.
+   The user page states both as a table rather than implying both work
+   everywhere.
+2. **`tests/test_exported_page_opens_from_disk.py`** opens the exported file in a
+   real browser, because no amount of reading the file can tell you whether a
+   browser will boot it. Mutation-verified: address a sibling instead of
+   embedding, and it reports the CORS refusal.
+3. **A released export carries the pinned CDN URL as a tail candidate**, tried
+   only after the local copy fails — which happens only from a disk. Same
+   version, another road; freshness is not smuggled in. Development versions get
+   no tail, because that URL was never published.
+
+Two filed defects closed as consequences rather than as patches: the docs-lite
+CDN pin and the standalone export mutating live widget state. Both are in
+[`../archive/`](../archive/README.md).
+
+Still open from this amendment: nothing blocks MolSysMT. The uncovered case —
+many shared views opened offline from a disk — is parked with its research in
+[`classic_script_runtime_for_offline_bundles.md`](classic_script_runtime_for_offline_bundles.md).

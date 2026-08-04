@@ -15,9 +15,11 @@ the runtime it is running, one about the actions it can complete.
 
 ## Part A — Scene and runtime may drift, and nothing notices
 
-A `mode="lite"` export addresses a shared runtime. Every export re-places that
-asset, overwriting it when the installed version differs, so the asset always
-matches whoever exported **last**.
+An export that shares a runtime addresses it. Every export re-places that asset,
+overwriting it when the installed version differs, so the asset always matches
+whoever exported **last**. (A self-contained export carries its runtime and
+cannot drift; since 2026-08-04 that is the whole of the difference between the
+two shapes, which narrows this to shared sites but does not remove it.)
 
 That is correct for the view being exported and silently wrong for the others.
 Regenerate one view of a documentation site after upgrading MolSysViewer and the

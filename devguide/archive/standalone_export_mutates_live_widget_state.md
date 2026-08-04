@@ -1,5 +1,16 @@
 # A standalone export mutates live widget state, and published notebooks carry it
 
+**RESOLVED 2026-08-04.** The function this describes no longer exists.
+
+Exports of both shapes are now built by `_build_lite_html`, which takes the
+projection as an argument and writes it into the page. Nothing is assigned to the
+live widget's synced state, so nothing is captured by `nbconvert`. The wider
+finding in this file — that an embedded widget's state is dead weight in a
+published notebook because the widget boots by asking Python — remains true and
+is why `docs/execute_notebooks.py` strips it.
+
+---
+
 **Status:** confirmed and measured 2026-08-03. Not a correctness defect: nothing
 renders wrongly. It makes any notebook that exports while it is being executed
 carry hundreds of kilobytes of state that can never render.

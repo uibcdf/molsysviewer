@@ -11,3 +11,8 @@ user/developer documentation.
 - [`molsysmovie_plan.md`](molsysmovie_plan.md)
 - [`standalone_qt_prototype_plan.md`](standalone_qt_prototype_plan.md)
 - [`canvas_panel_transition.md`](canvas_panel_transition.md)
+
+Resolved defect reports, kept for their evidence:
+
+- [`docs_lite_views_pinned_to_unpublished_npm_version.md`](docs_lite_views_pinned_to_unpublished_npm_version.md)
+- [`standalone_export_mutates_live_widget_state.md`](standalone_export_mutates_live_widget_state.md)
