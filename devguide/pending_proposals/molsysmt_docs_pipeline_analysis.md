@@ -8,8 +8,8 @@ question.
 
 **The question.** The new embedding scheme is implemented in **one** notebook,
 `docs/index.ipynb`, as a trial. It works. The next step is applying it to the
-rest. Measured in their tree today: **138 notebooks call `msm.view()` from code
-cells**, and **26** carry a target variable (`molsysviewer_htmlfile` or the
+rest. Measured in their tree today: **69 notebooks call `msm.view()` from code
+cells**, and **13** carry a target variable (`molsysviewer_htmlfile` or the
 inherited `nglview_htmlfile`). So the pilot is about to be multiplied by roughly
 five, and the useful thing we can do is say what changes when it is.
 
@@ -65,7 +65,7 @@ Nothing fails, nothing warns, and the page still renders.
 
 For a scientific library this is the worst class of documentation defect: a page
 that shows code and shows a result, where the result was not produced by that
-code. It is not hypothetical at 138 notebooks and several years — it is the
+code. It is not hypothetical at 69 notebooks and several years — it is the
 default outcome of two files that must be edited together and are not checked
 against each other.
 
@@ -74,13 +74,13 @@ in sync.
 
 ## 3. What multiplying by five costs
 
-| | pilot (1 notebook) | migrated (138) |
+| | pilot (1 notebook) | migrated (69) |
 |---|---|---|
 | Generation scripts | 1 | one per view, hundreds |
 | Hidden cells | 1 | one per view |
 | Committed view HTML | 149 KB | 34 KB to 18 MB each, depending on what is viewed (§4) |
 | Files to edit to change one figure | 2 | 2, every time, forever |
-| Notebooks that fail pre-execution until migrated | 0 | 112 today |
+| Notebooks that fail pre-execution until migrated | 0 | 56 today |
 
 Three of those deserve comment.
 
@@ -146,7 +146,7 @@ That is the argument for keeping generation explicit, and it is a better argumen
 than the one usually given. It is not about rebuild speed. **It is that only a
 person can decide whether a particular view deserves to be an 18 MB interactive
 artifact, a 146 KB one, or a static image** — and a scheme that turns every
-`msm.view()` in 138 notebooks into a file takes that decision away.
+`msm.view()` in 69 notebooks into a file takes that decision away.
 
 **So: keep the generation scripts.** The proposal is withdrawn.
 
@@ -181,6 +181,65 @@ the call it made (a sidecar, or a comment in the exported HTML) and compare that
 against the notebook, so the check no longer depends on the two files looking
 alike.
 
+## 4b. The hidden cell stays, and here is why it earns its place
+
+Asked on the same day: could the hidden cell be avoided, so the notebook holds
+only the tutorial line? Three answers were considered and the question *"what if
+one notebook has several `msm.view()` calls?"* decided between them.
+
+Measured in their source notebooks (excluding `_build` copies):
+
+| | notebooks |
+|---|---|
+| call `msm.view()` from code cells | 69 |
+| of those, more than once | 25 |
+| of those, with two **textually identical** calls | **15** |
+
+That last row is the pattern *view → change the system → view again*:
+`set_dihedral_angles`, `shift_dihedral_angles`, `move_away`, `make_bioassembly`.
+The two calls are the same characters; only the system's content differs between
+them.
+
+The options, against that:
+
+- **Derive the view's name from the call itself** — a key built from the system's
+  fingerprint plus `selection`, `structure_indices`, `syntax`, registered by the
+  generation script. Elegant: it removes the hidden cell *and* makes drift
+  impossible, because a changed tutorial call looks for a name that does not
+  exist. **It dies on the row above.** Two identical calls give one key, and
+  distinguishing them needs a content hash of the coordinates — which would have
+  to come out bit-identical from the notebook and from a generation script that
+  builds the system with different code. That is not a promise anyone can keep,
+  and when it broke it would break constantly.
+- **A cell tag** (`"tags": ["view:1BRS_molecule_index_zero"]`) instead of a hidden
+  cell. Survives the multi-view case, puts the declaration where Jupyter users
+  expect it, and removes a code cell that teaches nothing. Costs a small nbconvert
+  preprocessor, and does **not** fix drift. A real option if the hidden cell ever
+  becomes a nuisance.
+- **Positional naming** (`<notebook>-<n>.html`). Rejected: inserting a view early
+  silently renumbers every later one, so an editing slip becomes a page showing
+  one call's code beside another call's picture.
+
+**Conclusion: leave it as it is.** The hidden cell is an explicit, per-call
+declaration that survives several views in one notebook, several *identical*
+views in one notebook, and reordering — which is exactly the set of cases the
+alternatives fail. Its cost is one invisible line per view. Diego's judgement on
+2026-08-04, and the measurements agree with it.
+
+One improvement is worth taking regardless of this decision, because it is
+independent of how the pairing is declared: **`execute_notebooks.py` already
+knows which notebook it is running**, since it spawns one subprocess per
+notebook. Passing that down —
+
+```python
+env["MSM_VIEWS_FROM_HTML_FILES"] = "True"
+env["MSM_DOCS_NOTEBOOK"] = str(notebook_path)
+```
+
+— lets the adapter stop inferring its own location from `f_locals.get('__file__',
+'index.ipynb')`, which is the one thing in the pilot that is right only for
+`docs/index.ipynb`. See §2.1 of the reply.
+
 ## 5. What is ours to fix, not theirs
 
 Two things in this pipeline are limits of MolSysViewer, not of MolSysMT's design,
@@ -203,8 +262,8 @@ the same question: *an exported view should adapt to the frame it lands in.*
 - The pilot is correct and the policies around it are the right ones.
 - The one structural weakness is that the code shown and the code that produced
   the picture are two different pieces of code, with nothing checking they agree.
-  At one notebook it is invisible; at 138 it is a matter of time.
-- The migration as currently designed is all-or-nothing per notebook, and 112
+  At one notebook it is invisible; at 69 it is a matter of time.
+- The migration as currently designed is all-or-nothing per notebook, and 56
   notebooks are waiting on it. Worth deciding on purpose rather than discovering.
 - **Generating views from the notebooks was proposed and withdrawn on
   measurement.** The time is cheap (1.64 s per view) but the artifact is not: a

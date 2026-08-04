@@ -70,7 +70,7 @@ It breaks on the **first notebook in a subdirectory**. `nbconvert` runs a
 notebook with the working directory set to that notebook's own folder, so
 `Path(htmlfile).is_file()` will be false for a `_static/views/...` written
 relative to `docs/`, and your `RuntimeError` will fire on a notebook that is
-correctly configured. Since the next thing you do is migrate the other 137
+correctly configured. Since the next thing you do is migrate the other 68
 notebooks, this is the one to fix first.
 
 The robust form is to stop inferring it: put the notebook's own path in the
