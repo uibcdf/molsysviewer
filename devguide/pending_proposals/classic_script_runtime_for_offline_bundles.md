@@ -19,7 +19,7 @@ no network**. Supplementary material for a paper, downloaded as a zip; a USB
 stick; an air-gapped review machine.
 
 Today that reader must either serve the directory
-(`python -m molsysviewer.tools.preview`), or receive self-contained files, which
+(`python -m molsysviewer.preview`), or receive self-contained files, which
 means one 6.4 MB runtime per view instead of one for all of them. Twelve views
 is 77 MB instead of 7.
 

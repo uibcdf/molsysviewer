@@ -20,7 +20,7 @@ Access to script at 'file:///…/viewer.js' from origin 'null' has been blocked 
 Serve the build instead:
 
 ```bash
-python -m molsysviewer.tools.preview docs/_build/html
+python -m molsysviewer.preview docs/_build/html
 ```
 
 A published site is served, so it never has this problem. If you want a file that

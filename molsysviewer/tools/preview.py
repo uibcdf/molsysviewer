@@ -6,7 +6,7 @@ import across one. On a published site the question never arises, because the
 site is served — so what is missing is not a mechanism but a server, for the few
 minutes between building a documentation site and publishing it.
 
-``python -m molsysviewer.tools.preview docs/_build/html`` is that server.
+``python -m molsysviewer.preview docs/_build/html`` is that server.
 """
 
 from __future__ import annotations
@@ -89,18 +89,3 @@ def preview(
         server.shutdown()
         server.server_close()
     return url
-
-
-if __name__ == "__main__":  # pragma: no cover - exercised by hand
-    import argparse
-
-    parser = argparse.ArgumentParser(
-        prog="python -m molsysviewer.tools.preview",
-        description="Serve a directory of exported views so a browser will render them.",
-    )
-    parser.add_argument("path", help="directory to serve, e.g. docs/_build/html")
-    parser.add_argument("--port", type=int, default=8000)
-    parser.add_argument("--no-browser", action="store_true", help="do not open a browser")
-    args = parser.parse_args()
-
-    preview(args.path, port=args.port, open_browser=not args.no_browser)

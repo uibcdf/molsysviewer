@@ -136,7 +136,7 @@ msv.tools.embed_iframe(view, path=page)             # the <iframe>, path compute
 msv.tools.preview("docs/_build/html")               # serve it, so a browser will render it
 ```
 
-*(`preview` added 2026-08-04; see §8. Also `python -m molsysviewer.tools.preview
+*(`preview` added 2026-08-04; see §8. Also `python -m molsysviewer.preview
 docs/_build/html`, which is the form a docs author actually types.)*
 
 `embed_iframe` exists because counting `../` by hand is the one step of embedding

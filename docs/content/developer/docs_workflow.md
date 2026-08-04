@@ -29,7 +29,7 @@ make -C docs html
 Open the built site:
 
 ```bash
-python -m molsysviewer.tools.preview docs/_build/html
+python -m molsysviewer.preview docs/_build/html
 ```
 
 Serve it; do not open `index.html` from disk. This site's views share one
