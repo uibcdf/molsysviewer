@@ -23,9 +23,11 @@ Today that reader must either serve the directory
 means one 6.4 MB runtime per view instead of one for all of them. Twelve views
 is 77 MB instead of 7.
 
-Everybody else is covered: a website is served, a single file sent to a colleague
-is self-contained and opens with a double click, and a released export carries
-the pinned CDN URL as a last resort.
+Everybody else is covered: a website is served, and a single file sent to a
+colleague is self-contained and opens with a double click. (A pinned CDN tail
+covered part of this for one day and was removed — npm is thirteen versions
+behind, so it wrote a dead URL. It would not have covered the offline case
+anyway.)
 
 ## 2. Why the shared shape cannot open from disk
 

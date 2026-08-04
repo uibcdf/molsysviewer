@@ -190,35 +190,27 @@ def test_release_version_detection(version, released):
     assert is_release_version(version) is released
 
 
-# --- the tail that rescues a shared view opened from disk ---------------------
+# --- no registry tail while the registry is behind ----------------------------
 
 
-def test_a_released_export_keeps_the_registry_as_a_last_resort(tmp_path, monkeypatch):
-    """Local first, always. The CDN answers only where the local copy cannot.
+@pytest.mark.parametrize("version", ["0.20.0", "0.20.0+96.g6362914c.dirty", "0.20.1.dev3"])
+def test_a_shared_export_addresses_the_local_runtime_and_nothing_else(
+    tmp_path, monkeypatch, version
+):
+    """No CDN tail, at any version, unless the author asks for one.
 
-    A shared view opened straight from disk cannot import its sibling runtime —
-    opaque origin — and the network is the only road left. Pinned exact, so it is
-    the same runtime, not a newer one.
+    A pinned jsDelivr URL was appended here for a day, to rescue a shared view
+    opened straight from a disk. It was removed because it 404s: npm stops at
+    0.7.0 while this package is at 0.20.0, so the tail would write a dead URL
+    into somebody else's published pages — the exact defect this design exists to
+    remove. Reinstate it only when publishing to npm is a real release gate.
     """
-    monkeypatch.setattr("molsysviewer._version.__version__", "0.20.0")
-    output = tmp_path / "view.html"
-    _view().export.html(str(output), shared_runtime=str(tmp_path), skip_digestion=True)
-
-    candidates = _runtime_candidates(output)
-
-    assert candidates[0] == f"./{RUNTIME_ASSET_NAME}", "the local copy stopped being first"
-    assert candidates[-1] == (
-        "https://cdn.jsdelivr.net/npm/@uibcdf/molsysviewer@0.20.0/dist/viewer.js"
-    )
-
-
-def test_a_development_export_gets_no_registry_tail(tmp_path, monkeypatch):
-    """The URL would be dead: no development version is ever published."""
-    monkeypatch.setattr("molsysviewer._version.__version__", "0.20.0+96.g6362914c.dirty")
+    monkeypatch.setattr("molsysviewer._version.__version__", version)
     output = tmp_path / "view.html"
     _view().export.html(str(output), shared_runtime=str(tmp_path), skip_digestion=True)
 
     assert _runtime_candidates(output) == [f"./{RUNTIME_ASSET_NAME}"]
+    assert "jsdelivr" not in output.read_text(encoding="utf-8")
 
 
 # --- explicit candidates and refusals ----------------------------------------

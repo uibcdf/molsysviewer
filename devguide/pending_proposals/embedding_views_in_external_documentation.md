@@ -261,10 +261,16 @@ Three consequences worth carrying forward:
    real browser, because no amount of reading the file can tell you whether a
    browser will boot it. Mutation-verified: address a sibling instead of
    embedding, and it reports the CORS refusal.
-3. **A released export carries the pinned CDN URL as a tail candidate**, tried
-   only after the local copy fails — which happens only from a disk. Same
-   version, another road; freshness is not smuggled in. Development versions get
-   no tail, because that URL was never published.
+3. **A shared export addresses the local runtime and nothing else.** A pinned
+   jsDelivr URL was appended as a tail candidate on the same day and removed
+   hours later, once the registry was checked: npm `@uibcdf/molsysviewer` is at
+   `0.7.0` and this package at `0.20.0`, so the tail would have written a dead
+   URL into other people's published pages. §3.6 already says the export refuses
+   to write a URL it can predict is dead; the tail was that rule being broken by
+   its own author. Reinstate it when publishing to npm is a standing release gate
+   (`path_to_1_0.md` task 7) and not before. `shared_runtime="cdn"` is unaffected:
+   an author who asks for the registry gets it, and gets the refusal if their
+   version is unpublishable.
 
 Two filed defects closed as consequences rather than as patches: the docs-lite
 CDN pin and the standalone export mutating live widget state. Both are in

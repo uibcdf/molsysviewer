@@ -2926,19 +2926,15 @@ class MolSysView(
             else Path(output_filename).resolve().parent
         )
         asset = place_runtime_asset(assets_dir)
-        candidates = [relative_runtime_url(output_filename, asset)]
-
-        from .._version import __version__ as _pkg_version
-
-        if is_release_version(_pkg_version):
-            # A tail, never a head. The local copy is tried first and answers on
-            # any served site, so this is only reached when the page was opened
-            # straight from a disk: browsers refuse a module import across the
-            # opaque origin of a `file://` page, and there the network is the one
-            # way left. Pinned to this exact version, so it is the same runtime
-            # arriving by another road — freshness is not being smuggled in.
-            candidates.append(self._shared_runtime_cdn_url())
-        return candidates
+        # No registry tail. A pinned CDN URL was appended here for a day, as a
+        # last resort for a page opened straight from a disk, and removed on
+        # 2026-08-04: npm `@uibcdf/molsysviewer` is at 0.7.0 while this package is
+        # at 0.20.0, so the tail 404s for every release it would serve. Writing a
+        # URL we can predict is dead is the exact defect this design exists to
+        # remove. Reinstate it when publishing to npm is a real release gate
+        # (`path_to_1_0.md` task 7); `shared_runtime="cdn"` remains for authors
+        # who ask for the registry explicitly.
+        return [relative_runtime_url(output_filename, asset)]
 
     @staticmethod
     def _shared_runtime_cdn_url() -> str:

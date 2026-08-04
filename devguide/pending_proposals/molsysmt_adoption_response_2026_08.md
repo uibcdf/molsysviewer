@@ -198,20 +198,25 @@ Which is the honest limit on our side: we can verify what loads and what
 properties get applied; whether it *looks* right is something we will need you or
 Diego to confirm on a real screen.
 
-## 5. One thing you should know about the pages you have already published
+## 5. What a shared export addresses, and what it does not
 
-Since 2026-08-04 an export from a **released** MolSysViewer appends the pinned
-jsDelivr URL as a last-resort candidate, tried only after the local runtime fails
-— which on a served site never happens.
+Your published pages should contain exactly one runtime reference: the relative
+path to `viewer.js` beside them. No registry URL, no fallback, nothing that can
+rot while your site is up.
 
-Measured today: npm `@uibcdf/molsysviewer` is still at **0.7.0**, so for anyone
-exporting from a released 0.20.0 that tail URL 404s. It is inert on your
-published site (the local runtime answers first and the tail is never fetched),
-but it is a dead URL sitting in your HTML, and by our own rule — *the export
-refuses to write a URL it can predict is dead* — it should probably not be there
-until publishing to npm is a real release gate. That decision is ours to make and
-it is open; you do not need to do anything, and nothing you have published is
-broken by it.
+That is worth stating because for a few hours on 2026-08-04 it was not true. We
+appended the pinned jsDelivr URL as a last-resort candidate, meaning to rescue a
+view opened straight from a disk. Then we checked the registry: npm
+`@uibcdf/molsysviewer` is at **0.7.0** against MolSysViewer's `0.20.0`, so that
+tail 404s for every release it would have served — a dead URL written into other
+people's pages by the same design whose stated rule is that the export refuses to
+write a URL it can predict is dead. Removed the same day.
 
-If you export from a git checkout of MolSysViewer, this does not apply at all:
-development versions get no tail.
+Nothing you have published is affected either way: if you export from a git
+checkout, no tail was ever written; if you export from a release, regenerating
+your views on a current MolSysViewer removes it.
+
+The registry remains available to anyone who asks for it explicitly —
+`shared_runtime="cdn"` — and refuses to write anything if the exporting version
+is not publishable. We will reinstate the automatic fallback when publishing to
+npm is a standing release gate on our side, which is our task, not yours.

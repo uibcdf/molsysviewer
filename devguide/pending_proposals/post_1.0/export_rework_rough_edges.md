@@ -1,7 +1,7 @@
 # Rough edges of the 2026-08 export rework, to review cold
 
 **Status:** post-1.0 review. Nothing here is broken and nothing here blocks
-anybody. These are the four places where the export rework of 2026-08-04 chose an
+anybody. These are the places where the export rework of 2026-08-04 chose an
 answer that works but does not feel right, written down while the reasons were
 fresh so that a later reader can look for a better one without re-deriving the
 problem.
@@ -71,28 +71,21 @@ The middle option is the one that looks right today, precisely because the Qt
 render check already needs that machine. **Review these two together, not
 separately.**
 
-## 3. A page that reaches the network without the reader asking
+## 3. ~~A page that reaches the network without the reader asking~~ — resolved
 
-An export from a **released** version carries the pinned CDN URL as a last-resort
-candidate. It is only reached when the local copy fails, which today means only
-when the page was opened from a disk.
+**Closed 2026-08-04, hours after it was written.** The item was the pinned CDN
+tail appended to released shared exports. Checking the registry settled it
+instead of deferring it: npm `@uibcdf/molsysviewer` is at `0.7.0` against this
+package's `0.20.0`, so the tail 404s for every release it would have served, and
+writing a URL we can predict is dead is the defect the whole design exists to
+remove.
 
-**Why it grates.** It is the one part of the design that does something the
-author did not see when they published. Pinned exact, so reproducibility holds —
-the same runtime by another road — but "this page may contact jsDelivr" is not
-written on the page, and a reader on an air-gapped machine gets a failed request
-they did not expect.
+Removed in the same session. Kept here as the shortest example in this file of
+why the exercise is worth doing: the item was written to be reviewed cold in six
+months, and articulating it was enough to make one measurement obvious.
 
-**Possible better answers:** make it opt-in (`shared_runtime="docs/_static"` vs
-something explicit), which costs an argument we just finished collapsing into
-one; or make the page *say* it, which is really
-[`../exported_page_self_declaration.md`](../exported_page_self_declaration.md)
-wearing another hat; or drop the tail entirely if the classic-script route lands,
-since then the local copy answers from disk too.
-
-**Do not resolve this before item 1 and
-[`../classic_script_runtime_for_offline_bundles.md`](../classic_script_runtime_for_offline_bundles.md).**
-All three collapse together if that one is ever done.
+Reinstating the tail is gated on publishing to npm becoming a standing release
+gate — `path_to_1_0.md` task 7 — and on nothing else.
 
 ## 4. JavaScript inside a Python f-string
 
