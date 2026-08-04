@@ -1,4 +1,4 @@
 
-[NbConvertApp] Converting notebook html_export.ipynb to notebook
+[NbConvertApp] Converting notebook content/user/export/html_export.ipynb to notebook
 [IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
-[NbConvertApp] Writing 15877 bytes to html_export.ipynb
+[NbConvertApp] Writing 16296 bytes to content/user/export/html_export.ipynb

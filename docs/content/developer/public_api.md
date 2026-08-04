@@ -18,7 +18,7 @@ You treat these as public:
 - `molsysviewer.styles.BUILTIN_SCENE_STYLES`
 - `molsysviewer.styles.BUILTIN_FOCUS_STYLES`
 - `molsysviewer.config.set_structure_scale_budget` / `get_structure_scale_budget`
-- `molsysviewer.tools.export_runtime_asset` / `molsysviewer.tools.embed_iframe`
+- `molsysviewer.tools.export_runtime_asset` / `molsysviewer.tools.embed_iframe` / `molsysviewer.tools.preview`
 
 If you rename, remove, or change behavior here, you update docs and add tests.
 

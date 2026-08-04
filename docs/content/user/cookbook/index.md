@@ -14,6 +14,9 @@ Scientific tutorials (provisional):
 
 - {doc}`tutorial_trajectory_analysis` — RMSF colouring, region annotation, movie export
 
+Exporting a view and putting it on a website is documented once, in
+{doc}`../export/index`. This chapter does not repeat it.
+
 High-value runtime recipes:
 
 - {doc}`figure_export_workbench`
@@ -35,8 +38,6 @@ anisotropy_ellipsoids
 figure_export_workbench
 addon_workspace_workbench
 panel_mode_notebook
-html_export
-sphinx_html_embedding
 addon_development
 workbench_scientific_workflow
 movie_recipes

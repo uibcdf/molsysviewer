@@ -29,10 +29,12 @@ make -C docs html
 Open the built site:
 
 ```bash
-google-chrome docs/_build/html/index.html
+python -m molsysviewer.tools.preview docs/_build/html
 ```
 
-For lite embeds, you do not need a local HTTP server if assets load from the CDN.
+Serve it; do not open `index.html` from disk. This site's views share one
+runtime, and a page opened from a disk is refused when it tries to load the file
+beside it.
 
 ## Notebook outputs
 
