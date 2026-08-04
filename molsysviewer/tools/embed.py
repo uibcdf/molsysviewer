@@ -43,8 +43,12 @@ def embed_iframe(
     """Return the ``<iframe>`` markup that embeds an exported view in a page.
 
     ``filename`` is the exported HTML view, ``path`` the page that will embed it.
-    Both are given as you know them — from the project root, or relative to where
-    you are standing — and the relative ``src`` between them is computed here.
+    Neither has to be absolute, and neither has to exist yet. The only rule is
+    that **both are named from the same place** — typically the project root,
+    which is how you named the view when you exported it. What is returned is
+    the path from one to the other, and a shared starting point cancels out of
+    that subtraction, so where you happen to be standing when you call this does
+    not change the answer.
 
     That computation is the reason this exists. Counting directories by hand
     (``../../../_static/views/…``) is the one step of embedding that fails

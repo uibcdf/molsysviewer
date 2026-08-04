@@ -214,11 +214,33 @@ def test_embed_iframe_computes_the_path_from_the_page(tmp_path):
     markup = msv.tools.embed_iframe(
         str(tmp_path / "_static" / "views" / "1tcd.html"),
         path=str(tmp_path / "content" / "user" / "page.md"),
-        skip_digestion=True,
     )
 
     assert 'src="../../_static/views/1tcd.html"' in markup
     assert "<iframe" in markup and "</iframe>" in markup
+
+
+def test_embed_iframe_accepts_its_own_defaults(tmp_path):
+    """Documented call, digestion included.
+
+    Every other test here once passed `skip_digestion=True`, so the argument
+    layer was never exercised and `width="100%"` — the function's own default —
+    was rejected by the length digester that serves shapes and boxes. The
+    documented call raised while the tests were green.
+    """
+    markup = msv.tools.embed_iframe(
+        str(tmp_path / "v.html"), path=str(tmp_path / "p.ipynb")
+    )
+
+    assert 'width="100%"' in markup and 'height="480px"' in markup
+
+
+def test_embed_iframe_takes_pixels_as_a_number(tmp_path):
+    markup = msv.tools.embed_iframe(
+        str(tmp_path / "v.html"), path=str(tmp_path / "p.ipynb"), width=600, height=320,
+    )
+
+    assert 'width="600px"' in markup and 'height="320px"' in markup
 
 
 def test_embed_iframe_marks_a_sibling_path_as_relative(tmp_path):
@@ -226,7 +248,6 @@ def test_embed_iframe_marks_a_sibling_path_as_relative(tmp_path):
     markup = msv.tools.embed_iframe(
         str(tmp_path / "1tcd.html"),
         path=str(tmp_path / "page.md"),
-        skip_digestion=True,
     )
 
     assert 'src="./1tcd.html"' in markup
@@ -239,7 +260,7 @@ def test_embed_iframe_renders_in_a_notebook_and_is_still_a_string(tmp_path):
     would make pasting into a Markdown page awkward. Both must keep working.
     """
     markup = msv.tools.embed_iframe(
-        str(tmp_path / "v.html"), path=str(tmp_path / "p.ipynb"), skip_digestion=True
+        str(tmp_path / "v.html"), path=str(tmp_path / "p.ipynb")
     )
 
     assert isinstance(markup, str), "the result stopped behaving as a string"
@@ -250,7 +271,7 @@ def test_embed_iframe_renders_in_a_notebook_and_is_still_a_string(tmp_path):
 def test_embed_iframe_honours_the_requested_size(tmp_path):
     markup = msv.tools.embed_iframe(
         str(tmp_path / "v.html"), path=str(tmp_path / "p.md"),
-        height="640px", width="80%", skip_digestion=True,
+        height="640px", width="80%",
     )
 
     assert 'height="640px"' in markup and 'width="80%"' in markup
