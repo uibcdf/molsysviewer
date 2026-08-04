@@ -37,81 +37,67 @@ pixels. **Drop `skip_digestion=True` from your adapter.** It is worth dropping
 for its own sake: it also switches off validation of `filename` and `path`, so a
 mistyped view file currently reaches `embed_iframe` unchecked.
 
-## 2. Three things we would change in your integration
+## 2. Your code is ahead of your report
 
-### 2.1 `conf.py` succeeds when the runtime is missing
+We read `molsysmt/basic/viewer/molsysviewer.py` and `docs/conf.py` rather than
+only the report, and two of the three things we were going to raise are already
+fixed there:
 
-```python
-def _place_runtime(app):
-    try:
-        ...
-        export_runtime_asset(...)
-    except Exception as e:
-        print(f"Warning: Could not export MolSysViewer runtime asset: {e}")
-```
+- the adapter **consumes** the target (`f_locals.pop(...)`), so a later cell
+  cannot silently inherit an earlier cell's view;
+- and it **raises** when no target is in scope instead of falling through to a
+  live widget that could never render in a static page. `conf.py` no longer
+  swallows the runtime-placement error either.
 
-If that call fails, the build **succeeds** and you publish a site whose every
-view is a blank frame. That is precisely the failure class we spent this week
-removing from our own docs — a green build producing a broken site — and it is
-the one defect this whole mechanism exists to make impossible.
+Both are the right calls. The report describes an earlier version; worth
+knowing, because we were about to send you advice you had already taken.
 
-Let it raise. `export_runtime_asset` already fails with a message naming the
-directory and the reason (`NotADirectoryError` if `_static` is not there,
-`FileNotFoundError` if the installed package has no runtime, `FileExistsError` if
-something that is not ours already occupies `viewer.js`). A build that cannot
-place the runtime should stop.
+Three things do remain.
 
-### 2.2 The hidden variable is shared by every cell of the notebook
-
-Your adapter looks for `molsysviewer_htmlfile` by walking the caller frames.
-Notebook cells share one globals dictionary, so the variable set in cell 5
-survives for the rest of the notebook. With one view per notebook this is
-invisible. With two, any `msm.view()` whose hidden cell was forgotten will
-silently embed **the previous view** — the build succeeds, the page renders, and
-the wrong molecule is on it.
-
-Two cheap defences, either of which is enough:
-
-```python
-# in the adapter, after resolving it
-f_locals.pop('molsysviewer_htmlfile', None)      # consume it
-```
-
-or make it fail loudly instead of falling back:
-
-```python
-if os.environ.get("MSM_VIEWS_FROM_HTML_FILES", "").lower() == "true":
-    ...
-    raise RuntimeError(
-        "msm.view() was called in static documentation mode with no "
-        "molsysviewer_htmlfile in scope. Add the hidden cell, or the page will "
-        "embed a view belonging to another cell."
-    )
-```
-
-The second is better: in documentation-build mode, falling through to a live
-widget produces a cell whose output can never render anyway.
-
-### 2.3 `nb_path` assumes the notebook lives in `docs/`
+### 2.1 `nb_path` is right only for `docs/index.ipynb`
 
 ```python
 nb_path = f_locals.get('__file__', 'index.ipynb')
 ```
 
 `__file__` is not defined in a notebook's globals, so this is always the
-fallback, and the fallback says "the page is `docs/index.ipynb`". It works today
-because both paths are named from the same directory and the common prefix
-cancels — that is by design in `embed_iframe`, both arguments only have to share
-a frame of reference.
+fallback, and the fallback asserts that the page lives at `docs/index.ipynb`. It
+works in the pilot because both paths are named from the same directory and the
+common prefix cancels — that is by design in `embed_iframe`, the two arguments
+only have to share a frame of reference.
 
-It stops working for a notebook in a subdirectory: `Path(htmlfile).is_file()`
-will be false (the relative `_static/views/...` no longer resolves from there),
-the adapter falls through to the live-widget path, and you get a cell with no
-usable output. With 746 notebooks, that will be soon.
+It breaks on the **first notebook in a subdirectory**. `nbconvert` runs a
+notebook with the working directory set to that notebook's own folder, so
+`Path(htmlfile).is_file()` will be false for a `_static/views/...` written
+relative to `docs/`, and your `RuntimeError` will fire on a notebook that is
+correctly configured. Since the next thing you do is migrate the other 137
+notebooks, this is the one to fix first.
 
-Suggestion: set the notebook's own path in the hidden cell alongside the view, or
-derive both from a known documentation root, so the pair is always explicit
-rather than inferred.
+The robust form is to stop inferring it: put the notebook's own path in the
+hidden cell beside the view, or derive both from a documentation root you
+compute once.
+
+### 2.2 `f_locals.pop` works for a reason worth knowing
+
+`frame.f_locals` is the real dictionary only for module-level frames. Notebook
+cells are module-level, so the `pop` sticks. In a function frame — if the call
+were ever wrapped in a helper that defines the variable locally — the mutation
+would be discarded silently on Python below 3.13. It is correct today; it is
+correct by circumstance rather than by construction.
+
+### 2.3 `conf.py` still registers require.js and nglview from CDNs
+
+```python
+app.add_js_file('https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js')
+app.add_js_file('https://cdn.jsdelivr.net/npm/nglview-js-widgets@3.1.0/dist/index.js')
+```
+
+We removed exactly these two from our own `conf.py` as vestigial. For you they
+may still be load-bearing: 26 notebooks still carry `nglview_htmlfile`, and any
+page with a live NGLView widget state needs them. Worth deciding deliberately
+rather than by inertia — while the migration runs they stay; when the last
+nglview output goes, so do they, and every page in the site stops fetching two
+scripts from two third-party hosts.
 
 ## 3. Your camera diagnosis is wrong, and that is good news for the proposal
 

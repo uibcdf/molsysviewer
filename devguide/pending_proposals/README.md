@@ -67,6 +67,12 @@ is also explicitly post-1.0.
   measurement that moves their camera proposal: a script-generated export carries
   no camera snapshot at all, and `camera.zoom()` does not survive an export, so
   framing a view exported from a script is currently impossible.
+- [`molsysmt_docs_pipeline_analysis.md`](molsysmt_docs_pipeline_analysis.md):
+  their pipeline read at the scale it is about to reach. The scheme is piloted in
+  one notebook; 138 call `msm.view()` and 26 carry a target. The structural
+  finding is that the code a reader sees and the code that produced the picture
+  are two different files with nothing checking they agree, and the proposed
+  direction is to let the tutorial cell generate its own view.
 - [`classic_script_runtime_for_offline_bundles.md`](classic_script_runtime_for_offline_bundles.md):
   **not to be implemented yet.** Building the runtime as a classic script instead
   of ESM, which would let many shared views open from a disk with no server. The
