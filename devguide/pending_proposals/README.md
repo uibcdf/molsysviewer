@@ -58,6 +58,15 @@ is also explicitly post-1.0.
   2026-08-04 amendment: the export called self-contained fetched three CDNs and
   did not render offline, and the shared one could not be opened from a disk at
   all; both now come from one template. Two filed defects closed as consequences.
+- [`molsysmt_embedding_feedback_and_transparent_adapter_pattern.md`](molsysmt_embedding_feedback_and_transparent_adapter_pattern.md)
+  and its reply,
+  [`molsysmt_adoption_response_2026_08.md`](molsysmt_adoption_response_2026_08.md):
+  the first external adopter built the mechanism correctly and reported back.
+  The reply carries three defects in their integration that would publish wrong
+  or blank pages silently, one defect of ours they had worked around, and a
+  measurement that moves their camera proposal: a script-generated export carries
+  no camera snapshot at all, and `camera.zoom()` does not survive an export, so
+  framing a view exported from a script is currently impossible.
 - [`classic_script_runtime_for_offline_bundles.md`](classic_script_runtime_for_offline_bundles.md):
   **not to be implemented yet.** Building the runtime as a classic script instead
   of ESM, which would let many shared views open from a disk with no server. The
