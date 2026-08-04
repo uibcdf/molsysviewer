@@ -99,6 +99,26 @@ rather than by inertia — while the migration runs they stay; when the last
 nglview output goes, so do they, and every page in the site stops fetching two
 scripts from two third-party hosts.
 
+### 2.4 Your environment files do not reproduce your working setup
+
+`devtools/conda-envs/{production,development,test,docs}_env.yaml` all declare a
+bare `molsysviewer` dependency. On the machine where this was built that resolves
+to nothing, because MolSysViewer is a local development install in the shared
+conda environment — so everything works and nothing warns.
+
+Anyone creating one of those environments from scratch — a new contributor, CI,
+a rebuilt machine — gets the conda package instead. Checked today: `uibcdf`
+serves **molsysviewer 0.7.0**, and it is not on PyPI at all. Thirteen versions
+behind, and old enough to predate `shared_runtime`, `export_runtime_asset` and
+`tools.embed_iframe` entirely. That environment cannot build your documentation,
+and the error it gives will point at the wrong thing.
+
+This is ours as much as yours — the conda channel being thirteen versions stale
+is our release discipline, the same gap as the unpublished npm package. But
+until a current release exists, your environment files should say so: pin the
+development install, or note in the docs environment that MolSysViewer must come
+from a checkout.
+
 ## 3. Your camera diagnosis is wrong, and that is good news for the proposal
 
 [`tight_initial_camera_framing_for_exported_views.md`](tight_initial_camera_framing_for_exported_views.md)
