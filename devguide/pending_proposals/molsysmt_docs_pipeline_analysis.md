@@ -78,7 +78,7 @@ in sync.
 |---|---|---|
 | Generation scripts | 1 | one per view, hundreds |
 | Hidden cells | 1 | one per view |
-| Committed view HTML | 149 KB | tens of MB, rewritten on every regeneration |
+| Committed view HTML | 149 KB | 34 KB to 18 MB each, depending on what is viewed (§4) |
 | Files to edit to change one figure | 2 | 2, every time, forever |
 | Notebooks that fail pre-execution until migrated | 0 | 112 today |
 
@@ -107,74 +107,79 @@ generated is detected loudly. That asymmetry is the right way round, but at
 hundreds of files a `--prune` pass that lists unreferenced views will earn its
 keep.
 
-## 4. The design that removes the duplication
+## 4. Measured: the time is cheap, the storage is not
 
-Offered as a direction, not a demand. It follows from §2: if the duplication is
-the problem, then the fix is to have **one** piece of code produce both the
-picture and the page.
+The first version of this document proposed letting the tutorial cell generate
+its own view, which would delete the duplication by construction. Diego pushed
+back — separate generation gives control and keeps rebuilds light — and asked for
+numbers instead of arguments. The numbers settle it against the proposal.
 
-In documentation mode, let `msm.view()` do what it says — build the view from the
-system the notebook already has — and then export it instead of displaying it:
+**Marginal cost of adding an export to a notebook run** (1BRS, their own example):
+
+| step | time |
+|---|---|
+| `import molsysmt` | 0.45 s |
+| `msm.convert(1brs, ...)` — paid by the notebook either way | 4.55 s |
+| `msm.view(...)` | 1.30 s |
+| `export.html(...)` | 0.34 s |
+| **marginal cost of the proposal** | **1.64 s** |
+
+And end to end: their generation script takes **7.66 s**; executing
+`docs/index.ipynb` through `nbconvert` takes **12.52 s**. So per-run, generating
+views from the notebook is not expensive. On time alone the proposal is
+affordable.
+
+**Then the size of the artifact, which is where it dies:**
+
+| view | export time | HTML |
+|---|---|---|
+| dialanine (one structure) | 0.30 s | **34 KB** |
+| 1BRS, one molecule | 0.34 s | **146 KB** |
+| pentalanine **trajectory** | 2.43 s | **17.9 MB** |
+
+An exported view carries its scene, and a scene with a trajectory carries every
+frame. One trajectory view is 18 MB of committed, regenerated-on-every-edit text
+— more than a hundred times the static one beside it, and there is no way to know
+which kind a given `msm.view()` call is without looking at what it was handed.
+
+That is the argument for keeping generation explicit, and it is a better argument
+than the one usually given. It is not about rebuild speed. **It is that only a
+person can decide whether a particular view deserves to be an 18 MB interactive
+artifact, a 146 KB one, or a static image** — and a scheme that turns every
+`msm.view()` in 138 notebooks into a file takes that decision away.
+
+**So: keep the generation scripts.** The proposal is withdrawn.
+
+### What to do about the duplication instead
+
+The defect in §2 is real and survives the withdrawal: two files that must agree,
+with nothing checking that they do. But it does not need an architecture to fix,
+only a check.
+
+The pairing is already implicit — `1BRS_molecule_index_zero.py` produces
+`1BRS_molecule_index_zero.html`, which the hidden cell names. So a test can walk
+it: for every notebook cell whose hidden cell declares a view, find the
+generation script of the same stem, and compare the `msm.view(...)` call in both.
+Normalise whitespace, fail loudly on difference.
 
 ```python
-def view(molecular_system=None, selection='all', ...):
-    if _static_docs_mode():
-        from molsysviewer import new_view
-        import molsysviewer as msv
-
-        view = new_view(molecular_system, selection=selection, ...)
-        target = _view_path_for_this_call()          # deterministic, see below
-        view.export.html(str(target), shared_runtime=str(_static_dir()))
-        return msv.tools.embed_iframe(str(target), path=_notebook_path())
-
-    return new_view(molecular_system, selection=selection, ...)
+def test_every_embedded_view_matches_the_call_shown_beside_it():
+    for notebook, htmlfile, shown_call in _tutorial_view_calls():
+        script = GENERATED_VIEWS / f"{Path(htmlfile).stem}.py"
+        assert _view_call_in(script) == shown_call, (
+            f"{notebook} shows a call that did not produce the picture beside it"
+        )
 ```
 
-What this deletes:
+It will not catch everything: a system built differently in the two files still
+slips through. It catches the case that actually happens — someone edits the
+selection, the representation or the system in the tutorial and forgets the
+script — and it costs an afternoon rather than a migration.
 
-- **the generation scripts** — the tutorial cell *is* the generator, so the
-  picture cannot disagree with the code that produced it;
-- **the hidden cells** — nothing to declare, nothing to forget, nothing to keep
-  in sync;
-- **the stack traversal** — no variable to find in a caller frame;
-- **the cliff** — the other 112 notebooks work unmigrated, because there is
-  nothing to migrate;
-- **the `nb_path` inference** — `nbconvert` runs each notebook with the working
-  directory set to that notebook's folder, so the notebook's location is
-  `Path.cwd()`, known exactly rather than guessed.
-
-What it needs:
-
-- **a deterministic view path**, so re-running a notebook overwrites rather than
-  accumulates. The notebook's path relative to the docs root plus a per-notebook
-  call counter is enough: `_static/views/user/tools/get_dihedral_angles-1.html`.
-  Stable across runs, unique across the corpus, and it says where it came from;
-- **execution cost**: each `msm.view()` in doc mode now exports an HTML.
-  `export.html` is entirely Python-side — no browser, no kernel round trip — so
-  the cost is building the scene projection and writing 150–250 KB. Their
-  incremental machinery (`.nbconvert.last_run` against mtime and commit time)
-  already limits this to notebooks that changed, which is the right granularity:
-  **a view is an output of its notebook, regenerated when its notebook changes.**
-
-What it costs, stated plainly:
-
-- **views can no longer be regenerated without executing the notebook.** Today a
-  script can be re-run alone; under this design, refreshing a view means
-  re-executing its notebook. For a MolSysViewer upgrade that touches every view,
-  that is a full pre-execution pass — hours, on their corpus, though it is the
-  same pass they already run when notebooks change;
-- **a view that needs setup the tutorial does not show** — a specific camera, a
-  representation chosen for the figure — has nowhere to live. The generation
-  script was also an escape hatch for that. It can be kept for those cases, as an
-  exception rather than the rule;
-- **less control over which notebooks produce views.** Every `msm.view()` becomes
-  a file. On 138 notebooks that is likely several hundred views, where today it
-  is a curated set.
-
-The trade is: correctness by construction, paid for with execution time and less
-curation. Our judgement is that the trade is worth it at 138 notebooks, and
-obviously worth it at 500 — but it is theirs to make, and the escape hatch keeps
-the current design available where it is genuinely needed.
+The stronger version, if it is ever worth it: have the generation script record
+the call it made (a sidecar, or a comment in the exported HTML) and compare that
+against the notebook, so the check no longer depends on the two files looking
+alike.
 
 ## 5. What is ours to fix, not theirs
 
@@ -200,8 +205,12 @@ the same question: *an exported view should adapt to the frame it lands in.*
   the picture are two different pieces of code, with nothing checking they agree.
   At one notebook it is invisible; at 138 it is a matter of time.
 - The migration as currently designed is all-or-nothing per notebook, and 112
-  notebooks are waiting on it.
-- Letting the tutorial cell generate its own view removes the duplication, the
-  hidden cells, the stack traversal and the cliff, at the price of execution time
-  and curation.
-- Two of their friction points are ours to fix and are already queued.
+  notebooks are waiting on it. Worth deciding on purpose rather than discovering.
+- **Generating views from the notebooks was proposed and withdrawn on
+  measurement.** The time is cheap (1.64 s per view) but the artifact is not: a
+  trajectory view is 17.9 MB against 146 KB for a static one, and only a person
+  can decide which a given call deserves to be. Keep the generation scripts.
+- Fix the duplication with a check that the two copies agree, not with an
+  architecture. An afternoon instead of a migration.
+- Two of their friction points are ours to fix and are already queued: framing a
+  view exported from a script, and following the host page's theme.
