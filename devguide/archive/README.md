@@ -16,3 +16,5 @@ Resolved defect reports, kept for their evidence:
 
 - [`docs_lite_views_pinned_to_unpublished_npm_version.md`](docs_lite_views_pinned_to_unpublished_npm_version.md)
 - [`standalone_export_mutates_live_widget_state.md`](standalone_export_mutates_live_widget_state.md)
+- [`tight_initial_camera_framing_for_exported_views.md`](tight_initial_camera_framing_for_exported_views.md)
+  — closed without a change: the framing was measured and found correct.

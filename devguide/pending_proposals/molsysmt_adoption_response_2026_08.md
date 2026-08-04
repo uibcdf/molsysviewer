@@ -119,66 +119,72 @@ until a current release exists, your environment files should say so: pin the
 development install, or note in the docs environment that MolSysViewer must come
 from a checkout.
 
-## 3. Your camera diagnosis is wrong, and that is good news for the proposal
+## 3. The framing: measured, and there is nothing to fix
 
-[`tight_initial_camera_framing_for_exported_views.md`](tight_initial_camera_framing_for_exported_views.md)
-§2.2 says `export.html()` "serializes `camera.state` exactly as it exists in the
-active view instance", so the export inherits a wide, unfocused camera.
+We rendered the page you were looking at — `docs/_build/html/index.html`, barnase
+in its 946x480 embed — in a real browser, and measured the pixels.
 
-Measured on our own published view (`docs/_static/views/demo_1TCD.html`), the
-exported message list is:
+**Your observation is exact.** The molecule is 342 x 247 px: **51 % of the
+height**, 36 % of the width. "~30–40 % of the viewport" was a good eye.
 
-```
-load_molsys_payload, show_whole, set_sections, set_active_selection,
-set_measurement_settings, update_visibility, set_trajectory_frame,
-set_trajectory_playback, set_addon_runtime_summary
-```
+**Your explanation is not, and neither was our first one.** Three findings, in
+the order they arrived:
 
-There is **no `set_camera_snapshot` at all**. A camera snapshot is requested from
-the live frontend at export time; a script that never displayed the view has no
-frontend to ask, so nothing is captured. Your export does not inherit a bad
-frame — it inherits **no** frame, and what you see is the runtime's own framing
-on load, evaluated against a 480 px iframe whose aspect ratio is nothing like the
-notebook canvas the defaults were tuned for.
+1. **The export is not involved.** §2.2 of your proposal says `export.html()`
+   serialises the camera state as it stands. There is no camera state to
+   serialise: a script that never displayed the view has no frontend to ask, and
+   your exported view carries no `set_camera_snapshot` at all. Whatever you see
+   is the runtime framing the scene on load.
 
-That matters because it moves the fix. Your Solution 1 (autofocus at export time)
-cannot work: there is no camera state to correct. Your **Solution 2** — fitting
-on load, in the runtime, where the real viewport is finally known — is the one
-that addresses the cause.
+2. **Nor is the embed.** We measured the same view at three canvas shapes:
+   51 %, 51 % and 52 % of the height at 1.97:1, 1.40:1 and 1:1. The framing is
+   identical everywhere; what changes is the empty width around it — 36 %, 51 %,
+   71 % of the width. A notebook widget is framed exactly the same and merely
+   reads as fuller. So there is no "exported views need different framing"
+   problem to solve.
 
-**And a second measurement, which strengthens your case.** We checked whether an
-author could work around this today by framing before exporting:
+3. **Mol\* is not being wasteful.** It places the camera at `r / sin(fov/2)`, so
+   the bounding sphere exactly fills the height. We first thought there was a
+   further 25 % unaccounted for; Diego pointed out that we were comparing against
+   a sphere Mol\* does not use — its sphere is built from the rendered geometry
+   and includes the representation's radii. Checking against your coordinates
+   settles it: 51 % of the height would imply a projected extent of 24.0 A over a
+   23.4 A atom-centre sphere, and the smallest extent this molecule can present in
+   *any* orientation is 25.4 A. The measurement is only consistent with a bigger
+   sphere. There is no gap, and nothing is broken.
 
-```python
-view.camera.zoom(selection="all", extra_radius="1.0 angstroms")
-view.export.html(...)
-```
+**What is actually going on** is worth knowing, because it is not a defect and it
+explains everything: a molecule's projected extent runs between **0.54 and 0.95**
+of its bounding sphere's diameter depending on which way it faces, and your view
+sits at the narrow end. The camera starts aligned with the world axes, so the
+orientation you get is whatever frame the structure file carried. Barnase drew a
+bad one; another entry would have looked fine with the same code.
 
-The zoom does **not** survive into the exported page. Camera is endpoint-local
-state by Contract S9, and a static export is the deliberate exception only for a
-snapshot captured from a live frontend. So there is currently **no way to frame a
-view exported from a script**. That is a genuine gap, not a missing convenience,
-and your report is what surfaced it.
+**So the proposal is closed without a change**, and archived with the
+measurements. Two practical notes for you meanwhile:
 
-**What you can do today**, until we fix it properly: frame it once by hand in a
-notebook and carry the snapshot into your generation script.
+- if a particular figure deserves a tighter frame, compose it once in a notebook
+  and carry the camera into your generation script — `view.camera.get_snapshot(pretty=True)`
+  there, `view.camera.set_snapshot({...})` before `export.html(...)` here. That is
+  the only way today to frame a view exported from a script, and it is a real gap
+  we are not proud of;
+- the iframe's shape is yours to choose and it is what governs how empty the
+  result reads. `msv.tools.embed_iframe(..., height="600px")` on a ~950 px column
+  goes from 1.97:1 to 1.58:1, which is the cheapest improvement available to you
+  and costs nothing.
 
-```python
-# once, in a notebook, after framing the view as you want it
-view.camera.get_snapshot(pretty=True)      # copy the dict
-
-# then, in docs/generate_static_views/1BRS_molecule_index_zero.py
-view.camera.set_snapshot({...})            # paste it, before export.html(...)
-view.export.html(...)
-```
-
-`set_snapshot` writes the snapshot Python-side, so it does reach the exported
-page. It is a stopgap and we are not proud of it, but it works now.
+There is one lever we deliberately did **not** pull: `orientAxes()`, Mol\*'s own
+principal-axis alignment, would turn the molecule to face the screen with its
+broad side and move that 0.54 towards 0.95 — up to 1.75x more molecule, using
+their machinery, with no change to the camera distance. We left it alone because
+it would change the default orientation of every view in every notebook, and
+nothing is broken. It is recorded in the archived proposal if the question comes
+back.
 
 ## 4. What we are doing with your two proposals
 
 We are treating
-[`tight_initial_camera_framing_for_exported_views.md`](tight_initial_camera_framing_for_exported_views.md)
+[`tight_initial_camera_framing_for_exported_views.md`](../archive/tight_initial_camera_framing_for_exported_views.md)
 and
 [`dark_light_theme_synchronization_and_transparent_canvas.md`](dark_light_theme_synchronization_and_transparent_canvas.md)
 as **one piece of work**, because they collide in three places: both propose new

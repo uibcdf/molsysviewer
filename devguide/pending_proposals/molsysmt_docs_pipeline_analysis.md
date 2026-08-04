@@ -248,7 +248,7 @@ and they will hit them either way:
 1. **A view exported from a script has no camera framing.** Measured: `camera.zoom()`
    does not survive an export, and a script-generated export carries no camera
    snapshot at all. This is their proposal
-   [`tight_initial_camera_framing_for_exported_views.md`](tight_initial_camera_framing_for_exported_views.md),
+   [`tight_initial_camera_framing_for_exported_views.md`](../archive/tight_initial_camera_framing_for_exported_views.md),
    and the measurement moves the fix into the runtime rather than the export.
 2. **An exported view does not follow the host page's light/dark theme.** Their
    [`dark_light_theme_synchronization_and_transparent_canvas.md`](dark_light_theme_synchronization_and_transparent_canvas.md).
