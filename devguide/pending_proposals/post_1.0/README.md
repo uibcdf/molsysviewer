@@ -56,6 +56,7 @@ second transport specification.
 | Test-output study | measured token cost shows a meaningful iteration penalty |
 | ProteinView-inspired ideas | per-item gates in that document; none are approved designs |
 | Viewing in the terminal | 1.0 API freeze has ended; no upstream or benchmark dependency |
+| Export rough edges | 1.0 has shipped and the export mechanism has real external users, so "is anybody using this?" has an answer |
 
 ## Completion discipline
 
@@ -64,6 +65,12 @@ changes, and includes serialization in the same slice for user-created state.
 Render claims require Mol* real; performance claims require recorded fixtures
 and commands. Once the work is implemented and documented durably, remove its
 proposal rather than leaving a completed plan in this directory.
+
+[`export_rework_rough_edges.md`](export_rework_rough_edges.md) is neither design
+nor defect: four accepted trade-offs from the 2026-08 export rework, written down
+while the reasons were fresh so a colder reader can look for better answers. Its
+item 2 wants reading together with `qt_render_check_on_a_gpu_runner.md` — both
+are checks that need a machine the CI does not have, for the same reason.
 
 `qt_render_check_on_a_gpu_runner.md` is infrastructure rather than design: the
 Qt render gate is already closed on a real GPU, and what remains is a
