@@ -427,27 +427,19 @@ function applyExportedBackground(controller: any, mode: string) {
 
         applyFromHost();
 
-        // A theme switch is an attribute change, but the colour it produces
-        // arrives over the next few hundred milliseconds: themes animate. Reading
-        // three times left the canvas on the old colour and then jumping, which
-        // reads as a blink. Follow the animation frame by frame instead — the
-        // per-frame work is one renderer property, and the costly part is gated
-        // on the mode flipping, which happens once.
-        let trackUntil = 0;
-        let tracking = false;
-        const track = () => {
-            applyFromHost();
-            if (performance.now() < trackUntil) {
-                window.requestAnimationFrame(track);
-            } else {
-                tracking = false;
-            }
-        };
+        // A theme switch is an attribute change on the host, but the colour it
+        // produces may arrive later: themes animate. Re-read a few times rather
+        // than trusting the first frame, which would copy the colour being left.
+        //
+        // Timers, deliberately, and not `requestAnimationFrame`. Following the
+        // animation frame by frame would remove the small jump this leaves, and
+        // it was written that way for a day — but rAF only runs while the
+        // document paints, and an embedded view spends much of its life scrolled
+        // out of view or in a background tab. Measured: a theme switch with the
+        // frame not painting was then never followed at all. Correctness over
+        // smoothness, on a path whose smooth answer is `background="transparent"`.
         const observer = new MutationObserver(() => {
-            trackUntil = performance.now() + 600;
-            if (tracking) return;
-            tracking = true;
-            window.requestAnimationFrame(track);
+            for (const delay of [0, 120, 400]) window.setTimeout(applyFromHost, delay);
         });
         observer.observe(host.documentElement, { attributes: true });
         if (host.body) observer.observe(host.body, { attributes: true });

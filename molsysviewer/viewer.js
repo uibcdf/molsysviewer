@@ -167985,21 +167985,8 @@ function applyExportedBackground(controller, mode) {
       paint(isDarkColour(colour), transparent ? void 0 : colour);
     };
     applyFromHost();
-    let trackUntil = 0;
-    let tracking = false;
-    const track = () => {
-      applyFromHost();
-      if (performance.now() < trackUntil) {
-        window.requestAnimationFrame(track);
-      } else {
-        tracking = false;
-      }
-    };
     const observer = new MutationObserver(() => {
-      trackUntil = performance.now() + 600;
-      if (tracking) return;
-      tracking = true;
-      window.requestAnimationFrame(track);
+      for (const delay of [0, 120, 400]) window.setTimeout(applyFromHost, delay);
     });
     observer.observe(host.documentElement, { attributes: true });
     if (host.body) observer.observe(host.body, { attributes: true });
