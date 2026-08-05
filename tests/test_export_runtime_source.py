@@ -408,3 +408,22 @@ def test_the_html_export_refuses_a_background_it_cannot_honour(tmp_path):
         _view().export.html(str(tmp_path / "v.html"), background="current")
     with pytest.raises(ArgumentError):
         _view().export.html(str(tmp_path / "v.html"), background="#ffffff")
+
+
+@pytest.mark.parametrize("mode", ["auto", "white", "dark", "transparent"])
+def test_the_exported_stylesheet_is_css_a_browser_will_read(tmp_path, mode):
+    """Guard against a whole class of silence.
+
+    The rules are interpolated into an f-string template, and one version of this
+    escaped the braces twice: the file went out with `html, body {{ ... }}`, which
+    every browser discards without a word. Nothing failed — the runtime paints the
+    canvas anyway — except the one thing the stylesheet is for, covering the page
+    during the seconds the runtime takes to load.
+
+    The tests of the day did not catch it because they asked whether a substring
+    was present, which it was.
+    """
+    css = _page_css(_page(tmp_path, background=mode))
+
+    assert "{{" not in css and "}}" not in css, "the stylesheet went out double-braced"
+    assert css.count("{") == css.count("}"), "unbalanced braces in the stylesheet"

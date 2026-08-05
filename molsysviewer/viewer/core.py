@@ -3443,28 +3443,35 @@ class MolSysView(
         # The page's own background, so a reader on a dark site does not watch a
         # white rectangle for the seconds the runtime takes to boot. The colours
         # are the ones the canvas itself uses, so there is no seam once it lands.
+        # Interpolated into the template, which is an f-string — so these braces
+        # are the ones the browser sees and must be single. Written as doubles
+        # once, which produced CSS every browser silently ignored while the tests,
+        # asserting on substrings, stayed green.
         _LIGHT, _DARK = "#fcfbf9", "#101010"
         if background == "white":
-            background_css = f"    html, body {{{{ background: {_LIGHT}; }}}}"
+            background_css = f"    html, body {{ background: {_LIGHT}; }}"
         elif background == "dark":
-            background_css = f"    html, body {{{{ background: {_DARK}; }}}}"
+            background_css = f"    html, body {{ background: {_DARK}; }}"
         else:
             background_css = (
-                f"    html, body {{{{ background: {_LIGHT}; }}}}\n"
-                "    @media (prefers-color-scheme: dark) {{\n"
-                f"      html, body {{{{ background: {_DARK}; }}}}\n"
-                "    }}"
+                f"    html, body {{ background: {_LIGHT}; }}\n"
+                "    @media (prefers-color-scheme: dark) {\n"
+                f"      html, body {{ background: {_DARK}; }}\n"
+                "    }"
             )
 
         background_head = ""
         if background == "transparent":
+            # A stylesheet, not inline styles: `<body>` does not exist yet when
+            # this runs, and waiting for it would leave a window in which our own
+            # background paints over the host's. A rule covers both elements from
+            # the moment it is parsed, and only when there is a host to defer to.
             background_head = """
   <script>
     if (window.self !== window.top) {
-      document.documentElement.style.background = "transparent";
-      document.addEventListener("DOMContentLoaded", function () {
-        document.body.style.background = "transparent";
-      });
+      var sheet = document.createElement("style");
+      sheet.textContent = "html, body { background: transparent !important; }";
+      document.head.appendChild(sheet);
     }
   </script>"""
 

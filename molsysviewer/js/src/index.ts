@@ -442,13 +442,39 @@ function readableHostDocument(): Document | undefined {
     }
 }
 
-/** The host's painted background, as 0xRRGGBB, or undefined if it has none. */
+/**
+ * The colour painted *behind this frame*, as 0xRRGGBB, or undefined if none is.
+ *
+ * Not the host's `<body>`: what sits behind an embedded view is usually not the
+ * page itself but whatever container it was dropped into, and containers are
+ * exactly what a documentation theme styles. `pydata-sphinx-theme` paints the
+ * wrapper around a notebook's HTML output in dark mode —
+ * `div.cell_output .text_html { background-color: var(--pst-color-text-base) }`,
+ * `#222832`, with padding and a rounded corner — so a view that copied the body's
+ * near-black sat inside a grey rectangle a shade lighter than itself, and one
+ * that cleared with alpha showed that grey instead of the page.
+ *
+ * So walk out from our own frame and take the first ancestor that actually paints
+ * something. That is the surface we are on, and matching it is what makes the
+ * seam disappear without the site having to override its own theme.
+ */
 function hostBackgroundColour(host: Document): number | undefined {
-    for (const element of [host.body, host.documentElement]) {
-        if (!element) continue;
-        const parsed = parseCssColour(host.defaultView?.getComputedStyle(element).backgroundColor);
-        // A transparent body means the colour comes from further up, so keep going.
+    const view = host.defaultView;
+    if (!view) return undefined;
+
+    let element: Element | null = null;
+    try {
+        element = (window.frameElement as Element | null)?.parentElement ?? null;
+    } catch {
+        element = null;
+    }
+    if (!element) element = host.body;
+
+    while (element) {
+        const parsed = parseCssColour(view.getComputedStyle(element).backgroundColor);
+        // Transparent means the colour comes from further out, so keep going.
         if (parsed !== undefined) return parsed;
+        element = element.parentElement;
     }
     return undefined;
 }

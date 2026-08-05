@@ -168001,10 +168001,19 @@ function readableHostDocument() {
   }
 }
 function hostBackgroundColour(host) {
-  for (const element of [host.body, host.documentElement]) {
-    if (!element) continue;
-    const parsed = parseCssColour(host.defaultView?.getComputedStyle(element).backgroundColor);
+  const view2 = host.defaultView;
+  if (!view2) return void 0;
+  let element = null;
+  try {
+    element = window.frameElement?.parentElement ?? null;
+  } catch {
+    element = null;
+  }
+  if (!element) element = host.body;
+  while (element) {
+    const parsed = parseCssColour(view2.getComputedStyle(element).backgroundColor);
     if (parsed !== void 0) return parsed;
+    element = element.parentElement;
   }
   return void 0;
 }

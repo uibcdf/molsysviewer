@@ -134,7 +134,7 @@ def test_the_scene_travels_with_the_page(tmp_path):
 # --- the colour the page ends up on -------------------------------------------
 
 
-def _canvas_colour(html_path: Path, host_background: str) -> tuple:
+def _canvas_colour(html_path: Path, host_background: str, host_html: str | None = None) -> tuple:
     """Open the view inside a host page of a given colour, and sample the result.
 
     Served over HTTP, deliberately. Reading the page around you requires being
@@ -153,10 +153,13 @@ def _canvas_colour(html_path: Path, host_background: str) -> tuple:
 
     host = html_path.parent / "host.html"
     host.write_text(
-        "<!DOCTYPE html><html data-theme='x'><body style='margin:0;background:"
-        f"{host_background}'>"
-        f"<iframe src='./{html_path.name}' width='400' height='300' "
-        "style='border:none;display:block'></iframe></body></html>",
+        host_html
+        or (
+            "<!DOCTYPE html><html data-theme='x'><body style='margin:0;background:"
+            f"{host_background}'>"
+            f"<iframe src='./{html_path.name}' width='400' height='300' "
+            "style='border:none;display:block'></iframe></body></html>"
+        ),
         encoding="utf-8",
     )
     shot = html_path.parent / "shot.png"
@@ -214,3 +217,33 @@ def test_the_same_view_is_light_on_a_light_page(tmp_path):
     view = _self_contained(tmp_path)
 
     assert _canvas_colour(view, "#ffffff") == (255, 255, 255)
+
+
+def test_the_view_matches_the_container_it_was_dropped_into(tmp_path):
+    """Not the page's background: the surface immediately behind the frame.
+
+    Reported from MolSysMT's own site. `pydata-sphinx-theme` paints the wrapper
+    around a notebook's HTML output in dark mode — `.cell_output .text_html`,
+    `#222832`, with padding — over a near-black page. A view that copied the
+    *body* sat inside a rectangle a shade lighter than itself, which is the grey
+    frame the reader sees, and a transparent one showed that grey instead of the
+    page.
+
+    This replicates that structure. The view must come out `#222832`, the colour
+    of what is actually behind it, with no help from the site's own CSS.
+    """
+    view = _self_contained(tmp_path)
+    host_html = (
+        "<!DOCTYPE html><html data-theme='dark'><head><style>"
+        "body { background:#14181f; margin:0 }"
+        ".cell_output .text_html { background-color:#222832; border-radius:.25rem; padding:.5rem }"
+        "</style></head><body><div class='bd-content'><div class='cell_output'>"
+        f"<div class='output text_html'><iframe src='./{tmp_path.name}/../view.html' "
+        "width='400' height='300' style='border:none;display:block'></iframe>"
+        "</div></div></div></body></html>"
+    )
+    host_html = host_html.replace(f"./{tmp_path.name}/../view.html", "./view.html")
+
+    assert _canvas_colour(view, "#14181f", host_html=host_html) == (34, 40, 50), (
+        "the view took the page's colour instead of the container's"
+    )
