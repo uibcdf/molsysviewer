@@ -1,6 +1,13 @@
 name: NPM Release
 
 on:
+  # A tag is the thing that always happens when a version ships. Publishing used
+  # to hang off `release: published`, and from 0.8.0 the project tagged without
+  # creating Releases — so thirteen versions never reached npm, and every
+  # `shared_runtime="cdn"` export written by their users pointed at nothing.
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
   release:
     types: [published]
   workflow_dispatch:

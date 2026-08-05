@@ -27,14 +27,28 @@ Package: `@uibcdf/molsysviewer` published from `molsysviewer/js/`.
 Flow
 1. Ensure `molsysviewer/js/package.json` version matches the intended tag.
 2. Create and push a tag `X.Y.Z` (or `X.Y.Z-rc.N`).
-3. GitHub Actions runs `.github/workflows/npm-publish.yaml` and publishes
-   using Trusted Publisher (OIDC).
+3. Pushing the tag runs `.github/workflows/npm-publish.yaml`, which publishes
+   using Trusted Publisher (OIDC). Publishing conda works the same way.
 
-Docs-lite exports load the runtime from jsDelivr:
+**A tag is what publishes, and that is deliberate.** Both workflows used to
+trigger only on `release: published`. From `0.8.0` this project tagged without
+creating GitHub Releases, so the trigger stopped firing: npm and conda sat at
+`0.7.0` while Python reached `0.20.0` — **thirteen versions**, discovered on
+2026-08-05 and republished by hand. The lesson is not "remember to create the
+Release": it is that a publication step must hang off the thing that always
+happens.
 
+**Check it, do not assume it.** After tagging:
+
+```bash
+gh run list --workflow=npm-publish.yaml --limit 1
+curl -s -o /dev/null -w "%{http_code}\n" \
+  "https://cdn.jsdelivr.net/npm/@uibcdf/molsysviewer@X.Y.Z/dist/viewer.js"
 ```
-https://cdn.jsdelivr.net/npm/@uibcdf/molsysviewer@X.Y.Z/dist/viewer.js
-```
+
+A `404` there means every `view.export.html(..., shared_runtime="cdn")` written
+by a user of that version points at nothing. That is a public API path failing on
+somebody else's website, months later, with nothing on our side to notice.
 
 How the version is chosen
 

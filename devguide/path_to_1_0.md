@@ -18,7 +18,7 @@ Work done against the `0.18.0` tag.
 | 4 | Fill 3 placeholder doc pages (`demo_systems/catalog`, `demo_systems/index`, `scene_management/visibility`) | Claude | ✅ 2026-04-28 |
 | 5 | Manual smoke test — 14-step flow in `devguide/smoke_test.md` | Diego | — |
 | 6 | Visual smoke of `controls_mode="minimal"` + `panel_mode_style="floating"` in a real notebook | Diego | — |
-| 7 | Publish conda + npm packages for `0.18.0` | Diego | — |
+| 7 | Publish conda + npm packages | Diego | npm at `0.20.0` since 2026-08-05; conda still at `0.7.0`. Both workflows now trigger on a pushed tag, not on a GitHub Release — the trigger that stopped firing at `0.8.0` and cost thirteen unpublished versions. See `docs/content/developer/releasing.md`. |
 
 ---
 
