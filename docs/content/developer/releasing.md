@@ -28,15 +28,20 @@ Flow
 1. Ensure `molsysviewer/js/package.json` version matches the intended tag.
 2. Create and push a tag `X.Y.Z` (or `X.Y.Z-rc.N`).
 3. Pushing the tag runs `.github/workflows/npm-publish.yaml`, which publishes
-   using Trusted Publisher (OIDC). Publishing conda works the same way.
+   using Trusted Publisher (OIDC).
 
-**A tag is what publishes, and that is deliberate.** Both workflows used to
-trigger only on `release: published`. From `0.8.0` this project tagged without
-creating GitHub Releases, so the trigger stopped firing: npm and conda sat at
-`0.7.0` while Python reached `0.20.0` — **thirteen versions**, discovered on
-2026-08-05 and republished by hand. The lesson is not "remember to create the
-Release": it is that a publication step must hang off the thing that always
-happens.
+**Conda is different, on purpose.** It publishes from a GitHub *Release*, not
+from a tag. A tag is a checkpoint and there are many; a conda package is
+something people install, and the cadence is a decision. So a version can be on
+npm and not on conda, and that is not a defect.
+
+**A tag is what publishes to npm, and that is deliberate.** It used to trigger
+only on `release: published`. From `0.8.0` this project tagged without creating
+GitHub Releases, so the trigger stopped firing and npm sat at `0.7.0` while
+Python reached `0.20.0` — **thirteen versions**, discovered on 2026-08-05 and
+republished by hand. The runtime is not a package anybody installs on purpose: it
+is what an exported view fetches, so it has to exist for every version that can
+export. That is why its trigger is the thing that always happens.
 
 **Check it, do not assume it.** After tagging:
 
