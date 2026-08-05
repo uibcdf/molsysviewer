@@ -366,49 +366,88 @@ export async function bootDocsView(opts: {
 function applyExportedBackground(controller: any, mode: string) {
     const transparent = mode === "transparent";
 
-    const setCanvas = (dark: boolean, colour?: number) => {
-        void Promise.resolve(controller.toggleBackground(dark ? "dark" : "light")).then(() => {
-            const canvas3d = controller.plugin?.canvas3d;
-            if (!canvas3d) return;
-            // `toggleBackground` rewrites the renderer props wholesale, so both of
-            // these have to be re-asserted after it, every time, not set once.
-            if (transparent) {
-                canvas3d.setProps({ transparentBackground: true });
-            } else if (colour !== undefined) {
-                canvas3d.setProps({
-                    renderer: { ...(canvas3d.props?.renderer ?? {}), backgroundColor: colour },
-                });
-            }
-        });
+    let appliedDark: boolean | undefined;
+    let appliedColour: number | undefined;
+
+    /** Cheap: one renderer property, and the alpha clear it must not lose. */
+    const paintSurface = (colour?: number) => {
+        const canvas3d = controller.plugin?.canvas3d;
+        if (!canvas3d) return;
+        if (transparent) {
+            canvas3d.setProps({ transparentBackground: true });
+        } else if (colour !== undefined) {
+            canvas3d.setProps({
+                renderer: { ...(canvas3d.props?.renderer ?? {}), backgroundColor: colour },
+            });
+        }
+    };
+
+    /**
+     * Expensive: `toggleBackground` rewrites the whole renderer, lights included,
+     * so it runs only when the *mode* actually flips — once per theme switch, not
+     * once per frame of its animation. It also wipes what `paintSurface` set,
+     * which is why that is re-applied after it and never only at boot.
+     */
+    const paint = (dark: boolean, colour?: number) => {
+        if (dark === appliedDark) {
+            paintSurface(colour);
+            return;
+        }
+        appliedDark = dark;
+        void Promise.resolve(controller.toggleBackground(dark ? "dark" : "light"))
+            .then(() => paintSurface(colour));
     };
 
     // Fixed by the author: neither the host nor the reader is consulted.
     if (mode === "white" || mode === "dark") {
-        setCanvas(mode === "dark");
+        paint(mode === "dark");
         return;
     }
 
+    const prefersDark = () => !!window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+
     const host = readableHostDocument();
     if (host) {
-        // Sites change attributes on <html> and <body> for reasons that are not
-        // the theme — a class while a menu is open, another while a modal locks
-        // the scroll. Repainting the scene for those would be work the reader
-        // paid for and cannot see, so nothing happens unless the colour moved.
-        let current: number | undefined;
         const applyFromHost = () => {
             const colour = hostBackgroundColour(host);
-            if (colour === undefined || colour === current) return;
-            current = colour;
-            setCanvas(isDarkColour(colour), transparent ? undefined : colour);
+            if (colour === undefined) {
+                // Nothing to copy: the surface behind us is a gradient, an image,
+                // or transparent all the way up. Transparency still applies — that
+                // case is exactly what it is for — and only the lighting needs a
+                // guess, so fall back to the reader for that.
+                if (appliedColour === undefined && appliedDark !== undefined) return;
+                appliedColour = undefined;
+                paint(prefersDark());
+                return;
+            }
+            if (colour === appliedColour) return;
+            appliedColour = colour;
+            paint(isDarkColour(colour), transparent ? undefined : colour);
         };
 
         applyFromHost();
 
-        // A theme switch is an attribute change on the host, but the colour it
-        // produces may arrive later: themes animate. Re-read a few times rather
-        // than trusting the first frame, which would copy the colour being left.
+        // A theme switch is an attribute change, but the colour it produces
+        // arrives over the next few hundred milliseconds: themes animate. Reading
+        // three times left the canvas on the old colour and then jumping, which
+        // reads as a blink. Follow the animation frame by frame instead — the
+        // per-frame work is one renderer property, and the costly part is gated
+        // on the mode flipping, which happens once.
+        let trackUntil = 0;
+        let tracking = false;
+        const track = () => {
+            applyFromHost();
+            if (performance.now() < trackUntil) {
+                window.requestAnimationFrame(track);
+            } else {
+                tracking = false;
+            }
+        };
         const observer = new MutationObserver(() => {
-            for (const delay of [0, 120, 400]) window.setTimeout(applyFromHost, delay);
+            trackUntil = performance.now() + 600;
+            if (tracking) return;
+            tracking = true;
+            window.requestAnimationFrame(track);
         });
         observer.observe(host.documentElement, { attributes: true });
         if (host.body) observer.observe(host.body, { attributes: true });
@@ -418,11 +457,11 @@ function applyExportedBackground(controller: any, mode: string) {
     // No host to ask: the reader's own preference is the only signal left.
     const query = window.matchMedia?.("(prefers-color-scheme: dark)");
     if (!query) {
-        setCanvas(false);
+        paint(false);
         return;
     }
-    setCanvas(query.matches);
-    const onChange = (event: MediaQueryListEvent) => setCanvas(event.matches);
+    paint(query.matches);
+    const onChange = (event: MediaQueryListEvent) => paint(event.matches);
     if (typeof query.addEventListener === "function") {
         query.addEventListener("change", onChange);
     } else if (typeof (query as any).addListener === "function") {

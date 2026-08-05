@@ -146,6 +146,11 @@ def _canvas_colour(html_path: Path, host_background: str, host_html: str | None 
     A browser is the only instrument here: what the page sits on is decided at
     read time from the document around it, so no amount of reading the exported
     file can tell you the answer.
+
+    It samples the **background**, deliberately. Whether the molecule finishes
+    drawing is not reliable under a software rasteriser — the same page measured
+    three times gave 6186, 0 and 6172 lit pixels — so an assertion about the
+    molecule would be a flake generator. The colour behind it is stable.
     """
     from PIL import Image
 

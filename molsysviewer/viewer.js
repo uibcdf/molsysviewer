@@ -167944,35 +167944,62 @@ async function bootDocsView(opts) {
 }
 function applyExportedBackground(controller, mode) {
   const transparent = mode === "transparent";
-  const setCanvas = (dark, colour) => {
-    void Promise.resolve(controller.toggleBackground(dark ? "dark" : "light")).then(() => {
-      const canvas3d = controller.plugin?.canvas3d;
-      if (!canvas3d) return;
-      if (transparent) {
-        canvas3d.setProps({ transparentBackground: true });
-      } else if (colour !== void 0) {
-        canvas3d.setProps({
-          renderer: { ...canvas3d.props?.renderer ?? {}, backgroundColor: colour }
-        });
-      }
-    });
+  let appliedDark;
+  let appliedColour;
+  const paintSurface = (colour) => {
+    const canvas3d = controller.plugin?.canvas3d;
+    if (!canvas3d) return;
+    if (transparent) {
+      canvas3d.setProps({ transparentBackground: true });
+    } else if (colour !== void 0) {
+      canvas3d.setProps({
+        renderer: { ...canvas3d.props?.renderer ?? {}, backgroundColor: colour }
+      });
+    }
+  };
+  const paint = (dark, colour) => {
+    if (dark === appliedDark) {
+      paintSurface(colour);
+      return;
+    }
+    appliedDark = dark;
+    void Promise.resolve(controller.toggleBackground(dark ? "dark" : "light")).then(() => paintSurface(colour));
   };
   if (mode === "white" || mode === "dark") {
-    setCanvas(mode === "dark");
+    paint(mode === "dark");
     return;
   }
+  const prefersDark = () => !!window.matchMedia?.("(prefers-color-scheme: dark)").matches;
   const host = readableHostDocument();
   if (host) {
-    let current2;
     const applyFromHost = () => {
       const colour = hostBackgroundColour(host);
-      if (colour === void 0 || colour === current2) return;
-      current2 = colour;
-      setCanvas(isDarkColour(colour), transparent ? void 0 : colour);
+      if (colour === void 0) {
+        if (appliedColour === void 0 && appliedDark !== void 0) return;
+        appliedColour = void 0;
+        paint(prefersDark());
+        return;
+      }
+      if (colour === appliedColour) return;
+      appliedColour = colour;
+      paint(isDarkColour(colour), transparent ? void 0 : colour);
     };
     applyFromHost();
+    let trackUntil = 0;
+    let tracking = false;
+    const track = () => {
+      applyFromHost();
+      if (performance.now() < trackUntil) {
+        window.requestAnimationFrame(track);
+      } else {
+        tracking = false;
+      }
+    };
     const observer = new MutationObserver(() => {
-      for (const delay of [0, 120, 400]) window.setTimeout(applyFromHost, delay);
+      trackUntil = performance.now() + 600;
+      if (tracking) return;
+      tracking = true;
+      window.requestAnimationFrame(track);
     });
     observer.observe(host.documentElement, { attributes: true });
     if (host.body) observer.observe(host.body, { attributes: true });
@@ -167980,11 +168007,11 @@ function applyExportedBackground(controller, mode) {
   }
   const query2 = window.matchMedia?.("(prefers-color-scheme: dark)");
   if (!query2) {
-    setCanvas(false);
+    paint(false);
     return;
   }
-  setCanvas(query2.matches);
-  const onChange = (event) => setCanvas(event.matches);
+  paint(query2.matches);
+  const onChange = (event) => paint(event.matches);
   if (typeof query2.addEventListener === "function") {
     query2.addEventListener("change", onChange);
   } else if (typeof query2.addListener === "function") {
