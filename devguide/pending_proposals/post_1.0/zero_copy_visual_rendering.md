@@ -2,7 +2,7 @@
 
 **Status:** design / planning (feasibility-grounded). Not implemented.
 **Current transport proposal:** see
-[`data_plane_architecture.md`](data_plane_architecture.md). This document
+[`data_plane_architecture.md`](../../data_plane_architecture.md). This document
 is the deeper post-1.0 feasibility analysis and must not be read as a second wire
 protocol.
 **Consolidates:** this document folds in and supersedes the former

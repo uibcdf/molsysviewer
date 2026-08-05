@@ -920,7 +920,7 @@ saves their session, reopens it, and their shapes are gone — silently, because
 `export_state` still returns a document and `import_state` still runs.
 
 This is precisely the failure mode that
-[`session_reproducibility.md`](../session_reproducibility.md) exists to
+[`session_reproducibility.md`](session_reproducibility.md) exists to
 prevent ("serialisation coverage decays by default … and because `export_state`
 still returns something, it breaks **silently**"). The promise was broken for
 shapes and nobody noticed.
@@ -1166,7 +1166,7 @@ API — it needs to be surfaced. (Verified against the modules on 2026-07-12.)
 **Naming.** Two cross-cutting contracts carry a mnemonic letter — **T** (tags and
 identity) and **V** (visual realisation) — because they govern *every* domain,
 including the future ones. The **S** series is the scene-object series proper. The
-existing contracts in [`scene_contracts.md`](../scene_contracts.md) (A, B, R, C, H)
+existing contracts in [`scene_contracts.md`](scene_contracts.md) (A, B, R, C, H)
 remain in force and **win over everything here**.
 
 They appear below in dependency order — **V is deliberately before S5**, because
@@ -1639,7 +1639,7 @@ computed it*. Our data, their rendering.
 #### Decision (2026-07-12): the MVS annotation machinery is **post-1.0**
 
 Deferred — the rationale, the risk and the deferred work live in
-[`post_1.0/annotations_mvs_machinery.md`](post_1.0/annotations_mvs_machinery.md).
+[`post_1.0/annotations_mvs_machinery.md`](pending_proposals/post_1.0/annotations_mvs_machinery.md).
 In short: it is not what blocks the user (the 1.0 Annotations subpanel needs
 in-place text editing, renaming, layers and creation from the active selection —
 none of which needs MVS), its interactive behaviour is unverified, and **Contract V

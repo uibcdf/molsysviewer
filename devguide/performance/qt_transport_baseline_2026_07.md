@@ -11,7 +11,7 @@ Qt is in scope for 1.0 and had never been measured. This closes Phase 0 for the
 Qt connector, the counterpart of
 [`trajectory_transport_baseline_2026_07.md`](trajectory_transport_baseline_2026_07.md)
 for AnyWidget, and feeds
-[`data_plane_architecture.md`](../pending_proposals/data_plane_architecture.md).
+[`data_plane_architecture.md`](../data_plane_architecture.md).
 
 ## Command
 

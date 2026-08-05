@@ -56,8 +56,8 @@ orchestration ownership. The canonical execution order is
 The completed proposals remain the design record of what was built and why;
 the master plan preserves their contracts while replacing weaker internals:
 
-- [`pending_proposals/runtime_message_router.md`](pending_proposals/runtime_message_router.md);
-- [`pending_proposals/data_plane_architecture.md`](pending_proposals/data_plane_architecture.md).
+- [`runtime_message_router.md`](runtime_message_router.md);
+- [`data_plane_architecture.md`](data_plane_architecture.md).
 
 The explicit uniform-color API requested during dogfooding is implemented as
 `Whole.set_color` and `Region.set_color`. The Qt live-replacement defect has an

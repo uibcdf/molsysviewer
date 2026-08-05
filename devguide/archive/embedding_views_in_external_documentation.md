@@ -1,5 +1,20 @@
 # Embedding views in external documentation
 
+**COMPLETE 2026-08-05.** Every step of §5 is closed.
+
+Steps 1, 3 and 4 landed on 2026-08-03; §8 records the export rework that followed.
+Step 2 was deferred to
+[`../pending_proposals/exported_page_self_declaration.md`](../pending_proposals/exported_page_self_declaration.md),
+which is still open and whose trigger has now arrived. **Step 5 — port to
+MolSysMT — was done by MolSysMT**, from this specification, without us touching
+their repository: see the adoption report and our reply, archived beside this
+file. Step 6, the Sphinx extension, remains deferred until a real user asks, as
+designed.
+
+The mechanism it describes is now documented for users in *Embedding a view in
+your website*, which is where a third party should read it. This file is the
+record of why it is shaped the way it is.
+
 **Status:** executed except for §5.5 (port to MolSysMT) and §5.6 (Sphinx
 extension, deferred). Steps 1, 3 and 4 landed 2026-08-03; the export rework of
 2026-08-04 is recorded in §8 and changed what "self-contained" means.
@@ -8,7 +23,7 @@ extension, deferred). Steps 1, 3 and 4 landed 2026-08-03; the export rework of
 documentation. Investigating why produced
 [`../archive/docs_lite_views_pinned_to_unpublished_npm_version.md`](../archive/docs_lite_views_pinned_to_unpublished_npm_version.md)
 and the documentation findings in
-[`first_read_comprehension_gaps_2026_08.md`](first_read_comprehension_gaps_2026_08.md).
+[`first_read_comprehension_gaps_2026_08.md`](../pending_proposals/first_read_comprehension_gaps_2026_08.md).
 This proposal is the design that closes both.
 
 **Audience:** a third party publishing MolSysViewer views on their own website.
@@ -159,7 +174,7 @@ tighter surface costs an afternoon now and two repositories later.)*
 1. **The Python primitive** — the export parameter, the asset accessor, version
    coherence, tests with mutations.
 2. ~~**The runtime handshake (TypeScript)**~~ — **deferred 2026-08-03** to
-   [`exported_page_self_declaration.md`](exported_page_self_declaration.md),
+   [`exported_page_self_declaration.md`](../pending_proposals/exported_page_self_declaration.md),
    together with a second item raised in the same conversation: an exported page
    offers controls it cannot honour without an authority. Neither blocks
    MolSysMT, and both guard failures that are not active yet. That file records
@@ -234,7 +249,7 @@ Measured on real exports:
 
 - a **shared** view cannot be opened from a disk at all. A page with no origin
   may not import the runtime beside it — see
-  [`classic_script_runtime_for_offline_bundles.md`](classic_script_runtime_for_offline_bundles.md)
+  [`classic_script_runtime_for_offline_bundles.md`](../pending_proposals/classic_script_runtime_for_offline_bundles.md)
   for the browser evidence. On a served site the question never arises, which is
   why it went unnoticed;
 - the **self-contained** export, meanwhile, fetched `require.js` from cdnjs and
@@ -278,4 +293,4 @@ CDN pin and the standalone export mutating live widget state. Both are in
 
 Still open from this amendment: nothing blocks MolSysMT. The uncovered case —
 many shared views opened offline from a disk — is parked with its research in
-[`classic_script_runtime_for_offline_bundles.md`](classic_script_runtime_for_offline_bundles.md).
+[`classic_script_runtime_for_offline_bundles.md`](../pending_proposals/classic_script_runtime_for_offline_bundles.md).

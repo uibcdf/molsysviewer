@@ -31,7 +31,7 @@ applies the rule in two places and skips it in two others.** It is an internal
 inconsistency, not a design disagreement, which is the form most likely to be
 accepted quickly.
 
-Our own investigation is in `devguide/pending_bugs/camera_zoom_out_blocked_after_scene_replay.md`
+Our own investigation is in `devguide/archive/camera_zoom_out_blocked_after_scene_replay.md`
 and Contract S9. Everything a maintainer needs is reproduced self-contained in the
 issue body below — deliberately, since nobody upstream can run our probes.
 

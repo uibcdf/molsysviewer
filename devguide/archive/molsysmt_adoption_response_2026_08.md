@@ -1,5 +1,13 @@
 # Response to the MolSysMT adoption report
 
+**Archived 2026-08-05.** The exchange is closed: both of their proposals answered,
+one measured and found to need no change, one delivered as
+`export.html(background=...)` and adopted. What remains from this thread is not
+ours — the consistency check between their tutorials and their generation
+scripts, and their decision on migrating the rest of their notebooks — and it is
+recorded in
+[`../pending_proposals/molsysmt_docs_pipeline_analysis.md`](../pending_proposals/molsysmt_docs_pipeline_analysis.md).
+
 **Status:** closed 2026-08-05. Both proposals answered, one archived without a
 change and one delivered and adopted. Kept here because it is the record of what
 was measured; the durable descriptions live in the user guide.

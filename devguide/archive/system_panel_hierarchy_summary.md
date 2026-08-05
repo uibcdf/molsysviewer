@@ -1,5 +1,8 @@
 # ~~Project the molecular hierarchy~~ — DONE, but not the way this proposed
 
+**Archived 2026-08-05.** Its own title already said DONE; it sat in
+`pending_proposals/` for four days after the fact.
+
 **Proposed 2026-08-01, from the panel pop-out smoke test: every Studio subpanel
 renders in the popped-out window except System, which is empty.**
 

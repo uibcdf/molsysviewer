@@ -10,7 +10,7 @@ retrieval remains post-1.0. The optimization starts at Python list
 materialization rather than replacing the wire format in isolation.
 
 This benchmark closes Phase 0 of
-[`data_plane_architecture.md`](../pending_proposals/data_plane_architecture.md).
+[`data_plane_architecture.md`](../data_plane_architecture.md).
 
 ## Commands
 

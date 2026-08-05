@@ -1,11 +1,12 @@
 # An exported page should declare what it is and what it can do
 
-**Status:** open, deliberately deferred. Neither half blocks the work that
-unblocks MolSysMT, and both guard failures that are not active today. They stop
-being safe to defer for reasons recorded below.
+**Status:** open. **Part A's trigger arrived on 2026-08-05** and the deferral no
+longer holds; Part B's has not. Both were deferred because they guard failures
+that were not active yet, and the conditions that end each deferral are recorded
+below — one of them has now happened.
 
 **Origin:** deferred from
-[`embedding_views_in_external_documentation.md`](embedding_views_in_external_documentation.md)
+[`embedding_views_in_external_documentation.md`](../archive/embedding_views_in_external_documentation.md)
 on 2026-08-03 — its execution step 2, plus a second item raised in the same
 conversation. They are filed together because they are one idea seen from two
 sides: **the exported page tells the reader the truth about itself.** One about
@@ -35,10 +36,17 @@ The runtime compares it with its own on boot and reports a mismatch through the
 channel it already uses for a failed load — `console.error` plus a visible line
 in the mount element — rather than rendering something plausible.
 
-**Why deferring is safe today.** Nobody has a multi-view site on this mechanism
-yet: our own views are about to be regenerated in one pass, and MolSysMT has not
-adopted it. The first site that regenerates a *subset* is when this starts to
-bite.
+**Why deferring was safe until 2026-08-05.** Nobody had a multi-view site on this
+mechanism: our own views were regenerated in one pass, and MolSysMT had not
+adopted it.
+
+**It is not safe now.** MolSysMT has adopted the mechanism and publishes from it,
+and the moment they regenerate *one* view after upgrading MolSysViewer — which is
+exactly how a documentation site evolves, one figure at a time — their untouched
+pages carry scenes older than the runtime placed beside them, with nothing
+comparing the two. This is the condition this paragraph was written to detect.
+Their site is also where the failure would be quietest: the runtime loads, the
+molecule appears, and only the interpretation may have moved.
 
 **Acceptance when it is done.** Pair a scene with a deliberately mismatched
 runtime and the page reports it. Mutation: remove the comparison and that test

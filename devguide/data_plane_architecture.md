@@ -9,11 +9,15 @@ Both connectors keep the JSON path as an observable fallback. Windowed
 residency stays post-1.0; `SharedArrayBuffer` is blocked on preconditions this
 project does not own.
 
+Promoted out of `pending_proposals/` on 2026-08-05: ten documents cite it as the
+current description of the data plane, `architecture.md` and `roadmap.md` among
+them, which is a contract's job and not a plan's.
+
 **Scope:** connector-neutral transport of large homogeneous numeric arrays
 between Python and TypeScript. MolSysViewer 1.0 continues to materialize every
 selected structure in `view.molsys`. Lazy sources, partial residency, and
 eager/windowed modes belong to
-[`post_1.0/structure_windowing_and_lazy_materialization.md`](post_1.0/structure_windowing_and_lazy_materialization.md).
+[`post_1.0/structure_windowing_and_lazy_materialization.md`](pending_proposals/post_1.0/structure_windowing_and_lazy_materialization.md).
 Runtime routing belongs to
 [`runtime_message_router.md`](runtime_message_router.md).
 
@@ -41,7 +45,7 @@ the implementation rather than starting it.
 ## Evidence
 
 The July 2026 baseline is recorded in
-[`../performance/trajectory_transport_baseline_2026_07.md`](../performance/trajectory_transport_baseline_2026_07.md).
+[`../performance/trajectory_transport_baseline_2026_07.md`](performance/trajectory_transport_baseline_2026_07.md).
 For 5,000 structures of only 62 atoms it measured:
 
 - 18.37 MB JSON;
@@ -517,6 +521,6 @@ because no amount of work on our side unblocks it.
 ## Related work
 
 - [`runtime_message_router.md`](runtime_message_router.md)
-- [`post_1.0/structure_windowing_and_lazy_materialization.md`](post_1.0/structure_windowing_and_lazy_materialization.md)
-- [`post_1.0/zero_copy_visual_rendering.md`](post_1.0/zero_copy_visual_rendering.md)
-- [`../performance/trajectory_transport_baseline_2026_07.md`](../performance/trajectory_transport_baseline_2026_07.md)
+- [`post_1.0/structure_windowing_and_lazy_materialization.md`](pending_proposals/post_1.0/structure_windowing_and_lazy_materialization.md)
+- [`post_1.0/zero_copy_visual_rendering.md`](pending_proposals/post_1.0/zero_copy_visual_rendering.md)
+- [`../performance/trajectory_transport_baseline_2026_07.md`](performance/trajectory_transport_baseline_2026_07.md)

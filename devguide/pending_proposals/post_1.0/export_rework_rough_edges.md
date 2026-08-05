@@ -7,7 +7,7 @@ fresh so that a later reader can look for a better one without re-deriving the
 problem.
 
 **Origin:** asked for on 2026-08-04, at the end of the work recorded in
-[`../embedding_views_in_external_documentation.md`](../embedding_views_in_external_documentation.md)
+[`../embedding_views_in_external_documentation.md`](../../archive/embedding_views_in_external_documentation.md)
 §8. The judgement then was: good work overall, with one piece that should be
 removed if nobody uses it, one test that does not run where it should, one small
 wart, and one smell that predates all of it.

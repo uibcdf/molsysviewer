@@ -1,5 +1,20 @@
 # The view opens zoomed in and the wheel will not zoom out
 
+**RESOLVED 2026-08-05, and its own header was the last thing left wrong.** It
+still read "fix designed, not yet implemented" while the fix had been in
+`viewer-controller.ts` for days (`takeCameraAuthority`, Contract S9 mechanism B).
+
+Every item of "work remaining" is done. The last one to close was §8, *"resolve
+the no-op `clearGlobalRepresentations` — either implement it or delete it;
+leaving a question mark in a comment is not a decision"*: the function now has a
+body and a comment that argues why clearing the bookkeeping is enough, since the
+load replaces the structure and Mol\* removes its descendants with it.
+
+What is **not** done is §7, reporting the defect upstream. That is Mol\*'s to fix
+and ours to file, and it lives in
+[`../pending_proposals/report_molstar_empty_scene_camera_bounds.md`](../pending_proposals/report_molstar_empty_scene_camera_bounds.md),
+drafted and unsent.
+
 **Reported by hand, 2026-07-31, JupyterLab. Diagnosed and measured 2026-08-01.
 Fix designed, not yet implemented.**
 

@@ -335,8 +335,8 @@ and JSON fallback.
 
 ## Resume cautions
 
-- Read `devguide/pending_proposals/runtime_message_router.md` and
-  `devguide/pending_proposals/data_plane_architecture.md` first.
+- Read `devguide/runtime_message_router.md` and
+  `devguide/data_plane_architecture.md` first.
 - The popup host and popup runtime already share envelope semantics; do not
   reintroduce `{type, data, from}` routing.
 - Python remains the only authority for reproducible scene state.

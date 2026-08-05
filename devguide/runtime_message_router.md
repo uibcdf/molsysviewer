@@ -6,9 +6,14 @@ authority (R1), the canonical popup scene projection replacing the replay
 journal (R2), Qt no longer forking the protocol (R3), and structure data routed
 by endpoint (R4).
 
-What remains is not protocol work: automating the Qt render check on a GPU
-runner, and the thirteen legacy `molsysviewer-*` popup actions that now travel
-inside an envelope but are not yet enumerated in the shared manifest.
+Promoted out of `pending_proposals/` on 2026-08-05: seven documents cite it as
+the current description of the router, which is a contract's job and not a
+plan's. What remains is not protocol work and is tracked where work is tracked —
+the Qt render check on a GPU runner
+([`pending_proposals/post_1.0/qt_render_check_on_a_gpu_runner.md`](pending_proposals/post_1.0/qt_render_check_on_a_gpu_runner.md)),
+and the thirteen legacy `molsysviewer-*` popup actions still outside the shared
+manifest
+([`pending_proposals/open_items_after_the_2026_08_smoke_round.md`](pending_proposals/open_items_after_the_2026_08_smoke_round.md) E0).
 
 **Scope:** identity, authority, routing, deduplication, acknowledgements, and
 lifecycle across Python, AnyWidget/Qt host adapters, embedded canvases, and

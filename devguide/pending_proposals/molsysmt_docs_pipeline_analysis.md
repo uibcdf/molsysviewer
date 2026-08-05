@@ -2,7 +2,7 @@
 
 **Status:** analysis, 2026-08-04. Offered, not requested — MolSysMT may already
 have most of this in hand. Companion to
-[`molsysmt_adoption_response_2026_08.md`](molsysmt_adoption_response_2026_08.md),
+[`molsysmt_adoption_response_2026_08.md`](../archive/molsysmt_adoption_response_2026_08.md),
 which answers their report point by point. This document asks a different
 question.
 

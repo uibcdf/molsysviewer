@@ -3,7 +3,7 @@
 **Status:** post-1.0 study. Not a build decision.
 
 **Scope:** The Python side already has an answer (`pytest-receptor`, see
-[`../pytest_receptor.md`](../pytest_receptor.md)). This asks whether MolSysViewer's
+[`../pytest_receptor.md`](../../pytest_receptor.md)). This asks whether MolSysViewer's
 *other* test surfaces — the JS/TS unit tests, the Playwright E2E harnesses, and the
 perf/probe scripts — spend excessive tokens when the reader is an LLM or coding
 agent rather than a human, and if so what the cheapest fix is. **Measurement

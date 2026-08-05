@@ -5,7 +5,7 @@ somebody asks, the answer is already researched and measured rather than
 rediscovered. Do not implement it without the trigger in §4.
 
 **Origin:** while fixing "an exported view does not open from disk"
-([`embedding_views_in_external_documentation.md`](embedding_views_in_external_documentation.md)),
+(../archive/embedding_views_in_external_documentation.md)),
 this was the first design considered. A smaller change turned out to cover every
 case anybody has today, so this one was parked with the measurements already
 taken.

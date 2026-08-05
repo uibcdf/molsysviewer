@@ -1,5 +1,16 @@
 # MolSysMT Adoption Report: End-to-End Infrastructure & Transparent Adapter Pattern for Static View Embedding
 
+**Inbound report from the first external adopter, archived 2026-08-05 with the
+exchange it opened.** Our reply is
+[`molsysmt_adoption_response_2026_08.md`](molsysmt_adoption_response_2026_08.md);
+the scaling analysis it prompted is still live at
+[`../pending_proposals/molsysmt_docs_pipeline_analysis.md`](../pending_proposals/molsysmt_docs_pipeline_analysis.md),
+because the decisions it puts to them are theirs and unanswered.
+
+Read it knowing two of its statements were overtaken: their own code already
+consumed the target variable and already raised, and §4.4's `skip_digestion=True`
+was a workaround for a defect of ours, since fixed.
+
 **Status:** Informational / First-Adopter Technical Verification (2026-08-04)  
 **Authors:** MolSysMT & MolSysViewer Integration Team  
 **Related Proposals:** [`embedding_views_in_external_documentation.md`](embedding_views_in_external_documentation.md)  
