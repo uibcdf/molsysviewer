@@ -1,7 +1,23 @@
 # Report the empty-scene camera bounds defect to Mol\*
 
-**Proposed 2026-08-01. Action needed: file the issue below at
-`molstar/molstar`. Nobody has submitted it yet.**
+**Filed 2026-08-05 as [molstar/molstar#1903](https://github.com/molstar/molstar/issues/1903).
+Waiting for a maintainer's answer before offering the patch.**
+
+Verified against `master` at `26216e9b1` (5.11.0) on the day it was filed: all
+three links in the chain are unchanged — `commitScene`'s unguarded
+`camera.setState({ radiusMax: getSceneRadius() })` (`canvas3d.ts:959`), the
+`autoAdjustMinMaxDistance` block outside the `if (radius > 0)` guard beside it
+(`canvas3d.ts:886-893`), and `checkDistances` assigning `camera.position` every
+frame (`trackball.ts:493, 543`), while `Camera.update()` still refuses to act on
+`radiusMax === 0` (`camera.ts:99`).
+
+**Next step is theirs.** If the direction is accepted, the two-line patch is
+ready and the prize is not the fix — we already carry Contract S9 — but retiring
+the workaround: today it depends on two parameters Mol\* marks `isHidden`, and a
+change in their *semantics* would remove our protection silently, compiling and
+green. `camera_stranded_inside_scene` in the smonitor catalog exists for exactly
+that. If they decline, that detector becomes permanent and should be documented
+as such rather than left looking temporary.
 
 ## Why this is a proposal and not a bug of ours
 
