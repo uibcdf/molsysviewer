@@ -167963,9 +167963,11 @@ function applyExportedBackground(controller, mode) {
   }
   const host = readableHostDocument();
   if (host) {
+    let current2;
     const applyFromHost = () => {
       const colour = hostBackgroundColour(host);
-      if (colour === void 0) return;
+      if (colour === void 0 || colour === current2) return;
+      current2 = colour;
       setCanvas(isDarkColour(colour), transparent ? void 0 : colour);
     };
     applyFromHost();

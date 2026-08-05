@@ -390,9 +390,15 @@ function applyExportedBackground(controller: any, mode: string) {
 
     const host = readableHostDocument();
     if (host) {
+        // Sites change attributes on <html> and <body> for reasons that are not
+        // the theme — a class while a menu is open, another while a modal locks
+        // the scroll. Repainting the scene for those would be work the reader
+        // paid for and cannot see, so nothing happens unless the colour moved.
+        let current: number | undefined;
         const applyFromHost = () => {
             const colour = hostBackgroundColour(host);
-            if (colour === undefined) return;
+            if (colour === undefined || colour === current) return;
+            current = colour;
             setCanvas(isDarkColour(colour), transparent ? undefined : colour);
         };
 
