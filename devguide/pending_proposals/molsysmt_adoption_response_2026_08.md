@@ -181,34 +181,98 @@ it would change the default orientation of every view in every notebook, and
 nothing is broken. It is recorded in the archived proposal if the question comes
 back.
 
-## 4. What we are doing with your two proposals
+## 4. The theme proposal: done, and it needs nothing from you
 
-We are treating
-[`tight_initial_camera_framing_for_exported_views.md`](../archive/tight_initial_camera_framing_for_exported_views.md)
-and
-[`dark_light_theme_synchronization_and_transparent_canvas.md`](dark_light_theme_synchronization_and_transparent_canvas.md)
-as **one piece of work**, because they collide in three places: both propose new
-parameters on an `export.html` signature we deliberately collapsed to a single
-argument last week, both act at the same moment in the runtime's boot, and both
-are the same question in different clothes — *an exported view should adapt to
-the frame it lands in*, in size and in theme.
+`export.html` takes one new argument. It is the only one this work added, and it
+exists because the choice it expresses cannot be made where the file is written:
+an exported view is read on somebody else's page, on a screen its author never
+saw.
 
-Our starting suspicion, which the two proposals seen separately would hide: it is
-possible that **neither should be an export parameter**. Framing belongs to the
-scene, and theme belongs to the reading page, which can decide it in the browser
-with `prefers-color-scheme` without the author baking a choice into the file at
-export time. We will settle that before writing code.
+```python
+view.export.html(path, background="auto")         # default
+view.export.html(path, background="transparent")
+view.export.html(path, background="white")        # or "dark"
+```
 
-Two notes on the theme proposal specifically, so you can weigh them:
+| value | what the page sits on |
+|---|---|
+| `"auto"` *(default)* | the background of the page it is embedded in, copied exactly, and followed when that page changes. Falls back to the reader's light/dark preference when there is no host to ask. |
+| `"transparent"` | nothing: the canvas clears with alpha and the host shows through. For a host whose background is a gradient or an image, where copying a colour is not enough. |
+| `"white"` / `"dark"` | fixed, ignoring host and reader alike. |
 
-- our on-canvas controls carry their own styling, tuned for a dark canvas. A
-  transparent canvas over a light host page risks white on white;
-- Mol\*'s depth and outline effects against a transparent background need to be
-  looked at before we promise anything, and looking at them needs a real GPU.
+### Why `"auto"` follows your theme switch without you writing anything
 
-Which is the honest limit on our side: we can verify what loads and what
-properties get applied; whether it *looks* right is something we will need you or
-Diego to confirm on a real screen.
+Your proposal's Solution 2 has the host broadcast `MSV_SET_THEME` to every
+iframe. It is not needed, and we checked rather than assumed: in the
+`pydata-sphinx-theme` you ship, `postMessage` appears **zero** times, and so do
+`dispatchEvent` and `CustomEvent`. There is no emitter. Adopting Solution 2 would
+mean *writing* one into your templates and maintaining it against the theme's
+releases.
+
+What the theme does do, on every toggle, is write `data-theme` and `data-mode`
+onto `<html>`. And a view is served from the same site as the page embedding it,
+so the two are same-origin and the view can simply read that document. So it
+does:
+
+1. reads the host's computed background colour and uses it as the canvas colour —
+   the exact value, not our nearest approximation;
+2. picks the lighting by its luminance, because dark mode is also a white key
+   light and a molecule lit for a bright page reads badly on a dark one;
+3. watches the host's `<html>` and `<body>` attributes with a `MutationObserver`,
+   which is precisely where your theme writes, and re-reads on change. It costs
+   nothing while nothing changes — it is a callback, not a poll — and it repaints
+   only when the colour actually moved.
+
+Measured: on a `#1a1a1a` host the canvas comes out `(26,26,26)`; on `#ffffff` it
+comes out `(255,255,255)`. The dark case was produced by flipping `data-theme` at
+runtime with the *system* preference left on light — your toggle, in other words.
+
+**Limits, stated plainly.** It needs same-origin, which every published site is,
+but two files opened from a disk are not — there it falls back to the reader's
+preference. It reads a colour, so a gradient or image background falls back too;
+that is what `"transparent"` is for. And it reacts rather than being correct by
+construction: there is a small lag after your theme animates, where
+`"transparent"` cannot desynchronise because it has nothing to synchronise.
+
+### What we need you to test
+
+We can measure pixels; we cannot judge whether it looks right. Four things, and
+the second is the one that matters:
+
+1. **Generate both.** One line in
+   `docs/generate_static_views/1BRS_molecule_index_zero.py`:
+
+   ```python
+   view.export.html(str(views_dir / "1BRS_auto.html"),
+                    shared_runtime=str(static_dir), background="auto")
+   view.export.html(str(views_dir / "1BRS_transparent.html"),
+                    shared_runtime=str(static_dir), background="transparent")
+   ```
+
+   Point the hidden cell in `docs/index.ipynb` at one, then the other, and
+   rebuild. Nothing else changes: your `conf.py` places the runtime as it does
+   today.
+
+2. **Flip your theme switch with your system on the opposite setting.** Site to
+   dark while the OS is light. This is the case that separates the two, and the
+   case your original report was about. Both should follow; tell us if either
+   does not, or if the transition looks wrong while the theme animates.
+
+3. **Look at what we cannot.** With `"transparent"`: the molecule's edges against
+   your theme's colour, how the depth fog reads with nothing behind it, and
+   whether the on-canvas controls in the top right survive a light background —
+   they are styled for a dark canvas and that is our main worry.
+
+4. **Open one view as a plain file**, not through the site, and check it still
+   has a sane background. That path cannot read a host and falls back to your
+   system preference.
+
+Then tell us which of the two you would keep. If `"auto"` covers you, that is one
+fewer thing for an author to decide; if `"transparent"` reads better on your
+theme, we would rather know before anybody else adopts this.
+
+One practical note: two views means two ~150 KB files tracked in git. Delete the
+one that does not survive.
 
 ## 5. What a shared export addresses, and what it does not
 
