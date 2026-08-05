@@ -167737,6 +167737,29 @@ var parseInitialTrajectoryInfo = (msgs) => {
   }
   return { frameCount, multipleStructures, hasStructures };
 };
+function reportSceneRuntimeMismatch(el, sceneVersion) {
+  const runtimeVersion = true ? "0.20.0+131.g81b9d85f.dirty" : "";
+  if (typeof sceneVersion !== "string" || !sceneVersion || !runtimeVersion) return;
+  const release = (version) => version.split("+")[0].split(".dev")[0];
+  if (release(sceneVersion) === release(runtimeVersion)) return;
+  const message = `This view was exported by MolSysViewer ${sceneVersion} and is being rendered by ${runtimeVersion}. It may not look as its author saw it. Regenerating the view with the installed version removes this notice.`;
+  console.error("[MolSysViewer]", message);
+  const notice = document.createElement("div");
+  notice.setAttribute("data-molsysviewer-version-mismatch", "true");
+  notice.textContent = message;
+  Object.assign(notice.style, {
+    position: "absolute",
+    left: "0",
+    right: "0",
+    bottom: "0",
+    zIndex: "2000",
+    padding: "6px 10px",
+    font: "12px/1.4 system-ui, sans-serif",
+    background: "rgba(120, 53, 15, 0.92)",
+    color: "#fff"
+  });
+  el.appendChild(notice);
+}
 async function bootDocsView(opts) {
   const debug = !!opts.ui?.debug_js;
   const sendLog = (level, ...args) => {
@@ -167855,6 +167878,7 @@ async function bootDocsView(opts) {
       c8.trajectory.setExpectedFrameCount(trajInfo.frameCount);
     }
     applyExportedBackground(c8, typeof ui.background_mode === "string" ? ui.background_mode : "auto");
+    reportSceneRuntimeMismatch(hostEl, ui.scene_version);
     const sendSync = (msg) => {
       if (!msg) return;
       popupReplay.record(msg);

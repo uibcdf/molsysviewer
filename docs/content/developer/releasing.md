@@ -43,6 +43,13 @@ republished by hand. The runtime is not a package anybody installs on purpose: i
 is what an exported view fetches, so it has to exist for every version that can
 export. That is why its trigger is the thing that always happens.
 
+**Do not dispatch an old tag to fill a gap without thinking.** The workflow runs
+`npm publish` with no `--tag`, so it sets `latest`. Publishing `0.12.0` today
+would move `latest` backwards from the current release, and nothing on our side
+would say so. Versions `0.8.0` through `0.19.0` are missing from npm and are
+staying missing by decision; if that is ever revisited, the publish needs an
+explicit dist-tag first.
+
 **Check it, do not assume it.** After tagging:
 
 ```bash

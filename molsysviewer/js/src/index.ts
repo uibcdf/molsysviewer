@@ -80,6 +80,53 @@ const parseInitialTrajectoryInfo = (msgs: ViewerMessage[] | undefined) => {
     return { frameCount, multipleStructures, hasStructures };
 };
 
+/** Injected at build time from `molsysviewer/_version.py`. */
+declare const __MOLSYSVIEWER_VERSION__: string;
+
+/**
+ * Say so when a scene and the runtime rendering it come from different releases.
+ *
+ * A shared runtime is one file serving every view on a site. Regenerate one view
+ * after upgrading MolSysViewer — which is how a documentation site evolves, one
+ * figure at a time — and that file is replaced for **all** of them, so the pages
+ * nobody touched now carry scenes older than the code interpreting them.
+ *
+ * This is not the dead-CDN failure returning. There the page did not load and
+ * said so. Here it loads perfectly and renders a molecule; only the reading of
+ * the scene may have moved, and the reader has no way to know. Quieter is worse.
+ *
+ * Compared on the release, not the exact build: a development install rebuilds
+ * its runtime constantly against an unchanged `X.Y.Z`, and warning on that would
+ * train everyone to ignore the warning that matters.
+ *
+ * It reports and then renders. Refusing to draw would punish the many pages that
+ * are merely a patch apart for the sake of the few that are not, and the scene is
+ * usually fine — what is not fine is not being told.
+ */
+function reportSceneRuntimeMismatch(el: HTMLElement, sceneVersion: unknown) {
+    const runtimeVersion = typeof __MOLSYSVIEWER_VERSION__ === "string" ? __MOLSYSVIEWER_VERSION__ : "";
+    if (typeof sceneVersion !== "string" || !sceneVersion || !runtimeVersion) return;
+
+    const release = (version: string) => version.split("+")[0].split(".dev")[0];
+    if (release(sceneVersion) === release(runtimeVersion)) return;
+
+    const message =
+        `This view was exported by MolSysViewer ${sceneVersion} and is being rendered ` +
+        `by ${runtimeVersion}. It may not look as its author saw it. Regenerating the ` +
+        `view with the installed version removes this notice.`;
+    console.error("[MolSysViewer]", message);
+
+    const notice = document.createElement("div");
+    notice.setAttribute("data-molsysviewer-version-mismatch", "true");
+    notice.textContent = message;
+    Object.assign(notice.style, {
+        position: "absolute", left: "0", right: "0", bottom: "0", zIndex: "2000",
+        padding: "6px 10px", font: "12px/1.4 system-ui, sans-serif",
+        background: "rgba(120, 53, 15, 0.92)", color: "#fff",
+    });
+    el.appendChild(notice);
+}
+
 // Re-export bootPopup so it is available in the bundle's public interface
 export { bootPopup };
 export { MolSysViewerController }; // Export Controller for Popup context usage
@@ -223,6 +270,7 @@ export async function bootDocsView(opts: {
         }
 
         applyExportedBackground(c, typeof ui.background_mode === "string" ? ui.background_mode : "auto");
+        reportSceneRuntimeMismatch(hostEl, ui.scene_version);
 
         const sendSync = (msg: ViewerMessage) => {
             if (!msg) return;

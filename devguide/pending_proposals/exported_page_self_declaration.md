@@ -1,9 +1,10 @@
 # An exported page should declare what it is and what it can do
 
-**Status:** open. **Part A's trigger arrived on 2026-08-05** and the deferral no
-longer holds; Part B's has not. Both were deferred because they guard failures
-that were not active yet, and the conditions that end each deferral are recorded
-below — one of them has now happened.
+**Status:** **Part A is done (2026-08-05).** Part B remains open and its trigger
+has not arrived. Both were deferred because they guard failures that were not
+active yet, and the conditions that end each deferral are recorded below; Part
+A's arrived when MolSysMT began publishing from this mechanism, and it was
+implemented the same day.
 
 **Origin:** deferred from
 [`embedding_views_in_external_documentation.md`](../archive/embedding_views_in_external_documentation.md)
@@ -48,9 +49,26 @@ comparing the two. This is the condition this paragraph was written to detect.
 Their site is also where the failure would be quietest: the runtime loads, the
 molecule appears, and only the interpretation may have moved.
 
-**Acceptance when it is done.** Pair a scene with a deliberately mismatched
-runtime and the page reports it. Mutation: remove the comparison and that test
-must go red.
+**Done 2026-08-05.** The exported page declares `scene_version` in its UI block,
+and the runtime — which until now knew no version at all, so the build injects one
+from `_version.py` — compares them on boot. On a mismatch it writes to the console
+and appends a visible line naming both versions, then renders anyway: refusing to
+draw would punish the many pages that are a patch apart for the sake of the few
+that are not, and the scene is usually fine. What is not fine is not being told.
+
+Compared on the release, not the exact build. A development install rebuilds its
+runtime constantly against an unchanged `X.Y.Z`, and warning on that would teach
+everyone to ignore the warning that matters.
+
+**Acceptance, met.** `tests/test_exported_page_opens_from_disk.py` pairs a scene
+marked `0.19.0` with the current runtime in a real browser and the page reports
+it; a matching pair stays quiet. Mutation applied: with the comparison removed
+both tests go red, and green again when restored.
+
+**Note for the `cdn` path.** It cannot produce this mismatch: the URL is pinned
+to the exact version that exported the page, so scene and runtime agree by
+construction. This guard exists for a shared local runtime, which is the one that
+gets replaced underneath pages nobody touched.
 
 ## Part B — The page offers controls it cannot honour
 

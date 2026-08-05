@@ -2939,6 +2939,13 @@ class MolSysView(
         return [relative_runtime_url(output_filename, asset)]
 
     @staticmethod
+    def _scene_version() -> str:
+        """The MolSysViewer that produced this scene, as the page will declare it."""
+        from .._version import __version__ as _pkg_version
+
+        return str(_pkg_version)
+
+    @staticmethod
     def _shared_runtime_cdn_url() -> str:
         from .._version import __version__ as _pkg_version
 
@@ -3417,6 +3424,12 @@ class MolSysView(
             # "transparent": it also clears with alpha, so an embedded view shows
             # the host page's own background instead of our nearest colour.
             "background_mode": str(background),
+            # Which MolSysViewer produced this scene. A shared runtime is one file
+            # serving every view on a site, so regenerating one view after an
+            # upgrade replaces it for all of them and leaves the untouched pages
+            # carrying scenes older than the code that reads them. The runtime
+            # compares this with its own on boot and says so.
+            "scene_version": self._scene_version(),
         }
         if host_event_transport:
             ui_config["host_event_transport"] = str(host_event_transport)

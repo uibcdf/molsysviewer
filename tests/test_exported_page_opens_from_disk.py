@@ -252,3 +252,65 @@ def test_the_view_matches_the_container_it_was_dropped_into(tmp_path):
     assert _canvas_colour(view, "#14181f", host_html=host_html) == (34, 40, 50), (
         "the view took the page's colour instead of the container's"
     )
+
+
+# --- the scene and the runtime rendering it -----------------------------------
+
+
+def _with_scene_version(source: Path, version: str, name: str) -> Path:
+    """A copy of an exported page claiming a different MolSysViewer made its scene."""
+    html = source.read_text(encoding="utf-8")
+    patched = re.sub(r'"scene_version":"[^"]*"', f'"scene_version":"{version}"', html, count=1)
+    assert patched != html, "the exported page declares no scene version to patch"
+    target = source.parent / name
+    target.write_text(patched, encoding="utf-8")
+    return target
+
+
+def test_a_scene_from_another_release_says_so(tmp_path):
+    """The quietest failure this mechanism can produce, made loud.
+
+    A shared runtime is one file serving every view on a site. Regenerate one
+    view after upgrading and that file is replaced for all of them, so the
+    untouched pages carry scenes older than the code interpreting them. Nothing
+    breaks: the page loads, a molecule appears, and only the reading of the scene
+    may have moved.
+
+    Mutation: delete the comparison in `reportSceneRuntimeMismatch` and this must
+    go red.
+    """
+    view = _self_contained(tmp_path)
+    stale = _with_scene_version(view, "0.19.0", "stale.html")
+
+    dom, _ = _open_from_disk(stale)
+
+    assert 'data-molsysviewer-version-mismatch="true"' in dom, (
+        "a scene from another release rendered without a word"
+    )
+
+
+def test_the_notice_names_both_versions(tmp_path):
+    """A warning that does not say which two things disagree cannot be acted on."""
+    view = _self_contained(tmp_path)
+    stale = _with_scene_version(view, "0.19.0", "stale.html")
+
+    dom, _ = _open_from_disk(stale)
+    shown = re.search(r'data-molsysviewer-version-mismatch="true"[^>]*>([^<]*)', dom)
+
+    assert shown is not None
+    assert "0.19.0" in shown.group(1), "the notice does not name the scene's version"
+
+
+def test_a_matching_pair_stays_quiet(tmp_path):
+    """The guard has to be silent where it should be, or it trains people to ignore it.
+
+    A development install rebuilds its runtime constantly against an unchanged
+    `X.Y.Z`, so the comparison is on the release and not the exact build.
+    """
+    view = _self_contained(tmp_path)
+
+    dom, _ = _open_from_disk(view)
+
+    assert "data-molsysviewer-version-mismatch" not in dom.replace(
+        "data-molsysviewer-version-mismatch", "", 1
+    ), "a matching pair produced a mismatch notice"
