@@ -18,3 +18,5 @@ Resolved defect reports, kept for their evidence:
 - [`standalone_export_mutates_live_widget_state.md`](standalone_export_mutates_live_widget_state.md)
 - [`tight_initial_camera_framing_for_exported_views.md`](tight_initial_camera_framing_for_exported_views.md)
   — closed without a change: the framing was measured and found correct.
+- [`dark_light_theme_synchronization_and_transparent_canvas.md`](dark_light_theme_synchronization_and_transparent_canvas.md)
+  — delivered as `export.html(background=...)`; the adopter chose `"transparent"`.

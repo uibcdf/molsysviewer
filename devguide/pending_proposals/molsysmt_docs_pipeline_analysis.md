@@ -251,7 +251,8 @@ and they will hit them either way:
    [`tight_initial_camera_framing_for_exported_views.md`](../archive/tight_initial_camera_framing_for_exported_views.md),
    and the measurement moves the fix into the runtime rather than the export.
 2. **An exported view does not follow the host page's light/dark theme.** Their
-   [`dark_light_theme_synchronization_and_transparent_canvas.md`](dark_light_theme_synchronization_and_transparent_canvas.md).
+   [`dark_light_theme_synchronization_and_transparent_canvas.md`](../archive/dark_light_theme_synchronization_and_transparent_canvas.md)
+   — delivered 2026-08-05 as `export.html(background=...)`.
 
 We are treating both as one piece of work, because they collide on the same
 export signature and the same moment in the runtime's boot, and because they are

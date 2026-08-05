@@ -1,6 +1,10 @@
 # Response to the MolSysMT adoption report
 
-**Status:** reply, 2026-08-04. Answers
+**Status:** closed 2026-08-05. Both proposals answered, one archived without a
+change and one delivered and adopted. Kept here because it is the record of what
+was measured; the durable descriptions live in the user guide.
+
+Answers
 [`molsysmt_embedding_feedback_and_transparent_adapter_pattern.md`](molsysmt_embedding_feedback_and_transparent_adapter_pattern.md).
 
 **Audience:** the MolSysMT team. Everything here is either something we changed
@@ -296,3 +300,28 @@ The registry remains available to anyone who asks for it explicitly —
 `shared_runtime="cdn"` — and refuses to write anything if the exporting version
 is not publishable. We will reinstate the automatic fallback when publishing to
 npm is a standing release gate on our side, which is our task, not yours.
+
+
+---
+
+## 6. Outcome, 2026-08-05
+
+MolSysMT replied to §4 having tested the three things we could not judge: depth
+fog, molecular edges and the on-canvas controls over a light background all read
+cleanly. **They adopt `background="transparent"` for their documentation** and
+recommend keeping both values, which we have.
+
+They also reported the one property that separates them, and it is the property
+this design predicted rather than measured until now: `"transparent"` turns with
+the page instantly, because there is nothing of ours to change, while `"auto"`
+blinks perceptibly as the observer fires and the canvas repaints. Correct by
+construction against correct by reaction. That distinction is now the guidance in
+the user page — `"transparent"` on a site, `"auto"` for a file that travels
+alone — and the reason to keep both rather than pick one.
+
+Both of their proposals are closed:
+[the framing one](../archive/tight_initial_camera_framing_for_exported_views.md)
+without a change, measured and found correct; and
+[the theme one](../archive/dark_light_theme_synchronization_and_transparent_canvas.md)
+delivered under one argument, with its Solution 2 — a `postMessage` protocol —
+shown to be unnecessary.
