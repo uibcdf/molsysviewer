@@ -167944,29 +167944,81 @@ async function bootDocsView(opts) {
 }
 function applyExportedBackground(controller, mode) {
   const transparent = mode === "transparent";
-  const clearWithAlpha = () => {
-    if (transparent) controller.plugin?.canvas3d?.setProps({ transparentBackground: true });
-  };
-  const apply = (dark) => {
-    void Promise.resolve(controller.toggleBackground(dark ? "dark" : "light")).then(clearWithAlpha);
+  const setCanvas = (dark, colour) => {
+    void Promise.resolve(controller.toggleBackground(dark ? "dark" : "light")).then(() => {
+      const canvas3d = controller.plugin?.canvas3d;
+      if (!canvas3d) return;
+      if (transparent) {
+        canvas3d.setProps({ transparentBackground: true });
+      } else if (colour !== void 0) {
+        canvas3d.setProps({
+          renderer: { ...canvas3d.props?.renderer ?? {}, backgroundColor: colour }
+        });
+      }
+    });
   };
   if (mode === "white" || mode === "dark") {
-    apply(mode === "dark");
+    setCanvas(mode === "dark");
+    return;
+  }
+  const host = readableHostDocument();
+  if (host) {
+    const applyFromHost = () => {
+      const colour = hostBackgroundColour(host);
+      if (colour === void 0) return;
+      setCanvas(isDarkColour(colour), transparent ? void 0 : colour);
+    };
+    applyFromHost();
+    const observer = new MutationObserver(() => {
+      for (const delay of [0, 120, 400]) window.setTimeout(applyFromHost, delay);
+    });
+    observer.observe(host.documentElement, { attributes: true });
+    if (host.body) observer.observe(host.body, { attributes: true });
     return;
   }
   const query2 = window.matchMedia?.("(prefers-color-scheme: dark)");
   if (!query2) {
-    clearWithAlpha();
+    setCanvas(false);
     return;
   }
-  clearWithAlpha();
-  if (query2.matches) apply(true);
-  const onChange = (event) => apply(event.matches);
+  setCanvas(query2.matches);
+  const onChange = (event) => setCanvas(event.matches);
   if (typeof query2.addEventListener === "function") {
     query2.addEventListener("change", onChange);
   } else if (typeof query2.addListener === "function") {
     query2.addListener(onChange);
   }
+}
+function readableHostDocument() {
+  try {
+    if (window.parent === window) return void 0;
+    const doc = window.parent.document;
+    return doc?.documentElement ? doc : void 0;
+  } catch {
+    return void 0;
+  }
+}
+function hostBackgroundColour(host) {
+  for (const element of [host.body, host.documentElement]) {
+    if (!element) continue;
+    const parsed = parseCssColour(host.defaultView?.getComputedStyle(element).backgroundColor);
+    if (parsed !== void 0) return parsed;
+  }
+  return void 0;
+}
+function parseCssColour(value) {
+  if (!value) return void 0;
+  const match = value.match(/rgba?\(([^)]+)\)/);
+  if (!match) return void 0;
+  const parts = match[1].split(",").map((part) => parseFloat(part.trim()));
+  if (parts.length < 3 || parts.some((part) => Number.isNaN(part))) return void 0;
+  if (parts.length > 3 && parts[3] === 0) return void 0;
+  const [r, g, b8] = parts;
+  return (r & 255) << 16 | (g & 255) << 8 | b8 & 255;
+}
+function isDarkColour(colour) {
+  const r = colour >> 16 & 255, g = colour >> 8 & 255, b8 = colour & 255;
+  return 0.299 * r + 0.587 * g + 0.114 * b8 < 128;
 }
 function setupWidgetResizer(host, target, onResize) {
   host.style.position = "relative";

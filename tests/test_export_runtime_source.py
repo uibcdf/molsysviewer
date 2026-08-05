@@ -349,18 +349,26 @@ def _page_css(html: str) -> str:
     return match.group(1)
 
 
-def test_the_default_page_follows_the_reader(tmp_path):
+def test_the_default_page_asks_the_page_around_it_first(tmp_path):
     """An exported view is read on a screen its author never sees.
 
-    So the default asks the reader, through the one signal every browser
-    reports, and asks it in CSS as well as at runtime: the runtime is megabytes
-    and takes seconds, and a white rectangle on a dark site for those seconds is
-    the complaint this exists to answer.
+    So the page asks where it lands: the host document when there is one — which
+    is same-origin, because a view and the site embedding it are served together
+    — and the reader's preference when there is not. Asking the host is what
+    makes a documentation theme's own light/dark switch work, since that is a
+    decision of the site and no media query reports it.
+
+    The stylesheet carries the fallback too, because the runtime is megabytes:
+    without it a dark page shows white for the seconds it takes to boot.
     """
     html = _page(tmp_path)
 
     assert "prefers-color-scheme: dark" in _page_css(html)
     assert '"background_mode":"auto"' in html
+    for reading_the_host in ("window.parent.document", "MutationObserver"):
+        assert reading_the_host in html, (
+            f"the page stopped following the site it is embedded in ({reading_the_host})"
+        )
     assert "window.self !== window.top" not in html, (
         "the default page gave away its background to whatever embeds it"
     )

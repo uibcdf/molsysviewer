@@ -340,54 +340,128 @@ export async function bootDocsView(opts: {
  * Only exported pages call this. In a notebook the surrounding application owns
  * the theme, and JupyterLab's own dark mode is not this media query.
  */
+/**
+ * The colour an exported view sits on, decided where the view is read.
+ *
+ * A published view lands inside somebody else's page and is looked at on a
+ * screen its author never saw, so the choice cannot be made at export time. The
+ * page asks, in this order:
+ *
+ * 1. **The page around it**, when there is one and it is same-origin — which it
+ *    is on any published site, because a view and the page embedding it are
+ *    served together. The host document is readable, so the view copies its
+ *    actual background colour and watches it for changes. (Two files opened from
+ *    a disk are two *opaque* origins, so this step is unavailable there and the
+ *    next one answers instead.) This is what makes a documentation theme's own
+ *    light/dark switch work: it is a decision of the *site*, invisible to any
+ *    media query, and asking the host directly needs no cooperation from it —
+ *    no `postMessage`, no agreed protocol, no theme-specific attribute name.
+ * 2. **The reader's preference**, when there is no host to ask: a standalone
+ *    file, or an embed from another domain where reading across is refused.
+ *
+ * Lighting follows the same answer, by luminance. Dark mode is not only a
+ * background: it swaps the key light to white, and a molecule lit for a bright
+ * page reads badly on a dark one whatever colour is behind it.
+ */
 function applyExportedBackground(controller: any, mode: string) {
     const transparent = mode === "transparent";
 
-    // Transparency does not depend on the colour scheme, and `toggleBackground`
-    // rewrites the renderer props, so it has to be re-asserted after every change
-    // rather than set once at boot.
-    const clearWithAlpha = () => {
-        if (transparent) controller.plugin?.canvas3d?.setProps({ transparentBackground: true });
-    };
-    const apply = (dark: boolean) => {
-        void Promise.resolve(controller.toggleBackground(dark ? "dark" : "light"))
-            .then(clearWithAlpha);
+    const setCanvas = (dark: boolean, colour?: number) => {
+        void Promise.resolve(controller.toggleBackground(dark ? "dark" : "light")).then(() => {
+            const canvas3d = controller.plugin?.canvas3d;
+            if (!canvas3d) return;
+            // `toggleBackground` rewrites the renderer props wholesale, so both of
+            // these have to be re-asserted after it, every time, not set once.
+            if (transparent) {
+                canvas3d.setProps({ transparentBackground: true });
+            } else if (colour !== undefined) {
+                canvas3d.setProps({
+                    renderer: { ...(canvas3d.props?.renderer ?? {}), backgroundColor: colour },
+                });
+            }
+        });
     };
 
-    // Fixed by the author: the reader's preference is not consulted at all.
+    // Fixed by the author: neither the host nor the reader is consulted.
     if (mode === "white" || mode === "dark") {
-        apply(mode === "dark");
+        setCanvas(mode === "dark");
         return;
     }
 
+    const host = readableHostDocument();
+    if (host) {
+        const applyFromHost = () => {
+            const colour = hostBackgroundColour(host);
+            if (colour === undefined) return;
+            setCanvas(isDarkColour(colour), transparent ? undefined : colour);
+        };
+
+        applyFromHost();
+
+        // A theme switch is an attribute change on the host, but the colour it
+        // produces may arrive later: themes animate. Re-read a few times rather
+        // than trusting the first frame, which would copy the colour being left.
+        const observer = new MutationObserver(() => {
+            for (const delay of [0, 120, 400]) window.setTimeout(applyFromHost, delay);
+        });
+        observer.observe(host.documentElement, { attributes: true });
+        if (host.body) observer.observe(host.body, { attributes: true });
+        return;
+    }
+
+    // No host to ask: the reader's own preference is the only signal left.
     const query = window.matchMedia?.("(prefers-color-scheme: dark)");
     if (!query) {
-        clearWithAlpha();
+        setCanvas(false);
         return;
     }
-
-    // The page around the canvas is the exported HTML's own media query, so it is
-    // already right before this runs — a 6 MB runtime takes long enough to boot
-    // that doing it here would show a white flash on a dark page. This owns the
-    // canvas only.
-    //
-    // `transparent` is the other half of the same question. Clearing the canvas
-    // with alpha instead of a colour lets an embedded view show the host page's
-    // exact background, whatever it is, rather than our closest guess. It does
-    // not remove the need for this function: dark mode is also a *lighting*
-    // change — a white key light — and no amount of transparency tells us which
-    // way the page around us reads.
-    clearWithAlpha();
-    if (query.matches) apply(true);
-
-    // Readers do switch while reading, and a view that stays bright afterwards is
-    // the same complaint one theme change later.
-    const onChange = (event: MediaQueryListEvent) => apply(event.matches);
+    setCanvas(query.matches);
+    const onChange = (event: MediaQueryListEvent) => setCanvas(event.matches);
     if (typeof query.addEventListener === "function") {
         query.addEventListener("change", onChange);
     } else if (typeof (query as any).addListener === "function") {
         (query as any).addListener(onChange);
     }
+}
+
+/** The embedding document, when there is one and it lets us read it. */
+function readableHostDocument(): Document | undefined {
+    try {
+        if (window.parent === window) return undefined;
+        const doc = window.parent.document;
+        // Touching it is the test: a cross-origin parent throws here.
+        return doc?.documentElement ? doc : undefined;
+    } catch {
+        return undefined;
+    }
+}
+
+/** The host's painted background, as 0xRRGGBB, or undefined if it has none. */
+function hostBackgroundColour(host: Document): number | undefined {
+    for (const element of [host.body, host.documentElement]) {
+        if (!element) continue;
+        const parsed = parseCssColour(host.defaultView?.getComputedStyle(element).backgroundColor);
+        // A transparent body means the colour comes from further up, so keep going.
+        if (parsed !== undefined) return parsed;
+    }
+    return undefined;
+}
+
+function parseCssColour(value: string | undefined): number | undefined {
+    if (!value) return undefined;
+    const match = value.match(/rgba?\(([^)]+)\)/);
+    if (!match) return undefined;
+    const parts = match[1].split(",").map(part => parseFloat(part.trim()));
+    if (parts.length < 3 || parts.some(part => Number.isNaN(part))) return undefined;
+    if (parts.length > 3 && parts[3] === 0) return undefined;
+    const [r, g, b] = parts;
+    return ((r & 255) << 16) | ((g & 255) << 8) | (b & 255);
+}
+
+function isDarkColour(colour: number): boolean {
+    const r = (colour >> 16) & 255, g = (colour >> 8) & 255, b = colour & 255;
+    // Rec. 601 luma: cheap, and the question is only which way the page reads.
+    return (0.299 * r + 0.587 * g + 0.114 * b) < 128;
 }
 
 function setupWidgetResizer(

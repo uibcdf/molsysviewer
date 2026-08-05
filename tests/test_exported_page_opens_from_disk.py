@@ -24,6 +24,7 @@ import os
 import re
 import shutil
 import subprocess
+from collections import Counter
 import tempfile
 from pathlib import Path
 
@@ -128,3 +129,88 @@ def test_the_scene_travels_with_the_page(tmp_path):
     ops = [message.get("op") for message in json.loads(match.group(1))]
 
     assert "load_molsys_payload" in ops
+
+
+# --- the colour the page ends up on -------------------------------------------
+
+
+def _canvas_colour(html_path: Path, host_background: str) -> tuple:
+    """Open the view inside a host page of a given colour, and sample the result.
+
+    Served over HTTP, deliberately. Reading the page around you requires being
+    same-origin with it, and two files opened from a disk are two *opaque*
+    origins — so from `file://` a view cannot see its host and falls back to the
+    reader's preference. Every published site is served, which is the case this
+    is about.
+
+    A browser is the only instrument here: what the page sits on is decided at
+    read time from the document around it, so no amount of reading the exported
+    file can tell you the answer.
+    """
+    from PIL import Image
+
+    import molsysviewer as msv
+
+    host = html_path.parent / "host.html"
+    host.write_text(
+        "<!DOCTYPE html><html data-theme='x'><body style='margin:0;background:"
+        f"{host_background}'>"
+        f"<iframe src='./{html_path.name}' width='400' height='300' "
+        "style='border:none;display:block'></iframe></body></html>",
+        encoding="utf-8",
+    )
+    shot = html_path.parent / "shot.png"
+
+    server = msv.tools.preview(
+        str(html_path.parent), open_browser=False, serve_forever=False, skip_digestion=True
+    )
+    port = server.server_address[1]
+    try:
+        with tempfile.TemporaryDirectory() as profile:
+            subprocess.run(
+                [
+                    CHROME, "--headless=new", "--no-sandbox",
+                    "--use-angle=swiftshader", "--enable-unsafe-swiftshader",
+                    f"--user-data-dir={profile}",
+                    "--window-size=400,300", "--virtual-time-budget=45000",
+                    f"--screenshot={shot}", f"http://127.0.0.1:{port}/host.html",
+                ],
+                capture_output=True, text=True, timeout=300,
+            )
+    finally:
+        server.shutdown()
+        server.server_close()
+
+    if not shot.exists():
+        pytest.skip("the browser produced no screenshot")
+    image = Image.open(shot).convert("RGB").resize((40, 30))
+    return Counter(image.getdata()).most_common(1)[0][0]
+
+
+def _self_contained(tmp_path: Path) -> Path:
+    view = demo["dialanine"]
+    view.widget.send = lambda *_a, **_k: None  # type: ignore[attr-defined]
+    output = tmp_path / "view.html"
+    view.export.html(str(output), skip_digestion=True)
+    return output
+
+
+def test_an_embedded_view_takes_the_colour_of_the_page_around_it(tmp_path):
+    """The site's own theme switch is invisible to every media query.
+
+    It is an attribute on the host's document, and a view served from the same
+    site can read it. Copying the host's actual colour is what makes a view stop
+    being a bright rectangle on a dark documentation page.
+    """
+    view = _self_contained(tmp_path)
+
+    assert _canvas_colour(view, "#1a1a1a") == (26, 26, 26), (
+        "the view did not take the dark host's background"
+    )
+
+
+def test_the_same_view_is_light_on_a_light_page(tmp_path):
+    """Same file, same reader, different page: the answer comes from the host."""
+    view = _self_contained(tmp_path)
+
+    assert _canvas_colour(view, "#ffffff") == (255, 255, 255)
