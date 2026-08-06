@@ -1,0 +1,76 @@
+name: Documentation notebooks
+
+# Sphinx builds with `nb_execution_mode = "off"`, so a green `make html` proves
+# nothing about whether the documented code still runs. In July 2026 ten
+# notebooks were broken for weeks and nothing reported it.
+#
+# The trigger is a change in the **library**, not in the notebooks. That is not a
+# detail: those ten broke because the argument digesters were hardened, and their
+# own sources were untouched. Anything incremental — including this project's own
+# run marks — skips an unchanged notebook by definition, and an unchanged
+# notebook is exactly what a library change breaks. So this runs with `--force`
+# and consults no mark.
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - 'molsysviewer/**'
+      - 'docs/**'
+      - '.github/workflows/docs-notebooks.yaml'
+      - 'devtools/conda-envs/docs_env.yaml'
+  pull_request:
+    branches: ["main"]
+    paths:
+      - 'molsysviewer/**'
+      - 'docs/**'
+      - '.github/workflows/docs-notebooks.yaml'
+      - 'devtools/conda-envs/docs_env.yaml'
+  schedule:
+    # Weekly, so a break that arrives from a dependency rather than from us is
+    # found by a job and not by a reader.
+    - cron: "0 7 * * MON"
+  workflow_dispatch:
+
+jobs:
+  execute:
+    name: Execute the documented notebooks
+    if: >
+      !(
+        (github.event_name == 'push' && contains(github.event.head_commit.message, '[skip ci]'))
+        ||
+        (github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[skip ci]'))
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup conda env
+        uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-file: devtools/conda-envs/docs_env.yaml
+          environment-name: docs
+          condarc: |
+            channels:
+              - uibcdf
+              - conda-forge
+            channel_priority: strict
+
+      - name: Install MolSysViewer
+        shell: bash -l {0}
+        run: python -m pip install . --no-deps
+
+      - name: Execute every documented notebook
+        shell: bash -l {0}
+        # `--force` on purpose; see the note at the top of this file. `-q` keeps
+        # the log to milestones and a summary — failures still print in full.
+        run: python docs/execute_notebooks.py -q -n 4 -r -f docs/content
+
+      - name: Collect the failure logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: notebook-failure-logs
+          path: |
+            docs/notebook_errors.log
+            docs/content/**/*.nbconvert.log
+          if-no-files-found: ignore
