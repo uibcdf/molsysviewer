@@ -83,48 +83,89 @@ workspaces, panels, context actions, and shape providers without modifying the c
 ```python
 import molsysviewer as msv
 
-# Load a structure directly from the Protein Data Bank
+# A PDB ID, a local file, or a URL
 view = msv.new_view("1TRS")
 view.show()
 ```
 
-```python
-# Create named regions and control visibility independently
-backbone = msv.new_view("1TRS")
-backbone.make_regions_by(element="chain")
-backbone.regions["chain-A"].hide()
-backbone.regions["chain-B"].show()
-```
+### There is nothing to convert
+
+Objects you already have in memory go straight in:
 
 ```python
-# Add a displacement-vector overlay (e.g. ANM mode)
+import mdtraj as md
+import molsysmt as msm
+import molsysviewer as msv
+
+traj = md.load(msm.systems["pentalanine"]["traj_pentalanine.h5"])
+view = msv.new_view(traj)           # an mdtraj.Trajectory: 62 atoms, 5000 structures
+```
+
+MDAnalysis `Universe` and `AtomGroup` objects, OpenMM topologies, and a long
+list of file formats work the same way: `new_view` hands whatever you give it to
+[MolSysMT](https://github.com/uibcdf/MolSysMT)'s `convert`, so anything MolSysMT
+reads is accepted. Selections can be written in MolSysMT's own syntax or in
+MDTraj's (`syntax="MDTraj"`).
+
+### Regions: named subsets that keep their own appearance
+
+```python
+view = msv.demo["1TCD"]                  # triosephosphate isomerase, a dimer
+view.make_regions_by(element="chain")    # -> "A", "B", and the waters "A__2", "B__2"
+
+view.regions["A"].set_representation("cartoon")
+view.regions["A"].set_color("teal")
+view.regions["B"].set_representation("spacefill")
+view.regions["B"].hide()                 # a region can hide once it draws itself
+```
+
+### Scientific overlays
+
+```python
 import numpy as np
-view.shapes.add_displacement_vectors(
-    vectors=np.random.randn(n_atoms, 3) * 0.5,
-    atom_indices=list(range(n_atoms)),
+import pyunitwizard as puw
+
+atom_indices = view.regions["A"].atom_indices
+view.shapes.add_displacement_vectors(    # e.g. an ANM mode
+    origins=None,                        # None -> use the current atom positions
+    vectors=puw.quantity(np.random.randn(len(atom_indices), 3) * 0.5, "angstroms"),
+    atom_indices=atom_indices,
     tag="anm-mode-0",
 )
 ```
 
+Magnitudes carry units throughout the suite: a bare array is refused rather than
+silently assumed to be in Å.
+
+### Export, and addons
+
 ```python
-# Export an interactive HTML snapshot
 view.export.html("my_scene.html", title="TIM — chain A")
 ```
 
 ```python
-# Use the addon system
-import molsysviewer as msv
-from molsysviewer_molsysmt import get_addon, lifecycle, on_enable
-from molsysviewer_molsysmt.runtime import ensure_runtime
-
-msv.addons.register(get_addon(), lifecycle=lifecycle)
-
-view = msv.MolSysView()
-view.load(ms)                       # ms is a molsysmt.MolSys object
-ensure_runtime(view).molecular_system = ms
-on_enable(view)
-view.show()
+msv.addons.register_module("molsysviewer_molsysmt")   # a 10-panel MolSysMT workspace
 ```
+
+### The point: exploration becomes state
+
+Everything above — and everything you do by hand in the Studio panel — is scene
+state, and scene state is a plain dictionary:
+
+```python
+import json
+
+state = view.export_state()
+json.dump(state, open("scene.json", "w"))
+
+# later, on another machine, or as a paper's supplementary material
+restored = msv.demo["1TCD"]
+restored.import_state(json.load(open("scene.json")))
+```
+
+`restored` now carries the same regions, colours, representations, visibility and
+overlays as the view you had been clicking around in. That round trip — not the
+feature list above — is what MolSysViewer is for.
 
 ---
 

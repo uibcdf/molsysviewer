@@ -10,13 +10,15 @@ displacements between two structures.
 ```python
 import molsysviewer as mv
 import numpy as np
+import pyunitwizard as puw
 
 view = mv.demo["dialanine"]
 view
 
-# Four vectors at explicit origins
-origins = np.array([[0, 0, 0], [4, 0, 0], [8, 0, 0], [12, 0, 0]], dtype=float)
-vectors = np.array([[0, 0, 3], [0, 0, -2], [1, 1, 2], [-1, 0, 3]], dtype=float)
+# Four vectors at explicit origins. Coordinates and magnitudes carry units:
+# a bare array is refused rather than assumed to be in Å.
+origins = puw.quantity(np.array([[0, 0, 0], [4, 0, 0], [8, 0, 0], [12, 0, 0]], dtype=float), "angstroms")
+vectors = puw.quantity(np.array([[0, 0, 3], [0, 0, -2], [1, 1, 2], [-1, 0, 3]], dtype=float), "angstroms")
 
 view.shapes.add_displacement_vectors(
     origins=origins,
@@ -29,9 +31,11 @@ view.shapes.add_displacement_vectors(
 
 ```python
 # Use the current structure coordinates as arrow origins
+displacements = puw.quantity(modes[0].reshape(-1, 3), "angstroms")   # (n_atoms, 3)
+
 view.shapes.add_displacement_vectors(
     origins=None,
-    vectors=displacements,      # shape (n_atoms, 3), Å
+    vectors=displacements,
     atom_indices=list(range(len(displacements))),
     tag="anm-mode1",
 )
@@ -41,8 +45,8 @@ view.shapes.add_displacement_vectors(
 
 | Parameter | Default | Description |
 |---|---|---|
-| `origins` | — | `(n, 3)` origin coordinates. Required unless `atom_indices` is given. |
-| `vectors` | — | `(n, 3)` displacement vectors. |
+| `origins` | — | `(n, 3)` origin coordinates, with units. Always passed: use `origins=None` to take the origins from `atom_indices` instead. |
+| `vectors` | — | `(n, 3)` displacement vectors, with units. |
 | `atom_indices` | `None` | Use current structure coordinates as origins. |
 | `length_scale` | `1.0` | Global scale factor applied to vector lengths. |
 | `min_length` | `"0.0 nm"` | Vectors shorter than this after scaling are skipped. |

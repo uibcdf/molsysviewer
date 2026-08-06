@@ -1,7 +1,12 @@
 # What a first read got wrong, and what that says about the documentation
 
-**Status:** open. Evidence, not design. It proposes documentation changes and
-owns none of them.
+**Status: acted on 2026-08-06. One item left, and it is a decision, not work** —
+see *Closure* at the end. Findings 1, 2, 4 and 6 were fixed; 3 and 5 had already
+been closed by other work. Recommendation 3 (whether the sixty-bullet feature
+inventory should sit above or below the quickstart) is a positioning call and
+stays with the maintainer; archive this document once it is made.
+
+Evidence, not design. It proposes documentation changes and owns none of them.
 
 **Origin:** one uninterrupted first read of this repository on 2026-08-03, by an
 assistant with no prior exposure to it, asked only to "study the repo so you can
@@ -37,8 +42,14 @@ object types are accepted.
 `msm.convert(..., to_form="molsysmt.MolSys")`, and `molsysmt/form/` covers
 `MDAnalysis_Universe` / `AtomGroup` / `Topology`, `mdtraj_Trajectory` /
 `Topology` and its file handlers, biopython objects, and roughly twenty file
-formats. `syntax=` accepts other selection dialects. **A user converts
+formats. ~~`syntax=` accepts other selection dialects.~~ **A user converts
 nothing.**
+
+> **Correction, 2026-08-06.** The struck sentence is wrong, and was written the
+> way this document criticises: from the declared list, without executing it.
+> `MolSysMT` and `MDTraj` work from any form; `MDAnalysis` only from a PDB file
+> or an MDAnalysis object; `Amber`, `NGLView`, `ParmEd` and `MolSysMT_NEW` do
+> not work at all. See *Closure* below.
 
 **Severity: highest in this document.** This is the easiest advantage in the
 product to communicate, it is the first question a prospective user asks, and
@@ -88,7 +99,8 @@ single-valued and cannot express two coexisting global representations.
 This is the finding with the widest blast radius, because it is not a gap — it
 is an assertion, in the location a reader trusts most, that the code
 contradicts. Already filed separately as
-[`whole_representation_succession_semantics.md`](whole_representation_succession_semantics.md).
+[`archive/whole_representation_succession_semantics.md`](../archive/whole_representation_succession_semantics.md),
+now closed by Contract S10.
 
 **What would prevent it:** behavioural claims live in `scene_contracts.md`,
 which is normative and has tests behind it; vision documents describe intent and
@@ -177,3 +189,85 @@ ambitious thinking is the least likely to be found.
   and only to ask which of two accounts is true.
 - Any authority over the README. What a project leads with is a positioning
   decision, and this document is evidence for it, not the decision itself.
+
+---
+
+## Closure, 2026-08-06
+
+Acting on this document required executing every claim in it, including its own.
+That turned up more than it reported.
+
+**Finding 1 — fixed, and the reported cure was too small.** The README now
+passes an `mdtraj.Trajectory` straight into `new_view`, and states the mechanism
+(`new_view` hands the object to MolSysMT's `convert`) rather than a list. Three
+input types were verified end to end: `mdtraj.Trajectory`, `MDAnalysis.Universe`
+and an OpenMM topology.
+
+**But this document's own claim about selection dialects was false.** It states
+that "`syntax=` accepts other selection dialects". Measured: of the seven
+declared syntaxes, `MolSysMT` and `MDTraj` parse selections from any form;
+`MDAnalysis` parses only from a PDB file or an MDAnalysis object, because
+`molsysmt.MolSys → MDAnalysis.Universe` is not implemented; `Amber` and
+`NGLView` raise; `ParmEd` and `MolSysMT_NEW` are declared but absent from the
+dispatch tables, so they pass argument digestion and then fail inside `select`.
+The README therefore promises two dialects, not six. Reported upstream as
+`molsysmt/devguide/pending_proposals/declared_selection_syntaxes_without_implementation.md`.
+This is the same defect the document is about, committed by the document.
+
+**Finding 2 — fixed.** The quickstart's last snippet is the round trip, with a
+sentence naming what happened. Verified: regions, visibility, representations
+and shape overlays all survive `export_state` → JSON → `import_state`.
+
+**Finding 3 — already closed** by Contract S10 in `scene_contracts.md`;
+`whole_representation_succession_semantics.md` is archived. The contradicting
+section of `areas_of_opportunity_analysis.md` is now flagged in the index.
+
+**Finding 4 — fixed.** `devguide/README.md`'s Standalone list says what each
+document decides, starting with the decision itself. Annotating them surfaced a
+document whose premise is dead: `standalone_performance_and_depythonization.md`
+argues from Numba JIT cold-start latency, and MolSysMT no longer uses Numba.
+
+**Finding 5 — already closed.** The dashboard row for Phase 5 reads `◐ 60%` and
+agrees with `checkpoints.md`.
+
+**Finding 6 — fixed.** The Project direction list is ordered and annotated: what
+the product is, what 1.0 scopes, what comes after. `render_quality_vision.md`'s
+entry now states outright that the project *does* intend to compete with
+desktop-quality rendering, which is the misreading the finding recorded.
+
+### What acting on it revealed that it did not report
+
+**The README had never been executed.** Three of its five quickstart snippets
+could not run: `regions["chain-A"]` (`make_regions_by(element="chain")` produces
+`"A"` and `"A__2"`), `n_atoms` and `ms` undefined, `origins` omitted although it
+is a required argument, and an addon registration pattern superseded by
+`addons.register_module`. A reader who copies the second snippet gets a
+`KeyError` on their second command. This is worse than either finding above, and
+a first read did not catch it because a first read does not run the code.
+
+`tests/test_readme_quickstart_runs.py` now executes every quick-start block with
+`UserWarning` escalated to an error, and asserts the reproducibility claim
+rather than merely the absence of exceptions. Mutation-verified: removing the
+representation before `hide()` — the exact shape of the original defect — and
+breaking the `import_state` line each turn it red.
+
+**Documentation prose is not executed anywhere.** 259 python blocks live in 63
+`.md` files under `docs/content/`. The notebooks are executed by
+`docs/execute_notebooks.py`; the markdown is not executed by anything.
+`docs/content/user/overlays/shapes/vectors.md` was broken in its *Minimal
+example* — bare arrays where units are required — and had been for as long as
+units were enforced. Fixed here, along with a parameter table that described a
+required argument as optional. **The other 62 files are unverified.** A test in
+the shape of `test_readme_quickstart_runs.py`, applied per page with fixtures
+for shared context, would close this; it is not attempted here because most
+blocks depend on names defined in prose around them and the work is a project,
+not a fix.
+
+**A small state defect.** `export_state()` → `import_state()` → `export_state()`
+returns an identical document except `order_high_water_mark`, which grows by 4
+on every cycle: `_restore_high_water_marks` runs before the regions are
+recreated, and recreating them advances the counter past the restored value.
+Region `order` values themselves are preserved, so this is cosmetic — but it
+defeats `restored.export_state() == state`, which is the first check a user
+writes to convince themselves the round trip worked. Worth a look when Phase 5
+frees up; not worth a hurried fix inside ordering semantics.

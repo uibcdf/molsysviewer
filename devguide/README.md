@@ -93,13 +93,24 @@ Measured evidence, not estimates. Each records the command that reproduces it.
 
 ### Standalone
 
-- [`standalone_direction.md`](standalone_direction.md)
-- [`standalone_host_plan.md`](standalone_host_plan.md)
-- [`standalone_supported_environment.md`](standalone_supported_environment.md)
-- [`standalone_packaging_strategy.md`](standalone_packaging_strategy.md)
+- [`standalone_direction.md`](standalone_direction.md) — **the decision, and the
+  one to read first: one workbench model, multiple hosts.** Standalone is not a
+  second product with its own interaction model or scene architecture.
+- [`standalone_host_plan.md`](standalone_host_plan.md) — that direction turned
+  into the operational pre-1.0 plan.
+- [`standalone_supported_environment.md`](standalone_supported_environment.md) —
+  the supported development-time environment recipe.
+- [`standalone_packaging_strategy.md`](standalone_packaging_strategy.md) — how
+  the host is packaged and distributed.
 - [`standalone_qt_ci_and_gl_decisions.md`](standalone_qt_ci_and_gl_decisions.md)
+  — CI and GL decisions closed on 2026-07-04 against a real GPU. **Not to be
+  re-litigated without a new reason.** Spanish.
 - [`standalone_performance_and_depythonization.md`](standalone_performance_and_depythonization.md)
-- [`standalone_v2_evolution_plan.md`](standalone_v2_evolution_plan.md)
+  — **premise superseded:** it addresses Numba JIT cold-start latency, and
+  MolSysMT no longer uses Numba. Its depythonization argument may survive; its
+  latency figures do not.
+- [`standalone_v2_evolution_plan.md`](standalone_v2_evolution_plan.md) — post-1.0
+  architecture for a v2 host, beyond the monolithic PySide6 prototype.
 
 Closed Qt investigations live under [`audits/`](audits/README.md). The two
 remaining product defects are tracked in
@@ -108,17 +119,31 @@ and [`pending_bugs/post_1.0/`](pending_bugs/post_1.0/README.md).
 
 ## Project direction
 
-These documents explain product intent, not current implementation status:
+These documents explain product intent, not current implementation status.
+Read them in this order: the first two say what the product *is*, the next three
+scope 1.0, and the last four describe work that begins after it.
 
-- [`guiding_principles.md`](guiding_principles.md)
-- [`development_mantra.md`](development_mantra.md)
-- [`v1_vision_and_styles.md`](v1_vision_and_styles.md)
-- [`scene_look_styles_direction.md`](scene_look_styles_direction.md)
-- [`style_battery_and_future_ideas.md`](style_battery_and_future_ideas.md)
-- [`molsysmovie_vision.md`](molsysmovie_vision.md)
-- [`render_quality_vision.md`](render_quality_vision.md)
-- [`future_vision_beyond_1_0.md`](future_vision_beyond_1_0.md)
-- [`areas_of_opportunity_analysis.md`](areas_of_opportunity_analysis.md)
+1. [`guiding_principles.md`](guiding_principles.md) — the ideas-alma: what the
+   product is for, and what it refuses to become.
+2. [`development_mantra.md`](development_mantra.md) — the practical conclusions
+   that stay visible while writing code.
+3. [`v1_vision_and_styles.md`](v1_vision_and_styles.md) — the 1.0 scope: half
+   visualiser, half instrument, and what that costs.
+4. [`scene_look_styles_direction.md`](scene_look_styles_direction.md) — the next
+   careful step after the first scene-style slice.
+5. [`style_battery_and_future_ideas.md`](style_battery_and_future_ideas.md) —
+   which styles ship first, so style growth stays intentional.
+6. [`molsysmovie_vision.md`](molsysmovie_vision.md) — post-1.0: a separate
+   `MolSysMovie` surface for timelines and keyframes, kept out of the viewer.
+7. [`render_quality_vision.md`](render_quality_vision.md) — post-1.0: **the
+   project does intend to compete with desktop-quality rendering**, by bridging
+   to Blender rather than replacing Mol\*.
+8. [`future_vision_beyond_1_0.md`](future_vision_beyond_1_0.md) — post-1.0
+   frontier ideas, including live streaming from a running simulation. Spanish.
+9. [`areas_of_opportunity_analysis.md`](areas_of_opportunity_analysis.md) —
+   five opportunity areas with feasibility analysis. Spanish. **Its "Estado
+   Final de Implementación" sections record intent at the time of writing and
+   have been contradicted by the code since; `scene_contracts.md` wins.**
 
 ## Course material
 
