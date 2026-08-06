@@ -7,6 +7,10 @@ from datetime import datetime, timezone
 import argparse
 import glob
 from concurrent.futures import ThreadPoolExecutor
+import sys
+import threading
+import time
+import traceback
 import json
 from typing import Any, Dict, Iterable, Set, Tuple
 
@@ -23,10 +27,11 @@ WIDGET_VIEW_MIME = "application/vnd.jupyter.widget-view+json"
 WIDGET_STATE_MIME = "application/vnd.jupyter.widget-state+json"
 
 
-def write_timestamp_to_log(log_path: Path):
+def write_timestamp_to_log(log_path: Path, quiet: bool = False):
     timestamp = datetime.now(timezone.utc).timestamp()
     log_path.write_text(f"{timestamp:.6f}")
-    print(f"Timestamp written to {log_path}: {timestamp:.6f}")
+    if not quiet:
+        print(f"Timestamp written to {log_path}: {timestamp:.6f}")
     return timestamp
 
 def read_timestamp_from_log(log_path: Path) -> float:
@@ -208,7 +213,63 @@ def strip_widget_state(notebook_path: Path, keep_tag: str = KEEP_WIDGET_STATE_TA
     )
     return True
 
-def execute_notebook(notebook_path: Path, force: bool = False) -> bool:
+class ProgressTracker:
+    """Milestone progress for a quiet run, so `-q` is quiet and not blind.
+
+    Adopted from MolSysMT's `execute_notebooks.py`, which had it first and models
+    it on `pytest-receptor`: a percentage line every so often on stderr rather
+    than one line per notebook on stdout. A bulk run is minutes long; something
+    has to say it is still moving.
+    """
+
+    def __init__(self, total: int, step_percent: int = 20):
+        self.total = total
+        self.step_percent = step_percent
+        self.completed = 0
+        self.executed = 0
+        self.failed = 0
+        self.start_time = time.monotonic()
+        self.next_threshold = step_percent
+        self.lock = threading.Lock()
+
+    def update(self, executed: bool, failed: bool = False) -> None:
+        with self.lock:
+            self.completed += 1
+            self.executed += int(executed)
+            self.failed += int(failed)
+            if self.total <= 0 or self.completed >= self.total:
+                return
+            percent = (self.completed * 100) // self.total
+            if percent < self.next_threshold:
+                return
+            elapsed = time.monotonic() - self.start_time
+            sys.stderr.write(
+                f"execute_notebooks: {percent}% {self.completed}/{self.total} ({elapsed:.0f}s)\n"
+            )
+            sys.stderr.flush()
+            self.next_threshold = (percent // self.step_percent + 1) * self.step_percent
+
+
+def error_excerpt(output: str, max_lines: int = 40) -> str:
+    """The part of nbconvert's output a person needs, without the log file.
+
+    Writing documentation is a loop — edit a cell, run this, look at what
+    happened — and until now a failure printed only the path of a log to go and
+    open. The useful part is always the same block, so print that instead.
+    """
+    marker = "An error occurred while executing the following cell"
+    lines = output.splitlines()
+    start = next((i for i, line in enumerate(lines) if marker in line), None)
+    excerpt = lines[start:] if start is not None else lines[-max_lines:]
+    if len(excerpt) > max_lines:
+        # Keep the head (the offending cell) and the tail (the exception).
+        head, tail = excerpt[: max_lines // 2], excerpt[-max_lines // 2:]
+        excerpt = head + [f"    … {len(excerpt) - max_lines} more lines …"] + tail
+    return "\n".join(f"    {line}" for line in excerpt)
+
+
+def execute_notebook(notebook_path: Path, force: bool = False, quiet: bool = False,
+                     progress: "ProgressTracker | None" = None) -> bool:
 
     last_run_file = notebook_path.with_suffix('.nbconvert.last_run')
     log_file = notebook_path.with_suffix('.nbconvert.log')
@@ -225,7 +286,8 @@ def execute_notebook(notebook_path: Path, force: bool = False) -> bool:
 
     if needs_execution or force:
 
-        print(f"Executing notebook: {notebook_path}")
+        if not quiet:
+            print(f"Executing notebook: {notebook_path}")
         env = os.environ.copy()
         env["MSM_VIEWS_FROM_HTML_FILES"] = "True"
 
@@ -239,7 +301,11 @@ def execute_notebook(notebook_path: Path, force: bool = False) -> bool:
         log_file.write_text(result.stdout + "\n" + result.stderr)
 
         if result.returncode != 0:
-            print(f"{RED}✘{RESET} Error executing {notebook_path}: check {log_file}")
+            print(f"{RED}✘{RESET} Error executing {notebook_path}")
+            print(error_excerpt(result.stdout + "\n" + result.stderr))
+            print(f"    (full output: {log_file})")
+            if progress is not None:
+                progress.update(executed=True, failed=True)
             if last_run_file.exists():
                 last_run_file.unlink()
             # Log failing notebook immediately to the shared error log.
@@ -250,7 +316,10 @@ def execute_notebook(notebook_path: Path, force: bool = False) -> bool:
                 pass
             return False
         else:
-            print(f"{GREEN}✔{RESET} Notebook {notebook_path} executed successfully.")
+            if progress is not None:
+                progress.update(executed=True)
+            elif not quiet:
+                print(f"{GREEN}✔{RESET} Notebook {notebook_path} executed successfully.")
             try:
                 did_strip = strip_widget_state(notebook_path)
                 if did_strip:
@@ -258,20 +327,24 @@ def execute_notebook(notebook_path: Path, force: bool = False) -> bool:
             except Exception:
                 # Never fail notebook execution because of a best-effort cleanup.
                 pass
-            write_timestamp_to_log(last_run_file)
+            write_timestamp_to_log(last_run_file, quiet=quiet or progress is not None)
             return True
 
     else:
-        print(f"{BLUE}●{RESET} Notebook {notebook_path} is up to date. No execution needed.")
+        if progress is not None:
+            progress.update(executed=False)
+        elif not quiet:
+            print(f"{BLUE}●{RESET} Notebook {notebook_path} is up to date. No execution needed.")
         return True
 
 
-def main(force=False, notebook: Path = None, recursive: bool = False, n_workers: int = 1):
+def main(force=False, notebook: Path = None, recursive: bool = False, n_workers: int = 1,
+         quiet: bool = False) -> int:
 
     if notebook is not None:
         if not notebook.exists():
             print(f"{RED}✘{RESET} {notebook} does not exist.")
-            return
+            return 1
         if notebook.is_file():
             nb_list = [notebook]
         elif notebook.is_dir():
@@ -290,13 +363,20 @@ def main(force=False, notebook: Path = None, recursive: bool = False, n_workers:
     n_workers = max(1, int(n_workers) if n_workers is not None else 1)
 
     failed_notebooks = []
+    progress = ProgressTracker(len(nb_list)) if quiet else None
 
     if n_workers == 1:
         for nb_path in nb_list:
             try:
-                ok = execute_notebook(nb_path, force)
+                ok = execute_notebook(nb_path, force, quiet=quiet, progress=progress)
             except Exception:
                 ok = False
+                # Say what happened. This handler used to swallow the exception
+                # whole, so a failure *outside* the notebook — a missing file, a
+                # broken kernel spec, a bug in this script — was indistinguishable
+                # from a notebook whose code raised, and left no trace anywhere.
+                print(f"{RED}✘{RESET} {nb_path} could not be run at all:")
+                traceback.print_exc()
                 # Log unexpected failures (outside execute_notebook) immediately.
                 try:
                     with ERROR_LOG_PATH.open("a", encoding="utf-8") as f:
@@ -306,10 +386,11 @@ def main(force=False, notebook: Path = None, recursive: bool = False, n_workers:
             if not ok:
                 failed_notebooks.append(nb_path)
     else:
-        print(f"Executing {len(nb_list)} notebooks using {n_workers} workers.")
+        if not quiet:
+            print(f"Executing {len(nb_list)} notebooks using {n_workers} workers.")
         with ThreadPoolExecutor(max_workers=n_workers) as executor:
             future_to_nb = {
-                executor.submit(execute_notebook, nb_path, force): nb_path
+                executor.submit(execute_notebook, nb_path, force, quiet, progress): nb_path
                 for nb_path in nb_list
             }
             for future, nb_path in future_to_nb.items():
@@ -326,11 +407,22 @@ def main(force=False, notebook: Path = None, recursive: bool = False, n_workers:
                 if not ok:
                     failed_notebooks.append(nb_path)
 
+    if quiet and progress is not None:
+        elapsed = time.monotonic() - progress.start_time
+        print(f"execute_notebooks: {progress.completed} notebooks, "
+              f"{progress.executed} executed, {progress.failed} failed ({elapsed:.0f}s)")
+
     if failed_notebooks:
         print(f"{RED}✘{RESET} {len(failed_notebooks)} notebook(s) failed. "
               f"See {ERROR_LOG_PATH}")
     else:
         print(f"{GREEN}✔{RESET} All notebooks executed successfully.")
+
+    # The count is the exit status. Until 2026-08-06 this always ended in 0, so
+    # anything automating it — a CI job above all — would report success while
+    # documented examples were broken, which is the exact defect the gate exists
+    # to catch, one level up.
+    return len(failed_notebooks)
 
 
 if __name__ == "__main__":
@@ -368,6 +460,12 @@ if __name__ == "__main__":
              "Use 1 (default) to run serially without parallel workers."
     )
 
+    parser.add_argument(
+        "-q", "--quiet",
+        action="store_true",
+        help="Milestone progress instead of one line per notebook. Failures are "
+             "still printed in full: an error is not chatter.",
+    )
     args = parser.parse_args()
 
     # Reset error log at the beginning of a CLI invocation.
@@ -377,13 +475,17 @@ if __name__ == "__main__":
         # If we cannot reset the log, continue execution; failures will still be reported on stdout.
         pass
 
+    failures = 0
     if args.notebook:
         for nb in map(Path, args.notebook):
-            if nb.is_file():
-                main(force=args.force, notebook=nb, recursive=args.recursive, n_workers=args.n_workers)
-            elif nb.is_dir():
-                main(force=args.force, notebook=nb, recursive=args.recursive, n_workers=args.n_workers)
+            if nb.is_file() or nb.is_dir():
+                failures += main(force=args.force, notebook=nb, recursive=args.recursive,
+                                 n_workers=args.n_workers, quiet=args.quiet)
             else:
                 print(f"{RED}✘{RESET} File not found or not a notebook: {nb}")
+                failures += 1
     else:
-        main(force=args.force, recursive=args.recursive, n_workers=args.n_workers)
+        failures = main(force=args.force, recursive=args.recursive, n_workers=args.n_workers,
+                        quiet=args.quiet)
+
+    raise SystemExit(1 if failures else 0)
