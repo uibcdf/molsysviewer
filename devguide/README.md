@@ -177,7 +177,9 @@ Closed audits are stored separately in [`audits/`](audits/README.md).
   `pending_proposals/`.
 - Performance claims without a reproducible benchmark are labeled estimates.
 - A document naming current code or APIs must be checked against the repository,
-  not against an earlier plan.
+  not against an earlier plan. A contract or a procedure that names something the
+  code does not have is making a false claim, not a plan — that belongs in a
+  proposal, where naming what you intend to build is the point.
 
 ### Say "done" where a scan will hit it
 

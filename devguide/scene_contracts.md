@@ -555,8 +555,8 @@ same class of ambiguity that produced every bug catalogued in §0.
 | Event | Effect on layers |
 |---|---|
 | `region.delete()` | its layer is dropped; whatever lies beneath reappears |
-| `region.rename(new_tag)` | the layer follows the tag; `color_order` is preserved |
-| `region.duplicate()` | the copy receives a **copy** of the layer and a **fresh** `color_order` (so it wins over its source) |
+| `region.rename(new_tag)` | the layer follows the tag; `Region.order` is preserved |
+| `region.duplicate()` | the copy receives a **copy** of the layer and a **fresh** `Region.order` (so it wins over its source) |
 | boolean composition | the result is a new region with **no** layer (colour is not inherited from operands) |
 | `apply_system_edit` / rebuild | every layer is remapped through `atom_index_map` **and re-sent**; atoms that disappear drop out of the layer |
 | transient regions (§A.5) | never own a layer |
@@ -707,13 +707,13 @@ See Contract R. `provenance` and `mode` are serialised, not derived.
 A region serialises: identity (`tag`, `atom_indices`, `selection`, `syntax`),
 `provenance`, visual state (`representation` — including the `"inherit"`
 sentinel —, `preset`, `params`, `hidden`), its **colour layer** and its
-`color_order`.
+`order`.
 
 The document also gains the **whole**'s representation/preset/params/visibility, its
 **structural colour theme** (§0.4 — today a frontend-only setting) and its base colour layer,
 none of which are exported today.
 
-`import_state` must also restore the **`color_order` high-water mark**, so regions created
+`import_state` must also restore the **`order_high_water_mark`**, so regions created
 after a reload keep winning over the ones restored from disk. A counter that restarts at zero
 would silently invert the precedence of every overlap.
 

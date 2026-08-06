@@ -576,8 +576,9 @@ An unknown action now leaves a trace on Qt as it does on AnyWidget. It is
 the Qt handler ignores it, so the end state already matched — the defect was the
 silence, not the forwarding. A strict rejection was written first and an existing
 test caught it: the Qt payload-generation probe reports through a synthetic
-`probe_payload` event, and refusing unknown actions would also kill legitimate
-out-of-band diagnostics.
+`qt_payload_probe` event — declared in the manifest under `qt_test_actions` —
+and refusing unknown actions outright would also kill legitimate out-of-band
+diagnostics.
 
 Three guards hold this: both connectors classify from the same manifest, the old
 hardcoded literal cannot come back, and an unknown action must be observable on
