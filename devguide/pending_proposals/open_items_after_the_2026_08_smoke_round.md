@@ -224,7 +224,7 @@ the whole, and check the console is clean.
 
 ---
 
-## B. Coverage that is missing (1 of 3 left; B1 and B3 resolved — B2 is the only open coverage item in this file)
+## B. Coverage that is missing (0 of 3 left; B1, B2 and B3 resolved)
 
 ### B1. ~~The `camera_stranded_inside_scene` signal has no test at all~~ — RESOLVED
 
@@ -245,7 +245,18 @@ worse than no alarm: it invites trust it has not earned.
 JS: drive `reportStrandedCamera` through the harness with a camera placed inside and
 outside the bounding sphere and assert the notify payload. Mutation-verify both.
 
-### B2. The `getPanelPopupSize` wiring is uncovered
+### B2. ~~The `getPanelPopupSize` wiring is uncovered~~ — DONE 2026-08-06
+
+**DONE.** `panel-popup-welcome.e2e.ts` now opens the pop-out through
+`PopupHostManager.open` with `window.open` intercepted, and asserts the
+`features` string equals the size the controller computed (`width=600,height=560`
+against an 800 px host, i.e. the floating panel's own 75 % rule). The canvas
+pop-out is asserted to keep its fixed `960x720`, so the two cannot be confused.
+Mutation-verified: restoring the old fixed `450x800` turns it red.
+
+The harness gained `probePopupOpenFeatures`, because the `features` string is the
+only place where the computed number and the window that opens actually meet —
+asserting the number alone is what left the gap.
 
 **What.** The e2e asserts the size *calculation*; the one line in `popup-host.ts`
 that consumes it is not covered. Stated in `923ae74c`, still true.

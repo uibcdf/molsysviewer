@@ -103,6 +103,35 @@ async function run() {
         };
     });
 
+    // ── The size the controller computes is the size the window opens at ─────
+    // Asserted through `PopupHostManager.open` with `window.open` intercepted,
+    // because the number alone proves nothing: the line that consumes it in
+    // `popup-host.ts` was mutable with every suite still green.
+    const opened = await page.evaluate(async () => {
+        const controller = (window as any).__controller
+            ?? await (window as any).Harness.createController("viewer");
+        const panel = await (window as any).Harness.probePopupOpenFeatures(controller, "panel");
+        const canvas = await (window as any).Harness.probePopupOpenFeatures(controller, "canvas");
+        return { panel, canvas };
+    });
+
+    assert.ok(
+        opened.panel.computed && opened.panel.computed.width > 0,
+        "the controller computed no panel popup size",
+    );
+    assert.strictEqual(
+        opened.panel.features,
+        `width=${opened.panel.computed.width},height=${opened.panel.computed.height}`,
+        "the panel window did not open at the size the controller computed: "
+        + `features were ${opened.panel.features}`,
+    );
+    assert.strictEqual(
+        opened.canvas.features,
+        "width=960,height=720",
+        "the canvas popup must keep its own fixed size, not the panel's",
+    );
+    console.log(`[E2E panel-popup-welcome]   panel window opens with ${opened.panel.features}`);
+
     assert.strictEqual(
         result.panelCards,
         0,

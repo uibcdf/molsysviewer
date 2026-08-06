@@ -5,9 +5,9 @@ project state changes. Detail belongs in the normative documents this points to.
 
 ## Repository state
 
-- Branch: `main`. Base commit: `7619e5d7`. Latest release checkpoint: `0.20.0`.
-- Suites at that commit: **1291 Python passed, 3 environmental skips**
-  (`--receptor=llm -n 12`), **270 JS**, `tsc` clean, **29/29 E2E**.
+- Branch: `main`. Base commit: `9074c76f`. Latest release checkpoint: `0.20.0`.
+- Suites at that commit: **1293 Python passed, 3 environmental skips**
+  (`--receptor=llm -n 12`), **270 JS**, `tsc` clean, **30/30 E2E**.
 - `sandbox/Smoke_Test.ipynb` is developer scratch state. Never include it in a
   commit and never use it as architectural evidence.
 - Generated `molsysviewer/viewer.js` is built with `npm run build:runtime`;
@@ -72,10 +72,7 @@ Export, embedding and first contact, mostly. In order of consequence:
 
 Nothing below depends on Phase 5, and none of it is a feature.
 
-1. **B2 — the consumer of `getPanelPopupSize`** (`popup-host.ts:142`) is
-   uncovered; the e2e asserts the calculation only, and a mutation of that line
-   passed the suite.
-2. **Transport audit items 5, 7 and 8** in
+1. **Transport audit items 5, 7 and 8** in
    [`pending_proposals/transport_popup_audit_followups_2026_08.md`](pending_proposals/transport_popup_audit_followups_2026_08.md):
    reconcile the retained R2/D3/D4 design records with what shipped, and two
    measurements (scene deferral during popup bootstrap; copies and peak memory

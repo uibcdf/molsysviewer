@@ -1931,3 +1931,57 @@ export async function probeWidgetSeam(): Promise<{
         foreignSessionRejectedObservably,
     };
 }
+
+/**
+ * Open a popup through `PopupHostManager.open`, with `window.open` intercepted.
+ *
+ * The panel pop-out's size is computed by `MolSysViewerController
+ * .getPanelPopupSize` and consumed by one line of `popup-host.ts`, and until
+ * 2026-08-06 only the computation was covered: a mutation of the consuming line
+ * left every suite green while the window reverted to a fixed size. Asserting
+ * the number the controller returns proves nothing about the window that opens;
+ * the `features` string is the only place where the two meet.
+ */
+export async function probePopupOpenFeatures(
+    controller: MolSysViewerController,
+    mode: "canvas" | "panel",
+): Promise<{ features: string | undefined; computed: { width: number; height: number } | null }> {
+    const originalOpen = window.open;
+    let features: string | undefined;
+
+    // A real window would boot a runtime and outlive the probe. This one only has
+    // to be enough for `open()` to keep going as far as writing into it.
+    const fakeWindow = {
+        document: {
+            open() {}, write(_html: string) {}, close() {},
+            title: "", head: { appendChild() {} }, body: { appendChild() {} },
+        },
+        closed: false,
+        close() {}, focus() {}, addEventListener() {}, removeEventListener() {},
+        postMessage() {},
+    };
+
+    (window as any).open = (_url?: string, _target?: string, featuresArg?: string) => {
+        features = featuresArg;
+        return fakeWindow as any;
+    };
+
+    const manager = new PopupHostManager({
+        source: "export function boot() {}",
+        viewerId: "e2e-popup-features",
+        sessionId: "e2e-popup-features-session",
+    });
+    manager.setController(controller);
+
+    try {
+        await manager.open(mode);
+    } finally {
+        (window as any).open = originalOpen;
+        try { manager.close(); } catch { /* the fake window has nothing to close */ }
+    }
+
+    return {
+        features,
+        computed: (controller as any).getPanelPopupSize?.() ?? null,
+    };
+}
