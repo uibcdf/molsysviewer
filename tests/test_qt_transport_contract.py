@@ -230,3 +230,111 @@ def test_a_known_product_event_stays_silent_and_reaches_the_view():
 
     assert not signalled, "a manifest-known event must not be reported as unknown"
     assert [e["event"] for e in forwarded] == ["interaction_hover"]
+
+
+class _RecordingWebView:
+    """A web view that records deliveries without answering them.
+
+    Nothing acknowledges here on purpose: the question these tests ask is what
+    the bridge does *while* a message is outstanding.
+    """
+
+    def __init__(self) -> None:
+        self.delivered: list[str] = []
+        self._page = self
+
+    def page(self):
+        return self._page
+
+    def runJavaScript(self, script, callback=None):  # noqa: N802 - Qt's name
+        self.delivered.append(script)
+        if callback is not None:
+            callback("molsysviewer-message-accepted")
+
+
+class _NoTimer:
+    """QTimer stand-in: the bridge only ever arms timeouts with it."""
+
+    @staticmethod
+    def singleShot(_ms, _fn):  # noqa: N802 - Qt's name
+        return None
+
+
+def _ready_bridge():
+    from molsysviewer.standalone_qt.utils import QtMessageBridge
+
+    webview = _RecordingWebView()
+    bridge = QtMessageBridge(webview, _NoTimer)
+    bridge.ready = True
+    return bridge, webview
+
+
+def _acknowledge(bridge, *, event: str | None = None) -> None:
+    entry = bridge.inflight
+    assert entry is not None, "nothing was in flight to acknowledge"
+    bridge.handle_frontend_event({
+        "event": event or entry["wait_event"],
+        "id": entry["id"],
+        "generation": entry["generation"],
+    })
+
+
+def test_qt_delivers_one_message_at_a_time_and_waits_for_it_to_be_handled():
+    """This is where Qt's ordering guarantee actually lives.
+
+    S8 — a scene op reaching a frontend that has no structure yet — is solved on
+    the AnyWidget seam by deferring in `_send_widget_message`, gated on the
+    array-native transfer manager. **That gate never opens for Qt**: the binary
+    path is `isinstance(self.widget, MolSysViewerWidget)`, and the Qt channel
+    refuses buffers outright. So nothing defers on the Python side here.
+
+    Nothing needs to, because the bridge is stricter: one message in flight, and
+    the next is not even delivered until the frontend reports the current one
+    *handled*. The page emits `message_ack` after `await
+    controller.handleMessage(msg)` returns, so the acknowledgement means
+    completed, not received.
+
+    Pinned because it is a guarantee by construction that nothing states and
+    nothing tested. `qt-delivery-ordering.probe.ts` shows what a fire-and-forget
+    bridge would cost: with two unawaited deliveries against a real page, the
+    region survives (the state handler queues ops until the structure loads) and
+    the annotation and the measurement are **silently lost**.
+    """
+    bridge, webview = _ready_bridge()
+
+    bridge.send({"op": "load_molsys_payload", "payload": {"atoms": {}, "structures": []}})
+    bridge.send({"op": "add_label", "tag": "late", "options": {"tag": "late"}})
+
+    assert len(webview.delivered) == 1, "the second message was delivered before the first was handled"
+    assert bridge.inflight is not None
+    assert len(bridge.queue) == 1
+
+    _acknowledge(bridge)
+
+    assert len(webview.delivered) == 2, "the queued message was not released by the acknowledgement"
+    assert "add_label" in webview.delivered[1]
+
+
+def test_a_load_waits_for_the_structure_and_not_merely_for_the_message():
+    """`message_ack` is not enough after a load: the structure has to exist.
+
+    A load resolves when the browser has built the structure, which is later
+    than when the handler was entered. The bridge therefore waits for a
+    different event for loads than for everything else, and 30 s rather than 5.
+    """
+    bridge, webview = _ready_bridge()
+
+    bridge.send({"op": "load_molsys_payload", "payload": {"atoms": {}, "structures": []}})
+    assert bridge.inflight["wait_event"] == "structure_ready"
+    assert bridge.inflight["timeout_s"] == 30.0
+
+    # The wrong acknowledgement must not release the queue.
+    bridge.send({"op": "add_label", "tag": "late", "options": {"tag": "late"}})
+    _acknowledge(bridge, event="message_ack")
+    assert len(webview.delivered) == 1, "a load was released by a plain message_ack"
+
+    _acknowledge(bridge, event="structure_ready")
+    assert len(webview.delivered) == 2
+
+    assert bridge.inflight["wait_event"] == "message_ack"
+    assert bridge.inflight["timeout_s"] == 5.0

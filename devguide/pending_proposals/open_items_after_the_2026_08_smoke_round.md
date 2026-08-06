@@ -123,7 +123,7 @@ the popup one.
 
 ---
 
-## A. Verification the rules require (4 of 5 left; A1 done)
+## A. Verification the rules require (2 of 5 left; A1, A2 and A4 done)
 
 These are cheap to run and could be hiding a break introduced during the round.
 
@@ -145,7 +145,13 @@ browser paths.
 cd molsysviewer/js && npm run test:e2e
 ```
 
-### A2. `npm run test:perf` was not re-run after the render-path changes
+### A2. ~~`npm run test:perf` was not re-run after the render-path changes~~
+
+**DONE 2026-08-06.** Re-measured and appended to
+`performance/message_path_regression_check_2026_07.md`: unknown-message toll
+0.3 ms (unchanged), per-frame dynamic-region evaluation 0.0007 ms against a
+16 ms frame, load within 0.5 % at one sample. Add-before-remove does not cross
+the seam as extra messages — the succession happens inside the state handler.
 
 **What.** The perf harness ran once, after the S8 transport change (`d0551083`),
 and not after camera authority, in-place representation update, add-before-remove
@@ -180,7 +186,17 @@ pytest tests/test_standalone.py --receptor=llm -n 12
 MOLSYSVIEWER_QT_GPU_TEST=1 pytest tests/test_standalone.py   # needs a real display
 ```
 
-### A4. The static HTML export was not validated either
+### A4. ~~The static HTML export was not validated either~~
+
+**DONE 2026-08-06. It frames correctly, and now a suite says so.** Measured on a
+real exported file opened as `file://`: `radiusMax` 6.22 against a scene radius
+of 6.22, camera at 16.3. Pinned by `js/tests/e2e/exported-page-framing.e2e.ts`
+(30th suite), mutation-verified by removing the `frameLoadedStructure` call.
+
+A first measurement said the opposite and was wrong: a single sample under
+Chrome's `--virtual-time-budget`, which fast-forwards the very clock the framing
+loop measures its deadline with. The test lives in the Playwright suite for that
+reason.
 
 **What.** `build_html` / `bootDocsView` builds a viewer with **no Python to ask** —
 it replays a journal. It also inherits camera authority.
@@ -264,9 +280,33 @@ this guard is worth more than the two one-line fixes it would have replaced.
 
 ---
 
-## C. Interaction never checked (1)
+## C. Interaction never checked (0 of 1 left; C1 answered)
 
-### C1. S8 message deferral against the Qt connector
+### C1. ~~S8 message deferral against the Qt connector~~ — answered 2026-08-06
+
+**Answer: nothing defers on Qt, and nothing needs to.** The Python deferral is
+gated on the structure transfer manager, which only exists behind
+`isinstance(self.widget, MolSysViewerWidget)`; the Qt channel refuses buffers
+outright. Qt's binary transport is by *reference*, not by stream — the bridge
+serialises the arrays into one blob and sends a `load_molsys_array_payload_ref`
+that the page fetches — so there is no chunked stream to order against.
+
+The ordering guarantee lives in `QtMessageBridge`, and is stricter than the
+deferral: one message in flight, the next not delivered until the frontend
+reports the current one **handled**, a load waiting for `structure_ready`
+instead of `message_ack`. It was a guarantee by construction that nothing stated
+and nothing tested; now pinned in `tests/test_qt_transport_contract.py`
+(mutation-verified both ways) and recorded in Contract S8.
+
+**What the audit also found.** `js/tests/e2e/qt-delivery-ordering.probe.ts`
+delivers two messages the way a fire-and-forget bridge would, against a real
+page: the region survives — the state handler queues ops until the structure
+loads — and the annotation and the measurement are silently lost. So the
+frontend has no barrier of its own for those two families. That is not a
+regression and not reachable today; it is the concrete cost of the bridge
+guarantee, and evidence for the post-1.0 receiver-side barrier.
+
+<details><summary>Original item</summary>
 
 **What.** The deferral lives in `_send_widget_message`, the chokepoint **all**
 connectors funnel through. Qt has had its own binary transport since `903514de`.
@@ -279,6 +319,8 @@ knowing which is not.
 **How.** Determine whether the Qt path ever sets `_binary_structure_stream`. If it
 does, mirror `tests/test_structure_stream_ordering.py` for that transport. If it
 does not, say so in Contract S8 so the next reader does not have to re-derive it.
+
+</details>
 
 ---
 

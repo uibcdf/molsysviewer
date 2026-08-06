@@ -1860,6 +1860,25 @@ Tested in `tests/test_structure_stream_ordering.py`, including the fallback path
 (the backlog must not be stranded, nor precede the JSON load) and the JSON-only
 frontend (no stream, so nothing is ever held).
 
+**Qt satisfies S8 elsewhere, and that is deliberate** (audited 2026-08-06). The
+Python deferral never engages there: it is gated on the structure transfer
+manager, which only exists behind `isinstance(self.widget, MolSysViewerWidget)`,
+and the Qt channel refuses buffers outright. The guarantee lives in
+`QtMessageBridge` instead, and is stricter — one message in flight, the next not
+delivered until the frontend reports the current one **handled**, with a load
+waiting for `structure_ready` (30 s) rather than `message_ack` (5 s). Because
+the page emits those events after `await controller.handleMessage(msg)` returns,
+the acknowledgement means completed, not received.
+
+That makes the bridge's serialisation load-bearing, so it is pinned in
+`tests/test_qt_transport_contract.py` rather than left as an accident of
+implementation. `js/tests/e2e/qt-delivery-ordering.probe.ts` measures the cost of
+losing it: with two unawaited deliveries against a real page, the region survives
+— the state handler queues ops until the structure loads — while the annotation
+and the measurement are **silently lost**. The frontend has no barrier of its own
+for those two families, which is the same gap the post-1.0 receiver-side barrier
+proposal is about.
+
 ### Contract S9 — A half-built scene must never be treated as the finished one
 
 **Established 2026-08-01, from a defect found by hand. Status: implemented and
