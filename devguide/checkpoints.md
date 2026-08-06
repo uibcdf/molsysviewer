@@ -54,6 +54,16 @@ Export, embedding and first contact, mostly. In order of consequence:
   gates the documented notebooks with `--force`, ignoring the mark on purpose.
 - **The README had never been executed.** Three of five quick-start snippets
   could not run. `tests/test_readme_quickstart_runs.py` now runs them all.
+- **An exported page frames its own scene, and now a suite says so.** Measured on
+  a real exported file: `radiusMax` 6.22 against a scene radius of 6.22
+  (`exported-page-framing.e2e.ts`, the 30th suite). Nothing had ever opened one
+  and looked at its camera.
+- **Qt satisfies S8 through `QtMessageBridge`, not through the Python
+  deferral** — one message in flight, released only by a *handled*
+  acknowledgement. It was load-bearing and untested; pinned now, and recorded in
+  Contract S8.
+- **The message path was re-measured** after the render-path round: nothing
+  moved (`performance/message_path_regression_check_2026_07.md`).
 - **[molstar/molstar#1903](https://github.com/molstar/molstar/issues/1903)** was
   filed: the camera bound derived from a momentarily empty scene. Awaiting a
   maintainer. Contract S9 and `camera_stranded_inside_scene` stay until it lands.
@@ -62,20 +72,10 @@ Export, embedding and first contact, mostly. In order of consequence:
 
 Nothing below depends on Phase 5, and none of it is a feature.
 
-1. **A4 — the static export was never checked for framing.** It inherits
-   `takeCameraAuthority`; if `captureCurrentStructure` does not fire the same way
-   there, `frameLoadedStructure` never runs and the page opens unframed. The only
-   item here that may hide a real defect rather than a coverage gap.
-2. **A2 — `npm run test:perf` has not run since the render-path changes**
-   (camera authority, in-place representation update, add-before-remove, the
-   hierarchy relay). `engineering_rules.md` §6 requires it.
-3. **B2 — the consumer of `getPanelPopupSize`** (`popup-host.ts:142`) is
+1. **B2 — the consumer of `getPanelPopupSize`** (`popup-host.ts:142`) is
    uncovered; the e2e asserts the calculation only, and a mutation of that line
    passed the suite.
-4. **C1 — S8 deferral against the Qt connector.** The deferral lives in
-   `_send_widget_message`, where every connector funnels; Qt has had its own
-   binary transport since `903514de` and was never checked against it.
-5. **Transport audit items 5, 7 and 8** in
+2. **Transport audit items 5, 7 and 8** in
    [`pending_proposals/transport_popup_audit_followups_2026_08.md`](pending_proposals/transport_popup_audit_followups_2026_08.md):
    reconcile the retained R2/D3/D4 design records with what shipped, and two
    measurements (scene deferral during popup bootstrap; copies and peak memory

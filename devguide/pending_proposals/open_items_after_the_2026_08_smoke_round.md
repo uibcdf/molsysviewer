@@ -48,7 +48,7 @@ we postpone" but "who else uses what we changed".
 
 ## Z. ~~Broken right now~~ — both resolved, verified 2026-08-06 (2)
 
-### Z1. `molsysviewer-sync-hierarchy` is not declared in the action manifest
+### Z1. ~~`molsysviewer-sync-hierarchy` is not declared in the action manifest~~ — RESOLVED
 
 **RESOLVED.** `molsysviewer-sync-hierarchy` is declared in `popup_actions`, and `popupActionAllows` enforces it on both seams.
 
@@ -82,7 +82,7 @@ structure and proves that System follows. Mutation-verify it by removing the
 declaration. The existing `POPUP_ACTIONS.size >= 11` assertion is insufficient:
 it can notice some deletions but pins neither this action nor its direction.
 
-### Z2. `camera_stranded_inside_scene` is not declared either, so the signal never leaves the browser
+### Z2. ~~`camera_stranded_inside_scene` is not declared either~~ — RESOLVED
 
 **RESOLVED.** `camera_stranded_inside_scene` is declared in `actions` with category `error`, so the signal leaves the browser.
 
@@ -127,7 +127,7 @@ the popup one.
 
 These are cheap to run and could be hiding a break introduced during the round.
 
-### A1. The full E2E suite was never run
+### A1. ~~The full E2E suite was never run~~ — DONE
 
 **DONE 2026-08-06.** `npm run test:e2e:all` — **29/29 suites passed**, on a real Chromium with SwiftShader (`ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero)))`), no `E2E_ALLOW_SKIP`.
 
@@ -224,9 +224,9 @@ the whole, and check the console is clean.
 
 ---
 
-## B. Coverage that is missing (1 of 3 left; B1 and B3 resolved)
+## B. Coverage that is missing (1 of 3 left; B1 and B3 resolved — B2 is the only open coverage item in this file)
 
-### B1. The `camera_stranded_inside_scene` signal has no test at all
+### B1. ~~The `camera_stranded_inside_scene` signal has no test at all~~ — RESOLVED
 
 **RESOLVED.** Covered by `tests/test_runtime_seam_integration.py` and `js/tests/unit/viewer-controller-message-refresh.test.ts`.
 
@@ -256,7 +256,7 @@ The size can silently revert to a fixed value with everything green.
 **How.** Stub `window.open` in the e2e, open a panel popup, and assert the captured
 `features` string carries the computed width.
 
-### B3. Nothing pins the actions the code sends against the manifest
+### B3. ~~Nothing pins the actions the code sends against the manifest~~ — RESOLVED
 
 **RESOLVED.** `js/tests/unit/runtime-action-manifest.test.ts`, `tests/test_runtime_router.py` and `tests/test_distribution_artifact.py` pin the code's actions against the manifest.
 
@@ -349,7 +349,7 @@ that answer.
 
 **How.** Decide, record it in the proposal, then implement.
 
-### D3. The Mol\* upstream report has not been sent — *Diego sends it*
+### D3. ~~The Mol\* upstream report has not been sent~~ — SENT as molstar/molstar#1903
 
 **DONE 2026-08-06.** Filed as [molstar/molstar#1903](https://github.com/molstar/molstar/issues/1903), after re-verifying all four claims against master at `26216e9b1`.
 
@@ -363,7 +363,7 @@ detection that exists only to guard it. Until then both are permanent.
 
 ---
 
-## E. Housekeeping and drift (2 of 5 left; E1, E2 and E3 resolved)
+## E. Housekeeping and drift (1 of 5 left; only E1 — the MolSysMT handover — remains)
 
 Half an hour in total, and four of the five are documentation or handoff records
 contradicting the
@@ -392,7 +392,7 @@ it were committed now it would describe work that is done.
 **How.** Check it against their archived copy and delete it, or commit only what
 their archive does not already say.
 
-### E2. `pending_bugs` still lists item 8 as pending
+### E2. ~~`pending_bugs` still lists item 8 as pending~~ — RESOLVED
 
 **RESOLVED.** That bug is archived: item 8 is a documented decision in the code, and the report moved to `archive/` on 2026-08-05.
 
@@ -403,7 +403,7 @@ their archive does not already say.
 
 **How.** Mark it DONE with the commit, as items 1, 3, 5 and 6 already are.
 
-### E3. The System proposal keeps an obsolete "Interim" section
+### E3. ~~The System proposal keeps an obsolete "Interim" section~~ — MOOT (archived)
 
 **MOOT.** The System proposal was archived on 2026-08-05 — its own title had said DONE for four days — so an obsolete section inside it no longer misleads anyone.
 
@@ -416,7 +416,7 @@ panel that now works.
 
 **How.** Delete the section.
 
-### E4. The session memory is one commit stale
+### E4. ~~The session memory is one commit stale~~ — UPDATED 2026-08-06 to the current state
 
 **What.** `project_next_session.md` records `HEAD adebbf4b`; the round ended at
 `34755fb9`, which is the `clearGlobalRepresentations` fix.
@@ -426,7 +426,7 @@ session where things stand — and it omits the last fix of the round.
 
 **How.** Update the HEAD and add the eighth defect to the list.
 
-### E5. `checkpoints.md` does not know this round happened
+### E5. ~~`checkpoints.md` does not know this round happened~~ — REWRITTEN 2026-08-06, 351 lines to 111
 
 **What.** The resume document — the one with its own *Resume cautions* section —
 mentions neither Contract S8, nor S9, nor the smoke round. Its last recorded state
