@@ -230,6 +230,26 @@ For the current pre-`1.0.0` stage:
 
 ## Decision Rule
 
+**Checked 2026-08-06: the conditions below appear met, and the decision they gate
+has not been made.** The Qt host is recorded as *technically complete and
+packaging-validated* in
+[`standalone_supported_environment.md`](standalone_supported_environment.md),
+whose conda-native recipe names five packages — and all five are on the `uibcdf`
+channel at `6.9.2` with builds at or above the ones it requires
+(`shiboken6-uibcdf _4`, `pyside6-essentials-uibcdf _4`, `pyside6-addons-uibcdf _6`,
+`qt6-positioning-uibcdf _1`, `qt6-webengine-uibcdf _2`). So the recipe is
+installable without compiling, which was the second condition.
+
+What remains is the third one — whether the open question is now distribution
+polish rather than host viability — and that is a judgement, not a measurement.
+Whoever makes it should start from
+`standalone_supported_environment.md`'s *What Still Remains Open*, which lists
+the three surviving questions: conda-only or conda+pip, how the recipe is
+distributed, and environment-driven versus app-like release packaging.
+
+*Recorded because a decision rule ages like any other deferral: its conditions
+were written to be re-read, and nothing re-reads them.*
+
 The next standalone packaging decision should be made when:
 
 - the Qt host no longer feels prototype-fragile

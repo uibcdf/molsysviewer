@@ -82,6 +82,12 @@ new capability:
 - **No v1 reader.** v2 is the only accepted version by design (no external users
   yet). The moment there *are* saved sessions in the wild, a version-migration
   policy becomes a real obligation, not an optional one.
+
+  *Re-read 2026-08-06: still true, but the premise moved. MolSysMT is now an
+  external adopter, so "no external users" is no longer the blanket fact it was.
+  What they consume is the HTML export — a history replayed into a page — and not
+  a saved session, so no v2 document is in anyone's hands yet. The condition has
+  not fired; it is now one adopter away from firing.*
 - **History / undo** (Phase 8, Contract H): the command history is
   session-scoped and deliberately **not** serialised. If a user ever expects
   undo to survive a reload, that is a separate, larger decision — flagged here so
