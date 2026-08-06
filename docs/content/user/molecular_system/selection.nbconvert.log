@@ -1,3 +1,4 @@
 
 [NbConvertApp] Converting notebook docs/content/user/molecular_system/selection.ipynb to notebook
-[NbConvertApp] Writing 25308 bytes to docs/content/user/molecular_system/selection.ipynb
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+[NbConvertApp] Writing 25311 bytes to docs/content/user/molecular_system/selection.ipynb

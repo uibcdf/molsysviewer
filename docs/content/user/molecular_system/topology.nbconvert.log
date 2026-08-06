@@ -1,3 +1,4 @@
 
 [NbConvertApp] Converting notebook docs/content/user/molecular_system/topology.ipynb to notebook
-[NbConvertApp] Writing 37763 bytes to docs/content/user/molecular_system/topology.ipynb
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+[NbConvertApp] Writing 37806 bytes to docs/content/user/molecular_system/topology.ipynb

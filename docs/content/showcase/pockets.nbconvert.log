@@ -1,3 +1,4 @@
 
 [NbConvertApp] Converting notebook docs/content/showcase/pockets.ipynb to notebook
-[NbConvertApp] Writing 16007 bytes to docs/content/showcase/pockets.ipynb
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+[NbConvertApp] Writing 16013 bytes to docs/content/showcase/pockets.ipynb
