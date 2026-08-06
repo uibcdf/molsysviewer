@@ -59,3 +59,32 @@ last one predates the whole protocol.
 
 Re-run it when touching the message path, region ownership masks, or per-atom
 colour.
+
+---
+
+## Re-measured 2026-08-06, after the render-path round
+
+`engineering_rules.md` §6 asks for this after message-path work, and four
+changes had landed since the July baseline without it: camera authority
+(Contract S9), in-place representation update, add-before-remove succession
+(Contract S10), and the hierarchy relay.
+
+Same machine, same command, same 95,000 atoms:
+
+| Quantity | 2026-07-31 | 2026-08-06 |
+| --- | --- | --- |
+| Load | 3404.9 ms | 3388.5 ms |
+| **Unknown-message toll** | **0.3 ms** | **0.3 ms** |
+| Hide | 0.2 ms | 0.3 ms |
+| Group nodes | 9,500 | 9,500 |
+| Per-frame dynamic-region evaluation | 0.0008 ms | 0.0007 ms |
+
+Nothing moved. Load is 0.5 % faster, which is noise at one sample, and the two
+sub-millisecond figures are at the harness's resolution — a 0.1 ms difference on
+`hide` is one tick, not a trend.
+
+The result was not obvious in advance: add-before-remove succession means a
+representation change now builds the new one *before* dropping the old, so the
+question was whether the extra transient object showed up in the message path.
+It does not, because the succession happens inside the state handler and never
+crosses the seam as extra messages.
