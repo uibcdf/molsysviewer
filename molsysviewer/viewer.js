@@ -168013,6 +168013,7 @@ async function bootDocsView(opts) {
     }
     applyExportedBackground(c8, typeof ui.background_mode === "string" ? ui.background_mode : "auto");
     reportSceneRuntimeMismatch(hostEl, ui.scene_version);
+    window.__molsysviewerDocsController = c8;
     const sendSync = (msg) => {
       if (!msg) return;
       popupReplay.record(msg);

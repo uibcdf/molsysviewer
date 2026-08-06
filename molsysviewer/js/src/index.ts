@@ -345,6 +345,14 @@ export async function bootDocsView(opts: {
         applyExportedBackground(c, typeof ui.background_mode === "string" ? ui.background_mode : "auto");
         reportSceneRuntimeMismatch(hostEl, ui.scene_version);
 
+        // An exported page has no Python and no test harness, so nothing outside
+        // it could observe whether its scene ended up framed — the one property
+        // that decides whether the page is usable on arrival. The page already
+        // publishes `__molsysviewerDocsHandleMessage`; this is the same kind of
+        // handle, and `tests/test_exported_page_opens_from_disk.py` reads the
+        // camera through it.
+        (window as any).__molsysviewerDocsController = c;
+
         const sendSync = (msg: ViewerMessage) => {
             if (!msg) return;
             popupReplay.record(msg);

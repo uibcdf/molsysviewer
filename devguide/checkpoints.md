@@ -1,351 +1,111 @@
 # Development checkpoint
 
 This is the current handoff, not a changelog. Replace its contents when the
-project state changes.
+project state changes. Detail belongs in the normative documents this points to.
 
 ## Repository state
 
-- Branch: `main`.
-- Base commit: `cb5fda56`.
-- Latest release checkpoint: `0.20.0`.
-- The July 2026 devguide, performance, array-native transport, runtime-router,
-  popup, Qt, and API cleanup round is **committed** — ten commits on top of
-  `7a14fbfc`, pushed through `9512d02d`. *(Until 2026-07-30 this entry said the
-  round sat uncommitted in the working tree; it no longer does.)*
+- Branch: `main`. Base commit: `7619e5d7`. Latest release checkpoint: `0.20.0`.
+- Suites at that commit: **1291 Python passed, 3 environmental skips**
+  (`--receptor=llm -n 12`), **270 JS**, `tsc` clean, **29/29 E2E**.
 - `sandbox/Smoke_Test.ipynb` is developer scratch state. Never include it in a
-  product commit and do not use it as architectural evidence.
-- Generated `molsysviewer/viewer.js` was rebuilt with
-  `npm run build:runtime`; never edit or inspect it as source.
+  commit and never use it as architectural evidence.
+- Generated `molsysviewer/viewer.js` is built with `npm run build:runtime`;
+  never edit or inspect it as source. It now carries the version that built it.
+- **Every tag publishes to npm**; conda publishes from a Release, deliberately,
+  and that trigger is not to be widened without a decision.
 
-## Completed in the current round
+## Where the project is
 
-### Devguide and pre-1.0 scope
+Phase 5 of
+[`pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md`](pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md)
+— endpoint isolation and lifecycle — is **parked at 60%**. Phases 0a–4b are
+closed; 6–10 have not started. The plan's dashboard is the authority on
+progress; open a slice by moving its row to `◐` before working on it.
 
-- Historical, superseded, post-1.0, active proposal, bug, audit, and performance
-  material was separated and indexed.
-- Camera acquisition/movie export, structure windowing/lazy materialization,
-  Interactions, configurable picking, and multiview remain post-1.0.
-- Missing box and time remain valid scientific absence; no transport path
-  invents them.
+Phase 5's remainder: the endpoint evidence matrix, real-browser
+relay/reconstruction checks, full suites and a runtime rebuild.
 
-### Array-native materialized-structures data plane
+The architecture behind all of it is normative elsewhere and does not belong
+here: [`data_plane_architecture.md`](data_plane_architecture.md) for the
+array-native transport, [`runtime_message_router.md`](runtime_message_router.md)
+for envelopes, identity and authority, [`scene_contracts.md`](scene_contracts.md)
+for scene behaviour.
 
-- D0 baseline documents Python and browser amplification.
-- D1 serializes topology once and structural arrays directly from
-  `molsysmt.MolSys`, using contiguous little-endian `float32` coordinates in
-  angstrom.
-- D2 negotiates AnyWidget capability, validates typed descriptors and buffers,
-  constructs Mol* structures without nested coordinate arrays, and retains the
-  JSON compatibility/reproducibility path.
-- D2b splits on the structures axis, allows one chunk in flight, requires begin
-  and chunk acknowledgements, rejects stale/duplicate/malformed delivery, and
-  releases or falls back observably on cancellation and connector failure.
-- Box and time are aligned optional arrays and remain absent when absent in the
-  source `MolSys`.
-- Coordinates use the `structure-planar-c` layout (`[structures, 3, atoms]`) so
-  Mol\* frames are zero-copy `subarray` views. The interleaved layout forced a
-  per-frame de-interleaving pass — 930k scalar assignments and 15k allocations
-  on the 5,000×62 case, 30M and a full second copy on 100×100,000 — for no gain
-  on the Python side, where the transpose fuses into the contiguous `float32`
-  conversion. Verified by a real-browser E2E.
+## What closed in the 2026-08-03 → 06 round
 
-### Runtime router and popup control plane
+Export, embedding and first contact, mostly. In order of consequence:
 
-- R0 pure `RuntimeMessageRouter` validates viewer/session/source/target,
-  endpoint roles, direction, malformed envelopes, targeted delivery, endpoint
-  removal, and bounded duplicate-command state.
-- R1 envelopes the AnyWidget seam. A shared manifest `runtime_actions.json`
-  classifies every action for Python (`runtime_contract.py` +
-  `viewer/runtime_router.py`) and TypeScript (`runtime-actions.ts` +
-  `widget-envelope.ts`). Enveloping lives in `MolSysViewerWidget.send` (the
-  connector owns the wire), so Qt stays raw and `initial_messages` keeps domain
-  messages. `_handle_inbound_message` validates
-  identity/direction/action↔payload coherence and deduplicates commands (a
-  duplicate yields `command_duplicate_ack`, not a re-apply). Bootstrap source
-  and binary buffers stay off the control-plane envelope.
-- Popup channels use an unguessable token plus exact source, viewer, session,
-  authority, host, and popup endpoint identity.
-- Popup traffic now carries `RuntimeEnvelope`; host and popup both route it.
-- Popup controls no longer apply a reproducible operation locally and then ask
-  the host to apply it again.
-- Closing/reopening/disposal revokes popup endpoints and stale channels.
-- `PopupReplayLog` retains only the current molecular generation, coalesces
-  current-state/high-frequency projections, and gives panel popups only an
-  explicit UI projection allowlist. Panel bootstrap receives no molecular or
-  structure-dependent visual operations.
-- Camera synchronization is an endpoint event, not a Python projection.
-- Embedded `ready`/reconnect now consumes the same canonical current-state
-  projector family as popups and static export. The generic append-only
-  `_message_history` has been removed; coalesced domain records and
-  `SceneHistory` remain as current-state and undo authorities respectively.
+- **Exported pages work offline and open from disk.** One template builds both
+  shapes; `runtime_source` embeds the runtime, `runtime_urls` addresses it. The
+  three CDN dependencies are gone. A `file://` page cannot `import()` a sibling
+  module, so a self-contained export builds its own blob URL;
+  `python -m molsysviewer.preview` serves the addressed shape.
+- **`export.html(background=…)`** — `auto` copies the host container's colour
+  and follows its theme switch on a timer, `transparent` clears with alpha,
+  `white`/`dark` are fixed. The frame's *container* is what sits behind an
+  embedded view, not the page body.
+- **An exported page declares what it is.** It reports a scene built by a
+  different MolSysViewer version, and the Studio states, once and up front, that
+  no session is behind it (`hasAuthority: false`, declared by `bootDocsView`).
+- **Contract S10** — the whole's representation succeeds and never accumulates.
+- **`docs/execute_notebooks.py`** gained a content-hash run mark, error
+  excerpts, a non-zero exit and talking excepts; `.github/workflows/docs-notebooks.yaml`
+  gates the documented notebooks with `--force`, ignoring the mark on purpose.
+- **The README had never been executed.** Three of five quick-start snippets
+  could not run. `tests/test_readme_quickstart_runs.py` now runs them all.
+- **[molstar/molstar#1903](https://github.com/molstar/molstar/issues/1903)** was
+  filed: the camera bound derived from a momentarily empty scene. Awaiting a
+  maintainer. Contract S9 and `camera_stranded_inside_scene` stay until it lands.
 
-## Validation observed
+## Open work, in the order to take it
 
-- Phase 4b canonical embedded readiness: `1191 passed`, `3 skipped` Python;
-  `265` JS; TypeScript `0`; message-path performance green; real Chrome widget
-  seam green. Returning readiness to an emitted-message trace, omitting one
-  summary domain, or reintroducing the generic journal each fails its guard.
+Nothing below depends on Phase 5, and none of it is a feature.
 
-- Python full suite (end of round): `1146 passed`, `3 skipped`, `0 failed` via
-  `pytest --receptor=llm tests/`. The 3 skips are pre-existing environment gates
-  (X11/WebGL/Qt GPU). *(The `1009 passed` recorded here after R1 was the count
-  at that point in the round; R2, D3, D4, R3 and the guards added since brought
-  it to 1146.)*
-- JavaScript unit suite: `262 passed`, `0 failed`.
-- Performance harnesses (`npm run test:perf`), required by
-  `engineering_rules.md` §6 whenever the message path changes: unknown-message
-  toll `0.3 ms` at 95,000 atoms, dynamic-region evaluation `0.0008 ms` per
-  frame. Baseline recorded in
-  [`performance/message_path_regression_check_2026_07.md`](performance/message_path_regression_check_2026_07.md).
-- TypeScript: `npx tsc --noEmit`, exit `0`.
-- Runtime build: `npm run build:runtime`, exit `0`; R1 confirmed in the bundle.
-- E2E without skips: array-native (real-browser WebGL trajectory), popup-channel
-  (authenticated `postMessage` round trip), and structure-data-relay (buffers
-  reach the addressed popup byte for byte and its ack returns) all passed. The
-  relay suite is registered in `e2e-runner.ts`, so CI runs it with the rest.
+1. **A4 — the static export was never checked for framing.** It inherits
+   `takeCameraAuthority`; if `captureCurrentStructure` does not fire the same way
+   there, `frameLoadedStructure` never runs and the page opens unframed. The only
+   item here that may hide a real defect rather than a coverage gap.
+2. **A2 — `npm run test:perf` has not run since the render-path changes**
+   (camera authority, in-place representation update, add-before-remove, the
+   hierarchy relay). `engineering_rules.md` §6 requires it.
+3. **B2 — the consumer of `getPanelPopupSize`** (`popup-host.ts:142`) is
+   uncovered; the e2e asserts the calculation only, and a mutation of that line
+   passed the suite.
+4. **C1 — S8 deferral against the Qt connector.** The deferral lives in
+   `_send_widget_message`, where every connector funnels; Qt has had its own
+   binary transport since `903514de` and was never checked against it.
+5. **Transport audit items 5, 7 and 8** in
+   [`pending_proposals/transport_popup_audit_followups_2026_08.md`](pending_proposals/transport_popup_audit_followups_2026_08.md):
+   reconcile the retained R2/D3/D4 design records with what shipped, and two
+   measurements (scene deferral during popup bootstrap; copies and peak memory
+   in the Qt binary scheme).
 
-## Auto-mutation record for the latest slice
+### Waiting on someone who is not the next session
 
-```text
-mechanism: a new molecular load drops superseded popup generations
-mutation : append the new load instead of replacing replay entries
-test     : popup replay keeps only the current molecular generation
-result   : FAILS with mutation / PASSES restored
-
-mechanism: current-state popup projections are last-write-wins
-mutation : disable the last-write-wins branch
-test     : popup replay coalesces high-frequency current-state projections
-result   : FAILS with mutation / PASSES restored
-
-mechanism: panel bootstrap is an explicit UI-only allowlist
-mutation : return every replay entry to the panel
-test     : panel popup bootstrap contains only explicit UI projections
-result   : FAILS with mutation / PASSES restored
-
-mechanism: duplicate popup command is rejected by the runtime router
-mutation : bypass host-side router dispatch
-test     : popup host sends and accepts messages only on the bound popup channel
-result   : FAILS with mutation / PASSES restored
-
-mechanism: a popup cannot impersonate the authority/host endpoint
-mutation : remove expected popup endpoint binding at host receive
-test     : popup host sends and accepts messages only on the bound popup channel
-result   : FAILS with mutation / PASSES restored
-
-mechanism: the popup snapshot is built from live state, never the journal
-mutation : append _message_history to the snapshot
-test     : snapshot is byte-for-byte identical under history growth
-result   : FAILS with mutation / PASSES restored
-
-mechanism: the snapshot returns defensive copies
-mutation : emit _current_molecular_projection by reference
-test     : consumer cannot mutate internal state through the result
-result   : FAILS with mutation / PASSES restored
-
-mechanism: regions carry the indices materialized for the current frame
-mutation : drop atom_indices from the region create message
-test     : region create carries current materialized indices
-result   : FAILS with mutation / PASSES restored
-
-mechanism: hidden scene objects are reported hidden to the popup
-mutation : stop emitting hide_layer for hidden scene objects
-test     : a hidden object inside a hidden layer stays hidden
-result   : FAILS with mutation / PASSES restored
-
-mechanism: saved selections travel as real save_selection messages
-mutation : re-label them with an invented add_saved_selection op
-test     : a saved selection is projected as a real save_selection message
-result   : FAILS with mutation / PASSES restored
-
-mechanism: a stream whose acknowledgement never arrives expires
-mutation : make the deadline never expire
-test     : a stream whose ack never arrives releases its arrays and falls back
-result   : FAILS with mutation / PASSES restored
-
-mechanism: an expired stream releases its retained arrays explicitly
-mutation : clear the stream without dropping payload and chunks
-test     : a stream whose ack never arrives releases its arrays and falls back
-result   : FAILS with mutation / PASSES restored
-
-mechanism: the popup projector covers every live scene object
-mutation : stop projecting shapes, as a new unwired kind would behave
-test     : every live scene object appears in the canvas snapshot
-result   : FAILS with mutation / PASSES restored
-
-mechanism: sendTo delivers to one popup endpoint, never both
-mutation : make sendTo fan out again, as send does
-test     : a canvas bootstrap never reaches a panel popup
-result   : FAILS with mutation / PASSES restored
-
-mechanism: relayed binary buffers cross the postMessage seam intact
-mutation : relay empty buffers of the same length
-test     : structure-data-relay E2E byte comparison
-result   : FAILS with mutation / PASSES restored
-
-mechanism: the load path reads the real structure count
-mutation : restore structures.get_n_structures(), which always raises
-test     : a real load over a lowered budget warns
-result   : FAILS with mutation / PASSES restored
-
-mechanism: the Qt scheme handler serves binary as octet-stream
-mutation : always reply application/json
-test     : the scheme handler serves binary and json by id
-result   : FAILS with mutation / PASSES restored
-
-mechanism: Qt refuses buffers it cannot deliver
-mutation : drop them silently, as before
-test     : qt refuses buffers instead of dropping them
-result   : FAILS with mutation / PASSES restored
-
-mechanism: an unknown action is observable on Qt, not silent
-mutation : stop reporting unknown frontend actions
-test     : an unknown action is observable on qt as it is on anywidget
-result   : FAILS with mutation / PASSES restored
-
-mechanism: the widget seam rejects a projection from another session
-mutation : remove the session check in the inbound adapter
-test     : widget-seam E2E, in a real browser
-result   : FAILS with mutation / PASSES restored
-```
-
-## Pre-1.0 scale guard
-
-There was no guard of any kind on load size: a trajectory large enough to
-exhaust the browser tab simply tried until something died. That absence, not the
-absence of windowed residency, was the 1.0 defect — windowing changes what
-`view.molsys` means and its failure mode is silently wrong science, so it stays
-post-1.0. `_private/scale_budget.py` now warns with the measured size, the note
-that a canvas popup doubles the renderer cost, and a concrete
-`structure_indices=range(0, N, stride)` that fits. It warns and never refuses;
-`molsysviewer.config.set_structure_scale_budget(bytes)` tunes it, `0` silences
-it. *(It was briefly a bare top-level `molsysviewer.set_structure_scale_budget`.
-`development_mantra.md` asks every new public concept to fit the taxonomy, and
-`public_api.md` already names `molsysviewer.config.*` as the configuration
-surface, so it moved there with the module's `@signal` + `@digest()` pattern and
-a `budget_bytes` digester. No shim, per `engineering_rules.md` §2.)*
-
-Latent bug surfaced by wiring it: `load_from_molsysmt` called
-`structures.get_n_structures()`, which does not exist. The call always raised
-into a bare `except Exception`, so `n_structures` silently stayed `None` and was
-only recovered later by counting the serialized payload. Fixed to the
-`structures.n_structures` attribute; mutation-verified.
-
-`SharedArrayBuffer` was reclassified from "post-1.0" to **blocked on external
-preconditions**: the COOP/COEP headers belong to the notebook host, and Mol\*
-reorders coordinate arrays in place, which makes sharing one buffer between two
-instances unsafe. No work on our side unblocks it.
-
-## Hot-path findings from the critical review (measured)
-
-- Coordinates now ship planar so Mol\* frames are zero-copy views; see the data
-  plane proposal. Biggest single win found, and it cost nothing in Python.
-- Mol\* re-emits hover on every resolved pick without comparing `prevLoci`, so a
-  resting mouse sent ~30 identical messages per second to Python. The host now
-  deduplicates the Python-bound hover projection; local UI is unaffected.
-- `messageId` uses a per-session counter instead of `uuid4` (~12x cheaper) on
-  both Python paths, matching TypeScript.
-- A compact second wire format for ephemeral events was rejected on measurement
-  (+375 B per message, ~22 KB/s at 60/s) — not worth dual-shape validation.
-- The one-chunk-in-flight window was measured and deliberately kept; see the data
-  plane proposal for the numbers.
-
-Earlier tests in the same dirty round also cover forged source/token/session,
-stale reopen, disposal of both popups, no local-plus-forward double apply,
-array descriptor validation, stream ordering, stale generation, cancellation,
-and JSON fallback.
-
-## Open work and exact resume order
-
-1. **R1 AnyWidget/embedded canvas — DONE.** Envelopes on the AnyWidget seam,
-   Python as sole authority, wrapping in `MolSysViewerWidget.send`, inbound
-   dedup with `command_duplicate_ack`. Validated: full Python `1009 passed /
-   3 skipped` (receptor), `255` JS, `tsc` `0`, `build:runtime`, array-native +
-   popup-channel E2E without skips; guards mutation-verified.
-2. **R2 canonical popup bootstrap — projector and wiring DONE; cleanup next.**
-   `MolSysView.build_popup_scene_snapshot(mode, endpoint)`
-   (`viewer/popup_snapshot.py`) builds the current scene from live state:
-   pure with respect to history and transport, `_message_history` and
-   `_build_export_messages()` off limits, strict `mode`, defensive copies,
-   dynamic regions materialized at the current frame, camera excluded.
-   Mutation-verified in `tests/test_popup_snapshot.py` (7) and
-   `tests/test_popup_snapshot_fidelity.py` (8); inflating the journal with
-   10,000 ops leaves the snapshot byte-for-byte identical.
-   The seam is wired: on popup ready the host sends
-   `request_popup_scene_snapshot`, Python answers through
-   `_answer_popup_scene_snapshot` with a `correlated_projection`, and the host
-   consumes it at the seam and bootstraps with the canonical messages. The
-   host-local fields already in `molsysviewer-initial-sync` (camera, spin/swing,
-   dark mode, autohide, viewer/controls/panel mode, ambient/split) serve as
-   `endpointState`. `PopupReplayLog` survives only as a 5 s fallback.
-   Both closed: the journal is gone from the interactive path (kept only in
-   `bootDocsView`, where a static export has no Python to ask), and
-   `build_context_items` is the pure half that lets the panel snapshot carry
-   add-on context items.
-   Treat `session_id` as immutable per attachment: kernel restart or
-   widget reconstruction must close or visibly disconnect the old popup; it
-   must reject the replacement session. A popup for the replacement widget
-   authenticates afresh and receives the canonical snapshot.
-3. **D3 completion — DONE.** Each stream carries a deadline (30 s, restarted on
-   every accepted acknowledgement) evaluated on main-thread entry points only;
-   there is no timer thread, because `widget.send` is unsafe off the kernel
-   thread for AnyWidget. On expiry the retained arrays are released explicitly,
-   `structure_data_cancel` is sent, and the recorded JSON load is delivered with
-   a `RuntimeWarning`. The benchmark now separates `peak_rss_growth` from
-   `retained_growth` (current RSS via `/proc/self/statm`), since `ru_maxrss`
-   alone is monotonic and cannot show what was released. Audit finding: no
-   unsafe cross-thread send existed — the only thread serves headless export and
-   playback is frontend-driven; a regression test pins that the timeout path
-   sends on the calling thread.
-4. **D4 endpoint parity — D4a DONE, D4b next.**
-   D4a: `PopupHostManager.sendTo` delivers to one endpoint. This fixed a real
-   leak — `send` fans out, so with both popups open the canvas bootstrap (with
-   its molecular projection) also reached the panel popup. Closing a popup now
-   fires `onEndpointClosed` and cancels that endpoint's pending scene-snapshot
-   requests. Mutation-verified.
-   D4b DONE: the canvas popup receives a **typed** molecular generation. Python
-   starts an endpoint-addressed stream when the popup asks for its snapshot, the
-   snapshot then omits `load_molsys_payload`, the host relays chunks through
-   `sendTo` instead of consuming them, and the popup assembles with its own
-   receiver and acknowledges back through the host. `enable_popout` no longer
-   forces the JSON path. Host retention was rejected on memory grounds: it would
-   have cost a permanent spare copy (120 MB on 100 x 100,000 atoms) even with no
-   popup open, whereas relaying holds one chunk transiently. The remaining 2x
-   browser memory (two Mol* instances) is inherent to two renderers;
-   `SharedArrayBuffer` is the only real answer and needs cross-origin isolation,
-   so it stays post-1.0. Qt binary transport requires its own benchmark and is
-   not implied by AnyWidget success.
-5. Re-run focused tests after each fix, then exactly one full JS and one full
-   Python suite for the final implementation task. Use `pytest-receptor` for
-   agent-facing Python output.
-
-## Phase 5 endpoint isolation (in progress, 2026-08-02)
-
-- Per-destination structure managers and deferred queues replace the view-wide
-  popup barrier. A pending 95,000-atom popup stream leaves embedded-host
-  projection latency at 0.0088 ms against a predeclared 100 ms threshold.
-- Popup acknowledgements carry and validate `target_endpoint_id`; a different
-  popup cannot advance the generation.
-- Closing a popup notifies Python, releases begin/chunk/completion-wait buffers
-  immediately, and discards only that endpoint's deferred projections.
-- `PopupHostManager` queues live projections per bootstrapping popup and flushes
-  them after its canonical initial snapshot, preserving request-time snapshot
-  order without blocking another endpoint.
-- Remaining before closure: complete the endpoint evidence matrix, real-browser
-  relay/reconstruction checks, full suites and runtime rebuild.
+- **A3 and `pending_bugs/standalone_qt_live_demo_reload.md`** need a visible
+  window and a real GPU.
+- **A5** — `34755fb9` touched the load path and landed after Diego's review of
+  that round; no human has seen it.
+- **D1 `lazy_json_fallback_payload`, D2 hover telemetry, and the README's
+  positioning** (whether sixty feature bullets stay above the quick start) are
+  Diego's decisions, not work items.
+- **MolSysMT** holds four uncommitted files from us: the patched
+  `docs/execute_notebooks.py`, a selection-syntax proposal, a form-conversion bug
+  report, and two index lines.
 
 ## Resume cautions
 
-- Read `devguide/runtime_message_router.md` and
-  `devguide/data_plane_architecture.md` first.
-- The popup host and popup runtime already share envelope semantics; do not
-  reintroduce `{type, data, from}` routing.
-- Python remains the only authority for reproducible scene state.
-- Never make an existing popup silently adopt a changed `session_id`.
-  Continuity across kernel restart requires a new authenticated attachment and
-  a fresh current-state projection.
-- Binary buffers are runtime data, never scene history.
-- A compact replay journal is not the same as a canonical state snapshot; keep
-  that distinction explicit.
+- Read [`runtime_message_router.md`](runtime_message_router.md) and
+  [`data_plane_architecture.md`](data_plane_architecture.md) first.
+- Python remains the only authority for reproducible scene state. Do not
+  reintroduce `{type, data, from}` routing at any seam.
+- Never let an existing popup adopt a changed `session_id`. Continuity across a
+  kernel restart requires a fresh authenticated attachment and a new projection.
+- Binary buffers are runtime data, never scene history. A compact replay journal
+  is not a canonical state snapshot.
 - Do not run E2E with `E2E_ALLOW_SKIP=1` when validating popup or rendering
-  behavior.
-- Never include `sandbox/Smoke_Test.ipynb` in commits.
+  behaviour.
+- Verify a document's claims against the code before acting on them. This round
+  found five documents asserting states the code contradicted — including one
+  that criticised exactly that failure while committing it.

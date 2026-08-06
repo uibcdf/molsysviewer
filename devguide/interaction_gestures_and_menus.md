@@ -201,6 +201,12 @@ Open UX note:
 
 Hover is intentionally lightweight in the first slices.
 
+**The Python-bound hover projection is deduplicated, and must stay that way.**
+Mol\* re-emits hover on every resolved pick without comparing `prevLoci`, so a
+resting mouse sent roughly 30 identical messages per second to Python. The host
+now drops repeats of the same target before projecting; local UI is unaffected
+and still sees every event. Measured during the 2026-07 critical review.
+
 Future direction kept in scope:
 
 - hover may later feed tooltips, lightweight inspectors, or similar read-only feedback

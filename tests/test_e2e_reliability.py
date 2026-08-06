@@ -31,7 +31,11 @@ def test_e2e_runner_inventory_matches_every_scientific_suite():
     # load does not leave the whole pointing at the structure it replaced.
     # 29 since 2026-08-02: `endpoint-lifecycle`, which pins that closing a popup
     # releases only that endpoint's transfer state (Phase 5).
-    assert len(expected) == 29
+    # 30 since 2026-08-06: `exported-page-framing`, which opens a real exported
+    # page as a file and pins that it frames its own scene. The export inherits
+    # camera authority and has no Python to ask again, and nothing had ever
+    # looked at its camera.
+    assert len(expected) == 30
     assert declared == expected
 
 
