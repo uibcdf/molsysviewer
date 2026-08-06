@@ -1,6 +1,6 @@
 # Transport and popup audit follow-ups
 
-**Status:** audit record, swept 2026-08-06 — of its eight items, five are done, one is half done and two remain, each marked in place. Its execution order is superseded by
+**Status:** audit record, swept 2026-08-06 and closed out the same day — **items 1 to 8 are all done or measured**, each marked in its own title. **Items 1 to 9 are all done, measured or verified.** What remains is 10 to 12, which are standing boundaries rather than work. Its execution order is superseded by
 [`pre_1_0_architecture_rework_and_hardening_master_plan.md`](pre_1_0_architecture_rework_and_hardening_master_plan.md).
 
 This document records the additional work found after R2, D3, D4, the Qt
@@ -29,7 +29,7 @@ pre-1.0 performance improvement to implement.
 
 ## P0 — ~~Correctness defect~~ — resolved
 
-### 1. Address fallback cancellation to the popup endpoint
+### 1. ~~Address fallback cancellation to the popup endpoint~~ — RESOLVED
 
 **RESOLVED, verified 2026-08-06.** `_transmit_binary_structure_chunk` passes the chunk's `target_endpoint_id` into `_fallback_binary_structure_stream`, and `tests/test_runtime_seam_integration.py::test_a_popup_targeted_stream_fallback_cancels_and_loads_the_same_endpoint` pins it.
 
@@ -61,7 +61,7 @@ untargeted.
 
 ## P1 — Guarantees that still need evidence
 
-### 2. Test widget reconstruction and kernel-session replacement end to end
+### 2. ~~Test widget reconstruction and kernel-session replacement end to end~~ — DONE
 
 **DONE 2026-08-06.** `js/tests/e2e/endpoint-lifecycle.e2e.ts` already covered steps 1, 2 and 4 — open and authenticate, replace the session, and assert the old endpoint closed, the endpoint changed, the replacement session id and a matching close notification. Step 3 is now covered too: a command carrying the replaced session is fed to the live host and must not be accepted, **with a positive control** proving the same command from the current session *is*, since without it "refused" also passes for a message that was merely malformed.
 
@@ -86,7 +86,7 @@ Add a browser lifecycle test covering:
 
 Mutation check: allow the old session to remain attached; the test must fail.
 
-### 3. State the D3 timeout semantics precisely and evaluate event-loop expiry
+### 3. ~~State the D3 timeout semantics precisely and evaluate event-loop expiry~~ — DONE
 
 **DONE, checked 2026-08-06.** `data_plane_architecture.md` under *D3 implemented* states the guarantee as evaluated on main-thread entry points only, with an idle kernel not firing the timeout, and records the decision against a timer thread with its reason (`widget.send` is not safe off the kernel thread). That is both actions this item asked for.
 
@@ -108,7 +108,7 @@ If event-loop scheduling is not portable, keep the cooperative model and add a
 test that advances the clock while idle, then triggers one entry point and
 proves deterministic release and fallback.
 
-### 4. Add seam-level tests when behavior depends on composition
+### 4. ~~Add seam-level tests when behavior depends on composition~~ — DONE as a standing rule
 
 **DONE as a standing rule, checked 2026-08-06.** It is codified in `engineering_rules.md` under *Integration seams* — drive the seam, not the piece — which is where a rule belongs rather than in an audit that will be archived.
 
@@ -132,7 +132,7 @@ state.
 
 ## P1 — Documentation accuracy
 
-### 5. Reconcile the retained R2/D3/D4 design records with the shipped state
+### 5. ~~Reconcile the retained R2/D3/D4 design records with the shipped state~~ — DONE
 
 **DONE 2026-08-06.** Both contradictions named here were still present and are now fixed. `data_plane_architecture.md` listed R2, D3 and D4 as a *remaining execution order* while its own header said they were complete; `runtime_message_router.md` said "the remaining R2 work" under a heading reading *implemented*, and called D4b open after it had shipped. Both documents were also promoted out of `pending_proposals/` on 2026-08-05, since seven and ten documents cite them as current descriptions.
 
@@ -159,7 +159,7 @@ that closed phases remain implementation work.
 
 ## P1 — Measured pre-1.0 performance work
 
-### 6. Build the JSON fallback lazily
+### 6. ~~Build the JSON fallback lazily~~ — DONE and measured
 
 **DONE, verified 2026-08-06.** Implemented, tested and measured — 32 ms against 1,459 ms. Its proposal is archived: [`../archive/lazy_json_fallback_payload.md`](../archive/lazy_json_fallback_payload.md).
 
@@ -194,9 +194,14 @@ Closure requires:
 
 ## P2 — Improvements to measure, not assumptions to implement
 
-### 7. Measure endpoint-global scene deferral during popup bootstrap
+### 7. ~~Measure endpoint-global scene deferral during popup bootstrap~~ — CLOSED 2026-08-06
 
-**STILL OPEN, checked 2026-08-06.** No such measurement exists in `devguide/performance/`.
+**CLOSED.** Re-run and recorded where performance evidence lives:
+[`../performance/qt_payload_copies_and_endpoint_isolation_2026_08.md`](../performance/qt_payload_copies_and_endpoint_isolation_2026_08.md).
+Embedded-host projection latency **0.0097 ms** against the 100 ms threshold fixed
+before running, with the popup transfer deliberately in flight. The number had
+existed since Phase 5 but only inside this item and the dashboard row, which is
+why it kept reading as open.
 
 There is one active binary stream and one S8 deferred-scene queue per view. While
 a large canvas popup generation is being delivered, scene messages needed by
@@ -221,9 +226,19 @@ The reproducible command is:
 python devtools/benchmarks/endpoint_isolation.py
 ```
 
-### 8. Measure copies and peak memory in the Qt binary scheme
+### 8. ~~Measure copies and peak memory in the Qt binary scheme~~ — MEASURED 2026-08-06, path kept
 
-**STILL OPEN, checked 2026-08-06.** `qt_transport_baseline_2026_07.md` measures wire bytes and preparation time, not copies or peak memory; the peak-RSS figures in `trajectory_transport_baseline_2026_07.md` are for the Python JSON path.
+**MEASURED, and deliberately unchanged.** `devtools/benchmarks/qt_payload_copies.py`,
+recorded in
+[`../performance/qt_payload_copies_and_endpoint_isolation_2026_08.md`](../performance/qt_payload_copies_and_endpoint_isolation_2026_08.md).
+
+The join peaks at **exactly 2x the payload** at every size measured — `b"".join()`
+over a generator holds every per-buffer copy and the output at once. A
+preallocated `bytearray` peaks at 1.33x instead (400 MB → 267 MB on a 200 MB
+payload). It is not adopted: every shipped system measures under 4 MB, so the
+transient is unobservable today. **The trigger is written down** — a load at the
+256 MB scale-budget warning would peak at 512 MB on Qt, and nothing says so at
+the warning.
 
 Qt's payload-scheme transport is a sensible connector-specific implementation,
 but assembling the structural buffers into one Python `bytes` object can create
@@ -234,7 +249,19 @@ Do not replace this path merely because it is not AnyWidget `buffers=`. Change
 it only if measurement shows a release-relevant peak and a lower-copy Qt API is
 available without reintroducing large `runJavaScript` strings.
 
-### 9. Retire the probe-induced Qt unknown-action asymmetry
+### 9. ~~Retire the probe-induced Qt unknown-action asymmetry~~ — DONE, verified 2026-08-06
+
+**DONE, and the item's premise is stale.** Both halves it asked for are in place:
+the synthetic probe is declared as an explicit test-only action
+(`qt_test_actions: ["qt_payload_probe"]` in `runtime_actions.json`), and Qt is
+strict — `handle_frontend_event` returns `False` for an unknown action, emits
+`unknown_frontend_action`, and **does not forward it to the view**. So the
+asymmetry described below no longer exists.
+
+The mutation the item asked for was run: re-adding the forward to the view turns
+`test_an_unknown_action_is_observable_and_refused_on_qt_as_on_anywidget` red.
+
+<details><summary>Original item, describing behaviour that has since changed</summary>
 
 R3 removed **silent** acceptance of unknown actions, but the two connectors are
 not semantically identical:
@@ -252,6 +279,8 @@ Declare the synthetic probe as an explicit transport/test action, then make Qt
 strict as well. Mutation-test that an unknown action is diagnosed and never
 reaches the view. Until that lands, document the actual asymmetry as inherited
 from the probe, not as desired product policy.
+
+</details>
 
 ## Product decisions adjacent to this audit
 

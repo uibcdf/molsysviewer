@@ -68,15 +68,19 @@ Export, embedding and first contact, mostly. In order of consequence:
   filed: the camera bound derived from a momentarily empty scene. Awaiting a
   maintainer. Contract S9 and `camera_stranded_inside_scene` stay until it lands.
 
-## Open work, in the order to take it
+## Open work
 
-Nothing below depends on Phase 5, and none of it is a feature.
+**Nothing outside Phase 5 remains for the next session.** The transport audit's
+items 1–9 are closed (10–12 are standing boundaries, not work), and the smoke
+round's inventory has only items that need a person. Phase 5 itself is the work:
+its remainder is listed above.
 
-1. **Transport audit items 5, 7 and 8** in
-   [`pending_proposals/transport_popup_audit_followups_2026_08.md`](pending_proposals/transport_popup_audit_followups_2026_08.md):
-   reconcile the retained R2/D3/D4 design records with what shipped, and two
-   measurements (scene deferral during popup bootstrap; copies and peak memory
-   in the Qt binary scheme).
+Two measurements landed with a trigger attached rather than a change, in
+[`performance/qt_payload_copies_and_endpoint_isolation_2026_08.md`](performance/qt_payload_copies_and_endpoint_isolation_2026_08.md):
+host projection latency is 0.0097 ms behind an in-flight popup stream, and Qt's
+payload join peaks at **2× the payload** — irrelevant at the sizes we ship,
+worth 512 MB at the 256 MB scale-budget warning. If Qt is ever expected to carry
+loads near that budget, switch to the preallocated `bytearray` measured there.
 
 ### Waiting on someone who is not the next session
 
