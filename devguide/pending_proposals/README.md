@@ -61,12 +61,6 @@ is also explicitly post-1.0.
   Two findings are README-facing and affect prospective users; four are
   contributor-facing. Perishable evidence — a maintainer cannot produce it about
   their own project.
-- [`whole_representation_succession_semantics.md`](whole_representation_succession_semantics.md):
-  audit only. `areas_of_opportunity_analysis.md` §2 records the whole's global
-  representation as deliberately **additive**; the runtime reads as **replace**
-  (add-then-remove) and the Python model is single-valued. No test pins either,
-  and `scene_contracts.md` is silent. Decide which is true, then make the
-  normative document say it.
 - [`opt_in_hover_telemetry.md`](opt_in_hover_telemetry.md): stop forwarding hover
   to the kernel when nobody is listening. The July round deduplicated identical
   hovers, which fixes a resting mouse and not a moving one. **Blocked on one

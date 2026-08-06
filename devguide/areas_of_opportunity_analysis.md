@@ -169,8 +169,14 @@ Tras la deliberación sobre estas áreas de oportunidad, se ha concretado la imp
 * **Pruebas**: Se añadió la prueba unitaria de integración `test_add_sphere_selection_and_indices` en `tests/shapes/test_shapes.py` que convalida con éxito el comportamiento del backend y los payloads generados.
 
 ### 2. Modos de Coexistencia de Representaciones Globales
-* **Estado**: **Excluido por decisión de diseño**.
-* **Detalles Técnicos**: Tras la evaluación, se decidió no implementar la coexistencia de estilos ni los modos de reemplazo automático en `whole.set_representation()`. El comportamiento por defecto se mantiene de forma aditiva (`additive`), permitiendo que el usuario sea quien controle de forma explícita la adición o remoción de representaciones a través de los mecanismos provistos.
+* **Estado**: **CORREGIDO 2026-08-06 — este apartado describía lo contrario de lo que hace el visor.**
+* **Detalles Técnicos**: se decidió no implementar el parámetro `mode`, y eso sigue en pie: no hay API para elegir cómo se aplica una representación global. Lo que este apartado afirmaba de más era el comportamiento por defecto. **No es aditivo: es sucesión.** `whole.set_representation()` deja **una** representación global, siempre.
+
+  El modelo de Python no puede siquiera expresar dos: `Whole._representation` y `Whole._preset` son de valor único. Y el runtime lo cumple por dos mecanismos según el estado de partida — con una representación en pie edita el nodo existente (`applyWholeRepresentationInPlace`, mecanismo A del Contrato S9); con varias construye la nueva y **después** retira las que no reutilizó, que es el mismo "sin hueco" del Contrato S9 un nivel más arriba.
+
+  Fijado en `tests/e2e/scene-contracts.e2e.ts`, contando las celdas reales de Mol\*. La regla normativa vive ahora en [`scene_contracts.md`](scene_contracts.md); este documento es el registro de la decisión sobre el parámetro `mode`, no sobre la semántica.
+
+  *Cómo llegó a decir lo contrario durante meses: nada lo fijaba. Un documento de diseño y un renderizador discreparon y ninguna prueba tenía voto. Estuvo a punto de costarnos reportar un falso defecto a Mol\* por creerle al documento.*
 
 ### 3. Eventos de Interacción con Payloads Enriquecidos
 * **Estado**: **Implementado y verificado**.

@@ -1,5 +1,34 @@
 # Whole representation succession semantics
 
+**AUDITED AND CLOSED 2026-08-06. The answer is succession; the document was
+wrong.**
+
+Of the three readings this file offered, the first is what happened: the design
+record was stale. `whole.set_representation()` leaves one global representation
+on every path, the Python model is single-valued and cannot express otherwise,
+and the runtime reaches it two ways — an in-place edit when one is in place, and
+build-then-remove when a preset left several.
+
+`areas_of_opportunity_analysis.md` §2 is corrected, and the rule now lives where
+rules live: **Contract S10** in [`../scene_contracts.md`](../scene_contracts.md).
+The decision this file did *not* touch stands unchanged: no `mode` parameter.
+
+**Two findings from doing it, both about testing rather than about the whole.**
+
+The first assertion written was green under the mutation the acceptance
+prescribed — removing the `stillToClear` step — and that was not a bad test, it
+was the wrong path: with a single representation in place, a plain change never
+reaches the removal branch at all. `engineering_rules.md` §9 asks for proof that
+the mutated line executed before judging the test, and here that proof was the
+whole answer. The scenario now states which mechanism it exercises and shows red
+under a mutation of *that* one.
+
+And the removal branch stayed uncovered: neither the fixture's load nor
+`polymer-and-ligand` produces more than one representation from twelve atoms, so
+the state that triggers it was unreachable. Recorded in S10 as read-but-not-pinned
+rather than quietly counted as covered.
+
+---
 **Status:** open, audit only. No behavior change is proposed until the audit
 answers the question below.
 

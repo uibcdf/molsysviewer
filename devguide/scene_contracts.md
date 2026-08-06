@@ -2095,6 +2095,42 @@ camera ended up.
 
 ---
 
+### Contract S10 — The whole carries one representation, and changing it is a succession
+
+**Established 2026-08-06, from an audit of a design record that said the
+opposite. Status: in force, and pinned in `tests/e2e/scene-contracts.e2e.ts`.**
+
+`whole.set_representation()` leaves the whole with **one** global representation.
+Applying a second replaces the first; representations never accumulate at the
+whole level. Regions are where several coexist, deliberately, and the layered
+colour stack is where a single representation carries several colourings.
+
+The Python model cannot express anything else — `Whole._representation` and
+`Whole._preset` are single-valued — and the runtime reaches the same end by two
+mechanisms, chosen by the state it starts from:
+
+- **one representation in place**: the existing node is edited
+  (`applyWholeRepresentationInPlace`), which is Contract S9 mechanism A — no
+  demolition when a parameter edit will do;
+- **more than one**, which is what a loader preset can leave behind: the
+  successor is built first and the predecessors it did not reuse are removed
+  after. Same no-gap ordering as S9, one level up.
+
+**Why this is a contract and not an implementation note.** For months
+`areas_of_opportunity_analysis.md` §2 recorded the default as deliberately
+*additive*, and nothing in the suite could say which of the two was true. A
+reading of that document nearly produced a false defect report to Mol\*. A rule
+that no test can settle is a rumour, whichever document holds it.
+
+**What is pinned, and what is not.** The e2e scenario asserts the surviving
+representation from Mol\*'s own cells — not from `globalReprs`, which is cleared
+on every change and would report succession even when nothing was removed. It
+exercises the in-place mechanism, since a fixture of twelve atoms yields one
+representation from every preset tried and the multi-representation state was not
+reachable. The removal branch is therefore **read but not pinned**; covering it
+needs a fixture whose preset genuinely splits, and that is the next step for
+anyone touching this code.
+
 ## 4. How these contracts are tested
 
 Same standard as the rework — a claim in a test name must be asserted, and every

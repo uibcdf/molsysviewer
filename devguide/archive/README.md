@@ -33,3 +33,6 @@ Completed work, kept for the reasoning:
   and [`molsysmt_adoption_response_2026_08.md`](molsysmt_adoption_response_2026_08.md)
   — the first external adopter's report and our reply.
 - [`system_panel_hierarchy_summary.md`](system_panel_hierarchy_summary.md)
+- [`whole_representation_succession_semantics.md`](whole_representation_succession_semantics.md)
+  — audited: the whole's representation succeeds, it never accumulates. The rule
+  is now Contract S10.

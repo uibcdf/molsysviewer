@@ -62,6 +62,7 @@ type Harness = {
     inspectScene(controller: any): any;
     probeAtomColors(controller: any, atomIndices: number[]): any;
     probePerAtomColorDecorator(controller: any, options: any): Promise<any>;
+    inspectWholeRepresentationCells(controller: any): string[];
 };
 type BrowserWindow = Window & typeof globalThis & { __controller?: any; Harness?: Harness };
 
@@ -120,6 +121,45 @@ async function run() {
         const n = controller.getStructureData()?.elementCount ?? 0;
         if (n <= 0) throw new Error("no structure loaded");
     }, PDB_TEXT);
+
+    // =========================================================================
+    console.log("[E2E scene-contracts] Scenario: the whole's representation succeeds, it does not accumulate");
+    {
+        // `areas_of_opportunity_analysis.md` §2 recorded this as deliberately
+        // *additive* — "el comportamiento por defecto se mantiene de forma
+        // aditiva" — and the runtime does the opposite. Nothing pinned either
+        // reading, so a design record and a renderer disagreed for months.
+        //
+        // Counted from Mol*'s own cells, not from `globalReprs`: that set is
+        // cleared on every change and would report succession even if nothing
+        // survived that should not have.
+        //
+        // **Which mechanism this exercises.** With one representation in place,
+        // a plain change is an edit of the existing node
+        // (`applyWholeRepresentationInPlace`, Contract S9 mechanism A) and
+        // removes nothing. The add-then-remove branch below it only runs when
+        // the node set changes shape, and that state was not reachable here:
+        // neither the fixture's load nor `polymer-and-ligand` on a 12-atom
+        // structure produces more than one. Measured, not assumed — disabling
+        // the removal left this green, which is why it says so instead of
+        // implying coverage it does not have.
+        const succession = await page.evaluate(async () => {
+            const w = window as BrowserWindow;
+            const count = () => w.Harness!.inspectWholeRepresentationCells(w.__controller);
+
+            await w.__controller.handleMessage({ op: "set_whole_representation", representation: "cartoon" });
+            const afterFirst = count();
+            await w.__controller.handleMessage({ op: "set_whole_representation", representation: "spacefill" });
+            const afterSecond = count();
+            return { afterFirst, afterSecond };
+        });
+
+        assert.deepStrictEqual(succession.afterFirst, ["cartoon"],
+            `the whole carried more than one representation: ${JSON.stringify(succession.afterFirst)}`);
+        assert.deepStrictEqual(succession.afterSecond, ["spacefill"],
+            `the second representation did not replace the first: ${JSON.stringify(succession.afterSecond)}`);
+        console.log("[E2E scene-contracts]   cartoon -> spacefill, one representation at a time");
+    }
 
     // =========================================================================
     console.log("[E2E scene-contracts] Scenario: a restored section clips the real Mol* scene");

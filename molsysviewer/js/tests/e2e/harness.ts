@@ -31,6 +31,8 @@ declare global {
         probePerAtomColorDecorator: typeof probePerAtomColorDecorator;
         probeRegionOrderOwnership: typeof probeRegionOrderOwnership;
         inspectScene: typeof inspectScene;
+        inspectMolstarRepresentationCells: typeof inspectMolstarRepresentationCells;
+        inspectWholeRepresentationCells: typeof inspectWholeRepresentationCells;
         probeAtomColors: typeof probeAtomColors;
         inspectTaggedRefs: typeof inspectTaggedRefs;
         loadArrayNativeFixture: typeof loadArrayNativeFixture;
@@ -364,6 +366,53 @@ export type SceneSnapshot = {
         reprs: RenderedRepresentation[];
     }>;
 };
+
+/**
+ * Every structure representation Mol\* is actually holding, read from its own
+ * cells.
+ *
+ * Deliberately not `state.globalReprs`: that is our bookkeeping, and it is
+ * cleared on every whole-representation change whether or not the predecessors
+ * were removed. A test reading it would pass with the removal step deleted,
+ * which is the failure `engineering_rules.md` §5 calls reading the wrong channel.
+ */
+export function inspectMolstarRepresentationCells(
+    controller: MolSysViewerController,
+): Array<{ ref: string; name: string; tags: string[] }> {
+    const profiled = controller as ProfileController;
+    const cells = profiled.plugin.state.data.cells;
+    const out: Array<{ ref: string; name: string; tags: string[] }> = [];
+    cells.forEach((cell: any, ref: string) => {
+        const transformer = cell?.transform?.transformer?.id ?? "";
+        if (!String(transformer).includes("structure-representation-3d")) return;
+        const name = (cell.transform?.params as any)?.type?.name;
+        if (typeof name !== "string") return;
+        const rawTags = cell.transform?.tags;
+        const tags = Array.isArray(rawTags) ? rawTags.map(String) : rawTags ? [String(rawTags)] : [];
+        out.push({ ref: String(ref), name, tags });
+    });
+    return out;
+}
+
+/**
+ * The whole's representations, as Mol\* is holding them.
+ *
+ * "The whole's" is defined here the way `collectBaselineGlobalRepresentationRefs`
+ * defines it — every structure representation that is not a region's — so the
+ * test and the implementation cannot disagree about what is being counted.
+ * The region index is used only to subtract; the count itself comes from Mol\*'s
+ * cells, which is what makes the removal step observable.
+ */
+export function inspectWholeRepresentationCells(controller: MolSysViewerController): string[] {
+    const profiled = controller as ProfileController;
+    const regionRefs = new Set<string>();
+    ((profiled.state as any).regionIndex as Map<string, any> | undefined)?.forEach(entry => {
+        (entry.representations ?? []).forEach((ref: string) => regionRefs.add(String(ref)));
+    });
+    return inspectMolstarRepresentationCells(controller)
+        .filter(cell => !regionRefs.has(cell.ref))
+        .map(cell => cell.name);
+}
 
 export function inspectTaggedRefs(
     controller: MolSysViewerController,
@@ -1539,6 +1588,8 @@ if (typeof window !== "undefined") {
         probePerAtomColorDecorator,
         probeRegionOrderOwnership,
         inspectScene,
+        inspectMolstarRepresentationCells,
+        inspectWholeRepresentationCells,
         probeAtomColors,
         inspectTaggedRefs,
         loadArrayNativeFixture,
