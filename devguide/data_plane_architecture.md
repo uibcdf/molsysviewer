@@ -432,15 +432,25 @@ does not imply it.
 
 ## Remaining execution order
 
-1. Finish R2's canonical popup snapshot first. It removes the residual replay
-   journal and defines the current scene that a popup must receive.
-2. Close D3 with a no-ack timeout plus transient Python/browser memory
-   measurements and deterministic fallback/release evidence.
-3. Implement D4 endpoint parity so a canvas popup receives the current typed
-   molecular generation while a panel popup receives no molecular data.
+**Corrected 2026-08-06.** Items 1 to 3 below were listed as remaining while the
+header of this same file said D0-D4 were complete. They are done, and each is
+described in its own section above: R2's canonical popup snapshot, D3's
+acknowledgement timeout with observable release, and D4's endpoint parity —
+`tests/test_runtime_seam_integration.py::test_a_canvas_popup_snapshot_streams_the_molecular_generation_to_its_endpoint`
+pins the last of them.
+
+A file contradicting itself is worse than a file that is merely out of date: a
+reader who lands in the middle believes the middle. This is what
+`transport_popup_audit_followups_2026_08.md` item 5 was about.
+
+1. ~~Finish R2's canonical popup snapshot.~~ **Done.**
+2. ~~Close D3 with a no-ack timeout plus memory measurements.~~ **Done**, and the
+   timeout's cooperative semantics are stated under *D3 implemented* above.
+3. ~~Implement D4 endpoint parity.~~ **Done.**
 4. Keep partial residency, structure windows, cache eviction, and
    demand-driven access post-1.0. They require a separate scientific and public
-   API contract and are not implied by binary transport.
+   API contract and are not implied by binary transport. **This is the only one
+   still open, and it is post-1.0 by decision.**
 
 ## Acceptance criteria
 

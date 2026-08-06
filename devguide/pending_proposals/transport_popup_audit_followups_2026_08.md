@@ -1,6 +1,6 @@
 # Transport and popup audit follow-ups
 
-**Status:** audit record. Its execution order is superseded by
+**Status:** audit record, swept 2026-08-06 — of its eight items, five are done, one is half done and two remain, each marked in place. Its execution order is superseded by
 [`pre_1_0_architecture_rework_and_hardening_master_plan.md`](pre_1_0_architecture_rework_and_hardening_master_plan.md).
 
 This document records the additional work found after R2, D3, D4, the Qt
@@ -63,6 +63,8 @@ untargeted.
 
 ### 2. Test widget reconstruction and kernel-session replacement end to end
 
+**PARTLY DONE, checked 2026-08-06.** `js/tests/e2e/endpoint-lifecycle.e2e.ts` covers steps 1, 2 and 4: it opens and authenticates a popup, replaces the session, and asserts the old endpoint closed, the endpoint changed, the replacement session id and a matching close notification. Steps 3 and 5 — proving the old popup's command is *refused* and that nothing leaks across sessions — are still not asserted, and neither is the mutation check.
+
 The router correctly rejects stale `session_id` values in Python and
 TypeScript. That proves message validation, not the complete lifecycle promised
 by R2: an old popup must close or become visibly disconnected after widget or
@@ -81,6 +83,8 @@ Add a browser lifecycle test covering:
 Mutation check: allow the old session to remain attached; the test must fail.
 
 ### 3. State the D3 timeout semantics precisely and evaluate event-loop expiry
+
+**DONE, checked 2026-08-06.** `data_plane_architecture.md` under *D3 implemented* states the guarantee as evaluated on main-thread entry points only, with an idle kernel not firing the timeout, and records the decision against a timer thread with its reason (`widget.send` is not safe off the kernel thread). That is both actions this item asked for.
 
 The 30-second stream deadline is **cooperative**. It is checked when the kernel
 next enters a relevant main-thread path. This is a deliberate safety choice:
@@ -101,6 +105,8 @@ test that advances the clock while idle, then triggers one entry point and
 proves deterministic release and fallback.
 
 ### 4. Add seam-level tests when behavior depends on composition
+
+**DONE as a standing rule, checked 2026-08-06.** It is codified in `engineering_rules.md` under *Integration seams* — drive the seam, not the piece — which is where a rule belongs rather than in an audit that will be archived.
 
 The smoke round found seven failures that were invisible to large unit suites:
 JSON-incompatible NumPy scalars, unit stripping, scene-before-structure,
@@ -123,6 +129,8 @@ state.
 ## P1 — Documentation accuracy
 
 ### 5. Reconcile the retained R2/D3/D4 design records with the shipped state
+
+**DONE 2026-08-06.** Both contradictions named here were still present and are now fixed. `data_plane_architecture.md` listed R2, D3 and D4 as a *remaining execution order* while its own header said they were complete; `runtime_message_router.md` said "the remaining R2 work" under a heading reading *implemented*, and called D4b open after it had shipped. Both documents were also promoted out of `pending_proposals/` on 2026-08-05, since seven and ten documents cite them as current descriptions.
 
 The retained design records correctly explain why the architecture exists, but
 several sections still describe closed work as pending:
@@ -184,6 +192,8 @@ Closure requires:
 
 ### 7. Measure endpoint-global scene deferral during popup bootstrap
 
+**STILL OPEN, checked 2026-08-06.** No such measurement exists in `devguide/performance/`.
+
 There is one active binary stream and one S8 deferred-scene queue per view. While
 a large canvas popup generation is being delivered, scene messages needed by
 the already-loaded embedded host are also held so that the popup cannot observe
@@ -208,6 +218,8 @@ python devtools/benchmarks/endpoint_isolation.py
 ```
 
 ### 8. Measure copies and peak memory in the Qt binary scheme
+
+**STILL OPEN, checked 2026-08-06.** `qt_transport_baseline_2026_07.md` measures wire bytes and preparation time, not copies or peak memory; the peak-RSS figures in `trajectory_transport_baseline_2026_07.md` are for the Python JSON path.
 
 Qt's payload-scheme transport is a sensible connector-specific implementation,
 but assembling the structural buffers into one Python `bytes` object can create

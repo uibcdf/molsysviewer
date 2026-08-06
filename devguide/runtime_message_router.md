@@ -310,8 +310,10 @@ bootstrap from the canonical snapshot. R2 does not add implicit popup rebind.
 
 #### R2 canonical snapshot — implemented
 
-The remaining R2 work replaces the `PopupReplayLog` journal with a
-Python-originated **current-scene projector**. Approved decisions:
+R2 replaced the `PopupReplayLog` journal with a Python-originated
+**current-scene projector**. (Until 2026-08-06 this sentence said "the remaining
+R2 work", under a heading that already said *implemented* — the section
+contradicted itself.) The decisions it shipped with:
 
 - `request_popup_scene_snapshot` is a browser->Python `request` carrying a
   `correlationId`, mode (`canvas`/`panel`) and the requesting `popupEndpointId`.
@@ -490,7 +492,7 @@ gained `onEndpointClosed`, fired from every close path (the polling detector and
 the explicit `close`), and the host settles that endpoint's pending
 scene-snapshot requests instead of leaving them until their timeout.
 
-Still open for D4b: delivering the canvas popup a **typed** molecular generation
+~~Still open for D4b~~ — **delivered.** Its subject, delivering the canvas popup a **typed** molecular generation
 (Python re-streams to the popup endpoint, the host relays chunk by chunk with
 buffer transfer and retains nothing), which then allows lifting the
 `enable_popout` restriction that currently disables the binary path whenever a
