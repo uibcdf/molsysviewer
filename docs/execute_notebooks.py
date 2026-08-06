@@ -299,6 +299,35 @@ class ProgressTracker:
             self.next_threshold = (percent // self.step_percent + 1) * self.step_percent
 
 
+def sanitize_notebook_outputs(notebook_path: Path) -> bool:
+    """Give every code cell an `outputs` list, because `myst_nb` requires one.
+
+    Adopted from MolSysMT's copy of this script on 2026-08-06, where it was
+    written against a real failure: a code cell without the key crashes the docs
+    build with an error that points at the renderer rather than at the notebook.
+    Hand-written and generated notebooks are how a cell loses it.
+
+    Writes only when it actually fixed something.
+    """
+    try:
+        notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
+    except Exception as error:
+        print(f"Warning: could not read {notebook_path} to check its schema: {error}")
+        return False
+
+    modified = False
+    for cell in notebook.get("cells", []) if isinstance(notebook, dict) else []:
+        if isinstance(cell, dict) and cell.get("cell_type") == "code":
+            if not isinstance(cell.get("outputs"), list):
+                cell["outputs"] = []
+                modified = True
+    if modified:
+        notebook_path.write_text(
+            json.dumps(notebook, indent=1, ensure_ascii=False) + "\n", encoding="utf-8"
+        )
+    return modified
+
+
 def error_excerpt(output: str, max_lines: int = 40) -> str:
     """The part of nbconvert's output a person needs, without the log file.
 
@@ -382,10 +411,12 @@ def execute_notebook(notebook_path: Path, force: bool = False, quiet: bool = Fal
             except Exception:
                 # Never fail notebook execution because of a best-effort cleanup.
                 pass
+            sanitize_notebook_outputs(notebook_path)
             write_run_mark(last_run_file, notebook_path, quiet=quiet or progress is not None)
             return True
 
     else:
+        sanitize_notebook_outputs(notebook_path)
         if progress is not None:
             progress.update(executed=False)
         elif not quiet:
