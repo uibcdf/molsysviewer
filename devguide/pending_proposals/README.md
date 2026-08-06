@@ -25,6 +25,11 @@ is also explicitly post-1.0.
 
 ## Open before 1.0
 
+- [`what_needs_a_human_2026_08.md`](what_needs_a_human_2026_08.md): **read this
+  one first.** Seven items that no amount of work here can close — a Qt
+  validation that needs a real screen, a fix nobody has reviewed, two decisions,
+  a handover to MolSysMT, an upstream answer, and Phase 5's own opening. As of
+  2026-08-06 everything outside Phase 5 that did not need a person is done.
 - [`pre_1_0_architecture_rework_and_hardening_master_plan.md`](pre_1_0_architecture_rework_and_hardening_master_plan.md):
   canonical execution plan for the corrections, transport/export rework,
   architectural extraction, seam hardening, representative performance work

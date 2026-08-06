@@ -335,9 +335,15 @@ does not, say so in Contract S8 so the next reader does not have to re-derive it
 
 ---
 
-## D. Deferred by decision (2 of 3 left; D3 done)
+## D. Deferred by decision (1 of 3 left; only D2 is still a decision)
 
-### D1. `lazy_json_fallback_payload` — never revisited — *Diego decides*
+### D1. ~~`lazy_json_fallback_payload` — never revisited~~ — DONE, not a decision
+
+**DONE.** It was implemented, tested and measured — 32 ms against 1,459 ms — and
+the proposal is archived
+([`../archive/lazy_json_fallback_payload.md`](../archive/lazy_json_fallback_payload.md)).
+`_new_lazy_molecular_projection` in `viewer/core.py` is the producer. This item
+asked Diego to decide something that has since been decided and shipped.
 
 **What.** The JSON `ViewerJSON` payload is still built **unconditionally** as the
 eager fallback, even when the array-native path carries the structure.

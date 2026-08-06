@@ -84,16 +84,11 @@ loads near that budget, switch to the preallocated `bytearray` measured there.
 
 ### Waiting on someone who is not the next session
 
-- **A3 and `pending_bugs/standalone_qt_live_demo_reload.md`** need a visible
-  window and a real GPU.
-- **A5** — `34755fb9` touched the load path and landed after Diego's review of
-  that round; no human has seen it.
-- **D1 `lazy_json_fallback_payload`, D2 hover telemetry, and the README's
-  positioning** (whether sixty feature bullets stay above the quick start) are
-  Diego's decisions, not work items.
-- **MolSysMT** holds four uncommitted files from us: the patched
-  `docs/execute_notebooks.py`, a selection-syntax proposal, a form-conversion bug
-  report, and two index lines.
+All of it is collected, with what each one needs and what it unblocks, in
+[`pending_proposals/what_needs_a_human_2026_08.md`](pending_proposals/what_needs_a_human_2026_08.md):
+the Qt validation that needs a real screen, the unreviewed `34755fb9`, the hover
+telemetry question, the README's positioning, the four files waiting in
+MolSysMT's tree, and the Mol\* answer. Do not re-derive that list from here.
 
 ## Resume cautions
 
