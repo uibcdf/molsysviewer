@@ -86,48 +86,22 @@ canvas buttons:
 
 ## Visual Language For The Three Permanent Controls
 
-The controls should be:
+Minimal, elegant and low-noise, consistent in stroke and weight, grouped
+discreetly. They should read as meta-controls for the viewer shell, not as
+scientific tools — so no toolbar look, and a very small cluster rather than
+scattered buttons.
 
-- minimal
-- elegant
-- low-noise
-- consistent in stroke/weight
-- grouped discretely
-
-Preferred icon direction:
-
-- panel mode
-  - a minimal panel-like rectangle or frame, not a generic hamburger menu
-- fullscreen
-  - four outward expansion arrows / corners
-- popup
-  - diagonal outward arrow with corner
-
-These should read as meta-controls for the viewer shell, not as scientific tools.
-
-Placement direction:
-
-- keep them grouped very discreetly
-- avoid a toolbar look
-- prefer a very small control cluster over scattered buttons
-- keep the panel control slightly more legible than the other two if needed,
-  because it is the main structured workspace door
+Icons: a minimal panel-like rectangle for panel mode (not a generic hamburger),
+four outward corners for fullscreen, a diagonal outward arrow for popup. The
+panel control may be slightly more legible than the other two, since it is the
+main workspace door.
 
 ### Preferred Cluster Direction
 
-The current preferred direction is:
-
-- one small horizontal cluster
-- likely placed at the upper-right area of the canvas
-- `panel`, then `fullscreen`, then `popup`
-
-Reason:
-
-- it keeps the permanent controls together
-- it avoids scattered chrome
-- it makes the main workspace door appear first
-
-This cluster should feel like a very light shell utility, not like a toolbar.
+One small horizontal cluster, likely upper-right: `panel`, then `fullscreen`,
+then `popup`. That keeps the permanent controls together, avoids scattered
+chrome, and puts the main workspace door first. It should feel like a light
+shell utility.
 
 ### Preferred Weight And Size
 

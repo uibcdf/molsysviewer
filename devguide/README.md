@@ -198,3 +198,25 @@ bodies contradicting their own headers.
 3. **When you finish something, close it in its home document in the same
    change.** Not in a summary, not in a commit message: in the file the next
    reader will open.
+
+### Prose for prose, lists for lists
+
+28 % of the lines in this directory are bullets, and most of the excess comes
+from one habit: a lead-in ending in a colon — `Reason:`, `Preferred direction:`
+— followed by three or four bullets that carry one idea each. That is a sentence
+written as a diagram. It reads slower, not faster, and it triples the length of
+what a skim has to cross before reaching the point.
+
+- **A list earns itself when its items are enumerable and independent** — the
+  clauses of a contract, colour names, the steps of a procedure, a table of
+  measurements. `scene_contracts.md` is rightly full of them.
+- **Otherwise write the sentence.** "Minimal, elegant and low-noise, consistent
+  in stroke and weight" says exactly what five bullets said, in one line.
+- **Drop the orphan lead-in.** If a colon introduces reasoning rather than
+  items, the reasoning is the sentence.
+
+Rewriting one section of `canvas_minimal_ux.md` this way took it from 45 lines
+to 19 and from 184 words to 127, with every claim intact. The line count falls
+faster than the word count, which is the honest description: this is about
+layout, not about cutting content. **Nothing may be lost — if a rewrite drops a
+claim, it is a different document, not a shorter one.**
