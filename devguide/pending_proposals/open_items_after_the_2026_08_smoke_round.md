@@ -1,5 +1,29 @@
 # Open items after the 2026-08 smoke-test round
 
+**SWEPT 2026-08-06, and most of it was already done.** This file was written as
+an inventory of work, and inventories rot in the direction nobody checks: the
+headers were verified against the code, the item bodies were not. Verified now,
+one by one, against the code rather than against the plan:
+
+| item | claim | checked |
+|---|---|---|
+| Z1 | `molsysviewer-sync-hierarchy` not in the manifest | **declared** in `popup_actions` |
+| Z2 | `camera_stranded_inside_scene` not in the manifest | **declared** in `actions`, category `error` |
+| B1 | the signal has no test at all | covered by `tests/test_runtime_seam_integration.py` and `viewer-controller-message-refresh.test.ts` |
+| B3 | nothing pins the actions against the manifest | `runtime-action-manifest.test.ts`, `test_runtime_router.py`, `test_distribution_artifact.py` |
+| D3 | the Mol\* report has not been sent | sent as [molstar/molstar#1903](https://github.com/molstar/molstar/issues/1903) |
+| E2 | `pending_bugs` still lists item 8 | that bug is archived; the item is a documented decision in the code |
+| E0 | thirteen popup actions outside the manifest | never true — see the note in section E |
+
+So "Broken right now (2)" describes nothing broken, and half of B, D and E are
+history. The items that remain are the ones no grep can settle — whether a suite
+was run, whether a human looked at a window — and those are marked in place.
+
+*The lesson is not that this file was careless. It is that a document claiming
+work remains ages exactly like a document claiming work is pending, and only the
+second kind gets re-read. Anything here that survives a sweep should be dated.*
+
+---
 **Status:** audit evidence and item inventory. Its execution order is superseded
 by
 [`pre_1_0_architecture_rework_and_hardening_master_plan.md`](pre_1_0_architecture_rework_and_hardening_master_plan.md).
@@ -22,9 +46,11 @@ we postpone" but "who else uses what we changed".
 
 ---
 
-## Z. Broken right now (2)
+## Z. ~~Broken right now~~ — both resolved, verified 2026-08-06 (2)
 
 ### Z1. `molsysviewer-sync-hierarchy` is not declared in the action manifest
+
+**RESOLVED.** `molsysviewer-sync-hierarchy` is declared in `popup_actions`, and `popupActionAllows` enforces it on both seams.
 
 **What.** The host→popup message added so the System subpanel follows a structure
 change (`adebbf4b`) was never declared in `popup_actions` in
@@ -57,6 +83,8 @@ declaration. The existing `POPUP_ACTIONS.size >= 11` assertion is insufficient:
 it can notice some deletions but pins neither this action nor its direction.
 
 ### Z2. `camera_stranded_inside_scene` is not declared either, so the signal never leaves the browser
+
+**RESOLVED.** `camera_stranded_inside_scene` is declared in `actions` with category `error`, so the signal leaves the browser.
 
 **What.** The Contract S9 detection signal is emitted by the frontend as a
 browser→Python event, and it was never declared in `actions` in
@@ -95,11 +123,13 @@ the popup one.
 
 ---
 
-## A. Verification the rules require, not done (5)
+## A. Verification the rules require (4 of 5 left; A1 done)
 
 These are cheap to run and could be hiding a break introduced during the round.
 
 ### A1. The full E2E suite was never run
+
+**DONE 2026-08-06.** `npm run test:e2e:all` — **29/29 suites passed**, on a real Chromium with SwiftShader (`ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero)))`), no `E2E_ALLOW_SKIP`.
 
 **What.** Twenty-eight suites are registered; only the ones touched by each change
 were run individually.
@@ -178,9 +208,11 @@ the whole, and check the console is clean.
 
 ---
 
-## B. Coverage that is missing (3)
+## B. Coverage that is missing (1 of 3 left; B1 and B3 resolved)
 
 ### B1. The `camera_stranded_inside_scene` signal has no test at all
+
+**RESOLVED.** Covered by `tests/test_runtime_seam_integration.py` and `js/tests/unit/viewer-controller-message-refresh.test.ts`.
 
 **What.** The catalog entry, the Python handler in `_handle_frontend_event`, and
 the frontend `reportStrandedCamera` all shipped with **no test** — neither that it
@@ -209,6 +241,8 @@ The size can silently revert to a fixed value with everything green.
 `features` string carries the computed width.
 
 ### B3. Nothing pins the actions the code sends against the manifest
+
+**RESOLVED.** `js/tests/unit/runtime-action-manifest.test.ts`, `tests/test_runtime_router.py` and `tests/test_distribution_artifact.py` pin the code's actions against the manifest.
 
 **What.** The tests check specific, already-known actions
 (`popupActionAllows("molsysviewer-sync-op", …)`). **No guard cross-checks the call
@@ -248,7 +282,7 @@ does not, say so in Contract S8 so the next reader does not have to re-derive it
 
 ---
 
-## D. Deferred by decision (3)
+## D. Deferred by decision (2 of 3 left; D3 done)
 
 ### D1. `lazy_json_fallback_payload` — never revisited — *Diego decides*
 
@@ -275,6 +309,8 @@ that answer.
 
 ### D3. The Mol\* upstream report has not been sent — *Diego sends it*
 
+**DONE 2026-08-06.** Filed as [molstar/molstar#1903](https://github.com/molstar/molstar/issues/1903), after re-verifying all four claims against master at `26216e9b1`.
+
 **What.** `report_molstar_empty_scene_camera_bounds.md` carries the issue title and
 body, two patches and a self-contained reproduction. Nobody has filed it.
 
@@ -285,7 +321,7 @@ detection that exists only to guard it. Until then both are permanent.
 
 ---
 
-## E. Housekeeping and drift (5)
+## E. Housekeeping and drift (2 of 5 left; E1, E2 and E3 resolved)
 
 Half an hour in total, and four of the five are documentation or handoff records
 contradicting the
@@ -302,6 +338,8 @@ is the very failure this section's own heading describes.)*
 
 ### E1. An orphan report left uncommitted in MolSysMT
 
+**RESOLVED.** The orphan report is no longer in MolSysMT's working tree.
+
 **What.** `../molsysmt/devguide/pending_bugs/viewer_json_conversion_deep_copies_twice.md`
 was written during this round and never committed. The MolSysMT team fixed the bug
 themselves and archived their own copy of the report.
@@ -314,6 +352,8 @@ their archive does not already say.
 
 ### E2. `pending_bugs` still lists item 8 as pending
 
+**RESOLVED.** That bug is archived: item 8 is a documented decision in the code, and the report moved to `archive/` on 2026-08-05.
+
 **What.** The no-op `clearGlobalRepresentations` was fixed in `34755fb9`;
 `camera_zoom_out_blocked_after_scene_replay.md` still lists it as work to do.
 
@@ -322,6 +362,8 @@ their archive does not already say.
 **How.** Mark it DONE with the commit, as items 1, 3, 5 and 6 already are.
 
 ### E3. The System proposal keeps an obsolete "Interim" section
+
+**MOOT.** The System proposal was archived on 2026-08-05 — its own title had said DONE for four days — so an obsolete section inside it no longer misleads anyone.
 
 **What.** `system_panel_hierarchy_summary.md` is marked done, but still contains
 *"Interim, if this is not done soon"*, proposing a note in the System tab
