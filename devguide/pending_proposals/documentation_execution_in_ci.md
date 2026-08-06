@@ -91,3 +91,23 @@ but it does not write outputs back, so it cannot replace the script that produce
 the committed notebooks — it would leave two executors for one corpus, which is
 the shape of drift this repository has spent a week removing. Reconsider only if
 the reporting proves inadequate in practice.
+
+
+## A correction to the record, 2026-08-06
+
+The commit that made the run mark content-based (`c79c979c`) explains the 21
+notebooks that executed during the conversion by saying
+`sanitize_notebook_outputs` rewrites a notebook and bumps its date. **That is
+wrong**: that function belongs to MolSysMT's copy of the script, not to this
+one, and in this one the mark is written *after* every rewrite, so it cannot
+invalidate itself.
+
+The real cause is duller and fits the rest of the story better: several
+`git checkout` operations during that session reset those notebooks' modification
+times to the moment of the checkout. Which is the fresh-clone problem in
+miniature — the very thing the content mark exists to remove — happening inside
+one working session.
+
+Left here rather than silently fixed, because a wrong explanation in a commit
+message is not editable and someone reading it later would look for a defect that
+does not exist.
