@@ -18,6 +18,7 @@ const rawManifest = manifest as {
     qt_transport: string[];
     qt_test_actions: string[];
     popup_actions: Record<string, string[]>;
+    frontend_authoritative?: string[];
 };
 
 if (rawManifest.protocol_version !== RUNTIME_ACTIONS_PROTOCOL_VERSION) {
@@ -55,6 +56,16 @@ export const POPUP_ACTIONS: ReadonlyMap<string, ReadonlySet<string>> = new Map(
 export function popupActionAllows(action: string, direction: string): boolean {
     return POPUP_ACTIONS.get(action)?.has(direction) ?? false;
 }
+/**
+ * Actions the browser performs itself and merely reports to Python.
+ *
+ * The distinction only becomes visible where there is no Python: a static export
+ * can then tell a control that silently cannot work there from one that already
+ * did the work before telling anybody.
+ */
+export const FRONTEND_AUTHORITATIVE: ReadonlySet<string> =
+    new Set(rawManifest.frontend_authoritative ?? []);
+
 export const RAW_ACTIONS: ReadonlySet<string> = new Set(rawManifest.raw);
 export const DATA_PLANE_ACTIONS: ReadonlySet<string> = new Set(rawManifest.data_plane);
 

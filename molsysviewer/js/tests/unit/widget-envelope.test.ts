@@ -183,3 +183,24 @@ test("an action nobody declared is refused on the popup channel", () => {
     assert.equal(popupActionAllows("molsysviewer-made-up", "projection"), false);
     assert.equal(popupActionAllows("", "event"), false);
 });
+
+test("an exported page reports only what genuinely needs a session", () => {
+    const { needsRunningSession } = require("../../src/index");
+
+    // A panel control asks Python to change the scene: dead in an export, and it
+    // used to be dead in silence.
+    assert.equal(needsRunningSession({ event: "interaction_context_action", action: "delete_region" }), true);
+    assert.equal(needsRunningSession({ event: "scene_history_undo" }), true);
+    assert.equal(needsRunningSession({ event: "addon_panel_action" }), true);
+
+    // These the browser performs itself and merely reports. Warning about them
+    // would tell the reader they cannot do what they have just done.
+    assert.equal(needsRunningSession({ event: "interaction_measurement_created" }), false);
+    assert.equal(needsRunningSession({ event: "section_moved" }), false);
+    assert.equal(needsRunningSession({ event: "interaction_active_selection_changed" }), false);
+
+    // Informational traffic is not a failed request.
+    assert.equal(needsRunningSession({ event: "interaction_tool_state" }), false);
+    assert.equal(needsRunningSession({}), false);
+    assert.equal(needsRunningSession(null), false);
+});

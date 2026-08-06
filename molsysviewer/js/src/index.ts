@@ -18,6 +18,7 @@ import {
 } from "./messages/array-native-stream";
 import { PopupReplayLog } from "./messages/popup-replay-log";
 import { WidgetEnvelopeAdapter } from "./messages/widget-envelope";
+import { ACTION_CATEGORIES, FRONTEND_AUTHORITATIVE } from "./messages/runtime-actions";
 
 /**
  * Given an `interaction_measurement_created` event, build the corresponding
@@ -79,6 +80,74 @@ const parseInitialTrajectoryInfo = (msgs: ViewerMessage[] | undefined) => {
     }
     return { frameCount, multipleStructures, hasStructures };
 };
+
+/**
+ * Say that a control needs a session, on a page that has none.
+ *
+ * An exported page builds the same Studio a notebook does — since
+ * `panel_mode_style` defaults to `integrated`, that is now every export — but its
+ * channel to Python is a callback that goes nowhere. Its panels *display*
+ * correctly, because the scene travels with the page; what they cannot do is
+ * *act*, and until now a click simply did nothing at all.
+ *
+ * Only for commands, and only for the ones that need an authority to take
+ * effect: `frontend_authoritative` actions — a measurement, a section drag, an
+ * active-selection pick — are performed by the browser and merely reported, so
+ * they work here and must not be reported as failures. Events and acks are
+ * informational and are dropped as before.
+ */
+export function needsRunningSession(msg: unknown): boolean {
+    const name = typeof (msg as any)?.event === "string" ? (msg as any).event : "";
+    if (!name) return false;
+    // Events and acks are informational: nothing was asked of anybody.
+    if (ACTION_CATEGORIES.get(name) !== "command") return false;
+    // The browser already did these and is only reporting them.
+    return !FRONTEND_AUTHORITATIVE.has(name);
+}
+
+function makeMissingAuthorityReporter(el: HTMLElement) {
+    let toast: HTMLDivElement | undefined;
+    let timer: number | undefined;
+
+    return (msg: any) => {
+        if (!needsRunningSession(msg)) return;
+
+        const detail = typeof msg?.action === "string" && msg.action ? `“${msg.action}” ` : "";
+        const message =
+            `${detail}needs a running MolSysViewer session, and this is an exported view: `
+            + "there is no Python behind it. Open the scene in a Jupyter notebook or in the "
+            + "MolSysViewer desktop application to do this.";
+
+        console.warn("[MolSysViewer]", message);
+
+        if (!toast) {
+            toast = document.createElement("div");
+            toast.setAttribute("data-molsysviewer-needs-session", "true");
+            Object.assign(toast.style, {
+                position: "absolute", left: "50%", bottom: "18px", transform: "translateX(-50%)",
+                maxWidth: "min(560px, 90%)", zIndex: "2100", padding: "10px 14px",
+                borderRadius: "8px", font: "12px/1.5 system-ui, sans-serif",
+                background: "rgba(28, 28, 30, 0.94)", color: "#f5f5f7",
+                boxShadow: "0 6px 24px rgba(0,0,0,0.35)", textAlign: "center",
+            });
+            el.appendChild(toast);
+        }
+        // Built as nodes rather than markup: the message is ours, but a page that
+        // assembles HTML from message fields is one field away from not being.
+        toast.replaceChildren();
+        toast.appendChild(document.createTextNode(message + " "));
+        const more = document.createElement("a");
+        more.href = "https://www.uibcdf.org/molsysviewer";
+        more.target = "_blank";
+        more.rel = "noopener noreferrer";
+        more.textContent = "How to run it";
+        Object.assign(more.style, { color: "#8ab4f8", textDecoration: "underline", whiteSpace: "nowrap" });
+        toast.appendChild(more);
+        toast.style.display = "block";
+        if (timer) clearTimeout(timer);
+        timer = window.setTimeout(() => { if (toast) toast.style.display = "none"; }, 7000) as unknown as number;
+    };
+}
 
 /** Injected at build time from `molsysviewer/_version.py`. */
 declare const __MOLSYSVIEWER_VERSION__: string;
@@ -233,7 +302,7 @@ export async function bootDocsView(opts: {
 
     // Initialize Controller (no-op notify)
     const panelModeStyle = (ui.panel_mode_style as string) || "drawer";
-    const controllerPromise = MolSysViewerController.create(target, () => {}, undefined, { 
+    const controllerPromise = MolSysViewerController.create(target, makeMissingAuthorityReporter(hostEl), undefined, { 
         panelModeStyle,
         hasInitialStructures: trajInfo.hasStructures,
     });

@@ -165234,7 +165234,7 @@ var ArrayNativeStreamReceiver = class {
 // ../runtime_actions.json
 var runtime_actions_default = {
   protocol_version: 1,
-  comment: "Shared Python<->TypeScript action contract for the AnyWidget runtime seam (R1). Python (viewer/runtime_router.py) and TypeScript (js/src/messages/runtime-actions.ts) both load THIS file so every action is classified identically. `actions` are browser->Python; category is the RuntimeEnvelope direction the action must carry, and the envelope action must equal the payload `event`. `outbound_requests` are Python->browser requests and must never be accepted as browser-originated. `popup_actions` are the host<->popup wire actions, mapped to the directions each may legitimately carry; `molsysviewer-sync-op` is deliberately bidirectional (a projection from the host, a command from the popup), which is exactly why the direction must be declared in the envelope rather than inferred from the sender. `qt_transport` are delivery-level events the Qt bridge answers itself and never forwards to the view; `qt_test_actions` are explicit test-only events forwarded by Qt without weakening the product-action boundary. The AnyWidget comm has no equivalent transport probe. `raw` is the pre-runtime/source bootstrap (both directions), never enveloped in R1. `data_plane` travels on the array-native binary seam (both directions), not the control-plane envelope. Domain projection ops (Python->browser) are authored and trusted by the Python authority and are wrapped with direction 'projection'; they are intentionally not enumerated. NOTE: interaction_measurement_created and section_moved are still compatibility paths where the frontend acts before Python confirms; R1 protects and deduplicates them but does not yet fully normalize 'Python first, projection after' (a later slice).",
+  comment: "Shared Python<->TypeScript action contract for the AnyWidget runtime seam (R1). Python (viewer/runtime_router.py) and TypeScript (js/src/messages/runtime-actions.ts) both load THIS file so every action is classified identically. `actions` are browser->Python; category is the RuntimeEnvelope direction the action must carry, and the envelope action must equal the payload `event`. `outbound_requests` are Python->browser requests and must never be accepted as browser-originated. `popup_actions` are the host<->popup wire actions, mapped to the directions each may legitimately carry; `molsysviewer-sync-op` is deliberately bidirectional (a projection from the host, a command from the popup), which is exactly why the direction must be declared in the envelope rather than inferred from the sender. `qt_transport` are delivery-level events the Qt bridge answers itself and never forwards to the view; `qt_test_actions` are explicit test-only events forwarded by Qt without weakening the product-action boundary. The AnyWidget comm has no equivalent transport probe. `raw` is the pre-runtime/source bootstrap (both directions), never enveloped in R1. `data_plane` travels on the array-native binary seam (both directions), not the control-plane envelope. Domain projection ops (Python->browser) are authored and trusted by the Python authority and are wrapped with direction 'projection'; they are intentionally not enumerated. NOTE: interaction_measurement_created and section_moved are still compatibility paths where the frontend acts before Python confirms; R1 protects and deduplicates them but does not yet fully normalize 'Python first, projection after' (a later slice). `frontend_authoritative` is the subset of `actions` the browser performs itself and merely reports to Python \u2014 measurements, an active-selection pick, a section drag. They are the compatibility paths noted above, and naming them has a second use: a page with no authority behind it (a static export) can tell the difference between a control that silently cannot work there and one that already did the work before telling anybody.",
   actions: {
     interaction_active_selection_changed: "command",
     interaction_context_action: "command",
@@ -165285,19 +165285,46 @@ var runtime_actions_default = {
     "request_image_export"
   ],
   popup_actions: {
-    "molsysviewer-initial-sync": ["projection"],
-    "molsysviewer-sync-ui": ["projection"],
-    "molsysviewer-sync-autohide": ["projection"],
-    "molsysviewer-structure-data": ["projection"],
-    "molsysviewer-sync-camera": ["event"],
-    "molsysviewer-pop-ready": ["event"],
-    "molsysviewer-panel-ready": ["event"],
-    "molsysviewer-log-from-popout": ["event"],
-    "molsysviewer-structure-data-ack": ["event"],
-    "molsysviewer-popup-interaction": ["command"],
-    "molsysviewer-sync-op": ["projection", "command"],
-    "molsysviewer-sync-hierarchy": ["projection"],
-    "molsysviewer-runtime-contract-rejected": ["event"]
+    "molsysviewer-initial-sync": [
+      "projection"
+    ],
+    "molsysviewer-sync-ui": [
+      "projection"
+    ],
+    "molsysviewer-sync-autohide": [
+      "projection"
+    ],
+    "molsysviewer-structure-data": [
+      "projection"
+    ],
+    "molsysviewer-sync-camera": [
+      "event"
+    ],
+    "molsysviewer-pop-ready": [
+      "event"
+    ],
+    "molsysviewer-panel-ready": [
+      "event"
+    ],
+    "molsysviewer-log-from-popout": [
+      "event"
+    ],
+    "molsysviewer-structure-data-ack": [
+      "event"
+    ],
+    "molsysviewer-popup-interaction": [
+      "command"
+    ],
+    "molsysviewer-sync-op": [
+      "projection",
+      "command"
+    ],
+    "molsysviewer-sync-hierarchy": [
+      "projection"
+    ],
+    "molsysviewer-runtime-contract-rejected": [
+      "event"
+    ]
   },
   qt_transport: [
     "message_ack",
@@ -165325,6 +165352,11 @@ var runtime_actions_default = {
     "structure_data_chunk_ack",
     "structure_data_complete",
     "structure_data_error"
+  ],
+  frontend_authoritative: [
+    "interaction_measurement_created",
+    "section_moved",
+    "interaction_active_selection_changed"
   ]
 };
 
@@ -165354,6 +165386,7 @@ var POPUP_ACTIONS = new Map(
 function popupActionAllows(action, direction) {
   return POPUP_ACTIONS.get(action)?.has(direction) ?? false;
 }
+var FRONTEND_AUTHORITATIVE = new Set(rawManifest.frontend_authoritative ?? []);
 var RAW_ACTIONS = new Set(rawManifest.raw);
 var DATA_PLANE_ACTIONS = new Set(rawManifest.data_plane);
 (() => {
@@ -167737,6 +167770,56 @@ var parseInitialTrajectoryInfo = (msgs) => {
   }
   return { frameCount, multipleStructures, hasStructures };
 };
+function needsRunningSession(msg) {
+  const name = typeof msg?.event === "string" ? msg.event : "";
+  if (!name) return false;
+  if (ACTION_CATEGORIES.get(name) !== "command") return false;
+  return !FRONTEND_AUTHORITATIVE.has(name);
+}
+function makeMissingAuthorityReporter(el) {
+  let toast;
+  let timer2;
+  return (msg) => {
+    if (!needsRunningSession(msg)) return;
+    const detail = typeof msg?.action === "string" && msg.action ? `\u201C${msg.action}\u201D ` : "";
+    const message = `${detail}needs a running MolSysViewer session, and this is an exported view: there is no Python behind it. Open the scene in a Jupyter notebook or in the MolSysViewer desktop application to do this.`;
+    console.warn("[MolSysViewer]", message);
+    if (!toast) {
+      toast = document.createElement("div");
+      toast.setAttribute("data-molsysviewer-needs-session", "true");
+      Object.assign(toast.style, {
+        position: "absolute",
+        left: "50%",
+        bottom: "18px",
+        transform: "translateX(-50%)",
+        maxWidth: "min(560px, 90%)",
+        zIndex: "2100",
+        padding: "10px 14px",
+        borderRadius: "8px",
+        font: "12px/1.5 system-ui, sans-serif",
+        background: "rgba(28, 28, 30, 0.94)",
+        color: "#f5f5f7",
+        boxShadow: "0 6px 24px rgba(0,0,0,0.35)",
+        textAlign: "center"
+      });
+      el.appendChild(toast);
+    }
+    toast.replaceChildren();
+    toast.appendChild(document.createTextNode(message + " "));
+    const more = document.createElement("a");
+    more.href = "https://www.uibcdf.org/molsysviewer";
+    more.target = "_blank";
+    more.rel = "noopener noreferrer";
+    more.textContent = "How to run it";
+    Object.assign(more.style, { color: "#8ab4f8", textDecoration: "underline", whiteSpace: "nowrap" });
+    toast.appendChild(more);
+    toast.style.display = "block";
+    if (timer2) clearTimeout(timer2);
+    timer2 = window.setTimeout(() => {
+      if (toast) toast.style.display = "none";
+    }, 7e3);
+  };
+}
 function reportSceneRuntimeMismatch(el, sceneVersion) {
   const runtimeVersion = true ? "0.20.0+131.g81b9d85f.dirty" : "";
   if (typeof sceneVersion !== "string" || !sceneVersion || !runtimeVersion) return;
@@ -167853,8 +167936,7 @@ async function bootDocsView(opts) {
   hostEl.appendChild(target);
   const trajInfo = parseInitialTrajectoryInfo(initialMessages);
   const panelModeStyle = ui.panel_mode_style || "drawer";
-  const controllerPromise = MolSysViewerController.create(target, () => {
-  }, void 0, {
+  const controllerPromise = MolSysViewerController.create(target, makeMissingAuthorityReporter(hostEl), void 0, {
     panelModeStyle,
     hasInitialStructures: trajInfo.hasStructures
   });
@@ -168751,7 +168833,8 @@ export {
   MolSysViewerController,
   bootDocsView,
   bootPopup,
-  index_default as default
+  index_default as default,
+  needsRunningSession
 };
 /*! Bundled license information:
 

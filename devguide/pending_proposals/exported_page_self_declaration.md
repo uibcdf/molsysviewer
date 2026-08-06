@@ -1,7 +1,7 @@
 # An exported page should declare what it is and what it can do
 
-**Status:** **Part A is done (2026-08-05).** Part B remains open and its trigger
-has not arrived. Both were deferred because they guard failures that were not
+**Status:** **Part A done 2026-08-05, Part B's seam done 2026-08-06.** Part B's
+trigger had already arrived and nobody had noticed — see below. Both were deferred because they guard failures that were not
 active yet, and the conditions that end each deferral are recorded below; Part
 A's arrived when MolSysMT began publishing from this mechanism, and it was
 implemented the same day.
@@ -109,12 +109,35 @@ a region already present in the scene is local and works; naming a new selection
 needs authority. The manifest distinguishes them, and the fix must too — hiding
 a working control is its own kind of dishonesty.
 
-**Why deferring is safe today.** The default export exposes nothing dead.
+**Why deferring was safe when this was written.** The default export exposed
+nothing dead, because `panel_mode_style` defaulted to `drawer`.
 
-**Why it stops being safe.** The moment `panel_mode_style` defaults to
-`integrated`, or the moment anyone exports from a view that sets it. Whoever
-changes that default should read this file first; today it is a cheap guard,
-after the change it is a rescue.
+**It stopped being safe, and the file did not notice.** The condition written
+here was "the moment `panel_mode_style` defaults to `integrated`". Measured
+2026-08-06: a plain `MolSysView()` reports `panel_mode_style="integrated"` — the
+trait declares `"drawer"` and construction overrides it — so **every export
+already builds the Studio**. Its DOM carries "Studio" twenty times. Meanwhile
+`bootDocsView` still created the controller with `() => {}`, so all 127
+`ctx.onAction` call sites across ten panels emitted into nothing.
+
+**Done: the seam.** The reporter passed to `MolSysViewerController.create`
+consults the manifest and, for a command that needs an authority, shows a notice
+naming the action, saying there is no Python behind the page, and pointing at a
+notebook, the desktop application and
+[uibcdf.org/molsysviewer](https://www.uibcdf.org/molsysviewer). One funnel, so
+nothing can go silent again.
+
+The distinction that made it honest is new manifest data, `frontend_authoritative`:
+a measurement, a section drag and an active-selection pick are performed by the
+browser and merely reported to Python, so they **work** in an export and warning
+about them would tell the reader they cannot do what they have just done.
+`needsRunningSession` is unit-tested over all six cases and mutation-verified.
+
+**Still open: the polish.** Controls whose action is knowable at construction —
+representation, delete region, apply query — should be disabled with their reason
+rather than inviting a click that reports. The seam makes that an improvement
+rather than a rescue. And what the panels *display* stays untouched: that
+information is correct and hiding it would be the other kind of lie.
 
 ## Not in scope
 
