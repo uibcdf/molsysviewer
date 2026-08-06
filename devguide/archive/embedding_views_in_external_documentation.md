@@ -4,7 +4,7 @@
 
 Steps 1, 3 and 4 landed on 2026-08-03; §8 records the export rework that followed.
 Step 2 was deferred to
-[`../pending_proposals/exported_page_self_declaration.md`](../pending_proposals/exported_page_self_declaration.md),
+[`exported_page_self_declaration.md`](exported_page_self_declaration.md),
 which is still open and whose trigger has now arrived. **Step 5 — port to
 MolSysMT — was done by MolSysMT**, from this specification, without us touching
 their repository: see the adoption report and our reply, archived beside this
@@ -174,7 +174,7 @@ tighter surface costs an afternoon now and two repositories later.)*
 1. **The Python primitive** — the export parameter, the asset accessor, version
    coherence, tests with mutations.
 2. ~~**The runtime handshake (TypeScript)**~~ — **deferred 2026-08-03** to
-   [`exported_page_self_declaration.md`](../pending_proposals/exported_page_self_declaration.md),
+   [`exported_page_self_declaration.md`](exported_page_self_declaration.md),
    together with a second item raised in the same conversation: an exported page
    offers controls it cannot honour without an authority. Neither blocks
    MolSysMT, and both guard failures that are not active yet. That file records

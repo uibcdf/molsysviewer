@@ -84,7 +84,7 @@ Costs that come with it, and are the reason this is parked:
   not;
 - **one global per document** where blob imports were isolated. Two runtime
   versions in one document would collide, which strengthens the case for
-  [`exported_page_self_declaration.md`](exported_page_self_declaration.md);
+  [`exported_page_self_declaration.md`](../archive/exported_page_self_declaration.md);
 - it moves the floor under all three hosts — notebook, popout, Qt — at once.
 
 **Trigger:** a real user who needs many shared views to open with no server and

@@ -1,5 +1,8 @@
 # An exported page should declare what it is and what it can do
 
+**ARCHIVED 2026-08-06 — done.** An exported page reports a scene built by another
+version, and the Studio says when no session is behind it. Nothing here is pending.
+
 **Status:** **Part A done 2026-08-05, Part B's seam done 2026-08-06.** Part B's
 trigger had already arrived and nobody had noticed — see below. Both were deferred because they guard failures that were not
 active yet, and the conditions that end each deferral are recorded below; Part

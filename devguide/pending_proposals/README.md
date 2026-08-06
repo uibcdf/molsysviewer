@@ -3,25 +3,11 @@
 Only unresolved designs belong here. Implemented plans are promoted to durable
 documentation or removed; Git retains their development history.
 
-## Implemented, retained as the design record
-
-
-They preserve the 1.0 scientific model: `view.molsys` remains a complete selected
-`molsysmt.MolSys`. The data-plane work removed avoidable
-`ViewerJSON`/nested-list/text-JSON amplification without introducing partial
-residency.
-
-*These two are a deliberate exception to the triage rule "once implemented,
-remove the document from this directory."* They are the only written account of
-**why** the envelope, the shared manifest and the array-native layout are shaped
-the way they are, several documents link to them by path, and the decisions they
-record are still load-bearing. Read them as history, not as pending work. If they
-are ever moved, the links in `roadmap.md`, `checkpoints.md` and this file move
-with them.
-
-Structure windowing, eager/windowed modes, compression, workers, shared memory,
-BroadcastChannel, and multiview remain post-1.0. Camera acquisition/movie export
-is also explicitly post-1.0.
+**Nothing in this directory is finished work.** `data_plane_architecture.md` and
+`runtime_message_router.md` used to sit here as the design record for the
+envelope, the shared manifest and the array-native layout; they were promoted to
+`devguide/` on 2026-08-05 and are normative now. Structure windowing,
+compression, workers, shared memory and multiview remain post-1.0.
 
 ## Open before 1.0
 
@@ -35,16 +21,11 @@ is also explicitly post-1.0.
   architectural extraction, seam hardening, representative performance work
   and release gates required before 1.0. The audit documents below remain its
   evidence, not competing execution plans.
-- [`transport_popup_audit_followups_2026_08.md`](transport_popup_audit_followups_2026_08.md):
-  focused follow-up from the post-R2/D3/D4 audit. It records one targeted-stream
-  cancellation defect, missing lifecycle evidence, documentation drift, the
-  lazy-fallback priority, and measured improvement candidates without reopening
-  the completed architecture. Read it together with
-  [`open_items_after_the_2026_08_smoke_round.md`](open_items_after_the_2026_08_smoke_round.md);
-  the union of both is the complete current audit inventory.
-- [`documentation_execution_in_ci.md`](documentation_execution_in_ci.md): run
-  `docs/execute_notebooks.py` in CI. Sphinx does not execute notebooks, which is
-  how ten broken ones survived unnoticed. Postponed by decision, not closed.
+- [`transport_popup_audit_followups_2026_08.md`](transport_popup_audit_followups_2026_08.md)
+  and [`open_items_after_the_2026_08_smoke_round.md`](open_items_after_the_2026_08_smoke_round.md):
+  the two audit inventories. **Items 1–9, and sixteen of nineteen, are closed.**
+  What remains in either is collected in `what_needs_a_human_2026_08.md`. Closed
+  items keep one line and a pointer, so neither reads as a work queue any more.
 - [`molsysmt_docs_pipeline_analysis.md`](molsysmt_docs_pipeline_analysis.md):
   their pipeline read at the scale it is about to reach. The scheme is piloted in
   one notebook; 138 call `msm.view()` and 26 carry a target. The structural
@@ -57,18 +38,17 @@ is also explicitly post-1.0.
   research and the browser measurements are done and recorded; the trigger is a
   real user with that need.
 - [`first_read_comprehension_gaps_2026_08.md`](first_read_comprehension_gaps_2026_08.md):
-  what one uninterrupted first read of this repository concluded wrongly, with
-  the document that caused each wrong turn and the artifact that disproved it.
-  Two findings are README-facing and affect prospective users; four are
-  contributor-facing. Perishable evidence — a maintainer cannot produce it about
-  their own project.
+  **five of six findings acted on**; what is left is one positioning decision,
+  what the README leads with. Kept for its evidence — what one uninterrupted
+  first read concluded wrongly, and which document caused each wrong turn. A
+  maintainer cannot produce this about their own project.
 - [`opt_in_hover_telemetry.md`](opt_in_hover_telemetry.md): stop forwarding hover
   to the kernel when nobody is listening. The July round deduplicated identical
   hovers, which fixes a resting mouse and not a moving one. **Blocked on one
   product decision** — what `view.hover_target` means when telemetry is off.
 *(A JIT cold-start proposal was drafted here on 2026-07-31 and withdrawn the same
 day: MolSysMT no longer uses Numba. See
-[`../standalone_performance_and_depythonization.md`](../standalone_performance_and_depythonization.md).)*
+[`../standalone_performance_and_depythonization.md`](../archive/standalone_performance_and_depythonization.md).)*
 
 ## Deferred until after 1.0
 

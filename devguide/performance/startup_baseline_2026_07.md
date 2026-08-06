@@ -4,7 +4,7 @@
 
 Every startup figure in the devguide measured **Numba JIT compilation**: the
 "3–5 second freeze" that
-[`../standalone_performance_and_depythonization.md`](../standalone_performance_and_depythonization.md)
+[`../archive/standalone_performance_and_depythonization.md`](../archive/standalone_performance_and_depythonization.md)
 was written to solve, and that
 [`../standalone_v2_evolution_plan.md`](../standalone_v2_evolution_plan.md) used
 as the main argument for the Tauri+WASM target.

@@ -1,5 +1,10 @@
 # Standalone Performance and De-pythonization Roadmap
 
+**ARCHIVED 2026-08-06 — its premise is dead.** This document argues from Numba JIT
+cold-start latency, and MolSysMT no longer uses Numba: it was rewritten in Rust for
+1.0. The depythonization argument may survive the premise; the latency figures do
+not. Do not plan from this file without re-measuring.
+
 > **Overtaken by events (2026-07-31). Read the rest of this document as the
 > analysis that led to a decision, not as pending work.**
 >

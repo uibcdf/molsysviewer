@@ -1,5 +1,8 @@
 # Executing the documentation in CI
 
+**ARCHIVED 2026-08-06 — done.** `.github/workflows/docs-notebooks.yaml` gates the
+documented notebooks. Nothing here is pending.
+
 **Status:** **done 2026-08-06** — `.github/workflows/docs-notebooks.yaml`. Kept
 for the reasoning, and for one correction it needed before it could work.
 

@@ -42,6 +42,12 @@ Git retains the plan.
 
 ### Runtime and protocol
 
+- [`data_plane_architecture.md`](data_plane_architecture.md) — how structural
+  arrays travel as typed binary buffers, planar per structure. **Complete for
+  pre-1.0** (D0–D4 and the Qt payload scheme).
+- [`runtime_message_router.md`](runtime_message_router.md) — envelopes, identity,
+  authority and the shared action manifest. **Complete for pre-1.0** (R0–R4).
+  `checkpoints.md` sends every new session to these two first.
 - [`architecture.md`](architecture.md)
 - [`units_and_quantities.md`](units_and_quantities.md)
 - [`js_runtime_build_and_version_sync.md`](js_runtime_build_and_version_sync.md)
@@ -105,10 +111,9 @@ Measured evidence, not estimates. Each records the command that reproduces it.
 - [`standalone_qt_ci_and_gl_decisions.md`](standalone_qt_ci_and_gl_decisions.md)
   — CI and GL decisions closed on 2026-07-04 against a real GPU. **Not to be
   re-litigated without a new reason.** Spanish.
-- [`standalone_performance_and_depythonization.md`](standalone_performance_and_depythonization.md)
-  — **premise superseded:** it addresses Numba JIT cold-start latency, and
-  MolSysMT no longer uses Numba. Its depythonization argument may survive; its
-  latency figures do not.
+- *(`standalone_performance_and_depythonization.md` was archived on 2026-08-06:
+  it argues from Numba JIT cold-start latency, and MolSysMT no longer uses
+  Numba.)*
 - [`standalone_v2_evolution_plan.md`](standalone_v2_evolution_plan.md) — post-1.0
   architecture for a v2 host, beyond the monolithic PySide6 prototype.
 
@@ -173,3 +178,23 @@ Closed audits are stored separately in [`audits/`](audits/README.md).
 - Performance claims without a reproducible benchmark are labeled estimates.
 - A document naming current code or APIs must be checked against the repository,
   not against an earlier plan.
+
+### Say "done" where a scan will hit it
+
+Documents are read by skimming, so **a closed item is only closed if that is
+visible at scan depth**. Three rules follow, and this round is the evidence for
+all three — a handoff rewritten in the morning still listed as open the three
+things finished that afternoon, and an inventory of nineteen items had seven
+bodies contradicting their own headers.
+
+1. **The state goes in the title**, or in the first line of the file. Never only
+   in the body: a reader who skims a long body concludes the work is pending, and
+   the longer the body, the likelier that is.
+2. **Text in place is inversely proportional to how closed something is.** A
+   closed item keeps one line — the outcome and where the evidence lives. Its
+   reasoning goes to `archive/`, or stays in the git history. Preserving a
+   finished item's full *What / Why / How* beside the open ones is what makes an
+   inventory read as a work queue.
+3. **When you finish something, close it in its home document in the same
+   change.** Not in a summary, not in a commit message: in the file the next
+   reader will open.

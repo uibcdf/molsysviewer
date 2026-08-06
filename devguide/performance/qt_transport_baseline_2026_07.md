@@ -47,7 +47,7 @@ with the number of structures.
 In practice a standalone user waits **about 4.3 seconds of pure Python** before a
 5,000-structure trajectory can even reach the window, on top of the Numba cold
 start already described in
-[`../standalone_performance_and_depythonization.md`](../standalone_performance_and_depythonization.md).
+[`../archive/standalone_performance_and_depythonization.md`](../archive/standalone_performance_and_depythonization.md).
 The two costs add up.
 
 Most of this gain is not Qt-specific: it is the same `ViewerJSON` and

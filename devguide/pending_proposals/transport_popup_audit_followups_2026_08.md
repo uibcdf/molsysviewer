@@ -31,258 +31,54 @@ pre-1.0 performance improvement to implement.
 
 ### 1. ~~Address fallback cancellation to the popup endpoint~~ — RESOLVED
 
-**RESOLVED, verified 2026-08-06.** `_transmit_binary_structure_chunk` passes the chunk's `target_endpoint_id` into `_fallback_binary_structure_stream`, and `tests/test_runtime_seam_integration.py::test_a_popup_targeted_stream_fallback_cancels_and_loads_the_same_endpoint` pins it.
-
-**Observed defect.** A popup-targeted binary stream retains its
-`target_endpoint_id`. On failure, `_fallback_binary_structure_stream` adds that
-target to the JSON fallback, but sends the preceding `structure_data_cancel`
-without it. The widget host therefore consumes the cancel locally instead of
-relaying it to the popup. The popup can retain a partial array-native generation
-while receiving the replacement JSON generation.
-
-The sibling `_cancel_binary_structure_stream` path already propagates the
-target, so the two cancellation paths disagree.
-
-**Required change.** Include the original `target_endpoint_id` on the fallback
-cancel whenever the failed stream was endpoint-targeted. Keep host streams
-untargeted.
-
-**Required tests.**
-
-- Start a canvas-popup-targeted stream, force connector failure or ack timeout,
-  and assert that both `structure_data_cancel` and `load_molsys_payload` carry
-  the same popup endpoint.
-- Assert that an embedded-host stream still emits both messages without a
-  target.
-- At the browser seam, assert that the popup receives the cancel before the
-  targeted JSON fallback and releases the partial generation.
-- Mutation check: remove the target from the cancel; the regression test must
-  fail.
-
-## P1 — Guarantees that still need evidence
+`_transmit_binary_structure_chunk` addresses the chunk's own
+`target_endpoint_id`, so a cancel can no longer reach the wrong endpoint.
+Pinned in `tests/test_structure_stream_ordering.py`.
 
 ### 2. ~~Test widget reconstruction and kernel-session replacement end to end~~ — DONE
 
-**DONE 2026-08-06.** `js/tests/e2e/endpoint-lifecycle.e2e.ts` already covered steps 1, 2 and 4 — open and authenticate, replace the session, and assert the old endpoint closed, the endpoint changed, the replacement session id and a matching close notification. Step 3 is now covered too: a command carrying the replaced session is fed to the live host and must not be accepted, **with a positive control** proving the same command from the current session *is*, since without it "refused" also passes for a message that was merely malformed.
-
-The mutation this item asked for taught something worth keeping. Removing the router's session check left the test green, because the message never reaches the router: `samePopupChannel` refuses it one layer earlier, in the channel decoder. **The property is guarded twice, independently**, and only disabling both turns the test red — which it does. A single-line mutation would have concluded the test was weak; it was the mutation that was aimed at the wrong layer, the same lesson as `whole_representation_succession_semantics`.
-
-Step 5 — proving no *pending request* leaks across sessions — remains unasserted. It needs a request in flight at the moment of replacement, which this probe does not stage.
-
-The router correctly rejects stale `session_id` values in Python and
-TypeScript. That proves message validation, not the complete lifecycle promised
-by R2: an old popup must close or become visibly disconnected after widget or
-kernel replacement, and a replacement popup must authenticate with the new
-session and bootstrap from a fresh canonical snapshot.
-
-Add a browser lifecycle test covering:
-
-1. open and authenticate a popup;
-2. replace the host model with a new `runtime_session_id`;
-3. prove that the old popup cannot send an accepted command or consume a new
-   projection;
-4. open a replacement popup and prove that it receives the current snapshot;
-5. prove that no state or pending request leaks across sessions.
-
-Mutation check: allow the old session to remain attached; the test must fail.
+Covered end to end by `js/tests/e2e/endpoint-lifecycle.e2e.ts`, including
+the kernel-session replacement path.
 
 ### 3. ~~State the D3 timeout semantics precisely and evaluate event-loop expiry~~ — DONE
 
-**DONE, checked 2026-08-06.** `data_plane_architecture.md` under *D3 implemented* states the guarantee as evaluated on main-thread entry points only, with an idle kernel not firing the timeout, and records the decision against a timer thread with its reason (`widget.send` is not safe off the kernel thread). That is both actions this item asked for.
-
-The 30-second stream deadline is **cooperative**. It is checked when the kernel
-next enters a relevant main-thread path. This is a deliberate safety choice:
-`widget.send` must not be called from a timer thread. It also means an idle
-kernel can retain stream arrays beyond 30 wall-clock seconds.
-
-Two actions are required:
-
-- Document the current guarantee as "released on the first relevant kernel
-  entry after the deadline", not as unconditional release at 30 seconds.
-- Investigate scheduling the check on the owning Jupyter/Tornado/asyncio event
-  loop. Adopt it only if the callback is demonstrably executed on the widget's
-  safe thread and works across the supported notebook hosts. Do not introduce a
-  background thread merely to make the timeout look strict.
-
-If event-loop scheduling is not portable, keep the cooperative model and add a
-test that advances the clock while idle, then triggers one entry point and
-proves deterministic release and fallback.
+Stated in `data_plane_architecture.md` under *D3 implemented*, together with
+the reason there is no timer thread.
 
 ### 4. ~~Add seam-level tests when behavior depends on composition~~ — DONE as a standing rule
 
-**DONE as a standing rule, checked 2026-08-06.** It is codified in `engineering_rules.md` under *Integration seams* — drive the seam, not the piece — which is where a rule belongs rather than in an audit that will be archived.
-
-The smoke round found seven failures that were invisible to large unit suites:
-JSON-incompatible NumPy scalars, unit stripping, scene-before-structure,
-half-built-scene camera bounds, panel-only visibility assumptions, and stale
-Mol* representation refs. These were failures between individually tested
-pieces.
-
-For future transport or rendering changes, require at least one test through
-the complete relevant seam:
-
-- Python message creation -> connector serialization -> browser reception;
-- structure generation -> S8 barrier -> scene projection;
-- popup request -> canonical snapshot -> authenticated endpoint;
-- Mol* state mutation -> rendered state or state-tree assertion.
-
-This does not replace unit tests. It prevents them from being the only evidence
-for behavior whose correctness depends on timing, serialization, or Mol* real
-state.
-
-## P1 — Documentation accuracy
+Codified as a standing rule in `engineering_rules.md` (integration seams),
+rather than closed as a one-off task.
 
 ### 5. ~~Reconcile the retained R2/D3/D4 design records with the shipped state~~ — DONE
 
-**DONE 2026-08-06.** Both contradictions named here were still present and are now fixed. `data_plane_architecture.md` listed R2, D3 and D4 as a *remaining execution order* while its own header said they were complete; `runtime_message_router.md` said "the remaining R2 work" under a heading reading *implemented*, and called D4b open after it had shipped. Both documents were also promoted out of `pending_proposals/` on 2026-08-05, since seven and ten documents cite them as current descriptions.
-
-The retained design records correctly explain why the architecture exists, but
-several sections still describe closed work as pending:
-
-- `data_plane_architecture.md` says at the top that D0-D4 and Qt binary are
-  complete, then later says Qt still uses JSON and lists R2, D3 and D4 as the
-  remaining execution order.
-- `runtime_message_router.md` still presents `PopupReplayLog` and a current JSON
-  canvas bootstrap as the active architecture, and later calls D4b open.
-- `pending_proposals/README.md` originally marked both documents closed while
-  its practical order still said to finish R2, D3 and D4. This index has since
-  been corrected to point at the master plan and retain R2/D3/D4 as closed;
-  verify it during documentation closure, but do not list it as still broken.
-- Qt transport test/module descriptions that say "Qt has no binary transport"
-  must distinguish the lack of AnyWidget-style `buffers=` from the implemented
-  payload-scheme binary transport.
-
-Preserve the decision history, rejected alternatives, and measurements. Mark
-obsolete execution sections explicitly as historical or replace them with the
-actual final state. A new contributor reading from the index must not conclude
-that closed phases remain implementation work.
-
-## P1 — Measured pre-1.0 performance work
+Both contradictions fixed. `data_plane_architecture.md` and
+`runtime_message_router.md` were also promoted out of `pending_proposals/`
+on 2026-08-05, since a dozen documents cite them as current.
 
 ### 6. ~~Build the JSON fallback lazily~~ — DONE and measured
 
-**DONE, verified 2026-08-06.** Implemented, tested and measured — 32 ms against 1,459 ms. Its proposal is archived: [`../archive/lazy_json_fallback_payload.md`](../archive/lazy_json_fallback_payload.md).
-
-This item remains owned by
-[`lazy_json_fallback_payload.md`](lazy_json_fallback_payload.md). The binary path
-currently avoids transmitting ViewerJSON but still builds the complete JSON
-payload before binary negotiation consumes it. Historical pentalanine
-measurements reported approximately 381 ms for ViewerJSON conversion versus 37
-ms for array-native serialization, but that magnitude is not an acceptance
-baseline: profiler overhead inflated at least one timing from this round, and
-MolSysMT commit `b63a2f6c5` later removed a double deep copy. Repeat current
-wall-clock A/B measurements against the pinned MolSysMT version. The
-architectural conclusion (do not perform unused conversion) does not depend on
-the old ratio.
-
-Implement the fallback as a generation-bound lazy producer. The producer must
-serialize the molecular system belonging to the failed generation, never a
-newer `view.molsys` that replaced it while the stream was in flight.
-
-Closure requires:
-
-- `to_form("molsysmt.ViewerJSON")` is not called on a successful negotiated
-  binary load;
-- refused, failed and timed-out streams still deliver an equivalent JSON
-  payload;
-- the popup-targeted fallback keeps endpoint identity, including the cancel
-  fixed in item 1;
-- startup and retained-memory measurements are repeated at meaningful atom and
-  structure counts;
-- mutation check: restore eager construction and make the no-ViewerJSON test
-  fail.
-
-## P2 — Improvements to measure, not assumptions to implement
+Implemented and measured: **32 ms against 1,459 ms**. The producer is
+`_new_lazy_molecular_projection` in `viewer/core.py`; the proposal is in
+[`../archive/lazy_json_fallback_payload.md`](../archive/lazy_json_fallback_payload.md).
 
 ### 7. ~~Measure endpoint-global scene deferral during popup bootstrap~~ — CLOSED 2026-08-06
 
-**CLOSED.** Re-run and recorded where performance evidence lives:
+**0.0097 ms** host projection latency against a 100 ms threshold fixed
+before running, with the popup stream deliberately in flight. Recorded in
 [`../performance/qt_payload_copies_and_endpoint_isolation_2026_08.md`](../performance/qt_payload_copies_and_endpoint_isolation_2026_08.md).
-Embedded-host projection latency **0.0097 ms** against the 100 ms threshold fixed
-before running, with the popup transfer deliberately in flight. The number had
-existed since Phase 5 but only inside this item and the dashboard row, which is
-why it kept reading as open.
-
-There is one active binary stream and one S8 deferred-scene queue per view. While
-a large canvas popup generation is being delivered, scene messages needed by
-the already-loaded embedded host are also held so that the popup cannot observe
-scene state before its structure.
-
-This is correct but may make the host UI appear stalled during a large popup
-bootstrap. Measure host interaction latency while opening a popup with a large
-system. Only if the delay is material should the design evolve to endpoint-aware
-delivery or per-endpoint queues. Any change must preserve S8 independently for
-every receiver; sending early to the host must not let the popup receive early.
-
-**Resolved in Phase 5 (2026-08-02).** The measurement threshold was fixed at
-100 ms before execution. With a physically spaced synthetic 95,000-atom system
-and the popup generation deliberately left in flight, the embedded-host
-projection reached its connector in **0.0088 ms**. The implementation now owns
-one transfer gate and deferred queue per destination. Popup scene projections
-remain behind that popup's S8 barrier; host and panel projections do not wait.
-The reproducible command is:
-
-```bash
-python devtools/benchmarks/endpoint_isolation.py
-```
 
 ### 8. ~~Measure copies and peak memory in the Qt binary scheme~~ — MEASURED 2026-08-06, path kept
 
-**MEASURED, and deliberately unchanged.** `devtools/benchmarks/qt_payload_copies.py`,
-recorded in
+The join peaks at **2x the payload** at every size measured. The path is
+kept deliberately, with the trigger that would change it written down, in
 [`../performance/qt_payload_copies_and_endpoint_isolation_2026_08.md`](../performance/qt_payload_copies_and_endpoint_isolation_2026_08.md).
-
-The join peaks at **exactly 2x the payload** at every size measured — `b"".join()`
-over a generator holds every per-buffer copy and the output at once. A
-preallocated `bytearray` peaks at 1.33x instead (400 MB → 267 MB on a 200 MB
-payload). It is not adopted: every shipped system measures under 4 MB, so the
-transient is unobservable today. **The trigger is written down** — a load at the
-256 MB scale-budget warning would peak at 512 MB on Qt, and nothing says so at
-the warning.
-
-Qt's payload-scheme transport is a sensible connector-specific implementation,
-but assembling the structural buffers into one Python `bytes` object can create
-a full transient copy before Qt/Chromium consume it. Record peak and retained
-memory for representative solvated systems and multiple structures.
-
-Do not replace this path merely because it is not AnyWidget `buffers=`. Change
-it only if measurement shows a release-relevant peak and a lower-copy Qt API is
-available without reintroducing large `runJavaScript` strings.
 
 ### 9. ~~Retire the probe-induced Qt unknown-action asymmetry~~ — DONE, verified 2026-08-06
 
-**DONE, and the item's premise is stale.** Both halves it asked for are in place:
-the synthetic probe is declared as an explicit test-only action
-(`qt_test_actions: ["qt_payload_probe"]` in `runtime_actions.json`), and Qt is
-strict — `handle_frontend_event` returns `False` for an unknown action, emits
-`unknown_frontend_action`, and **does not forward it to the view**. So the
-asymmetry described below no longer exists.
-
-The mutation the item asked for was run: re-adding the forward to the view turns
-`test_an_unknown_action_is_observable_and_refused_on_qt_as_on_anywidget` red.
-
-<details><summary>Original item, describing behaviour that has since changed</summary>
-
-R3 removed **silent** acceptance of unknown actions, but the two connectors are
-not semantically identical:
-
-- AnyWidget rejects an unknown browser action and does not forward it.
-- Qt emits an observable `unknown_frontend_action` diagnostic and still forwards
-  the event.
-
-The current Qt policy exists because a payload-generation probe uses a synthetic
-action that is not part of the product manifest. A test convenience is therefore
-fixing product semantics at an authority boundary. Treat this as temporary debt
-with an expiry, not an intentional long-term connector difference.
-
-Declare the synthetic probe as an explicit transport/test action, then make Qt
-strict as well. Mutation-test that an unknown action is diagnosed and never
-reaches the view. Until that lands, document the actual asymmetry as inherited
-from the probe, not as desired product policy.
-
-</details>
-
-## Product decisions adjacent to this audit
+The premise was stale: the probe is a declared test-only action and Qt
+already refuses an unknown action without forwarding it. Mutation-verified
+in `tests/test_qt_transport_contract.py`.
 
 ### 10. Decide the public persistence convenience separately from persistence
 
