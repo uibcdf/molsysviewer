@@ -204,3 +204,4 @@ test("an exported page reports only what genuinely needs a session", () => {
     assert.equal(needsRunningSession({}), false);
     assert.equal(needsRunningSession(null), false);
 });
+

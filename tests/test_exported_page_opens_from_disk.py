@@ -314,3 +314,26 @@ def test_a_matching_pair_stays_quiet(tmp_path):
     assert "data-molsysviewer-version-mismatch" not in dom.replace(
         "data-molsysviewer-version-mismatch", "", 1
     ), "a matching pair produced a mismatch notice"
+
+
+def test_the_studio_says_it_cannot_act_here(tmp_path):
+    """An exported page builds the same Studio a notebook does.
+
+    Every one of its controls asks Python to change the scene and waits for the
+    projection back — 127 call sites across ten panels, not one of them local —
+    and there is no Python here, so until 2026-08-06 a click did nothing at all
+    and said nothing about it.
+
+    Nothing is disabled: the panels still show the scene correctly, and hiding a
+    working thing to signal a broken one is its own kind of dishonesty. The panel
+    states the situation before anyone clicks, and the seam answers whoever
+    clicks anyway.
+    """
+    view = _self_contained(tmp_path)
+
+    dom, _ = _open_from_disk(view)
+
+    assert 'data-molsysviewer-no-session="true"' in dom, (
+        "an exported page offered the Studio with no word about what it cannot do"
+    )
+    assert "Studio" in dom, "the panels vanished instead of explaining themselves"

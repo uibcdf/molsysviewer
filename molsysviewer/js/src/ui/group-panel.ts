@@ -182,6 +182,8 @@ export class GroupPanel {
     private readonly wholePanel: WholePanel;
     private readonly layersPanel: LayersPanel;
     private readonly viewportPanel: ViewportPanel;
+    /** False in an exported page: the panels can show the scene but not change it. */
+    private readonly hasAuthority: boolean = true;
     private readonly exportPanel: ExportPanel;
     private readonly regionsPanel: RegionsPanel;
     private readonly selectionPanel: SelectionPanel;
@@ -224,9 +226,10 @@ export class GroupPanel {
         private readonly onActivateSavedSelection: (tag: string) => void,
         private readonly onFocusRegion: (tag: string) => void,
         private readonly onAction: ((action: string, details?: any) => void) | undefined,
-        options?: { floating?: boolean; sharedShell?: FloatingPanelShell; model?: any },
+        options?: { floating?: boolean; sharedShell?: FloatingPanelShell; model?: any; hasAuthority?: boolean },
     ) {
         this.model = options?.model;
+        this.hasAuthority = options?.hasAuthority !== false;
         const floating = options?.floating || !!options?.sharedShell;
         this.sharedShell = !!options?.sharedShell;
         this.shell = options?.sharedShell
@@ -391,6 +394,8 @@ export class GroupPanel {
         });
         this.body.appendChild(this.rightColumn);
 
+        if (!this.hasAuthority) this.rightColumn.appendChild(this.buildNoSessionNotice());
+
         // Create Sections
         this.systemSection = this.createSection("system");
         this.wholeSection = this.createSection("whole");
@@ -497,6 +502,45 @@ export class GroupPanel {
 
         // Show the default tab.
         this.switchTab("system");
+    }
+
+    /**
+     * Say, before anything is clicked, what this Studio can and cannot do here.
+     *
+     * An exported page builds the same Studio a notebook does, and every one of
+     * its controls asks Python to change the scene and waits for the projection
+     * back — measured: 127 `onAction` call sites across ten panels, and not one
+     * that acts locally. With no session there is nothing to wait for.
+     *
+     * Nothing is disabled or dimmed. The panels still *show* the scene
+     * correctly — regions, annotations, measurements, sections — and that
+     * information is worth reading, scrolling and selecting. Hiding a working
+     * thing to signal a broken one is its own kind of dishonesty. So the panel
+     * states the situation once, and the seam in `index.ts` answers anyone who
+     * clicks anyway.
+     */
+    private buildNoSessionNotice(): HTMLDivElement {
+        const notice = document.createElement("div");
+        notice.setAttribute("data-molsysviewer-no-session", "true");
+        Object.assign(notice.style, {
+            margin: "0 0 10px 0", padding: "8px 10px", borderRadius: "6px",
+            font: "11px/1.5 system-ui, sans-serif",
+            background: "rgba(120, 53, 15, 0.25)",
+            border: "1px solid rgba(180, 120, 40, 0.45)",
+            color: "inherit",
+        });
+        notice.appendChild(document.createTextNode(
+            "Exported view: the panels show this scene, but changing it needs a running "
+            + "MolSysViewer session — a Jupyter notebook or the desktop application. ",
+        ));
+        const link = document.createElement("a");
+        link.href = "https://www.uibcdf.org/molsysviewer";
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = "How to run it";
+        Object.assign(link.style, { color: "#8ab4f8", textDecoration: "underline", whiteSpace: "nowrap" });
+        notice.appendChild(link);
+        return notice;
     }
 
     private createSection(key: TabKey): HTMLDivElement {

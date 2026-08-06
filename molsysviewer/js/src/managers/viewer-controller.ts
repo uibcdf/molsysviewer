@@ -697,7 +697,7 @@ export class MolSysViewerController {
         target.appendChild(overlay);
     }
 
-    static async create(target: HTMLElement, notify?: (msg: any) => void, existingCanvas?: HTMLCanvasElement, options?: { panelModeStyle?: string, model?: any, onPanelPopClick?: () => void, isPanelOnly?: boolean, hasInitialStructures?: boolean }): Promise<MolSysViewerController> {
+    static async create(target: HTMLElement, notify?: (msg: any) => void, existingCanvas?: HTMLCanvasElement, options?: { panelModeStyle?: string, model?: any, onPanelPopClick?: () => void, isPanelOnly?: boolean, hasInitialStructures?: boolean, hasAuthority?: boolean }): Promise<MolSysViewerController> {
         // Wrap the Mol* canvas in a host div so panels can shift it without
         // resizing the outer target element.  No CSS transition here — inset
         // animation is driven frame-by-frame via rAF so Mol*'s ResizeObserver
@@ -970,7 +970,7 @@ export class MolSysViewerController {
         return `measurement_${this.measurementTagCounter}`;
     }
 
-    private constructor(public readonly plugin: PluginContext, private readonly host: HTMLElement, private readonly notify?: (msg: any) => void, canvasHost?: HTMLDivElement, private readonly initOptions?: { panelModeStyle?: string, viewerMode?: string, controlsMode?: string, isAmbient?: boolean, isSplit?: boolean, model?: any, isPanelOnly?: boolean, onPanelPopClick?: () => void, hasInitialStructures?: boolean }) {
+    private constructor(public readonly plugin: PluginContext, private readonly host: HTMLElement, private readonly notify?: (msg: any) => void, canvasHost?: HTMLDivElement, private readonly initOptions?: { panelModeStyle?: string, viewerMode?: string, controlsMode?: string, isAmbient?: boolean, isSplit?: boolean, model?: any, isPanelOnly?: boolean, onPanelPopClick?: () => void, hasInitialStructures?: boolean, hasAuthority?: boolean }) {
         this.model = initOptions?.model;
         this.isPanelOnly = !!initOptions?.isPanelOnly;
         if (initOptions?.viewerMode) {
@@ -1186,7 +1186,8 @@ export class MolSysViewerController {
                 action,
                 ...details,
             });
-        }, { sharedShell, floating: floatingPanels, model: this.model });
+        }, { sharedShell, floating: floatingPanels, model: this.model,
+             hasAuthority: this.initOptions?.hasAuthority !== false });
         const addonsOptions: any = sharedShell ? { sharedShell } : (floatingPanels ? { floating: true } : {});
         addonsOptions.model = this.model;
         addonsOptions.onAction = (action: string, details: any) => {

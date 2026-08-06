@@ -159224,11 +159224,14 @@ var GroupPanel = class {
     this.onAction = onAction;
     this.activeTab = "system";
     this.tabs = /* @__PURE__ */ new Map();
+    /** False in an exported page: the panels can show the scene but not change it. */
+    this.hasAuthority = true;
     this.panels = /* @__PURE__ */ new Map();
     this.expanded = false;
     this.runtimeVisibleOverride = null;
     this.visible = false;
     this.model = options?.model;
+    this.hasAuthority = options?.hasAuthority !== false;
     const floating = options?.floating || !!options?.sharedShell;
     this.sharedShell = !!options?.sharedShell;
     this.shell = options?.sharedShell ? options.sharedShell : floating ? new FloatingPanelShell(this.host, { title: "Studio", navButtonLabel: "Add-ons" }) : new PanelShell(this.host, { title: "Studio", width: 560, toggleWidth: 26, navButtonLabel: "Add-ons" });
@@ -159372,6 +159375,7 @@ var GroupPanel = class {
       paddingLeft: "12px"
     });
     this.body.appendChild(this.rightColumn);
+    if (!this.hasAuthority) this.rightColumn.appendChild(this.buildNoSessionNotice());
     this.systemSection = this.createSection("system");
     this.wholeSection = this.createSection("whole");
     this.wholePanel = new WholePanel(this.makePanelContext("whole"));
@@ -159461,6 +159465,45 @@ var GroupPanel = class {
       }
     }
     this.switchTab("system");
+  }
+  /**
+   * Say, before anything is clicked, what this Studio can and cannot do here.
+   *
+   * An exported page builds the same Studio a notebook does, and every one of
+   * its controls asks Python to change the scene and waits for the projection
+   * back — measured: 127 `onAction` call sites across ten panels, and not one
+   * that acts locally. With no session there is nothing to wait for.
+   *
+   * Nothing is disabled or dimmed. The panels still *show* the scene
+   * correctly — regions, annotations, measurements, sections — and that
+   * information is worth reading, scrolling and selecting. Hiding a working
+   * thing to signal a broken one is its own kind of dishonesty. So the panel
+   * states the situation once, and the seam in `index.ts` answers anyone who
+   * clicks anyway.
+   */
+  buildNoSessionNotice() {
+    const notice = document.createElement("div");
+    notice.setAttribute("data-molsysviewer-no-session", "true");
+    Object.assign(notice.style, {
+      margin: "0 0 10px 0",
+      padding: "8px 10px",
+      borderRadius: "6px",
+      font: "11px/1.5 system-ui, sans-serif",
+      background: "rgba(120, 53, 15, 0.25)",
+      border: "1px solid rgba(180, 120, 40, 0.45)",
+      color: "inherit"
+    });
+    notice.appendChild(document.createTextNode(
+      "Exported view: the panels show this scene, but changing it needs a running MolSysViewer session \u2014 a Jupyter notebook or the desktop application. "
+    ));
+    const link = document.createElement("a");
+    link.href = "https://www.uibcdf.org/molsysviewer";
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = "How to run it";
+    Object.assign(link.style, { color: "#8ab4f8", textDecoration: "underline", whiteSpace: "nowrap" });
+    notice.appendChild(link);
+    return notice;
   }
   createSection(key2) {
     const section = document.createElement("div");
@@ -161650,7 +161693,12 @@ var MolSysViewerController = class _MolSysViewerController {
         action,
         ...details
       });
-    }, { sharedShell, floating: floatingPanels, model: this.model });
+    }, {
+      sharedShell,
+      floating: floatingPanels,
+      model: this.model,
+      hasAuthority: this.initOptions?.hasAuthority !== false
+    });
     const addonsOptions = sharedShell ? { sharedShell } : floatingPanels ? { floating: true } : {};
     addonsOptions.model = this.model;
     addonsOptions.onAction = (action, details) => {
@@ -167938,7 +167986,11 @@ async function bootDocsView(opts) {
   const panelModeStyle = ui.panel_mode_style || "drawer";
   const controllerPromise = MolSysViewerController.create(target, makeMissingAuthorityReporter(hostEl), void 0, {
     panelModeStyle,
-    hasInitialStructures: trajInfo.hasStructures
+    hasInitialStructures: trajInfo.hasStructures,
+    // There is no Python behind an exported page. Said here rather than
+    // inferred, because a callback that quietly drops what it is given looks
+    // exactly like one that delivers.
+    hasAuthority: false
   });
   const runtimeSource = typeof opts.runtimeSource === "string" ? opts.runtimeSource : "";
   const popupMgr = new PopupHostManager({

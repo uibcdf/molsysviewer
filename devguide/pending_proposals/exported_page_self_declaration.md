@@ -133,11 +133,26 @@ browser and merely reported to Python, so they **work** in an export and warning
 about them would tell the reader they cannot do what they have just done.
 `needsRunningSession` is unit-tested over all six cases and mutation-verified.
 
-**Still open: the polish.** Controls whose action is knowable at construction —
-representation, delete region, apply query — should be disabled with their reason
-rather than inviting a click that reports. The seam makes that an improvement
-rather than a rescue. And what the panels *display* stays untouched: that
-information is correct and hiding it would be the other kind of lie.
+**The polish, done 2026-08-06 — and not the way this proposed.** The plan here
+was to disable the controls whose action is knowable at construction. Measured
+first: **there is nothing to select**. All 127 `ctx.onAction` call sites across
+the ten panels emit to Python and wait for the projection back; not one acts
+locally, and `PanelAction` is a closed type listing every one of them. So a
+partial disabling would have been arbitrary, and a total one would have broken
+reading, scrolling and selecting text in panels that display the scene perfectly.
+
+So the Studio **says** it instead, once, before anything is clicked: a line at the
+top naming the situation and pointing at a notebook, the desktop application and
+uibcdf.org/molsysviewer. Nothing is disabled or dimmed — hiding a working thing
+to signal a broken one is its own kind of dishonesty, which is the nuance this
+file already insisted on. Whoever clicks anyway meets the seam.
+
+`hasAuthority` is declared by `bootDocsView` rather than inferred, because a
+callback that drops what it is given looks exactly like one that delivers. The
+notebook widget does not pass it and keeps authority. Both covered by
+`tests/test_exported_page_opens_from_disk.py`, in a real browser, and
+mutation-verified: declare the exported page authoritative and the test goes
+red.
 
 ## Not in scope
 

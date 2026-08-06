@@ -305,6 +305,10 @@ export async function bootDocsView(opts: {
     const controllerPromise = MolSysViewerController.create(target, makeMissingAuthorityReporter(hostEl), undefined, { 
         panelModeStyle,
         hasInitialStructures: trajInfo.hasStructures,
+        // There is no Python behind an exported page. Said here rather than
+        // inferred, because a callback that quietly drops what it is given looks
+        // exactly like one that delivers.
+        hasAuthority: false,
     });
 
     // Popup manager: an exported page hands over whichever way it got the
