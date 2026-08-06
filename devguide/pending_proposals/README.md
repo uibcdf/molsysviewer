@@ -40,10 +40,6 @@ is also explicitly post-1.0.
 - [`documentation_execution_in_ci.md`](documentation_execution_in_ci.md): run
   `docs/execute_notebooks.py` in CI. Sphinx does not execute notebooks, which is
   how ten broken ones survived unnoticed. Postponed by decision, not closed.
-- [`lazy_json_fallback_payload.md`](lazy_json_fallback_payload.md): the
-  array-native path avoids *sending* the JSON payload but not *building* it, so
-  every load pays the ViewerJSON path (~10× the binary one) and discards it. The
-  fallback is sound; paying for it eagerly is not.
 - [`molsysmt_docs_pipeline_analysis.md`](molsysmt_docs_pipeline_analysis.md):
   their pipeline read at the scale it is about to reach. The scheme is piloted in
   one notebook; 138 call `msm.view()` and 26 carry a target. The structural

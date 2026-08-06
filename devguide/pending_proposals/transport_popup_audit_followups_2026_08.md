@@ -27,9 +27,11 @@ to the active defects found by the smoke inventory, two lifecycle
 guarantees to prove or sharpen, documentation drift to remove, and one measured
 pre-1.0 performance improvement to implement.
 
-## P0 — Correctness defect
+## P0 — ~~Correctness defect~~ — resolved
 
 ### 1. Address fallback cancellation to the popup endpoint
+
+**RESOLVED, verified 2026-08-06.** `_transmit_binary_structure_chunk` passes the chunk's `target_endpoint_id` into `_fallback_binary_structure_stream`, and `tests/test_runtime_seam_integration.py::test_a_popup_targeted_stream_fallback_cancels_and_loads_the_same_endpoint` pins it.
 
 **Observed defect.** A popup-targeted binary stream retains its
 `target_endpoint_id`. On failure, `_fallback_binary_structure_stream` adds that
@@ -146,6 +148,8 @@ that closed phases remain implementation work.
 ## P1 — Measured pre-1.0 performance work
 
 ### 6. Build the JSON fallback lazily
+
+**DONE, verified 2026-08-06.** Implemented, tested and measured — 32 ms against 1,459 ms. Its proposal is archived: [`../archive/lazy_json_fallback_payload.md`](../archive/lazy_json_fallback_payload.md).
 
 This item remains owned by
 [`lazy_json_fallback_payload.md`](lazy_json_fallback_payload.md). The binary path

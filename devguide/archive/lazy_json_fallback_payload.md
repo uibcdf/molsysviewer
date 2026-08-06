@@ -1,5 +1,23 @@
 # Remove ViewerJSON and build portable JSON only on demand
 
+**DONE, and the header was the last thing that did not know it.** It said
+"implemented in the Phase 3 working tree; validation and measurement pending" —
+all three parts have existed for some time.
+
+- **Implemented**: `_new_lazy_molecular_projection` and `is_lazy_molecular_message`
+  in `viewer/core.py`.
+- **Validated**: `tests/test_lazy_molecular_projection.py`, including that the
+  projection materialises once, returns defensive copies, and refuses a stale
+  molecular revision before building.
+- **Measured**: [`../performance/pre_1_0_rework_baseline_2026_08.md`](../performance/pre_1_0_rework_baseline_2026_08.md)
+  — registering the generation-bound lazy projection before the frontend is
+  ready takes **32 ms**, against **1,459 ms** for a direct portable-JSON load,
+  and the successful binary path builds portable JSON zero times, so that cost is
+  absent rather than hidden.
+
+Archived 2026-08-06 during a sweep for reports that outlived their subject.
+
+---
 **Status:** implemented in the Phase 3 working tree; validation and measurement
 pending.
 
