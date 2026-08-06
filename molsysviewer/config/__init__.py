@@ -16,11 +16,18 @@ controls_position = ["top", "right"]
 # Overlay position when fullscreen is active.
 controls_position_fullscreen = ["top", "right"]
 
-# Controls surface style: "classic" (text buttons) or "minimal" (3-icon cluster).
-controls_mode: str = "classic"
+# Controls surface style: "classic" (text buttons), "minimal" (3-icon cluster) or
+# "cinema". `None` means "whatever `viewer_mode` implies", which is the default.
+#
+# `None` and not `"classic"`, deliberately. These were once their own defaults,
+# and the resolver read "equal to the default" as "the user has not chosen" — so
+# setting `controls_mode = "classic"` here asked for the classic surface and got
+# the preset's instead, silently. A sentinel has to be a value nobody can want.
+controls_mode: str | None = None
 
-# Panel container architecture: "drawer" (side drawers) or "floating" (centered overlay).
-panel_mode_style: str = "drawer"
+# Panel container architecture: "drawer" (side drawers), "floating", "integrated",
+# "floating-unified", "ambient" or "split". `None` follows `viewer_mode`.
+panel_mode_style: str | None = None
 
 # High-level viewer mode preset: "classic", "integrated", or "cinema".
 viewer_mode: str = "integrated"

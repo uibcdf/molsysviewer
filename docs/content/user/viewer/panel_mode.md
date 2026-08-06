@@ -166,18 +166,40 @@ view = mv.MolSysView(
 
 `controls_mode`:
 
-- `"classic"` (default) — six text buttons at the bottom of the canvas.
+- `"classic"` — six text buttons at the bottom of the canvas.
 - `"minimal"` — three SVG icons (panel / fullscreen / popup) plus a `?` help button.
   Scene actions (reset view, background, spin, swing) move to the empty-canvas context menu.
   Keyboard shortcuts: `H` help overlay, `N` Navigate, `W` Workbench.
+- `"cinema"` — the canvas alone, with the controls out of the way.
 
 `panel_mode_style`:
 
-- `"drawer"` (default) — Navigate slides in from the left, Workbench from the right.
+- `"drawer"` — Navigate slides in from the left, Workbench from the right.
 - `"floating"` — a centered overlay card that closes on backdrop click, with zero viewport shift.
+- `"floating-unified"` — one shared shell instead of two separate panels.
+- `"integrated"` — the unified shell, docked into the canvas rather than over it.
+- `"ambient"` and `"split"` — the unified shell laid out beside the canvas.
 
-Both defaults remain `"classic"` / `"drawer"` until the new design is validated
-with real scientific workflows.
+**You rarely need either.** Both follow from `viewer_mode`, which is the one knob
+worth knowing: `"classic"` gives you `classic` + `drawer`, `"integrated"` (the
+default) gives `minimal` + `integrated`, and `"cinema"` gives `cinema` +
+`integrated`. Setting `controls_mode` or `panel_mode_style` overrides that pair
+for one of the two.
+
+To fix a preference for every view, set it in `molsysviewer.config`:
+
+```python
+import molsysviewer as mv
+
+mv.config.viewer_mode = "classic"        # or set the two below individually
+mv.config.panel_mode_style = "drawer"
+```
+
+Leaving a configuration value as `None` — which is how it ships — means *follow
+whatever `viewer_mode` implies*. That distinction matters: until 2026-08-06 the
+defaults `"classic"` and `"drawer"` doubled as "not chosen", so configuring
+either of them asked for the classic surface and quietly got the preset's
+instead. They are requestable now.
 
 ## See also
 

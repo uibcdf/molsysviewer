@@ -501,10 +501,13 @@ class MolSysView(
             "cinema": ("cinema", "integrated"),
         }
 
-        # Retrieve values from config, falling back to defaults if not present
+        # Retrieve values from config. `None` means "not chosen": until 2026-08-06
+        # the sentinels were `"classic"` and `"drawer"`, which are also legitimate
+        # answers, so a user who configured either got the preset's value instead
+        # and had no way to ask for them at all.
         cfg_viewer_mode = getattr(config, "viewer_mode", "classic")
-        cfg_controls_mode = getattr(config, "controls_mode", "classic")
-        cfg_panel_mode_style = getattr(config, "panel_mode_style", "drawer")
+        cfg_controls_mode = getattr(config, "controls_mode", None)
+        cfg_panel_mode_style = getattr(config, "panel_mode_style", None)
 
         # 1. Resolve viewer_mode. An explicitly requested viewer_mode is validated
         # strictly (removed presets raise instead of silently coercing); a stale or
@@ -523,10 +526,7 @@ class MolSysView(
         elif viewer_mode is not None:
             c_mode = preset_controls
         else:
-            if cfg_controls_mode != "classic":
-                c_mode = cfg_controls_mode
-            else:
-                c_mode = preset_controls
+            c_mode = cfg_controls_mode if cfg_controls_mode is not None else preset_controls
 
         c_mode_valid = c_mode if c_mode in ("classic", "minimal", "cinema") else "classic"
 
@@ -536,10 +536,7 @@ class MolSysView(
         elif viewer_mode is not None:
             p_style = preset_panel
         else:
-            if cfg_panel_mode_style != "drawer":
-                p_style = cfg_panel_mode_style
-            else:
-                p_style = preset_panel
+            p_style = cfg_panel_mode_style if cfg_panel_mode_style is not None else preset_panel
 
         p_style_valid = p_style if p_style in ("drawer", "floating", "floating-unified", "integrated", "ambient", "split") else "drawer"
 
