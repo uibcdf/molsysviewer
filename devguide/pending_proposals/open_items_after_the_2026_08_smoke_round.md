@@ -285,26 +285,20 @@ detection that exists only to guard it. Until then both are permanent.
 
 ---
 
-## E. Housekeeping and drift (6)
+## E. Housekeeping and drift (5)
 
-Half an hour in total, and four of them are documentation or handoff records
+Half an hour in total, and four of the five are documentation or handoff records
 contradicting the
 code — the exact failure `feedback_devguide_accuracy` warns about.
 
-### E0. Thirteen legacy popup actions outside the shared manifest
-
-Carried here on 2026-08-05 from [`../runtime_message_router.md`](../runtime_message_router.md),
-which was promoted out of this directory once R0–R4 landed. Its protocol work is
-done; this one item is not, and a contract document is a poor place for a task to
-wait.
-
-The thirteen `molsysviewer-*` popup actions now travel inside an envelope but are
-not enumerated in `molsysviewer/runtime_actions.json`. So the manifest, which is
-the thing that says which actions need an authority, does not describe all of
-them — and [`exported_page_self_declaration.md`](exported_page_self_declaration.md)
-Part B proposes to decide what an exported page may offer *from that manifest*.
-Whoever does Part B needs this closed first, or the classification is built on a
-list with holes.
+*(An E0 was added here on 2026-08-05 — "thirteen legacy popup actions outside the
+shared manifest" — and removed on 2026-08-06 having been checked. It was not
+true. `runtime_actions.json` enumerates all thirteen with the directions each may
+carry, and `popupActionAllows` is enforced on three seams: host inbound, host
+outbound and popup inbound, each rejecting through the contract-rejection channel,
+with the direction matrix covered by unit tests. The claim came from a stale
+sentence in the router document and was carried here without verifying it — which
+is the very failure this section's own heading describes.)*
 
 ### E1. An orphan report left uncommitted in MolSysMT
 

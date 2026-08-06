@@ -11,9 +11,11 @@ the current description of the router, which is a contract's job and not a
 plan's. What remains is not protocol work and is tracked where work is tracked —
 the Qt render check on a GPU runner
 ([`pending_proposals/post_1.0/qt_render_check_on_a_gpu_runner.md`](pending_proposals/post_1.0/qt_render_check_on_a_gpu_runner.md)),
-and the thirteen legacy `molsysviewer-*` popup actions still outside the shared
-manifest
-([`pending_proposals/open_items_after_the_2026_08_smoke_round.md`](pending_proposals/open_items_after_the_2026_08_smoke_round.md) E0).
+and nothing else. The sentence that stood here until 2026-08-06 — thirteen legacy
+`molsysviewer-*` popup actions still outside the shared manifest — was stale:
+`runtime_actions.json` enumerates all thirteen with their permitted directions,
+and `popupActionAllows` refuses anything else on host inbound, host outbound and
+popup inbound alike.
 
 **Scope:** identity, authority, routing, deduplication, acknowledgements, and
 lifecycle across Python, AnyWidget/Qt host adapters, embedded canvases, and
