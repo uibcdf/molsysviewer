@@ -24,6 +24,16 @@ async function run(): Promise<void> {
         assert.equal(result.endpointChanged, true);
         assert.equal(result.replacementSessionId, "e2e-new-session");
         assert.equal(result.closeNotificationMatched, true);
+
+        // R2's promise is a lifecycle, not only message validation: the replaced
+        // popup must stop being able to act. The second assertion is the control
+        // that gives the first one meaning — without it, "refused" also passes
+        // for a message that was merely malformed.
+        assert.equal(result.staleSessionCommandAccepted, false,
+            "a popup from the replaced session still had its command accepted");
+        assert.equal(result.currentSessionCommandAccepted, true,
+            "the probe's command was refused even for the current session, so the "
+            + "assertion above proves nothing");
         assert.deepEqual(errors, []);
         console.log("[E2E endpoint lifecycle] reconstruction revoked the old popup and authenticated a fresh session");
     } finally {

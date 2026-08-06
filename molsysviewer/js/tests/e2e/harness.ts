@@ -143,6 +143,8 @@ export async function probePopupReconstruction(): Promise<{
     endpointChanged: boolean;
     replacementSessionId: string;
     closeNotificationMatched: boolean;
+    staleSessionCommandAccepted: boolean;
+    currentSessionCommandAccepted: boolean;
 }> {
     const popupModule = `
         export function bootPopup() {
@@ -209,12 +211,46 @@ export async function probePopupReconstruction(): Promise<{
             const newEndpoint = secondMessage.channel.popupEndpointId;
             const replacementSessionId = secondMessage.channel.sessionId;
             const closeNotificationMatched = closedEndpoint === oldEndpoint;
+
+            // Step 3 of the audit item: the replaced popup must not be able to
+            // command the host any more. Synthesised rather than driven from the
+            // old window, which is gone by now — what is under test is the
+            // *acceptance*, and that is decided here.
+            //
+            // The second call is a positive control, and it is the half that
+            // makes the first one mean anything: without it, "not accepted" also
+            // passes when the message is simply malformed.
+            const commandFrom = (channel: any) => ({
+                source: (event as MessageEvent).source,
+                data: {
+                    channel,
+                    envelope: {
+                        protocolVersion: 1,
+                        viewerId: channel.viewerId,
+                        sessionId: channel.sessionId,
+                        endpointId: channel.popupEndpointId,
+                        targetEndpointId: channel.hostEndpointId,
+                        messageId: `${channel.popupEndpointId}:probe-command`,
+                        direction: "command",
+                        action: "molsysviewer-sync-op",
+                        payload: { op: "reset_view", options: {} },
+                    },
+                },
+            }) as unknown as MessageEvent;
+
+            const staleChannel = { ...secondMessage.channel, sessionId: "e2e-old-session" };
+            const staleSessionCommandAccepted = second.receive(commandFrom(staleChannel)) !== null;
+            const currentSessionCommandAccepted =
+                second.receive(commandFrom(secondMessage.channel)) !== null;
+
             cleanup();
             resolve({
                 oldEndpointClosed,
                 endpointChanged: oldEndpoint !== newEndpoint,
                 replacementSessionId,
                 closeNotificationMatched,
+                staleSessionCommandAccepted,
+                currentSessionCommandAccepted,
             });
         };
         window.addEventListener("message", onMessage);

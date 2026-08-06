@@ -63,7 +63,11 @@ untargeted.
 
 ### 2. Test widget reconstruction and kernel-session replacement end to end
 
-**PARTLY DONE, checked 2026-08-06.** `js/tests/e2e/endpoint-lifecycle.e2e.ts` covers steps 1, 2 and 4: it opens and authenticates a popup, replaces the session, and asserts the old endpoint closed, the endpoint changed, the replacement session id and a matching close notification. Steps 3 and 5 — proving the old popup's command is *refused* and that nothing leaks across sessions — are still not asserted, and neither is the mutation check.
+**DONE 2026-08-06.** `js/tests/e2e/endpoint-lifecycle.e2e.ts` already covered steps 1, 2 and 4 — open and authenticate, replace the session, and assert the old endpoint closed, the endpoint changed, the replacement session id and a matching close notification. Step 3 is now covered too: a command carrying the replaced session is fed to the live host and must not be accepted, **with a positive control** proving the same command from the current session *is*, since without it "refused" also passes for a message that was merely malformed.
+
+The mutation this item asked for taught something worth keeping. Removing the router's session check left the test green, because the message never reaches the router: `samePopupChannel` refuses it one layer earlier, in the channel decoder. **The property is guarded twice, independently**, and only disabling both turns the test red — which it does. A single-line mutation would have concluded the test was weak; it was the mutation that was aimed at the wrong layer, the same lesson as `whole_representation_succession_semantics`.
+
+Step 5 — proving no *pending request* leaks across sessions — remains unasserted. It needs a request in flight at the moment of replacement, which this probe does not stage.
 
 The router correctly rejects stale `session_id` values in Python and
 TypeScript. That proves message validation, not the complete lifecycle promised
