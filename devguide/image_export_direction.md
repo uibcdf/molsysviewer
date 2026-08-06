@@ -1,110 +1,46 @@
 # Image Export Direction
 
 This document records the current design direction for image export in
-**MolSysViewer**.
-
-It covers two related but distinct goals:
-
-- **image export**
-- **premium/publication-oriented image export**
-
-The purpose is to keep this work aligned with the core identity of the project:
-
-- a molecular workbench,
-- reproducible scientific state,
-- and a user experience that can support both exploration and communication.
+**MolSysViewer**, covering both ordinary export and premium, publication-oriented
+export. It exists to keep that work aligned with what the project is: a molecular
+workbench with reproducible scientific state, whose UX has to serve exploration
+and communication alike.
 
 ## Core Position
 
-MolSysViewer should support image export not merely as:
-
-- "take a screenshot of the canvas"
-
-but as:
-
-- **export this scientific scene intentionally**
-- **with this camera**
-- **with this style**
-- **with this visibility state**
-- **with this output quality**
-
-The export story should therefore be tied to:
-
-- camera state
-- style/preset
-- visibility
-- annotations
-- measurements
-- background
-- and future figure-oriented recipes
+Export is not "take a screenshot of the canvas". It is **export this scientific
+scene intentionally** — with this camera, this style, this visibility state and
+this output quality. So the export story is tied to camera state, style/preset,
+visibility, annotations, measurements, background, and the figure recipes that
+come later.
 
 ## What We Mean By "Premium"
 
-"Premium" image export does **not** mean:
+Not photorealism at any cost, not desktop-renderer complexity, and not a UI full
+of figure controls. It means publication-quality clarity: strong visual
+hierarchy, deliberate composition, clean silhouettes, high-resolution output and
+reproducible figure generation. The target is a figure that can stand in a paper,
+a talk or a report without looking like an incidental screenshot.
 
-- photorealism at any cost
-- desktop-renderer complexity
-- a noisy UI full of figure controls
+## Current Technical Judgment About Mol\*
 
-It means:
+After reviewing the local Mol\* source tree: **Mol\* is not a hard limitation for
+high-quality figure export.** It already has a serious screenshot/headless path,
+multisampling and image-pass rendering, postprocessing (occlusion, outline,
+shadow, antialiasing, sharpening/CAS, depth of field, fog), and stylized
+screenshot-oriented settings of its own.
 
-- publication-quality clarity
-- strong visual hierarchy
-- deliberate composition
-- clean silhouettes
-- high-resolution output
-- reproducible figure generation
-
-The target is a figure that can stand in a paper, talk, or report without
-feeling like an incidental screenshot.
-
-## Current Technical Judgment About Mol*
-
-After reviewing the local Mol* source tree, the current judgment is:
-
-- **Mol* is not a hard limitation for high-quality figure export**
-
-Why:
-
-- it already has a serious screenshot/headless path
-- it supports multisampling/image-pass rendering
-- it supports postprocessing options such as:
-  - occlusion
-  - outline
-  - shadow
-  - antialiasing
-  - sharpening/CAS
-  - depth of field
-  - fog
-- it already includes stylized screenshot-oriented settings in its own codebase
-
-So the main bottleneck for MolSysViewer is not "Mol* cannot render well enough".
-
-The more likely bottlenecks are:
-
-- missing publication-oriented styles
-- missing export UX and API
-- missing camera/composition workflows
-- missing figure recipes/specifications
-- missing curation of defaults
+The bottleneck is ours, not the renderer's: missing publication-oriented styles,
+missing export UX and API, missing camera and composition workflows, missing
+figure recipes, and uncurated defaults.
 
 ## The Real Opportunity For MolSysViewer
 
-MolSysViewer can differentiate itself by combining:
-
-- modern realtime rendering
-- workbench interaction
-- Python integration
-- reproducibility
-- and figure export based on the same scene model
-
-This means the image-export story should not live outside the product.
-It should be a natural extension of:
-
-- `styles`
-- `Navigate` / `Workbench`
-- export/replay
-- and future standalone/CLI directions
+The differentiator is the combination — modern realtime rendering, workbench
+interaction, Python integration, reproducibility, and figure export built on the
+*same scene model*. So image export should not live outside the product: it is a
+natural extension of `styles`, the panel surface, export/replay, and the
+standalone/CLI directions.
 
 ## Work Lines
 
@@ -112,181 +48,78 @@ The image-export direction should develop along several lines in parallel.
 
 ### 1. Basic Image Export
 
-MolSysViewer should provide a simple but serious image export entrypoint.
+A simple but serious entrypoint: PNG, explicit output size in pixels, the current
+camera and scene state, and a background choice between current, a solid colour
+and transparent. That is the minimum useful layer.
 
-Minimum expected features:
-
-- export PNG
-- explicit output size in pixels
-- use current camera
-- use current scene state
-- allow background choice:
-  - current
-  - solid color
-  - transparent
-
-This is the minimum useful layer.
-
-Current status:
-
-- the first real slice now exists in the repository as Python `view.export.image(...)`
-- current implemented scope:
-  - PNG
-  - optional `width_px` / `height_px`
-  - optional `scale` multiplier for higher-resolution output
-  - optional transparent background
-  - live frontend required
-- current implementation note:
-  - it is backed by Mol*'s real viewport screenshot helper
-  - not by a naive `canvas.toDataURL()` capture of whatever happens to be on screen
+**Status: the first slice exists** as `view.export.image(...)`, covering PNG,
+optional `width_px` / `height_px`, an optional `scale` multiplier, and a
+transparent background. It requires a live frontend, and it is backed by Mol\*'s
+real viewport screenshot helper rather than a naive `canvas.toDataURL()` capture
+of whatever happens to be on screen.
 
 ### 2. High-Resolution Export
 
-High-quality figures need more than canvas capture.
-
-The next level should support:
-
-- supersampling or render scale
-- high-resolution export factors such as:
-  - `2x`
-  - `4x`
-  - perhaps later `6x`
-- explicit width/height
-- careful preservation of labels and linework
-
-This is likely one of the highest-impact improvements.
+Good figures need more than canvas capture: supersampling or render scale,
+export factors like `2x` and `4x` (perhaps `6x` later), explicit width and
+height, and careful preservation of labels and linework. Likely one of the
+highest-impact improvements.
 
 ### 3. Camera And Composition
 
-Publication quality depends heavily on composition.
-
-MolSysViewer should strengthen:
-
-- persistent camera snapshots
-- exact reuse of camera state
-- explicit framing workflow
-- perhaps later:
-  - figure margins
-  - crop intent
-  - saved viewpoints
-
-The figure should be reproducible as a composition, not just as raw pixels.
+Publication quality depends heavily on composition, so persistent camera
+snapshots, exact reuse of camera state and an explicit framing workflow matter —
+with figure margins, crop intent and saved viewpoints as later candidates. The
+figure should be reproducible *as a composition*, not just as raw pixels.
 
 ### 4. Publication Styles
 
-MolSysViewer should eventually offer styles specifically oriented to figure
-export.
+Styles oriented specifically to figure export, not merely structural presets:
+better contrast, a clearer focus/context hierarchy, cleaner materials, better
+silhouette separation, more deliberate backgrounds, less visual noise. This stays
+connected to the evolving `Style` model.
 
-These should not be mere structural presets.
-
-They should include a more editorial visual direction:
-
-- better contrast
-- clearer focus/context hierarchy
-- cleaner materials
-- better silhouette separation
-- more deliberate backgrounds
-- less visual noise
-
-This work should stay connected to the evolving `Style` model.
-
-Candidate publication-oriented styles / looks worth exploring:
-
-- `publication`
-  - clean defaults for figures intended for papers and slides
-- `illustrative`
-  - stronger silhouette and shape separation, closer to explanatory figures
-- `analysis`
-  - slightly more technical and information-dense, but still cleaner than raw interactive defaults
+Candidate looks: `publication` (clean defaults for papers and slides),
+`illustrative` (stronger silhouette and shape separation, closer to explanatory
+figures), and `analysis` (more technical and information-dense, but still cleaner
+than raw interactive defaults).
 
 ### 5. Outlines, Occlusion, And Postprocessing
 
-Mol* already suggests that this is a viable direction.
-
-MolSysViewer should explore:
-
-- subtle outline
-- calibrated occlusion
-- sharpening where useful
-- maybe selective shadowing
-
-But with a strong rule:
-
-- postprocessing must support clarity
-- not visual gimmickry
-
-The aim is scientific legibility, not effect-heavy rendering.
-
-Concrete Mol* capabilities worth exploiting here:
-
-- headless screenshot
-- multisampling / image-pass rendering
-- outline
-- occlusion
-- CAS / sharpening
+Mol\* already shows this is viable, and it exposes what is needed: headless
+screenshot, multisampling and image-pass rendering, outline, occlusion, and
+CAS/sharpening. Worth exploring subtle outline, calibrated occlusion, sharpening
+where useful and perhaps selective shadowing — under one rule: **postprocessing
+must support clarity, not visual gimmickry.** The aim is scientific legibility,
+not effect-heavy rendering.
 
 ### 6. Labels And Annotations For Figures
 
-Premium figures often fail because labels are weak, not because geometry is.
-
-MolSysViewer should eventually improve:
-
-- label contrast
-- placement stability
-- collision avoidance
-- figure-oriented label styling
-- consistent typography for export
-
-This is likely a major differentiator for final figure quality.
+Premium figures usually fail on labels, not on geometry. Improving label
+contrast, placement stability, collision avoidance, figure-oriented styling and
+consistent typography for export is likely a major differentiator for final
+figure quality.
 
 ### 7. Figure Recipes / Specifications
 
-This is a particularly good fit for MolSysViewer.
-
-The project should eventually be able to represent a figure not just as an
-image file, but as a reproducible spec.
-
-A future figure spec might include:
-
-- camera
-- style
-- visibility
-- annotations
-- background
-- image size
-- scale factor
-- maybe output intent
-
-This is much more aligned with the project identity than raw screenshots alone.
+A particularly good fit for this project: representing a figure not just as an
+image file but as a **reproducible spec** — camera, style, visibility,
+annotations, background, image size, scale factor, perhaps output intent. That is
+far more aligned with the project's identity than raw screenshots.
 
 ### 8. Batch / Headless / Standalone Export
 
-Later, image export should align naturally with:
-
-- CLI launch
-- standalone host
-- headless export
-- scripted figure generation
-
-But this should come after the workbench and export model are mature enough.
+Later, export should align with CLI launch, the standalone host, headless export
+and scripted figure generation — after the workbench and export model are mature
+enough.
 
 ## Output Formats
 
-The output format story should remain staged.
-
-Preferred first target:
-
-- PNG
-
-Likely later directions:
-
-- TIFF if a stronger high-quality raster workflow becomes necessary
-- helpers for external composition workflows
-- future figure/session exports that combine image output with reproducible metadata
+Staged. PNG first. Later, TIFF if a stronger high-quality raster workflow becomes
+necessary, helpers for external composition workflows, and figure/session exports
+that combine image output with reproducible metadata.
 
 ## Proposed Roadmap
-
-The preferred roadmap is:
 
 ### Phase 1: Essential Export
 
@@ -330,7 +163,7 @@ The preferred roadmap is:
 
 ## Priority View
 
-To avoid drift, it is useful to keep a very short priority map:
+A short priority map, to avoid drift.
 
 ### Now
 
@@ -359,7 +192,7 @@ To avoid drift, it is useful to keep a very short priority map:
 
 ## Quick Wins
 
-These likely offer the best return early:
+Best return early:
 
 - real `view.export.image()` API
 - transparent background export
@@ -506,74 +339,33 @@ The key is that the API should:
 
 ## Medium-Term Higher-Value Improvements
 
-These are more strategic:
-
-- figure recipe/spec model
-- publication-oriented label system
-- reusable scene/look presets for figure generation
-- export API that is equally usable from:
-  - notebook
-  - script
-  - future standalone host
+More strategic: a figure recipe/spec model, a publication-oriented label system,
+reusable scene/look presets for figure generation, and an export API equally
+usable from a notebook, a script and the standalone host.
 
 ## Things To Avoid
 
-This direction should avoid:
-
-- screenshot-only thinking
-- many ad hoc export toggles in the visible canvas UI
-- postprocessing as spectacle
-- a giant "figure settings" panel too early
-- creating a figure export pipeline disconnected from the scene/state model
-
-The export story should stay:
-
-- minimal in visible UX
-- strong in reproducibility
-- progressive in complexity
+Screenshot-only thinking; many ad hoc export toggles in the canvas UI;
+postprocessing as spectacle; a giant "figure settings" panel too early; and a
+figure pipeline disconnected from the scene/state model. The export story stays
+minimal in visible UX, strong in reproducibility, progressive in complexity.
 
 ## Risks And Frictions
 
-Some quality problems are likely to appear before the system feels mature.
-
-The main risks worth tracking are:
-
-- labels:
-  - they can easily become the weakest part of figure quality
-- transparent backgrounds combined with outline/fog:
-  - these combinations often look worse or behave differently than expected
-- confusing screenshot export with reproducible figure export:
-  - these should remain related, but not conceptually collapsed into the same thing
+Three quality problems will appear before the system feels mature. **Labels** can
+easily become the weakest part of a figure. **Transparent backgrounds combined
+with outline or fog** often look worse, or behave differently, than expected. And
+**screenshot export and reproducible figure export** are related but must not
+collapse into the same concept.
 
 ## Relation To The UI Direction
 
-The current minimal canvas philosophy still applies.
-
-Image export should not force:
-
-- toolbar clutter
-- permanent figure buttons everywhere
-- a noisy canvas
-
-The likely future interaction model remains consistent:
-
-- quick export actions from the menu or panel
-- deeper figure/export configuration in `Workbench`
-- scripted/export-heavy use from Python or future CLI
-
-## Relation To `Workbench`
-
-The current `Workbench` direction already suggests where image export should
-live in the interactive UX.
-
-Most likely:
-
-- `Scene` becomes the first visual home for export-related controls
-- quick export actions remain small and unobtrusive
-- deeper figure/export configuration should appear in `Workbench`, not as
-  permanent canvas clutter
-
-This keeps the canvas calm while still making export a first-class capability.
+The minimal canvas philosophy still applies: no toolbar clutter, no permanent
+figure buttons, no noisy canvas. Quick export actions belong in the menu or the
+panel, deeper figure configuration in the Studio's export subpanel, and
+export-heavy use in Python or the CLI. `Export` is a Studio subpanel today, which
+is where the earlier drafts of this document expected "deeper configuration" to
+land.
 
 ## Open Questions
 

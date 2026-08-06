@@ -46,7 +46,7 @@ Current smoke scope:
 8. GroupStrip synchronization
 9. Annotation API sanity after UI-created labels
 10. Export/replay sanity for the newly created artifacts
-11. Figure-export baseline from `Workbench -> Scene`
+11. Figure-export baseline from the Studio's `Export` tab
 12. Reference add-on workspace behavior in the shared workbench
 13. Shared panel-mode behavior across `Core` and add-on workspaces
 14. Popup bootstrap: canvas popup and panel popup carry the current scene
@@ -276,12 +276,13 @@ There is now an integral Python regression for this export surface covering:
 - distance / angle / dihedral measurements,
 - camera snapshot.
 
-### 12. Check figure-export baseline from `Workbench -> Scene`
+### 12. Check figure-export baseline from the Studio's `Export` tab
 
 Workflow:
 
-- open `Workbench`
-- inspect the `Scene` section
+- open the Studio (`view.set_panel_mode(panel="navigate")` — the API name is
+  still `navigate`; the panel is labelled **Studio** in the UI)
+- select the `Export` tab
 - confirm that figure export is visible there as part of the workbench story
   (the section should show the default baseline immediately after load, without
   needing to call `set_global_representation` first)
@@ -297,12 +298,13 @@ Suggested checks:
 ```python
 from molsysviewer.figures import FigureSpec
 
-view.set_panel_mode(panel="workbench", expanded=True)
-# Workbench -> Scene should already show the default figure baseline
+view.set_panel_mode(panel="navigate", expanded=True)
+view.set_workspace_panel(panel="export")
+# the Export tab should already show the default figure baseline
 
 base = FigureSpec.from_view(view, preset="publication-light", scale=2.0)
 view.set_figure_spec(figure_spec=base)
-# Workbench -> Scene now reflects the explicit spec
+# the Export tab now reflects the explicit spec
 
 view.export.figure("scene_light.png", figure_spec=base)
 view.export.figure_variants(
@@ -314,7 +316,7 @@ view.export.figure_publication_set("publication/", figure_spec=base, stem="scene
 
 Expected:
 
-- `Workbench -> Scene` shows the figure baseline immediately after loading a structure
+- the Studio's `Export` tab shows the figure baseline immediately after loading a structure
 - `set_figure_spec(...)` updates the Scene section with the explicit recipe
 - one explicit figure export succeeds
 - `figure_variants(...)` writes a named batch
@@ -348,7 +350,7 @@ view.workspace_runtime()
 
 Expected:
 
-- the reference add-on lands in the shared `Workbench`
+- the reference add-on lands in the shared Add-ons panel
 - it also lands in the add-on workspace and its entry panel
 - the add-on workspace appears as a real workspace, not as detached metadata
 - the active add-on host surface exposes:
@@ -363,16 +365,16 @@ Expected:
 
 Workflow:
 
-- open `Navigate` from Python
-- switch to `Workbench`
+- open the Studio from Python (`panel="navigate"`)
+- switch to the Add-ons panel (`panel="addons"`)
 - collapse panel mode
 - if an add-on workspace is available, switch into it and return to `Core`
 
 Suggested checks:
 
 ```python
-view.set_panel_mode("navigate")
-view.set_panel_mode("workbench")
+view.set_panel_mode("navigate")   # the Studio
+view.set_panel_mode("addons")     # the Add-ons panel
 view.set_panel_mode(None, expanded=False)
 ```
 
@@ -382,7 +384,7 @@ Expected:
 - the messages are retained as part of the viewer-side state/history
 - `Core` still reads as the calm native workspace
 - larger add-on workspaces remain workbench-centric without pretending they are
-  already a second native `Navigate`
+  already a second native Studio
 - the launcher hierarchy still feels like:
   - workspace first
   - local panel stack second

@@ -1,398 +1,136 @@
 # Standalone Host Plan
 
 This document turns the standalone direction into an operational pre-`1.0.0`
-plan.
-
-The question is no longer whether MolSysViewer should have a standalone mode.
-That is already decided.
-
-The question is:
-
-- what host shape should carry the final standalone experience,
-- what should stay shared with notebook/popup hosts,
-- and how to get there without forking the product.
+plan. Whether MolSysViewer should have a standalone mode is already decided; the
+open questions are what host shape carries the final experience, what stays
+shared with the notebook and popup hosts, and how to get there without forking
+the product.
 
 ## Core Position
 
-MolSysViewer should remain:
-
-- one workbench model,
-- one scene/state model,
-- one add-on/workspace model,
-- multiple hosts.
-
-The standalone host must not become:
-
-- a separate product,
-- a second UX designed from scratch,
-- or a place where unfinished workbench decisions are hidden.
-
-The runtime should remain the same.
-What changes is the host shell around it.
+One workbench model, one scene/state model, one add-on/workspace model, multiple
+hosts. The standalone host must not become a separate product, a second UX
+designed from scratch, or a place where unfinished workbench decisions are
+hidden. The runtime stays the same; only the shell around it changes.
 
 ## What `standalone 0` Already Proves
 
-The current browser-hosted standalone bridge already proves several important
-things:
+The browser-hosted bridge already proves that MolSysViewer can be launched from a
+CLI, that the host can exist outside a notebook, that `Core` and add-on
+workspaces can be surfaced there, and that the same panel/workbench runtime and
+the same export/state logic survive the move. It is the first host proof, not
+throwaway work.
 
-- MolSysViewer can be launched from CLI
-- the host can exist outside notebook
-- `Core` and add-on workspaces can be surfaced there
-- the same panel/workbench runtime can survive there
-- the same export/state logic can survive there
-
-So `standalone 0` is not throwaway work.
-It is the first host proof.
-
-What it does **not** prove yet is the final feel of the product.
-Today it still feels like:
-
-- generated HTML
-- opened in a browser tab
-
-That is enough for `standalone 0`.
-It is not enough for the final pre-`1.0.0` host.
+What it does **not** prove is the final feel: today it is still generated HTML
+opened in a browser tab. Enough for `standalone 0`, not enough for the final
+pre-`1.0.0` host.
 
 ## What The Final Standalone Must Feel Like
 
-The final standalone host should feel like software, not like "a web page with
-a widget".
+Like software, not like a web page with a widget in it: a dedicated application
+window with its own name, icon and title; host-owned menus, shortcuts and
+file open/save flows; a clean main canvas; workspaces and panel mode that feel
+native inside the host.
 
-That implies:
-
-- a dedicated application window
-- app identity:
-  - name
-  - icon
-  - window title
-- host-owned menus and shortcuts
-- host-owned file open/save flows
-- a clean main canvas experience
-- workspaces and panel mode feeling native inside the host
-
-It should also preserve the current project identity:
-
-- calm workbench
-- minimal permanent chrome
-- add-ons/workspaces scaling cleanly
-- reproducible scientific state
+It must also preserve the project's identity — calm workbench, minimal permanent
+chrome, add-ons and workspaces that scale cleanly, reproducible scientific state.
 
 ## Product Aspiration
 
-The final standalone should aim to feel:
-
-- solid
-- powerful
-- professional
-
-That does not mean "visually heavy" or "enterprise-like".
-It means the product should communicate:
-
-- stability
-- clarity
-- deliberateness
-- trustworthiness for scientific work
-
-The intended perception is:
-
-- this is a real scientific application
-- not a browser tab carrying an embedded viewer
-- not a demo shell around a widget
+Solid, powerful, professional — which is not "visually heavy" or
+"enterprise-like". It means communicating stability, clarity, deliberateness and
+trustworthiness for scientific work, so the tool reads as **a real scientific
+application** rather than a browser tab carrying an embedded viewer, or a demo
+shell around a widget.
 
 ## What Will Make It Feel Solid And Professional
 
-Several signals matter here more than flashy host chrome.
+Seven signals, none of which is flashy host chrome.
 
-### 1. Dedicated app identity
-
-The host should clearly own:
-
-- application name
-- icon
-- window title
-- menu structure
-
-This is one of the first things that separates an app from a browser page.
-
-### 2. Native host affordances
-
-The final standalone should use host-owned:
-
-- file open dialogs
-- save/export dialogs
-- keyboard shortcuts
-- menu actions
-
-Those flows should feel native, not simulated inside the viewer surface.
-
-### 3. Clean boundary between host and viewer
-
-Professional feel will be lost if the app becomes architecturally confused.
-
-The host should feel like a strong shell around the viewer, not like a second
-implementation of the viewer.
-
-That means:
-
-- host concerns remain host concerns
-- viewer concerns remain viewer concerns
-
-### 4. Calm but deliberate workbench
-
-The app should not try to feel "professional" by becoming busy.
-
-Professional feel in MolSysViewer should come from:
-
-- a calm canvas
-- clear workspace hierarchy
-- panel stacks that scale cleanly
-- predictable export behavior
-- visible scientific intent
-
-### 5. Stable flows for real work
-
-The host should support ordinary scientific workflows without friction:
-
-- open data
-- inspect structure
-- move between workspaces
-- export figures
-- return later to the same state model
-
-If those flows feel stable, the tool will feel powerful.
-
-### 6. Add-ons that look native
-
-Large add-ons should not feel bolted on.
-
-A professional MolSysSuite story means:
-
-- `Core` remains coherent
-- add-on workspaces feel first-class
-- the host does not expose a second-class extension model
-
-### 7. Good error and edge behavior
-
-A tool feels professional not only when the happy path works, but when failure
-is handled clearly.
-
-That includes:
-
-- understandable startup failures
-- understandable file-open failures
-- controlled missing-dependency behavior
-- predictable add-on compatibility behavior
+1. **Dedicated app identity.** The host owns the application name, icon, window
+   title and menu structure. This is the first thing that separates an app from
+   a browser page.
+2. **Native host affordances.** File open, save and export dialogs, keyboard
+   shortcuts and menu actions come from the host, and feel native rather than
+   simulated inside the viewer surface.
+3. **A clean boundary between host and viewer.** The professional feel is lost
+   the moment the app becomes architecturally confused: the host is a strong
+   shell around the viewer, never a second implementation of it. Host concerns
+   stay host concerns.
+4. **A calm but deliberate workbench.** The app does not become professional by
+   becoming busy. It comes from a calm canvas, a clear workspace hierarchy,
+   panel stacks that scale, predictable export behaviour and visible scientific
+   intent.
+5. **Stable flows for real work** — open data, inspect structure, move between
+   workspaces, export figures, and return later to the same state model. If
+   those feel stable, the tool feels powerful.
+6. **Add-ons that look native.** `Core` stays coherent, add-on workspaces are
+   first-class, and the host never exposes a second-class extension model.
+7. **Good error and edge behaviour.** A tool feels professional when failure is
+   handled clearly: understandable startup and file-open failures, controlled
+   missing-dependency behaviour, predictable add-on compatibility.
 
 ## What Would Make It Feel Weak
 
-These are warning signs for the final standalone:
-
-- it still looks like a normal browser tab
-- browser chrome dominates the experience
-- menus and shortcuts feel accidental or missing
-- file open/export flows feel improvised
-- add-ons feel glued on instead of native
-- host logic and viewer logic start to diverge
-- the shell looks like a demo wrapper rather than an application
+Warning signs: it still looks like a browser tab; browser chrome dominates;
+menus and shortcuts feel accidental or missing; file open and export flows feel
+improvised; add-ons feel glued on; host logic and viewer logic diverge; the shell
+reads as a demo wrapper rather than an application.
 
 ## Host Options Considered
 
-### Option A. Browser Tab
+| Host | For | Against | Decision |
+|---|---|---|---|
+| **A. Browser tab** — today's `standalone 0` | already exists, almost no host complexity, easy to demo and debug, reuses the HTML export path directly | feels like a browser page; weak ownership of menus, dialogs and shortcuts; browser chrome competes with ours | transitional host only |
+| **B. Browser popup / dedicated window** | closer to a separate app window, reachable incrementally from the current host, cheap | still browser-shaped; popup restrictions and platform inconsistency; still weak as a final host | acceptable intermediate step, not the target |
+| **C. Python app shell with embedded WebView** (PySide6 + Qt WebEngine) | fits the Python ecosystem and keeps Python as the orchestration layer; a real application window with menus, native file dialogs, shortcuts and window management; embeds the same runtime | more packaging work; WebEngine integration must stay disciplined; a real app-shell maintenance surface | **preferred** |
+| **D. Tauri** | light modern shell, strong app feeling | a Rust/web packaging toolchain, weaker fit with a Python-first host story, higher integration cost | interesting, not now |
+| **E. Electron** | well known, very app-like | heavy for this project, poor fit with a Python-first architecture, too much host overhead for the scale | no |
 
-This is the current `standalone 0`.
-
-Pros:
-
-- already exists
-- almost zero extra host complexity
-- easy to demo and debug
-- reuses current HTML export path directly
-
-Cons:
-
-- feels like a browser page, not an app
-- weak ownership of menus, dialogs, and shortcuts
-- hard to make it feel like the final standalone identity
-- browser chrome competes with MolSysViewer chrome
-
-Decision:
-
-- keep as transitional host only
-- not the final standalone target
-
-### Option B. Browser Popup / Dedicated Window
-
-This is a possible intermediate host:
-
-- still browser-based
-- but opened as a more dedicated window/popup
-
-Pros:
-
-- closer to a separate app window than a tab
-- can be reached incrementally from the current browser host
-- lower implementation cost than a real app shell
-
-Cons:
-
-- still browser-shaped
-- popup restrictions and platform inconsistency can become annoying
-- still weak as a final software-feeling host
-
-Decision:
-
-- acceptable transitional step if needed
-- not the preferred final target
-
-### Option C. Python App Shell With Embedded WebView
-
-Examples:
-
-- PySide6 + Qt WebEngine
-
-Pros:
-
-- fits naturally with the Python ecosystem
-- can keep Python as the first-class orchestration layer
-- provides a real application window
-- gives access to:
-  - menus
-  - native file dialogs
-  - keyboard shortcuts
-  - window management
-- can still embed the same runtime/workbench model
-
-Cons:
-
-- more packaging work than browser hosting
-- WebEngine/WebView integration must be kept disciplined
-- introduces a real app-shell maintenance surface
-
-First spike result:
-
-- technically validated
-- still packaging-heavy
-- should remain the preferred host direction, but with explicit caution that
-  the environment recipe is now a first-class product concern
-
-Decision:
-
-- preferred direction for the final standalone host
-
-### Option D. Tauri
-
-Pros:
-
-- light modern app shell
-- strong app feeling
-
-Cons:
-
-- introduces a broader Rust/web packaging toolchain
-- weaker fit with the current Python-first host story
-- higher integration cost relative to current architecture
-
-Decision:
-
-- interesting but not preferred now
-
-### Option E. Electron
-
-Pros:
-
-- well-known model
-- very app-like
-
-Cons:
-
-- heavy for this project
-- poor fit for the Python-first architecture
-- likely too much host overhead for the product scale
-
-Decision:
-
-- do not prefer
+The first spike of option C validated it technically while confirming it is
+packaging-heavy — which is why the environment recipe is now a first-class
+product concern rather than a footnote.
 
 ## Recommended Direction
 
-The recommended final direction is:
-
-- **PySide6 + Qt WebEngine as the standalone host shell**
-
-with this interpretation:
-
-- Python remains the host/orchestration layer
-- the same MolSysViewer runtime is embedded in a dedicated app window
-- notebook/popup/standalone keep sharing the same core viewer model
-
-This is the best balance currently visible between:
-
-- real software feel
-- reuse of current runtime
-- fit with the existing Python ecosystem
-- and keeping standalone from becoming a second product.
+**PySide6 + Qt WebEngine as the standalone host shell**: Python stays the host
+and orchestration layer, the same MolSysViewer runtime is embedded in a dedicated
+app window, and notebook, popup and standalone keep sharing one core viewer
+model. It is the best balance visible between real software feel, reuse of the
+current runtime, fit with the Python ecosystem, and keeping standalone from
+becoming a second product.
 
 ## What The First Qt Spike Already Taught Us
 
-The first Qt spike has moved the discussion from speculation to evidence.
+The spike moved this from speculation to evidence. **Proven:** the runtime lives
+in a real Qt application window, `QWebEngineView` hosts the viewer, the host can
+show both an empty viewer and a demo-loaded one (`dialanine`), and the host is
+materially stronger using the `lite` export/runtime path with a local
+`viewer.js` than the AMD widget-manager export path.
 
-What is now proven:
-
-- the MolSysViewer runtime can live in a real Qt application window
-- `QWebEngineView` can host the viewer successfully
-- the Qt host can show:
-  - an empty MolSysViewer host
-  - a demo-loaded viewer (`dialanine`)
-- the host is materially stronger when it uses the `lite` export/runtime path
-  and prefers local `viewer.js` over the AMD widget-manager export path
-
-What is not solved yet:
-
-- a final supported conda-only recipe for Qt WebEngine
-- a final release packaging strategy for the standalone host
-
-Operational lesson:
-
-- Phase E can continue on top of the now-working Qt spike
-- but final packaging should be treated as a separate release question, not as
-  a precondition for all standalone host implementation work
+**Not solved:** a final supported conda-only recipe for Qt WebEngine, and a final
+release packaging strategy. The operational lesson is that Phase E can continue
+on top of the working spike — packaging is a separate release question, not a
+precondition for host implementation work.
 
 ## Environment Strategy Implication
 
-The standalone final host is not only a package question.
-It is an environment-recipe question.
-
-That is because the final standalone must coexist with:
-
-- `molsysviewer`
-- `molsysmt`
-- `pyunitwizard`
-- future MolSysSuite add-ons such as:
-  - `molsysviewer-molsysmt`
-  - `molsysviewer-topomt`
-  - `molsysviewer-pharmacophoremt`
-
-So the final release must not depend on arbitrary user-side mixing.
-It will need a supported environment recipe, whether that becomes:
-
-- conda-only
-- a supported conda+pip combination
-- or a more curated UIBCDF stack later
+The final host is an environment-recipe question, not only a packaging one,
+because it must coexist with `molsysviewer`, `molsysmt`, `pyunitwizard` and the
+MolSysSuite add-ons (`molsysviewer-molsysmt`, `molsysviewer-topomt`,
+`molsysviewer-pharmacophoremt`). The release cannot depend on arbitrary user-side
+mixing: it needs a supported recipe, whether conda-only, a supported conda+pip
+combination, or a more curated UIBCDF stack later.
 
 ## Non-Negotiable Invariants
 
-The following should remain true through the standalone push:
+Through the standalone push: the same scene/state contract, workbench concepts,
+add-on/workspace model and figure/export story, with no host-specific scene
+semantics, no standalone-only panel logic, and no notebook-only business logic
+hidden in the core.
 
-- same scene/state contract
-- same workbench concepts
-- same add-on/workspace model
-- same figure/export story
-- no host-specific scene semantics
-- no standalone-only panel logic
-- no notebook-only business logic hidden in the core
-
-If a feature only works in standalone because the host invents new viewer logic,
-that is a warning sign.
+**If a feature only works in standalone because the host invented new viewer
+logic, that is a warning sign.**
 
 ## Proposed Execution Stages
 
@@ -472,81 +210,43 @@ It must not replace the canonical single-window experience.
 
 ## Ownership Boundary
 
-### The Host Should Own
+| The host owns | The viewer runtime owns |
+|---|---|
+| app window, native menus, open/save dialogs, startup flow, global shortcuts, multi-window layout if it exists | canvas behaviour, workspaces, panel stacks, add-on runtime projection, context-menu semantics, reproducible scene/state, figure-export semantics |
 
-- app window
-- native menus
-- open/save dialogs
-- startup flow
-- global app shortcuts
-- multi-window layout if it exists
-
-### The Viewer Runtime Should Own
-
-- canvas behavior
-- workspaces
-- panel stacks
-- add-on runtime projection
-- context menu semantics
-- reproducible scene/state
-- figure export semantics
-
-That boundary is critical.
-It is what prevents standalone from drifting away from notebook mode.
+**That boundary is what prevents standalone from drifting away from notebook
+mode.**
 
 ## Relationship To Add-Ons
 
-The final standalone host should not require a second add-on platform.
-
-It should reuse:
-
-- `molsysviewer.addons`
-- `view.addons`
-- the same workspace specs
-- the same runtime projection already used in notebook mode
-
-Standalone should merely make those workspaces feel native inside a real app
-window.
+No second add-on platform: standalone reuses `molsysviewer.addons`,
+`view.addons`, the same workspace specs and the same runtime projection as the
+notebook. It only makes those workspaces feel native inside a real app window.
 
 ## Relationship To Figure Export
 
-The final standalone host should not invent a separate export subsystem.
-
-It should expose the same export capabilities through host affordances:
-
-- menu items
-- save dialogs
-- possibly a small export assistant later
-
-But the underlying figure/image semantics should remain the same ones already
-owned by the viewer runtime.
+No separate export subsystem either. The host exposes the same capabilities
+through its own affordances — menu items, save dialogs, perhaps a small export
+assistant later — while the figure and image semantics stay owned by the viewer
+runtime.
 
 ## Risks To Avoid
 
-The main risks are:
-
-- building too much host chrome too early
-- putting viewer logic into the host
-- letting standalone and notebook diverge semantically
-- choosing a shell that is too heavy for the project
-- treating the current browser host as if it were already the final answer
+Building too much host chrome too early; putting viewer logic into the host;
+letting standalone and notebook diverge semantically; choosing a shell too heavy
+for the project; treating the current browser host as if it were already the
+final answer.
 
 ## Practical Recommendation For The Next Standalone Revisit
 
-When standalone returns as the active front:
-
-1. confirm the final shell choice
-2. build the thinnest possible dedicated app window
-3. keep `Core` + panel mode + export + add-ons visibly intact there
-4. only then improve file/session/app polish
+1. Confirm the final shell choice.
+2. Build the thinnest possible dedicated app window.
+3. Keep `Core`, panel mode, export and add-ons visibly intact there.
+4. Only then improve file, session and app polish.
 
 ## Provisional Conclusion
 
-The current state is good enough to stop speculating loosely.
-
-The plan is now:
-
-- keep browser-hosted `standalone 0` as the teaching bridge
-- treat PySide6 + Qt WebEngine as the preferred final standalone direction
-- build the final standalone host only after the core product is already mature
-- preserve one viewer model across notebook, popup, and standalone
+Keep browser-hosted `standalone 0` as the teaching bridge, treat PySide6 + Qt
+WebEngine as the preferred final direction, build the final host only once the
+core product is mature, and preserve one viewer model across notebook, popup and
+standalone.

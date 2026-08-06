@@ -1,138 +1,60 @@
 # MolSysSuite Add-On Direction
 
-This page records a future-facing but now operationally relevant direction for
-**MolSysViewer 1.0**:
-
-- **MolSysViewer should stay as a strong core workbench**
-- **domain-specific MolSysSuite functionality should arrive through optional add-ons**
-
-This direction is especially relevant for future integration with libraries
-such as:
-
-- `TopoMT`
-- `PharmacophoreMT`
-- `ElastNetMT`
-- and other MolSysSuite packages with their own scientific semantics
+MolSysViewer stays a strong core workbench, and domain-specific MolSysSuite
+functionality arrives through optional add-ons. The direction matters most for
+future integration with `TopoMT`, `PharmacophoreMT`, `ElastNetMT` and other
+MolSysSuite packages carrying their own scientific semantics.
 
 ## Core Position
 
-`MolSysViewer` should not absorb all domain-specific analysis concepts into its
-core runtime.
-
-Instead, it should provide:
-
-- a clean molecular workbench core
-- a reproducible scene/state model
-- and explicit extension points that allow optional ecosystem add-ons to grow on
-  top of it
-
-The goal is to avoid two bad outcomes:
-
-- a bloated core viewer that tries to understand every downstream domain
-- a fragmented ecosystem where each library builds a separate viewer shell
+The core does not absorb every downstream domain concept. It provides a clean
+molecular workbench, a reproducible scene/state model, and explicit extension
+points for optional add-ons to grow on. That avoids both bad outcomes: a bloated
+core that tries to understand every domain, and a fragmented ecosystem where each
+library builds its own viewer shell.
 
 ## What Must Stay Core
 
-The following should remain part of the core `MolSysViewer` 1.0 workbench:
-
-- canvas and popup runtime
-- context menu
-- `Navigate`
-- `Workbench`
-- generic shapes
-- annotations
-- measurements
-- scene styles
-- export / replay
-- image-export foundation
-- panel architecture
-- the reproducible Python <-> TS scene/state contract
-
-This is the common substrate that all MolSysSuite libraries should be able to
-reuse.
+The common substrate every MolSysSuite library reuses: the canvas and popup
+runtime, the context menu, the Studio panel architecture, generic shapes,
+annotations, measurements, scene styles, export and replay, the image-export
+foundation, and the reproducible Python ↔ TypeScript scene/state contract.
 
 ## What Should Prefer Add-Ons
 
-The following kinds of functionality should prefer optional add-ons rather than
-growing the core directly:
-
-- topography/cavity-specific analysis workflows
-- pharmacophore-specific feature models and controls
-- elastic-network or allostery-specific overlays and actions
-- domain-specific figure/export helpers
-- domain-specific panels and workbench summaries
-- domain-specific context-menu actions
-- domain-specific tool modes
-
-This keeps the core thin while still allowing MolSysViewer to act as the shared
-visual workbench of MolSysSuite.
+Anything domain-specific: topography and cavity analysis workflows,
+pharmacophore feature models and controls, elastic-network and allostery overlays
+and actions, plus domain-specific figure helpers, panels and workbench summaries,
+context-menu actions and tool modes. This keeps the core thin while MolSysViewer
+still acts as the shared visual workbench of MolSysSuite.
 
 ## Workspace Direction
 
-The next scaling step for panel mode should not be "one flat ever-growing list
-of panels".
+The next scaling step for panel mode is **not** one flat, ever-growing list of
+panels. It is a small number of top-level **workspaces**, each holding a **panel
+stack**.
 
-The healthier long-term direction is:
+The three concepts are distinct and worth keeping distinct: a `workspace` is the
+high-level work domain, a `stack` is the panel family inside it, and an `add-on`
+is the extension mechanism. `Core` is itself a workspace. Every non-core
+workspace comes from an add-on — but not every add-on needs to become one, and
+many should stay lighter: context actions, add-on sections, export helpers, tool
+modes, shapes and overlays.
 
-- a small number of top-level **workspaces**
-- and, inside each workspace, a **panel stack**
-
-Important distinction:
-
-- a `workspace` is the high-level work domain
-- a `stack` is the local panel family inside that workspace
-- an `add-on` is the extension mechanism
-
-This means:
-
-- `Core` is itself a workspace
-- some larger add-ons may contribute a workspace
-- not every add-on needs to become a workspace
-
-So the relationship is:
-
-- every non-core workspace would come from an add-on
-- but many smaller add-ons should remain lighter:
-  - context actions
-  - addon sections
-  - export helpers
-  - tool modes
-  - shapes/overlays
-
-This separation matters because a flat global panel pile does not scale well if
-MolSysViewer eventually hosts several scientific domains with several panels of
-their own.
+This matters because a flat global panel pile does not scale once MolSysViewer
+hosts several scientific domains with several panels each.
 
 ## Main Visible Form Of An Add-On
 
-The main visible form of a **small** add-on should normally be:
+A **small** add-on normally shows up as one or a few local contributions —
+context actions, add-on sections, export helpers, shapes, tool modes. A **large**
+one may contribute a whole workspace with its own panel stack: `MolSysMT` a
+`MolSysMT` workspace with several analysis panels, `TopoMT` a `TopoMT` workspace,
+`PharmacophoreMT` its own, `ElastNetMT` an `Elastic` or `Networks` workspace,
+while `Core` keeps the native one.
 
-- one or a few local contributions
-  - context actions
-  - addon sections
-  - export helpers
-  - shapes
-  - tool modes
-
-The main visible form of a **large** add-on may be:
-
-- **one new workspace**
-- with its own panel stack inside it
-
-So, for example:
-
-- `Core` keeps the native workspace with:
-  - `Navigate`
-  - `Workbench`
-- `MolSysMT` could contribute a `MolSysMT` workspace with several analysis
-  panels
-- `TopoMT` could contribute a `TopoMT` workspace
-- `PharmacophoreMT` could contribute a `PharmacophoreMT` workspace
-- `ElastNetMT` could contribute an `Elastic` or `Networks` workspace
-
-This fits the panel-mode direction already established in
-`canvas_minimal_ux.md` while avoiding a single flat panel navigator for all
-future scientific domains.
+This fits the panel-mode direction in `canvas_minimal_ux.md` while avoiding a
+single flat navigator for every future scientific domain.
 
 ## What An Add-On May Register
 

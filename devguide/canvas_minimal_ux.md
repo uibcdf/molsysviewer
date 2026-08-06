@@ -230,7 +230,7 @@ as separate concerns:
 
 Current runtime direction:
 
-- the `Workbench` body-level workspace overview should keep moving toward a
+- the workspace overview should keep moving toward a
   light mosaic language
 - the current workspace card may act as a small "hero" summary of the active
   host:
@@ -270,7 +270,7 @@ The shared header should reinforce the same reading:
 
 This should also stay compatible with optional ecosystem add-ons:
 
-- the built-in target remains `Navigate` + `Workbench`
+- the built-in target remains the Studio and Add-ons panels
 - but the panel-mode architecture should not assume there can only ever be two
   panels forever
 
@@ -307,143 +307,53 @@ Important rule:
 - do not mix this step with docking, free arrangement, or arbitrary multi-panel
   layouts
 
-## Workbench Workspace Overview
+## Workspace Overview
 
-The first body-level step toward the future mosaic should be modest:
+The body-level step toward a future mosaic should stay modest: a small workspace
+overview block, using cards like the launcher's, that lets the user see the
+available domains without a full layout editor. When a workspace has an active
+panel the overview should reflect it rather than staying generic, surfacing the
+panel's runtime id as a secondary line and giving quick access to that
+workspace's local panel stack, so overview and active host cooperate instead of
+reading as separate surfaces. Once several workspaces exist it may separate the
+current one and group the rest as `Core` and `Add-ons`.
 
-- `Workbench` may expose a small workspace overview block
-- that block may use cards similar to the launcher
-- it should help the user understand the available domains without forcing a
-  full layout editor
-- when a workspace already has an active panel, the overview should be able to
-  reflect that active panel instead of staying completely generic
-- if the active panel has a meaningful entry/runtime id, the current workspace
-  card may surface that too as a small secondary line
-- the current workspace card may also expose quick access to its local panel
-  stack, so the overview and active host cooperate instead of feeling like
-  separate surfaces
-- once several workspaces exist, the overview may separate the current
-  workspace from the rest, then keep the remaining cards grouped as `Core` and
-  `Add-ons`
+**It is a navigator, not a multi-panel container.** It should reinforce the
+workspace model already in the shared header, and the final mosaic — if it ever
+comes — should grow out of that shared language rather than replace it abruptly.
 
-Important rule:
+**Scaling direction.** `Core` is the native workspace; larger add-ons may
+contribute their own, each with its own internal panel stack; smaller add-ons
+stay lighter, as context actions, panel sections, export helpers and shapes. So
+the future pressure is not "more panels in one flat pile" but "more workspaces,
+each with a calmer local stack".
 
-- this overview is still a navigator, not yet a multi-panel container
-- it should reinforce the workspace model already present in the shared header
-- the final mosaic, if it comes, should grow from this shared language rather
-  than replace it abruptly
+### What the runtime does today
 
-Longer-term scaling direction:
+The shared panel shell has a workspace switcher that appears only when more than
+one workspace is effective — a workspace contributing no visible panel or section
+runtime does not pollute the launcher. The header stays calm: only the current
+workspace is visible as the trigger, with a compact subtitle for the active
+domain, and the full set appears when it is opened. Entries may summarise what
+they contain (panel count, section count, lightweight runtime hints) and mark the
+current workspace, so it reads as a domain selector rather than a raw dropdown.
 
-- `Core` should be treated as the native workspace
-- larger add-ons may later contribute their own workspaces
-- each workspace would then carry its own internal panel stack
-- smaller add-ons should still be allowed to remain lighter:
-  - context actions
-  - workbench sections
-  - export helpers
-  - shapes
+Outside `Core`, the Studio panel disappears as an operative panel, and returning
+to `Core` restores the last core panel instead of forcing it. Non-core workspaces
+stay workbench-centric and can offer a direct return to `Core`; the runtime must
+not imply that every add-on workspace already has a full native panel stack.
 
-This means the future scaling pressure is not "more panels in one flat pile",
-but "more workspaces, each with a calmer local panel stack".
+The Add-ons panel materialises a generic panel-stack bridge for add-on
+workspaces: a panel selector for the current workspace and a generic active-panel
+host that also absorbs workspace-specific sections and the active add-on's
+immediate capabilities (context actions, export helpers), so a panel and its
+add-on runtime do not feel artificially split. It is still not arbitrary add-on
+frontend UI. That selector has moved up into the shared header, which now reads
+in two levels: workspace launcher first, panel stack inside the active workspace
+second.
 
-Current runtime bridge:
-
-- the shared panel shell now already supports a minimal workspace switcher
-- it only appears when there is more than one effective workspace
-- it is still intentionally modest:
-  - chrome-level launcher only
-  - not yet the final mosaic/launcher
-  - current non-core effect is limited to steering the shared panel runtime
-    toward add-on-backed workbench slices
-  - the visible header remains calm:
-    - only the current workspace stays visible as the trigger
-    - the effective workspace set appears only when that trigger is opened
-    - the current workspace trigger may already expose a compact subtitle so the
-      active domain is readable without opening the launcher
-  - only effective workspaces should appear there:
-    - if a workspace contributes no visible panel/section runtime yet, it should
-      not pollute the launcher
-  - launcher entries may already summarize what they contain:
-    - panel count
-    - workbench-section count
-    - other lightweight runtime hints
-    - and may explicitly mark the current workspace so the launcher reads more
-      like a domain selector than a raw dropdown
-  - while that remains true, the shared header should stay honest:
-    - non-core workspaces can remain workbench-centric
-    - `Workbench` may offer a direct return to `Core`
-    - the runtime should not imply every add-on workspace already has a full
-      native `Navigate` stack
-  - current runtime consequence:
-    - outside `Core`, `Navigate` should disappear as an operative panel
-    - returning to `Core` should restore the last core panel instead of always
-      forcing `Navigate`
-- `Workbench` can now also materialize a first generic panel-stack bridge for
-  add-on workspaces:
-  - a panel selector for the current workspace
-  - and a generic active-panel host surface
-  - that host can now also absorb workspace-specific sections so the panel and
-    its immediate add-on runtime no longer feel artificially split apart
-  - it may also surface the active add-on's immediate domain capabilities there:
-    - context actions
-    - export helpers
-  - still not arbitrary add-on frontend UI, but already more than a flat summary
-- that panel selector is now moving up into the shared header itself:
-  - core stack navigation (`Navigate` / `Workbench`)
-  - and non-core workspace panel stacks
-  - this is closer to the future `panel mode` than the previous local-only strip
-- this now yields a clearer two-level reading in the shared header:
-  - workspace launcher first
-  - panel stack inside the active workspace second
-- optional MolSysSuite add-ons should normally surface themselves through this
-  same panel-mode system, not through new permanent canvas chrome
-
-Future host-layout note:
-
-- the canonical experience is still one canvas host with panel mode inside it
-- but a future standalone or popup-based advanced mode may allow panel mode to
-  live in an auxiliary window on a second screen while the main canvas remains
-  alone in the primary window
-- if that ever happens, it should be treated as an optional host layout, not as
-  a replacement for the canonical minimal single-window model
-
-Current practical bridge state:
-
-- the runtime still has only one real panel implementation:
-  - `GroupPanel`
-- the runtime now has two real panel implementations:
-  - `GroupPanel`
-  - `WorkbenchPanel`
-- both are still drawer-like, not yet the final centered floating `panel mode`
-- but it has now taken a first structural step toward the future model:
-  - reusable shell chrome
-  - explicit `Navigate` identity
-  - explicit `Workbench` identity
-  - cleaner separation between panel chrome and panel content
-  - `Navigate` now also exposes first lightweight live sections below `Structure`:
-    - `Active`
-    - `Saved`
-    - `Regions`
-  - `Navigate` now also has its first lightweight row actions:
-    - click `Saved` -> restore `active_selection`
-    - click `Regions` -> focus region
-  - real `Workbench` sections and empty states already scaffolded
-  - minimal controller wiring for `Workbench` rows based on live runtime summaries
-  - first row-level primary action already present when structural anchoring is available:
-    - click row -> focus target
-  - `Workbench` rows now also expose first local visual states:
-    - `active`
-    - `context` for tagged annotations/shapes while the menu is open
-  - `Workbench` rows now also expose a first minimal persistent affordance:
-    - per-row visibility toggle for tagged annotations, measurements, and shapes
-  - `Workbench` sections can now collapse/expand locally
-  - the drawer runtime now also exposes a first shared panel navigator in the
-    header chrome:
-    - current panel shown as the active pill
-    - sibling panel shown as the secondary jump target
-    - direct `Navigate <-> Workbench` switching already works before the final
-      shared floating container and formal `tabs`
+Optional MolSysSuite add-ons should normally surface themselves through this
+path.
 
 ## First Container Direction For Panel Mode
 
@@ -461,7 +371,7 @@ permanent sidebar and not like a dense application window.
 
 ### Preferred Container Rule
 
-Both `Navigate` and `Workbench` should initially share the same base
+Both built-in panels should share the same base
 container.
 
 Reason:
@@ -473,17 +383,8 @@ Reason:
 
 ### Preferred Size Direction
 
-The first working size direction is approximately:
-
-- width:
-  - about `68-74%` of the canvas
-- height:
-  - about `62-72%` of the canvas
-
-Current mental center:
-
-- around `72%` width
-- around `68%` height
+Roughly `68-74%` of the canvas in width and `62-72%` in height, centred on
+about `72%` by `68%`.
 
 This is intentionally large enough for calm reading and navigation, but still
 small enough to leave visible molecular context around the panel.

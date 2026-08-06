@@ -165,7 +165,7 @@ This especially reinforces current work on:
 
 - `styles`
 - export/replay
-- `Navigate` / `Workbench`
+- the Studio and Add-ons panels
 - minimal canvas UX
 - popup/canvas parity
 
@@ -254,8 +254,8 @@ The intended spirit would be:
 
 - one window dedicated to the main molecular canvas
 - another auxiliary window dedicated to:
-  - `Navigate`
-  - `Workbench`
+  - the Studio panel and its subpanels
+  - the Add-ons panel
   - and perhaps later add-on panels
 
 This should not replace the canonical single-window experience.
