@@ -9,19 +9,19 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from molsysviewer._private.arg_digestion.argument.alpha_atoms import digest_alpha_atoms
-from molsysviewer._private.arg_digestion.argument.atom_quads import digest_atom_quads
-from molsysviewer._private.arg_digestion.argument.atom_triplets import digest_atom_triplets
-from molsysviewer._private.arg_digestion.argument.color_component import digest_color_component
-from molsysviewer._private.arg_digestion.argument.directions import digest_directions
-from molsysviewer._private.arg_digestion.argument.draw_edges import digest_draw_edges
-from molsysviewer._private.arg_digestion.argument.edge_color import digest_edge_color
-from molsysviewer._private.arg_digestion.argument.exterior_only import digest_exterior_only
-from molsysviewer._private.arg_digestion.argument.kinds import digest_kinds
-from molsysviewer._private.arg_digestion.argument.length_scale import digest_length_scale
-from molsysviewer._private.arg_digestion.argument.normals import digest_normals
-from molsysviewer._private.arg_digestion.argument.segments import digest_segments
-from molsysviewer._private.arg_digestion.argument.structures_atom_indices import (
+from molsysviewer._private.argdigest.argument.alpha_atoms import digest_alpha_atoms
+from molsysviewer._private.argdigest.argument.atom_quads import digest_atom_quads
+from molsysviewer._private.argdigest.argument.atom_triplets import digest_atom_triplets
+from molsysviewer._private.argdigest.argument.color_component import digest_color_component
+from molsysviewer._private.argdigest.argument.directions import digest_directions
+from molsysviewer._private.argdigest.argument.draw_edges import digest_draw_edges
+from molsysviewer._private.argdigest.argument.edge_color import digest_edge_color
+from molsysviewer._private.argdigest.argument.exterior_only import digest_exterior_only
+from molsysviewer._private.argdigest.argument.kinds import digest_kinds
+from molsysviewer._private.argdigest.argument.length_scale import digest_length_scale
+from molsysviewer._private.argdigest.argument.normals import digest_normals
+from molsysviewer._private.argdigest.argument.segments import digest_segments
+from molsysviewer._private.argdigest.argument.structures_atom_indices import (
     digest_structures_atom_indices,
 )
 from molsysviewer._private.exceptions import ArgumentError

@@ -13,7 +13,7 @@ Three sweeps were run, each scriptable and repeatable.
 
 Every function decorated with `@digest()` was parsed with `ast`, its argument
 names collected, and checked against
-`molsysviewer/_private/arg_digestion/argument/*.py`.
+`molsysviewer/_private/argdigest/argument/*.py`.
 
 **Result: 26 arguments have no digester** (out of 483 digesters available). Each
 one emits `DigestNotDigestedWarning` on every ordinary call, so the public

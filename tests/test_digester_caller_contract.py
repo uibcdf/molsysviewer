@@ -26,7 +26,7 @@ from molsysviewer._private.exceptions import ArgumentError
 
 ARGUMENT_DIR = (
     Path(__file__).resolve().parents[1]
-    / "molsysviewer" / "_private" / "arg_digestion" / "argument"
+    / "molsysviewer" / "_private" / "argdigest" / "argument"
 )
 
 #: Arguments the digesters themselves declare as MolSysMT-style query flags,

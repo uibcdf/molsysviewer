@@ -8,7 +8,7 @@ import warnings
 import molsysmt as msm
 from depdigest import dep_digest
 from smonitor import signal
-from ._private.arg_digestion import digest
+from ._private.argdigest import digest
 from ._private.exceptions import ArgumentError
 from ._private.smonitor_emit import emit_suppressed_exception
 from .colors import expand_values_to_atoms, normalize_color

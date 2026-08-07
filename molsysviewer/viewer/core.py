@@ -19,8 +19,8 @@ from smonitor.integrations import context_extra, emit_from_catalog
 from depdigest import dep_digest
 
 from .._pyunitwizard import puw
-from .._private.arg_digestion import digest
-from .._private.arg_digestion.argument.viewer_mode import digest_viewer_mode
+from .._private.argdigest import digest
+from .._private.argdigest.argument.viewer_mode import digest_viewer_mode
 from .._private.smonitor import CATALOG, PACKAGE_ROOT, META
 from .._private.smonitor_emit import emit_suppressed_exception
 from .._private.variables import is_all

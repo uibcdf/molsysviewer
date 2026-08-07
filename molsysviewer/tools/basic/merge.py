@@ -7,7 +7,7 @@ import numpy as np
 from depdigest import dep_digest
 from smonitor import signal
 
-from ..._private.arg_digestion import digest
+from ..._private.argdigest import digest
 from ...new_view import new_view
 from ...viewer import MolSysView
 

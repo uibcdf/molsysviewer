@@ -12,7 +12,7 @@ from smonitor.integrations import emit_from_catalog
 from smonitor import signal
 from depdigest import dep_digest
 
-from .._private.arg_digestion import digest
+from .._private.argdigest import digest
 from .._private.smonitor import CATALOG, PACKAGE_ROOT, META
 from .._private.smonitor_emit import emit_suppressed_exception
 from ..regions import Region

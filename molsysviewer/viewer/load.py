@@ -8,7 +8,7 @@ import molsysmt as msm
 from smonitor import signal
 from depdigest import dep_digest
 
-from .._private.arg_digestion import digest
+from .._private.argdigest import digest
 from ..loaders import load_from_molsysmt as _load_from_molsysmt
 from .signals import load_signal_extra as _load_signal_extra
 

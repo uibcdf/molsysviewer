@@ -4,7 +4,7 @@ from typing import Any
 
 from smonitor import signal
 
-from ._private.arg_digestion import digest
+from ._private.argdigest import digest
 
 
 def _empty_payload(event_name: str) -> dict[str, Any]:

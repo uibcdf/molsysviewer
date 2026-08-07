@@ -8,8 +8,8 @@ We use ArgDigest in **package style**. Validation and normalization live outside
 
 ### Structure
 - **Config**: `molsysviewer/_argdigest.py` defines the source of digesters.
-- **Engine**: `molsysviewer/_private/arg_digestion/` contains the adapters and sub-packages.
-- **Digesters**: `molsysviewer/_private/arg_digestion/argument/` contains one `.py` file per argument name (e.g., `centers.py`, `radii.py`).
+- **Engine**: `molsysviewer/_private/argdigest/` contains the adapters and sub-packages.
+- **Digesters**: `molsysviewer/_private/argdigest/argument/` contains one `.py` file per argument name (e.g., `centers.py`, `radii.py`).
 
 ### Current Status
 
@@ -38,7 +38,7 @@ This was previously bypassed: the `ShapesManager.add_*` wrappers forced
 - **Every length digester** now accepts the real input forms (unit strings,
   `Quantity`, pint/…) and rejects bare numbers, via
   `puw.ensure_quantity(..., dimensionality={'[L]': 1})` wrapped by
-  `_private/arg_digestion/_quantity.py::digest_length_quantity`.
+  `_private/argdigest/_quantity.py::digest_length_quantity`.
 - Digesting the *whole* public argument set means non-length digesters must also
   accept the shape forms: `color`, `alpha`, and `tag` are now batch-aware
   (single **or** a per-object list).
@@ -59,7 +59,7 @@ one you came for.
    - if `None` is valid only for specific callables, that belongs in the digester, not in ad hoc bypass code.
    - when MolSysViewer exposes both method-style and module/helper-style public routes, caller-aware digesters should accept both aliases; do not rely on one exact caller string if the API intentionally exposes more than one public entry path.
 4. **Prefer normalization over scattering coercion**
-   - if a public method keeps manually coercing booleans, positions, tags, colors, or lists, that is a signal to move the contract into `arg_digestion`.
+   - if a public method keeps manually coercing booleans, positions, tags, colors, or lists, that is a signal to move the contract into `argdigest`.
 5. **Treat warnings as migration signals**
    - `STRICTNESS = "warn"` means the integration is still being hardened.
    - do not accept `DigestNotDigestedWarning` on stable public API as normal background noise.

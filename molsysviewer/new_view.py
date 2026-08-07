@@ -7,7 +7,7 @@ import warnings
 from smonitor import signal
 
 from .viewer import MolSysView
-from ._private.arg_digestion import digest
+from ._private.argdigest import digest
 from depdigest import dep_digest
 
 Selection = Union[str, Sequence[int]]

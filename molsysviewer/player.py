@@ -5,7 +5,7 @@ from typing import Any
 import molsysmt as msm
 from smonitor import signal
 
-from ._private.arg_digestion import digest
+from ._private.argdigest import digest
 
 
 class PlayerManager:

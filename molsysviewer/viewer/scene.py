@@ -7,7 +7,7 @@ import molsysmt as msm
 
 from smonitor import signal
 from .._pyunitwizard import puw
-from .._private.arg_digestion import digest
+from .._private.argdigest import digest
 from ..regions import Region
 from ..figures import FigureSpec
 from ..whole import Whole

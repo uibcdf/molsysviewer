@@ -10,10 +10,10 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from molsysviewer._private.arg_digestion.argument.color_scheme import digest_color_scheme
-from molsysviewer._private.arg_digestion.argument.replace import digest_replace
-from molsysviewer._private.arg_digestion.argument.scheme import digest_scheme
-from molsysviewer._private.arg_digestion.argument.value_range import digest_value_range
+from molsysviewer._private.argdigest.argument.color_scheme import digest_color_scheme
+from molsysviewer._private.argdigest.argument.replace import digest_replace
+from molsysviewer._private.argdigest.argument.scheme import digest_scheme
+from molsysviewer._private.argdigest.argument.value_range import digest_value_range
 from molsysviewer._private.exceptions import ArgumentError
 
 

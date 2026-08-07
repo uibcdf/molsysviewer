@@ -51,7 +51,7 @@ standard units.
 
 1. **Validate at the public surface.** Decorate the method that owns the real
    named signature with `@digest()`. Each magnitude argument has a digester in
-   `molsysviewer/_private/arg_digestion/argument/<name>.py`:
+   `molsysviewer/_private/argdigest/argument/<name>.py`:
 
    ```python
    from .._quantity import digest_length_quantity

@@ -16,7 +16,7 @@ import pathlib
 import re
 
 ROOT = pathlib.Path(__file__).resolve().parents[1] / "molsysviewer"
-ARGUMENT_DIR = ROOT / "_private" / "arg_digestion" / "argument"
+ARGUMENT_DIR = ROOT / "_private" / "argdigest" / "argument"
 JS_SRC = ROOT / "js" / "src"
 
 NOT_ARGUMENTS = {"self", "cls", "skip_digestion"}
@@ -32,7 +32,7 @@ def _has_digest_decorator(node: ast.AST) -> bool:
 
 def _python_sources():
     for path in ROOT.rglob("*.py"):
-        if "_private/arg_digestion" in path.as_posix() or "/js/" in path.as_posix():
+        if "_private/argdigest" in path.as_posix() or "/js/" in path.as_posix():
             continue
         yield path
 

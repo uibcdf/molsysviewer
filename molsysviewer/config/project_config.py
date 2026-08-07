@@ -4,7 +4,7 @@ from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 from typing import Any
 
-from .._private.arg_digestion import digest
+from .._private.argdigest import digest
 
 
 @digest()

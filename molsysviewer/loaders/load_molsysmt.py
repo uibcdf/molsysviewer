@@ -8,7 +8,7 @@ import molsysmt as msm
 import numpy as np
 
 from .._private import scale_budget
-from .._private.arg_digestion import digest
+from .._private.argdigest import digest
 from .._private.scale_budget import check_structure_scale
 
 if TYPE_CHECKING:

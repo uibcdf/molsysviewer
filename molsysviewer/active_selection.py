@@ -5,7 +5,7 @@ from typing import Any, Literal
 from smonitor import signal
 from .scene_history import records_scene_history
 
-from ._private.arg_digestion import digest
+from ._private.argdigest import digest
 
 SelectionCombineOperation = Literal["replace", "add", "subtract", "intersect", "invert"]
 

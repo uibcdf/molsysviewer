@@ -47,7 +47,7 @@ MolSysViewer was the outlier; it now conforms.
 
 A public method that owns a real named signature carries `@digest()`; every
 physical-magnitude argument gets a **length digester** in
-`molsysviewer/_private/arg_digestion/argument/<name>.py`:
+`molsysviewer/_private/argdigest/argument/<name>.py`:
 
 ```python
 from .._quantity import digest_length_quantity
@@ -58,7 +58,7 @@ def digest_<name>(<name>, caller=None):
     return digest_length_quantity(<name>, "<name>", caller=caller)
 ```
 
-`digest_length_quantity` (in `_private/arg_digestion/_quantity.py`) delegates the
+`digest_length_quantity` (in `_private/argdigest/_quantity.py`) delegates the
 logic to `puw.ensure_quantity(value, dimensionality={'[L]': 1})` — parse strings,
 accept any recognized quantity form, reject bare numbers, require `[L]`
 dimensionality, standardize to nm — and re-raises MolSysViewer's own

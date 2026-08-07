@@ -1,6 +1,6 @@
 import numpy as np
 
-from molsysviewer._private.arg_digestion import (
+from molsysviewer._private.argdigest import (
     digest_selection_and_syntax,
     digest_selection_inputs,
 )

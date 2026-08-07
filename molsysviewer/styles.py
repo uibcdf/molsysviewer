@@ -5,7 +5,7 @@ from typing import Any
 
 from smonitor import signal
 
-from ._private.arg_digestion import digest
+from ._private.argdigest import digest
 from .config.user_presets import user_presets
 from .viewer.presets import ALLOWED_PRESETS, PRESET_ALIASES
 from .viewer.representations import (

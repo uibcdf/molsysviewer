@@ -4,7 +4,7 @@ from pathlib import Path
 import json
 from typing import Any, Dict
 
-from .._private.arg_digestion import digest
+from .._private.argdigest import digest
 try:
     import yaml  # type: ignore
 except Exception:  # pragma: no cover - optional dependency

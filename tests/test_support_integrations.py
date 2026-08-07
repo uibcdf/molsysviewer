@@ -7,9 +7,9 @@ import pytest
 
 from molsysviewer import config
 from molsysviewer import _depdigest as depdigest_config
-from molsysviewer._private.arg_digestion.argument.atom_indices import digest_atom_indices
-from molsysviewer._private.arg_digestion.argument.element import digest_element
-from molsysviewer._private.arg_digestion.argument.mask import digest_mask
+from molsysviewer._private.argdigest.argument.atom_indices import digest_atom_indices
+from molsysviewer._private.argdigest.argument.element import digest_element
+from molsysviewer._private.argdigest.argument.mask import digest_mask
 from molsysviewer._private import variables
 from molsysviewer._pyunitwizard import puw
 

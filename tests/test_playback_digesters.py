@@ -11,9 +11,9 @@ from __future__ import annotations
 
 import pytest
 
-from molsysviewer._private.arg_digestion.argument.direction import digest_direction
-from molsysviewer._private.arg_digestion.argument.mode import digest_mode
-from molsysviewer._private.arg_digestion.argument.step import digest_step
+from molsysviewer._private.argdigest.argument.direction import digest_direction
+from molsysviewer._private.argdigest.argument.mode import digest_mode
+from molsysviewer._private.argdigest.argument.step import digest_step
 from molsysviewer._private.exceptions import ArgumentError
 
 PLAY_CALLER = "molsysviewer.viewer.play"

@@ -5,7 +5,7 @@ from typing import Any
 
 from smonitor import signal
 
-from .._private.arg_digestion import digest
+from .._private.argdigest import digest
 from ..scene_history import records_scene_history
 from .anisotropy_ellipsoids import AnisotropyEllipsoids
 from .channel_tubes import ChannelTubes

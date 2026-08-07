@@ -6,7 +6,7 @@ from typing import Any
 import molsysmt as msm
 from smonitor import signal
 
-from .._private.arg_digestion import digest
+from .._private.argdigest import digest
 from .. import pyunitwizard as puw
 from ..regions import Region
 from .signals import zoom_signal_extra, camera_snapshot_extra

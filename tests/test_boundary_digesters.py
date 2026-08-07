@@ -10,12 +10,12 @@ from __future__ import annotations
 
 import pytest
 
-from molsysviewer._private.arg_digestion.argument.fade import digest_fade
-from molsysviewer._private.arg_digestion.argument.layer import digest_layer
-from molsysviewer._private.arg_digestion.argument.meta import digest_meta
-from molsysviewer._private.arg_digestion.argument.region import digest_region
-from molsysviewer._private.arg_digestion.argument.target import digest_target
-from molsysviewer._private.arg_digestion.argument.transaction_id import digest_transaction_id
+from molsysviewer._private.argdigest.argument.fade import digest_fade
+from molsysviewer._private.argdigest.argument.layer import digest_layer
+from molsysviewer._private.argdigest.argument.meta import digest_meta
+from molsysviewer._private.argdigest.argument.region import digest_region
+from molsysviewer._private.argdigest.argument.target import digest_target
+from molsysviewer._private.argdigest.argument.transaction_id import digest_transaction_id
 from molsysviewer._private.exceptions import ArgumentError
 
 

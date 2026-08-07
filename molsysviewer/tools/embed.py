@@ -5,7 +5,7 @@ from pathlib import Path
 
 from smonitor import signal
 
-from .._private.arg_digestion import digest
+from .._private.argdigest import digest
 
 
 class IframeMarkup(str):

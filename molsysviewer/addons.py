@@ -16,7 +16,7 @@ import traitlets as T
 from smonitor import signal
 from smonitor.integrations import emit_from_catalog
 
-from ._private.arg_digestion import digest
+from ._private.argdigest import digest
 from .config.project_config import load_project_config
 from ._private.smonitor import CATALOG, PACKAGE_ROOT, META
 from ._version import __version__ as MOLSYSVIEWER_VERSION

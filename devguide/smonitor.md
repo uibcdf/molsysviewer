@@ -46,7 +46,7 @@ Custom exceptions must inherit from `CatalogException` (and typically `ValueErro
 
 Example:
 ```python
-from molsysviewer._private.arg_digestion.exceptions import ArgumentError
+from molsysviewer._private.argdigest.exceptions import ArgumentError
 # This exception automatically pulls its message from CATALOG['argument_error']
 ```
 

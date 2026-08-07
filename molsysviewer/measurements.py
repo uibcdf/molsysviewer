@@ -7,7 +7,7 @@ import molsysmt as msm
 import pyunitwizard as puw
 from smonitor import signal
 
-from ._private.arg_digestion import digest
+from ._private.argdigest import digest
 from ._private.smonitor_emit import emit_suppressed_exception
 from .layers import Layer, Measurement
 from .scene_history import records_scene_history

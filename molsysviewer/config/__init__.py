@@ -34,7 +34,7 @@ viewer_mode: str = "integrated"
 
 from .user_presets import user_presets, load_user_presets
 from .project_config import load_project_config
-from .._private.arg_digestion import digest
+from .._private.argdigest import digest
 from smonitor import signal
 
 __all__ = [

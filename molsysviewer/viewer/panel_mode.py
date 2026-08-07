@@ -7,7 +7,7 @@ import inspect
 from typing import Any, Mapping
 
 from smonitor import signal
-from .._private.arg_digestion import digest
+from .._private.argdigest import digest
 from .signals import (
     controls_signal_extra as _controls_signal_extra,
     panel_mode_signal_extra as _panel_mode_signal_extra,

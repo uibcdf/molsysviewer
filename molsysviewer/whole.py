@@ -6,7 +6,7 @@ import molsysmt as msm
 from smonitor import signal
 
 from . import pyunitwizard as puw
-from ._private.arg_digestion import digest
+from ._private.argdigest import digest
 from ._private.exceptions import ArgumentError
 from .colors import expand_values_to_atoms, normalize_color
 from .scene_history import records_scene_history

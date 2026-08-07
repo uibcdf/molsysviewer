@@ -11,7 +11,7 @@ from smonitor import signal
 from depdigest import dep_digest
 
 from .._pyunitwizard import puw
-from .._private.arg_digestion import digest
+from .._private.argdigest import digest
 from .._private.variables import is_all
 
 

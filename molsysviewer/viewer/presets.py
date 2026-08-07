@@ -53,7 +53,7 @@ def resolve_user_preset(view: Any, preset: str | None) -> dict[str, Any] | None:
             sel = new_rule.get("selection")
             if sel is not None:
                 try:
-                    from .._private.arg_digestion import digest_selection_and_syntax
+                    from .._private.argdigest import digest_selection_and_syntax
 
                     sel, syntax = digest_selection_and_syntax(
                         sel,
