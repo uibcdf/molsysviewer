@@ -1,10 +1,14 @@
 from molsysviewer._private.exceptions import ArgumentError
 import numpy as np
 from molsysviewer._pyunitwizard import puw
-from matplotlib.pyplot import colormaps
-from matplotlib.colors import LinearSegmentedColormap
 
 def digest_colormap_2(colormap_2, caller=None):
+
+    # Imported here, not at module level: ArgDigest loads every digester in this
+    # package when it initializes, so a top-level import made any digested call pay
+    # for a heavy library that most calls never need.
+    from matplotlib.colors import LinearSegmentedColormap
+    from matplotlib.pyplot import colormaps
 
     if colormap_2 is None:
         return None
