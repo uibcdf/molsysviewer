@@ -1,8 +1,7 @@
 # Pre-1.0 architecture rework and hardening master plan
 
-**Status:** active master execution plan. Phases 0a through 2 and Phase 4a are
-implemented and awaiting independent audit; Phase 3 is implemented except for
-its browser validation in the restricted executor.
+**Status:** active master execution plan. Phases 0a through 4b are audited and
+closed. Phase 5 is implemented and awaiting independent audit.
 
 **Purpose:** turn the current, functionally strong viewer into a pre-1.0 base
 that is robust under real connector lifecycles, efficient for scientifically
@@ -31,14 +30,14 @@ audit.
 
 | Slice | Deliverable | Status | Progress | Implementation / commit | Validation / audit |
 |---|---|---:|---:|---|---|
-| 0a | Distribution rescue | ● | 100% | working tree from `6362914c` | wheel import + metadata guard; 1160 passed, 3 skipped; awaiting audit |
-| 0b | Green baseline and thresholds | ● | 100% | `main` working tree | 1160 Python, 262 JS, 28/28 E2E; timing/RSS and unavailable real-window surfaces recorded; awaiting audit |
-| 1 | Immediate correctness and transversal guards | ● | 100% | working tree from `6362914c` | 1165 Python, 265 JS, 28/28 E2E; seams and guards mutation-verified; awaiting audit |
-| 2 | Transfer state machine | ● | 100% | working tree from `6362914c` | 1178 Python, 3 documented skips; 39 focused transport + 44 Qt; mutation-verified; awaiting audit |
-| 3 | Direct lazy JSON fallback and deadline hardening | ◐ | 95% | working tree from `21027309` | 1186 Python passed, 3 environmental skips; tsc 0; four mechanisms mutation-verified; wall-clock/RSS measured; real-Mol* JSON E2E blocked by sandbox Chrome SIGTRAP |
-| 4a | Canonical static export | ● | 100% | working tree from `d7768ab1` | 1190 Python passed, 3 environmental skips; 265 JS; tsc 0; generated Python projection passed in real Chromium/Mol*; mutation-verified; awaiting audit |
-| 4b | Live `ready`/reconnect closure | ● | 100% | working tree from `2b504d77` | Canonical ready projection; generic journal removed; 1191 Python + 3 environmental skips, 265 JS, tsc 0, perf and real widget-seam E2E green; three mechanisms mutation-verified; awaiting audit |
-| 5 | Endpoint isolation and lifecycle | ◐ | 60% | working tree from `06131cae` | Per-destination transfer managers and deferred queues; endpoint-scoped acks and close cleanup; host latency 0.0088 ms against the predeclared 100 ms threshold (`devtools/benchmarks/endpoint_isolation.py`). Endpoint evidence matrix, real-browser relay/reconstruction checks, full suites and runtime rebuild still open |
+| 0a | Distribution rescue | ✓ | 100% | working tree from `6362914c` | wheel import + metadata guard; audited and closed |
+| 0b | Green baseline and thresholds | ✓ | 100% | `main` working tree | green baseline, timing/RSS bands and unavailable real-window surfaces recorded; audited and closed |
+| 1 | Immediate correctness and transversal guards | ✓ | 100% | working tree from `6362914c` | seams and guards mutation-verified; audited and closed |
+| 2 | Transfer state machine | ✓ | 100% | working tree from `6362914c` | transition and terminal cleanup guards mutation-verified; audited and closed |
+| 3 | Direct lazy JSON fallback and deadline hardening | ✓ | 100% | working tree from `21027309` | lazy fallback, deadline and real-Mol* fallback path validated; audited and closed |
+| 4a | Canonical static export | ✓ | 100% | working tree from `d7768ab1` | generated Python projection passed in real Chromium/Mol*; mutation-verified; audited and closed |
+| 4b | Live `ready`/reconnect closure | ✓ | 100% | working tree from `2b504d77` | canonical ready projection, bounded compatibility path and real widget-seam E2E; audited and closed |
+| 5 | Endpoint isolation and lifecycle | ● | 100% | `6904aea8` plus working tree from `1a9b59b1` | Per-endpoint transfer managers and queues; endpoint matrix closed; 1295 Python + 3 skips, 271 JS, tsc 0, runtime/perf, 30/30 E2E; 95k host latency 0.0111 ms; awaiting independent audit |
 | 6 | Ownership audit and limited consolidation | ○ | 0% | — | — |
 | 7 | Missing seam evidence | ○ | 0% | — | — |
 | 8 | Representative performance and memory gate | ○ | 0% | — | — |
@@ -956,6 +955,55 @@ Mol* load or render time; the latter belongs to the Phase 8 scale matrix.
 **Exit:** every row in the endpoint matrix has named identity, ordering and
 cleanup tests. If serialization remains global, its measured latency and
 predeclared acceptance threshold are recorded.
+
+#### Phase 5 implementation evidence — 2026-08-08
+
+Phase 5 replaces the view-global popup transfer gate with one manager and one
+deferred queue per destination. The embedded host and a canvas popup can advance
+independently; a panel popup owns no molecular stream; Qt continues to satisfy
+S8 through its own ordered payload-reference queue rather than by sharing the
+AnyWidget transfer manager.
+
+The final audit found one lifecycle defect in the initial implementation. A
+canvas manager was removed after each completed or fallback generation. A live
+popup receiver retains its latest generation, so recreating the Python manager
+reset the sender to generation 1 and made the popup reject the next molecular
+reload as stale. An inactive manager now remains owned by its endpoint until
+that endpoint closes; completion/fallback release its payload, while endpoint
+close releases the manager itself.
+
+Endpoint evidence matrix:
+
+| Endpoint | Identity | Ordering / absence of molecular state | Cleanup |
+|---|---|---|---|
+| Embedded AnyWidget host | `test_the_widget_connector_envelopes_control_messages_on_the_wire`; `test_only_the_expected_ack_advances_and_refreshes_the_deadline` | `test_a_replayed_scene_waits_for_the_streamed_structure`; `array-native-load.e2e.ts`; `widget-seam.e2e.ts` | `test_every_terminal_transition_releases_once_and_preserves_identity`; `test_close_releases_embedded_and_popup_structure_transfers` |
+| Canvas popup | `test_acknowledgement_must_belong_to_the_transfer_target_endpoint`; `the host binds a popup acknowledgement to its authenticated source endpoint`; `endpoint-lifecycle.e2e.ts` | `test_a_canvas_popup_snapshot_streams_the_molecular_generation_to_its_endpoint`; `popup bootstrap queues only that endpoint and flushes after initial sync`; `structure-data-relay.e2e.ts` | `test_popup_close_releases_every_active_transfer_state`; `test_a_popup_targeted_stream_fallback_cancels_and_loads_the_same_endpoint`; `endpoint-lifecycle.e2e.ts` |
+| Panel popup | authenticated popup channel tests | `test_a_panel_popup_snapshot_never_starts_a_molecular_stream`; `sendTo delivers to one popup endpoint, so a canvas bootstrap never reaches a panel popup`; `test_live_molecular_reload_starts_independent_host_and_canvas_generations` | `closing a popup reports its exact endpoint once`; `test_closing_panel_endpoint_does_not_release_canvas_transfer` |
+| Qt standalone | `test_an_unknown_action_is_observable_and_refused_on_qt_as_on_anywidget`; known-product-event tests | `test_qt_delivers_one_message_at_a_time_and_waits_for_it_to_be_handled`; `test_a_load_waits_for_the_structure_and_not_merely_for_the_message` | `test_qt_view_channel_close_only_detaches_its_own_event_sink`; `test_qt_payload_refs_replace_across_two_real_generations` |
+
+Observed validation after the implementation was believed complete:
+
+| Gate | Result |
+|---|---:|
+| `python -m pytest --receptor=llm -n 12 tests/` | 1295 passed, 3 environmental skips, exit 0 |
+| `npm run test:js` | 271 passed, exit 0 |
+| `npx tsc --noEmit` | exit 0 |
+| `npm run build:runtime` | exit 0 |
+| `npm run test:perf` | exit 0; 95k unknown 0.20 ms, hide 0.20 ms; dynamic 0.000693 ms/frame |
+| `npm run test:e2e` | 30/30 suites, real Chromium/WebGL2, exit 0 |
+| `python devtools/benchmarks/endpoint_isolation.py` | 95,000 atoms; host 0.0111 ms against the predeclared 100 ms threshold |
+
+Mutation ledger:
+
+| Mechanism | Mutation | Test that failed | Restored result |
+|---|---|---|---|
+| endpoint-lifetime generation identity after completion | remove the inactive popup manager when a generation completes | `test_live_molecular_reload_starts_independent_host_and_canvas_generations` | pass |
+| endpoint-lifetime generation identity after fallback | remove the inactive popup manager after JSON fallback | `test_a_popup_targeted_stream_fallback_cancels_and_loads_the_same_endpoint` | pass |
+
+Not done in this slice: no change to completion-wait timeout semantics, no
+frontend-orchestrator decomposition, no structure windowing and no dependency
+pinning. The only remaining closure action is independent audit. The developer
+scratch notebook was not used as evidence or included in the implementation.
 
 ### Phase 6 — Ownership audit and limited consolidation
 

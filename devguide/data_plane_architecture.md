@@ -402,10 +402,14 @@ when no popup is ever opened*. With Python re-streaming instead, the host holds
 one chunk transiently while relaying, bounded by the one-chunk-in-flight rule,
 and no endpoint keeps a spare generation.
 
-Only one binary stream is in flight at a time, which keeps the D3 state machine
-and its acknowledgement deadline unchanged. A popup-targeted stream that fails
-falls back to a JSON load **addressed to the popup**, never into the host, which
-already holds that structure.
+At most one binary stream is in flight **per endpoint**. Each destination owns
+its transfer manager, acknowledgement deadline and deferred scene queue, so a
+canvas bootstrap does not stall projections for the embedded host. The manager
+persists inactive across completed or fallback generations until its endpoint
+closes; this preserves the monotonic generation identity retained by the live
+receiver. A popup-targeted stream that fails falls back to a JSON load
+**addressed to the popup**, never into the host, which already holds that
+structure.
 
 What remains inherent: two Mol\* instances each keep their own axes, so browser
 memory is roughly 2x the coordinates while a canvas popup is open. No transport

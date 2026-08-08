@@ -1237,8 +1237,9 @@ class MolSysView(
             fallback,
             defer_for_endpoint=target_endpoint_id,
         )
-        if target_endpoint_id is not None:
-            self._popup_structure_transfers.pop(target_endpoint_id, None)
+        # Keep an inactive popup manager until the endpoint closes. Its
+        # generation counter is part of the receiver identity; recreating the
+        # manager would restart at 1 and the live popup would reject the load.
 
     def _handle_binary_structure_event(self, content: Mapping[str, Any]) -> None:
         # An acknowledgement that arrives after the deadline belongs to a stream
@@ -1272,8 +1273,7 @@ class MolSysView(
             # so this is the first moment a scene message can land on
             # something to draw on.
             self._flush_deferred_widget_messages(target_endpoint_id)
-            if target_endpoint_id is not None:
-                self._popup_structure_transfers.pop(target_endpoint_id, None)
+            # The manager outlives this generation. See the fallback path above.
         elif result.disposition is AckDisposition.FALLBACK:
             if result.termination is None:
                 raise RuntimeError("transfer manager returned fallback without termination")

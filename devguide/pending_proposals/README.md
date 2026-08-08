@@ -38,6 +38,12 @@ compression, workers, shared memory and multiview remain post-1.0.
   finding is that the code a reader sees and the code that produced the picture
   are two different files with nothing checking they agree, and the proposed
   direction is to let the tutorial cell generate its own view.
+- [`molsysmt_known_source_form_and_large_string_detection.md`](molsysmt_known_source_form_and_large_string_detection.md):
+  upstream proposal motivated by a 95,000-atom PDB string. It combines bounded,
+  content-aware `get_form()` detection with a public explicit source-form hint for
+  callers that know their input representation by construction. MolSysViewer keeps
+  only a temporary benchmark-level direct converter import until MolSysMT exposes the
+  public path.
 - [`classic_script_runtime_for_offline_bundles.md`](classic_script_runtime_for_offline_bundles.md):
   **not to be implemented yet.** Building the runtime as a classic script instead
   of ESM, which would let many shared views open from a disk with no server. The

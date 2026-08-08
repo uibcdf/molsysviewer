@@ -53,6 +53,39 @@ def test_context_manager_closes_the_view_when_the_block_exits():
     assert set(_instances) == baseline_ids
 
 
+def test_close_releases_embedded_and_popup_structure_transfers():
+    view = MolSysView()
+
+    def start(manager, target_endpoint_id):
+        return manager.start(
+            begin_message={"op": "structure_data_begin", "chunk_count": 1},
+            chunks=[(
+                {"op": "structure_data_chunk", "chunk_id": 0},
+                [memoryview(b"coordinates")],
+            )],
+            fallback_factory=lambda _generation: {"op": "load_molsys_payload"},
+            payload=object(),
+            target_endpoint_id=target_endpoint_id,
+        )
+
+    embedded = start(view._structure_transfers, None)  # noqa: SLF001
+    popup_manager = view._structure_transfer_manager("canvas-popup", create=True)  # noqa: SLF001
+    popup = start(popup_manager, "canvas-popup")
+    view._popup_endpoint_modes["canvas-popup"] = "canvas"  # noqa: SLF001
+    view._deferred_widget_messages[None] = [({"op": "host-scene"}, None)]  # noqa: SLF001
+    view._deferred_widget_messages["canvas-popup"] = [({"op": "popup-scene"}, None)]  # noqa: SLF001
+
+    view.close()
+
+    assert embedded.release_count == 1
+    assert popup.release_count == 1
+    assert embedded.payload is None
+    assert popup.payload is None
+    assert not view._popup_structure_transfers  # noqa: SLF001
+    assert not view._popup_endpoint_modes  # noqa: SLF001
+    assert not view._deferred_widget_messages  # noqa: SLF001
+
+
 def test_autouse_teardown_releases_a_view_left_open_by_a_test():
     baseline_ids = set(_instances)
     fixture = conftest._close_molsysviewer_widgets_after_each_test.__wrapped__

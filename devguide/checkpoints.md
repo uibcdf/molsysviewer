@@ -5,9 +5,11 @@ project state changes. Detail belongs in the normative documents this points to.
 
 ## Repository state
 
-- Branch: `main`. Base commit: `9074c76f`. Latest release checkpoint: `0.20.0`.
-- Suites at that commit: **1293 Python passed, 3 environmental skips**
-  (`--receptor=llm -n 12`), **270 JS**, `tsc` clean, **30/30 E2E**.
+- Branch: `main`. Phase 5 working tree based on `1a9b59b1`. Latest release
+  checkpoint: `0.20.1`.
+- Suites on that working tree: **1295 Python passed, 3 environmental skips**
+  (`--receptor=llm -n 12`), **271 JS**, `tsc` clean, **30/30 E2E**;
+  `build:runtime` and `test:perf` pass.
 - `sandbox/Smoke_Test.ipynb` is developer scratch state. Never include it in a
   commit and never use it as architectural evidence.
 - Generated `molsysviewer/viewer.js` is built with `npm run build:runtime`;
@@ -19,12 +21,16 @@ project state changes. Detail belongs in the normative documents this points to.
 
 Phase 5 of
 [`pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md`](pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md)
-— endpoint isolation and lifecycle — is **parked at 60%**. Phases 0a–4b are
-closed; 6–10 have not started. The plan's dashboard is the authority on
-progress; open a slice by moving its row to `◐` before working on it.
+— endpoint isolation and lifecycle — is **implemented and awaiting independent
+audit**. Phases 0a–4b are closed; 6–10 have not started. The plan's dashboard is
+the authority on progress; open a slice by moving its row to `◐` before working
+on it.
 
-Phase 5's remainder: the endpoint evidence matrix, real-browser
-relay/reconstruction checks, full suites and a runtime rebuild.
+Phase 5 has one transfer manager and deferred queue per destination. Inactive
+popup managers persist until endpoint close so generation identity remains
+monotonic across live molecular reloads; completion and fallback release the
+payload but do not reset that identity. The endpoint matrix and mutation ledger
+are recorded in the master plan.
 
 The architecture behind all of it is normative elsewhere and does not belong
 here: [`data_plane_architecture.md`](data_plane_architecture.md) for the
@@ -70,14 +76,15 @@ Export, embedding and first contact, mostly. In order of consequence:
 
 ## Open work
 
-**Nothing outside Phase 5 remains for the next session.** The transport audit's
-items 1–9 are closed (10–12 are standing boundaries, not work), and the smoke
-round's inventory has only items that need a person. Phase 5 itself is the work:
-its remainder is listed above.
+**The next action is independent audit of Phase 5.** The transport audit's items
+1–9 are closed (10–12 are standing boundaries, not work), and the smoke round's
+inventory has only items that need a person. After audit, Phase 6 is the next
+implementation slice.
 
 Two measurements landed with a trigger attached rather than a change, in
 [`performance/qt_payload_copies_and_endpoint_isolation_2026_08.md`](performance/qt_payload_copies_and_endpoint_isolation_2026_08.md):
-host projection latency is 0.0097 ms behind an in-flight popup stream, and Qt's
+host projection latency revalidated at 0.0111 ms behind an in-flight popup
+stream, and Qt's
 payload join peaks at **2× the payload** — irrelevant at the sizes we ship,
 worth 512 MB at the 256 MB scale-budget warning. If Qt is ever expected to carry
 loads near that budget, switch to the preallocated `bytearray` measured there.

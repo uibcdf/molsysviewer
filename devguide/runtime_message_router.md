@@ -594,9 +594,12 @@ Implemented as part of D4. A message carrying `target_endpoint_id` is relayed by
 the widget host rather than consumed, so a canvas popup receives its own typed
 generation without any endpoint retaining a spare copy; buffers never enter
 `_message_history` or state v2; and closing a popup fires `onEndpointClosed`,
-which cancels that endpoint's pending scene-snapshot requests. See the
-data-plane proposal for the delivery details and
-`structure-data-relay.e2e.ts` for the real-browser verification.
+which cancels that endpoint's pending scene-snapshot requests and releases its
+transfer manager, deferred queue and endpoint mode. Completing or falling back
+one generation releases its payload but deliberately keeps the inactive manager
+until endpoint close, because its counter is the endpoint-lifetime generation
+identity used by the receiver. See the data-plane proposal for the delivery
+details and `structure-data-relay.e2e.ts` for the real-browser verification.
 
 ## Tests and mutation targets
 

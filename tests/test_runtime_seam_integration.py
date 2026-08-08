@@ -295,6 +295,20 @@ def test_a_popup_targeted_stream_fallback_cancels_and_loads_the_same_endpoint():
     assert cancel["target_endpoint_id"] == "canvas-popup-7"
     assert fallback["target_endpoint_id"] == "canvas-popup-7"
 
+    # The manager belongs to the endpoint, not to one generation. Keeping it
+    # preserves the monotonic generation counter expected by the popup receiver.
+    manager = view._structure_transfer_manager("canvas-popup-7")  # noqa: SLF001
+    assert manager is not None
+    assert not manager.has_active
+
+    view._popup_endpoint_modes["canvas-popup-7"] = "canvas"  # noqa: SLF001
+    view._handle_frontend_event({  # noqa: SLF001
+        "event": "popup_endpoint_closed",
+        "mode": "canvas",
+        "popup_endpoint_id": "canvas-popup-7",
+    })
+    assert view._structure_transfer_manager("canvas-popup-7") is None  # noqa: SLF001
+
 
 def test_a_failed_stream_cancel_is_reported_without_masking_the_json_fallback(monkeypatch):
     import molsysmt as msm
@@ -492,4 +506,51 @@ def test_live_molecular_reload_starts_independent_host_and_canvas_generations(
     assert view._structure_transfer_manager("canvas-popup-live").has_active  # noqa: SLF001
     complete_structure_stream(view, target_endpoint_id="canvas-popup-live")
     assert not view._structure_transfers.has_active  # noqa: SLF001
-    assert view._structure_transfer_manager("canvas-popup-live") is None  # noqa: SLF001
+    popup_manager = view._structure_transfer_manager("canvas-popup-live")  # noqa: SLF001
+    assert popup_manager is not None
+    assert not popup_manager.has_active
+
+    sent.clear()
+    view._deliver_transport_message(view._current_molecular_projection)  # noqa: SLF001
+    second_begins = [message for message in sent if message.get("op") == "structure_data_begin"]
+    assert len(second_begins) == 2
+    assert {
+        (message.get("target_endpoint_id"), message["generation"])
+        for message in second_begins
+    } == {
+        (None, 2),
+        ("canvas-popup-live", 2),
+    }
+
+
+def test_closing_panel_endpoint_does_not_release_canvas_transfer():
+    view = MolSysView()
+    canvas_id = "canvas-popup-live"
+    panel_id = "panel-popup-live"
+    view._popup_endpoint_modes.update({  # noqa: SLF001
+        canvas_id: "canvas",
+        panel_id: "panel",
+    })
+    canvas_manager = view._structure_transfer_manager(canvas_id, create=True)  # noqa: SLF001
+    transfer = canvas_manager.start(
+        begin_message={"op": "structure_data_begin", "chunk_count": 1},
+        chunks=[(
+            {"op": "structure_data_chunk", "chunk_id": 0},
+            [memoryview(b"coordinates")],
+        )],
+        fallback_factory=lambda _generation: {"op": "load_molsys_payload"},
+        payload=object(),
+        target_endpoint_id=canvas_id,
+    )
+    view._deferred_widget_messages[panel_id] = [({"op": "panel-only"}, None)]  # noqa: SLF001
+
+    view._handle_frontend_event({  # noqa: SLF001
+        "event": "popup_endpoint_closed",
+        "mode": "panel",
+        "popup_endpoint_id": panel_id,
+    })
+
+    assert canvas_manager.active is transfer
+    assert transfer.release_count == 0
+    assert view._popup_endpoint_modes == {canvas_id: "canvas"}  # noqa: SLF001
+    assert panel_id not in view._deferred_widget_messages  # noqa: SLF001

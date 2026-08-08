@@ -6,7 +6,9 @@ import argparse
 import json
 import time
 
-import molsysmt as msm
+from molsysmt.form.string_pdb_text.to_molsysmt_MolSys import (
+    to_molsysmt_MolSys as pdb_text_to_molsys,
+)
 
 from molsysviewer import MolSysView
 
@@ -50,7 +52,10 @@ def make_pdb(atom_count: int) -> str:
 
 
 def run(atom_count: int, threshold_ms: float) -> dict[str, object]:
-    molsys = msm.convert(make_pdb(atom_count), to_form="molsysmt.MolSys")
+    # The fixture generator knows its source form. Generic form detection is
+    # unrelated to endpoint isolation and dominates this benchmark for a large
+    # in-memory PDB string.
+    molsys = pdb_text_to_molsys(make_pdb(atom_count), skip_digestion=True)
     view = MolSysView()
     try:
         view.load(molsys)

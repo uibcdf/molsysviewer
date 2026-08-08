@@ -29,6 +29,15 @@ the Phase 5 dashboard row and inside the audit item; it was never written where
 performance evidence lives, which is why item 7 kept reading as open. It is here
 now.
 
+The completed Phase 5 implementation was revalidated on 2026-08-08 after its
+endpoint-lifetime generation fix. The same 95,000-atom case measured **0.0111
+ms**, still four orders of magnitude below the predeclared threshold. The
+benchmark now calls the known `string:pdb_text` converter directly: generic
+MolSysMT form detection on a very large in-memory string is not part of endpoint
+isolation and had dominated the benchmark before parsing began. A proposal for
+bounded detection and a public known-source-form path is recorded in
+[`../pending_proposals/molsysmt_known_source_form_and_large_string_detection.md`](../pending_proposals/molsysmt_known_source_form_and_large_string_detection.md).
+
 **This does not measure the browser side.** It measures that Python delivers the
 host's projection to its connector without waiting for the popup's stream, which
 is the property the item is about.

@@ -118,6 +118,23 @@ test("array-native acknowledgements preserve popup endpoint identity", async () 
     assert.equal(events[1].target_endpoint_id, "canvas-popup-7");
 });
 
+test("array-native receiver accepts successive generations for one endpoint", async () => {
+    const completed: number[] = [];
+    const receiver = new ArrayNativeStreamReceiver(
+        () => undefined,
+        async beginMessage => { completed.push(beginMessage.generation); },
+    );
+
+    await receiver.handle(begin(1));
+    await receiver.handle(...chunk(0, 0, [0, 1, 2, 3, 4, 5], 1));
+    await receiver.handle(...chunk(1, 1, [6, 7, 8, 9, 10, 11], 1));
+    await receiver.handle(begin(2));
+    await receiver.handle(...chunk(0, 0, [12, 13, 14, 15, 16, 17], 2));
+    await receiver.handle(...chunk(1, 1, [18, 19, 20, 21, 22, 23], 2));
+
+    assert.deepEqual(completed, [1, 2]);
+});
+
 test("the host binds a popup acknowledgement to its authenticated source endpoint", () => {
     assert.deepEqual(
         bindStreamEventToEndpoint(
