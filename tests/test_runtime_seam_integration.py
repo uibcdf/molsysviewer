@@ -301,7 +301,7 @@ def test_a_popup_targeted_stream_fallback_cancels_and_loads_the_same_endpoint():
     assert manager is not None
     assert not manager.has_active
 
-    view._popup_endpoint_modes["canvas-popup-7"] = "canvas"  # noqa: SLF001
+    view._endpoint_transfers.register("canvas-popup-7", "canvas")  # noqa: SLF001
     view._handle_frontend_event({  # noqa: SLF001
         "event": "popup_endpoint_closed",
         "mode": "canvas",
@@ -422,7 +422,7 @@ def test_popup_transfer_does_not_block_the_embedded_host_and_close_releases_it()
     assert transfer.release_count == 1
     assert transfer.payload is None
     assert view._structure_transfer_manager("canvas-popup-7") is None  # noqa: SLF001
-    assert "canvas-popup-7" not in view._deferred_widget_messages  # noqa: SLF001
+    assert view._endpoint_transfers.state("canvas-popup-7") is None  # noqa: SLF001
     assert not any(message.get("op") == "structure_data_cancel" for message in sent)
     assert not any(message.get("op") == "popup-only-scene" for message in sent)
 
@@ -485,8 +485,8 @@ def test_live_molecular_reload_starts_independent_host_and_canvas_generations(
         "binary_structure_data": [1],
         "max_buffer_bytes": 16 * 1024 * 1024,
     }
-    view._popup_endpoint_modes["canvas-popup-live"] = "canvas"  # noqa: SLF001
-    view._popup_endpoint_modes["panel-popup-live"] = "panel"  # noqa: SLF001
+    view._endpoint_transfers.register("canvas-popup-live", "canvas")  # noqa: SLF001
+    view._endpoint_transfers.register("panel-popup-live", "panel")  # noqa: SLF001
     sent: list[dict] = []
     view.widget.send = lambda content, buffers=None: sent.append(content)  # type: ignore[assignment]
 
@@ -505,7 +505,7 @@ def test_live_molecular_reload_starts_independent_host_and_canvas_generations(
     complete_structure_stream(view)
     assert view._structure_transfer_manager("canvas-popup-live").has_active  # noqa: SLF001
     complete_structure_stream(view, target_endpoint_id="canvas-popup-live")
-    assert not view._structure_transfers.has_active  # noqa: SLF001
+    assert not view._structure_transfer_manager(None).has_active  # noqa: SLF001
     popup_manager = view._structure_transfer_manager("canvas-popup-live")  # noqa: SLF001
     assert popup_manager is not None
     assert not popup_manager.has_active
@@ -527,10 +527,8 @@ def test_closing_panel_endpoint_does_not_release_canvas_transfer():
     view = MolSysView()
     canvas_id = "canvas-popup-live"
     panel_id = "panel-popup-live"
-    view._popup_endpoint_modes.update({  # noqa: SLF001
-        canvas_id: "canvas",
-        panel_id: "panel",
-    })
+    view._endpoint_transfers.register(canvas_id, "canvas")  # noqa: SLF001
+    view._endpoint_transfers.register(panel_id, "panel")  # noqa: SLF001
     canvas_manager = view._structure_transfer_manager(canvas_id, create=True)  # noqa: SLF001
     transfer = canvas_manager.start(
         begin_message={"op": "structure_data_begin", "chunk_count": 1},
@@ -542,7 +540,9 @@ def test_closing_panel_endpoint_does_not_release_canvas_transfer():
         payload=object(),
         target_endpoint_id=canvas_id,
     )
-    view._deferred_widget_messages[panel_id] = [({"op": "panel-only"}, None)]  # noqa: SLF001
+    view._endpoint_transfers.defer(  # noqa: SLF001
+        panel_id, {"op": "panel-only"}, None
+    )
 
     view._handle_frontend_event({  # noqa: SLF001
         "event": "popup_endpoint_closed",
@@ -552,5 +552,5 @@ def test_closing_panel_endpoint_does_not_release_canvas_transfer():
 
     assert canvas_manager.active is transfer
     assert transfer.release_count == 0
-    assert view._popup_endpoint_modes == {canvas_id: "canvas"}  # noqa: SLF001
-    assert panel_id not in view._deferred_widget_messages  # noqa: SLF001
+    assert view._endpoint_transfers.modes == {canvas_id: "canvas"}  # noqa: SLF001
+    assert view._endpoint_transfers.state(panel_id) is None  # noqa: SLF001

@@ -33,6 +33,7 @@ from ..loaders.array_native_molsys import (
 from ..loaders.json_molsys import build_json_molsys_message
 from ..transport import (
     AckDisposition,
+    EndpointTransferRegistry,
     LazyMolecularMessage,
     StructureTransfer,
     StructureTransferManager,
@@ -206,9 +207,7 @@ class MolSysView(
         self._unmount_addon_panel()
         self.addons._close_runtime()  # noqa: SLF001
         self._cancel_binary_structure_stream("view closed")
-        self._popup_structure_transfers.clear()
-        self._popup_endpoint_modes.clear()
-        self._deferred_widget_messages.clear()
+        self._endpoint_transfers.clear()
 
         widget = self.widget
         layout = getattr(widget, "layout", None)
@@ -288,22 +287,22 @@ class MolSysView(
         # `widget.send` unsafe for AnyWidget). Generous by default so a slow
         # connection is not mistaken for a dead one.
         self._monotonic = time.monotonic
-        self._structure_transfers = StructureTransferManager(
+        embedded_transfer_manager = StructureTransferManager(
             self._binary_viewer_id,
             self._binary_session_id,
             timeout_s=30.0,
             monotonic=lambda: self._monotonic(),
         )
-        self._popup_structure_transfers: dict[str, StructureTransferManager] = {}
-        self._popup_endpoint_modes: dict[str, str] = {}
-        # Scene messages waiting for the structure they describe. Streaming the
-        # molecular payload made its delivery asynchronous, so "handed to the
-        # transport" stopped meaning "applied in the browser"; see
-        # `_send_widget_message`.
-        self._deferred_widget_messages: dict[
-            str | None, list[tuple[Mapping[str, Any], Any]]
-        ] = {}
-        self._flushing_deferred_widget_messages: set[str | None] = set()
+        self._endpoint_transfers = EndpointTransferRegistry(
+            embedded_transfer_manager,
+            lambda endpoint_id: StructureTransferManager(
+                self._binary_viewer_id,
+                self._binary_session_id,
+                timeout_s=30.0,
+                monotonic=lambda: self._monotonic(),
+                stream_id=f"structures:{endpoint_id}",
+            ),
+        )
         # The current molecular projection ("current molecular state"), updated
         # on every load/rebuild. Its portable JSON body may remain lazy until a
         # compatibility/export consumer asks for it.
@@ -971,24 +970,10 @@ class MolSysView(
         *,
         create: bool = False,
     ) -> StructureTransferManager | None:
-        if target_endpoint_id is None:
-            return self._structure_transfers
-        manager = self._popup_structure_transfers.get(target_endpoint_id)
-        if manager is None and create:
-            manager = StructureTransferManager(
-                self._binary_viewer_id,
-                self._binary_session_id,
-                timeout_s=30.0,
-                monotonic=lambda: self._monotonic(),
-                stream_id=f"structures:{target_endpoint_id}",
-            )
-            self._popup_structure_transfers[target_endpoint_id] = manager
-            self._deferred_widget_messages.setdefault(target_endpoint_id, [])
-        return manager
+        return self._endpoint_transfers.manager(target_endpoint_id, create=create)
 
     def _iter_structure_transfer_managers(self):
-        yield None, self._structure_transfers
-        yield from self._popup_structure_transfers.items()
+        yield from self._endpoint_transfers.iter_managers()
 
     def _try_send_array_native_molsys(
         self,
@@ -1315,9 +1300,7 @@ class MolSysView(
         """
         manager = self._structure_transfer_manager(defer_for_endpoint)
         if manager is not None and manager.has_active:
-            self._deferred_widget_messages.setdefault(defer_for_endpoint, []).append(
-                (message, buffers)
-            )
+            self._endpoint_transfers.defer(defer_for_endpoint, message, buffers)
             return
         self._transmit_widget_message(message, buffers)
         # Drains a backlog that outlived its stream even if some exit path forgot
@@ -1344,23 +1327,20 @@ class MolSysView(
         target_endpoint_id: str | None = None,
     ) -> None:
         """Send what waited for the structure, in the order it was produced."""
-        if target_endpoint_id in self._flushing_deferred_widget_messages:
+        state = self._endpoint_transfers.begin_flush(target_endpoint_id)
+        if state is None:
             return
-        self._flushing_deferred_widget_messages.add(target_endpoint_id)
         try:
-            queue = self._deferred_widget_messages.setdefault(target_endpoint_id, [])
-            while queue:
+            while state.deferred:
                 manager = self._structure_transfer_manager(target_endpoint_id)
                 if manager is not None and manager.has_active:
                     # A newer generation started mid-flush; the rest waits for it
                     # rather than overtaking the structure it is about to replace.
                     break
-                message, buffers = queue.pop(0)
+                message, buffers = state.deferred.popleft()
                 self._transmit_widget_message(message, buffers)
-            if not queue:
-                self._deferred_widget_messages.pop(target_endpoint_id, None)
         finally:
-            self._flushing_deferred_widget_messages.discard(target_endpoint_id)
+            self._endpoint_transfers.end_flush(state)
 
     def _handle_inbound_message(self, content: Any) -> None:
         """Validate + unwrap an inbound envelope, or pass raw messages through.
@@ -1405,7 +1385,7 @@ class MolSysView(
         mode = payload.get("mode")
         popup_endpoint_id = payload.get("popup_endpoint_id")
         if mode in {"canvas", "panel"} and isinstance(popup_endpoint_id, str) and popup_endpoint_id:
-            self._popup_endpoint_modes[popup_endpoint_id] = mode
+            self._endpoint_transfers.register(popup_endpoint_id, mode)
         # D4: a canvas popup gets its molecular generation as typed buffers,
         # streamed straight to its endpoint, so neither the host nor Python keeps
         # a spare copy. Only then is the JSON load left out of the snapshot.
@@ -1457,7 +1437,7 @@ class MolSysView(
             self._send_widget_message(self._materialize_molecular_projection(message))
         if not is_molecular:
             return
-        for endpoint_id, mode in tuple(self._popup_endpoint_modes.items()):
+        for endpoint_id, mode in tuple(self._endpoint_transfers.mode_items()):
             if mode != "canvas":
                 continue
             if not self._try_send_array_native_molsys(
@@ -1517,9 +1497,7 @@ class MolSysView(
                 target_endpoint_id=endpoint_id,
                 notify_receiver=False,
             )
-            self._popup_structure_transfers.pop(endpoint_id, None)
-            self._popup_endpoint_modes.pop(endpoint_id, None)
-            self._deferred_widget_messages.pop(endpoint_id, None)
+            self._endpoint_transfers.close(endpoint_id)
         elif event == "request_widget_runtime_source":
             # This is the lazy-load bootstrap handshake: the frontend requests the
             # runtime source BEFORE the real runtime has loaded, so `_ready` is

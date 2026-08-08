@@ -38,7 +38,7 @@ audit.
 | 4a | Canonical static export | ✓ | 100% | working tree from `d7768ab1` | generated Python projection passed in real Chromium/Mol*; mutation-verified; audited and closed |
 | 4b | Live `ready`/reconnect closure | ✓ | 100% | working tree from `2b504d77` | canonical ready projection, bounded compatibility path and real widget-seam E2E; audited and closed |
 | 5 | Endpoint isolation and lifecycle | ● | 100% | `6904aea8` plus working tree from `1a9b59b1` | Per-endpoint transfer managers and queues; endpoint matrix closed; 1295 Python + 3 skips, 271 JS, tsc 0, runtime/perf, 30/30 E2E; 95k host latency 0.0111 ms; awaiting independent audit |
-| 6 | Ownership audit and limited consolidation | ○ | 0% | — | — |
+| 6 | Ownership audit and limited consolidation | ● | 100% | working tree from `0f907ccd` | Ownership table recorded; endpoint lifecycle consolidated in one registry; static projector remains single authority; 1298 Python + 3 skips; three guards mutation-verified; awaiting independent audit |
 | 7 | Missing seam evidence | ○ | 0% | — | — |
 | 8 | Representative performance and memory gate | ○ | 0% | — | — |
 | 9 | Documentation and upstream closure | ○ | 0% | — | — |
@@ -1023,6 +1023,42 @@ scratch notebook was not used as evidence or included in the implementation.
 state; structural checks find no direct transfer transition in `core.py` and no
 duplicate static-export authority; every removed compatibility path has a
 parity test. No prediction about hypothetical future edits is used as evidence.
+
+#### Phase 6 implementation evidence — 2026-08-08
+
+The durable ownership table is
+[`../transport_state_ownership.md`](../transport_state_ownership.md). The audit
+confirmed that `StructureTransferManager` is already the sole transfer-state
+authority and `PopupSnapshotMixin` is already the sole canonical/static
+projector. No extraction of runtime dispatch or frontend orchestrators was
+therefore justified.
+
+One concrete duplicate lifecycle representation did remain: `core.py` kept
+popup manager, popup mode, deferred messages and flush reentrancy in four
+parallel containers. `EndpointTransferRegistry` now owns one
+`EndpointTransferState` bundle per destination. `MolSysView` coordinates wire
+effects through that registry and no longer has to register or remove the same
+endpoint from several dictionaries.
+
+Observed validation:
+
+| Gate | Result |
+|---|---:|
+| focused transfer/ordering/lifecycle/projector set | 66 passed, exit 0 |
+| `python -m pytest --receptor=llm -n 12 tests/` | 1298 passed, 3 environmental skips, exit 0 |
+| frontend gates | not run; no TypeScript or runtime source changed |
+
+Mutation ledger:
+
+| Mechanism | Mutation | Test that failed | Restored result |
+|---|---|---|---|
+| endpoint-close isolation | make `close(endpoint)` clear every popup bundle | `test_closing_one_endpoint_removes_its_complete_bundle_only` | pass |
+| endpoint single ownership | reintroduce `_popup_endpoint_modes` in `core.py` | `test_core_has_no_parallel_endpoint_lifecycle_containers` | pass |
+| static-projector single authority | add a second `_build_static_export_snapshot` in `export.py` | `test_static_export_snapshot_has_one_constructor` | pass |
+
+Not done: no behavior change to the transfer protocol, no TypeScript movement,
+no general `core.py` decomposition and no compatibility alias for the removed
+private dictionaries. Phase 6 needs independent audit before closure.
 
 ### Phase 7 — Missing seam evidence
 

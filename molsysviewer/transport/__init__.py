@@ -14,6 +14,7 @@ from .lazy_molecular import (
     StaleMolecularProjectionError,
     is_lazy_molecular_message,
 )
+from .endpoints import EndpointTransferRegistry, EndpointTransferState
 
 __all__ = [
     "AckDisposition",
@@ -26,4 +27,6 @@ __all__ = [
     "LazyMolecularMessage",
     "StaleMolecularProjectionError",
     "is_lazy_molecular_message",
+    "EndpointTransferRegistry",
+    "EndpointTransferState",
 ]

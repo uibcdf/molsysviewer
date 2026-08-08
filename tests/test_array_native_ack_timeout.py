@@ -50,8 +50,9 @@ def _view_with_pending_stream():
         "capabilities": {"binary_structure_data": [1], "max_buffer_bytes": 16 * 1024 * 1024},
     })
     assert any(m.get("op") == "structure_data_begin" for m, _ in sent)
-    assert view._structure_transfers.active is not None  # noqa: SLF001
-    assert view._structure_transfers.active.state is TransferState.WAITING_BEGIN_ACK  # noqa: SLF001
+    manager = view._structure_transfer_manager(None)  # noqa: SLF001
+    assert manager.active is not None
+    assert manager.active.state is TransferState.WAITING_BEGIN_ACK
     return view, clock, sent
 
 
@@ -65,10 +66,11 @@ def test_a_stream_whose_ack_never_arrives_releases_arrays_and_builds_json_once(m
         return original_build(*args, **kwargs)
 
     monkeypatch.setattr(viewer_core, "build_json_molsys_message", recording_build)
-    transfer = view._structure_transfers.active  # noqa: SLF001
+    manager = view._structure_transfer_manager(None)  # noqa: SLF001
+    transfer = manager.active
     assert transfer.payload is not None, "arrays are retained while in flight"
 
-    clock.advance(view._structure_transfers.timeout_s + 1)  # noqa: SLF001
+    clock.advance(manager.timeout_s + 1)
     sent.clear()
 
     # Any main-thread entry point triggers the check; unrelated frontend traffic
@@ -77,7 +79,7 @@ def test_a_stream_whose_ack_never_arrives_releases_arrays_and_builds_json_once(m
         view._handle_inbound_message({"event": "widget_resize", "height": 10, "width": 10})  # noqa: SLF001
 
     # The stream is gone and its arrays are released, not merely dereferenced.
-    assert view._structure_transfers.active is None  # noqa: SLF001
+    assert manager.active is None
     assert transfer.payload is None
     assert transfer.chunks == []
 
@@ -92,25 +94,27 @@ def test_a_stream_whose_ack_never_arrives_releases_arrays_and_builds_json_once(m
 
 def test_a_stream_that_is_acknowledged_in_time_is_not_dropped():
     view, clock, sent = _view_with_pending_stream()
+    manager = view._structure_transfer_manager(None)  # noqa: SLF001
     # Just under the deadline: still alive.
-    clock.advance(view._structure_transfers.timeout_s - 1)  # noqa: SLF001
+    clock.advance(manager.timeout_s - 1)
     view._handle_inbound_message({"event": "widget_resize", "height": 10, "width": 10})  # noqa: SLF001
-    assert view._structure_transfers.active is not None  # noqa: SLF001
+    assert manager.active is not None
 
 
 def test_each_acknowledgement_restarts_the_deadline():
     view, clock, sent = _view_with_pending_stream()
-    first_deadline = view._structure_transfers.active.deadline  # noqa: SLF001
+    manager = view._structure_transfer_manager(None)  # noqa: SLF001
+    first_deadline = manager.active.deadline
 
-    clock.advance(view._structure_transfers.timeout_s - 1)  # noqa: SLF001
+    clock.advance(manager.timeout_s - 1)
     view._handle_frontend_event({  # noqa: SLF001
         "event": "structure_data_begin_ack",
         "viewer_id": view._binary_viewer_id,  # noqa: SLF001
         "session_id": view._binary_session_id,  # noqa: SLF001
         "stream_id": "structures:main",
-        "generation": view._structure_transfers.active.generation,  # noqa: SLF001
+        "generation": manager.active.generation,
     })
-    transfer = view._structure_transfers.active  # noqa: SLF001
+    transfer = manager.active
     assert transfer is not None, "progress must keep the stream alive"
     # A peer that is slow but alive gets a fresh budget rather than being dropped.
     assert transfer.deadline > first_deadline
@@ -118,7 +122,8 @@ def test_each_acknowledgement_restarts_the_deadline():
 
 def test_a_completed_stream_is_released_and_never_expires():
     view, clock, sent = _view_with_pending_stream()
-    generation = view._structure_transfers.active.generation  # noqa: SLF001
+    manager = view._structure_transfer_manager(None)  # noqa: SLF001
+    generation = manager.active.generation
     identity = {
         "viewer_id": view._binary_viewer_id,  # noqa: SLF001
         "session_id": view._binary_session_id,  # noqa: SLF001
@@ -128,8 +133,8 @@ def test_a_completed_stream_is_released_and_never_expires():
     view._handle_frontend_event({"event": "structure_data_begin_ack", **identity})  # noqa: SLF001
     chunk_id = 0
     while (
-        view._structure_transfers.active is not None  # noqa: SLF001
-        and view._structure_transfers.active.state is not TransferState.WAITING_COMPLETE  # noqa: SLF001
+        manager.active is not None
+        and manager.active.state is not TransferState.WAITING_COMPLETE
     ):
         view._handle_frontend_event({  # noqa: SLF001
             "event": "structure_data_chunk_ack", "chunk_id": chunk_id, **identity,
@@ -139,7 +144,7 @@ def test_a_completed_stream_is_released_and_never_expires():
             pytest.fail("chunk acknowledgement loop did not converge")
 
     view._handle_frontend_event({"event": "structure_data_complete", **identity})  # noqa: SLF001
-    assert view._structure_transfers.active is None  # noqa: SLF001
+    assert manager.active is None
 
     # A late deadline sweep on a finished stream must not warn or fall back.
     clock.advance(10_000)
@@ -158,7 +163,8 @@ def test_the_ack_deadline_is_never_driven_from_a_timer_thread():
         return original_send(message, buffers=buffers)
 
     view.widget.send = recording_send  # type: ignore[method-assign]
-    clock.advance(view._structure_transfers.timeout_s + 1)  # noqa: SLF001
+    manager = view._structure_transfer_manager(None)  # noqa: SLF001
+    clock.advance(manager.timeout_s + 1)
     with pytest.warns(RuntimeWarning):
         view._handle_inbound_message({"event": "widget_resize", "height": 1, "width": 1})  # noqa: SLF001
 

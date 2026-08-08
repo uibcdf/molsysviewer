@@ -76,7 +76,7 @@ def test_a_replayed_scene_waits_for_the_streamed_structure(complete_structure_st
     assert "add_distance_measurement" in ops, "the measurement must arrive eventually"
     assert ops.index("add_distance_measurement") > last_chunk
     assert "add_label" in ops
-    assert not view._deferred_widget_messages, "nothing may be stranded"  # noqa: SLF001
+    assert not view._endpoint_transfers.has_deferred, "nothing may be stranded"  # noqa: SLF001
 
 
 def test_the_deferred_scene_keeps_the_order_python_produced_it_in(complete_structure_stream):
@@ -147,7 +147,7 @@ def test_a_stream_that_falls_back_to_json_still_delivers_the_scene_behind_it():
     assert "load_molsys_payload" in ops, "the stream must have fallen back to JSON"
     assert "add_distance_measurement" in ops, "the backlog must not be stranded"
     assert ops.index("add_distance_measurement") > ops.index("load_molsys_payload")
-    assert not view._deferred_widget_messages  # noqa: SLF001
+    assert not view._endpoint_transfers.has_deferred  # noqa: SLF001
 
 
 def test_the_handshake_and_blocking_requests_are_never_held(complete_structure_stream):
@@ -183,4 +183,4 @@ def test_a_json_only_frontend_is_unaffected():
     assert "load_molsys_payload" in ops
     assert "add_distance_measurement" in ops
     assert ops.index("add_distance_measurement") > ops.index("load_molsys_payload")
-    assert not view._deferred_widget_messages  # noqa: SLF001
+    assert not view._endpoint_transfers.has_deferred  # noqa: SLF001

@@ -1,5 +1,10 @@
 # Array-native data plane for materialized structures
 
+Mutable runtime ownership is enumerated in
+[`transport_state_ownership.md`](transport_state_ownership.md). This document
+defines the protocol; the ownership table defines which component may retain or
+mutate each lifecycle state.
+
 **Status:** complete for pre-1.0. D0 through D4 are implemented and
 mutation-verified on the AnyWidget connector, and Qt now has both its own
 baseline (`../performance/qt_transport_baseline_2026_07.md`) and binary

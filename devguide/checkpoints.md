@@ -5,11 +5,12 @@ project state changes. Detail belongs in the normative documents this points to.
 
 ## Repository state
 
-- Branch: `main`. Phase 5 working tree based on `1a9b59b1`. Latest release
-  checkpoint: `0.20.1`.
-- Suites on that working tree: **1295 Python passed, 3 environmental skips**
-  (`--receptor=llm -n 12`), **271 JS**, `tsc` clean, **30/30 E2E**;
-  `build:runtime` and `test:perf` pass.
+- Branch: `main`. Phase 5 is committed as `0f907ccd`; Phase 6 is an uncommitted
+  working tree based on it. Latest release checkpoint: `0.20.1`.
+- Suites on the Phase 6 working tree: **1298 Python passed, 3 environmental
+  skips** (`--receptor=llm -n 12`). The latest frontend validation remains the
+  Phase 5 result: **271 JS**, `tsc` clean, **30/30 E2E**;
+  `build:runtime` and `test:perf` passed. Phase 6 changed no TypeScript.
 - `sandbox/Smoke_Test.ipynb` is developer scratch state. Never include it in a
   commit and never use it as architectural evidence.
 - Generated `molsysviewer/viewer.js` is built with `npm run build:runtime`;
@@ -21,10 +22,10 @@ project state changes. Detail belongs in the normative documents this points to.
 
 Phase 5 of
 [`pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md`](pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md)
-— endpoint isolation and lifecycle — is **implemented and awaiting independent
-audit**. Phases 0a–4b are closed; 6–10 have not started. The plan's dashboard is
-the authority on progress; open a slice by moving its row to `◐` before working
-on it.
+— endpoint isolation and lifecycle — is committed and awaiting independent
+audit. Phase 6 — ownership audit and limited consolidation — is also
+**implemented and awaiting independent audit**. Phases 0a–4b are closed; 7–10
+have not started. The plan's dashboard is the authority on progress.
 
 Phase 5 has one transfer manager and deferred queue per destination. Inactive
 popup managers persist until endpoint close so generation identity remains
@@ -76,9 +77,8 @@ Export, embedding and first contact, mostly. In order of consequence:
 
 ## Open work
 
-**The next action is independent audit of Phase 5.** The transport audit's items
-1–9 are closed (10–12 are standing boundaries, not work), and the smoke round's
-inventory has only items that need a person. After audit, Phase 6 is the next
+**The next action is independent audit of Phases 5 and 6.** Phase 5 is already
+committed; Phase 6 remains in the working tree. After audit, Phase 7 is the next
 implementation slice.
 
 Two measurements landed with a trigger attached rather than a change, in

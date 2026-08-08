@@ -175,12 +175,12 @@ def test_anywidget_stream_sends_one_bounded_chunk_per_ack_and_releases_on_comple
         ]
         assert chunk_ids == list(range(min(chunk_id + 2, 3)))
 
-    assert view._structure_transfers.active is not None  # noqa: SLF001
+    assert view._structure_transfer_manager(None).active is not None  # noqa: SLF001
     view._handle_frontend_event({  # noqa: SLF001
         "event": "structure_data_complete",
         **identity,
     })
-    assert view._structure_transfers.active is None  # noqa: SLF001
+    assert view._structure_transfer_manager(None).active is None  # noqa: SLF001
     view.close()
 
 
@@ -237,6 +237,6 @@ def test_anywidget_stream_connector_failure_releases_buffers_and_falls_back_to_j
             "generation": begin["generation"],
         })
 
-    assert view._structure_transfers.active is None  # noqa: SLF001
+    assert view._structure_transfer_manager(None).active is None  # noqa: SLF001
     assert any(message.get("op") == "load_molsys_payload" for message in sent)
     view.close()
