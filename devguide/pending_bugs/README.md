@@ -10,6 +10,11 @@ archive only after the implementation and regression tests are complete.
 
 ## Current triage
 
+- [`exported_view_background_not_transparent_when_loaded_dark.md`](exported_view_background_not_transparent_when_loaded_dark.md):
+  a view exported with `background="transparent"` is opaque white when the embedding
+  page is dark at load time, and never recovers. Reported from MolSysMT's published
+  documentation. Located in `applyExportedBackground`, which resolves light/dark and
+  calls `toggleBackground` even in transparent mode, where neither is meaningful.
 - [`standalone_qt_live_demo_reload.md`](standalone_qt_live_demo_reload.md):
   replacing a loaded demo does not update the real Qt scene. It requires a real
   Qt/WebGL window for the next diagnostic pass.
