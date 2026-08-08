@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
+from ._private.argdigest import digest
 from .colors import normalize_color
 from .scene_history import records_scene_history
 
@@ -95,6 +96,7 @@ class SceneManager:
 
     # ── Lighting ──────────────────────────────────────────────────────────
 
+    @digest()
     def set_lighting(
         self,
         ambient: float | None = None,
@@ -116,8 +118,6 @@ class SceneManager:
 
         At least one parameter must be given.
         """
-        if ambient is None and diffuse is None and specular is None:
-            raise ValueError("At least one of ambient, diffuse, or specular must be provided.")
         msg: dict = {"op": "set_lighting"}
         if ambient is not None:
             msg["ambient"] = float(ambient)
@@ -143,6 +143,7 @@ class SceneManager:
 
     # ── Clipping ──────────────────────────────────────────────────────────
 
+    @digest()
     def set_clip_planes(
         self,
         near: float | None = None,
@@ -170,8 +171,6 @@ class SceneManager:
         At least one of ``near``, ``far``, ``min_near``, or ``thickness``
         must be provided.
         """
-        if near is None and far is None and min_near is None and thickness is None:
-            raise ValueError("At least one of near, far, min_near, or thickness must be provided.")
         if thickness is not None:
             if near is None:
                 raise ValueError("thickness requires near to be specified.")

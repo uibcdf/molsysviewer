@@ -16,6 +16,12 @@ compression, workers, shared memory and multiview remain post-1.0.
   validation that needs a real screen, a fix nobody has reviewed, two decisions,
   a handover to MolSysMT, an upstream answer, and Phase 5's own opening. As of
   2026-08-06 everything outside Phase 5 that did not need a person is done.
+- [`digest_every_public_callable.md`](digest_every_public_callable.md): the release
+  owner's rule that every public callable carries `@digest`. Measured: 515 public
+  callables are undecorated against 286 decorated, and 482 raw `ValueError`/`TypeError`/
+  `KeyError` never reach the diagnostics catalogue. The cost is not the decorator but
+  declaring the arguments each function introduces, so the job must be sized by argument
+  names rather than by function count.
 - [`pre_1_0_architecture_rework_and_hardening_master_plan.md`](pre_1_0_architecture_rework_and_hardening_master_plan.md):
   canonical execution plan for the corrections, transport/export rework,
   architectural extraction, seam hardening, representative performance work
