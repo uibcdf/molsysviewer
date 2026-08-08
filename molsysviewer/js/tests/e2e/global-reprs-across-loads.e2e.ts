@@ -60,6 +60,9 @@ async function run() {
         const stack = String((err as any).stack ?? err);
         errors.push(stack.split("\n").slice(0, 6).join(" | "));
     });
+    page.on("console", message => {
+        if (message.type() === "error") errors.push(`console: ${message.text()}`);
+    });
 
     await page.goto("about:blank");
     await page.setContent(
@@ -104,12 +107,26 @@ async function run() {
         await load(cfg.b);
         out.push(census("after load B"));
 
+        await controller.handleMessage({ op: "hide_whole", target: "whole" });
+        await new Promise(r => setTimeout(r, 200));
+        const hidden = Array.from(state.globalReprs ?? []).every(
+            (ref: any) => plugin.state.data.cells.get(ref)?.state?.isHidden === true,
+        );
+        out.push({ ...census("after hide B"), hidden });
+
+        await controller.handleMessage({ op: "show_whole", target: "whole" });
+        await new Promise(r => setTimeout(r, 200));
+        const shown = Array.from(state.globalReprs ?? []).every(
+            (ref: any) => plugin.state.data.cells.get(ref)?.state?.isHidden !== true,
+        );
+        out.push({ ...census("after show B"), shown });
+
         return out;
     }, { a: PDB_A, b: PDB_B });
 
     for (const row of report) console.log(`[E2E global-reprs] ${JSON.stringify(row)}`);
 
-    const afterSecondLoad = report[report.length - 1];
+    const afterSecondLoad = report.find(row => row.label === "after load B");
     assert.ok(
         afterSecondLoad.held > 0,
         "the whole's representations must be adopted after the second load; an empty "
@@ -120,6 +137,16 @@ async function run() {
         `globalReprs still holds ${afterSecondLoad.dead} ref(s) whose cell is gone. `
         + "setSubtreeVisibility throws on those, and one of them keeps the set "
         + "non-empty so the new structure's representations are never adopted.",
+    );
+    assert.strictEqual(
+        report.find(row => row.label === "after hide B")?.hidden,
+        true,
+        "hide_whole did not hide the replacement structure",
+    );
+    assert.strictEqual(
+        report.find(row => row.label === "after show B")?.shown,
+        true,
+        "show_whole did not restore the replacement structure",
     );
     assert.deepStrictEqual(errors, [], `page errors: ${errors.join(" | ")}`);
 

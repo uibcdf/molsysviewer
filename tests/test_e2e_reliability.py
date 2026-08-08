@@ -54,6 +54,24 @@ def test_e2e_suites_use_the_shared_browser_without_silent_success_paths():
             assert marker not in source, f"{path.name} contains {marker!r}"
 
 
+def test_e2e_failures_cannot_leave_chromium_alive_until_timeout():
+    """A failed assertion must terminate, not merely set a future exit code.
+
+    ``process.exitCode = 1`` waits for the event loop to empty. A browser that
+    was not closed because execution jumped into ``catch`` keeps that loop
+    alive, turning a useful assertion failure into a CI timeout.
+    """
+    offenders = [
+        path.name
+        for path in E2E_ROOT.glob("*.e2e.ts")
+        if re.search(r"process\.exitCode\s*=\s*1", path.read_text())
+    ]
+    assert offenders == [], (
+        "E2E catch paths must close Chromium in finally and terminate with "
+        f"process.exit(1); unsafe suites: {offenders}"
+    )
+
+
 def test_e2e_skip_is_centralized_and_requires_explicit_opt_in():
     source = (E2E_ROOT / "e2e-browser.ts").read_text()
 

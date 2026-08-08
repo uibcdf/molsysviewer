@@ -40,6 +40,7 @@ declare global {
         probePopupReconstruction: typeof probePopupReconstruction;
         probeStructureDataRelay: typeof probeStructureDataRelay;
         probeWidgetSeam: typeof probeWidgetSeam;
+        probePanelHierarchyRefreshAtWidgetSeam: typeof probePanelHierarchyRefreshAtWidgetSeam;
     } | undefined;
 }
 
@@ -1633,6 +1634,7 @@ if (typeof window !== "undefined") {
         probePopupReconstruction,
         probeStructureDataRelay,
         probeWidgetSeam,
+        probePanelHierarchyRefreshAtWidgetSeam,
     };
 }
 
@@ -1823,6 +1825,8 @@ export async function probeWidgetSeam(): Promise<{
     projectionApplied: boolean;
     foreignSessionApplied: boolean;
     foreignSessionRejectedObservably: boolean;
+    cameraDiagnosticEnveloped: boolean;
+    cameraDiagnosticPayload: Record<string, unknown> | null;
 }> {
     const viewerId = "e2e-seam-view";
     const sessionId = "e2e-seam-session";
@@ -1862,9 +1866,11 @@ export async function probeWidgetSeam(): Promise<{
     // applied either way, so "a foreign session is not applied" held for the
     // wrong reason.
     const delivered: string[] = [];
+    let liveController: any = null;
     const controllerProto = MolSysViewerController.prototype as any;
     const originalHandle = controllerProto.handleMessage;
     controllerProto.handleMessage = function (msg: any, ...rest: any[]) {
+        liveController = this;
         if (msg?.op) delivered.push(String(msg.op));
         return originalHandle.call(this, msg, ...rest);
     };
@@ -1920,6 +1926,19 @@ export async function probeWidgetSeam(): Promise<{
             && m?.payload?.reason === "session-mismatch",
     );
 
+    sent.length = 0;
+    liveController?.notify?.({
+        event: "camera_stranded_inside_scene",
+        distance: 2,
+        scene_radius: 10,
+        after: "representation-change",
+    });
+    const cameraEnvelope = sent.find(
+        m => m?.action === "camera_stranded_inside_scene" && m?.direction === "error",
+    );
+    const cameraDiagnosticEnveloped = !!cameraEnvelope;
+    const cameraDiagnosticPayload = cameraEnvelope?.payload ?? null;
+
     controllerProto.handleMessage = originalHandle;
 
     return {
@@ -1929,7 +1948,104 @@ export async function probeWidgetSeam(): Promise<{
         projectionApplied,
         foreignSessionApplied,
         foreignSessionRejectedObservably,
+        cameraDiagnosticEnveloped,
+        cameraDiagnosticPayload,
     };
+}
+
+/** Drive the live AnyWidget enqueue path and capture its panel hierarchy relay. */
+export async function probePanelHierarchyRefreshAtWidgetSeam(): Promise<string[]> {
+    const viewerId = "e2e-panel-hierarchy-view";
+    const sessionId = "e2e-panel-hierarchy-session";
+    const traits: Record<string, unknown> = {
+        runtime_viewer_id: viewerId,
+        runtime_session_id: sessionId,
+        initial_messages: [],
+        enable_popout: false,
+        debug_js: false,
+        show_controls: false,
+        autohide_controls: true,
+        controls_mode: "classic",
+        panel_mode_style: "drawer",
+        viewer_mode: "integrated",
+        controls_position: ["top", "right"],
+        addon_states: {},
+    };
+    let customHandler: ((msg: any, buffers?: DataView[]) => void) | null = null;
+    const model = {
+        get: (key: string) => traits[key],
+        set: () => {},
+        save_changes: () => {},
+        send: () => {},
+        on: (event: string, cb: any) => {
+            if (event === "msg:custom") customHandler = cb;
+        },
+        off: () => {},
+    };
+    const relays: string[] = [];
+    const popupProto = PopupHostManager.prototype as any;
+    const panelOpen = Object.getOwnPropertyDescriptor(popupProto, "isPanelOpen");
+    const sendTo = popupProto.sendTo;
+    Object.defineProperty(popupProto, "isPanelOpen", { configurable: true, get: () => true });
+    popupProto.sendTo = function (mode: string, type: string, data: any) {
+        if (mode === "panel" && type === "molsysviewer-sync-hierarchy") {
+            relays.push(JSON.stringify(data?.items ?? []));
+        }
+        return true;
+    };
+
+    const el = document.createElement("div");
+    Object.assign(el.style, { width: "640px", height: "480px" });
+    document.body.appendChild(el);
+
+    try {
+        const widget = (await import("../../src/index")).default;
+        widget.render({ model, el });
+        const handlerDeadline = Date.now() + 20000;
+        while (Date.now() < handlerDeadline && customHandler === null) {
+            await new Promise(resolve => setTimeout(resolve, 50));
+        }
+        if (!customHandler) throw new Error("the widget did not install its custom-message handler");
+
+        const payload = (names: [string, string]) => ({
+            atoms: {
+                atom_id: [1, 2, 3, 4], atom_name: ["N", "CA", "N", "CA"],
+                element_symbol: ["N", "C", "N", "C"], residue_id: [1, 1, 2, 2],
+                residue_name: [names[0], names[0], names[1], names[1]],
+                chain_id: ["A", "A", "A", "A"], entity_id: ["1", "1", "1", "1"],
+                molecule_id: [0, 0, 1, 1], molecule_name: names.flatMap(name => [name, name]),
+                component_id: [0, 0, 1, 1], component_name: names.flatMap(name => [name, name]),
+            },
+            structures: [{ coordinates: [[0, 0, 0], [1, 1, 1], [4, 4, 4], [5, 5, 5]] }],
+        });
+        const sendLoad = (messageId: string, names: [string, string]) => customHandler!({
+            protocolVersion: 1,
+            viewerId,
+            sessionId,
+            endpointId: `python:${viewerId}`,
+            targetEndpointId: `widget-host:${sessionId}`,
+            messageId,
+            direction: "projection",
+            action: "load_molsys_payload",
+            payload: { op: "load_molsys_payload", payload: payload(names), label: messageId },
+        });
+
+        sendLoad("hierarchy-first", ["MET", "ALA"]);
+        const firstDeadline = Date.now() + 20000;
+        while (Date.now() < firstDeadline && relays.length < 1) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        sendLoad("hierarchy-second", ["GLY", "SER"]);
+        const secondDeadline = Date.now() + 20000;
+        while (Date.now() < secondDeadline && relays.length < 2) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        return relays;
+    } finally {
+        popupProto.sendTo = sendTo;
+        if (panelOpen) Object.defineProperty(popupProto, "isPanelOpen", panelOpen);
+        el.remove();
+    }
 }
 
 /**

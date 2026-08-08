@@ -174,6 +174,21 @@ async function run() {
         + "by design, so without the relay it stays empty while every other subpanel "
         + "populates from the snapshot",
     );
+
+    const hierarchyRelays = await page.evaluate(
+        () => (window as any).Harness.probePanelHierarchyRefreshAtWidgetSeam(),
+    );
+    assert.ok(hierarchyRelays.length >= 2, "the widget seam did not relay both hierarchies");
+    assert.ok(
+        hierarchyRelays[0].includes("MET") && hierarchyRelays[0].includes("ALA"),
+        `the first hierarchy relay was wrong: ${hierarchyRelays[0]}`,
+    );
+    const latestHierarchy = hierarchyRelays[hierarchyRelays.length - 1];
+    assert.ok(
+        latestHierarchy.includes("GLY") && latestHierarchy.includes("SER")
+            && !latestHierarchy.includes("MET") && !latestHierarchy.includes("ALA"),
+        `the panel hierarchy did not refresh after the second structure: ${latestHierarchy}`,
+    );
     assert.deepStrictEqual(errors, [], `page errors: ${errors.join(" | ")}`);
 
     console.log("[E2E panel-popup-welcome] PASS");

@@ -37,6 +37,17 @@ async function run(): Promise<void> {
             true,
             "a rejected envelope must emit a runtime diagnostic even with debug disabled",
         );
+        assert.equal(
+            result.cameraDiagnosticEnveloped,
+            true,
+            "the S9 camera diagnostic must cross the live widget adapter",
+        );
+        assert.deepEqual(result.cameraDiagnosticPayload, {
+            event: "camera_stranded_inside_scene",
+            distance: 2,
+            scene_radius: 10,
+            after: "representation-change",
+        });
 
         console.log("[E2E widget seam] real render(): raw ready, enveloped outbound, session isolation held");
     } finally {
@@ -46,5 +57,5 @@ async function run(): Promise<void> {
 
 run().catch(error => {
     console.error(error);
-    process.exitCode = 1;
+    process.exit(1);
 });

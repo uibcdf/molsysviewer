@@ -39,7 +39,7 @@ audit.
 | 4b | Live `ready`/reconnect closure | ✓ | 100% | working tree from `2b504d77` | canonical ready projection, bounded compatibility path and real widget-seam E2E; audited and closed |
 | 5 | Endpoint isolation and lifecycle | ● | 100% | `6904aea8` plus working tree from `1a9b59b1` | Per-endpoint transfer managers and queues; endpoint matrix closed; 1295 Python + 3 skips, 271 JS, tsc 0, runtime/perf, 30/30 E2E; 95k host latency 0.0111 ms; awaiting independent audit |
 | 6 | Ownership audit and limited consolidation | ● | 100% | working tree from `0f907ccd` | Ownership table recorded; endpoint lifecycle consolidated in one registry; static projector remains single authority; 1298 Python + 3 skips; three guards mutation-verified; awaiting independent audit |
-| 7 | Missing seam evidence | ○ | 0% | — | — |
+| 7 | Missing seam evidence | ⚠ | 90% | working tree from `ca3dd2e7` | Automated seam evidence complete; blocked on Qt real-window/GPU and human reload smoke observations |
 | 8 | Representative performance and memory gate | ○ | 0% | — | — |
 | 9 | Documentation and upstream closure | ○ | 0% | — | — |
 | 10 | Product and release gates | ○ | 0% | — | — |

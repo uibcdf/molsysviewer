@@ -77,9 +77,10 @@ Export, embedding and first contact, mostly. In order of consequence:
 
 ## Open work
 
-**The next action is independent audit of Phases 5 and 6.** Phase 5 is already
-committed; Phase 6 remains in the working tree. After audit, Phase 7 is the next
-implementation slice.
+**The next independent review is Phases 5 and 6 plus the automated evidence of
+Phase 7.** Phases 5 and 6 are committed. Phase 7's automated seams are in the
+working tree; its Qt real-window/GPU observation and human reload smoke remain
+explicitly blocked on a person with the required environment.
 
 Two measurements landed with a trigger attached rather than a change, in
 [`performance/qt_payload_copies_and_endpoint_isolation_2026_08.md`](performance/qt_payload_copies_and_endpoint_isolation_2026_08.md):

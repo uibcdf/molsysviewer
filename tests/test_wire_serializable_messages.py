@@ -141,3 +141,25 @@ def test_the_popup_snapshot_is_wire_safe():
 
     for mode in ("canvas", "panel"):
         _assert_wire_safe(view.build_popup_scene_snapshot(mode), f"popup snapshot ({mode})")
+
+
+def test_optional_box_and_time_quantities_cross_the_snapshot_wire():
+    source = _view().molsys.copy()
+    n_structures = source.structures.n_structures
+    source.structures.box = puw.quantity(
+        np.broadcast_to(np.eye(3) * 3.0, (n_structures, 3, 3)).copy(),
+        "nm",
+    )
+    source.structures.time = puw.quantity(
+        np.arange(n_structures, dtype=np.float64) * 0.5,
+        "ps",
+    )
+    view = MolSysView()
+    view.load(source)
+
+    snapshot = view.build_popup_scene_snapshot("canvas")
+    _assert_wire_safe(snapshot, "popup snapshot with box/time quantities")
+    molecular = next(message for message in snapshot if message.get("op") == "load_molsys_payload")
+    first = molecular["payload"]["structures"][0]
+    assert isinstance(first["time"], float)
+    assert type(first["box"][0][0]) is float

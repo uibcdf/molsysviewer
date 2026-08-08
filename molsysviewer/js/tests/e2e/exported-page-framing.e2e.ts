@@ -130,8 +130,58 @@ async function run() {
             `framed, then left at distance ${distance} from a scene of radius ${sceneRadius}`,
         );
 
+        const afterRepresentationChange = await page.evaluate(async () => {
+            const controller = (window as any).__molsysviewerDocsController;
+            const handleMessage = (window as any).__molsysviewerDocsHandleMessage;
+            const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
+            const representationNames = () => Array.from(
+                (controller as any).state?.globalReprs ?? [],
+            ).map((ref: any) => controller.plugin.state.data.cells.get(ref))
+                .filter(Boolean)
+                .map((cell: any) => cell.transform?.params?.type?.name)
+                .filter((name: any) => typeof name === "string");
+
+            await handleMessage({
+                op: "set_whole_representation",
+                representation: "spacefill",
+                preset: null,
+                params: {},
+            });
+
+            const deadline = Date.now() + 30000;
+            while (Date.now() < deadline && !representationNames().includes("spacefill")) {
+                await wait(100);
+            }
+            await wait(1000);
+
+            const canvas3d: any = controller.plugin.canvas3d;
+            const state = canvas3d.camera.state;
+            const changedSceneRadius = (canvas3d.boundingSphere?.radius ?? 0)
+                * (canvas3d.props?.sceneRadiusFactor ?? 1);
+            return {
+                representationNames: representationNames(),
+                sceneRadius: changedSceneRadius,
+                distance: Math.hypot(
+                    state.position[0] - state.target[0],
+                    state.position[1] - state.target[1],
+                    state.position[2] - state.target[2],
+                ),
+            };
+        });
+
+        assert.deepStrictEqual(
+            afterRepresentationChange.representationNames,
+            ["spacefill"],
+            "the exported page did not replace the rendered whole representation",
+        );
+        assert.ok(
+            afterRepresentationChange.sceneRadius > 0
+                && afterRepresentationChange.distance < afterRepresentationChange.sceneRadius * 6,
+            "the exported page lost usable framing after changing the whole representation",
+        );
+
         assert.deepStrictEqual(errors, [], "the exported page raised errors while framing");
-        console.log("[E2E exported-page-framing]   the page opens framed on its own structure");
+        console.log("[E2E exported-page-framing]   initial and post-representation framing are usable");
     } finally {
         await browser.close();
     }

@@ -1,8 +1,25 @@
 from __future__ import annotations
 
+import json
+
 from molsysviewer import MolSysView
 from molsysviewer import pyunitwizard as puw
 from molsysviewer.demo import demo
+
+
+def _op_counts(messages):
+    counts = {}
+    for message in messages:
+        op = message.get("op")
+        counts[op] = counts.get(op, 0) + 1
+    return counts
+
+
+def _assert_no_projection_is_replayed_twice(messages):
+    serialized = [json.dumps(message, sort_keys=True) for message in messages]
+    assert len(serialized) == len(set(serialized)), (
+        "one ready handshake replayed an identical current-state projection twice"
+    )
 
 
 def test_ready_projects_current_state_without_trait_reserialization():
@@ -26,10 +43,14 @@ def test_ready_projects_current_state_without_trait_reserialization():
     view._handle_frontend_event({"event": "ready"})  # noqa: SLF001
 
     assert sent == expected
+    assert _op_counts(sent) == _op_counts(expected)
+    _assert_no_projection_is_replayed_twice(sent)
 
     sent.clear()
     view._handle_frontend_event({"event": "ready"})  # noqa: SLF001
     assert sent == expected
+    assert _op_counts(sent) == _op_counts(expected)
+    _assert_no_projection_is_replayed_twice(sent)
 
 
 def test_a_remounted_frontend_receives_the_whole_scene():
