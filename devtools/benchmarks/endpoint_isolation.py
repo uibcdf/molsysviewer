@@ -4,13 +4,23 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 import time
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 from molsysmt.form.string_pdb_text.to_molsysmt_MolSys import (
     to_molsysmt_MolSys as pdb_text_to_molsys,
 )
 
 from molsysviewer import MolSysView
+from devtools.benchmarks.representative_scale_gate import (
+    CASE_SPECS,
+    build_representative_molsys,
+)
 
 
 ATOM_NAMES = ("N", "CA", "C", "O", "CB", "CG", "CD", "CE", "NZ", "H")
@@ -51,11 +61,17 @@ def make_pdb(atom_count: int) -> str:
     return "\n".join(lines)
 
 
-def run(atom_count: int, threshold_ms: float) -> dict[str, object]:
+def run(atom_count: int, threshold_ms: float, representative_case: str | None = None) -> dict[str, object]:
     # The fixture generator knows its source form. Generic form detection is
     # unrelated to endpoint isolation and dominates this benchmark for a large
     # in-memory PDB string.
-    molsys = pdb_text_to_molsys(make_pdb(atom_count), skip_digestion=True)
+    if representative_case is None:
+        molsys = pdb_text_to_molsys(make_pdb(atom_count), skip_digestion=True)
+        fixture = "synthetic-pdb"
+    else:
+        molsys = build_representative_molsys(representative_case, 1)
+        atom_count = int(molsys.get_n_atoms())
+        fixture = representative_case
     view = MolSysView()
     try:
         view.load(molsys)
@@ -93,6 +109,7 @@ def run(atom_count: int, threshold_ms: float) -> dict[str, object]:
             )
         return {
             "atoms": atom_count,
+            "fixture": fixture,
             "host_latency_ms": round(host_latency_ms, 4),
             "threshold_ms": threshold_ms,
             "popup_transfer_pending": popup_still_pending,
@@ -105,9 +122,10 @@ def run(atom_count: int, threshold_ms: float) -> dict[str, object]:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--atoms", type=int, default=95_000)
+    parser.add_argument("--representative-case", choices=sorted(CASE_SPECS))
     parser.add_argument("--threshold-ms", type=float, default=100.0)
     args = parser.parse_args()
-    print(json.dumps(run(args.atoms, args.threshold_ms), sort_keys=True))
+    print(json.dumps(run(args.atoms, args.threshold_ms, args.representative_case), sort_keys=True))
 
 
 if __name__ == "__main__":

@@ -40,7 +40,7 @@ audit.
 | 5 | Endpoint isolation and lifecycle | ● | 100% | `6904aea8` plus working tree from `1a9b59b1` | Per-endpoint transfer managers and queues; endpoint matrix closed; 1295 Python + 3 skips, 271 JS, tsc 0, runtime/perf, 30/30 E2E; 95k host latency 0.0111 ms; awaiting independent audit |
 | 6 | Ownership audit and limited consolidation | ● | 100% | working tree from `0f907ccd` | Ownership table recorded; endpoint lifecycle consolidated in one registry; static projector remains single authority; 1298 Python + 3 skips; three guards mutation-verified; awaiting independent audit |
 | 7 | Missing seam evidence | ⚠ | 90% | working tree from `ca3dd2e7` | Automated seam evidence complete; blocked on Qt real-window/GPU and human reload smoke observations |
-| 8 | Representative performance and memory gate | ○ | 0% | — | — |
+| 8 | Representative performance and memory gate | ● | 100% | working tree from `3a2aaaf3` | Full atom/structure matrix, browser/process memory, endpoint/Qt/startup/artifact gates and bounded compact scene history implemented; full Python run 1304 pass + 3 skips + 1 stale-build failure, sole target green after runtime rebuild; JS/tsc/runtime/perf and 30/30 E2E green; awaiting independent audit |
 | 9 | Documentation and upstream closure | ○ | 0% | — | — |
 | 10 | Product and release gates | ○ | 0% | — | — |
 

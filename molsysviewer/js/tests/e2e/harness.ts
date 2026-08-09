@@ -17,6 +17,10 @@ import {
 import { setSubtreeVisibility } from "molstar/lib/mol-plugin/behavior/static/state";
 import { MsvPerAtomColorThemeProvider } from "../../src/themes/per-atom-color";
 import { ArrayNativeStreamReceiver } from "../../src/messages/array-native-stream";
+import {
+    decodeStructuralArraySet,
+    type ArrayNativeMolSysMetadata,
+} from "../../src/messages/array-native-transport";
 import { PopupHostManager } from "../../src/managers/popup-host";
 
 declare global {
@@ -41,6 +45,7 @@ declare global {
         probeStructureDataRelay: typeof probeStructureDataRelay;
         probeWidgetSeam: typeof probeWidgetSeam;
         probePanelHierarchyRefreshAtWidgetSeam: typeof probePanelHierarchyRefreshAtWidgetSeam;
+        profileRepresentativeArrayNativeLoad: typeof profileRepresentativeArrayNativeLoad;
     } | undefined;
 }
 
@@ -376,6 +381,166 @@ export async function loadArrayNativeFixture(controller: MolSysViewerController)
         frameCount: trajectoryCell?.obj?.data?.frameCount ?? 0,
         firstAtomX: structure?.models?.[0]?.atomicConformation?.x?.[0] ?? null,
         events,
+    };
+}
+
+export async function profileRepresentativeArrayNativeLoad(
+    controller: MolSysViewerController,
+    metadataUrl: string,
+    arrayUrls: string[],
+) {
+    const memory = () => (performance as Performance & {
+        memory?: { usedJSHeapSize: number };
+    }).memory?.usedJSHeapSize ?? 0;
+    const beforeHeap = memory();
+    const fetchStarted = performance.now();
+    const [metadataResponse, ...arrayResponses] = await Promise.all([
+        fetch(metadataUrl, { cache: "no-store" }),
+        ...arrayUrls.map(url => fetch(url, { cache: "no-store" })),
+    ]);
+    if (!metadataResponse.ok || arrayResponses.some(response => !response.ok)) {
+        throw new Error("representative array-native fixture fetch failed");
+    }
+    const metadata = await metadataResponse.json() as ArrayNativeMolSysMetadata;
+    const arrayBuffers = await Promise.all(arrayResponses.map(response => response.arrayBuffer()));
+    const fetchMs = performance.now() - fetchStarted;
+    const afterFetchHeap = memory();
+
+    const decodeStarted = performance.now();
+    const decoded = decodeStructuralArraySet(
+        metadata.structural_arrays,
+        arrayBuffers.map(buffer => new DataView(buffer)),
+        metadata.n_atoms,
+        metadata.n_structures,
+    );
+    const decodeMs = performance.now() - decodeStarted;
+
+    const profiled = controller as ProfileController;
+    const canvas3d = profiled.plugin.canvas3d;
+    type RepresentationCell = {
+        transform?: { params?: { type?: { name?: string } } };
+        obj?: { data?: { repr?: { renderObjects?: readonly unknown[] } } };
+    };
+    const sceneHasContent = () => (canvas3d?.boundingSphere.radius ?? 0) > 0;
+    const representationHasRenderObjects = (name: string) => {
+        let found = false;
+        profiled.plugin.state.data.cells.forEach(cell => {
+            const candidate = cell as unknown as RepresentationCell;
+            if (candidate.transform?.params?.type?.name !== name) return;
+            if ((candidate.obj?.data?.repr?.renderObjects?.length ?? 0) > 0) found = true;
+        });
+        return found;
+    };
+    const waitFor = async (predicate: () => boolean, description: string, timeoutMs = 60000) => {
+        const deadline = performance.now() + timeoutMs;
+        while (performance.now() < deadline) {
+            if (predicate()) return;
+            canvas3d?.requestDraw();
+            await new Promise(resolve => setTimeout(resolve, 16));
+        }
+        throw new Error(`representative scale benchmark timed out waiting for ${description}`);
+    };
+    const presentCanvasFrame = async () => {
+        canvas3d?.requestDraw();
+        await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+        await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+    };
+
+    const loadStarted = performance.now();
+    let loadPeakHeap = memory();
+    const heapSampler = window.setInterval(() => {
+        loadPeakHeap = Math.max(loadPeakHeap, memory());
+    }, 5);
+    let loadCommitMs: number;
+    try {
+        await controller.loadArrayNativeMolSysPayload({
+            atoms: metadata.atoms,
+            bonds: metadata.bonds,
+            meta: metadata.meta,
+            nAtoms: metadata.n_atoms,
+            nStructures: metadata.n_structures,
+            ...decoded,
+        }, "representative-scale");
+        loadCommitMs = performance.now() - loadStarted;
+        await waitFor(sceneHasContent, "the first visible molecular geometry");
+    } finally {
+        window.clearInterval(heapSampler);
+    }
+    const firstVisibleMs = performance.now() - loadStarted;
+    const afterLoadHeap = memory();
+
+    const frameCommitSamples: number[] = [];
+    const frameVisibleSamples: number[] = [];
+    const frameIndices: number[] = [];
+    const frameFirstVisits: boolean[] = [];
+    if (metadata.n_structures > 1) {
+        const visited = new Set([0]);
+        const indices = [
+            metadata.n_structures - 1,
+            Math.floor(metadata.n_structures / 2),
+            0,
+            Math.min(1, metadata.n_structures - 1),
+            metadata.n_structures - 1,
+        ];
+        for (const index of indices) {
+            frameIndices.push(index);
+            frameFirstVisits.push(!visited.has(index));
+            visited.add(index);
+            const started = performance.now();
+            await controller.handleMessage({ op: "set_trajectory_frame", index });
+            frameCommitSamples.push(performance.now() - started);
+            await presentCanvasFrame();
+            frameVisibleSamples.push(performance.now() - started);
+        }
+    }
+
+    let representationPeakHeap = memory();
+    const representationSampler = window.setInterval(() => {
+        representationPeakHeap = Math.max(representationPeakHeap, memory());
+    }, 5);
+    const representationStarted = performance.now();
+    let representationCommitMs: number;
+    try {
+        await controller.handleMessage({
+            op: "set_whole_representation",
+            representation: "spacefill",
+            preset: null,
+            params: { quality: "medium" },
+        });
+        representationCommitMs = performance.now() - representationStarted;
+        await waitFor(
+            () => sceneHasContent() && representationHasRenderObjects("spacefill"),
+            "the replacement representation to become renderable",
+        );
+        await presentCanvasFrame();
+    } finally {
+        window.clearInterval(representationSampler);
+    }
+    const representationVisibleMs = performance.now() - representationStarted;
+
+    return {
+        atoms: metadata.n_atoms,
+        structures: metadata.n_structures,
+        timingsMs: {
+            fetch: fetchMs,
+            decode: decodeMs,
+            firstVisible: firstVisibleMs,
+            molstarLoadCommit: loadCommitMs,
+            molstarLoadVisible: firstVisibleMs,
+            frameChangeCommits: frameCommitSamples,
+            frameChanges: frameVisibleSamples,
+            frameIndices,
+            frameFirstVisits,
+            representationReplacementCommit: representationCommitMs,
+            representationReplacementVisible: representationVisibleMs,
+        },
+        jsHeapMb: {
+            before: beforeHeap / 1024 / 1024,
+            afterFetch: afterFetchHeap / 1024 / 1024,
+            sampledLoadPeak: loadPeakHeap / 1024 / 1024,
+            afterLoad: afterLoadHeap / 1024 / 1024,
+            sampledRepresentationPeak: representationPeakHeap / 1024 / 1024,
+        },
     };
 }
 
@@ -1635,6 +1800,7 @@ if (typeof window !== "undefined") {
         probeStructureDataRelay,
         probeWidgetSeam,
         probePanelHierarchyRefreshAtWidgetSeam,
+        profileRepresentativeArrayNativeLoad,
     };
 }
 

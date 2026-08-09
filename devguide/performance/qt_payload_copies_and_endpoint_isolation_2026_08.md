@@ -69,12 +69,15 @@ which is a fact about the allocator, not about the code.
 | 4V4Z (ribosome, 149,640 atoms) | 1.71 MB | 3.43 MB | 3.43 MB |
 | synthetic | 50 MB | 100 MB | 66.67 MB |
 | synthetic | 200 MB | **400 MB** | **266.67 MB** |
+| solvated HP35 supercell, 104,856 atoms x 100 structures | **120 MB** | **240 MB** | **240 MB** |
+| solvated HP35 supercell, 314,568 atoms x 10 structures | **36 MB** | **72 MB** | **72 MB** |
 
 **The rule is exact: the join peaks at 2× the payload.** `b"".join(...)` over a
 generator materialises every per-buffer copy *and* the output simultaneously, so
 the transient overhead equals the payload at every size measured. The
-preallocated alternative peaks at 1× the payload plus one buffer — 1.33× with
-the three buffers this payload has.
+preallocated alternative peaks at 1× the payload plus the largest source
+buffer — 1.33× when three similarly sized buffers are used, but still 2× when
+one coordinate buffer dominates a representative molecular payload.
 
 ### Decision: keep the join
 
@@ -88,11 +91,13 @@ The audit's own rule is to change this path only if the peak is release-relevant
   where the join would peak at 512 MB. **That is the number to remember:** a load
   the scale guard merely warns about costs double on Qt, and nothing says so at
   the warning.
-- The alternative is a Python-side assembly change, not a different Qt API, so it
-  reintroduces no `runJavaScript` strings and stays behind the same scheme
-  handler. It is available whenever it is wanted.
+- The preallocated alternative only lowers the peak when the payload is split
+  across several similarly sized buffers. It does not help representative
+  coordinate-dominated payloads. A meaningful improvement near the warning
+  budget needs a lower-copy Qt delivery design, not a different join loop.
 
 So this is deferred with a trigger rather than rejected: **if Qt is expected to
-carry loads near the scale budget, switch to the preallocated `bytearray` and
-re-run this benchmark.** The AnyWidget path needs no equivalent, because it never
-joins.
+carry loads near the scale budget, design and benchmark a lower-copy delivery
+path.** Do not adopt the preallocated `bytearray` without an A/B on a real
+coordinate-dominated payload. The AnyWidget path needs no equivalent, because it
+never joins.

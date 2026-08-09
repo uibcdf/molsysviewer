@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+import warnings
 from contextlib import contextmanager
 from functools import wraps
 from typing import Any
@@ -60,21 +62,33 @@ class SceneHistory:
     """The single scene-level undo/redo history (Contract H, Decision B1).
 
     Snapshot-based: before each mutating public operation a full ``export_state``
-    snapshot is pushed; :meth:`undo` restores the previous snapshot via
-    ``import_state`` and :meth:`redo` re-applies. There is exactly one of these
-    per view, and it absorbs what used to be a separate frontend selection
-    undo/redo — the active selection is part of the serialised snapshot.
+    snapshot is encoded as compact JSON bytes; :meth:`undo` restores the
+    previous snapshot via ``import_state`` and :meth:`redo` re-applies. The
+    undo/redo store is bounded by both entry count and encoded byte size. There
+    is exactly one history per view, and it absorbs what used to be a separate
+    frontend selection undo/redo — the active selection is part of the
+    serialised snapshot.
 
     It is session-scoped and is **not** itself serialised; it is invalidated on
     load and on ``apply_system_edit`` (the snapshots would reference a stale
     index space).
     """
 
-    def __init__(self, view: Any, *, limit: int = 25) -> None:
+    def __init__(
+        self,
+        view: Any,
+        *,
+        limit: int = 25,
+        byte_limit: int = 64 * 1024 * 1024,
+    ) -> None:
         self._view = view
         self._limit = limit
-        self._undo: list[dict] = []
-        self._redo: list[dict] = []
+        self._byte_limit = max(1, int(byte_limit))
+        self._undo: list[bytes] = []
+        self._redo: list[bytes] = []
+        self._undo_bytes = 0
+        self._redo_bytes = 0
+        self._budget_warning_emitted = False
         self._depth = 0
         self._suspended = False
         self._coalescing_depth = 0
@@ -89,15 +103,18 @@ class SceneHistory:
         if self._depth == 0:
             already_coalesced = self._coalescing_depth > 0 and operation_key in self._coalesced_keys
             if not already_coalesced:
-                snapshot = self._view.export_state()
+                snapshot = self._encode(self._view.export_state())
                 # Skip a redundant checkpoint when the previous operation left the
                 # scene unchanged (e.g. a validation that raised, or a no-op call),
                 # so undo never lands on an identical state.
                 if not self._undo or self._undo[-1] != snapshot:
                     self._undo.append(snapshot)
+                    self._undo_bytes += len(snapshot)
                     if len(self._undo) > self._limit:
-                        self._undo.pop(0)
+                        self._undo_bytes -= len(self._undo.pop(0))
+                self._redo_bytes = 0
                 self._redo.clear()
+                self._enforce_byte_limit()
                 if self._coalescing_depth > 0:
                     self._coalesced_keys.add(operation_key)
         self._depth += 1
@@ -133,10 +150,13 @@ class SceneHistory:
         """Restore the scene to before the last mutating operation."""
         if not self._undo:
             return False
-        current = self._view.export_state()
+        current = self._encode(self._view.export_state())
         snapshot = self._undo.pop()
+        self._undo_bytes -= len(snapshot)
         self._redo.append(current)
+        self._redo_bytes += len(current)
         self._restore(snapshot)
+        self._enforce_byte_limit()
         self._notify_state()
         return True
 
@@ -144,10 +164,13 @@ class SceneHistory:
         """Re-apply the operation most recently undone."""
         if not self._redo:
             return False
-        current = self._view.export_state()
+        current = self._encode(self._view.export_state())
         snapshot = self._redo.pop()
+        self._redo_bytes -= len(snapshot)
         self._undo.append(current)
+        self._undo_bytes += len(current)
         self._restore(snapshot)
+        self._enforce_byte_limit()
         self._notify_state()
         return True
 
@@ -155,6 +178,9 @@ class SceneHistory:
         """Drop the whole history (called on load and on system edits)."""
         self._undo.clear()
         self._redo.clear()
+        self._undo_bytes = 0
+        self._redo_bytes = 0
+        self._budget_warning_emitted = False
         self._depth = 0
         self._coalescing_depth = 0
         self._coalesced_keys.clear()
@@ -194,8 +220,43 @@ class SceneHistory:
         finally:
             self._suspended = was_suspended
 
-    def _restore(self, snapshot: dict) -> None:
+    @staticmethod
+    def _encode(snapshot: dict) -> bytes:
+        return json.dumps(
+            snapshot,
+            ensure_ascii=False,
+            separators=(",", ":"),
+            sort_keys=True,
+        ).encode("utf-8")
+
+    @staticmethod
+    def _decode(snapshot: bytes) -> dict:
+        return json.loads(snapshot.decode("utf-8"))
+
+    def _enforce_byte_limit(self) -> None:
+        evicted = 0
+        while self._undo_bytes + self._redo_bytes > self._byte_limit:
+            if len(self._undo) > 1:
+                self._undo_bytes -= len(self._undo.pop(0))
+            elif len(self._redo) > 1:
+                self._redo_bytes -= len(self._redo.pop(0))
+            else:
+                break
+            evicted += 1
+        over_budget = self._undo_bytes + self._redo_bytes > self._byte_limit
+        if (evicted or over_budget) and not self._budget_warning_emitted:
+            budget_mib = self._byte_limit / (1024 * 1024)
+            warnings.warn(
+                f"Scene history exceeded its {budget_mib:g} MiB storage budget; "
+                "oldest undo/redo checkpoints were discarded where possible while "
+                "preserving the current scene and newest checkpoint.",
+                RuntimeWarning,
+                stacklevel=3,
+            )
+            self._budget_warning_emitted = True
+
+    def _restore(self, snapshot: bytes) -> None:
         # Suspend checkpointing so import_state's own mutations do not push
         # new history entries.
         with self.suspended():
-            self._view.import_state(snapshot)
+            self._view.import_state(self._decode(snapshot))

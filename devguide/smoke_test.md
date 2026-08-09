@@ -441,9 +441,9 @@ view.history.undo()                   # one undo returns to the pre-popup state
 view.history.can_undo()               # not still True for the same edit
 ```
 
-(`view.history` is the public `SceneHistory`; its undo stack is bounded at 25 —
-see `scene_contracts.md` Contract S6 on why continuous gestures must coalesce
-rather than evict the user's history.)
+(`view.history` is the public `SceneHistory`; its undo/redo store is bounded at
+25 entries and 64 MiB — see `scene_contracts.md` Contract S6 on why continuous
+gestures must coalesce rather than evict the user's history.)
 
 Expected:
 

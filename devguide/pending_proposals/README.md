@@ -73,6 +73,9 @@ See [`post_1.0/`](post_1.0/). It contains:
 - advanced annotation, representation, and chemical-metadata work;
 - typing-generation and test-output studies;
 - deeper large-system rendering analysis;
+- [`post_1.0/representative_scale_followups.md`](post_1.0/representative_scale_followups.md):
+  Phase 8's measured next optimizations — typed/dictionary topology transport,
+  bounded profiling-driven structure prefetch, and the Qt lower-copy trigger;
 - [`qt_popout_parity.md`](post_1.0/qt_popout_parity.md): the Qt shell is built
   with `include_popout=False`, so the entire popup control plane — manifest
   validation, canonical snapshot, endpoint identity — is exercised only on

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from molsysviewer.demo import demo
 from molsysviewer import pyunitwizard as puw
 
@@ -94,6 +96,50 @@ def test_history_is_not_serialised_into_state():
     view.regions.add(atom_indices=[0, 1], tag="A", skip_digestion=True)
     state = view.export_state()
     assert "history" not in state
+
+
+def test_history_stores_compact_json_checkpoints_without_changing_undo_semantics():
+    view = _mute(demo["dialanine"])
+    view.regions.add(atom_indices=[0, 1], tag="A", skip_digestion=True)
+
+    assert isinstance(view.history._undo[-1], bytes)  # noqa: SLF001
+    assert view.history.undo()
+    assert view.regions.tags() == []
+
+
+def test_history_byte_budget_discards_oldest_checkpoints_observably():
+    view = _mute(demo["dialanine"])
+    view.history._byte_limit = 2048  # noqa: SLF001
+
+    with pytest.warns(RuntimeWarning, match="storage budget"):
+        for index in range(10):
+            view.active_selection.set(
+                [index], syntax="Indices", skip_digestion=True
+            )
+
+    retained = view.history._undo_bytes + view.history._redo_bytes  # noqa: SLF001
+    assert retained <= view.history._byte_limit  # noqa: SLF001
+    assert 0 < len(view.history._undo) < 10  # noqa: SLF001
+    assert view.active_selection.atom_indices == [9]
+    assert view.history.undo()
+    assert view.active_selection.atom_indices != [9]
+
+
+def test_history_byte_budget_counts_undo_and_redo_together():
+    view = _mute(demo["dialanine"])
+    for index in range(6):
+        view.active_selection.set(
+            [index], syntax="Indices", skip_digestion=True
+        )
+
+    checkpoint_size = max(len(snapshot) for snapshot in view.history._undo)  # noqa: SLF001
+    view.history._byte_limit = checkpoint_size * 3  # noqa: SLF001
+    with pytest.warns(RuntimeWarning, match="storage budget"):
+        assert view.history.undo()
+
+    retained = view.history._undo_bytes + view.history._redo_bytes  # noqa: SLF001
+    assert retained <= view.history._byte_limit  # noqa: SLF001
+    assert view.history.can_redo()
 
 
 def test_undo_absorbs_active_selection_changes():

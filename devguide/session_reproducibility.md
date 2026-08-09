@@ -91,7 +91,11 @@ new capability:
 - **History / undo** (Phase 8, Contract H): the command history is
   session-scoped and deliberately **not** serialised. If a user ever expects
   undo to survive a reload, that is a separate, larger decision — flagged here so
-  it is a choice, not an accident.
+  it is a choice, not an accident. In memory, checkpoints are deterministic
+  compact JSON bytes rather than duplicated Python object graphs. The store is
+  bounded by both 25 entries and 64 MiB across undo and redo; crossing the byte
+  budget discards the oldest checkpoints with a `RuntimeWarning`, never the
+  current scene or the newest available checkpoint.
 - **Terminology.** "State" (a snapshot you can reload) and "history" (the
   sequence of commands, for undo and for reproducible replay/export to HTML) are
   different mechanisms that both bear on reproducibility. They must not be
@@ -101,9 +105,10 @@ new capability:
 ## Future proposal: a command history that compacts itself
 
 Phase 8's undo/redo is **snapshot-based**: each mutating operation stores a full
-`export_state` snapshot, and undo restores the previous one. This is
-guaranteed-correct and cheap to build, but it discards *how* the user got there —
-the sequence of commands — and it grows linearly with the number of operations.
+`export_state` snapshot in compact JSON form, and undo restores the previous
+one. This is guaranteed-correct and bounded, but it discards *how* the user got
+there — the sequence of commands — and large changing snapshots consume the
+byte budget faster than ordinary scene edits.
 
 A **command-based** history (each operation records its forward command and its
 inverse) would instead preserve the narrative: the exact steps taken, replayable

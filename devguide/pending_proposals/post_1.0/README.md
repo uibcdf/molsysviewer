@@ -6,7 +6,11 @@ upstream-dependent ideas.
 
 ## Suggested order after 1.0
 
-1. `interactions_domain.md` and
+1. `representative_scale_followups.md`: the canonical performance strategy
+   derived from the pre-1.0 representative-scale gate. Start with its topology
+   v2 prototype and observability work; structure residency remains gated by the
+   separate windowing contract.
+2. `interactions_domain.md` and
    `studio_interactions_subpanel_ui_design.md`: the next major scientific scene
    domain, already designed. Implement it in vertical slices:
    - canonical Python manager and immutable records;
@@ -14,12 +18,12 @@ upstream-dependent ideas.
    - state, history, rebuild, broken references, and frame semantics;
    - frontend rendering;
    - Studio subpanel last.
-2. `canvas_picking_level.md`: self-contained interaction UX.
-3. `structure_windowing_and_lazy_materialization.md`: decide the public meaning
+3. `canvas_picking_level.md`: self-contained interaction UX.
+4. `structure_windowing_and_lazy_materialization.md`: decide the public meaning
    of resident versus available structures before implementing a cache.
-4. `multiview_split_screen.md`: depends on the pre-1.0 runtime router and popup
+5. `multiview_split_screen.md`: depends on the pre-1.0 runtime router and popup
    ownership contract.
-5. Advanced annotations, representations, chemical metadata, typing generation,
+6. Advanced annotations, representations, chemical metadata, typing generation,
    and test-output studies as their use cases or upstream contracts mature.
 
 `proteinview_external_review_and_ideas.md` is an idea inventory rather than a
@@ -38,13 +42,16 @@ above.
 The array-native transport for fully materialized structures and the runtime
 router moved to active pre-1.0 proposals. Lazy structure sources, partial
 residency, and cache eviction remain deferred because they change the meaning of
-`view.molsys`. `zero_copy_visual_rendering.md` is feasibility analysis, not a
-second transport specification.
+`view.molsys`. `representative_scale_followups.md` is the current performance
+strategy. `zero_copy_visual_rendering.md` is older feasibility analysis, not a
+second transport specification; its pre-D4 descriptions of JSON transport are
+historical.
 
 ## Entry gates
 
 | Work | Start only when |
 |---|---|
+| Performance architecture | the Phase 8 representative baseline is accepted; each optimization sets its A/B gate before implementation |
 | Interactions | 1.0 API freeze has ended and MolSysMT calculation vocabulary is confirmed |
 | Canvas picking | desired levels and Mol* granularity behavior are verified against local `src_molstar` |
 | Structure windowing | MolSysMT vocabulary, `view.molsys` semantics, add-on behavior, edits, and materialization are specified |

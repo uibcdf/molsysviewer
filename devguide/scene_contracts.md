@@ -1714,11 +1714,13 @@ step. Each mutation is a full `export_state` snapshot. Two consequences, and the
 second is the serious one:
 
 1. Snapshotting the whole scene per mouse-move is **expensive**.
-2. **It evicts the user's history.** The stack is bounded — `limit: int = 25`
-   (`scene_history.py:45`) — so ~100 snapshots from one drag truncate to 25, and
-   now *all 25 entries are that single drag*. Everything the user did before is
-   gone. **This is not lag; it is losing the undo history**, and it is why the
-   coalescing is mandatory rather than an optimisation.
+2. **It evicts the user's history.** The stack is bounded by both 25 entries and
+   64 MiB across undo and redo. About 100 snapshots from one drag truncate to
+   25 even for a small scene; large literal overlays can reach the byte ceiling
+   first, in which case the oldest checkpoints are discarded with an observable
+   `RuntimeWarning`. Either way, the retained history becomes dominated by that
+   single drag and earlier work is lost. **This is not lag; it is losing the undo
+   history**, and it is why coalescing is mandatory rather than an optimisation.
 
 **The mechanism belongs to the history, not to the panel.** A GUI-side debounce
 would leave a plain Python loop (`for a in alphas: shape.set_alpha(a)`) evicting

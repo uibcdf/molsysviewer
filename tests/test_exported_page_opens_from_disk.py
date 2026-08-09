@@ -311,9 +311,9 @@ def test_a_matching_pair_stays_quiet(tmp_path):
 
     dom, _ = _open_from_disk(view)
 
-    assert "data-molsysviewer-version-mismatch" not in dom.replace(
-        "data-molsysviewer-version-mismatch", "", 1
-    ), "a matching pair produced a mismatch notice"
+    assert re.search(
+        r'<div[^>]*data-molsysviewer-version-mismatch="true"', dom
+    ) is None, "a matching pair produced a mismatch notice"
 
 
 def test_the_studio_says_it_cannot_act_here(tmp_path):

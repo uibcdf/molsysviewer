@@ -33,8 +33,13 @@ import json
 import resource
 import sys
 import tracemalloc
+from pathlib import Path
 
 import numpy as np
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 _PAGE_SIZE = 4096
 
@@ -139,6 +144,23 @@ def _real_case(label: str, system_name: str, resource_name: str, n_structures) -
     )
 
 
+def _representative_case(label: str, scale_case: str, n_structures: int) -> dict:
+    from devtools.benchmarks.representative_scale_gate import build_representative_molsys
+    from molsysviewer.loaders.array_native_molsys import serialize_array_native_molsys
+
+    molsys = build_representative_molsys(scale_case, n_structures)
+    payload = serialize_array_native_molsys(molsys)
+    return _join_metrics(
+        payload.buffers,
+        label,
+        {
+            "n_atoms": int(payload.metadata["n_atoms"]),
+            "n_structures": int(payload.metadata["n_structures"]),
+            "synthetic": False,
+        },
+    )
+
+
 def _synthetic_case(label: str, megabytes: int, buffers: int = 3) -> dict:
     per_buffer = int(megabytes * 1024 * 1024 / buffers / 4)
     arrays = [np.zeros(per_buffer, dtype=np.float32) for _ in range(buffers)]
@@ -154,6 +176,12 @@ CASES: dict[str, callable] = {
         "pentalanine-5000", "pentalanine", "traj_pentalanine.h5msm", "all"
     ),
     "4v4z": lambda: _real_case("4v4z", "4V4Z", "4v4z.bcif.gz", "all"),
+    "representative-large-100": lambda: _representative_case(
+        "representative-large-100", "large", 100
+    ),
+    "representative-xlarge-10": lambda: _representative_case(
+        "representative-xlarge-10", "xlarge", 10
+    ),
     "synthetic-50mb": lambda: _synthetic_case("synthetic-50mb", 50),
     "synthetic-200mb": lambda: _synthetic_case("synthetic-200mb", 200),
     "synthetic-800mb": lambda: _synthetic_case("synthetic-800mb", 800),
