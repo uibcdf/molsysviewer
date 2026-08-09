@@ -1,7 +1,8 @@
 # Report the empty-scene camera bounds defect to Mol\*
 
-**Filed 2026-08-05 as [molstar/molstar#1903](https://github.com/molstar/molstar/issues/1903).
-Accepted 2026-08-07 — this document's job is done; what is left is ours.**
+**Filed 2026-08-05 as [molstar/molstar#1903](https://github.com/molstar/molstar/issues/1903),
+accepted 2026-08-07, closed 2026-08-09. This document's job is done; what is left
+is ours.**
 
 Both changes went in verbatim, unprompted, without the patch being offered:
 [`4807179`](https://github.com/molstar/molstar/commit/4807179589f43c20f38d689e4acbc3fc8590df14),

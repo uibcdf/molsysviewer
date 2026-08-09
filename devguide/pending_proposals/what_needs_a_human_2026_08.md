@@ -90,7 +90,8 @@ running the script with `-q` avoids emitting output nobody needs to read.
 [molstar/molstar#1903](https://github.com/molstar/molstar/issues/1903) was
 **accepted on 2026-08-07**: both changes landed verbatim in
 [`4807179`](https://github.com/molstar/molstar/commit/4807179589f43c20f38d689e4acbc3fc8590df14),
-unreleased, changelog-listed above `v5.11.0`. No longer a wait on upstream.
+unreleased, changelog-listed above `v5.11.0`. Closed 2026-08-09. No longer a wait
+on upstream — the only external event left is the release itself.
 
 What needs a person is the **minimum supported Mol\* version**. We are pinned at
 `^5.4.1`; depending on the fix means raising that floor deliberately, because a
