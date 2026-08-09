@@ -80,7 +80,7 @@ The premise was stale: the probe is a declared test-only action and Qt
 already refuses an unknown action without forwarding it. Mutation-verified
 in `tests/test_qt_transport_contract.py`.
 
-### 10. ~~Decide the public persistence convenience separately from persistence~~ — IMPLEMENTED, awaiting audit
+### 10. ~~Decide the public persistence convenience separately from persistence~~ — DONE
 
 `export_state()` / `import_state()` version 2 already provide tested overlay
 state persistence. They do not bundle the molecular system and require a
@@ -92,6 +92,10 @@ that the molecular system, camera and undo history are excluded and that a
 compatible structure must be loaded first. No `.msv` extension or portable
 session bundle is introduced. Such a bundle still needs its own format,
 versioning, provenance and compatibility policy and remains post-1.0.
+
+The persistence slice was independently mutation-audited and closed on
+2026-08-09; see
+[`../audits/pre_1_0_phases_5_6_8_9_10_audit_2026_08.md`](../audits/pre_1_0_phases_5_6_8_9_10_audit_2026_08.md).
 
 ### 11. Keep the established post-1.0 boundaries
 

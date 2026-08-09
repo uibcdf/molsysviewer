@@ -187,11 +187,11 @@ What is scarce is **shared reference** and **trust**.
    Undo must cover everything the assistant can reach — no exceptions, because
    the exception is what the user will hit.
 3. **Attribution.** The human must be able to tell what the assistant did from
-   what they did. This is exactly
-   [`pending_proposals/post_1.0/scene_object_owner_field.md`](pending_proposals/post_1.0/scene_object_owner_field.md),
-   filed for add-ons: *an add-on's shape is indistinguishable from one the user
-   drew*. An assistant makes that gap sharper and more urgent than an add-on
-   does.
+   what they did. The creator-attribution contract is implemented for add-ons
+   through `view.attributed_to(owner)` and recorded in
+   [`archive/scene_object_owner_field.md`](archive/scene_object_owner_field.md).
+   An assistant can reuse that mechanism; it does not need a second ownership
+   model.
 4. **Explanation in the product's vocabulary.** The assistant reports in
    `regions` / `layers` / `selections` / `annotations`, never in Mol\* internals.
    Otherwise it teaches the user a model the API does not have.

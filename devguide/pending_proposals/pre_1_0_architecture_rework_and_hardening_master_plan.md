@@ -42,7 +42,7 @@ audit.
 | 7 | Missing seam evidence | ⚠ | 90% | working tree from `ca3dd2e7` | Automated seam evidence complete; blocked on Qt real-window/GPU and human reload smoke observations |
 | 8 | Representative performance and memory gate | ✓ | 100% | `15d86a8a` | Matrix evidence and byte-budget guard independently audited; small worker remeasured coherently; closed 2026-08-09 |
 | 9 | Documentation and upstream closure | ✓ | 100% | `55839d23` | Closed-architecture phrase guard independently mutation-audited; closed 2026-08-09 |
-| 10 | Product and release gates | ◐ | 30% | `78b485f9` plus the current hover-telemetry commit | Notebook CI, state-file persistence and mutation-audited hover policy closed; dependency/artifact gates remain blocked |
+| 10 | Product and release gates | ◐ | 27% | `78b485f9` plus the current hover-telemetry commit | 3 of 11 gates closed: notebook CI, state-file persistence and mutation-audited hover policy; public-callable digestion, dependency/artifact, dogfooding and final gates remain |
 
 Status vocabulary:
 
@@ -1204,7 +1204,7 @@ not repeated for this documentation slice.
    source checkout.
 5. **Source-tree path guarded; final-artifact rerun pending.** Verify the
    one-line first-contact path.
-6. **Implemented; awaiting audit.** Thin `save_state(path)` / `load_state(path)`
+6. **Done.** Thin `save_state(path)` / `load_state(path)`
    helpers persist the existing version-2 overlay document as atomic UTF-8 JSON.
    They explicitly exclude the molecular system, camera and undo history and do
    not define or imply a portable `.msv` session bundle. The same change makes
@@ -1216,9 +1216,16 @@ not repeated for this documentation slice.
 8. **Done.** Notebook execution is enforced by
    `.github/workflows/docs-notebooks.yaml` through
    `docs/execute_notebooks.py`.
-9. **Human workflow required.** Complete scientific dogfooding on
+9. **Decided policy; implementation pending.** Close the public callable
+   inventory and execute
+   [`digest_every_public_callable.md`](digest_every_public_callable.md) module by
+   module. The first deliverable is mechanical: distinguish supported public API
+   from merely non-underscore implementation methods, list missing argument
+   digesters, and make the resulting closed inventory the regression guard.
+   Decorating names without declaring their arguments does not close this gate.
+10. **Human workflow required.** Complete scientific dogfooding on
    representative laboratory workflows.
-10. **Pending all preceding gates.** Run the final smoke matrix and
+11. **Pending all preceding gates.** Run the final smoke matrix and
     release-version consistency checks.
 
 **Exit:** no open pre-1.0 gate remains in `path_to_1_0.md`.

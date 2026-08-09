@@ -76,8 +76,6 @@ See [`post_1.0/`](post_1.0/). It contains:
   with `include_popout=False`, so the entire popup control plane — manifest
   validation, canonical snapshot, endpoint identity — is exercised only on
   AnyWidget. Staged at Stage 4 of the host plan, not a defect;
-- [`scene_object_owner_field.md`](post_1.0/scene_object_owner_field.md): an
-  add-on's shape is indistinguishable from one the user drew;
 - [`qt_render_check_on_a_gpu_runner.md`](post_1.0/qt_render_check_on_a_gpu_runner.md):
   the render gate is closed on real GPU; what is missing is a machine that proves
   it again automatically;
@@ -100,10 +98,9 @@ upstream decisions. They do not block the current release.
 - **Done:** the router inventory/AnyWidget seam and the array-native serializer,
   negotiated buffer delivery, chunking, acknowledgement, cancellation, JSON
   fallback, and embedded-canvas E2E are implemented.
-- **Now:** finish Phases 9 and 10 of the staged pre-1.0 rework and hardening
-  master plan. R2, D3 and D4 remain closed contracts; the transfer, ownership,
-  seam and representative-scale implementation through Phase 8 is complete and
-  awaiting the audits recorded in the dashboard.
+- **Now:** finish Phase 10 of the staged pre-1.0 rework and hardening master
+  plan, plus Phase 7's two visible Qt observations. R2, D3, D4 and Phases 0a-6,
+  8 and 9 remain closed and audited.
 - **Preserve 1.0 semantics:** all selected structures remain materialized in
   `view.molsys`; binary is a transport choice, not a new scientific model.
 - **Session lifecycle:** kernel restart or widget reconstruction creates a new

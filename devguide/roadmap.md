@@ -43,6 +43,9 @@ These are the release gates:
 5. End-user installation and dependency-channel synchronization.
 6. First-contact README/onboarding verification.
 7. Documentation and package-version consistency at the release commit.
+8. Close the decided `@digest` policy over the supported public callable
+   surface, with argument digesters and catalogued diagnostics rather than
+   decoration-only coverage.
 
 ## Active pre-1.0 execution
 
@@ -50,7 +53,7 @@ The transport and routing contracts landed in gates 1 and 2. The architecture
 rework found by the subsequent repository audit and JupyterLab smoke testing is
 implemented through Phase 8: typed transfer lifecycle, lazy generation-bound
 fallback, canonical static/live projection, endpoint ownership, seam evidence
-and representative performance/memory gates. Phase 9 is reconciling durable
+and representative performance/memory gates. Phase 9 reconciled durable
 documentation; Phase 10 owns the remaining product/release gates. The canonical
 dashboard is
 [`pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md`](pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md).

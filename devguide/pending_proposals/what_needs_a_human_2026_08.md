@@ -112,15 +112,10 @@ the visible Qt observations above; Phase 10 owns the remaining release gates.
 
 ---
 
-## Two findings parked on purpose, in case they look like oversights
+## One finding parked on purpose, in case it looks like an oversight
 
-Neither needs a decision now; both are recorded so nobody rediscovers them as
-bugs.
+It needs no decision now; it is recorded so nobody rediscovers it as a bug.
 
-- **`order_high_water_mark` grows by 4 on every state round trip.** The scene
-  comes back identical, but `restored.export_state() == state` is never true —
-  which is the first check a user writes to convince themselves the round trip
-  worked. Cosmetic, but the fix touches ordering semantics.
 - **259 python blocks in 63 `.md` files under `docs/content/` are executed by
   nothing.** The notebooks are executed by `docs/execute_notebooks.py`; the
   markdown is not. One of those blocks was broken for as long as units have been

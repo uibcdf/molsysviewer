@@ -263,11 +263,8 @@ for shared context, would close this; it is not attempted here because most
 blocks depend on names defined in prose around them and the work is a project,
 not a fix.
 
-**A small state defect.** `export_state()` → `import_state()` → `export_state()`
-returns an identical document except `order_high_water_mark`, which grows by 4
-on every cycle: `_restore_high_water_marks` runs before the regions are
-recreated, and recreating them advances the counter past the restored value.
-Region `order` values themselves are preserved, so this is cosmetic — but it
-defeats `restored.export_state() == state`, which is the first check a user
-writes to convince themselves the round trip worked. Worth a look when Phase 5
-frees up; not worth a hurried fix inside ordering semantics.
+**Resolved state defect.** `export_state()` → `import_state()` →
+`export_state()` formerly grew `order_high_water_mark` by 4 on every cycle even
+though region order itself was preserved. The Phase 10 persistence slice now
+normalizes the watermark after reconstruction and protects exact document
+round-trip by mutation test.

@@ -1091,11 +1091,10 @@ honoured rather than discovered:
 
 - **An add-on must tolerate its shape being deleted.** The handle it kept goes
   `_active = False`; it must check, not assume. This belongs in the add-on contract.
-- **The panel should say where an object came from.** There is no `owner` field in the
-  model today, so a shape from ElastNetMT is indistinguishable from one the user made.
-  Adding `owner` to the record (and showing `· from elastnetmt` on the row) is cheap,
-  genuinely useful, and **explicitly deferred** — it is API surface, and this block has
-  enough. Recorded so it is a choice and not an oversight.
+- **The panel says where an object came from.** `view.attributed_to(owner)` assigns an
+  immutable creator to layers, regions, shapes, annotations, measurements and sections.
+  Summaries expose it, state v2 preserves it, and it remains informational: an
+  attributed object is still fully manageable and deletable by the user.
 
 ### 0.7 Three of the panels do not exist
 
@@ -1783,9 +1782,8 @@ damaged, destroyed — or, post-1.0, of another kind entirely
   to the Viewport panel's world, not to these four. Their panel remains out of scope,
   but their state persistence is resolved in §0.11: clipping planes survive a
   save/reload as live `Section` handles.
-- **An `owner` field on scene objects** (so the panel can say `· from elastnetmt`).
-  Cheap and useful, but it is new API surface and this block has enough (§0.12).
-  Deferred on purpose.
+- **Creator attribution is no longer a non-goal.** The immutable `owner` field and
+  `view.attributed_to(owner)` are implemented across all scene domains (§0.12).
 
 ### Contract S8 — A scene message never overtakes the structure it describes
 

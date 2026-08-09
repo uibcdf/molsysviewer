@@ -1,6 +1,7 @@
 # An `owner` field on scene objects
 
-**Status:** post-1.0. Deferred on purpose, recorded so it stays a choice.
+**Status:** implemented before 1.0. Kept as the design record for creator
+attribution.
 
 **Origin:** `scene_contracts.md` §0.12, which decided the behaviour and deferred
 the field in the same breath.
@@ -24,28 +25,29 @@ that displays an object it refuses to let you remove is worse than one that lets
 you delete something an add-on made. The add-on's obligation is to tolerate it:
 the handle it kept goes `_active = False`, and it must check rather than assume.
 
-## What is missing
+## What was missing
 
-There is no `owner` field in the model, so a shape produced by ElastNetMT is
-**indistinguishable** from one the user drew by hand. The panel cannot say
+There was no `owner` field in the model, so a shape produced by ElastNetMT was
+**indistinguishable** from one the user drew by hand. The panel could not say
 `· from elastnetmt`, and the user has no way to tell which objects will
 reappear if the add-on re-runs and which are theirs.
 
-## Why it was deferred
+## Resolution
 
-It is new public API surface, and the block that surfaced it already carried
-enough. That reasoning still holds; this is not urgent.
+`view.attributed_to(owner)` now scopes creation for layers, regions, shapes,
+annotations, measurements and sections. Each resulting object exposes an
+immutable `owner`; summaries carry it to Studio, state v2 preserves it, nested
+attribution restores the outer owner, and documents created before the field
+restore as `owner=None`. Attribution is informational and never restricts
+rename, movement, visibility or deletion.
 
-## What it would take
+## Implemented contract
 
 - an `owner` on the scene-object record, set at creation from the calling add-on
   when there is one, `None` otherwise;
 - the field in the authoritative summary (Contract S1) so the panel can render it
   without a second projection;
-- serialisation (Contract S5), or an explicit decision that ownership is a
-  session-scoped annotation and does not survive a reload — either is defensible,
-  but it must be *decided*, because an owner that silently disappears on import
-  is worse than no owner at all;
+- serialisation under Contract S5, preserving the owner in state v2;
 - a row affordance that is informative, not a second permission system. Ownership
   labels what made an object; it does not restrict what the user may do to it.
 
@@ -57,6 +59,6 @@ panel and from `export_state` by `_TRANSIENT_REGION_TAG`, and Contract V's
 be filtered the same way. Both are about objects the user did not create and
 should not manage directly.
 
-`owner` is different: an add-on's shape **is** the user's to manage. Do not
-implement `owner` by generalising the transient mechanism; they answer opposite
-questions.
+`owner` is different: an add-on's shape **is** the user's to manage. The
+implementation does not generalise the transient mechanism; they answer
+opposite questions.

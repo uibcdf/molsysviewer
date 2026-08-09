@@ -75,20 +75,27 @@ Main findings:
 
 ## What is next
 
-Phase 10 is active. Its persistence decision is implemented and audited:
-`save_state` / `load_state` are atomic JSON conveniences over the existing v2
-overlay contract, not molecular-session bundles. Dependency-channel closure is
-deliberately blocked until the sibling packages are release-ready; final
-installed-artifact validation follows that closure.
+Resume in this order:
 
-Hover telemetry is now implemented as an opt-in session channel: off by
-default, active while callbacks exist or when explicitly enabled, and honest
-about disabled/waiting state. Its five prevention guards were mutation-audited
-before commit, and its live widget seam passed in real Chromium.
+1. Scope the decided public-API digestion rule from
+   [`pending_proposals/digest_every_public_callable.md`](pending_proposals/digest_every_public_callable.md):
+   first produce the closed inventory of genuinely public callables and missing
+   argument digesters, then execute it module by module. Do not equate every
+   non-underscore implementation method with supported public API without that
+   inventory.
+2. In parallel when the required workstation is available, close Phase 7's two
+   observations: Qt real-window/GPU and ten human live-demo replacements. Never
+   report the existing offscreen/browser evidence as those observations.
+3. Complete scientific dogfooding and the remaining human decisions in
+   [`pending_proposals/what_needs_a_human_2026_08.md`](pending_proposals/what_needs_a_human_2026_08.md).
+4. Once sibling releases are ready, close dependency channels; build wheel and
+   conda artifacts; verify imports, resources and the one-line path from clean
+   installations.
+5. Run the final smoke/version matrix and release only with no open pre-1.0 gate.
 
-Phase 7 still has two human/environment observations outside this automated
-closure: Qt real-window/GPU and the human reload smoke. Do not report them as
-automated passes.
+Already closed in Phase 10: atomic overlay-state file helpers, notebook CI and
+opt-in hover telemetry. The state helpers are not a molecular-session bundle;
+hover is runtime/session state rather than scene state.
 
 ## Resume cautions
 

@@ -78,3 +78,22 @@ def test_qt_docs_distinguish_control_channel_from_binary_payload_scheme():
     assert "payload-scheme path" in normalized_source
     assert "qt bridge has no binary transport" not in normalized_source
     assert "connector has no binary transport" not in catalog.lower()
+
+
+def test_resume_route_does_not_reopen_closed_work_or_orphan_public_digestion():
+    contracts = _text("scene_contracts.md")
+    pending_index = _text("pending_proposals/README.md")
+    master = _text(
+        "pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md"
+    )
+    checkpoint = _text("checkpoints.md")
+
+    assert not (
+        DEVGUIDE / "pending_proposals/post_1.0/scene_object_owner_field.md"
+    ).exists()
+    assert (DEVGUIDE / "archive/scene_object_owner_field.md").is_file()
+    assert "There is no `owner` field in the model today" not in contracts
+    assert "finish Phases 9 and 10" not in pending_index
+    assert "6. **Implemented; awaiting audit.**" not in master
+    assert "digest_every_public_callable.md" in master
+    assert "digest_every_public_callable.md" in checkpoint
