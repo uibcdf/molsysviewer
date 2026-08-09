@@ -235,15 +235,16 @@ demo, not a capability.
 
 ### A decision this already informs
 
-[`pending_proposals/opt_in_hover_telemetry.md`](pending_proposals/opt_in_hover_telemetry.md)
-is blocked on one product question: what `view.hover_target` means when
-telemetry is off. Target B answers it. If hover is how an assistant knows what
+[`archive/opt_in_hover_telemetry.md`](archive/opt_in_hover_telemetry.md)
+resolved one product question: what `view.hover_target` means when telemetry is
+off. Target B informed the selected answer. If hover is how an assistant knows what
 the human is looking at, then a `hover_target` that silently reports "nothing
 hovered" when the truth is "not being told" does not merely mislead a user — it
 makes the assistant confidently wrong about the one thing it most needs to be
 right about. The proposal's first option (an explicit *telemetry disabled* state
 that `info()` reports honestly) is the only one compatible with this section.
-That is an argument for the option already preferred there, not a new one.
+That is why the explicit `telemetry_disabled` option was selected and
+implemented, rather than silently reporting an empty target.
 
 ---
 

@@ -48,8 +48,18 @@ async function run(): Promise<void> {
             scene_radius: 10,
             after: "representation-change",
         });
+        assert.equal(
+            result.hoverSuppressedByDefault,
+            true,
+            "hover must produce no widget traffic until Python enables telemetry",
+        );
+        assert.equal(
+            result.hoverForwardedAfterEnable,
+            true,
+            "hover must cross the widget seam exactly once after enablement",
+        );
 
-        console.log("[E2E widget seam] real render(): raw ready, enveloped outbound, session isolation held");
+        console.log("[E2E widget seam] real render(): envelopes, isolation and opt-in hover held");
     } finally {
         await browser.close();
     }

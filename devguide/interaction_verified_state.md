@@ -130,7 +130,9 @@ interaction behavior.
 ### Verified (2026-06-25)
 
 - `view.on_hover(callback)` — registers a callback fired on every
-  `interaction_hover` event; deregisters on second call with same callable
+  `interaction_hover` event and enables browser-to-Python hover telemetry;
+  `off_hover(callback)` removes it and the last removal disables telemetry
+  unless `view.hover_telemetry_enabled` remains explicitly true
 - `view.on_click(callback)` — same pattern for `interaction_click`
 - `view.on_context_menu(callback)` — same pattern for `interaction_context_menu`
 - Callbacks receive the raw event dict (same payload stored in
@@ -231,6 +233,9 @@ interaction behavior.
 - current minimum surface for both:
   - `info()`
   - `is_empty()`
+- hover telemetry is off by default; `hover_target.info()` distinguishes
+  `telemetry_disabled`, `telemetry_waiting`, and a sampled target, while
+  `is_empty()` raises for the first two states
 - current first slice intentionally remains query-oriented
 - legacy/raw event getters still exist and remain valid:
   - `get_last_hover_event()`

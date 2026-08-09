@@ -76,6 +76,13 @@ class PopupSnapshotMixin:
             if look is not None:
                 messages.append(deepcopy(look))
 
+        # Hover telemetry is endpoint runtime state, not scene state. Reproject
+        # it so a reconnected canvas follows the current Python subscription.
+        messages.append({
+            "op": "set_hover_telemetry",
+            "enabled": bool(self._hover_telemetry_active),
+        })
+
         # 3. whole: representation, then visibility (separate ops).
         #
         # The representation op is emitted only when the whole actually carries

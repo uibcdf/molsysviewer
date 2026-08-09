@@ -5,10 +5,42 @@ from smonitor import signal
 
 
 class InteractionMixin:
+    @property
+    def hover_telemetry_enabled(self) -> bool:
+        """Whether browser hover events currently cross into Python."""
+        return bool(self._hover_telemetry_active)
+
+    @hover_telemetry_enabled.setter
+    def hover_telemetry_enabled(self, enabled: bool) -> None:
+        if not isinstance(enabled, bool):
+            raise TypeError("hover_telemetry_enabled must be a bool")
+        self._hover_telemetry_requested = enabled
+        self._sync_hover_telemetry()
+
+    def _sync_hover_telemetry(self) -> None:
+        active = bool(self._hover_telemetry_requested or self._hover_callbacks)
+        if active == self._hover_telemetry_active:
+            return
+        self._hover_telemetry_active = active
+        self._last_hover_event = None
+        self._send_runtime_only({"op": "set_hover_telemetry", "enabled": active})
+
     @signal(tags=["interaction", "query"])
     def get_last_hover_event(self) -> dict | None:
+        if not self._hover_telemetry_active:
+            return {
+                "event": "interaction_hover",
+                "kind": "telemetry_disabled",
+                "atom_indices": [],
+                "telemetry_enabled": False,
+            }
         if self._last_hover_event is None:
-            return None
+            return {
+                "event": "interaction_hover",
+                "kind": "telemetry_waiting",
+                "atom_indices": [],
+                "telemetry_enabled": True,
+            }
         return dict(self._last_hover_event)
 
     @signal(tags=["interaction", "query"])
@@ -59,6 +91,7 @@ class InteractionMixin:
         """
         if callback not in self._hover_callbacks:
             self._hover_callbacks.append(callback)
+            self._sync_hover_telemetry()
 
     def off_hover(self, callback) -> None:
         """Remove a previously registered hover callback."""
@@ -66,6 +99,8 @@ class InteractionMixin:
             self._hover_callbacks.remove(callback)
         except ValueError:
             pass
+        else:
+            self._sync_hover_telemetry()
 
     def on_click(self, callback) -> None:
         """Register a callback invoked on every ``interaction_click`` event.
@@ -128,4 +163,3 @@ for _name, _value in InteractionMixin.__dict__.items():
             _value.__module__ = "molsysviewer.viewer"
         except Exception:
             pass
-

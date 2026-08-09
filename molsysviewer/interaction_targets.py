@@ -71,6 +71,11 @@ class InteractionTarget:
     @digest()
     def is_empty(self, skip_digestion: bool = False) -> bool:
         event = self._event()
+        state = event.get("kind")
+        if state == "telemetry_disabled":
+            raise RuntimeError("hover telemetry is disabled")
+        if state == "telemetry_waiting":
+            raise RuntimeError("hover telemetry is enabled but no hover event has been received")
         return event.get("kind", "empty") == "empty" and len(event.get("atom_indices", []) or []) == 0
 
 

@@ -579,6 +579,7 @@ export class MolSysViewerController {
     private lastContextPayload: ContextInteractionPayload | null = null;
     private lastHoverLoci: any = null;
     private lastHoverPayload: InteractionPayload | null = null;
+    private hoverTelemetryEnabled = false;
     private pendingHoverPayload: InteractionPayload | null = null;
     private hoverDebounceTimer: ReturnType<typeof setTimeout> | null = null;
     private readonly hoverDebounceMs = 60;
@@ -664,14 +665,24 @@ export class MolSysViewerController {
         }
     }
     private emitDebouncedHover(payload: InteractionPayload) {
+        if (!this.hoverTelemetryEnabled) return;
         this.pendingHoverPayload = payload;
         if (this.hoverDebounceTimer !== null) clearTimeout(this.hoverDebounceTimer);
         this.hoverDebounceTimer = setTimeout(() => {
             this.hoverDebounceTimer = null;
             const latest = this.pendingHoverPayload;
             this.pendingHoverPayload = null;
-            if (latest) this.notify?.(latest);
+            if (latest && this.hoverTelemetryEnabled) this.notify?.(latest);
         }, this.hoverDebounceMs);
+    }
+
+    public setHoverTelemetryEnabled(enabled: boolean) {
+        if (enabled === this.hoverTelemetryEnabled) return;
+        this.hoverTelemetryEnabled = enabled;
+        if (enabled) return;
+        if (this.hoverDebounceTimer !== null) clearTimeout(this.hoverDebounceTimer);
+        this.hoverDebounceTimer = null;
+        this.pendingHoverPayload = null;
     }
 
     private static showInitFailureOverlay(target: HTMLElement, message: string) {
@@ -988,6 +999,10 @@ export class MolSysViewerController {
         }
         this.injectGlobalStyles();
         const emitInteractionEvent = (msg: any) => {
+            if (msg?.event === "interaction_hover") {
+                this.emitDebouncedHover(msg as InteractionPayload);
+                return;
+            }
             if (msg?.event === "interaction_tool_state") {
                 if (msg?.status === "started" || msg?.status === "progress") {
                     this.toolStatusOverlay.update({
@@ -1485,7 +1500,7 @@ export class MolSysViewerController {
             const payload = resolved
                 ? resolved
                 : this.normalizeManagedInteractionPayload(normalizeInteractionEvent("hover", ev));
-            this.emitDebouncedHover(payload);
+            emitInteractionEvent(payload);
         }, (ev) => {
             const resolved = resolveTooltipPayload("click", ev, this.annotations, this.measurements);
             if (resolved) {
@@ -2253,6 +2268,9 @@ export class MolSysViewerController {
                 }
             }
             switch (msg.op) {
+                case "set_hover_telemetry":
+                    this.setHoverTelemetryEnabled((msg as any).enabled === true);
+                    break;
                 // Loader Ops
                 case "load_structure_from_string":
                 case "load_pdb_string": await this.loader.loadFromString(msg); break;

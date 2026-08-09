@@ -1993,6 +1993,8 @@ export async function probeWidgetSeam(): Promise<{
     foreignSessionRejectedObservably: boolean;
     cameraDiagnosticEnveloped: boolean;
     cameraDiagnosticPayload: Record<string, unknown> | null;
+    hoverSuppressedByDefault: boolean;
+    hoverForwardedAfterEnable: boolean;
 }> {
     const viewerId = "e2e-seam-view";
     const sessionId = "e2e-seam-session";
@@ -2105,6 +2107,32 @@ export async function probeWidgetSeam(): Promise<{
     const cameraDiagnosticEnveloped = !!cameraEnvelope;
     const cameraDiagnosticPayload = cameraEnvelope?.payload ?? null;
 
+    sent.length = 0;
+    liveController?.emitDebouncedHover?.({
+        event: "interaction_hover",
+        kind: "structure",
+        atom_indices: [1],
+    });
+    await new Promise(resolve => setTimeout(resolve, 100));
+    const hoverSuppressedByDefault = !sent.some(m => m?.action === "interaction_hover");
+
+    customHandler?.(projection({
+        messageId: "py-seam-hover-enable",
+        action: "set_hover_telemetry",
+        payload: { op: "set_hover_telemetry", enabled: true },
+    }));
+    await new Promise(resolve => setTimeout(resolve, 100));
+    sent.length = 0;
+    liveController?.emitDebouncedHover?.({
+        event: "interaction_hover",
+        kind: "structure",
+        atom_indices: [1],
+    });
+    await new Promise(resolve => setTimeout(resolve, 100));
+    const hoverForwardedAfterEnable = sent.filter(
+        m => m?.action === "interaction_hover" && m?.direction === "event",
+    ).length === 1;
+
     controllerProto.handleMessage = originalHandle;
 
     return {
@@ -2116,6 +2144,8 @@ export async function probeWidgetSeam(): Promise<{
         foreignSessionRejectedObservably,
         cameraDiagnosticEnveloped,
         cameraDiagnosticPayload,
+        hoverSuppressedByDefault,
+        hoverForwardedAfterEnable,
     };
 }
 

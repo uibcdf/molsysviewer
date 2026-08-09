@@ -1,6 +1,6 @@
 # What needs a human
 
-**Written 2026-08-06 and reconciled during Phase 9.** Six items remain, and none
+**Written 2026-08-06 and reconciled on 2026-08-09.** Five items remain, and none
 of them is blocked on implementation effort in this repository: they need a
 screen, a judgement, or a hand on another repository. The former seventh item,
 opening Phase 5, is complete.
@@ -34,6 +34,11 @@ MOLSYSVIEWER_QT_GPU_TEST=1 xvfb-run -a pytest -k full_render_gpu
 Two of the suite's three permanent skips are exactly these. They are not
 failures, but they mean the Qt render path is asserted by nobody on this machine.
 
+The check was retried on 2026-08-09. This executor had only an SSH session;
+`DISPLAY=:0 glxinfo -B` was rejected by X authorization and there was no
+user-owned desktop process to attach to. The item remains open rather than
+substituting an offscreen or virtual-display result.
+
 **`pending_bugs/standalone_qt_live_demo_reload.md` — the fix is in, the
 confirmation is not.** Its closure criteria are explicitly manual: alternate two
 visually distinguishable demos at least ten times, confirm each replacement shows
@@ -52,11 +57,13 @@ was never seen.
 
 *Home:* `open_items_after_the_2026_08_smoke_round.md`, item A5.
 
-## 3. Answer one question about hover — *a product decision*
+## 3. ~~Answer one question about hover~~ — **closed**
 
-D2, `opt_in_hover_telemetry.md`, is blocked on a single answer: **what should
-`view.hover_target` mean when telemetry is off?** Every branch of the design
-follows from it. The proposal cannot proceed and should not be guessed at.
+The explicit-state option was selected and implemented. Hover transport is off
+by default; `hover_target.info()` reports `telemetry_disabled` rather than a
+plausible empty target, and callback registration activates transport without a
+reload. The completed design record is
+[`../archive/opt_in_hover_telemetry.md`](../archive/opt_in_hover_telemetry.md).
 
 ## 4. Decide what the README leads with — *positioning, not work*
 
@@ -100,9 +107,8 @@ re-framing. The four steps are in
 
 ## 7. ~~Open Phase 5, or decide not to~~ — **closed**
 
-Phase 5 was completed and committed; Phases 6 and 8 are also implemented, Phase
-7 awaits the human observations above, and Phase 9 is in progress. This item no
-longer belongs to the work queue.
+Phases 5, 6, 8 and 9 are independently audited and closed. Phase 7 still awaits
+the visible Qt observations above; Phase 10 owns the remaining release gates.
 
 ---
 

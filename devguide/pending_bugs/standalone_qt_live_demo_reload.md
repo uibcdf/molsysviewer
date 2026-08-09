@@ -51,6 +51,12 @@ context in Qt offscreen mode. It can validate the real bridge and scheme
 handlers, while Chrome/SwiftShader validates Mol*, but it cannot observe the
 integrated visible Qt window.
 
+Rechecked on 2026-08-09: the executor had only an SSH session. Although
+`/tmp/.X11-unix/X0` existed, `DISPLAY=:0 glxinfo -B` failed with
+`Authorization required, but no authorization protocol specified`; there was no
+user-owned Xorg/Wayland desktop session to attach to. No virtual-display result
+is substituted for the required visible human/GPU observation.
+
 On a supported Qt/WebGL workstation:
 
 1. alternate two visually distinguishable demos at least ten times;

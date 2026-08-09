@@ -314,6 +314,8 @@ class MolSysView(
         self._movie_export_frames: list | None = None
         self._movie_export_done: bool = False
         self._last_hover_event: dict | None = None
+        self._hover_telemetry_requested: bool = False
+        self._hover_telemetry_active: bool = False
         self._last_click_event: dict | None = None
         self._last_context_event: dict | None = None
         self._last_context_action_event: dict | None = None
@@ -1559,6 +1561,8 @@ class MolSysView(
         elif event == "movie_export_done":
             self._movie_export_done = True
         elif event == "interaction_hover":
+            if not self._hover_telemetry_active:
+                return
             self._last_hover_event = self._enrich_interaction_payload(dict(content))
             for cb in list(self._hover_callbacks):
                 cb(self._last_hover_event)

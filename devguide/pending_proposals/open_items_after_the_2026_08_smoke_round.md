@@ -122,22 +122,19 @@ and recorded in Contract S8.
 
 ---
 
-## D. Deferred by decision — only D2 is still a decision
+## D. Deferred decisions — all resolved
 
 ### D1. ~~`lazy_json_fallback_payload` — never revisited~~ — DONE, not a decision
 
 Not a decision: the lazy fallback was implemented, measured at 32 ms
 against 1,459 ms, and archived.
 
-### D2. `opt_in_hover_telemetry` — blocked — *Diego decides*
+### D2. ~~`opt_in_hover_telemetry` — blocked~~ — DONE
 
-**What.** Filed, and waiting on one answer: what `view.hover_target` should mean
-when telemetry is off.
-
-**Why.** The proposal cannot be implemented without it — every design branches on
-that answer.
-
-**How.** Decide, record it in the proposal, then implement.
+The explicit-state option was selected and implemented on 2026-08-09. Hover
+transport is off by default, callbacks activate it, and `hover_target` reports
+`telemetry_disabled` rather than plausible empty state. The completed record is
+[`../archive/opt_in_hover_telemetry.md`](../archive/opt_in_hover_telemetry.md).
 
 ### D3. ~~The Mol\* upstream report has not been sent~~ — SENT and ACCEPTED
 

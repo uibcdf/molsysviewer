@@ -118,11 +118,19 @@ edits on an existing viewer are provided by the MolSysMT addon namespace:
 - `make_regions_by(...)`
   - limited for now to `element="chain" | "molecule" | "entity"`
 - `get_last_hover_event()`
+  - hover transport is off by default; reports `kind="telemetry_disabled"`
+    while off and `kind="telemetry_waiting"` before the first enabled sample
+- `hover_telemetry_enabled` (boolean property)
+  - explicitly enables or disables browser-to-Python hover telemetry
+  - registered `on_hover` callbacks keep telemetry enabled until the last one
+    is removed
 - `get_last_click_event()`
   - current interaction payloads are intentionally minimal and atom-centric
 - `hover_target`
   - `info()`
   - `is_empty()`
+  - `is_empty()` raises while telemetry is disabled or waiting for its first
+    sample; those states are not equivalent to an empty canvas target
 - `context_target`
   - `info()`
   - `is_empty()`
@@ -296,6 +304,8 @@ the same tag; APIs resolve identity as `(domain, tag)`.
   - reactive (non-polling) Python callbacks for interaction events
   - callbacks receive the same payload dict as `get_last_hover_event()` etc.
   - multiple callbacks per event type are supported; `off_*` removes a specific one
+  - the first hover callback enables hover telemetry without reloading; removing
+    the last disables it unless `hover_telemetry_enabled` was explicitly set
 - `view.export_state()` → JSON-serializable dict
   - captures annotations, measurements, selections, regions, shapes, layers, clipping sections, and whole state
 - `view.import_state(state, *, clear_first=True)`

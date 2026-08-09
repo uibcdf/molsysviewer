@@ -257,6 +257,7 @@ test("MolSysViewerController debounces hover notifications to Python", async () 
     controller.pendingHoverPayload = null;
     controller.hoverDebounceTimer = null;
     controller.hoverDebounceMs = 10;
+    controller.hoverTelemetryEnabled = true;
 
     controller.emitDebouncedHover({ event: "interaction_hover", kind: "structure", atom_indices: [1] });
     controller.emitDebouncedHover({ event: "interaction_hover", kind: "structure", atom_indices: [2] });
@@ -266,6 +267,39 @@ test("MolSysViewerController debounces hover notifications to Python", async () 
     assert.deepStrictEqual(notifications, [
         { event: "interaction_hover", kind: "structure", atom_indices: [2] },
     ]);
+});
+
+test("MolSysViewerController suppresses hover telemetry until Python enables it", async () => {
+    const notifications: any[] = [];
+    const controller: any = Object.create(MolSysViewerController.prototype);
+    controller.notify = (msg: any) => notifications.push(msg);
+    controller.hoverTelemetryEnabled = false;
+    controller.pendingHoverPayload = null;
+    controller.hoverDebounceTimer = null;
+    controller.hoverDebounceMs = 5;
+
+    controller.emitDebouncedHover({ event: "interaction_hover", kind: "structure", atom_indices: [1] });
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    assert.deepStrictEqual(notifications, []);
+});
+
+test("disabling hover telemetry cancels a pending notification", async () => {
+    const notifications: any[] = [];
+    const controller: any = Object.create(MolSysViewerController.prototype);
+    controller.notify = (msg: any) => notifications.push(msg);
+    controller.hoverTelemetryEnabled = true;
+    controller.pendingHoverPayload = null;
+    controller.hoverDebounceTimer = null;
+    controller.hoverDebounceMs = 10;
+
+    controller.emitDebouncedHover({ event: "interaction_hover", kind: "structure", atom_indices: [1] });
+    controller.setHoverTelemetryEnabled(false);
+    await new Promise((resolve) => setTimeout(resolve, 20));
+
+    assert.deepStrictEqual(notifications, []);
+    assert.strictEqual(controller.pendingHoverPayload, null);
+    assert.strictEqual(controller.hoverDebounceTimer, null);
 });
 
 test("suppressCanvasContextMenu prevents the host context menu on canvas", () => {

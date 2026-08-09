@@ -1,9 +1,12 @@
+import pytest
+
 from molsysviewer import MolSysView
 from molsysviewer.regions import Region
 
 
 def test_frontend_interaction_events_are_stored_on_view():
     view = MolSysView()
+    view.hover_telemetry_enabled = True
 
     hover = {"event": "interaction_hover", "kind": "structure", "atom_indices": [1, 2, 3]}
     click = {"event": "interaction_click", "kind": "empty"}
@@ -43,8 +46,15 @@ def test_frontend_interaction_events_are_stored_on_view():
 def test_hover_and_context_targets_expose_lightweight_public_wrappers():
     view = MolSysView()
 
-    assert view.hover_target.is_empty() is True
+    assert view.hover_target.info()["kind"] == "telemetry_disabled"
+    with pytest.raises(RuntimeError, match="telemetry is disabled"):
+        view.hover_target.is_empty()
     assert view.context_target.is_empty() is True
+
+    view.hover_telemetry_enabled = True
+    assert view.hover_target.info()["kind"] == "telemetry_waiting"
+    with pytest.raises(RuntimeError, match="no hover event"):
+        view.hover_target.is_empty()
 
     hover = {"event": "interaction_hover", "kind": "structure", "atom_indices": [1, 2, 3]}
     context = {
@@ -75,6 +85,7 @@ def test_hover_and_context_targets_expose_lightweight_public_wrappers():
 
 def test_shape_targets_and_shape_active_selection_are_exposed_in_python():
     view = MolSysView()
+    view.hover_telemetry_enabled = True
 
     hover = {"event": "interaction_hover", "kind": "shape", "atom_indices": [8, 9], "tag": "shape-1", "shape_name": "Sphere"}
     context = {
@@ -150,6 +161,66 @@ def test_on_hover_callback_is_called_with_event_dict():
     assert received == [{**hover1, "region_tags": []}, hover2]
 
 
+def test_hover_callback_subscription_controls_runtime_telemetry_without_reload():
+    view = MolSysView()
+    messages = []
+    view._send_runtime_only = messages.append  # noqa: SLF001
+
+    def first(_event):
+        pass
+
+    def second(_event):
+        pass
+
+    view.on_hover(first)
+    assert view.hover_telemetry_enabled is True
+    assert messages == [{"op": "set_hover_telemetry", "enabled": True}]
+    view.on_hover(second)
+    view.off_hover(first)
+    assert messages == [{"op": "set_hover_telemetry", "enabled": True}]
+    view.off_hover(second)
+
+    assert messages == [
+        {"op": "set_hover_telemetry", "enabled": True},
+        {"op": "set_hover_telemetry", "enabled": False},
+    ]
+    assert view.hover_telemetry_enabled is False
+
+
+def test_explicit_hover_telemetry_survives_callback_removal():
+    view = MolSysView()
+    messages = []
+    view._send_runtime_only = messages.append  # noqa: SLF001
+    view.hover_telemetry_enabled = True
+
+    def handler(_event):
+        pass
+
+    view.on_hover(handler)
+    view.off_hover(handler)
+
+    assert view.hover_telemetry_enabled is True
+    assert messages == [{"op": "set_hover_telemetry", "enabled": True}]
+
+
+def test_hover_telemetry_flag_rejects_non_boolean_values():
+    view = MolSysView()
+
+    with pytest.raises(TypeError, match="must be a bool"):
+        view.hover_telemetry_enabled = 1
+
+
+def test_disabled_hover_telemetry_rejects_late_browser_events():
+    view = MolSysView()
+
+    view._handle_frontend_event(  # noqa: SLF001
+        {"event": "interaction_hover", "kind": "structure", "atom_indices": [7]}
+    )
+
+    assert view.get_last_hover_event()["kind"] == "telemetry_disabled"
+    assert view._last_hover_event is None  # noqa: SLF001
+
+
 def test_on_click_callback_is_called_with_event_dict():
     view = MolSysView()
     received = []
@@ -206,6 +277,7 @@ def test_on_hover_ignores_duplicate_registration():
 
 def test_region_tags_added_to_structure_payload():
     view = MolSysView()
+    view.hover_telemetry_enabled = True
 
     # Inject two regions directly into the internal registry
     view._regions["active-site"] = Region(view, "active-site", "all", atom_indices=[10, 11, 12])  # noqa: SLF001
@@ -234,6 +306,7 @@ def test_region_tags_added_to_structure_payload():
 
 def test_region_tags_empty_when_no_regions_defined():
     view = MolSysView()
+    view.hover_telemetry_enabled = True
     hover = {"event": "interaction_hover", "kind": "structure", "atom_indices": [5, 6]}
     view._handle_frontend_event(hover)  # noqa: SLF001
     assert view.get_last_hover_event()["region_tags"] == []
@@ -304,5 +377,3 @@ def test_set_region_representation_context_action():
     assert sent_msgs[0]["tag"] == "ligand"
     assert sent_msgs[0]["representation"] == "ball-and-stick"
     assert sent_msgs[0]["params"] == {"color_scheme": "chain-id"}
-
-

@@ -68,6 +68,17 @@ def test_panel_snapshot_contains_no_molecular_or_structural_ops():
     assert "set_region_summaries" in ops
 
 
+def test_canvas_snapshot_reprojects_hover_telemetry_but_panel_does_not():
+    view = MolSysView()
+    view.hover_telemetry_enabled = True
+
+    canvas = view.build_popup_scene_snapshot("canvas")
+    panel = view.build_popup_scene_snapshot("panel")
+
+    assert {"op": "set_hover_telemetry", "enabled": True} in canvas
+    assert "set_hover_telemetry" not in {message.get("op") for message in panel}
+
+
 # -- purity: no history, no send, no state change ----------------------------
 
 def test_projector_is_pure_with_respect_to_history_and_state():

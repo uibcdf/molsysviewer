@@ -1,8 +1,7 @@
 # Pre-1.0 architecture rework and hardening master plan
 
-**Status:** active master execution plan. Phases 0a through 4b are audited and
-closed; Phases 5, 6, 8 and 9 are implemented and awaiting independent audit;
-Phase 7 awaits two human observations.
+**Status:** active master execution plan. Phases 0a through 6, 8 and 9 are
+audited and closed; Phase 7 awaits two human observations; Phase 10 is active.
 
 **Purpose:** turn the current, functionally strong viewer into a pre-1.0 base
 that is robust under real connector lifecycles, efficient for scientifically
@@ -38,12 +37,12 @@ audit.
 | 3 | Direct lazy JSON fallback and deadline hardening | ✓ | 100% | working tree from `21027309` | lazy fallback, deadline and real-Mol* fallback path validated; audited and closed |
 | 4a | Canonical static export | ✓ | 100% | working tree from `d7768ab1` | generated Python projection passed in real Chromium/Mol*; mutation-verified; audited and closed |
 | 4b | Live `ready`/reconnect closure | ✓ | 100% | working tree from `2b504d77` | canonical ready projection, bounded compatibility path and real widget-seam E2E; audited and closed |
-| 5 | Endpoint isolation and lifecycle | ● | 100% | `6904aea8` plus working tree from `1a9b59b1` | Per-endpoint transfer managers and queues; endpoint matrix closed; 1295 Python + 3 skips, 271 JS, tsc 0, runtime/perf, 30/30 E2E; 95k host latency 0.0111 ms; awaiting independent audit |
-| 6 | Ownership audit and limited consolidation | ● | 100% | working tree from `0f907ccd` | Ownership table recorded; endpoint lifecycle consolidated in one registry; static projector remains single authority; 1298 Python + 3 skips; three guards mutation-verified; awaiting independent audit |
+| 5 | Endpoint isolation and lifecycle | ✓ | 100% | `6904aea8` plus working tree from `1a9b59b1` | Endpoint matrix and fallback lifecycle independently mutation-audited; closed 2026-08-09 |
+| 6 | Ownership audit and limited consolidation | ✓ | 100% | working tree from `0f907ccd` | Ownership table and endpoint-close isolation independently mutation-audited; closed 2026-08-09 |
 | 7 | Missing seam evidence | ⚠ | 90% | working tree from `ca3dd2e7` | Automated seam evidence complete; blocked on Qt real-window/GPU and human reload smoke observations |
-| 8 | Representative performance and memory gate | ● | 100% | `15d86a8a` | Full atom/structure matrix, browser/process memory, endpoint/Qt/startup/artifact gates and bounded compact scene history implemented; full Python run 1304 pass + 3 skips + 1 stale-build failure, sole target green after runtime rebuild; JS/tsc/runtime/perf and 30/30 E2E green; awaiting independent audit |
-| 9 | Documentation and upstream closure | ● | 100% | working tree from `15d86a8a` | Normative D4/R2/Qt/S9 statements reconciled; completed Mol* and superseded zero-copy documents archived; entrypoint indexes agree; 4 focused guards pass and the stale-Qt mutation fails; awaiting independent audit |
-| 10 | Product and release gates | ○ | 0% | — | — |
+| 8 | Representative performance and memory gate | ✓ | 100% | `15d86a8a` | Matrix evidence and byte-budget guard independently audited; small worker remeasured coherently; closed 2026-08-09 |
+| 9 | Documentation and upstream closure | ✓ | 100% | `55839d23` | Closed-architecture phrase guard independently mutation-audited; closed 2026-08-09 |
+| 10 | Product and release gates | ◐ | 30% | `78b485f9` plus the current hover-telemetry commit | Notebook CI, state-file persistence and mutation-audited hover policy closed; dependency/artifact gates remain blocked |
 
 Status vocabulary:
 
@@ -1003,8 +1002,10 @@ Mutation ledger:
 
 Not done in this slice: no change to completion-wait timeout semantics, no
 frontend-orchestrator decomposition, no structure windowing and no dependency
-pinning. The only remaining closure action is independent audit. The developer
-scratch notebook was not used as evidence or included in the implementation.
+pinning. The independent audit closed this phase on 2026-08-09; see
+[`../audits/pre_1_0_phases_5_6_8_9_10_audit_2026_08.md`](../audits/pre_1_0_phases_5_6_8_9_10_audit_2026_08.md).
+The developer scratch notebook was not used as evidence or included in the
+implementation.
 
 ### Phase 6 — Ownership audit and limited consolidation
 
@@ -1059,7 +1060,9 @@ Mutation ledger:
 
 Not done: no behavior change to the transfer protocol, no TypeScript movement,
 no general `core.py` decomposition and no compatibility alias for the removed
-private dictionaries. Phase 6 needs independent audit before closure.
+private dictionaries. The independent audit closed this phase on 2026-08-09;
+see
+[`../audits/pre_1_0_phases_5_6_8_9_10_audit_2026_08.md`](../audits/pre_1_0_phases_5_6_8_9_10_audit_2026_08.md).
 
 ### Phase 7 — Missing seam evidence
 
@@ -1207,7 +1210,9 @@ not repeated for this documentation slice.
    not define or imply a portable `.msv` session bundle. The same change makes
    `export_state -> import_state -> export_state` stable for order high-water
    marks and implicit scene-object layer provenance.
-7. **Human product decision required.** Decide hover telemetry semantics.
+7. **Done.** Hover telemetry is off by
+   default, callback subscriptions activate it, and query state distinguishes
+   disabled/waiting/actual targets without inventing emptiness.
 8. **Done.** Notebook execution is enforced by
    `.github/workflows/docs-notebooks.yaml` through
    `docs/execute_notebooks.py`.
@@ -1244,6 +1249,29 @@ Mutation record:
 Not done in this slice: no molecular-system/session bundle, `.msv` format,
 camera persistence or history persistence; no dependency pins or final release
 artifact validation; no hover-policy decision, dogfooding or final smoke matrix.
+
+#### Phase 10 hover slice evidence — 2026-08-09
+
+The selected policy is opt-in with explicit state. With no callback and no
+explicit request, frontend hover remains local and emits zero widget messages.
+The first `on_hover` subscription enables telemetry without reload; removing the
+last disables it unless `hover_telemetry_enabled` remains true. Querying never
+activates transport: `hover_target.info()` reports `telemetry_disabled` or
+`telemetry_waiting`, and `is_empty()` raises for either because neither means
+empty canvas.
+
+Observed gates: 18 focused Python tests, 273 JS tests, TypeScript exit 0,
+runtime build exit 0, and the real-Chromium widget-seam E2E observed zero hover
+envelopes before enablement and exactly one afterward. Five mutation guards
+cover default frontend suppression, late-event rejection in Python, honest
+disabled state, callback activation and strict boolean input. Debounce
+cancellation has a direct unit regression.
+
+The full Python suite before the final test-only strict-boolean assertion passed
+1,316 with 3 environmental skips under normal pytest and 12 workers. The added
+assertion then passed focused; production code was unchanged. No scene state,
+history or molecular payload includes hover telemetry; canvas reconnect
+projection carries only its current runtime enablement.
 
 ---
 

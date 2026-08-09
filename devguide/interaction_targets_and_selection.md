@@ -132,20 +132,18 @@ Current runtime note:
   - simple fields such as `kind` and `atom_indices`
 - richer behavior and stronger typed target semantics still remain ahead
 
-Scalability note (opt-in hover telemetry):
+Scalability note (opt-in hover telemetry, implemented 2026-08-09):
 
-- hover events are currently forwarded to the kernel on every debounced hover (the
-  frontend debounce is **60 ms**), i.e. ~16 messages/s during continuous hover
-- on remote / high-latency deployments (cloud JupyterHub) this can flood the Comm
-  channel and hurt overall responsiveness, while most sessions only use hover in the
-  frontend (tooltips)
-- **direction:** make kernel-side hover forwarding **opt-in** — only transmit when a
-  Python callback is registered (e.g. `view.on_hover(cb)`) or a flag is set (e.g.
-  `view.enable_hover_telemetry = True`). This is its own small optimization, tracked
-  here; it is not part of the selection-subpanel work
+- hover remains local to the browser by default, so moving across the structure
+  produces zero Comm traffic when Python is not listening
+- `view.on_hover(callback)` activates transport immediately; removing the last
+  callback deactivates it unless `view.hover_telemetry_enabled` is explicitly true
+- disabled and not-yet-sampled states are reported as `telemetry_disabled` and
+  `telemetry_waiting`; neither is presented as an empty target
+- local tooltips and highlighting are independent of this transport gate
 
-**Status (2026-07-31): still open, and it is the better fix.** The July round
-attacked the same flooding from a different angle and only solved half of it.
+The July round attacked the same flooding from a different angle and solved the
+other half of it.
 Mol\* re-emits hover on every resolved pick, storing `prevLoci` but never using
 it to suppress, so a mouse **resting** on one atom sent ~30 identical messages
 per second; `registerInteractionObservers` now deduplicates the Python-bound
@@ -155,16 +153,8 @@ does nothing for a **moving** one: every tick is a different payload, so the
 and opt-in are complementary, and opt-in is the one that addresses the case this
 note was written about.
 
-**What blocks a naive implementation, and is not in the note above:**
-`view.hover_target` became a public query object *after* this note was written,
-and it is populated *from* the forwarded events. Gating forwarding on
-`on_hover(cb)` alone would therefore leave `view.hover_target.info()` silently
-empty for anyone who queries it without registering a callback — trading a
-performance problem for a correctness one, and exactly the kind of silent
-staleness `scene_contracts.md` Contract S7 exists to forbid. Any implementation
-must decide what `hover_target` means when telemetry is off: an explicit
-"telemetry disabled" state is honest; an empty target that looks like "nothing
-hovered" is not. Not implemented pending that decision.
+The implementation uses that explicit state, so querying `hover_target` does not
+silently enable telemetry and cannot return a plausible but false empty target.
 
 ### `context_target`
 

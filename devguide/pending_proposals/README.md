@@ -12,9 +12,9 @@ compression, workers, shared memory and multiview remain post-1.0.
 ## Open before 1.0
 
 - [`what_needs_a_human_2026_08.md`](what_needs_a_human_2026_08.md): **read this
-  one first.** Six human observations or decisions remain: visible Qt
-  validation, review of the final reload fix, hover semantics, README
-  positioning, a small MolSysMT handover and the future Mol* version floor.
+  one first.** Five human observations or decisions remain: visible Qt
+  validation, review of the final reload fix, README positioning, a small
+  MolSysMT handover and the future Mol* version floor.
   Its former Phase 5 opening item is closed.
 - [`digest_every_public_callable.md`](digest_every_public_callable.md): the release
   owner's rule that every public callable carries `@digest`. Measured: 515 public
@@ -54,10 +54,6 @@ compression, workers, shared memory and multiview remain post-1.0.
   what the README leads with. Kept for its evidence — what one uninterrupted
   first read concluded wrongly, and which document caused each wrong turn. A
   maintainer cannot produce this about their own project.
-- [`opt_in_hover_telemetry.md`](opt_in_hover_telemetry.md): stop forwarding hover
-  to the kernel when nobody is listening. The July round deduplicated identical
-  hovers, which fixes a resting mouse and not a moving one. **Blocked on one
-  product decision** — what `view.hover_target` means when telemetry is off.
 *(A JIT cold-start proposal was drafted here on 2026-07-31 and withdrawn the same
 day: MolSysMT no longer uses Numba. See
 [`../standalone_performance_and_depythonization.md`](../archive/standalone_performance_and_depythonization.md).)*

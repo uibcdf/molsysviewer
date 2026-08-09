@@ -715,6 +715,11 @@ export type SetCameraSnapshotMessage = {
     duration_ms?: number;
 };
 
+export type SetHoverTelemetryMessage = {
+    op: "set_hover_telemetry";
+    enabled: boolean;
+};
+
 export type SetPanelModeMessage = {
     op: "set_panel_mode";
     panel?: "navigate" | "addons" | null;
@@ -975,6 +980,7 @@ export type KnownViewerMessage =
     ZoomMessage |
     ZoomToPositionMessage |
     SetCameraSnapshotMessage |
+    SetHoverTelemetryMessage |
     SetPanelModeMessage |
     SetWorkspaceMessage |
     SetWorkspacePanelMessage |

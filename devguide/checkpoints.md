@@ -5,11 +5,10 @@ changes. Normative behavior remains in the contracts linked below.
 
 ## Repository state
 
-- Branch: `main`, at `55839d23`, plus the implemented and validated Phase 10
-  scene-state file helpers awaiting independent audit. Phases 8 and 9 are
-  committed separately; the scratch notebook is not part of any change.
-- Phase 8 — representative performance and memory — is implemented in
-  `15d86a8a` and awaits independent audit. Its evidence is in
+- Branch: `main`; the latest committed slice is opt-in hover telemetry and its
+  audit closure. The scratch notebook is not part of any change.
+- Phases 5, 6, 8 and 9 and the Phase 10 persistence slice were independently
+  audited and closed on 2026-08-09. Phase 8 evidence remains in
   [`performance/representative_scale_gate_2026_08.md`](performance/representative_scale_gate_2026_08.md).
 - `sandbox/Smoke_Test.ipynb` is developer-owned scratch state. Never stage it and
   never use it as architectural evidence.
@@ -18,6 +17,13 @@ changes. Normative behavior remains in the contracts linked below.
 
 ## Validation observed
 
+- Current hover slice: 18 focused Python tests; 273 JS tests; TypeScript exit 0;
+  runtime build exit 0; real-Chromium widget seam exit 0. Five prevention
+  mechanisms fail under their mutations and pass restored.
+- Full Python after the implementation, normal pytest with 12 workers: 1,316
+  passed, 3 environmental skips, exit 0. One strict-boolean regression was
+  added afterward and passed focused; production code did not change after the
+  full run.
 - Phase 10 persistence focused checks: state serialization 15 passed, state v2
   22 passed, executable README 3 passed, Qt transport contract 12 passed.
 - Phase 10 full Python attempt, 12 workers: 1,311 passed, 3 environmental skips
@@ -69,12 +75,16 @@ Main findings:
 
 ## What is next
 
-Phase 9 — documentation and upstream closure — is implemented in `55839d23`
-and awaits audit. Phase 10 is active. Its persistence decision is implemented:
+Phase 10 is active. Its persistence decision is implemented and audited:
 `save_state` / `load_state` are atomic JSON conveniences over the existing v2
 overlay contract, not molecular-session bundles. Dependency-channel closure is
 deliberately blocked until the sibling packages are release-ready; final
 installed-artifact validation follows that closure.
+
+Hover telemetry is now implemented as an opt-in session channel: off by
+default, active while callbacks exist or when explicitly enabled, and honest
+about disabled/waiting state. Its five prevention guards were mutation-audited
+before commit, and its live widget seam passed in real Chromium.
 
 Phase 7 still has two human/environment observations outside this automated
 closure: Qt real-window/GPU and the human reload smoke. Do not report them as
