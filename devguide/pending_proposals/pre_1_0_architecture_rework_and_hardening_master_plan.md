@@ -1,7 +1,8 @@
 # Pre-1.0 architecture rework and hardening master plan
 
 **Status:** active master execution plan. Phases 0a through 4b are audited and
-closed. Phase 5 is implemented and awaiting independent audit.
+closed; Phases 5, 6, 8 and 9 are implemented and awaiting independent audit;
+Phase 7 awaits two human observations.
 
 **Purpose:** turn the current, functionally strong viewer into a pre-1.0 base
 that is robust under real connector lifecycles, efficient for scientifically
@@ -40,8 +41,8 @@ audit.
 | 5 | Endpoint isolation and lifecycle | ● | 100% | `6904aea8` plus working tree from `1a9b59b1` | Per-endpoint transfer managers and queues; endpoint matrix closed; 1295 Python + 3 skips, 271 JS, tsc 0, runtime/perf, 30/30 E2E; 95k host latency 0.0111 ms; awaiting independent audit |
 | 6 | Ownership audit and limited consolidation | ● | 100% | working tree from `0f907ccd` | Ownership table recorded; endpoint lifecycle consolidated in one registry; static projector remains single authority; 1298 Python + 3 skips; three guards mutation-verified; awaiting independent audit |
 | 7 | Missing seam evidence | ⚠ | 90% | working tree from `ca3dd2e7` | Automated seam evidence complete; blocked on Qt real-window/GPU and human reload smoke observations |
-| 8 | Representative performance and memory gate | ● | 100% | working tree from `3a2aaaf3` | Full atom/structure matrix, browser/process memory, endpoint/Qt/startup/artifact gates and bounded compact scene history implemented; full Python run 1304 pass + 3 skips + 1 stale-build failure, sole target green after runtime rebuild; JS/tsc/runtime/perf and 30/30 E2E green; awaiting independent audit |
-| 9 | Documentation and upstream closure | ○ | 0% | — | — |
+| 8 | Representative performance and memory gate | ● | 100% | `15d86a8a` | Full atom/structure matrix, browser/process memory, endpoint/Qt/startup/artifact gates and bounded compact scene history implemented; full Python run 1304 pass + 3 skips + 1 stale-build failure, sole target green after runtime rebuild; JS/tsc/runtime/perf and 30/30 E2E green; awaiting independent audit |
+| 9 | Documentation and upstream closure | ● | 100% | working tree from `15d86a8a` | Normative D4/R2/Qt/S9 statements reconciled; completed Mol* and superseded zero-copy documents archived; entrypoint indexes agree; 4 focused guards pass and the stale-Qt mutation fails; awaiting independent audit |
 | 10 | Product and release gates | ○ | 0% | — | — |
 
 Status vocabulary:
@@ -1157,6 +1158,34 @@ every claimed improvement has an A/B measurement.
 **Exit:** each closed assertion above is checked directly, stale phrases have
 zero hits outside explicitly historical sections, and entrypoint documents
 agree about what is implemented, manually validated and post-1.0.
+
+#### Phase 9 implementation evidence — 2026-08-09
+
+- `data_plane_architecture.md` and `runtime_message_router.md` describe the
+  implemented R2/D3/D4 and Qt payload-scheme paths without retaining a future
+  execution list or an interactive replay-journal fallback.
+- Contract S9 is marked implemented; the accepted Mol* report and the
+  superseded pre-D4 zero-copy analysis live under `archive/`, not pending work.
+- `roadmap.md`, `path_to_1_0.md`, `checkpoints.md` and both pending indexes agree
+  that implementation through Phase 8 is complete, Phase 7 has two human
+  observations, and Phase 10 owns the remaining release gates.
+- Current architecture no longer assigns any present or future role to the
+  removed viewer-specific molecular intermediate. Historical measurements and
+  the source-level guard against reintroduction retain their accurate wording.
+- `tests/test_devguide_architecture_status.py`: 4 passed. Mutation record:
+
+```text
+mechanism: current architecture records cannot restore completed transport as pending
+mutation: add "Qt keeps the JSON path" to data_plane_architecture.md
+test: test_current_architecture_documents_do_not_restore_completed_work_as_pending
+mutated result: FAIL
+restored result: PASS
+```
+
+No rendering or runtime behavior changed. The Qt edits clarify diagnostic text:
+the control channel rejects AnyWidget-style `buffers=`, while structural binary
+data uses Qt's separate payload-scheme path. Full runtime suites were therefore
+not repeated for this documentation slice.
 
 ### Phase 10 — Product and release gates
 

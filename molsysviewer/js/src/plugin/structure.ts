@@ -476,7 +476,7 @@ function ensureStringArray(values: string[] | undefined, length: number, fallbac
 
 function ensureNumericArray(values: number[] | undefined, length: number, fallback: (index: number) => number) {
     if (Array.isArray(values) && values.length === length) {
-        // Coerce to numbers in case ViewerJSON carries strings
+        // Coerce numeric-looking values accepted by the portable payload.
         const out = new Array<number>(length);
         for (let i = 0; i < length; i++) {
             const v = values[i];

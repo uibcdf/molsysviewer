@@ -13,9 +13,10 @@ measured scale strategy.
 
 [`structure_windowing_and_lazy_materialization.md`](structure_windowing_and_lazy_materialization.md)
 owns the future semantics of resident versus available structures.
-[`zero_copy_visual_rendering.md`](zero_copy_visual_rendering.md) is retained as
-historical feasibility analysis; statements there that all molecular data still
-travels as JSON predate D4 and are not current architecture.
+[`zero_copy_visual_rendering.md`](../../archive/zero_copy_visual_rendering.md) is
+retained in the archive as historical feasibility analysis; statements there
+that all molecular data still travels as JSON predate D4 and are not current
+architecture.
 
 ## 1. Objective
 

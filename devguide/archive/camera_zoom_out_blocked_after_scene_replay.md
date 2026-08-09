@@ -12,7 +12,7 @@ load replaces the structure and Mol\* removes its descendants with it.
 
 What is **not** done is §7, reporting the defect upstream. That is Mol\*'s to fix
 and ours to file, and it lives in
-[`../pending_proposals/report_molstar_empty_scene_camera_bounds.md`](../pending_proposals/report_molstar_empty_scene_camera_bounds.md),
+[`report_molstar_empty_scene_camera_bounds.md`](report_molstar_empty_scene_camera_bounds.md),
 drafted and unsent.
 
 **Reported by hand, 2026-07-31, JupyterLab. Diagnosed and measured 2026-08-01.
@@ -112,7 +112,7 @@ writes `camera.position`. Full chain and measurements: Contract S9.
 
 7. **DRAFTED — report upstream to Mol\*.** The defect is theirs, not ours, so it
    lives as a proposal rather than a bug of this repo:
-   `devguide/pending_proposals/report_molstar_empty_scene_camera_bounds.md`, with
+   `devguide/archive/report_molstar_empty_scene_camera_bounds.md`, with
    the issue title and body ready to paste, a self-contained reproduction that
    needs no code of ours, and both suggested patches. **Not yet submitted.** The case is stronger than "we disagree with a
    design choice": **Mol\* already encodes the right rule, in two places, and

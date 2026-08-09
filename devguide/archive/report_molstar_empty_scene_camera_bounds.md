@@ -16,7 +16,8 @@ meaningless bound being *derived*, which is what the issue asked for.
 **Not released.** The commit sits on `master`, changelog-listed above `v5.11.0`
 (2026-07-18). We are pinned at `^5.4.1` with 5.4.1 installed, so nothing changes
 here until a release ships it and someone raises the floor deliberately — see
-"After filing" below, and item 6 of `what_needs_a_human_2026_08.md`.
+"After filing" below, and item 6 of
+`../pending_proposals/what_needs_a_human_2026_08.md`.
 
 Verified against `master` at `26216e9b1` (5.11.0) on the day it was filed: all
 three links in the chain were unchanged — `commitScene`'s unguarded
@@ -54,7 +55,7 @@ applies the rule in two places and skips it in two others.** It is an internal
 inconsistency, not a design disagreement, which is the form most likely to be
 accepted quickly.
 
-Our own investigation is in `devguide/archive/camera_zoom_out_blocked_after_scene_replay.md`
+Our own investigation is in `camera_zoom_out_blocked_after_scene_replay.md`
 and Contract S9. Everything a maintainer needs is reproduced self-contained in the
 issue body below — deliberately, since nobody upstream can run our probes.
 

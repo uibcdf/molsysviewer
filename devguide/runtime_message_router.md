@@ -22,9 +22,9 @@ lifecycle across Python, AnyWidget/Qt host adapters, embedded canvases, and
 popup canvases or panels. It does not define structural-array encoding or
 scientific residency.
 
-## Why the current path needs a contract
+## Why the former path needed a contract
 
-The current popup path:
+Before R1/R2, the popup path:
 
 - creates a second `MolSysViewerController`;
 - replays the host `commandLog`;
@@ -359,7 +359,7 @@ only one could give it up:
   Python no longer had, and a silently wrong scene is the failure mode this
   project least tolerates. If Python does not answer, the popup gets an empty
   bootstrap and the host reports it.
-- **`bootDocsView` (docs HTML export, Qt)**: keeps it. A static export has no
+- **`bootDocsView` (static HTML export)**: keeps it. A static export has no
   Python to ask, so the journal is not a fallback there, it is the mechanism.
 
 Add-on context items were the last panel projection the projector could not
@@ -464,9 +464,11 @@ replaying the journal:
    dark mode, autohide, viewer/controls/panel mode, ambient/split) are the
    `endpointState`: assembled by the host, never by Python.
 
-`PopupReplayLog` remains only as the fallback when Python does not answer within
-5 s, so a lost response can never leave a popup blank. An invalid `mode` is
-reported and answered with nothing rather than with a malformed projection.
+If Python does not answer within 5 s, bootstrap fails observably and sends an
+empty initial projection; the live widget does not fall back to a replay
+journal. `PopupReplayLog` remains only in `bootDocsView`, where a static export
+has no Python authority to query. An invalid `mode` is reported and answered
+with nothing rather than with a malformed projection.
 
 Validated: full Python suite `1024 passed / 3 skipped` (receptor), `257` JS,
 `tsc` `0`, `build:runtime` with R2 confirmed in the bundle, and the
@@ -492,11 +494,12 @@ gained `onEndpointClosed`, fired from every close path (the polling detector and
 the explicit `close`), and the host settles that endpoint's pending
 scene-snapshot requests instead of leaving them until their timeout.
 
-~~Still open for D4b~~ — **delivered.** Its subject, delivering the canvas popup a **typed** molecular generation
-(Python re-streams to the popup endpoint, the host relays chunk by chunk with
-buffer transfer and retains nothing), which then allows lifting the
-`enable_popout` restriction that currently disables the binary path whenever a
-popout is possible. Qt keeps the JSON path and needs its own benchmark.
+#### D4b implemented: typed canvas-popup generation
+
+Python re-streams a typed molecular generation to the popup endpoint; the host
+relays it chunk by chunk with buffer transfer and retains nothing. This lifted
+the former `enable_popout` restriction. Qt independently consumes the same
+array-native schema through its payload-scheme binary path.
 
 #### The widget seam, measured in a real browser (2026-07-31)
 
@@ -508,7 +511,8 @@ model and asserts, in Chromium:
 - `ready` leaves **raw**, outside the envelope. It has to: the adapter does not
   exist yet when the bootstrap handshake is sent, and enveloping it would
   deadlock.
-- `ready` advertises the binary capability with popout disabled.
+- At this R1 measurement milestone, `ready` advertised the binary capability
+  with popout disabled. D4 later removed that restriction.
 - Ordinary browser-to-Python traffic **is** enveloped.
 - A valid projection is unwrapped and reaches the controller.
 - A projection carrying another `sessionId` **never** reaches it.
@@ -571,14 +575,11 @@ group is named for the connector that needs it.
 
 Qt's bounded retry policy is untouched.
 
-An unknown action now leaves a trace on Qt as it does on AnyWidget. It is
-**signalled and forwarded** rather than refused: the AnyWidget seam drops it and
-the Qt handler ignores it, so the end state already matched — the defect was the
-silence, not the forwarding. A strict rejection was written first and an existing
-test caught it: the Qt payload-generation probe reports through a synthetic
-`qt_payload_probe` event — declared in the manifest under `qt_test_actions` —
-and refusing unknown actions outright would also kill legitimate out-of-band
-diagnostics.
+An unknown action now leaves a trace on Qt and is refused, matching the
+AnyWidget authority boundary. The payload-generation probe is no longer an
+undeclared exception that weakens product policy: `qt_payload_probe` is declared
+explicitly in the manifest under `qt_test_actions` and reaches only its intended
+test sink.
 
 Three guards hold this: both connectors classify from the same manifest, the old
 hardcoded literal cannot come back, and an unknown action must be observable on

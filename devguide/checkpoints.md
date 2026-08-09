@@ -5,9 +5,11 @@ changes. Normative behavior remains in the contracts linked below.
 
 ## Repository state
 
-- Branch: `main`, at `3a2aaaf3`, plus the uncommitted Phase 8 working tree.
-- Phase 8 — representative performance and memory — is implemented and awaits
-  independent audit. Its evidence is in
+- Branch: `main`, at `15d86a8a`, plus the implemented Phase 9 documentation
+  reconciliation awaiting independent audit. Phase 8 is committed separately
+  and the scratch notebook is not part of either change.
+- Phase 8 — representative performance and memory — is implemented in
+  `15d86a8a` and awaits independent audit. Its evidence is in
   [`performance/representative_scale_gate_2026_08.md`](performance/representative_scale_gate_2026_08.md).
 - `sandbox/Smoke_Test.ipynb` is developer-owned scratch state. Never stage it and
   never use it as architectural evidence.
@@ -61,10 +63,10 @@ Main findings:
 
 ## What is next
 
-Proceed to Phase 9 — documentation and upstream closure — only after the Phase 8
-working tree is independently audited and committed. Phase 9 must reconcile
-stale architecture statements mechanically; it must not reopen the measured
-transport design.
+Phase 9 — documentation and upstream closure — is implemented and awaits audit. It reconciles
+stale architecture statements mechanically and does not reopen the measured
+transport design. The D4/R2/Qt/S9 descriptions and legacy intermediate-form language have
+been corrected; indexes, archived evidence and remaining human-work lists agree.
 
 Phase 7 still has two human/environment observations outside this automated
 closure: Qt real-window/GPU and the human reload smoke. Do not report them as

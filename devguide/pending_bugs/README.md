@@ -22,11 +22,12 @@ archive only after the implementation and regression tests are complete.
 The movie camera-snapshot defect is confirmed but explicitly deferred under
 [`post_1.0/`](post_1.0/README.md).
 
-The camera zoom-out defect (Contract S9) was resolved and archived on 2026-08-05;
-its header still claimed the fix was unimplemented days after it shipped. What is
-left of it is not code but a filing:
-[`../pending_proposals/report_molstar_empty_scene_camera_bounds.md`](../pending_proposals/report_molstar_empty_scene_camera_bounds.md),
-drafted since 2026-08-01 and never sent.
+The camera zoom-out defect (Contract S9) was resolved and archived on 2026-08-05.
+The upstream report was filed as
+[molstar/molstar#1903](https://github.com/molstar/molstar/issues/1903), accepted
+and implemented upstream, and is retained as historical evidence in
+[`../archive/report_molstar_empty_scene_camera_bounds.md`](../archive/report_molstar_empty_scene_camera_bounds.md).
+The upstream fix is not released yet, so the local S9 protection remains.
 
 Two reports were resolved on 2026-08-04 by the export rework and moved to
 [`../archive/`](../archive/README.md): the docs-lite views pinned to an

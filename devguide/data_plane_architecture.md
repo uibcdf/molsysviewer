@@ -36,8 +36,8 @@ MolSysViewer keeps:
 - **data plane:** typed binary buffers for structural numeric arrays;
 - **compatibility path:** the current JSON molecular payload.
 
-The optimization removes `ViewerJSON`, nested Python lists, and text JSON from
-the coordinate hot path when a connector supports buffers. It does not change
+The optimization removes legacy form conversion, nested Python lists, and text
+JSON from the coordinate hot path when a connector supports buffers. It does not change
 which structures are loaded or available to Python, Mol*, playback, add-ons, or
 scientific methods.
 
@@ -58,8 +58,9 @@ For 5,000 structures of only 62 atoms it measured:
 - 752 MB peak Python RSS;
 - about 385 ms browser fetch plus JSON parsing.
 
-The Python stages after `msm.convert` included roughly 1.61 s converting to
-`ViewerJSON`, 2.12 s normalizing nested lists, and 0.69 s encoding JSON.
+The legacy Python stages after `msm.convert` included roughly 1.61 s converting
+to an intermediate viewer form, 2.12 s normalizing nested lists, and 0.69 s
+encoding JSON.
 Those stages are avoidable without changing residency semantics.
 
 Scale must be evaluated across both independent axes:
@@ -175,18 +176,22 @@ The binary path obtains structural data directly from `view.molsys`:
 
 It must not route coordinates through:
 
-- `MolSys.to_form("molsysmt.ViewerJSON")`;
+- an intermediate viewer-specific form;
 - `.tolist()`;
 - a second per-coordinate normalization loop;
 - `json.dumps()` of numeric coordinates.
 
-`ViewerJSON` remains available for fallback, export, and interoperability.
+Fallback and export build the portable MolSysViewer JSON projection directly
+from `molsysmt.MolSys`; no intermediate viewer form is part of the architecture.
 
 ## Connector and popup behavior
 
 - **AnyWidget:** custom messages with binary buffers.
-- **Qt:** current payload references remain the initial fallback. Alternative
-  binary mechanisms require their own benchmark.
+- **Qt:** array-native structural buffers are concatenated into one binary blob
+  and served by the existing `molsysviewer-payload` scheme. Control messages
+  still cross `QtViewChannel` as JSON; that channel deliberately rejects an
+  AnyWidget-style `buffers=` argument because Qt's binary mechanism is the
+  payload scheme, not widget comm buffers.
 - **Popup:** the runtime router sends one current molecular projection to a
   canvas popup; it does not accumulate molecular payloads in a replay log.
 - **Panel popup:** receives UI state and no molecular arrays.
@@ -226,8 +231,7 @@ Implemented in `molsysviewer/loaders/array_native_molsys.py`. The serializer:
 - emits C-contiguous little-endian `float32` coordinates in angstroms;
 - emits aligned box and time arrays only when they exist in the `MolSys`;
 - does not invent box or time for systems that lack them;
-- serializes static topology without converting the complete `MolSys` to
-  `ViewerJSON`;
+- serializes static topology directly from the complete `MolSys`;
 - returns metadata plus ordered memory buffers without sending or recording
   them.
 
@@ -243,8 +247,8 @@ On the same 5,000-structure, 62-atom pentalanine case used by D0, after
 - 3.94 MB of structural buffers: 3.72 MB coordinates, 0.18 MB box, and
   0.04 MB time.
 
-The prior JSON path measured 1.61 s for `ViewerJSON`, 2.12 s for nested-list
-normalization, 0.69 s for JSON encoding, and 18.37 MB on the wire. This is
+The prior JSON path measured 1.61 s for an intermediate form conversion, 2.12 s
+for nested-list normalization, 0.69 s for JSON encoding, and 18.37 MB on the wire. This is
 evidence that D1 removes the targeted Python amplification. It does not yet
 measure AnyWidget delivery, browser decoding, Mol* construction, retained
 memory, or large-topology behavior.
@@ -269,16 +273,11 @@ HTML export, but replaces only the live delivery with
 - retains exact optional box and time arrays when present;
 - never rebuilds the structural coordinate axis as nested JavaScript arrays.
 
-The binary path is currently advertised only when `enable_popout=False`.
-Canvas popouts still depend on one compacted current JSON molecular projection;
-silently opening an empty popup would be a functional regression, while
-retaining a second nested JSON copy would defeat the memory objective. The
-popup replay no longer accumulates superseded molecular generations or
-high-frequency state, and panel popups receive no molecular projection. Popup
-binary parity belongs to D4.
-With popout enabled, unsupported capabilities, malformed capability metadata,
-or a buffer above the negotiated 16 MiB D2a limit, Python uses the unchanged
-JSON path.
+At the D2a milestone the binary path was advertised only when
+`enable_popout=False`; D4 subsequently removed that restriction by streaming a
+separate typed generation to the canvas endpoint. Unsupported capabilities,
+malformed capability metadata, or a buffer above the negotiated per-buffer
+limit use the portable JSON fallback observably.
 
 Validation:
 
@@ -431,41 +430,27 @@ nowhere), that the chunk identity is preserved, and that the popup's
 acknowledgement returns through the host. Mutation-verified: corrupting the
 relayed buffer fails the byte comparison.
 
-Qt keeps the JSON path and still requires its own benchmark; AnyWidget success
-does not imply it.
+Qt parity was measured and implemented through its payload-scheme transport;
+AnyWidget `buffers=` and Qt payload blobs are different connector adapters for
+the same array-native schema.
 
-- route descriptors through the common runtime router;
-- validate popup behavior;
-- retain Qt and docs fallbacks until connector-specific binary paths prove
-  useful and reliable.
+## Completion and deferred scope
 
-## Remaining execution order
-
-**Corrected 2026-08-06.** Items 1 to 3 below were listed as remaining while the
-header of this same file said D0-D4 were complete. They are done, and each is
-described in its own section above: R2's canonical popup snapshot, D3's
-acknowledgement timeout with observable release, and D4's endpoint parity —
+R2's canonical popup snapshot, D3's acknowledgement timeout with observable
+release, D4's endpoint parity and Qt's payload-scheme binary path are complete.
+The regression
 `tests/test_runtime_seam_integration.py::test_a_canvas_popup_snapshot_streams_the_molecular_generation_to_its_endpoint`
-pins the last of them.
+pins popup endpoint delivery.
 
-A file contradicting itself is worse than a file that is merely out of date: a
-reader who lands in the middle believes the middle. This is what
-`transport_popup_audit_followups_2026_08.md` item 5 was about.
-
-1. ~~Finish R2's canonical popup snapshot.~~ **Done.**
-2. ~~Close D3 with a no-ack timeout plus memory measurements.~~ **Done**, and the
-   timeout's cooperative semantics are stated under *D3 implemented* above.
-3. ~~Implement D4 endpoint parity.~~ **Done.**
-4. Keep partial residency, structure windows, cache eviction, and
-   demand-driven access post-1.0. They require a separate scientific and public
-   API contract and are not implied by binary transport. **This is the only one
-   still open, and it is post-1.0 by decision.**
+Partial residency, structure windows, cache eviction and demand-driven access
+remain post-1.0. They require a separate scientific and public API contract and
+are not implied by binary transport.
 
 ## Acceptance criteria
 
 - `view.molsys` remains a complete selected `molsysmt.MolSys`;
 - binary and JSON paths expose exactly the same structures and ordering;
-- coordinates avoid `ViewerJSON`, nested lists, and text JSON on the binary path;
+- coordinates avoid intermediate forms, nested lists, and text JSON on the binary path;
 - the large fixtures show reduced preparation time, transferred bytes, and
   transient memory amplification;
 - topology, coordinates, box, time, units, and precision expectations are
@@ -541,5 +526,6 @@ because no amount of work on our side unblocks it.
 
 - [`runtime_message_router.md`](runtime_message_router.md)
 - [`post_1.0/structure_windowing_and_lazy_materialization.md`](pending_proposals/post_1.0/structure_windowing_and_lazy_materialization.md)
-- [`post_1.0/zero_copy_visual_rendering.md`](pending_proposals/post_1.0/zero_copy_visual_rendering.md)
+- [`archive/zero_copy_visual_rendering.md`](archive/zero_copy_visual_rendering.md)
+  (historical feasibility analysis)
 - [`../performance/trajectory_transport_baseline_2026_07.md`](performance/trajectory_transport_baseline_2026_07.md)

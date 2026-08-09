@@ -70,11 +70,10 @@ class QtViewChannel:
     def send(self, msg: dict, buffers: Any = None) -> None:
         """Deliver a control-plane message to the Qt frontend.
 
-        The Qt bridge carries JSON only. Accepting `buffers` and dropping them
-        would lose structural data silently, so this refuses instead: the
-        array-native path is gated on the AnyWidget connector, and if that gate
-        is ever widened the failure must be immediate and loud rather than a
-        viewer that renders an empty structure.
+        This control channel carries JSON only. Qt structural arrays use the
+        separate binary payload-scheme path. Accepting AnyWidget-style
+        ``buffers=`` here and dropping them would lose structural data silently,
+        so this refuses immediately and observably.
         """
         if buffers:
             emit_from_catalog(
@@ -87,15 +86,16 @@ class QtViewChannel:
                     failure_class="binary_transport_unsupported",
                     last_failure_reason=(
                         f"{len(buffers)} buffer(s) for op {msg.get('op')!r} "
-                        "cannot cross the Qt JSON bridge"
+                        "cannot cross the Qt control channel; structural binary "
+                        "data uses the payload scheme"
                     ),
                 ),
             )
             raise NotImplementedError(
-                "The Qt bridge has no binary transport: it would drop "
-                f"{len(buffers)} buffer(s) for op {msg.get('op')!r}. Qt keeps the "
-                "JSON path until a connector-specific binary mechanism is "
-                "benchmarked (see devguide data_plane_architecture.md, D4)."
+                "QtViewChannel does not carry AnyWidget-style buffers and would "
+                f"drop {len(buffers)} buffer(s) for op {msg.get('op')!r}. "
+                "Structural binary data uses the Qt payload-scheme path "
+                "(see devguide/data_plane_architecture.md)."
             )
         self._bridge.send(dict(msg))
 

@@ -100,7 +100,7 @@ The **ElasNetMT add-on was renamed to ElastNetMT** across both repositories.
 
 **Reading:** scene and product contracts are mature, but the July 2026 transport
 baseline exposed one remaining transport requirement. Before `1.0.0`, the
-viewer should eliminate avoidable `ViewerJSON`, nested-list, and text-JSON
+viewer should eliminate avoidable intermediate-form, nested-list, and text-JSON
 coordinate amplification for structures already selected into `view.molsys`,
 while preserving the current complete-materialization semantics and JSON
 fallback. The same round establishes typed routing across Python, widget/Qt
@@ -110,8 +110,9 @@ workers, multiview, camera/movie expansion, and other product scope remain
 post-1.0.
 
 Scientific dogfooding (#14), end-user distribution, and onboarding README
-verification remain release gates as well. The Qt render gate is closed on a
-real GPU; only its CI automation is pending.
+verification remain release gates as well. Qt was validated on a real GPU, but
+the current camera-authority and live-reload paths still need the visible-window
+revalidation recorded in Phase 7. GPU-runner CI remains post-1.0.
 
 ---
 
@@ -177,7 +178,7 @@ Deciding release readiness against a stale plan is its own risk.
 | 25 | **Legacy popup vocabulary** | ✅ done. The eleven host/popup actions are declared in a `popup_actions` group with the directions each may carry, and both ends validate against it. `molsysviewer-sync-op` is declared bidirectional, which makes explicit the ambiguity that motivated the envelope in the first place. |
 | 23 | **Widget seam E2E** | ✅ done. `widget-seam.e2e.ts` drives the real `render()` in Chromium: raw `ready`, enveloped outbound, a valid projection reaching the controller, and a foreign session never reaching it. |
 | 24 | **R2 tail** | ✅ done. The journal is gone from the interactive path — kept only in `bootDocsView`, where a static export has no Python to ask — and `build_context_items` is the pure half that lets the panel snapshot carry add-on context items. |
-| 26 | **Architecture rework and hardening** | Open. Preserve the closed R1/R2/D3/D4/S8/S9 contracts while replacing the untyped transfer lifecycle, making JSON fallback lazy, moving static export to canonical current-state projection, extracting explicit owners, and closing the seam/performance evidence. See [`pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md`](pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md). |
+| 26 | **Architecture rework and hardening** | In progress. Phases 0a–4b are audited; 5, 6 and 8 are implemented awaiting audit; Phase 7 awaits two human observations; Phase 9 documentation reconciliation is active; Phase 10 release gates remain. See [`pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md`](pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md). |
 | 14 | **Scientific dogfooding** | Unchanged: daily lab usage is what finds what audits cannot. |
 | 15 | **Bug resolution from dogfooding** | Unchanged. |
 

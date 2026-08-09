@@ -26,7 +26,7 @@ def _finite_array(
 
 
 def serialize_json_molsys(molsys: Any) -> dict[str, Any]:
-    """Build the frontend's portable payload without a ViewerJSON intermediate."""
+    """Build the frontend's portable payload directly from a materialized MolSys."""
 
     n_atoms = int(molsys.get_n_atoms())
     structures = molsys.structures

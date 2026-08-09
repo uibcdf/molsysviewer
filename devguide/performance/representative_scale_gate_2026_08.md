@@ -7,8 +7,9 @@ This is the Phase 8 measurement record for
 It measures atom count and structure count independently, using real molecular
 systems. It is a baseline, not a claim that every cell is interactive at 60 FPS.
 
-**Status:** measured on 2026-08-09 at `3a2aaaf3` plus the uncommitted Phase 8
-work. Python results are medians of three fresh processes. Browser cells are
+**Status:** measured on 2026-08-09 from `3a2aaaf3`; the Phase 8 implementation
+and this evidence were committed as `15d86a8a` and await independent audit.
+Python results are medians of three fresh processes. Browser cells are
 single measurements unless a range is shown. Hardware-GPU VRAM was unavailable;
 browser rendering used SwiftShader and process RSS is therefore not VRAM.
 

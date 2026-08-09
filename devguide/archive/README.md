@@ -21,8 +21,8 @@ Resolved defect reports, kept for their evidence:
 - [`dark_light_theme_synchronization_and_transparent_canvas.md`](dark_light_theme_synchronization_and_transparent_canvas.md)
   — delivered as `export.html(background=...)`; the adopter chose `"transparent"`.
 - [`camera_zoom_out_blocked_after_scene_replay.md`](camera_zoom_out_blocked_after_scene_replay.md)
-  — Contract S9. Fixed; only the upstream report to Mol\* is still open, and it
-  has its own file.
+  — Contract S9. Fixed. The accepted upstream report is preserved in
+  [`report_molstar_empty_scene_camera_bounds.md`](report_molstar_empty_scene_camera_bounds.md).
 
 Completed work, kept for the reasoning:
 
@@ -35,6 +35,9 @@ Completed work, kept for the reasoning:
 - [`system_panel_hierarchy_summary.md`](system_panel_hierarchy_summary.md)
 - [`lazy_json_fallback_payload.md`](lazy_json_fallback_payload.md)
   — implemented, validated and measured; only its header said otherwise.
+- [`zero_copy_visual_rendering.md`](zero_copy_visual_rendering.md)
+  — pre-D4 feasibility analysis superseded by the implemented data plane and
+  the measured post-1.0 performance strategy.
 - [`whole_representation_succession_semantics.md`](whole_representation_succession_semantics.md)
   — audited: the whole's representation succeeds, it never accumulates. The rule
   is now Contract S10.

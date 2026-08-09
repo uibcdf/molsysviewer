@@ -163,8 +163,8 @@ Production MolSysViewer call sites should provide `from_form` only where the for
 guaranteed by construction or by a validated protocol field. User-provided arbitrary
 objects should continue through normal MolSysMT detection.
 
-This proposal does **not** reintroduce ViewerJSON, change `view.molsys`, or create a new
-MolSysViewer serialization format. It concerns only how a known input representation is
+This proposal does **not** change `view.molsys` or create a new MolSysViewer
+serialization format. It concerns only how a known input representation is
 identified before an existing MolSysMT conversion.
 
 ## Verification

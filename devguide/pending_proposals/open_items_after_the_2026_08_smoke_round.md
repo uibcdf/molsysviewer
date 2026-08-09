@@ -144,7 +144,8 @@ that answer.
 [molstar/molstar#1903](https://github.com/molstar/molstar/issues/1903), filed
 after re-verifying all four claims against master at `26216e9b1`, was accepted on
 2026-08-07: both changes landed verbatim in `4807179`, unreleased. What follows
-is ours, not upstream's; see `report_molstar_empty_scene_camera_bounds.md`.
+is ours, not upstream's; see
+`../archive/report_molstar_empty_scene_camera_bounds.md`.
 
 ---
 

@@ -1,10 +1,9 @@
 # What needs a human
 
-**Written 2026-08-06, at the point where everything outside Phase 5 that an
-assistant could finish was finished.** Seven items remain, and none of them is
-blocked on effort: they need a screen, a judgement, or a hand on another
-repository. They are collected here because they were scattered across four
-documents and each one, read alone, looked like ordinary pending work.
+**Written 2026-08-06 and reconciled during Phase 9.** Six items remain, and none
+of them is blocked on implementation effort in this repository: they need a
+screen, a judgement, or a hand on another repository. The former seventh item,
+opening Phase 5, is complete.
 
 Each entry says what is needed, from whom, and what it unblocks. When one is
 done, close it **in its home document** — the entries below point there — and
@@ -71,19 +70,16 @@ Deciding it archives that document.
 
 ## 5. Hand MolSysMT what is waiting in their tree — *another repository*
 
-Four files sit **uncommitted** in `../molsysmt`, all of them ours:
+The earlier four-file handover was resolved. Two current changes now sit
+uncommitted in `../molsysmt` and need its maintainer's review:
 
 | File | What it is |
 | --- | --- |
-| `docs/execute_notebooks.py` | patched with the content-hash run mark, error excerpts, a non-zero exit and talking excepts |
-| `devguide/pending_proposals/declared_selection_syntaxes_without_implementation.md` | seven declared syntaxes, four of fourteen `(syntax, direction)` cells work |
-| `devguide/pending_bugs/form_conversions_importing_nonexistent_modules.md` | three advertised conversions raise `ModuleNotFoundError`; one is a dead import |
-| two index lines | in their `pending_bugs/README.md` and `pending_proposals/README.md` |
+| `devguide/pending_proposals/known_source_form_and_large_string_detection.md` | bounded source-form detection plus an explicit source-form hint, motivated by a 95k-atom PDB string |
+| one index line | the corresponding entry in `devguide/pending_proposals/README.md` |
 
-There is also a prepared explanation for their team, including the point that
-running the script with `-q` avoids emitting output nobody needs to read.
-
-*Home:* `open_items_after_the_2026_08_smoke_round.md`, item E1.
+*Home:* the matching proposal in this repository and the two-file MolSysMT
+working tree.
 
 ## 6. Mol\* accepted the fix — *the decision is now ours*
 
@@ -100,17 +96,13 @@ Only after that release exists, and only after re-verifying against it, is
 retiring `takeCameraAuthority` and `camera_stranded_inside_scene` on the table —
 and that is a *behaviour* decision, since it returns Mol\*'s opportunistic
 re-framing. The four steps are in
-[`report_molstar_empty_scene_camera_bounds.md`](report_molstar_empty_scene_camera_bounds.md).
+[`../archive/report_molstar_empty_scene_camera_bounds.md`](../archive/report_molstar_empty_scene_camera_bounds.md).
 
-## 7. Open Phase 5, or decide not to — *the only remaining work item*
+## 7. ~~Open Phase 5, or decide not to~~ — **closed**
 
-Phase 5 of the master plan is parked at 60 %, and its dashboard row must be moved
-to `◐` deliberately before anyone works on it. Its remainder is the endpoint
-evidence matrix, real-browser relay and reconstruction checks, full suites and a
-runtime rebuild. Phases 6–10 have not started.
-
-This is the one entry that is ordinary work rather than a human prerequisite —
-it is here so the list reads as complete.
+Phase 5 was completed and committed; Phases 6 and 8 are also implemented, Phase
+7 awaits the human observations above, and Phase 9 is in progress. This item no
+longer belongs to the work queue.
 
 ---
 

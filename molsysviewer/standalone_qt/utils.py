@@ -487,7 +487,7 @@ class QtMessageBridge:
         payload_id = str(message["id"])
 
         # Prefer the array-native form: the same scheme handler serves the raw
-        # structural arrays, so the page skips ViewerJSON, nested lists and the
+        # structural arrays, so the page skips intermediate forms, nested lists and the
         # JSON encode entirely. Measured 4.7x fewer bytes and up to 120x less
         # preparation time (devguide/performance/qt_transport_baseline_2026_07.md).
         array_message = self._array_native_ref_message(message, payload_id)

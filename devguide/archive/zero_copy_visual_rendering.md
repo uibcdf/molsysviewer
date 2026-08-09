@@ -1,10 +1,11 @@
 # Proposal: Large-System Rendering Performance (Binary Transport, In-Place Updates, and the Limits of Zero-Copy)
 
-**Status:** design / planning (feasibility-grounded). Not implemented.
-**Current transport proposal:** see
-[`data_plane_architecture.md`](../../data_plane_architecture.md). This document
-is the deeper post-1.0 feasibility analysis and must not be read as a second wire
-protocol.
+**Status:** historical feasibility analysis, archived after D4 and the Phase 8
+representative-scale gate. Its transport premise predates the implemented
+array-native path and must not be used as a work plan. Current architecture is
+in [`data_plane_architecture.md`](../data_plane_architecture.md); current
+post-1.0 performance strategy is in
+[`representative_scale_followups.md`](../pending_proposals/post_1.0/representative_scale_followups.md).
 **Consolidates:** this document folds in and supersedes the former
 `visual_scaling_zero_copy.md` (same problem space, viewed from the TopoMT
 large-shape-set angle).

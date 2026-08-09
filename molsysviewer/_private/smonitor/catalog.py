@@ -228,7 +228,10 @@ CODES = {
         "protection is no longer effective — most likely a Mol* upgrade changed one "
         "of the hidden params it relies on."
     ),
-    "binary_transport_unsupported": "This connector has no binary transport and cannot deliver the buffers for {operation}.",
+    "binary_transport_unsupported": (
+        "This control channel cannot deliver AnyWidget-style buffers for "
+        "{operation}; use the connector's structural data-plane path."
+    ),
     "viewer_init_failed": "Mol* viewer failed to initialize. Reason: {reason}. {message}",
     "runtime_contract_rejected": "Runtime contract rejected a message on {seam}: {reason} ({detail}).",
     "frontend_action_failed": "Frontend action {action} failed while processing {event}: {error_type}: {error_message}",

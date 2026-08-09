@@ -2097,7 +2097,7 @@ inside `resolveCameraReset`'s `if (radius > 0)`. **It changes nothing here yet**
 the fix is unreleased and we are pinned at `^5.4.1`. Everything below stays
 normative until a release ships it, the floor is raised deliberately, and the
 third vector is re-verified against it; the sequence is in
-`pending_proposals/report_molstar_empty_scene_camera_bounds.md`.
+`archive/report_molstar_empty_scene_camera_bounds.md`.
 
 **Do not "repair" the camera afterwards.** That was the first fix attempted and it
 is the wrong shape: it cannot tell a clamp from Mol\*'s own legitimate re-framing

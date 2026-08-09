@@ -1,6 +1,6 @@
 # Development roadmap
 
-**Updated:** 2026-08-01
+**Updated:** 2026-08-09
 
 This roadmap states current priorities. Release gating lives in
 [`path_to_1_0.md`](path_to_1_0.md), normative behavior in
@@ -27,7 +27,7 @@ This roadmap states current priorities. Release gating lives in
 These are the release gates:
 
 1. ✅ **Closed 2026-07-30.** Array-native transport for all structures selected
-   into `view.molsys`: no `ViewerJSON`/nested-list/text-JSON coordinate path when
+   into `view.molsys`: no intermediate-form/nested-list/text-JSON coordinate path when
    binary is negotiated; behaviorally equivalent JSON fallback; representative
    atom-count and structure-count measurements. Qt serves raw arrays through the
    `molsysviewer-payload` scheme handler it already had. Evidence in
@@ -44,17 +44,18 @@ These are the release gates:
 6. First-contact README/onboarding verification.
 7. Documentation and package-version consistency at the release commit.
 
-## Active implementation candidates
+## Active pre-1.0 execution
 
-The transport and routing contracts landed in gates 1 and 2. Subsequent
-repository audit and JupyterLab smoke testing found that some implementations
-beneath those contracts should be replaced before 1.0: the untyped transfer
-lifecycle, eager JSON fallback, journal-based static export, and concentrated
-orchestration ownership. The canonical execution order is
+The transport and routing contracts landed in gates 1 and 2. The architecture
+rework found by the subsequent repository audit and JupyterLab smoke testing is
+implemented through Phase 8: typed transfer lifecycle, lazy generation-bound
+fallback, canonical static/live projection, endpoint ownership, seam evidence
+and representative performance/memory gates. Phase 9 is reconciling durable
+documentation; Phase 10 owns the remaining product/release gates. The canonical
+dashboard is
 [`pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md`](pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md).
 
-The completed proposals remain the design record of what was built and why;
-the master plan preserves their contracts while replacing weaker internals:
+The durable contracts record what was built and why:
 
 - [`runtime_message_router.md`](runtime_message_router.md);
 - [`data_plane_architecture.md`](data_plane_architecture.md).

@@ -43,9 +43,8 @@ The array-native transport for fully materialized structures and the runtime
 router moved to active pre-1.0 proposals. Lazy structure sources, partial
 residency, and cache eviction remain deferred because they change the meaning of
 `view.molsys`. `representative_scale_followups.md` is the current performance
-strategy. `zero_copy_visual_rendering.md` is older feasibility analysis, not a
-second transport specification; its pre-D4 descriptions of JSON transport are
-historical.
+strategy. The older `zero_copy_visual_rendering.md` feasibility analysis was
+archived after D4; it is not a second transport specification.
 
 ## Entry gates
 

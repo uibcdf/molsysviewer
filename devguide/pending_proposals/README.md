@@ -12,10 +12,10 @@ compression, workers, shared memory and multiview remain post-1.0.
 ## Open before 1.0
 
 - [`what_needs_a_human_2026_08.md`](what_needs_a_human_2026_08.md): **read this
-  one first.** Seven items that no amount of work here can close — a Qt
-  validation that needs a real screen, a fix nobody has reviewed, two decisions,
-  a handover to MolSysMT, an upstream answer, and Phase 5's own opening. As of
-  2026-08-06 everything outside Phase 5 that did not need a person is done.
+  one first.** Six human observations or decisions remain: visible Qt
+  validation, review of the final reload fix, hover semantics, README
+  positioning, a small MolSysMT handover and the future Mol* version floor.
+  Its former Phase 5 opening item is closed.
 - [`digest_every_public_callable.md`](digest_every_public_callable.md): the release
   owner's rule that every public callable carries `@digest`. Measured: 515 public
   callables are undecorated against 286 decorated, and 482 raw `ValueError`/`TypeError`/
@@ -104,9 +104,10 @@ upstream decisions. They do not block the current release.
 - **Done:** the router inventory/AnyWidget seam and the array-native serializer,
   negotiated buffer delivery, chunking, acknowledgement, cancellation, JSON
   fallback, and embedded-canvas E2E are implemented.
-- **Now:** execute the staged pre-1.0 rework and hardening master plan. R2, D3
-  and D4 remain closed as contracts; their transfer implementation is being
-  replaced where the audit demonstrated weak state ownership.
+- **Now:** finish Phases 9 and 10 of the staged pre-1.0 rework and hardening
+  master plan. R2, D3 and D4 remain closed contracts; the transfer, ownership,
+  seam and representative-scale implementation through Phase 8 is complete and
+  awaiting the audits recorded in the dashboard.
 - **Preserve 1.0 semantics:** all selected structures remain materialized in
   `view.molsys`; binary is a transport choice, not a new scientific model.
 - **Session lifecycle:** kernel restart or widget reconstruction creates a new
