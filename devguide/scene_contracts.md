@@ -2085,8 +2085,17 @@ as though the universe collapsed to a point.
 
 **An empty scene is not a scene of radius zero.** It is a scene about which
 nothing can be concluded. Treating "unknown" as "zero" is the underlying error,
-and it is not ours. Our configuration is the workaround we need now; an upstream
-report is what eventually makes it unnecessary rather than permanent.
+and it is not ours.
+
+**Reported, and accepted upstream.**
+[molstar/molstar#1903](https://github.com/molstar/molstar/issues/1903) → commit
+`4807179` (2026-08-07): `commitScene` now guards on
+`scene.boundingSphere.radius > 0`, and the `autoAdjustMinMaxDistance` block moved
+inside `resolveCameraReset`'s `if (radius > 0)`. **It changes nothing here yet** —
+the fix is unreleased and we are pinned at `^5.4.1`. Everything below stays
+normative until a release ships it, the floor is raised deliberately, and the
+third vector is re-verified against it; the sequence is in
+`pending_proposals/report_molstar_empty_scene_camera_bounds.md`.
 
 **Do not "repair" the camera afterwards.** That was the first fix attempted and it
 is the wrong shape: it cannot tell a clamp from Mol\*'s own legitimate re-framing

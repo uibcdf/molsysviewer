@@ -85,19 +85,21 @@ running the script with `-q` avoids emitting output nobody needs to read.
 
 *Home:* `open_items_after_the_2026_08_smoke_round.md`, item E1.
 
-## 6. Wait for Mol\* — *upstream, not us*
+## 6. Mol\* accepted the fix — *the decision is now ours*
 
-[molstar/molstar#1903](https://github.com/molstar/molstar/issues/1903) reports
-the camera bound derived from a momentarily empty scene, with a two-line patch
-ready to offer if the direction is accepted.
+[molstar/molstar#1903](https://github.com/molstar/molstar/issues/1903) was
+**accepted on 2026-08-07**: both changes landed verbatim in
+[`4807179`](https://github.com/molstar/molstar/commit/4807179589f43c20f38d689e4acbc3fc8590df14),
+unreleased, changelog-listed above `v5.11.0`. No longer a wait on upstream.
 
-Both outcomes need a decision here, and they are opposite:
-
-- **Accepted** — `takeCameraAuthority` and the `camera_stranded_inside_scene`
-  detector can both go, but only once the minimum supported Mol\* version
-  includes the fix. That floor is a deliberate choice, not something to inherit.
-- **Declined** — the detector becomes permanent and should be documented as
-  such, rather than left looking temporary in Contract S9.
+What needs a person is the **minimum supported Mol\* version**. We are pinned at
+`^5.4.1`; depending on the fix means raising that floor deliberately, because a
+user on 5.4.1 would lose the protection the moment `takeCameraAuthority` goes.
+Only after that release exists, and only after re-verifying against it, is
+retiring `takeCameraAuthority` and `camera_stranded_inside_scene` on the table —
+and that is a *behaviour* decision, since it returns Mol\*'s opportunistic
+re-framing. The four steps are in
+[`report_molstar_empty_scene_camera_bounds.md`](report_molstar_empty_scene_camera_bounds.md).
 
 ## 7. Open Phase 5, or decide not to — *the only remaining work item*
 

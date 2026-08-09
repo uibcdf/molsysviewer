@@ -71,9 +71,13 @@ Export, embedding and first contact, mostly. In order of consequence:
   Contract S8.
 - **The message path was re-measured** after the render-path round: nothing
   moved (`performance/message_path_regression_check_2026_07.md`).
-- **[molstar/molstar#1903](https://github.com/molstar/molstar/issues/1903)** was
-  filed: the camera bound derived from a momentarily empty scene. Awaiting a
-  maintainer. Contract S9 and `camera_stranded_inside_scene` stay until it lands.
+- **[molstar/molstar#1903](https://github.com/molstar/molstar/issues/1903) was
+  accepted** (2026-08-07): the camera bound derived from a momentarily empty
+  scene. Both changes landed verbatim in `4807179`, **unreleased** — changelog
+  entry sits above `v5.11.0`, and we are pinned at `^5.4.1`. Contract S9 and
+  `camera_stranded_inside_scene` stay: retiring them needs a release, a raised
+  version floor, and a behaviour decision, in that order
+  (`pending_proposals/report_molstar_empty_scene_camera_bounds.md`).
 
 ## Open work
 

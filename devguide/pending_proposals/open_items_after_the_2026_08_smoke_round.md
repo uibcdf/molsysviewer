@@ -139,11 +139,12 @@ that answer.
 
 **How.** Decide, record it in the proposal, then implement.
 
-### D3. ~~The Mol\* upstream report has not been sent~~ — SENT as molstar/molstar#1903
+### D3. ~~The Mol\* upstream report has not been sent~~ — SENT and ACCEPTED
 
-Filed as [molstar/molstar#1903](https://github.com/molstar/molstar/issues/1903)
-after re-verifying all four claims against master at `26216e9b1`. Awaiting
-a maintainer; see `report_molstar_empty_scene_camera_bounds.md`.
+[molstar/molstar#1903](https://github.com/molstar/molstar/issues/1903), filed
+after re-verifying all four claims against master at `26216e9b1`, was accepted on
+2026-08-07: both changes landed verbatim in `4807179`, unreleased. What follows
+is ours, not upstream's; see `report_molstar_empty_scene_camera_bounds.md`.
 
 ---
 

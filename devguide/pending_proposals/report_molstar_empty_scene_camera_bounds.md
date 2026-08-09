@@ -1,23 +1,29 @@
 # Report the empty-scene camera bounds defect to Mol\*
 
 **Filed 2026-08-05 as [molstar/molstar#1903](https://github.com/molstar/molstar/issues/1903).
-Waiting for a maintainer's answer before offering the patch.**
+Accepted 2026-08-07 — this document's job is done; what is left is ours.**
+
+Both changes went in verbatim, unprompted, without the patch being offered:
+[`4807179`](https://github.com/molstar/molstar/commit/4807179589f43c20f38d689e4acbc3fc8590df14),
+"Fix camera reset handling for (temporary) empty scenes", `arose`, *"thanks,
+makes sense"*. `commitScene` now reads
+`if (!p.camera.manualReset && scene.boundingSphere.radius > 0)`, and the
+`autoAdjustMinMaxDistance` block moved inside `resolveCameraReset`'s existing
+`if (radius > 0)`. `checkDistances` was correctly left alone: the fix stops the
+meaningless bound being *derived*, which is what the issue asked for.
+
+**Not released.** The commit sits on `master`, changelog-listed above `v5.11.0`
+(2026-07-18). We are pinned at `^5.4.1` with 5.4.1 installed, so nothing changes
+here until a release ships it and someone raises the floor deliberately — see
+"After filing" below, and item 6 of `what_needs_a_human_2026_08.md`.
 
 Verified against `master` at `26216e9b1` (5.11.0) on the day it was filed: all
-three links in the chain are unchanged — `commitScene`'s unguarded
+three links in the chain were unchanged — `commitScene`'s unguarded
 `camera.setState({ radiusMax: getSceneRadius() })` (`canvas3d.ts:959`), the
 `autoAdjustMinMaxDistance` block outside the `if (radius > 0)` guard beside it
 (`canvas3d.ts:886-893`), and `checkDistances` assigning `camera.position` every
-frame (`trackball.ts:493, 543`), while `Camera.update()` still refuses to act on
+frame (`trackball.ts:493, 543`), while `Camera.update()` still refused to act on
 `radiusMax === 0` (`camera.ts:99`).
-
-**Next step is theirs.** If the direction is accepted, the two-line patch is
-ready and the prize is not the fix — we already carry Contract S9 — but retiring
-the workaround: today it depends on two parameters Mol\* marks `isHidden`, and a
-change in their *semantics* would remove our protection silently, compiling and
-green. `camera_stranded_inside_scene` in the smonitor catalog exists for exactly
-that. If they decline, that detector becomes permanent and should be documented
-as such rather than left looking temporary.
 
 ## Why this is a proposal and not a bug of ours
 
@@ -175,8 +181,24 @@ becomes required, not optional.
 
 ## After filing
 
-- Record the issue number here.
-- When it lands, `takeCameraAuthority` and the `camera_stranded_inside_scene`
-  catalog entry can both go, together with the note in Contract S9 about hidden
-  parameters — but only once the minimum supported Mol\* version includes the fix.
-  That version floor is a deliberate decision, not something to inherit silently.
+Accepted; recorded at the top. What remains is a version floor and a behaviour
+decision, in that order, and **neither is a revert**.
+
+1. **Wait for a release** containing `4807179` (the first after `v5.11.0`), then
+   raise the floor from `^5.4.1` explicitly. Inheriting the fix through a caret
+   range is not the same as depending on it: a user on 5.4.1 would silently lose
+   the protection the moment `takeCameraAuthority` goes.
+2. **Re-verify against that release**, do not assume. The fix closes exactly the
+   two vectors §B names — the `commitScene` collapse and the `resolveCameraReset`
+   `p.maxDistance` pin, which is also what closed the `requestCameraReset` hole.
+   That the *third* path (`syncVisibility`, `radiusMax === 0` exactly) stays shut
+   without our configuration has never been measured upstream-fixed.
+3. **Then decide, separately, whether to give the authority back.** Removing
+   `takeCameraAuthority` returns Mol\*'s opportunistic re-framing
+   (`shouldResetCamera`) and `minDistance: 5`. §B calls that re-framing arguably a
+   source of surprise rather than a feature, and the export path now frames
+   explicitly and is tested doing so (`exported-page-framing.e2e.ts`). Keeping the
+   authority and dropping only the *justification* is a legitimate outcome.
+4. `camera_stranded_inside_scene` in the smonitor catalog goes only with step 3,
+   never with step 1. It detects the camera ending up inside the scene, whatever
+   the cause; upstream fixing one cause does not make the observation meaningless.
