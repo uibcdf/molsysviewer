@@ -301,6 +301,10 @@ the same tag; APIs resolve identity as `(domain, tag)`.
 - `view.import_state(state, *, clear_first=True)`
   - replays a state dict onto a viewer with compatible structure
   - `clear_first=True` wipes existing scene objects, clipping sections, selections, and regions before replay
+- `view.save_state(path)` / `view.load_state(path, *, clear_first=True, on_conflict="raise")`
+  - atomic UTF-8 JSON file convenience around `export_state()` / `import_state()`
+  - stores overlay state only; the molecular system, camera, and undo history are not bundled
+  - load the same or a compatible structure before calling `load_state()`
 - `view.set_structure(index)`
 - `view.play(fps=..., step=...)`
 - `view.pause()`

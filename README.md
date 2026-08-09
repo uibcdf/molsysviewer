@@ -153,19 +153,18 @@ Everything above — and everything you do by hand in the Studio panel — is sc
 state, and scene state is a plain dictionary:
 
 ```python
-import json
-
-state = view.export_state()
-json.dump(state, open("scene.json", "w"))
+view.save_state("scene-state.json")
 
 # later, on another machine, or as a paper's supplementary material
 restored = msv.demo["1TCD"]
-restored.import_state(json.load(open("scene.json")))
+restored.load_state("scene-state.json")
 ```
 
 `restored` now carries the same regions, colours, representations, visibility and
 overlays as the view you had been clicking around in. That round trip — not the
-feature list above — is what MolSysViewer is for.
+feature list above — is what MolSysViewer is for. The file stores scene state,
+not the molecular system itself, so load the same or a compatible structure
+before calling `load_state()`.
 
 ---
 

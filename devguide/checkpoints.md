@@ -5,9 +5,9 @@ changes. Normative behavior remains in the contracts linked below.
 
 ## Repository state
 
-- Branch: `main`, at `15d86a8a`, plus the implemented Phase 9 documentation
-  reconciliation awaiting independent audit. Phase 8 is committed separately
-  and the scratch notebook is not part of either change.
+- Branch: `main`, at `55839d23`, plus the implemented and validated Phase 10
+  scene-state file helpers awaiting independent audit. Phases 8 and 9 are
+  committed separately; the scratch notebook is not part of any change.
 - Phase 8 — representative performance and memory — is implemented in
   `15d86a8a` and awaits independent audit. Its evidence is in
   [`performance/representative_scale_gate_2026_08.md`](performance/representative_scale_gate_2026_08.md).
@@ -18,6 +18,12 @@ changes. Normative behavior remains in the contracts linked below.
 
 ## Validation observed
 
+- Phase 10 persistence focused checks: state serialization 15 passed, state v2
+  22 passed, executable README 3 passed, Qt transport contract 12 passed.
+- Phase 10 full Python attempt, 12 workers: 1,311 passed, 3 environmental skips
+  and one stale Phase 9 test-message assertion. The assertion was corrected and
+  its 12-test file passed; the full suite was not repeated blindly after the
+  diagnosis.
 - Focused Python: 22 passed (`test_scene_history.py` plus the representative
   fixture guard).
 - Full Python, 12 workers: 1,304 passed, 3 documented environmental skips and
@@ -63,10 +69,12 @@ Main findings:
 
 ## What is next
 
-Phase 9 — documentation and upstream closure — is implemented and awaits audit. It reconciles
-stale architecture statements mechanically and does not reopen the measured
-transport design. The D4/R2/Qt/S9 descriptions and legacy intermediate-form language have
-been corrected; indexes, archived evidence and remaining human-work lists agree.
+Phase 9 — documentation and upstream closure — is implemented in `55839d23`
+and awaits audit. Phase 10 is active. Its persistence decision is implemented:
+`save_state` / `load_state` are atomic JSON conveniences over the existing v2
+overlay contract, not molecular-session bundles. Dependency-channel closure is
+deliberately blocked until the sibling packages are release-ready; final
+installed-artifact validation follows that closure.
 
 Phase 7 still has two human/environment observations outside this automated
 closure: Qt real-window/GPU and the human reload smoke. Do not report them as

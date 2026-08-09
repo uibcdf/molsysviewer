@@ -1,9 +1,13 @@
 from __future__ import annotations
 
 
-from typing import Any
-from copy import deepcopy
 from contextlib import nullcontext
+from copy import deepcopy
+import json
+import os
+from pathlib import Path
+import tempfile
+from typing import Any
 
 from .._private.smonitor_emit import emit_suppressed_exception
 from ..regions import Region
@@ -180,6 +184,56 @@ class StateMixin:
             },
         })
 
+    def save_state(self, path: str | os.PathLike[str]) -> None:
+        """Write the current overlay state to a UTF-8 JSON file atomically.
+
+        This is the file counterpart of :meth:`export_state`. It does not
+        include the molecular system, camera, or undo history. Load the same
+        (or a compatible) structure before passing the file to
+        :meth:`load_state`.
+        """
+        destination = Path(path)
+        temporary_path: Path | None = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                mode="w",
+                encoding="utf-8",
+                dir=destination.parent,
+                prefix=f".{destination.name}.",
+                suffix=".tmp",
+                delete=False,
+            ) as temporary:
+                temporary_path = Path(temporary.name)
+                json.dump(self.export_state(), temporary, indent=2, sort_keys=True)
+                temporary.write("\n")
+                temporary.flush()
+                os.fsync(temporary.fileno())
+            os.replace(temporary_path, destination)
+        except Exception:
+            if temporary_path is not None:
+                temporary_path.unlink(missing_ok=True)
+            raise
+
+    def load_state(
+        self,
+        path: str | os.PathLike[str],
+        *,
+        clear_first: bool = True,
+        on_conflict: str = "raise",
+    ) -> None:
+        """Load overlay state from JSON onto an already loaded structure.
+
+        The document is parsed before the current scene is changed. State
+        validation, conflict handling, and history invalidation are delegated
+        to :meth:`import_state`.
+        """
+        state = json.loads(Path(path).read_text(encoding="utf-8"))
+        self.import_state(
+            state,
+            clear_first=clear_first,
+            on_conflict=on_conflict,
+        )
+
     def _color_layer_record(self, owner: str) -> dict:
         layer = self._atom_color_layers.get(owner, {})
         return {str(int(index)): int(color) for index, color in layer.items()}
@@ -218,6 +272,7 @@ class StateMixin:
         ordered_records = self._topologically_ordered_regions(region_records)
         if not clear_first and on_conflict == "raise":
             self._preflight_import_conflicts(state)
+        order_high_water_mark_before_import = self._region_order_counter
         with self.history.suspended() as already_suspended:
             self._restore_high_water_marks(state)
             if clear_first:
@@ -271,6 +326,14 @@ class StateMixin:
             self._restore_active_selection(state.get("active_selection"))
             self._send_resolved_atom_colors(replay=True)
             self._sync_whole_summary_runtime()
+            self._region_order_counter = max(
+                order_high_water_mark_before_import,
+                int(state.get("order_high_water_mark", 0)),
+                max(
+                    (int(region.order) for region in self._regions.values()),
+                    default=0,
+                ),
+            )
 
         if not already_suspended:
             self.history.clear()
@@ -369,7 +432,11 @@ class StateMixin:
             if tag is None:
                 continue
             options = dict(record.get("options") or {})
-            layer_tag = layer_tag_map.get(options.get("layer_tag"), options.get("layer_tag"))
+            layer_tag = self._restored_layer_tag(
+                options.get("layer_tag"),
+                original_object_tag=original_tag,
+                layer_tag_map=layer_tag_map,
+            )
             anchor = record.get("anchor")
             if isinstance(anchor, dict) and anchor.get("type") == "atoms":
                 atom_indices = list(anchor.get("indices") or [])
@@ -418,11 +485,16 @@ class StateMixin:
         for record in records if isinstance(records, list) else []:
             if not isinstance(record, dict) or record.get("op") not in kinds:
                 continue
-            tag = self._import_tag("measurement", str(record.get("tag") or ""), on_conflict)
+            original_tag = str(record.get("tag") or "")
+            tag = self._import_tag("measurement", original_tag, on_conflict)
             if tag is None:
                 continue
             options = dict(record.get("options") or {})
-            layer_tag = layer_tag_map.get(options.get("layer_tag"), options.get("layer_tag"))
+            layer_tag = self._restored_layer_tag(
+                options.get("layer_tag"),
+                original_object_tag=original_tag,
+                layer_tag_map=layer_tag_map,
+            )
             picks = [list(item) for item in options.get("picks_atom_indices", [])]
             missing = self._missing_anchor_indices([index for pick in picks for index in pick])
             if not picks or any(not pick for pick in picks) or missing:
@@ -472,16 +544,19 @@ class StateMixin:
             options = dict(msg.get("options") or {})
             options["tag"] = tag
             requested_layer_tag = record.get("layer_tag") or options.get("layer_tag")
-            resolved_layer_tag = layer_tag_map.get(requested_layer_tag, requested_layer_tag)
-            if resolved_layer_tag is not None:
-                options["layer_tag"] = resolved_layer_tag
+            registration_layer_tag = self._restored_layer_tag(
+                requested_layer_tag,
+                original_object_tag=original_tag,
+                layer_tag_map=layer_tag_map,
+            )
+            options["layer_tag"] = registration_layer_tag or tag
             msg["tag"] = tag
             msg["options"] = options
             with self._state_owner_context(record):
                 shape = register_shape_layer(
                     self,
                     tag,
-                    layer_tag=resolved_layer_tag,
+                    layer_tag=registration_layer_tag,
                     meta=options.get("meta"),
                 )
             self._send(msg)
@@ -536,6 +611,21 @@ class StateMixin:
             suffix += 1
             candidate = f"{tag}_{suffix}"
         return candidate
+
+    @staticmethod
+    def _restored_layer_tag(
+        requested_layer_tag: Any,
+        *,
+        original_object_tag: str,
+        layer_tag_map: dict[str, str],
+    ) -> str | None:
+        """Preserve the distinction between implicit and user-owned layers."""
+        if (
+            requested_layer_tag == original_object_tag
+            and requested_layer_tag not in layer_tag_map
+        ):
+            return None
+        return layer_tag_map.get(requested_layer_tag, requested_layer_tag)
 
     def _missing_anchor_indices(self, indices: list) -> list[int]:
         n_atoms = int(self._molsys.get_n_atoms()) if self._molsys is not None else 0

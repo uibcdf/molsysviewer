@@ -1,8 +1,9 @@
 # Session reproducibility — the standing requirement
 
 **Status:** durable requirement (not a phase). Owner: whoever touches viewer
-state. Current mechanism: `view.export_state()` / `view.import_state()`,
-document `version: 2` (landed Phase 6 of the scene rework).
+state. Current mechanism: `view.export_state()` / `view.import_state()`, plus
+the thin file helpers `view.save_state()` / `view.load_state()`; document
+`version: 2` (landed Phase 6 of the scene rework).
 
 ---
 
@@ -56,6 +57,11 @@ requires a compatible structure already loaded). The document carries:
 Regions are restored in **topological order** (a recipe's operands, referenced
 by `uid`, exist before the dependent is rebuilt). A corrupt graph (a cycle or a
 missing operand) raises rather than loading half a session.
+
+`save_state(path)` writes that same document atomically as UTF-8 JSON, and
+`load_state(path)` parses it before delegating to `import_state`. These helpers
+do not define a `.msv` bundle and do not broaden the reproducible unit: the
+molecular system, camera and undo history remain outside the file.
 
 ## The rule for every future change
 

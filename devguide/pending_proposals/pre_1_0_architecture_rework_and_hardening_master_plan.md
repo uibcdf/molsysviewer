@@ -1189,24 +1189,61 @@ not repeated for this documentation slice.
 
 ### Phase 10 — Product and release gates
 
-1. Close and record compatible versions/channels for the UIBCDF dependency
+1. **Blocked by dependency release readiness.** Close and record compatible versions/channels for the UIBCDF dependency
    stack (`argdigest`, `depdigest`, `smonitor`, MolSysMT and related packages).
-2. Build the release wheel and conda artifacts and test installation from
+2. **Pending the final versions from item 1.** Build the release wheel and conda artifacts and test installation from
    supported channels in fresh environments.
-3. Reverify the Phase 0 dependency-name and package-resource contract against
+3. **Pending the final artifacts from item 2.** Reverify the Phase 0 dependency-name and package-resource contract against
    those release artifacts; this is where resolver/version compatibility becomes
    a blocking assertion.
-4. Verify runtime resources (`viewer.js`, `runtime_actions.json`) from an
-   installed artifact, not the source checkout.
-5. Verify the one-line first-contact path.
-6. Decide whether thin `save_state(path)` / `load_state(path)` helpers are needed;
-   do not imply a portable molecular session bundle unless one is designed.
-7. Decide hover telemetry semantics.
-8. Add notebook execution to CI or record an explicit release waiver.
-9. Complete scientific dogfooding on representative laboratory workflows.
-10. Run the final smoke matrix and release-version consistency checks.
+4. **Guard exists; final-artifact rerun pending.** Verify runtime resources
+   (`viewer.js`, `runtime_actions.json`) from an installed artifact, not the
+   source checkout.
+5. **Source-tree path guarded; final-artifact rerun pending.** Verify the
+   one-line first-contact path.
+6. **Implemented; awaiting audit.** Thin `save_state(path)` / `load_state(path)`
+   helpers persist the existing version-2 overlay document as atomic UTF-8 JSON.
+   They explicitly exclude the molecular system, camera and undo history and do
+   not define or imply a portable `.msv` session bundle. The same change makes
+   `export_state -> import_state -> export_state` stable for order high-water
+   marks and implicit scene-object layer provenance.
+7. **Human product decision required.** Decide hover telemetry semantics.
+8. **Done.** Notebook execution is enforced by
+   `.github/workflows/docs-notebooks.yaml` through
+   `docs/execute_notebooks.py`.
+9. **Human workflow required.** Complete scientific dogfooding on
+   representative laboratory workflows.
+10. **Pending all preceding gates.** Run the final smoke matrix and
+    release-version consistency checks.
 
 **Exit:** no open pre-1.0 gate remains in `path_to_1_0.md`.
+
+#### Phase 10 persistence slice evidence — 2026-08-09
+
+- `tests/test_state_serialization.py`: 15 passed after adding exact file
+  round-trip, atomic-write failure and parse-before-mutation coverage.
+- `tests/test_state_v2.py`: 22 passed.
+- `tests/test_readme_quickstart_runs.py`: 3 passed; the executable quick start
+  now uses the public file helpers.
+- Full Python with 12 workers and `--receptor=llm`: 1,311 passed, 3 skipped and
+  one failure in a stale Qt test phrase left by Phase 9. The test still claimed
+  Qt had "no binary transport" although the product and docs correctly
+  distinguish JSON control messages from the binary payload-scheme path. After
+  correcting that assertion and its module description,
+  `tests/test_qt_transport_contract.py` passed 12/12. The full suite was not
+  repeated blindly after this diagnosis.
+
+Mutation record:
+
+| mechanism | mutation | test | result |
+|---|---|---|---|
+| imported order watermark does not grow from reconstruction side effects | remove final `_region_order_counter` normalization | `test_state_file_round_trip_preserves_the_exact_overlay_document` | fails: restored mark 4 vs saved mark 2; passes restored |
+| implicit scene-object layers remain implicit across import | remove the implicit-layer branch in `_restored_layer_tag` | `test_state_file_round_trip_preserves_the_exact_overlay_document` | fails: auto annotation layer becomes a user layer; passes restored |
+| failed JSON encoding cannot truncate an existing state file | write directly to the destination instead of temporary-file + `os.replace` | `test_save_state_does_not_damage_an_existing_file_when_encoding_fails` | fails with truncated destination; passes restored |
+
+Not done in this slice: no molecular-system/session bundle, `.msv` format,
+camera persistence or history persistence; no dependency pins or final release
+artifact validation; no hover-policy decision, dogfooding or final smoke matrix.
 
 ---
 

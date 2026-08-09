@@ -54,7 +54,7 @@ def test_the_quick_start_has_the_blocks_this_test_thinks_it_has():
     blocks = _quick_start_blocks()
     assert len(blocks) >= 6, f"only {len(blocks)} python blocks found in the quick start"
     assert any(NEEDS_NETWORK in block for block in blocks)
-    assert any("export_state()" in block for block in blocks), (
+    assert any("save_state(" in block and "load_state(" in block for block in blocks), (
         "the quick start no longer closes the reproducibility loop; that snippet is "
         "the one thing in this README that no other viewer can copy"
     )

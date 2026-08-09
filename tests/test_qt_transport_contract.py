@@ -1,9 +1,9 @@
-"""Qt keeps the JSON path, and says so instead of losing data quietly.
+"""Qt keeps control messages JSON and refuses AnyWidget-style buffers.
 
 Qt is in scope for 1.0, but a green AnyWidget transport does not imply Qt: the
-bridge carries JSON, has no binary mechanism, and has not been benchmarked. What
-must hold today is that this is *true by construction* and *loud when violated*,
-so the binary work can proceed on AnyWidget without leaving a trap behind.
+control bridge carries JSON while structural binary payloads use a separate Qt
+payload-scheme path. What must hold is that passing AnyWidget-style ``buffers``
+to the control channel fails loudly instead of dropping them.
 """
 
 from pathlib import Path
@@ -29,7 +29,7 @@ def _channel():
     return channel
 
 
-def test_the_binary_path_cannot_reach_qt_by_construction():
+def test_the_anywidget_buffer_path_cannot_reach_qt_by_construction():
     # `_binary_structure_transport_limit` gates on the AnyWidget connector, so a
     # Qt channel never negotiates the array-native transport.
     assert not issubclass(QtViewChannel, MolSysViewerWidget)
@@ -37,7 +37,7 @@ def test_the_binary_path_cannot_reach_qt_by_construction():
 
 def test_qt_refuses_buffers_instead_of_dropping_them():
     channel = _channel()
-    with pytest.raises(NotImplementedError, match="no binary transport"):
+    with pytest.raises(NotImplementedError, match="does not carry AnyWidget-style buffers"):
         channel.send({"op": "structure_data_chunk"}, buffers=[memoryview(b"xyz")])
     assert channel._bridge.sent == [], "nothing may reach the frontend"  # noqa: SLF001
 

@@ -1,6 +1,7 @@
 import json
 import pytest
-from molsysviewer import MolSysView
+from molsysviewer import MolSysView, pyunitwizard as puw
+from molsysviewer.demo import demo
 
 
 def test_export_state_returns_json_serializable_dict():
@@ -211,3 +212,64 @@ def test_export_state_numpy_int_serializable():
         "type": "atoms",
         "indices": [0, 1],
     }
+
+
+def test_state_file_round_trip_preserves_the_exact_overlay_document(tmp_path):
+    source = demo["dialanine"]
+    source.widget.send = lambda _msg: None
+    region = source.regions.add(
+        atom_indices=[0, 1, 2],
+        tag="site",
+        skip_digestion=True,
+    )
+    region.set_representation("spacefill", skip_digestion=True)
+    source.annotations.add("active site", atom_indices=[0], tag="note")
+    source.measurements.add("distance", [0], [1], tag="distance")
+    source.shapes.add(
+        "sphere",
+        center=puw.quantity([0.0, 0.0, 0.0], "nm"),
+        radius=puw.quantity(0.2, "nm"),
+        tag="marker",
+        skip_digestion=True,
+    )
+    expected = source.export_state()
+    path = tmp_path / "scene-state.json"
+
+    source.save_state(path)
+
+    assert json.loads(path.read_text(encoding="utf-8")) == expected
+
+    restored = demo["dialanine"]
+    restored.widget.send = lambda _msg: None
+    restored.load_state(path)
+
+    assert restored.export_state() == expected
+
+
+def test_save_state_does_not_damage_an_existing_file_when_encoding_fails(
+    tmp_path,
+    monkeypatch,
+):
+    view = demo["dialanine"]
+    path = tmp_path / "scene-state.json"
+    path.write_text("previous valid state\n", encoding="utf-8")
+    monkeypatch.setattr(view, "export_state", lambda: {"not_json": object()})
+
+    with pytest.raises(TypeError, match="JSON serializable"):
+        view.save_state(path)
+
+    assert path.read_text(encoding="utf-8") == "previous valid state\n"
+    assert list(tmp_path.iterdir()) == [path]
+
+
+def test_load_state_parses_before_mutating_the_current_scene(tmp_path):
+    view = demo["dialanine"]
+    view.annotations.add("keep", atom_indices=[0], tag="note")
+    before = view.export_state()
+    path = tmp_path / "corrupt.json"
+    path.write_text("{not json", encoding="utf-8")
+
+    with pytest.raises(json.JSONDecodeError):
+        view.load_state(path)
+
+    assert view.export_state() == before
