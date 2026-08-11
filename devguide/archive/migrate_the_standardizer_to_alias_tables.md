@@ -1,6 +1,59 @@
 # Migrate the standardizer to declarative alias tables
 
-**Status:** proposed, deferred with the design settled. **Filed:** 2026-08-08.
+**Status: done, 2026-08-11.** Filed 2026-08-08. The design below held. What it did not
+anticipate is recorded first, because it is the more useful half.
+
+## What the migration found
+
+**The standardizer had never renamed anything.** It branched on
+`caller == 'molsysviewer.viewer.MolSysView.get'`; ArgDigest builds the caller as
+`<owner module>.<function name>`, and `MolSysView.__module__` is `molsysviewer.viewer`, so
+the real string is `molsysviewer.viewer.get`. Measured by logging every call through it
+over a full suite run: **4,674 digested calls, 210 distinct callers, zero matches** against
+any of its four branches. `normalize_viewer_caller` changed the caller in **0** of them.
+
+That was not cosmetic. `view.get`, `view.contains` and `view.is_composed_of` forward to
+MolSysMT with `skip_digestion=True` — correctly, since the arguments are digested once, on
+this side — so MolSysMT's own normalization never ran on them either. Nothing renamed
+anything anywhere:
+
+```python
+view.get(element='group', index=True)   # KeyError: 'index'
+view.get(element='group', name=True)    # ArgumentError on `name`
+view.get(element='group', group_index=True)   # worked — the spelled-out form only
+```
+
+Both now work. The port is therefore a bug fix that happens to also be a refactor, and the
+suite grew by 17 tests because **no existing test could have covered these spellings**:
+they raised.
+
+**Rule 3 was not ported, deliberately.** `mutation -> mutations` targets
+`molsysmt.build.mutate.mutate`, which is digested under MolSysMT's configuration and
+already carries that alias in their `caller_aliases.py`. It can never reach this library's
+registry — confirmed by the same inventory. There is no `caller_aliases.py` here.
+
+**The global-scope trap is real here too, and larger.** Declaring the synonyms for `*`
+fails **132 tests** in this repository, against 76 in MolSysMT. Measured, not assumed.
+
+**`normalize_viewer_caller` stayed.** The proposal's step 3 asked whether it had other
+users: it has about twenty, every caller-aware digester. It is also a no-op on all 4,674
+calls, which makes it dead weight rather than a mechanism — but removing it is its own
+change with its own risk, and it is not this one.
+
+## Evidence
+
+- `tests/test_argument_name_normalization.py`, 17 tests, all of which fail against the
+  code as it stood.
+- Mutation 1, `NORMALIZATION_SOURCE` removed: 11 of 17 fail.
+- Mutation 2, synonyms declared `applies_to='*'`: the two scope tests fail, and the full
+  suite drops to 132 failures.
+- Full suite after the change: 1,335 passed, 3 environmental skips, exit 0.
+
+---
+
+*The proposal as filed follows.*
+
+**Filed:** 2026-08-08.
 **Blocked on:** nothing. ArgDigest 0.11.0 already has everything this needs.
 
 ## What this is

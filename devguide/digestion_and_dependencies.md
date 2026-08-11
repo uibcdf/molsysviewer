@@ -66,10 +66,21 @@ one you came for.
 
 ### Standardization
 
-`argument_names_standardization.py` is intentionally narrow.
+Argument-name renames are **declared as data**, in
+`molsysviewer/_private/argdigest/normalization/`, one module per family of rules. Each
+declares `AliasTable` instances; ArgDigest discovers them and applies them before both the
+function contract and the digesters. `describe_normalization` can then list what a
+function accepts.
 
-- use it for stable caller-aware renames and synonym handling;
-- do not rely on it as a substitute for writing the missing digester.
+- scope every table to the callers that need it. A rename declared for `*` is almost
+  always wrong: `atom_indices` is a synonym in three methods and a real argument
+  everywhere else, and declaring it globally fails 132 tests;
+- a rename is not a substitute for the missing digester;
+- there is exactly one mechanism. The imperative `argument_names_standardization.py` it
+  replaced tested a caller string the code never produces, so all four of its branches
+  were dead and `view.get(element='group', index=True)` raised `KeyError`. Two mechanisms
+  deciding the same rename is how that goes unnoticed — see
+  [`archive/migrate_the_standardizer_to_alias_tables.md`](archive/migrate_the_standardizer_to_alias_tables.md).
 
 ### Interaction with PyUnitWizard
 

@@ -11,6 +11,10 @@ user/developer documentation.
 - [`molsysmovie_plan.md`](molsysmovie_plan.md)
 - [`standalone_qt_prototype_plan.md`](standalone_qt_prototype_plan.md)
 - [`canvas_panel_transition.md`](canvas_panel_transition.md)
+- [`migrate_the_standardizer_to_alias_tables.md`](migrate_the_standardizer_to_alias_tables.md)
+  — the imperative standardizer became declared `AliasTable`s. Read for the finding
+  rather than the plan: the code it replaced tested a caller string nothing produces, so
+  it had never renamed anything, and `view.get(element='group', index=True)` raised.
 
 Resolved defect reports, kept for their evidence:
 
