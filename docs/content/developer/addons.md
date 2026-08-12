@@ -37,14 +37,45 @@ Current public surfaces include:
 
 ---
 
-## Recommended Package Shape
+## Where an add-on lives
 
-For larger integrations, prefer:
-- Domain/scientific package: e.g. `topomt`
-- MolSysViewer integration package: e.g. `molsysviewer-topomt`
-- Recommended Python import path: `molsysviewer_topomt`
+**MolSysViewer owns the host contract; each scientific toolkit owns its own integration.**
+The integration is a top-level package inside the toolkit's repository, not a separate
+distribution:
 
-This keeps domain logic and viewer integration decoupled while still allowing a first-class add-on story.
+| Toolkit repository | Ships | Imported as |
+|---|---|---|
+| `molsysmt` | `molsysviewer_molsysmt/` | `molsysviewer_molsysmt` |
+| `topomt` | `molsysviewer_topomt/` | `molsysviewer_topomt` |
+| `elastnetmt` | `molsysviewer_elastnetmt/` | `molsysviewer_elastnetmt` |
+| `pharmacophoremt` | `molsysviewer_pharmacophoremt/` | `molsysviewer_pharmacophoremt` |
+
+There is no `molsysviewer-topomt` distribution to install. Installing the toolkit installs
+its integration, which is the point: the team that owns the science owns the panel that
+presents it, and MolSysViewer never has to be edited to add one.
+
+An external add-on is free to be its own distribution. The pattern above is what the
+MolSysSuite toolkits do, not a requirement of the host contract.
+
+## How the host finds it
+
+Three routes, in decreasing order of preference. They are not equivalent, and the
+MolSysSuite add-ons do not all use the same one:
+
+1. **An entry point** in the toolkit's `pyproject.toml` — installed means discovered:
+
+   ```toml
+   [project.entry-points."molsysviewer.addons"]
+   molsysmt = "molsysviewer_molsysmt"
+   ```
+
+2. **`KNOWN_ADDON_MODULES`** in `molsysviewer/addons.py`, which names the four MolSysSuite
+   modules explicitly. This is a courtesy for known siblings, not a mechanism external
+   add-ons should rely on: it requires editing MolSysViewer.
+3. **`molsysviewer.addons.register_module("…")`**, always available, always explicit.
+
+An add-on that offers only route 3 works; it just will not appear until someone asks for
+it by name.
 
 ---
 

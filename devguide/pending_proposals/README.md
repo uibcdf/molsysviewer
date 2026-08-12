@@ -22,6 +22,11 @@ compression, workers, shared memory and multiview remain post-1.0.
   semantic scene state, visual state, molecular data and a portable session. One obstacle
   is structural rather than unimplemented: **the camera is the frontend's state mirrored
   back**, so it cannot simply become another key.
+- [`addon_maturity_and_ownership.md`](addon_maturity_and_ownership.md): the ownership half
+  is documented and done; what remains is whether maturity belongs to the host contract.
+  Measured: four MolSysSuite add-ons declare four different things about themselves in an
+  untyped `meta` dict, `AddonSpec` has no `status` field, and only MolSysMT is discovered
+  on install.
 - [`digest_every_public_callable.md`](digest_every_public_callable.md): the release
   owner's rule that every public callable carries `@digest`. Measured: 515 public
   callables are undecorated against 286 decorated, and 482 raw `ValueError`/`TypeError`/

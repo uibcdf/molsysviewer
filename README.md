@@ -65,12 +65,21 @@ Documentation: https://www.uibcdf.org/molsysviewer
 MolSysViewer has a first-class addon API that lets external packages add
 workspaces, panels, context actions, and shape providers without modifying the core:
 
-| Addon package | Ecosystem tool | What it adds |
-|---|---|---|
-| `molsysviewer-molsysmt` | MolSysMT | 10-panel workspace: inspect, select, colour, H-bonds, topology, PBC, mechanics, build |
-| `molsysviewer-elastnetmt` | ElastNetMT | GNM/ANM elastic network modes and contact network overlays |
-| `molsysviewer-topomt` | TopoMT | Pocket detection and topography visualisation |
-| `molsysviewer-pharmacophoremt` | PharmacophoresMT | Structure-based pharmacophore glyph overlays |
+Each MolSysSuite integration is shipped **by its own toolkit**, as a package inside that
+toolkit's repository — installing the toolkit installs its add-on. There is no separate
+`molsysviewer-*` distribution to install.
+
+| Import as | Shipped by | What it adds | Maturity |
+|---|---|---|---|
+| `molsysviewer_molsysmt` | MolSysMT | 10-panel workspace: inspect, select, colour, H-bonds, topology, PBC, mechanics, build | alpha |
+| `molsysviewer_topomt` | TopoMT | Pocket detection and topography visualisation | undeclared |
+| `molsysviewer_elastnetmt` | ElastNetMT | GNM/ANM elastic network modes and contact network overlays | skeleton |
+| `molsysviewer_pharmacophoremt` | PharmacophoresMT | Structure-based pharmacophore glyph overlays | skeleton |
+
+Maturity is what each add-on declares about itself, and the levels are not yet a defined
+vocabulary — see
+[`devguide/pending_proposals/addon_maturity_and_ownership.md`](devguide/pending_proposals/addon_maturity_and_ownership.md).
+Treat `skeleton` as "the integration exists and is not finished".
 
 ### Canvas UX modes
 - `controls_mode="minimal"` — 3-icon cluster + keyboard shortcuts (N/W/H)
