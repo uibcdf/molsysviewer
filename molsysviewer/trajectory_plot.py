@@ -9,6 +9,8 @@ from smonitor import signal
 from molsysviewer.colors import colors as _color_registry
 from molsysviewer.colors import normalize_color
 
+from ._private.argdigest import digest
+
 
 def _is_sequence(value: Any) -> bool:
     if isinstance(value, np.ndarray):
@@ -113,6 +115,7 @@ class TrajectoryPlotManager:
     # -- public API -----------------------------------------------------------
 
     @signal(tags=["trajectory", "plot"])
+    @digest()
     def show(
         self,
         series: Any,
@@ -189,6 +192,7 @@ class TrajectoryPlotManager:
     update = show
 
     @signal(tags=["trajectory", "plot"])
+    @digest()
     def clear(self, tag: str | None = None) -> None:
         """Hide and clear trajectory plot cards.
 
@@ -199,6 +203,7 @@ class TrajectoryPlotManager:
             options["tag"] = str(tag)
         self._view._send({"op": "set_trajectory_plot", "options": options})
 
+    @digest()
     def hide(self, tag: str | None = None) -> None:
         """Alias for ``clear()``."""
         self.clear(tag=tag)

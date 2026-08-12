@@ -756,6 +756,7 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
                 )
 
     @signal(tags=["addon"])
+    @digest()
     def register(
         self,
         addon: AddonSpec,
@@ -781,6 +782,7 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         return addon
 
     @signal(tags=["addon"])
+    @digest()
     def register_module(self, module: str | ModuleType) -> AddonSpec:
         imported = import_module(module) if isinstance(module, str) else module
         addon = self.register(
@@ -804,6 +806,7 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         )
 
     @signal(tags=["addon"])
+    @digest()
     def discover(
         self,
         modules: tuple[str, ...] | list[str] | None = None,
@@ -1105,6 +1108,7 @@ class ViewAddonsManager(_AddonAggregationMixin):
                 pass
         return sorted(names)
 
+    @digest()
     def bind_runtime(self) -> None:
         self._notify_view_runtime = True
         self._notify_runtime_summary()
@@ -1291,6 +1295,7 @@ class ViewAddonsManager(_AddonAggregationMixin):
         self._lifecycle_failures.pop(f"lifecycle:{addon}.on_context_action:{action_id}", None)
         return True
 
+    @digest()
     def build_context_items(self, selection: dict[str, Any]) -> list[dict[str, Any]]:
         """Compute selection-driven context-menu items without sending anything.
 
@@ -1331,6 +1336,7 @@ class ViewAddonsManager(_AddonAggregationMixin):
                 )
         return items
 
+    @digest()
     def refresh_context_items(self, selection: dict[str, Any]) -> list[dict[str, Any]]:
         """Recompute the items and push them to the frontend.
 
@@ -1343,6 +1349,7 @@ class ViewAddonsManager(_AddonAggregationMixin):
             send({"op": "set_addon_context_items", "items": items})
         return items
 
+    @digest()
     def resolve_panel_widget(
         self, addon_name: str, panel_id: str
     ) -> AddonPanelWidget | None:

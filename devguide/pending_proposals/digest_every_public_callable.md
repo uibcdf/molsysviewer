@@ -3,8 +3,9 @@
 **Raised:** 2026-08-07, by the release owner, while declaring the first function argument
 contracts: *"todo lo público debe ser decorado"*.
 
-**Status:** the policy is decided and **the inventory is closed** (2026-08-11, gate 9's
-first deliverable). The decorating itself is scoped but not scheduled.
+**Status: done, 2026-08-12.** Every public callable is digested or deliberately exempt,
+and every argument name they introduce has a digester. The rule below is now enforced by
+`tests/test_public_api_inventory.py` rather than aspired to.
 
 ## The rule
 
@@ -27,13 +28,24 @@ layers, tanda-1, shapes and viewer slices. Run
 | | At the start | Now |
 | --- | ---: | ---: |
 | public callables | 477 | 477 |
-| **with** `@digest` | 312 | 424 |
-| **without** it | 165 | 24 |
+| **with** `@digest` | 312 | **448** |
+| **without** it | 165 | **0** |
 | deliberately exempt | — | 29 |
-| **argument names with no digester** | **56** | **25** |
+| **argument names with no digester** | 56 | **0** |
 
-**25 is the number to plan against, not 24 and not 515.** Decorating is one line;
-declaring the argument is the job, and the arguments overlap heavily across a module.
+The 56 that had to be written cost far more than the 165 decorations, as expected. What
+was not expected is that **the decorating found more defects than it introduced**: a
+digester branch that could never match, so `view.camera.set_mode` raised for both its
+valid values; `digest_point` refusing the plain `[x, y, z]` its own callers document; and
+two `add_pharmacophore_features` aliases that had carried `@digest` for months while
+digesting nothing and warning on every call.
+
+`deliberately exempt` is not a rounding of the debt. It is the 29 callables that must
+*not* be decorated, each with a stated reason: pure variadic forwarders, whose decoration
+digests nothing and warns on every call; context managers, which are not calls with
+arguments to judge; and the two colour primitives a digester delegates to, where
+decorating creates a cycle. Without that column the gate could never honestly reach
+zero.
 
 `deliberately exempt` is not a rounding of the debt. It is the set of callables that must
 *not* be decorated, each with a stated reason — pure variadic forwarders, whose decoration

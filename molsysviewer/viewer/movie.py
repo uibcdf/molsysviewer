@@ -8,6 +8,8 @@ import time
 from pathlib import Path
 from typing import Any
 
+from .._private.argdigest import digest
+
 _EASING_VALUES = frozenset({"linear", "ease-in", "ease-out", "ease-in-out"})
 _MOLSYSMOVIE_VERSION = 1
 
@@ -45,6 +47,7 @@ class MovieManager:
 
     # ── Timeline construction ─────────────────────────────────────────────
 
+    @digest()
     def add_keyframe(
         self,
         time_ms: float,
@@ -96,6 +99,7 @@ class MovieManager:
             kf["layer_visibility"] = {str(k): bool(v) for k, v in layer_visibility.items()}
         self._keyframes.append(kf)
 
+    @digest()
     def add_visibility_transition(
         self,
         tag: str,
@@ -133,6 +137,7 @@ class MovieManager:
         )
         self._keyframes.insert(insert_at, new_kf)
 
+    @digest()
     def add_camera_orbit(
         self,
         duration_ms: float = 5000.0,
@@ -229,6 +234,7 @@ class MovieManager:
             kf: dict = {"time_ms": kf_time, "easing": easing, "camera": camera_kf}
             self._keyframes.append(kf)
 
+    @digest()
     def add_structure_sweep(
         self,
         *,
@@ -313,6 +319,7 @@ class MovieManager:
             }
             self._keyframes.append(kf)
 
+    @digest()
     def clear(self) -> None:
         """Remove all keyframes and reset the timeline."""
         self._keyframes = []
@@ -331,6 +338,7 @@ class MovieManager:
 
     # ── Inspection ────────────────────────────────────────────────────────
 
+    @digest()
     def info(self) -> dict:
         """Return a summary of the current timeline.
 
@@ -354,6 +362,7 @@ class MovieManager:
 
     # ── Serialization ─────────────────────────────────────────────────────
 
+    @digest()
     def to_dict(self) -> dict:
         """Serialise the timeline to a JSON-compatible plain dict.
 
@@ -365,6 +374,7 @@ class MovieManager:
             "keyframes": [dict(kf) for kf in self._keyframes],
         }
 
+    @digest()
     def from_dict(self, data: dict) -> None:
         """Replace the current timeline with data from a plain dict.
 
@@ -390,6 +400,7 @@ class MovieManager:
                 )
         self._keyframes = [dict(kf) for kf in keyframes]
 
+    @digest()
     def save(self, path: str | Path) -> None:
         """Write the timeline to a JSON file.
 
@@ -400,6 +411,7 @@ class MovieManager:
         """
         Path(path).write_text(json.dumps(self.to_dict(), indent=2), encoding="utf-8")
 
+    @digest()
     def load(self, path: str | Path) -> None:
         """Replace the timeline from a JSON file written by :meth:`save`.
 
@@ -412,6 +424,7 @@ class MovieManager:
 
     # ── Playback / export (Phase 2 / Phase 3) ─────────────────────────────
 
+    @digest()
     def play(self, loop: bool = False, start_time_ms: float = 0.0) -> None:
         """Preview the movie in the browser.
 
@@ -446,10 +459,12 @@ class MovieManager:
             }
         )
 
+    @digest()
     def stop(self) -> None:
         """Stop browser playback."""
         self._view._send_runtime_only({"op": "stop_movie"})  # noqa: SLF001
 
+    @digest()
     def export(
         self,
         path: str | Path,

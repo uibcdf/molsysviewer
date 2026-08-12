@@ -14,6 +14,10 @@ from molsysviewer._private.exceptions import ArgumentError
 
 
 def digest_timeout_s(timeout_s, caller=None):
+    # `None` is not "no timeout": it means the caller has a default of its own,
+    # which `movie.export` computes from the movie length.
+    if timeout_s is None:
+        return None
     if isinstance(timeout_s, bool) or not isinstance(timeout_s, (int, float)):
         raise ArgumentError("timeout_s", value=timeout_s, caller=caller, message=None)
     if timeout_s <= 0:

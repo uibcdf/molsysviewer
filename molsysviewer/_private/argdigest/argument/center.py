@@ -54,6 +54,13 @@ def digest_center(center, syntax="MolSysMT", caller=None):
         # In the viewer, a shape "center" is a physical position (single point or
         # a batch of points), so it must carry explicit length units — like
         # molsysmt's coordinates. Bare numbers are rejected.
+        #
+        # `None` is not a position: every viewer caller that takes one defaults to it,
+        # meaning "the current camera target" or "the centroid of what is selected". The
+        # branch had no case for it, so `movie.add_camera_orbit()` — called with no
+        # arguments at all — was refused for its own default.
+        if center is None:
+            return None
         return digest_length_quantity(center, "center", caller=caller)
 
     raise ArgumentError('center', value=center, caller=caller, message=None)

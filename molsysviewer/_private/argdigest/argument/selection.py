@@ -2,6 +2,17 @@ from molsysviewer._private.exceptions import ArgumentError
 from molsysviewer._private.variables import is_iterable
 import numpy as np
 
+#: `selection` means a MolSysMT selection expression everywhere in this library except in
+#: the add-on context-menu path, where it is the frontend's selection *payload* -- a dict
+#: such as `{"kind": "structure", "atom_indices": [...]}` describing what the user has
+#: picked in the canvas. It is data arriving from the browser, not an expression to
+#: resolve, so it is passed through and the builders read the keys they know.
+_FRONTEND_SELECTION_PAYLOAD_CALLERS = frozenset({
+    "molsysviewer.addons.build_context_items",
+    "molsysviewer.addons.refresh_context_items",
+})
+
+
 def digest_selection(selection, syntax="MolSysMT", caller=None):
     """ Checks if a given selection has the correct type and syntax
 
@@ -23,6 +34,9 @@ def digest_selection(selection, syntax="MolSysMT", caller=None):
             A WrongSyntaxError is raised if the syntax given is not in deed a syntax.
 
     """
+
+    if caller in _FRONTEND_SELECTION_PAYLOAD_CALLERS:
+        return selection
 
     if syntax=='MolSysMT':
         if isinstance(selection, str):

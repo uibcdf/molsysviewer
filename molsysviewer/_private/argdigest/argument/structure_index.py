@@ -10,6 +10,14 @@ functions_with_boolean = (
         'iterators.__init__',
         )
 
+#: A movie keyframe may set the structure or leave it alone, and `None` is how it says the
+#: latter. Every other caller here means an index into the loaded structures.
+_OPTIONAL_STRUCTURE_INDEX_CALLERS = frozenset({
+    "molsysviewer.viewer.movie.add_keyframe",
+    "molsysviewer.viewer.movie.add_structure_sweep",
+})
+
+
 def digest_structure_index(structure_index, caller=None):
     """Checks if `structure_index` has the expected type and value.
 
@@ -33,6 +41,10 @@ def digest_structure_index(structure_index, caller=None):
     ArgumentError
         If the given `structure_index` has not of the correct type or value.
     """
+
+    if caller in _OPTIONAL_STRUCTURE_INDEX_CALLERS and structure_index is None:
+        return None
+
 
     if caller is not None:
 
