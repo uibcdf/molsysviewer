@@ -10,6 +10,10 @@ archive only after the implementation and regression tests are complete.
 
 ## Current triage
 
+- [`argdigest_cannot_carry_var_positional.md`](argdigest_cannot_carry_var_positional.md):
+  a `@digest`-decorated `*args` function raises on any positional call, because ArgDigest
+  invokes the wrapped function by keyword only. One of ours is decorated that way today
+  and nobody noticed, because its only test bypasses digestion. Reported upstream.
 - [`exported_view_background_not_transparent_when_loaded_dark.md`](exported_view_background_not_transparent_when_loaded_dark.md):
   a view exported with `background="transparent"` is opaque white when the embedding
   page is dark at load time, and never recovers. Reported from MolSysMT's published

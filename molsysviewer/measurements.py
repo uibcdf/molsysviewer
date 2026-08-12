@@ -515,9 +515,13 @@ class MeasurementsManager:
         self._view._last_measurement_created_event = dict(event)  # noqa: SLF001
         return layer
 
+    @signal(tags=["measurement", "query"])
+    @digest()
     def records(self) -> list[dict]:
         return [dict(record) for record in self._view._measurement_history]  # noqa: SLF001
 
+    @signal(tags=["measurement", "query"])
+    @digest()
     def count(self) -> int:
         return len(self._view._measurement_history)  # noqa: SLF001
 
@@ -536,6 +540,8 @@ class MeasurementsManager:
     def get(self, tag: str, skip_digestion: bool = False) -> Layer | None:
         return self._measurement_layer(tag)
 
+    @signal(tags=["measurement", "query"])
+    @digest()
     def info(self, tag: str | None = None) -> dict[str, Any] | list[dict[str, Any]]:
         items: list[dict] = []
         for record in self._view._measurement_history:  # noqa: SLF001
@@ -598,6 +604,8 @@ class MeasurementsManager:
             return items[0]
         raise ValueError(f"No measurement record found for tag {tag!r}.")
 
+    @signal(tags=["measurement", "query"])
+    @digest()
     def series(self, tag: str):
         """Return the stored or recomputed measurement time series for *tag*."""
         record = next((item for item in self._view._measurement_history if item.get("tag") == tag), None)  # noqa: SLF001

@@ -50,6 +50,55 @@ BASELINE_PATH = Path(__file__).resolve().parent / "public_api_inventory_baseline
 #: instance itself.
 NOT_USER_ARGUMENTS = frozenset({"self", "cls", "skip_digestion"})
 
+#: Public callables that must **not** carry `@digest`, and why.
+#:
+#: Gate 9's rule is that every public callable is digested. Reaching zero without this
+#: list would mean either decorating things where the decorator does nothing, or leaving
+#: the number permanently short of its target with no way to tell debt from design.
+#:
+#: A *pure variadic forwarder* takes `*args, **kwargs`, passes them straight to a callable
+#: that is itself digested, and names none of them. Decorating it digests nothing and adds
+#: a layer — `devguide/digestion_and_dependencies.md` says so explicitly. A context
+#: manager is not a call whose arguments can be judged at all.
+#:
+#: Every entry needs a reason, and the reason has to survive being read by someone who
+#: suspects it is an excuse.
+DELIBERATELY_NOT_DIGESTED: dict[str, str] = {
+    "molsysviewer.build_standalone0_html":
+        "lazy import wrapper; the imported callable is the one with a signature",
+    "molsysviewer.launch_standalone0":
+        "lazy import wrapper; the imported callable is the one with a signature",
+    "molsysviewer.create_standalone_qt0_window":
+        "lazy import wrapper; the imported callable is the one with a signature",
+    "molsysviewer.launch_standalone_qt0":
+        "lazy import wrapper; the imported callable is the one with a signature",
+    "view.whole.get":
+        "pure forwarder to view.get, which digests; it passes skip_digestion through "
+        "rather than forcing it, so digesting here would digest the same call twice",
+    "view.whole.info":
+        "pure forwarder to view.info, which digests",
+    "view.whole.select":
+        "pure forwarder to view.select, which digests",
+    "view.annotations.add":
+        "alias forwarding to add_annotation, which digests",
+    "view.history.coalescing":
+        "context manager, not a call with arguments to judge",
+    "view.history.suspended":
+        "context manager, not a call with arguments to judge",
+    # ArgDigest calls the wrapped function as `fn_to_wrap(**bound)`, by keyword only, and
+    # binds positionally first. A `*args` function therefore raises `TypeError: too many
+    # positional arguments` on any positional call, and would lose the tuple even if it
+    # bound. Measured on `shapes.add_pharmacophore_features`, which is decorated today and
+    # broken for positional callers -- see
+    # `devguide/pending_bugs/argdigest_cannot_carry_var_positional.md`.
+    "view.regions[…].difference":
+        "var-positional operands; ArgDigest cannot pass *args through",
+    "view.regions[…].intersection":
+        "var-positional operands; ArgDigest cannot pass *args through",
+    "view.regions[…].union":
+        "var-positional operands; ArgDigest cannot pass *args through",
+}
+
 #: How deep the attribute walk goes. The public surface is a handful of managers hanging
 #: off the view and off the package; anything deeper is reached through one of them.
 MAX_DEPTH = 4
@@ -115,7 +164,10 @@ def _user_arguments(function: Any) -> tuple[str, ...]:
         name
         for name, parameter in signature.parameters.items()
         if name not in NOT_USER_ARGUMENTS
-        and parameter.kind not in (parameter.VAR_POSITIONAL, parameter.VAR_KEYWORD)
+        # `*others` is bound as one tuple under that name and digested like any other, so
+        # it needs a digester. `**kwargs` is not: ArgDigest digests each key by its own
+        # name, never the mapping.
+        and parameter.kind is not parameter.VAR_KEYWORD
     )
 
 
@@ -241,7 +293,9 @@ def build_inventory() -> dict[str, Any]:
     callables = sorted(set(walk_public_surface(roots)), key=lambda item: item.path)
 
     digesters = declared_digesters()
-    undigested = [item for item in callables if not item.digested]
+    exempt = [item for item in callables if item.path in DELIBERATELY_NOT_DIGESTED]
+    undigested = [item for item in callables
+                  if not item.digested and item.path not in DELIBERATELY_NOT_DIGESTED]
 
     missing: dict[str, list[str]] = {}
     for item in undigested:
@@ -253,12 +307,14 @@ def build_inventory() -> dict[str, Any]:
         "callables": [item.as_dict() for item in callables],
         "totals": {
             "public_callables": len(callables),
-            "digested": len(callables) - len(undigested),
+            "digested": sum(1 for item in callables if item.digested),
             "undigested": len(undigested),
+            "exempt": len(exempt),
             "declared_digesters": len(digesters),
             "missing_digesters": len(missing),
         },
         "undigested": sorted(item.path for item in undigested),
+        "exempt": sorted(item.path for item in exempt),
         "missing_digesters": {
             name: sorted(paths) for name, paths in sorted(missing.items())
         },
@@ -289,6 +345,7 @@ def _report(inventory: dict[str, Any]) -> str:
         f"  public callables      {totals['public_callables']:>5}",
         f"    digested            {totals['digested']:>5}",
         f"    undigested          {totals['undigested']:>5}",
+        f"    exempt by design    {totals['exempt']:>5}",
         f"  declared digesters    {totals['declared_digesters']:>5}",
         f"  MISSING digesters     {totals['missing_digesters']:>5}"
         "   <- the size of the job",

@@ -1338,18 +1338,26 @@ class RegionsManager(dict):
     # untouched (scene reset relies on it); a message-based bulk delete is
     # exposed as delete_all() instead of overriding clear().
 
+    @signal(tags=["region", "query"])
+    @digest()
     def tags(self) -> list[str]:
         """The tags of every managed region."""
         return list(self.keys())
 
+    @signal(tags=["region", "query"])
+    @digest()
     def contains(self, tag: str, skip_digestion: bool = False) -> bool:
         """Whether a region with *tag* is registered."""
         return tag in self
 
+    @signal(tags=["region", "query"])
+    @digest()
     def count(self, skip_digestion: bool = False) -> int:
         """How many regions are registered."""
         return len(self)
 
+    @signal(tags=["region", "query"])
+    @digest()
     def records(self, skip_digestion: bool = False) -> list[dict[str, Any]]:
         """A summary record per region (the list form of :meth:`info`)."""
         result = self.info()
@@ -1434,6 +1442,8 @@ class RegionsManager(dict):
             raise KeyError(tag)
         region.send_to_back(skip_digestion=True)
 
+    @signal(tags=["region", "query"])
+    @digest()
     def info(self, tag: str | None = None) -> dict[str, Any] | List[dict[str, Any]]:
         """Return compact metadata for one region (by *tag*) or all regions."""
 

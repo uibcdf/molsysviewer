@@ -6,12 +6,15 @@ import molsysmt as msm
 from depdigest import dep_digest
 from smonitor import signal
 
+from ..._private.argdigest import digest
+
 from ...new_view import new_view
 from .merge import _import_view_state
 
 
 @dep_digest("molsysmt")
 @signal(tags=["tools", "basic", "view"])
+@digest()
 def copy(
     view: Any,
     *,

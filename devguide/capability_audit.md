@@ -16,12 +16,12 @@ behaviour, delegates it, or merely hosts it.
 | Capability | Public API | Public | Digested | Provenance | Docs | Unit | E2E | Status | Since |
 |---|---|---:|---:|---|---|---:|---:|---|---|
 | Whole | `view.whole.` | 16 | 13 | MolSysViewer (Python authority) | [page](../docs/content/user/scene_management/whole.md) | 2 | 1 | stable | 0.5.0 |
-| Regions | `view.regions.`, `view.regions[…].` | 45 | 37 | MolSysViewer (Python authority) | [page](../docs/content/user/scene_management/regions.md) | 4 | 3 | stable | 0.1.0 |
+| Regions | `view.regions.`, `view.regions[…].` | 45 | 42 | MolSysViewer (Python authority) | [page](../docs/content/user/scene_management/regions.md) | 4 | 3 | stable | 0.1.0 |
 | Layers | `view.layers.` | 12 | 12 | MolSysViewer (Python authority) | [page](../docs/content/user/scene_management/layers.md) | 2 | 2 | stable | 0.1.0 |
-| Selections and active selection | `view.selections.`, `view.active_selection.`, `view.select` | 29 | 28 | MolSysMT (scientific authority) | — | 2 | 2 | stable | 0.8.0 |
+| Selections and active selection | `view.selections.`, `view.active_selection.`, `view.select` | 29 | 29 | MolSysMT (scientific authority) | — | 2 | 2 | stable | 0.8.0 |
 | Representations, styles and presets | `view.styles.`, `view.whole.set_representation` | 35 | 35 | Mol* (rendering authority) | [page](../docs/content/user/representations/types.md) | 3 | 1 | stable | 0.18.0 |
-| Annotations | `view.annotations.` | 22 | 20 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/labels.md) | 1 | 2 | stable | 0.8.0 |
-| Measurements | `view.measurements.` | 20 | 15 | MolSysViewer (Python authority) | — | 1 | 2 | stable | 0.8.0 |
+| Annotations | `view.annotations.` | 22 | 21 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/labels.md) | 1 | 2 | stable | 0.8.0 |
+| Measurements | `view.measurements.` | 20 | 19 | MolSysViewer (Python authority) | — | 1 | 2 | stable | 0.8.0 |
 | Shapes | `view.shapes.` | 50 | 27 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/shapes/index.md) | 3 | 2 | stable | 0.1.0 |
 | Trajectories and frames | `view.player.` | 11 | 11 | MolSysViewer (Python authority) | [page](../docs/content/user/movie/playback.md) | 2 | 2 | stable | 0.18.0 |
 | Trajectory plot | `view.trajectory_plot.` | 4 | 0 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/trajectory_plot.md) | 2 | 0 | experimental | 0.19.0 |

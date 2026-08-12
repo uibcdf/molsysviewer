@@ -6,6 +6,8 @@ import molsysmt as msm
 from depdigest import dep_digest
 from smonitor import signal
 
+from ..._private.argdigest import digest
+
 from ...new_view import new_view
 from ...viewer import MolSysView
 
@@ -193,6 +195,7 @@ def _import_extracted_state(
 
 @dep_digest("molsysmt")
 @signal(tags=["tools", "basic", "extract"])
+@digest()
 def extract(
     view: Any,
     selection: Any = "all",

@@ -94,6 +94,7 @@ def set_structure_scale_budget(budget_bytes: int, skip_digestion: bool = False):
 
 
 @signal(tags=["config", "query"])
+@digest()
 def get_structure_scale_budget() -> int:
     """Current coordinate budget in bytes; 0 means the warning is silenced."""
     from .._private import scale_budget

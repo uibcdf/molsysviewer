@@ -192,6 +192,8 @@ class SelectionsManager:
                 return dict(record)
         return None
 
+    @signal(tags=["selection", "query"])
+    @digest()
     def tags(self, skip_digestion: bool = False) -> list[str]:
         """Return the stored persistent selection tags."""
         return [str(record.get("tag")) for record in self._view._selection_history if isinstance(record.get("tag"), str)]  # noqa: SLF001

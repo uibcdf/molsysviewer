@@ -130,3 +130,55 @@ def test_every_recorded_missing_digester_really_has_no_module(baseline):
 
     assert declared, "no digesters found — the digester directory moved"
     assert not (set(baseline["missing_digesters"]) & declared)
+
+
+def test_no_exemption_is_a_ghost(inventory):
+    """An exemption naming nothing is an unexamined claim that reads as a decision.
+
+    It is also how a real exemption goes stale: the callable is renamed, the entry stays,
+    and the inventory silently stops covering it. Caught while writing the list — one
+    entry named a method that does not exist.
+    """
+    from public_api_inventory import DELIBERATELY_NOT_DIGESTED
+
+    paths = {item["path"] for item in inventory["callables"]}
+    ghosts = sorted(set(DELIBERATELY_NOT_DIGESTED) - paths)
+
+    assert ghosts == [], f"exemptions matching no public callable: {ghosts}"
+
+
+def test_every_exemption_gives_a_reason():
+    from public_api_inventory import DELIBERATELY_NOT_DIGESTED
+
+    silent = [path for path, reason in DELIBERATELY_NOT_DIGESTED.items()
+              if not reason or len(reason) < 20]
+
+    assert silent == [], f"exemptions without a usable reason: {silent}"
+
+
+def test_no_decorated_callable_takes_var_positional():
+    """ArgDigest calls the wrapped function as `fn_to_wrap(**bound)`, by keyword only.
+
+    A `@digest`-decorated `*args` function therefore raises `TypeError: too many
+    positional arguments` for any positional caller, and would lose the tuple even if it
+    bound. Measured, not deduced. This is the rule that keeps a well-meant decoration from
+    breaking a public call; the one function still violating it is recorded in
+    `devguide/pending_bugs/argdigest_cannot_carry_var_positional.md`.
+    """
+    import ast
+
+    known = {("molsysviewer/shapes/pharmacophore.py", "add_pharmacophore_features")}
+    offenders = set()
+    for path in sorted((ROOT / "molsysviewer").rglob("*.py")):
+        if "js" in path.parts:
+            continue
+        for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))):
+            if not isinstance(node, ast.FunctionDef) or node.args.vararg is None:
+                continue
+            if any("digest" in ast.unparse(d) for d in node.decorator_list):
+                offenders.add((str(path.relative_to(ROOT)), node.name))
+
+    assert offenders <= known, (
+        "these are decorated and take *args, so positional calls to them raise: "
+        f"{sorted(offenders - known)}"
+    )

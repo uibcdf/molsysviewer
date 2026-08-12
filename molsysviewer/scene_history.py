@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 import warnings
 from contextlib import contextmanager
+
+from ._private.argdigest import digest
 from functools import wraps
 from typing import Any
 
@@ -140,12 +142,15 @@ class SceneHistory:
 
     # ── Public API ─────────────────────────────────────────────────────────
 
+    @digest()
     def can_undo(self) -> bool:
         return bool(self._undo)
 
+    @digest()
     def can_redo(self) -> bool:
         return bool(self._redo)
 
+    @digest()
     def undo(self) -> bool:
         """Restore the scene to before the last mutating operation."""
         if not self._undo:
@@ -160,6 +165,7 @@ class SceneHistory:
         self._notify_state()
         return True
 
+    @digest()
     def redo(self) -> bool:
         """Re-apply the operation most recently undone."""
         if not self._redo:
@@ -174,6 +180,7 @@ class SceneHistory:
         self._notify_state()
         return True
 
+    @digest()
     def clear(self) -> None:
         """Drop the whole history (called on load and on system edits)."""
         self._undo.clear()
@@ -186,12 +193,14 @@ class SceneHistory:
         self._coalesced_keys.clear()
         self._notify_state()
 
+    @digest()
     def begin_coalescing(self) -> None:
         """Open a window that records one checkpoint per object operation."""
         if self._coalescing_depth == 0:
             self._coalesced_keys.clear()
         self._coalescing_depth += 1
 
+    @digest()
     def end_coalescing(self) -> None:
         """Close a coalescing window opened by :meth:`begin_coalescing`."""
         if self._coalescing_depth == 0:
