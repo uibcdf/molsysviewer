@@ -179,3 +179,68 @@ def test_every_publicly_exported_name_resolves():
                if not hasattr(molsysviewer_package, name)]
 
     assert missing == [], f"names in __all__ that do not resolve: {missing}"
+
+
+SUPPORTED_PYTHON_VERSIONS = ("3.11", "3.12", "3.13")
+
+
+def _matrix_versions(workflow: str, pattern: str) -> set[str]:
+    text = (ROOT / ".github" / "workflows" / workflow).read_text(encoding="utf-8")
+    return set(re.findall(pattern, text))
+
+
+def test_the_published_python_matrix_is_the_one_we_actually_test():
+    """Three files decide which Pythons we support, and nothing kept them together.
+
+    They had drifted in both directions at once: `requires-python` and the classifiers
+    advertised 3.10 while CI tested only 3.11 and 3.12 — and the conda workflow *built and
+    published* a 3.10 artifact that no test job ever ran. Meanwhile 3.13, the version
+    development happens on, appeared in none of them, so `>=3.10` let users install it
+    untested.
+
+    A wheel classifier is a promise about what was verified. This is what makes it one.
+    """
+    pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    project = pyproject["project"]
+
+    classifiers = {
+        classifier.rsplit(" ", 1)[1]
+        for classifier in project["classifiers"]
+        if classifier.startswith("Programming Language :: Python :: 3.")
+    }
+    assert classifiers == set(SUPPORTED_PYTHON_VERSIONS)
+
+    # The floor must be the oldest supported version, not an older one nobody runs.
+    assert project["requires-python"] == f">={min(SUPPORTED_PYTHON_VERSIONS)}"
+
+    tested = _matrix_versions("CI.yaml", r'python-version:\s*"(3\.\d+)"')
+    assert tested == set(SUPPORTED_PYTHON_VERSIONS), (
+        f"the test matrix runs {sorted(tested)} against a published "
+        f"{sorted(SUPPORTED_PYTHON_VERSIONS)}"
+    )
+
+    built = _matrix_versions(
+        "build_and_upload_conda_packages.yaml", r'"(3\.\d+)"'
+    )
+    assert built == set(SUPPORTED_PYTHON_VERSIONS), (
+        f"conda publishes {sorted(built)} against a tested "
+        f"{sorted(SUPPORTED_PYTHON_VERSIONS)}"
+    )
+
+
+def test_every_supported_version_is_tested_on_both_operating_systems():
+    """A matrix that publishes a version is not the same as one that exercises it.
+
+    Pinned separately because the counts can agree while a cell is missing: dropping one
+    macOS row leaves the set of versions unchanged.
+    """
+    text = (ROOT / ".github" / "workflows" / "CI.yaml").read_text(encoding="utf-8")
+    cells = set(re.findall(r'os:\s*(\S+?),\s*python-version:\s*"(3\.\d+)"', text))
+
+    expected = {
+        (operating_system, version)
+        for operating_system in ("ubuntu-latest", "macos-latest")
+        for version in SUPPORTED_PYTHON_VERSIONS
+    }
+
+    assert cells == expected, f"missing cells: {sorted(expected - cells)}"
