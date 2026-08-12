@@ -26,6 +26,10 @@ documents, and historical audits.
 ## Current status and planning
 
 - [`checkpoints.md`](checkpoints.md): current repository handoff.
+- [`capability_audit.md`](capability_audit.md): one row per capability — public API,
+  provenance, documentation, tests, status and the release it first shipped in.
+  **Generated**; regenerate with `python devtools/capability_audit.py --write`. Read it
+  before writing any claim about what MolSysViewer does.
 - [`path_to_1_0.md`](path_to_1_0.md): release gate toward `1.0.0`.
 - [`roadmap.md`](roadmap.md): current execution priorities.
 - [`pending_bugs/`](pending_bugs/): confirmed unresolved defects.
