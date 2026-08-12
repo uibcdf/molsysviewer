@@ -1,6 +1,7 @@
 # What an add-on says about its own maturity
 
-**Status:** open. **Raised:** 2026-08-12, from outside the project, so the paper can
+**Status:** the vocabulary is **decided** (below); adoption is each toolkit's, and none has
+re-declared yet. **Raised:** 2026-08-12, from outside the project, so the paper can
 distinguish *implemented integration* from *production-ready integration*.
 
 The ownership half of the request is documentation and is done:
@@ -34,34 +35,47 @@ The request names two of these. Three more facts belong with them:
 glyphs draw, the integration is unfinished — but nothing anywhere says that is what the
 pair means.
 
-## The decision
+## Decided 2026-08-12: declare the vocabulary, do not enforce it
 
-**Is maturity part of the host contract, or each toolkit's own business?**
+**MolSysViewer defines the levels and what each one means. Each toolkit decides which one
+its integration is in, and declares it. The host reads `meta["status"]` when present and
+requires nothing.**
 
-*Host contract* — `AddonSpec` gains a typed `status` with a closed vocabulary, the host can
-refuse or warn, `view.addons.records()` reports it, and the four toolkits are updated. It
-also means MolSysViewer starts having opinions about work it does not own.
+The two positions this rejects, and why. *Host contract* — a typed `status` on `AddonSpec`
+that the host validates — would make MolSysViewer arbitrate the readiness of work it does
+not own. *Toolkit's business*, with `meta` free-form and no shared words, is what produced
+`skeleton`, `alpha` and nothing at all for the same question.
 
-*Toolkit's business* — `meta` stays free-form, and the README table is the only place the
-levels are collected. Cheaper, and it drifts by construction, as it already has.
+Nothing here is retroactive. Until a toolkit re-declares, the README shows what that
+add-on says about itself today, including "undeclared". A table that reported a level
+nobody claimed would be the defect this proposal exists to prevent.
 
-A middle position exists and is probably the right one: **declare the vocabulary, do not
-enforce it.** Define the levels here, ask each toolkit to use them, and have the host read
-`meta["status"]` when present without requiring it.
+### The levels
 
-## If the vocabulary is defined, these are the distinctions that matter
+| Level | Means |
+| --- | --- |
+| `experimental` | It exists and is being shaped. Expect the API to change without notice, and expect gaps. Nobody should build on it. |
+| `development` | The intended surface is present and the shape is settling. Usable knowingly; breaking changes are still normal and should be announced. |
+| `beta` | Feature-complete for its declared scope, tested against a released MolSysViewer, and discovered on install. Breaking changes become exceptional. |
+| `stable` | Its public surface is a commitment. Breaking it requires a deprecation cycle. |
 
-Drawn from what the four add-ons actually differ in, not from a generic ladder:
+`skeleton` maps to `experimental` and `alpha` to `development` — but that mapping is a
+reading, not a re-declaration, and belongs to whoever owns each add-on.
 
-- **does it draw?** — `rendering_ready` already tries to say this;
-- **is its API stable?** — whether a user's script survives the next release;
-- **is it tested against the host?** — MolSysMT's integration has 34 tests, the others have
-  fewer or none;
-- **is it discovered on install?** — the entry point is the difference between "installed"
-  and "requires knowing the module name". Only MolSysMT declares one.
+### What separates `development` from `beta`
 
-The last is worth separating because it is the one a *user* notices first, and it is a
-one-line fix in each toolkit's `pyproject.toml`.
+Three things, chosen because they are what the four add-ons actually differ in rather than
+because a generic ladder wants four rungs. All three are checkable:
+
+- **tested against the host** — MolSysMT's integration has 34 tests; the others have fewer
+  or none;
+- **discovered on install** — an entry point in the toolkit's `pyproject.toml`. Only
+  MolSysMT declares one, and it is the difference a *user* notices first;
+- **it draws what it claims** — what `rendering_ready` is reaching for. Keep the key: it
+  answers a narrower question than `status` and is useful beside it, not instead of it.
+
+An add-on that fails any of the three is at most `development`, whatever else is true of
+it.
 
 ## Two things found on the way, for their owners
 

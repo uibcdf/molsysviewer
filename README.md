@@ -76,10 +76,16 @@ toolkit's repository — installing the toolkit installs its add-on. There is no
 | `molsysviewer_elastnetmt` | ElastNetMT | GNM/ANM elastic network modes and contact network overlays | skeleton |
 | `molsysviewer_pharmacophoremt` | PharmacophoresMT | Structure-based pharmacophore glyph overlays | skeleton |
 
-Maturity is what each add-on declares about itself, and the levels are not yet a defined
-vocabulary — see
-[`devguide/pending_proposals/addon_maturity_and_ownership.md`](devguide/pending_proposals/addon_maturity_and_ownership.md).
-Treat `skeleton` as "the integration exists and is not finished".
+**Maturity is what each add-on declares about itself**, so the column reports rather than
+grades. The shared vocabulary — `experimental`, `development`, `beta`, `stable` — is
+defined in
+[`devguide/pending_proposals/addon_maturity_and_ownership.md`](devguide/pending_proposals/addon_maturity_and_ownership.md);
+the values above predate it, and each toolkit adopts it when it re-declares. Until then,
+read `skeleton` as `experimental`, `alpha` as `development`, and `undeclared` as exactly
+that.
+
+All four integrations exist and work. **None of them is production-ready today**, and only
+MolSysMT's is tested against the host and discovered on install.
 
 ### Canvas UX modes
 - `controls_mode="minimal"` — 3-icon cluster + keyboard shortcuts (N/W/H)
