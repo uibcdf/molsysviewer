@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Iterable, Mapping, Sequence
 
+from ._private.argdigest import digest
+
 
 MOLSTAR_COLOR_NAMES: dict[str, int] = {
     "aliceblue": 0xF0F8FF,
@@ -269,6 +271,7 @@ class ColorRegistry:
         self._generated_scheme_palettes: dict[str, tuple[Any, int | None]] = {}
         self._cvd_safe: set[str] = set()
 
+    @digest()
     def color_names(self) -> list[str]:
         return sorted(self._named_colors.keys())
 
@@ -278,12 +281,15 @@ class ColorRegistry:
     def normalize_colors(self, values: Iterable[Any]) -> list[int]:
         return normalize_colors(values)
 
+    @digest()
     def palette_names(self) -> list[str]:
         return sorted(self._palettes.keys())
 
+    @digest()
     def scheme_names(self) -> list[str]:
         return sorted(set(self._schemes.keys()) | set(self._generated_scheme_palettes.keys()))
 
+    @digest()
     def mark_cvd_safe(self, *names: str) -> None:
         """Tag one or more palette/scheme names as colour-vision-deficiency safe."""
         for name in names:
@@ -291,17 +297,21 @@ class ColorRegistry:
             if key:
                 self._cvd_safe.add(key)
 
+    @digest()
     def is_cvd_safe(self, name: str) -> bool:
         """Whether ``name`` is a registered colour-blind-safe palette or scheme."""
         return str(name).strip() in self._cvd_safe
 
+    @digest()
     def cvd_safe_names(self) -> list[str]:
         """All palette/scheme names tagged as colour-blind safe (Okabe-Ito, Tol, perceptually-uniform continuous)."""
         return sorted(self._cvd_safe)
 
+    @digest()
     def get_palette(self, name: str) -> ContinuousPalette:
         return self._palettes[name]
 
+    @digest()
     def get_scheme(
         self,
         name: str,
@@ -316,6 +326,7 @@ class ColorRegistry:
             return self.resolve_scheme(name, categories=categories)
         raise KeyError(name)
 
+    @digest()
     def resolve_palette(self, palette: Any, *, samples: int = 256) -> ContinuousPalette:
         if isinstance(palette, ContinuousPalette):
             return palette
@@ -325,6 +336,7 @@ class ColorRegistry:
             return self._palette_from_name_or_matplotlib(palette, samples=samples)
         return self._palette_from_matplotlib_or_sequence(palette, samples=samples)
 
+    @digest()
     def register_palette(self, name: str, palette: Any, *, samples: int = 256, overwrite: bool = False) -> ContinuousPalette:
         key = str(name).strip()
         if key == "":
@@ -336,6 +348,7 @@ class ColorRegistry:
         self._palettes[key] = stored
         return stored
 
+    @digest()
     def resolve_scheme(
         self,
         scheme: Any,
@@ -377,6 +390,7 @@ class ColorRegistry:
             return CategoricalColorScheme(name=None, mapping=mapping, fallback=fallback_color, source=palette.source)
         raise ValueError("Categorical schemes require either a mapping or explicit categories.")
 
+    @digest()
     def register_scheme(
         self,
         name: str,
@@ -401,6 +415,7 @@ class ColorRegistry:
         self._schemes[key] = stored
         return stored
 
+    @digest()
     def register_generated_scheme(
         self,
         name: str,
@@ -593,6 +608,7 @@ for _cvd_cmap in ("viridis", "cividis", "magma", "inferno", "plasma"):
     colors.mark_cvd_safe(_cvd_cmap)
 
 
+@digest()
 def expand_values_to_atoms(
     molsys: "Any",
     values: "Any",
@@ -712,6 +728,7 @@ def expand_values_to_atoms(
     return out_atom_indices, out_colors
 
 
+@digest()
 def scalar_to_color_list(
     values: Any,
     palette: Any = "viridis",

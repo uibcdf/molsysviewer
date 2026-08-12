@@ -206,3 +206,32 @@ def test_a_pure_forwarder_is_never_decorated():
         "these take only *args/**kwargs and are decorated, so they digest nothing and "
         f"warn on every call: {offenders}"
     )
+
+
+def test_a_digesters_own_primitive_is_never_digested():
+    """`digest_color` calls `normalize_color`, so decorating the latter is a cycle.
+
+    Measured by doing it: the call recurses through its own digester. There is no third
+    place to put the rule — the digester has to call *something* — so the primitive stays
+    undigested and the exemption says why.
+
+    Pinned by name because the failure mode is inviting: `normalize_color` is public, it
+    looks exactly like every other public callable in `colors.py`, and gate 9 counts it.
+    """
+    import ast
+
+    source = (ROOT / "molsysviewer" / "colors.py").read_text(encoding="utf-8")
+    primitives = {"normalize_color", "normalize_colors"}
+
+    decorated = {
+        node.name
+        for node in ast.walk(ast.parse(source))
+        if isinstance(node, ast.FunctionDef)
+        and node.name in primitives
+        and any("digest" in ast.unparse(d) for d in node.decorator_list)
+    }
+
+    assert decorated == set(), (
+        f"{sorted(decorated)} is what `digest_color` delegates to; decorating it makes "
+        "the digester call the function it is digesting"
+    )

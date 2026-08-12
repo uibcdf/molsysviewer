@@ -88,6 +88,19 @@ DELIBERATELY_NOT_DIGESTED: dict[str, str] = {
     "view.attributed_to":
         "context manager, not a call with arguments to judge",
 
+    # The colour primitives the `color` digester is built on. Decorating them makes the
+    # digester call the function it is digesting: `normalize_color` -> `digest_color` ->
+    # `normalize_color`. Measured by doing it. A function a digester delegates to cannot
+    # itself be digested by that digester, and there is no third place to put the rule.
+    "molsysviewer.normalize_color":
+        "the primitive `digest_color` delegates to; decorating it is a cycle",
+    "molsysviewer.normalize_colors":
+        "the primitive `digest_color` delegates to; decorating it is a cycle",
+    "molsysviewer.colors.normalize_color":
+        "the primitive `digest_color` delegates to; decorating it is a cycle",
+    "molsysviewer.colors.normalize_colors":
+        "the primitive `digest_color` delegates to; decorating it is a cycle",
+
     # The `shapes` forwarders, and the measurement most likely to be misread as debt.
     #
     # Each takes `*args, **kwargs` and hands them to a sub-manager method that has a

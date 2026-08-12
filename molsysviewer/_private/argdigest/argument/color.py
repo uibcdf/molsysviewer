@@ -1,6 +1,12 @@
+"""Deferred colour import.
+
+This digester needs `molsysviewer.colors`, and `colors.py` is itself decorated. The
+digester package is loaded eagerly at decoration time, so a module-level import here
+would land while `colors` is still initialising. The import is inside the function
+instead, which costs one dict lookup per call.
+"""
 from molsysviewer._private.exceptions import ArgumentError
 import numpy as np
-from molsysviewer.colors import normalize_color, normalize_colors
 
 
 def _looks_like_single_rgb(color):
@@ -24,6 +30,7 @@ def _looks_like_single_rgb(color):
 
 def digest_color(color, caller=None):
     """Normalize a single colour, or a batch (sequence) of colours, to int(s)."""
+    from molsysviewer.colors import normalize_color, normalize_colors  # deferred: see module note
     if color is None:
         return None
     try:

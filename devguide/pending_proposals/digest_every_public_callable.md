@@ -27,12 +27,12 @@ layers, tanda-1, shapes and viewer slices. Run
 | | At the start | Now |
 | --- | ---: | ---: |
 | public callables | 477 | 477 |
-| **with** `@digest` | 312 | 383 |
-| **without** it | 165 | 69 |
-| deliberately exempt | — | 25 |
-| **argument names with no digester** | **56** | **44** |
+| **with** `@digest` | 312 | 398 |
+| **without** it | 165 | 50 |
+| deliberately exempt | — | 29 |
+| **argument names with no digester** | **56** | **37** |
 
-**44 is the number to plan against, not 69 and not 515.** Decorating is one line;
+**37 is the number to plan against, not 50 and not 515.** Decorating is one line;
 declaring the argument is the job, and the arguments overlap heavily across a module.
 
 `deliberately exempt` is not a rounding of the debt. It is the set of callables that must
