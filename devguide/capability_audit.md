@@ -21,7 +21,7 @@ behaviour, delegates it, or merely hosts it.
 | Selections and active selection | `view.selections.`, `view.active_selection.`, `view.select` | 29 | 29 | MolSysMT (scientific authority) | — | 2 | 2 | stable | 0.8.0 |
 | Representations, styles and presets | `view.styles.`, `view.whole.set_representation` | 35 | 35 | Mol* (rendering authority) | [page](../docs/content/user/representations/types.md) | 3 | 1 | stable | 0.18.0 |
 | Annotations | `view.annotations.` | 22 | 21 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/labels.md) | 1 | 2 | stable | 0.8.0 |
-| Measurements | `view.measurements.` | 20 | 19 | MolSysViewer (Python authority) | — | 1 | 2 | stable | 0.8.0 |
+| Measurements | `view.measurements.` | 20 | 20 | MolSysViewer (Python authority) | — | 1 | 2 | stable | 0.8.0 |
 | Shapes | `view.shapes.` | 50 | 36 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/shapes/index.md) | 3 | 2 | stable | 0.1.0 |
 | Trajectories and frames | `view.player.` | 11 | 11 | MolSysViewer (Python authority) | [page](../docs/content/user/movie/playback.md) | 2 | 2 | stable | 0.18.0 |
 | Trajectory plot | `view.trajectory_plot.` | 4 | 0 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/trajectory_plot.md) | 2 | 0 | experimental | 0.19.0 |
@@ -29,7 +29,7 @@ behaviour, delegates it, or merely hosts it.
 | Camera | `view.camera.`, `view.get_camera_snapshot`, `view.set_camera_snapshot`, `view.zoom` | 11 | 11 | Frontend (mirrored to Python) | — | 2 | 1 | stable | 0.18.0 |
 | save_state / load_state | `view.save_state`, `view.load_state`, `view.export_state`, `view.import_state` | 4 | 4 | MolSysViewer (Python authority) | — | 3 | 0 | stable | 0.19.0 |
 | HTML export and replay | `view.export.` | 5 | 5 | MolSysViewer (Python authority) | [page](../docs/content/user/export/index.md) | 4 | 2 | stable | 0.9.0 |
-| Popup | `view.build_popup_scene_snapshot` | 1 | 0 | MolSysViewer (Python authority) | [page](../docs/content/developer/standalone_surfaces.md) | 4 | 3 | stable | 0.20.1 |
+| Popup | `view.build_popup_scene_snapshot` | 1 | 1 | MolSysViewer (Python authority) | [page](../docs/content/developer/standalone_surfaces.md) | 4 | 3 | stable | 0.20.1 |
 | Standalone (Qt host) | `molsysviewer.launch_standalone_qt0`, `molsysviewer.create_standalone_qt0_window` | 2 | 0 | MolSysViewer (Python authority) | [page](../docs/content/developer/standalone_surfaces.md) | 2 | 1 | experimental | 0.19.0 |
 | Add-ons | `molsysviewer.addons.`, `view.addons.` | 54 | 47 | Add-on (external owner) | [page](../docs/content/developer/addons.md) | 2 | 1 | stable | 0.10.0 |
 | MolSysMT integration | `view.get`, `view.contains`, `view.is_composed_of`, `view.convert`, `view.extract` | 15 | 15 | MolSysMT (scientific authority) | [page](../docs/content/user/introduction/molsysmt.md) | 3 | 1 | stable | 0.19.0 |

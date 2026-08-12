@@ -8,6 +8,9 @@ import numpy as np
 from smonitor import get_manager
 from molsysviewer.demo import demo
 
+from molsysviewer._private.argdigest import digest
+
+@digest()
 def benchmark_loading(iterations: int = 5) -> dict[str, dict[str, float]]:
     """Measure structure and topology loading speed from demo systems."""
     results = {}
@@ -31,6 +34,7 @@ def benchmark_loading(iterations: int = 5) -> dict[str, dict[str, float]]:
         }
     return results
 
+@digest()
 def benchmark_coordinates(iterations: int = 50) -> dict[str, dict[str, float]]:
     """Measure coordinate serialization (get) and deserialization/update (set) performance."""
     view_small = demo["dialanine"]
@@ -94,6 +98,7 @@ def benchmark_coordinates(iterations: int = 50) -> dict[str, dict[str, float]]:
     
     return results
 
+@digest()
 def benchmark_serialization(iterations: int = 100) -> dict[str, dict[str, float]]:
     """Measure JSON serialization latency for typical high-frequency payloads."""
     # Camera snapshot payload
@@ -133,6 +138,7 @@ def benchmark_serialization(iterations: int = 100) -> dict[str, dict[str, float]
         }
     return results
 
+@digest()
 def benchmark_telemetry_overhead(iterations: int = 50) -> dict[str, Any]:
     """Measure CPU overhead introduced by SMonitor tracking and ArgDigest validation."""
     view = demo["dialanine"]
@@ -205,6 +211,7 @@ def benchmark_telemetry_overhead(iterations: int = 50) -> dict[str, Any]:
         
     return runs
 
+@digest()
 def run_benchmarks(iterations: int = 50, verbose: bool = True) -> str:
     """Execute the full molecular performance benchmark suite and return a Markdown report."""
     if verbose:

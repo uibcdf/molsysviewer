@@ -21,6 +21,8 @@ from copy import deepcopy
 from .._private.smonitor_emit import emit_suppressed_exception
 from typing import Any
 
+from .._private.argdigest import digest
+
 # Deterministic order for the coalesced scene-look entries.
 _SCENE_LOOK_ORDER = (
     "background",
@@ -40,6 +42,7 @@ _PANEL_OPS_ALREADY_IN_CANVAS = frozenset({
 
 
 class PopupSnapshotMixin:
+    @digest()
     def build_popup_scene_snapshot(
         self,
         mode: str,

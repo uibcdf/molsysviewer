@@ -1,6 +1,16 @@
 from molsysviewer._private.exceptions import ArgumentError
 from ..helpers import normalize_viewer_caller
 
+# `mode` is the most overloaded argument name in this library: five unrelated closed sets,
+# told apart only by the caller. File access (auto/read/write), load semantics
+# (add/replace/append_structures/auto), camera projection (perspective/orthographic),
+# popup surface (canvas/panel) and playback (loop/once/ping-pong).
+#
+# Each branch must list the caller string ArgDigest actually builds --
+# `<owner module>.<function name>`. A class-qualified spelling alone silently disables the
+# branch, and every value it was meant to accept is then refused; that is how
+# `camera.set_mode` came to raise for both of its valid values.
+
 def digest_mode(mode, caller=None):
 
     caller = normalize_viewer_caller(caller)
@@ -34,6 +44,12 @@ def digest_mode(mode, caller=None):
             "molsysviewer.scene.SceneManager.set_projection",
         }:
             if mode in ["perspective", "orthographic"]:
+                return mode
+        if caller in {
+            "molsysviewer.viewer.build_popup_scene_snapshot",
+            "molsysviewer.viewer.popup_snapshot.build_popup_scene_snapshot",
+        }:
+            if mode in ["canvas", "panel"]:
                 return mode
         if caller in {
             "molsysviewer.player.play",

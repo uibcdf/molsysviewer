@@ -5,6 +5,8 @@ from __future__ import annotations
 from importlib import import_module
 from typing import TYPE_CHECKING
 
+from .._private.argdigest import digest
+
 if TYPE_CHECKING:
     from molsysviewer.addons import AddonSpec, GlobalAddonsRegistry
     from molsysviewer.viewer import MolSysView
@@ -18,11 +20,13 @@ REFERENCE_ADDON_MODULES: dict[str, str] = {
 }
 
 
+@digest()
 def list_reference_addons() -> list[str]:
     """Return the stable short names of bundled reference add-ons."""
     return sorted(name for name in REFERENCE_ADDON_MODULES if not name.startswith("minimal_"))
 
 
+@digest()
 def resolve_reference_addon(name: str) -> str:
     """Resolve a short reference name or module-like key to its importable module."""
     from molsysviewer.addons import _ensure_non_empty_text
@@ -36,6 +40,7 @@ def resolve_reference_addon(name: str) -> str:
     )
 
 
+@digest()
 def register_reference_addon(
     name: str,
     *,
@@ -48,6 +53,7 @@ def register_reference_addon(
     return target.register_module(resolve_reference_addon(name))
 
 
+@digest()
 def register_all_reference_addons(
     *,
     registry: "GlobalAddonsRegistry | None" = None,
@@ -65,11 +71,13 @@ def register_all_reference_addons(
     return registered
 
 
+@digest()
 def import_reference_module(name: str):
     """Import the module behind a bundled reference add-on."""
     return import_module(resolve_reference_addon(name))
 
 
+@digest()
 def register_dummy_addon(
     *,
     registry: "GlobalAddonsRegistry | None" = None,
@@ -78,6 +86,7 @@ def register_dummy_addon(
     return register_reference_addon("dummy", registry=registry)
 
 
+@digest()
 def build_reference_demo_view(
     name: str,
     *,

@@ -39,6 +39,8 @@ class MeasurementsManager:
         return layer
 
     @records_scene_history
+    @signal(tags=["measurement"])
+    @digest()
     def add(self, kind: str, *selections: Any, **kwargs: Any) -> Layer:
         """Create a measurement of explicit *kind*."""
         methods = {

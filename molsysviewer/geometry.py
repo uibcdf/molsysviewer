@@ -8,6 +8,8 @@ import json
 
 import numpy as np
 
+from ._private.argdigest import digest
+
 
 MESH_LOCAL = "mesh_local"
 MOLECULAR_SYSTEM = "molecular_system"
@@ -49,6 +51,7 @@ def _jsonable_payload(value: Any, *, owner: str) -> dict[str, Any]:
     return payload
 
 
+@digest()
 def entity_ref_payload(ref: "EntityRef | dict[str, Any]") -> dict[str, Any]:
     """Return a JSON-serializable entity-reference payload."""
     return _jsonable_payload(ref, owner="EntityRef")
