@@ -22,7 +22,7 @@ behaviour, delegates it, or merely hosts it.
 | Representations, styles and presets | `view.styles.`, `view.whole.set_representation` | 35 | 35 | Mol* (rendering authority) | [page](../docs/content/user/representations/types.md) | 3 | 1 | stable | 0.18.0 |
 | Annotations | `view.annotations.` | 22 | 21 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/labels.md) | 1 | 2 | stable | 0.8.0 |
 | Measurements | `view.measurements.` | 20 | 19 | MolSysViewer (Python authority) | — | 1 | 2 | stable | 0.8.0 |
-| Shapes | `view.shapes.` | 50 | 28 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/shapes/index.md) | 3 | 2 | stable | 0.1.0 |
+| Shapes | `view.shapes.` | 50 | 36 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/shapes/index.md) | 3 | 2 | stable | 0.1.0 |
 | Trajectories and frames | `view.player.` | 11 | 11 | MolSysViewer (Python authority) | [page](../docs/content/user/movie/playback.md) | 2 | 2 | stable | 0.18.0 |
 | Trajectory plot | `view.trajectory_plot.` | 4 | 0 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/trajectory_plot.md) | 2 | 0 | experimental | 0.19.0 |
 | Movie | `view.movie.` | 13 | 0 | MolSysViewer (Python authority) | [page](../docs/content/user/movie/export.md) | 1 | 0 | experimental | 0.18.0 |

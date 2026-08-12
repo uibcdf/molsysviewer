@@ -134,8 +134,12 @@ def test_every_method_that_forwards_undigested_kwargs_has_a_table(registry):
     import ast
     from pathlib import Path
 
+    # Forwarding undigested kwargs is only a problem when those kwargs are *attribute
+    # names*. These forward conversion options, representation parameters and shape
+    # parameters, none of which the synonym tables touch.
     exempt = {("molsysviewer/viewer/molsysmt_interface.py", "convert"),
               ("molsysviewer/shapes/__init__.py", "add_sphere"),
+              ("molsysviewer/shapes/__init__.py", "add_topomt_feature"),
               ("molsysviewer/shapes/pharmacophore.py", "add_pharmacophore_features")}
 
     root = Path(__file__).resolve().parents[1]

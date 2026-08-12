@@ -168,7 +168,6 @@ class PharmacophoreShapes:
         return layer
 
     @signal(tags=["shape", "pharmacophore"])
-    @digest()
     @records_scene_history
     def add_pharmacophore_features(
         self,

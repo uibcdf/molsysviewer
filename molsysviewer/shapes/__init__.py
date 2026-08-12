@@ -69,6 +69,8 @@ class ShapesManager:
         return layer
 
     @records_scene_history
+    @signal(tags=["shape"])
+    @digest()
     def add(self, kind: str, **kwargs):
         """Create a shape of explicit *kind* through its public constructor."""
         methods = {
@@ -135,13 +137,19 @@ class ShapesManager:
         """Return (tag, Shape) pairs for all shapes."""
         return [(tag, self.get(tag, skip_digestion=True)) for tag in self.tags(skip_digestion=True)]
 
+    @signal(tags=["shape", "query"])
+    @digest()
     def count(self, skip_digestion: bool = False) -> int:
         return len(self.tags(skip_digestion=True))
 
+    @signal(tags=["shape", "query"])
+    @digest()
     def records(self, skip_digestion: bool = False) -> list[dict]:
         return [dict(record) for record in self._view._shape_history]  # noqa: SLF001
 
     @records_scene_history
+    @signal(tags=["shape"])
+    @digest()
     def delete(self, tag: str, skip_digestion: bool = False) -> None:
         shape = self.get(tag, skip_digestion=True)
         if shape is None:
@@ -149,6 +157,8 @@ class ShapesManager:
         shape.delete(skip_digestion=True)
 
     @records_scene_history
+    @signal(tags=["shape"])
+    @digest()
     def set_tag(self, tag: str, new_tag: str, skip_digestion: bool = False):
         shape = self.get(tag, skip_digestion=True)
         if shape is None:
@@ -157,6 +167,8 @@ class ShapesManager:
         return shape
 
     @records_scene_history
+    @signal(tags=["shape", "visibility"])
+    @digest()
     def show(self, tag: str, skip_digestion: bool = False):
         shape = self.get(tag, skip_digestion=True)
         if shape is None:
@@ -165,6 +177,8 @@ class ShapesManager:
         return shape
 
     @records_scene_history
+    @signal(tags=["shape", "visibility"])
+    @digest()
     def hide(self, tag: str, skip_digestion: bool = False):
         shape = self.get(tag, skip_digestion=True)
         if shape is None:
@@ -173,11 +187,15 @@ class ShapesManager:
         return shape
 
     @records_scene_history
+    @signal(tags=["shape", "visibility"])
+    @digest()
     def show_all(self, skip_digestion: bool = False) -> None:
         for tag in self.tags(skip_digestion=True):
             self.show(tag, skip_digestion=True)
 
     @records_scene_history
+    @signal(tags=["shape", "visibility"])
+    @digest()
     def hide_all(self, skip_digestion: bool = False) -> None:
         for tag in self.tags(skip_digestion=True):
             self.hide(tag, skip_digestion=True)
@@ -477,7 +495,6 @@ class ShapesManager:
 
     @records_scene_history
     @signal(tags=["shape"])
-    @digest()
     def add_pharmacophore_features(
         self,
         *args,
@@ -493,6 +510,8 @@ class ShapesManager:
 
     @records_scene_history
     @signal(tags=["shape"])
+    @signal(tags=["shape", "topomt"])
+    @digest()
     def add_topomt_feature(
         self,
         feature: "Any",

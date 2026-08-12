@@ -154,3 +154,55 @@ def test_every_exemption_gives_a_reason():
               if not reason or len(reason) < 20]
 
     assert silent == [], f"exemptions without a usable reason: {silent}"
+
+
+def test_no_digester_is_written_for_a_var_parameter_name():
+    """`args` and `kwargs` are not argument names; they are the absence of them.
+
+    Thirteen `shapes` forwarders take `*args, **kwargs` and hand them to a sub-manager
+    method that has a closed signature and its own `@digest`. Decorating a forwarder was
+    tried and measured: nothing is digested — ArgDigest digests the empty `args` tuple and
+    leaves the `**kwargs` keys in the mapping, so `tag` and the rest never reach their
+    digesters — and every call emits `DigestNotDigestedWarning`.
+
+    That warning made `args` look like a missing digester wanted by thirteen callables.
+    Writing one would silence a signal that is correctly saying those functions should not
+    be decorated, which is why this test exists rather than a `digest_args`.
+    """
+    forbidden = {"args", "kwargs"} & declared_digesters()
+
+    assert forbidden == set(), (
+        f"a digester was written for {sorted(forbidden)}; the warning it silences is "
+        "telling you a pure forwarder is decorated, and the fix is to undecorate it"
+    )
+
+
+def test_a_pure_forwarder_is_never_decorated():
+    """Decorating one is silent debt: it digests nothing and warns on every call.
+
+    Two `add_pharmacophore_features` aliases carried `@digest` for months doing exactly
+    that. Nobody saw the warning because the only test that reaches them passes
+    `skip_digestion=True`, which turns the decorator off.
+    """
+    import ast
+
+    offenders = []
+    for path in sorted((ROOT / "molsysviewer").rglob("*.py")):
+        if "js" in path.parts:
+            continue
+        for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))):
+            if not isinstance(node, ast.FunctionDef):
+                continue
+            if not (node.args.vararg and node.args.kwarg):
+                continue
+            named = [a.arg for a in node.args.args if a.arg != "self"]
+            named += [a.arg for a in node.args.kwonlyargs if a.arg != "skip_digestion"]
+            if named:
+                continue  # it declares something of its own, so it is not a pure forwarder
+            if any("digest" in ast.unparse(d) for d in node.decorator_list):
+                offenders.append(f"{path.relative_to(ROOT)}:{node.name}")
+
+    assert offenders == [], (
+        "these take only *args/**kwargs and are decorated, so they digest nothing and "
+        f"warn on every call: {offenders}"
+    )

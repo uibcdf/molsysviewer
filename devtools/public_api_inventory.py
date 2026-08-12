@@ -85,6 +85,51 @@ DELIBERATELY_NOT_DIGESTED: dict[str, str] = {
         "context manager, not a call with arguments to judge",
     "view.history.suspended":
         "context manager, not a call with arguments to judge",
+
+    # The `shapes` forwarders, and the measurement most likely to be misread as debt.
+    #
+    # Each takes `*args, **kwargs` and hands them to a sub-manager method that has a
+    # closed keyword-only signature and its own `@digest`. Decorating the forwarder was
+    # tried and measured: **nothing is digested and every call warns.** ArgDigest digests
+    # `args` (the empty tuple, under the parameter's own name) and leaves the `**kwargs`
+    # keys inside the mapping, so `tag`, `centers` and the rest never reach their
+    # digesters — verified by instrumenting `digest_tag` and watching it never fire.
+    #
+    # This is why `args` shows up in the inventory as an argument name wanted by thirteen
+    # callables. **Writing a `digest_args` would be the wrong fix**: it would silence a
+    # warning that is correctly reporting that these functions should not be decorated.
+    #
+    # Two of them carried `@digest` already and had been emitting
+    # `DigestNotDigestedWarning` on every real call. Nobody saw it because the only test
+    # that reaches them passes `skip_digestion=True`.
+    "view.shapes.add_anisotropy_ellipsoids":
+        "pure forwarder to a digested sub-manager method; see the note above",
+    "view.shapes.add_channel_tube":
+        "pure forwarder to a digested sub-manager method; see the note above",
+    "view.shapes.add_displacement_vectors":
+        "pure forwarder to a digested sub-manager method; see the note above",
+    "view.shapes.add_interaction_sites":
+        "pure forwarder to a digested sub-manager method; see the note above",
+    "view.shapes.add_links":
+        "pure forwarder to a digested sub-manager method; see the note above",
+    "view.shapes.add_pharmacophore_features":
+        "pure forwarder to a digested sub-manager method; see the note above",
+    "view.shapes.add_pocket_blob":
+        "pure forwarder to a digested sub-manager method; see the note above",
+    "view.shapes.add_pocket_surface":
+        "pure forwarder to a digested sub-manager method; see the note above",
+    "view.shapes.add_rings":
+        "pure forwarder to a digested sub-manager method; see the note above",
+    "view.shapes.add_scalar_isosurface":
+        "pure forwarder to a digested sub-manager method; see the note above",
+    "view.shapes.add_set_alpha_spheres":
+        "pure forwarder to a digested sub-manager method; see the note above",
+    "view.shapes.add_tetrahedra":
+        "pure forwarder to a digested sub-manager method; see the note above",
+    "view.shapes.add_triangle_faces":
+        "pure forwarder to a digested sub-manager method; see the note above",
+    "view.shapes.interaction_sites.add_pharmacophore_features":
+        "pure forwarder to a digested sub-manager method; see the note above",
 }
 
 #: How deep the attribute walk goes. The public surface is a handful of managers hanging
