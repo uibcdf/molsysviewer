@@ -22,15 +22,21 @@ from molsysmt._private.argdigest.normalization.get_element_names import (
     TABLES as _MOLSYSMT_TABLES,
 )
 
-#: The viewer method that forwards to `msm.get` with `skip_digestion=True`.
-_GET_CALLER = 'molsysviewer.viewer.get'
+#: The `get`-shaped methods that digest here and forward with `skip_digestion=True`.
+#: `Whole.get` is absent on purpose — it forwards `skip_digestion` through instead of
+#: forcing it, so `view.get` digests on its behalf and already has these tables.
+_GET_CALLERS = (
+    'molsysviewer.viewer.get',
+    'molsysviewer.regions.get',
+)
 
 TABLES = [
     AliasTable(
-        applies_to=_GET_CALLER,
+        applies_to=caller,
         when=dict(table.when) if table.when else None,
         aliases=dict(table.aliases),
         description=table.description,
     )
+    for caller in _GET_CALLERS
     for table in _MOLSYSMT_TABLES
 ]

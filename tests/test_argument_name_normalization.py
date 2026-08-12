@@ -28,8 +28,11 @@ from molsysviewer.demo import demo
 NORMALIZATION_SOURCE = "molsysviewer._private.argdigest.normalization"
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def view():
+    # Function-scoped on purpose: `conftest` instruments `MolSysView.__init__` per test,
+    # so a view built once and reused across the module sends messages into a log that
+    # the current test's patch never created.
     view = demo["dialanine"]
     view.widget.send = lambda _message: None  # type: ignore[attr-defined]
     return view
@@ -88,6 +91,80 @@ def test_attribute_synonyms_reach_contains_and_is_composed_of(view):
     assert view.is_composed_of(selection="all", n_waters=0) is False
 
 
+def test_a_region_gets_the_same_renames_as_the_view(view):
+    """`Region` has the same shape and was missed on the first pass.
+
+    It digests, then forwards with `skip_digestion=True` — so `region.get` raised
+    `KeyError: 'index'` for exactly the reason `view.get` did.
+    """
+    view.regions.add(selection="atom_index==[0,1]", tag="_normalization_probe")
+    region = view.regions["_normalization_probe"]
+
+    assert list(region.get(element="group", index=True)) \
+        == list(region.get(element="group", group_index=True))
+    assert region.contains(n_waters=0) is True
+
+
+def test_the_whole_gets_the_synonyms_too(view):
+    assert view.whole.contains(n_waters=0) is True
+    assert view.whole.is_composed_of(n_waters=0) is False
+
+
+def test_a_pure_forwarder_needs_no_table_of_its_own(view):
+    """`Whole.get` passes `skip_digestion` through rather than forcing it.
+
+    So `view.get` digests on its behalf and the bare names work without `whole.get`
+    appearing in any table. Pinned because adding it would look like a fix and would
+    instead mean renaming twice.
+    """
+    assert list(view.whole.get(element="group", index=True)) \
+        == list(view.get(element="group", group_index=True))
+
+
+def test_every_method_that_forwards_undigested_kwargs_has_a_table(registry):
+    """The membership rule is structural, so it can be re-derived instead of trusted.
+
+    A method that digests here and forwards `**kwargs` onward with `skip_digestion=True`
+    is the last layer that can rename them. If one acquires that shape and nobody adds it
+    to a table, nothing renames its arguments and nothing says so — which is precisely how
+    the mechanism this replaced stayed broken. Two exemptions, both deliberate:
+    `convert` forwards conversion options rather than attribute names, and the shape
+    helpers forward representation parameters.
+    """
+    import ast
+    from pathlib import Path
+
+    exempt = {("molsysviewer/viewer/molsysmt_interface.py", "convert"),
+              ("molsysviewer/shapes/__init__.py", "add_sphere"),
+              ("molsysviewer/shapes/pharmacophore.py", "add_pharmacophore_features")}
+
+    root = Path(__file__).resolve().parents[1]
+    delegators = set()
+    for path in sorted((root / "molsysviewer").rglob("*.py")):
+        if "_private" in path.parts:
+            continue
+        for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))):
+            if not isinstance(node, ast.FunctionDef) or node.args.kwarg is None:
+                continue
+            if not any("digest" in ast.unparse(d) for d in node.decorator_list):
+                continue
+            source = ast.unparse(node)
+            if "**kwargs" in source and "skip_digestion=True" in source:
+                relative = str(path.relative_to(root))
+                if (relative, node.name) not in exempt:
+                    delegators.add(f"molsysviewer.{path.stem}.{node.name}"
+                                   if path.stem != "molsysmt_interface"
+                                   else f"molsysviewer.viewer.{node.name}")
+
+    covered = {table["applies_to"] for table in describe_normalization(registry)}
+
+    assert delegators <= covered, (
+        "these digest their arguments and then forward them with `skip_digestion=True`, "
+        "so nothing downstream will rename them, and no alias table covers them: "
+        f"{sorted(delegators - covered)}"
+    )
+
+
 # --- the scope, which is the part that is easy to get wrong ------------------------
 
 
@@ -120,6 +197,11 @@ def test_only_the_three_delegating_methods_carry_the_synonyms(registry):
         "molsysviewer.viewer.get",
         "molsysviewer.viewer.contains",
         "molsysviewer.viewer.is_composed_of",
+        "molsysviewer.regions.get",
+        "molsysviewer.regions.contains",
+        "molsysviewer.regions.is_composed_of",
+        "molsysviewer.whole.contains",
+        "molsysviewer.whole.is_composed_of",
     }
 
 

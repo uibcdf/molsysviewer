@@ -3,24 +3,41 @@
 `molsysmt.attribute._attribute_synonyms` is the source of truth; this points at it rather
 than copying, so the two cannot drift apart.
 
-**The scope is not incidental.** These synonyms rename attribute *names*, and only three
-viewer methods take attribute names as keywords. Everywhere else the same words are
-ordinary parameters: `atom_indices` is a real argument of several viewer calls and has its
-own digester, and a global table would rename it to `atom_index`, which nothing declares.
-Declaring them globally breaks **132 tests here**, measured by doing it; the same mistake
-broke 76 in MolSysMT. It is the obvious simplification and it is wrong.
+**The scope is not incidental**, in either direction.
+
+*Too wide* renames arguments that are not attribute names: `atom_indices` is a synonym
+here and a real argument with its own digester almost everywhere else, so a global table
+would turn it into `atom_index`, which nothing declares. Measured by doing it: **132 tests
+fail**; the same mistake broke 76 in MolSysMT.
+
+*Too narrow* leaves a caller with no rename at all, which is what the mechanism this
+replaced did to every one of them. The condition that decides membership is structural,
+not a matter of taste: **a method that digests its arguments here and then forwards
+`**kwargs` onward with `skip_digestion=True`** is the last layer that can rename them —
+nothing downstream will digest them again. `Region` and `Whole` have that shape too, and
+were missed on the first pass; `region.get(element='group', index=True)` raised
+`KeyError` exactly as `view.get` had.
+
+`test_argument_name_normalization.py` re-derives this list from the source and fails if a
+method acquires that shape without appearing here, because the failure is silent
+otherwise. `Whole.get` deliberately does *not* appear: it is a pure forwarder that passes
+`skip_digestion` through rather than forcing it, so `view.get` digests on its behalf.
 """
 
 from argdigest import AliasTable
 
 from molsysmt.attribute import _attribute_synonyms
 
-#: The viewer methods whose keywords are attribute names. All three forward to MolSysMT
-#: with `skip_digestion=True`, so this is the only place the rename can happen.
+#: Digest here, forward with `skip_digestion=True`: the last chance to rename.
 _ATTRIBUTE_TAKING_CALLERS = (
     'molsysviewer.viewer.get',
     'molsysviewer.viewer.contains',
     'molsysviewer.viewer.is_composed_of',
+    'molsysviewer.regions.get',
+    'molsysviewer.regions.contains',
+    'molsysviewer.regions.is_composed_of',
+    'molsysviewer.whole.contains',
+    'molsysviewer.whole.is_composed_of',
 )
 
 TABLES = [
