@@ -431,10 +431,15 @@ serialised (§C.2), never counted for overlap, never given a colour layer (§B.6
 
 At rest they are all in state **Own**. `styles.focus()` passes a representation to
 `new_region` directly (`styles.py:642-648`, and it raises without one). The geometry overlays
-create the region first and call `set_representation("orientation" | "plane", …)` immediately
-after (`viewer/regions.py:455-462, 488-495`), so they pass transiently through state
-**None** — which under this contract means one fewer wasted Mol\* rebuild, since the creation
-no longer paints a `cartoon` that the next call immediately tears down.
+create the region first and then send `set_region_representation` themselves
+(`viewer/regions.py:838-897`), so they pass transiently through state **None** — which under
+this contract means one fewer wasted Mol\* rebuild, since the creation no longer paints a
+`cartoon` that the next call immediately tears down.
+
+**They do not call `set_representation`, and cannot.** `"orientation"` and `"plane"` are
+deliberately absent from `ALLOWED_REPRESENTATIONS`, so the public setter rejects them; the
+helpers reach the runtime directly. That is the whole reason `show_orientation_axes()` and
+`show_best_fit_plane()` exist as their own entry points rather than as two more type names.
 
 ### A.6 Python must describe reality
 

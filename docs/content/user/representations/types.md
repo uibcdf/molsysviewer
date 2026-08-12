@@ -15,21 +15,36 @@ Supported types (normalized)
 - `ellipsoid`
 - `gaussian-surface`
 - `gaussian-volume`
-- `label`
 - `line`
 - `molecular-surface`
-- `orientation`
-- `plane`
 - `point`
 - `putty`
 - `spacefill`
 
 Common aliases
-- `sticks`, `ballstick`, `ball_and_stick` → `ball-and-stick`
-- `licorice`, `lines`, `wire`, `wireframe` → `line`
+- `sticks`, `ballstick`, `ball_and_stick`, `licorice`, `cylinders` → `ball-and-stick`
+- `lines`, `wire`, `wireframe` → `line`
+- `dots` → `point`
 - `ribbon` → `backbone`
 - `surface` → `molecular-surface`
 - `vdw` → `spacefill`
+
+Not representation types
+
+Three capabilities are sometimes expected here and do not belong to
+`set_representation`. Each has its own entry point, and passing its name as a
+representation type raises:
+
+- **labels** — use {doc}`../annotations/index` (`view.annotations.add_annotation(...)`).
+  A label is text placed in the scene, not a way of drawing atoms, and it has its own
+  lifecycle.
+- **orientation axes** — use `view.show_orientation_axes(selection)`. It returns a
+  `Region` with the usual `hide` / `show` / `delete`.
+- **best-fit plane** — use `view.show_best_fit_plane(selection)`, likewise.
+
+The last two draw Mol\* representations that are geometric rather than structural: they
+describe where a selection *is*, not what its atoms look like. They are public, and they
+are reached through their own helper rather than through the type name.
 
 Tips
 - Start with a preset if you are unsure (see {doc}`presets`).
