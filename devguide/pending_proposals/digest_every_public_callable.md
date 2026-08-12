@@ -3,25 +3,55 @@
 **Raised:** 2026-08-07, by the release owner, while declaring the first function argument
 contracts: *"todo lo público debe ser decorado"*.
 
-**Status:** proposal. The policy is decided; the work is not scoped or scheduled.
+**Status:** the policy is decided and **the inventory is closed** (2026-08-11, gate 9's
+first deliverable). The decorating itself is scoped but not scheduled.
 
 ## The rule
 
 Every public callable of MolSysViewer carries `@digest`. There is no second entrance to
 the library that skips argument digestion.
 
-## Why it matters, measured
+## The size of the work, closed
 
-Counted on 2026-08-07 over `molsysviewer/`, excluding `_private` and underscore-prefixed
-names:
+`devtools/public_api_inventory.py` walks what a user can actually reach — from
+`import molsysviewer` and from a `MolSysView` — never through an underscore name, honouring
+each module's `__all__` where it declares one and otherwise counting only what that module
+*defines*. `tests/test_public_api_inventory.py` pins the result against
+`devtools/public_api_inventory_baseline.json`, in both directions: a new undigested
+callable fails, and so does progress that leaves the baseline stale.
 
 | | Count |
 | --- | ---: |
-| public callables **with** `@digest` | 286 |
-| public callables **without** it | **515** |
+| public callables | 477 |
+| **with** `@digest` | 312 |
+| **without** it | 165 |
+| digesters already declared | 524 |
+| **argument names with no digester** | **56** |
+
+**56 is the number to plan against, not 165 and not 515.** Decorating is one line;
+declaring the argument is the job, and the arguments overlap heavily across a module.
+
+The original estimate below — 286 against 515 — counted every non-underscore name in the
+package. That set includes implementation helpers nobody can reach and, worse, every
+imported name re-exported by the module that imported it: `digest` alone appeared as 38
+distinct "public callables". Ranked by demand, the remaining work is unglamorous and
+small: `callback` (8 callables), `iterations` (6), `registry` (4), then a long tail of
+ones and twos.
+
+The walk was validated against reality rather than trusted: every one of the 210 callers
+observed during a full suite run is in the inventory, with a single exception —
+`molsysviewer.loaders.load_molsysmt.load_from_molsysmt`, which is MolSysViewer calling
+itself and is excluded because `loaders` is not in `molsysviewer.__all__`.
+
+## Why it matters, measured
+
+Counted on 2026-08-07, before the inventory existed:
+
+| | Count |
+| --- | ---: |
 | raw `ValueError` / `TypeError` / `KeyError` outside `_private` | **482** |
 
-So roughly a third of the public surface is digested. The rest gets:
+The undigested part of the surface gets:
 
 - **no value contract** — arguments reach the body unvalidated and unnormalized;
 - **no function contract** — a mistyped keyword is silently discarded, the call runs with
@@ -57,9 +87,8 @@ function introduces". Some will already exist; the long tail will not.
 
 ## Suggested approach
 
-1. **Measure the argument surface first.** Collect the distinct argument names across the
-   515 undecorated callables and subtract the ones with a digester. That number, not 515,
-   is the size of the job.
+1. ~~**Measure the argument surface first.**~~ **Done** — 56 argument names, and
+   `devtools/public_api_inventory.py --json` says which callables want each one.
 2. **Work by module, not by function.** A module's arguments overlap heavily, so
    `layers.py` (60 undecorated) will need far fewer than 60 new digesters.
 3. **Take the modules with a public surface first**: `layers.py`, `regions.py`,
