@@ -112,7 +112,7 @@ jobs:
         echo "::endgroup::"
 
     - name: Resolve documented Python API calls
-      if: matrix.cfg.os == 'ubuntu-latest' && matrix.cfg.python-version == '3.12'
+      if: matrix.cfg.os == 'ubuntu-latest' && matrix.cfg.python-version == '3.13'
       shell: bash -l {0}
       run: python scripts/api_resolver.py docs/
 
@@ -123,7 +123,7 @@ jobs:
         pytest -v --cov-config=.coveragerc --cov=molsysviewer --cov-report=xml --junitxml=junit.xml --color=yes
 
     - name: JS unit tests (Node)
-      if: matrix.cfg.os == 'ubuntu-latest' && matrix.cfg.python-version == '3.12'
+      if: matrix.cfg.os == 'ubuntu-latest' && matrix.cfg.python-version == '3.13'
       shell: bash -l {0}
       run: |
         cd molsysviewer/js
@@ -141,7 +141,7 @@ jobs:
         fi
 
     - name: Upload coverage reports to Codecov
-      if: matrix.cfg.os == 'ubuntu-latest' && matrix.cfg.python-version == '3.12'
+      if: matrix.cfg.os == 'ubuntu-latest' && matrix.cfg.python-version == '3.13'
       uses: codecov/codecov-action@v4
       with:
         verbose: true
@@ -153,7 +153,7 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
 
     - name: Upload test results to Codecov
-      if: matrix.cfg.os == 'ubuntu-latest' && matrix.cfg.python-version == '3.12' && ${{ !cancelled() }}
+      if: matrix.cfg.os == 'ubuntu-latest' && matrix.cfg.python-version == '3.13' && ${{ !cancelled() }}
       uses: codecov/test-results-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}

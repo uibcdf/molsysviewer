@@ -182,6 +182,9 @@ def test_every_publicly_exported_name_resolves():
 
 
 SUPPORTED_PYTHON_VERSIONS = ("3.11", "3.12", "3.13")
+#: The one we recommend, develop and document on. It is the newest supported
+#: version, and it is what the single-version jobs and the README badge must say.
+RECOMMENDED_PYTHON_VERSION = "3.13"
 
 
 def _matrix_versions(workflow: str, pattern: str) -> set[str]:
@@ -244,3 +247,55 @@ def test_every_supported_version_is_tested_on_both_operating_systems():
     }
 
     assert cells == expected, f"missing cells: {sorted(expected - cells)}"
+
+
+def test_the_recommended_version_is_the_one_the_single_version_jobs_use():
+    """One cell of the matrix does the work nobody repeats, and the docs are built once.
+
+    Which version those land on is a statement about what we recommend, so it should not
+    be left wherever it happened to be when the matrix last changed. The API resolver, the
+    JS suite and the coverage upload run on one cell; the documentation is rendered by one
+    environment.
+    """
+    assert RECOMMENDED_PYTHON_VERSION == max(SUPPORTED_PYTHON_VERSIONS)
+
+    ci = (ROOT / ".github" / "workflows" / "CI.yaml").read_text(encoding="utf-8")
+    gated = set(re.findall(r"matrix\.cfg\.python-version == '(3\.\d+)'", ci))
+    assert gated == {RECOMMENDED_PYTHON_VERSION}, (
+        f"single-cell CI steps run on {sorted(gated)}, not the recommended version"
+    )
+
+    for path in ("devtools/conda-envs/development_env.yaml",
+                 "devtools/conda-envs/docs_env.yaml",
+                 ".github/workflows/sphinx_docs_to_gh_pages.yaml"):
+        text = (ROOT / path).read_text(encoding="utf-8")
+        found = set(re.findall(r"python=(3\.\d+)", text))
+        assert found == {RECOMMENDED_PYTHON_VERSION}, f"{path} pins {sorted(found)}"
+
+
+def test_the_readme_badge_says_what_we_support():
+    """The badge is the first compatibility claim anyone reads, and nothing checked it.
+
+    It said 3.10 | 3.11 | 3.12 — a version we never tested, and missing the one we
+    recommend.
+    """
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    match = re.search(r"badge/Python-(3\.\d+(?:%20%7C%20\d+\.\d+)*)-blue", readme)
+
+    assert match is not None, "the README has no Python badge"
+    advertised = tuple(match.group(1).replace("%20%7C%20", " ").split())
+
+    assert advertised == SUPPORTED_PYTHON_VERSIONS
+
+
+def test_ruff_targets_the_floor_rather_than_the_recommendation():
+    """`target-version` tells ruff which syntax it may assume, so it is the minimum.
+
+    It was `py312` against a floor of 3.11 — which lets ruff rewrite code into something
+    the oldest supported interpreter cannot parse. This is the one setting in the repo
+    that must *not* follow the recommended version.
+    """
+    pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    target = pyproject["tool"]["ruff"]["target-version"]
+
+    assert target == "py" + min(SUPPORTED_PYTHON_VERSIONS).replace(".", "")

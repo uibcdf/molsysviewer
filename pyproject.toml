@@ -82,7 +82,7 @@ exclude = ["molsysviewer.js", "molsysviewer.js.*"]
 
 [tool.ruff]
 line-length = 120
-target-version = "py312"
+target-version = "py311"
 # Directories to analyze (adjust if needed).
 src = ["molsysviewer", "tests"]
 
