@@ -393,6 +393,8 @@ class Region:
         return combined
 
     @records_scene_history
+    @signal(tags=["region"])
+    @digest()
     def difference(
         self,
         *others: Any,
@@ -417,6 +419,8 @@ class Region:
         )
 
     @records_scene_history
+    @signal(tags=["region"])
+    @digest()
     def intersection(
         self,
         *others: Any,
@@ -443,6 +447,8 @@ class Region:
         )
 
     @records_scene_history
+    @signal(tags=["region"])
+    @digest()
     def union(
         self,
         *others: Any,

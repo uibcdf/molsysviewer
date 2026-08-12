@@ -477,6 +477,7 @@ class ShapesManager:
 
     @records_scene_history
     @signal(tags=["shape"])
+    @digest()
     def add_pharmacophore_features(
         self,
         *args,

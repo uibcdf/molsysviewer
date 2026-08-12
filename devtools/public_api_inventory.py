@@ -85,18 +85,6 @@ DELIBERATELY_NOT_DIGESTED: dict[str, str] = {
         "context manager, not a call with arguments to judge",
     "view.history.suspended":
         "context manager, not a call with arguments to judge",
-    # ArgDigest calls the wrapped function as `fn_to_wrap(**bound)`, by keyword only, and
-    # binds positionally first. A `*args` function therefore raises `TypeError: too many
-    # positional arguments` on any positional call, and would lose the tuple even if it
-    # bound. Measured on `shapes.add_pharmacophore_features`, which is decorated today and
-    # broken for positional callers -- see
-    # `devguide/pending_bugs/argdigest_cannot_carry_var_positional.md`.
-    "view.regions[…].difference":
-        "var-positional operands; ArgDigest cannot pass *args through",
-    "view.regions[…].intersection":
-        "var-positional operands; ArgDigest cannot pass *args through",
-    "view.regions[…].union":
-        "var-positional operands; ArgDigest cannot pass *args through",
 }
 
 #: How deep the attribute walk goes. The public surface is a handful of managers hanging

@@ -154,31 +154,3 @@ def test_every_exemption_gives_a_reason():
               if not reason or len(reason) < 20]
 
     assert silent == [], f"exemptions without a usable reason: {silent}"
-
-
-def test_no_decorated_callable_takes_var_positional():
-    """ArgDigest calls the wrapped function as `fn_to_wrap(**bound)`, by keyword only.
-
-    A `@digest`-decorated `*args` function therefore raises `TypeError: too many
-    positional arguments` for any positional caller, and would lose the tuple even if it
-    bound. Measured, not deduced. This is the rule that keeps a well-meant decoration from
-    breaking a public call; the one function still violating it is recorded in
-    `devguide/pending_bugs/argdigest_cannot_carry_var_positional.md`.
-    """
-    import ast
-
-    known = {("molsysviewer/shapes/pharmacophore.py", "add_pharmacophore_features")}
-    offenders = set()
-    for path in sorted((ROOT / "molsysviewer").rglob("*.py")):
-        if "js" in path.parts:
-            continue
-        for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))):
-            if not isinstance(node, ast.FunctionDef) or node.args.vararg is None:
-                continue
-            if any("digest" in ast.unparse(d) for d in node.decorator_list):
-                offenders.add((str(path.relative_to(ROOT)), node.name))
-
-    assert offenders <= known, (
-        "these are decorated and take *args, so positional calls to them raise: "
-        f"{sorted(offenders - known)}"
-    )

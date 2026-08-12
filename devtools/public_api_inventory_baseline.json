@@ -1,10 +1,10 @@
 {
   "totals": {
     "public_callables": 477,
-    "digested": 346,
-    "undigested": 118,
-    "exempt": 13,
-    "declared_digesters": 525,
+    "digested": 350,
+    "undigested": 117,
+    "exempt": 10,
+    "declared_digesters": 526,
     "missing_digesters": 57
   },
   "undigested": [
@@ -104,7 +104,6 @@
     "view.shapes.add_displacement_vectors",
     "view.shapes.add_interaction_sites",
     "view.shapes.add_links",
-    "view.shapes.add_pharmacophore_features",
     "view.shapes.add_pocket_blob",
     "view.shapes.add_pocket_surface",
     "view.shapes.add_rings",
