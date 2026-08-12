@@ -22,7 +22,16 @@ def digest_mode(mode, caller=None):
             if mode in ["add", "replace", "append_structures", "auto"]:
                 return mode
         if caller in {
+            # ArgDigest builds the caller as `<owner module>.<function name>`, so the
+            # `CameraManager.` spelling below is never produced. It was the only entry
+            # here, which meant `view.camera.set_mode("orthographic")` -- one of its two
+            # valid values -- raised. Kept alongside the real one rather than deleted,
+            # because a class-qualified caller is what a reader expects to see.
             "molsysviewer.viewer.camera.CameraManager.set_mode",
+            "molsysviewer.viewer.camera.set_mode",
+            # `scene.set_projection` is the public route to the same setting.
+            "molsysviewer.scene.set_projection",
+            "molsysviewer.scene.SceneManager.set_projection",
         }:
             if mode in ["perspective", "orthographic"]:
                 return mode

@@ -235,3 +235,49 @@ def test_a_digesters_own_primitive_is_never_digested():
         f"{sorted(decorated)} is what `digest_color` delegates to; decorating it makes "
         "the digester call the function it is digesting"
     )
+
+
+def test_no_digester_relies_only_on_a_caller_string_that_cannot_occur():
+    """A caller-aware digester whose only entry is a spelling ArgDigest never builds.
+
+    ArgDigest builds the caller as `<owner module>.<function name>`, so a class-qualified
+    string like `molsysviewer.viewer.camera.CameraManager.set_mode` is never produced.
+    Listing one is harmless; listing *only* one silently disables the branch, and the
+    argument is then refused for every value it was supposed to accept.
+
+    Found live: `view.camera.set_mode("orthographic")` raised for both of its two valid
+    values, because that was the sole entry in its branch. It is the same defect as the
+    imperative standardizer, one layer down, so this pins the shape rather than the case.
+
+    The check is deliberately narrow — a branch whose caller set is entirely
+    class-qualified — because a class-qualified string *beside* a real one is what a
+    reader expects to see and is worth keeping.
+    """
+    import ast
+    import re
+
+    digester_root = ROOT / "molsysviewer" / "_private" / "argdigest" / "argument"
+    offenders = []
+
+    for path in sorted(digester_root.glob("*.py")):
+        source = path.read_text(encoding="utf-8")
+        for node in ast.walk(ast.parse(source)):
+            if not isinstance(node, ast.Set):
+                continue
+            literals = [element.value for element in node.elts
+                        if isinstance(element, ast.Constant) and isinstance(element.value, str)]
+            callers = [name for name in literals if name.startswith("molsysviewer.")]
+            if not callers:
+                continue
+            # A class-qualified caller has a CamelCase component before the last one.
+            class_qualified = [
+                name for name in callers
+                if re.search(r"\.[A-Z][A-Za-z0-9]*\.[A-Za-z_][\w]*$", name)
+            ]
+            if callers and len(class_qualified) == len(callers):
+                offenders.append(f"{path.name}: {sorted(callers)}")
+
+    assert offenders == [], (
+        "these digester branches list only class-qualified callers, which ArgDigest never "
+        f"produces, so the branch is dead: {offenders}"
+    )

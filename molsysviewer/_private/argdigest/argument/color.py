@@ -28,11 +28,26 @@ def _looks_like_single_rgb(color):
     return all(0.0 <= float(c) <= 1.0 for c in seq)
 
 
+#: `scene.set_background` takes a colour **or** a theme keyword, and the keywords are not
+#: colours: `"light"` and `"dark"` select the built-in presets and take a different branch
+#: of the method, sending `toggle_background` instead of `set_background_color`.
+#: Normalising them would have to invent a hex value, which is precisely what the presets
+#: exist to avoid.
+_THEME_KEYWORDS = frozenset({"light", "dark"})
+_THEME_ACCEPTING_CALLERS = frozenset({
+    "molsysviewer.scene.set_background",
+    "molsysviewer.scene.SceneManager.set_background",
+})
+
+
 def digest_color(color, caller=None):
     """Normalize a single colour, or a batch (sequence) of colours, to int(s)."""
     from molsysviewer.colors import normalize_color, normalize_colors  # deferred: see module note
     if color is None:
         return None
+    if (caller in _THEME_ACCEPTING_CALLERS and isinstance(color, str)
+            and color.strip().lower() in _THEME_KEYWORDS):
+        return color.strip().lower()
     try:
         if isinstance(color, (list, tuple, np.ndarray)) and not _looks_like_single_rgb(color):
             return normalize_colors(list(color))

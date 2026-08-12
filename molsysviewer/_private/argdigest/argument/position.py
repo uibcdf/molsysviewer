@@ -9,7 +9,10 @@ def _normalize_position(value):
     if value is None:
         return None
     if isinstance(value, str):
-        tokens = value.replace(",", " ").split()
+        # `"top-right"` is the spelling the public docstrings use; `"top right"`
+        # and `"top, right"` were already accepted, and refusing the documented
+        # one was the whole defect.
+        tokens = value.replace(",", " ").replace("-", " ").split()
     elif isinstance(value, (list, tuple)):
         tokens = list(value)
     else:

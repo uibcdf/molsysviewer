@@ -32,6 +32,7 @@ class SceneManager:
 
     # ── Background ────────────────────────────────────────────────────────
 
+    @digest()
     def set_background(self, color: Any = "dark") -> None:
         """Set the canvas background.
 
@@ -51,6 +52,7 @@ class SceneManager:
         color_int = normalize_color(color)
         self._view._send({"op": "set_background_color", "color": color_int})  # noqa: SLF001
 
+    @digest()
     def spin(self, enabled: bool = True, speed: float | None = None) -> None:
         """Enable or disable continuous rotation around the vertical axis.
 
@@ -66,6 +68,7 @@ class SceneManager:
             msg["speed"] = float(speed)
         self._view._send(msg)  # noqa: SLF001
 
+    @digest()
     def swing(self, enabled: bool = True, speed: float | None = None) -> None:
         """Enable or disable oscillating rock motion.
 
@@ -81,6 +84,7 @@ class SceneManager:
             msg["speed"] = float(speed)
         self._view._send(msg)  # noqa: SLF001
 
+    @digest()
     def set_fog(self, enabled: bool = True, intensity: float = 0.15) -> None:
         """Enable or disable depth fog.
 
@@ -129,6 +133,7 @@ class SceneManager:
 
     # ── Projection ────────────────────────────────────────────────────────
 
+    @digest()
     def set_projection(self, mode: str) -> None:
         """Switch between perspective and orthographic projection.
 
@@ -187,6 +192,7 @@ class SceneManager:
 
     # ── Legend ────────────────────────────────────────────────────────────
 
+    @digest()
     def set_legend(self, items: Any = None, *, position: str = "top-right") -> None:
         """Show a colour legend overlay (a generic key for any colour scheme).
 
@@ -208,13 +214,18 @@ class SceneManager:
                 label, color = item[0], item[1]
             entries.append({"label": str(label), "color": int(color)})
         self._view._send(  # noqa: SLF001
-            {"op": "set_legend", "options": {"items": entries, "position": str(position)}}
+            {"op": "set_legend", "options": {"items": entries,
+             # `digest_position` canonicalises to ["bottom", "left"]; the wire
+             # format is the hyphenated spelling.
+             "position": "-".join(position) if isinstance(position, (list, tuple))
+                         else str(position)}}
         )
 
 
     # ── Sectioning ────────────────────────────────────────────────────────
 
     @records_scene_history
+    @digest()
     def add_section(
         self,
         point: Any,
@@ -275,7 +286,13 @@ class SceneManager:
         if isinstance(point, str):
             point_nm = self._resolve_point_string(point)
         elif puw.is_quantity(point):
-            point_nm = puw.get_value(point, to_unit="nm").tolist()
+            # `digest_point` canonicalises a single point to shape (1, 3), because its
+            # other callers pass batches. One row is still one point.
+            point_value = np.atleast_2d(puw.get_value(point, to_unit="nm"))
+            if point_value.shape[0] == 1:
+                point_nm = point_value[0].tolist()
+            else:
+                point_nm = point_value.tolist()
         elif hasattr(point, "__iter__"):
             point_nm = list(np.asarray(point, dtype=float))
         else:
@@ -318,6 +335,7 @@ class SceneManager:
         view._sync_section_summaries_runtime()  # noqa: SLF001
         return section
 
+    @digest()
     def sections(self) -> list["Section"]:
         """Return active clipping planes as live handles in creation order."""
         view = self._view
@@ -387,6 +405,7 @@ class SceneManager:
         )
 
     @records_scene_history
+    @digest()
     def remove_section(self, tag: str) -> None:
         """Remove a clipping plane by tag.
 
@@ -405,6 +424,7 @@ class SceneManager:
         view._sync_section_summaries_runtime()  # noqa: SLF001
 
     @records_scene_history
+    @digest()
     def clear_sections(self) -> None:
         """Remove all active clipping planes."""
         view = self._view
