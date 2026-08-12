@@ -198,6 +198,8 @@ class MolSysView(
         self.close()
         return False
 
+    @signal(tags=["viewer"])
+    @digest()
     def close(self) -> None:
         """Release the frontend transport and widgets owned by this view.
 
@@ -546,6 +548,8 @@ class MolSysView(
         self.widget.controls_mode = c_mode_valid
         self.widget.panel_mode_style = p_style_valid
 
+    @signal(tags=["viewer"])
+    @digest()
     def set_dimensions(self, width: str | None = None, height: str | None = None) -> None:
         """Set the dimensions of the viewer widget.
 
@@ -561,6 +565,8 @@ class MolSysView(
         if height is not None:
             self.widget.layout.height = height
 
+    @signal(tags=["viewer", "visibility"])
+    @digest()
     def set_canvas_visibility(self, visible: bool) -> None:
         """Set the visibility of the WebGL canvas.
 
@@ -1917,6 +1923,8 @@ class MolSysView(
         """
         return self._molsys
 
+    @signal(tags=["viewer", "transport"])
+    @digest()
     def wait_for_transaction(self, transaction_id: str | int, timeout_s: float = 1.0) -> bool:
         """Wait until the frontend acknowledges that the transaction has been rendered."""
         import time
@@ -2564,6 +2572,8 @@ class MolSysView(
         self._sync_shape_summaries_runtime()
 
     @signal(tags=["edit"])
+    @signal(tags=["viewer", "structures"])
+    @digest()
     def apply_system_edit(
         self,
         new_molsys,

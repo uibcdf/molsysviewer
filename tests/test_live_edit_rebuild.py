@@ -63,9 +63,20 @@ def test_apply_system_edit_reconciles_external_molsysmt_edit():
 
 
 def test_apply_system_edit_requires_molecular_system():
+    """The refusal moved from the body to the seam, and gained a caller with it.
+
+    `ArgumentError` is a `ValueError`, so a caller catching the old exception still
+    catches this one; what changed is that the diagnostic is catalogued and names
+    `apply_system_edit` rather than arriving as a bare message.
+    """
+    from molsysviewer._private.exceptions import ArgumentError
+
     view = demo["dialanine"]
 
-    with pytest.raises(ValueError, match="requires a molecular system"):
+    with pytest.raises(ArgumentError, match="needs the molecular system"):
+        view.apply_system_edit(None)
+
+    with pytest.raises(ValueError):
         view.apply_system_edit(None)
 
 

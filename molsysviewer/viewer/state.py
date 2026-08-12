@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+from smonitor import signal
+
+from .._private.argdigest import digest
+
 
 from contextlib import nullcontext
 from copy import deepcopy
@@ -23,6 +27,8 @@ class StateMixin:
             return self.attributed_to(owner)
         return nullcontext()
 
+    @signal(tags=["state", "query"])
+    @digest()
     def export_state(self) -> dict:
         """Serialize the current viewer overlay state to a JSON-compatible dict.
 
@@ -184,6 +190,8 @@ class StateMixin:
             },
         })
 
+    @signal(tags=["state"])
+    @digest()
     def save_state(self, path: str | os.PathLike[str]) -> None:
         """Write the current overlay state to a UTF-8 JSON file atomically.
 
@@ -214,6 +222,8 @@ class StateMixin:
                 temporary_path.unlink(missing_ok=True)
             raise
 
+    @signal(tags=["state"])
+    @digest()
     def load_state(
         self,
         path: str | os.PathLike[str],
@@ -238,6 +248,8 @@ class StateMixin:
         layer = self._atom_color_layers.get(owner, {})
         return {str(int(index)): int(color) for index, color in layer.items()}
 
+    @signal(tags=["state"])
+    @digest()
     def import_state(
         self,
         state: dict,

@@ -27,12 +27,12 @@ behaviour, delegates it, or merely hosts it.
 | Trajectory plot | `view.trajectory_plot.` | 4 | 0 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/trajectory_plot.md) | 2 | 0 | experimental | 0.19.0 |
 | Movie | `view.movie.` | 13 | 0 | MolSysViewer (Python authority) | [page](../docs/content/user/movie/export.md) | 1 | 0 | experimental | 0.18.0 |
 | Camera | `view.camera.`, `view.get_camera_snapshot`, `view.set_camera_snapshot`, `view.zoom` | 11 | 11 | Frontend (mirrored to Python) | — | 2 | 1 | stable | 0.18.0 |
-| save_state / load_state | `view.save_state`, `view.load_state`, `view.export_state`, `view.import_state` | 4 | 0 | MolSysViewer (Python authority) | — | 3 | 0 | stable | 0.19.0 |
+| save_state / load_state | `view.save_state`, `view.load_state`, `view.export_state`, `view.import_state` | 4 | 4 | MolSysViewer (Python authority) | — | 3 | 0 | stable | 0.19.0 |
 | HTML export and replay | `view.export.` | 5 | 5 | MolSysViewer (Python authority) | [page](../docs/content/user/export/index.md) | 4 | 2 | stable | 0.9.0 |
 | Popup | `view.build_popup_scene_snapshot` | 1 | 0 | MolSysViewer (Python authority) | [page](../docs/content/developer/standalone_surfaces.md) | 4 | 3 | stable | 0.20.1 |
 | Standalone (Qt host) | `molsysviewer.launch_standalone_qt0`, `molsysviewer.create_standalone_qt0_window` | 2 | 0 | MolSysViewer (Python authority) | [page](../docs/content/developer/standalone_surfaces.md) | 2 | 1 | experimental | 0.19.0 |
 | Add-ons | `molsysviewer.addons.`, `view.addons.` | 54 | 47 | Add-on (external owner) | [page](../docs/content/developer/addons.md) | 2 | 1 | stable | 0.10.0 |
-| MolSysMT integration | `view.get`, `view.contains`, `view.is_composed_of`, `view.convert`, `view.extract` | 15 | 7 | MolSysMT (scientific authority) | [page](../docs/content/user/introduction/molsysmt.md) | 3 | 1 | stable | 0.19.0 |
+| MolSysMT integration | `view.get`, `view.contains`, `view.is_composed_of`, `view.convert`, `view.extract` | 15 | 15 | MolSysMT (scientific authority) | [page](../docs/content/user/introduction/molsysmt.md) | 3 | 1 | stable | 0.19.0 |
 | Units | `molsysviewer.config.set_default_standard_units` | 1 | 1 | PyUnitWizard (unit authority) | [page](../docs/content/user/introduction/units.md) | 2 | 0 | stable | 0.5.0 |
 
 ## Capabilities with no user documentation page

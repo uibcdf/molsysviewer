@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from smonitor import signal
 
+from .._private.argdigest import digest
+
 
 class InteractionMixin:
     @property
@@ -26,6 +28,7 @@ class InteractionMixin:
         self._send_runtime_only({"op": "set_hover_telemetry", "enabled": active})
 
     @signal(tags=["interaction", "query"])
+    @digest()
     def get_last_hover_event(self) -> dict | None:
         if not self._hover_telemetry_active:
             return {
@@ -44,41 +47,49 @@ class InteractionMixin:
         return dict(self._last_hover_event)
 
     @signal(tags=["interaction", "query"])
+    @digest()
     def get_last_click_event(self) -> dict | None:
         if self._last_click_event is None:
             return None
         return dict(self._last_click_event)
 
     @signal(tags=["interaction", "query"])
+    @digest()
     def get_last_context_event(self) -> dict | None:
         if self._last_context_event is None:
             return None
         return dict(self._last_context_event)
 
     @signal(tags=["interaction", "query"])
+    @digest()
     def get_last_context_action_event(self) -> dict | None:
         if self._last_context_action_event is None:
             return None
         return dict(self._last_context_action_event)
 
     @signal(tags=["interaction", "query"])
+    @digest()
     def get_last_active_selection_event(self) -> dict | None:
         if self._last_active_selection_event is None:
             return None
         return dict(self._last_active_selection_event)
 
     @signal(tags=["interaction", "query"])
+    @digest()
     def get_last_tool_state_event(self) -> dict | None:
         if self._last_tool_state_event is None:
             return None
         return dict(self._last_tool_state_event)
 
     @signal(tags=["interaction", "query"])
+    @digest()
     def get_last_measurement_created_event(self) -> dict | None:
         if self._last_measurement_created_event is None:
             return None
         return dict(self._last_measurement_created_event)
 
+    @signal(tags=["interaction", "callback"])
+    @digest()
     def on_hover(self, callback) -> None:
         """Register a callback invoked on every ``interaction_hover`` event.
 
@@ -93,6 +104,8 @@ class InteractionMixin:
             self._hover_callbacks.append(callback)
             self._sync_hover_telemetry()
 
+    @signal(tags=["interaction", "callback"])
+    @digest()
     def off_hover(self, callback) -> None:
         """Remove a previously registered hover callback."""
         try:
@@ -102,6 +115,8 @@ class InteractionMixin:
         else:
             self._sync_hover_telemetry()
 
+    @signal(tags=["interaction", "callback"])
+    @digest()
     def on_click(self, callback) -> None:
         """Register a callback invoked on every ``interaction_click`` event.
 
@@ -112,6 +127,8 @@ class InteractionMixin:
         if callback not in self._click_callbacks:
             self._click_callbacks.append(callback)
 
+    @signal(tags=["interaction", "callback"])
+    @digest()
     def off_click(self, callback) -> None:
         """Remove a previously registered click callback."""
         try:
@@ -119,6 +136,8 @@ class InteractionMixin:
         except ValueError:
             pass
 
+    @signal(tags=["interaction", "callback"])
+    @digest()
     def on_context(self, callback) -> None:
         """Register a callback invoked on every ``interaction_context_menu`` event.
 
@@ -129,6 +148,8 @@ class InteractionMixin:
         if callback not in self._context_callbacks:
             self._context_callbacks.append(callback)
 
+    @signal(tags=["interaction", "callback"])
+    @digest()
     def off_context(self, callback) -> None:
         """Remove a previously registered context-menu callback."""
         try:
@@ -136,6 +157,8 @@ class InteractionMixin:
         except ValueError:
             pass
 
+    @signal(tags=["interaction", "callback"])
+    @digest()
     def on_frame_change(self, callback) -> None:
         """Register a callback invoked whenever the trajectory frame changes.
 
@@ -148,6 +171,8 @@ class InteractionMixin:
         if callback not in self._frame_change_callbacks:
             self._frame_change_callbacks.append(callback)
 
+    @signal(tags=["interaction", "callback"])
+    @digest()
     def off_frame_change(self, callback) -> None:
         """Remove a previously registered frame-change callback."""
         try:

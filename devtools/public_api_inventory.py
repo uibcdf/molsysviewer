@@ -85,6 +85,8 @@ DELIBERATELY_NOT_DIGESTED: dict[str, str] = {
         "context manager, not a call with arguments to judge",
     "view.history.suspended":
         "context manager, not a call with arguments to judge",
+    "view.attributed_to":
+        "context manager, not a call with arguments to judge",
 
     # The `shapes` forwarders, and the measurement most likely to be misread as debt.
     #

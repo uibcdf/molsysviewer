@@ -20,16 +20,25 @@ each module's `__all__` where it declares one and otherwise counting only what t
 `devtools/public_api_inventory_baseline.json`, in both directions: a new undigested
 callable fails, and so does progress that leaves the baseline stale.
 
-| | Count |
-| --- | ---: |
-| public callables | 477 |
-| **with** `@digest` | 312 |
-| **without** it | 165 |
-| digesters already declared | 524 |
-| **argument names with no digester** | **56** |
+**The tool is the authority; this table is a snapshot** taken 2026-08-12, after the
+layers, tanda-1, shapes and viewer slices. Run
+`python devtools/public_api_inventory.py` rather than trusting it.
 
-**56 is the number to plan against, not 165 and not 515.** Decorating is one line;
+| | At the start | Now |
+| --- | ---: | ---: |
+| public callables | 477 | 477 |
+| **with** `@digest` | 312 | 383 |
+| **without** it | 165 | 69 |
+| deliberately exempt | — | 25 |
+| **argument names with no digester** | **56** | **44** |
+
+**44 is the number to plan against, not 69 and not 515.** Decorating is one line;
 declaring the argument is the job, and the arguments overlap heavily across a module.
+
+`deliberately exempt` is not a rounding of the debt. It is the set of callables that must
+*not* be decorated, each with a stated reason — pure variadic forwarders, whose decoration
+digests nothing and warns on every call, and context managers, which are not calls with
+arguments to judge. Without that column the gate can never honestly reach zero.
 
 The original estimate below — 286 against 515 — counted every non-underscore name in the
 package. That set includes implementation helpers nobody can reach and, worse, every
@@ -122,6 +131,14 @@ Two other candidates found while surveying MolSysMT have the same shape from a d
 angle: rules conditional on a *value* rather than on presence (`if pairs=True then both
 as_entity must be True`; `parallel=False is only compatible with num_threads in {None,
 1}`). Neither is expressible today.
+
+A fourth arrived from this repository on 2026-08-12, while digesting the viewer:
+`apply_system_edit(load_blocks="append")` **requires** `appended_n_atoms`, and every other
+policy leaves it unset. `co_required` would reject a valid `keep` call that omits the
+count. The rule stays in the body, and
+`tests/test_viewer_argument_contracts.py::test_the_conditional_rule_stays_in_the_body`
+pins it there — so moving it into a contract becomes a deliberate act taken when ArgDigest
+grows the capability, not an assumption that it already has.
 
 If this pattern keeps appearing, the missing capability is not another variant of
 `co_required` but a way to say *"when this argument has this value, then…"*. That is new
