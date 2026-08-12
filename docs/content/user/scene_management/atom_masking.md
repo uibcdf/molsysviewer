@@ -5,9 +5,9 @@ MolSysViewer uses MolSysMT selections to control what is visible in the scene.
 ## Hide/show/isolate
 
 ```python
-import molsysviewer as viewer
+import molsysviewer as msv
 
-view = viewer.MolSysView()
+view = msv.MolSysView()
 view.load("1CRN")
 view.show()
 

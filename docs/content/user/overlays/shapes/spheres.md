@@ -3,9 +3,9 @@
 Spheres are the simplest overlay primitives.
 
 ```python
-import molsysviewer as viewer
+import molsysviewer as msv
 
-view = viewer.MolSysView()
+view = msv.MolSysView()
 view.load("1CRN")
 view.show()
 
@@ -13,8 +13,8 @@ view.shapes.add_sphere(center=(0, 0, 0), radius=3.0, color=0x00FF00, alpha=0.4, 
 ```
 
 ```python
-import molsysviewer as viewer
-view = viewer.MolSysView()
+import molsysviewer as msv
+view = msv.MolSysView()
 view.show()
 
 # Transparent sphere

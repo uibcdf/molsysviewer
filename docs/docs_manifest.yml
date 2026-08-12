@@ -1,0 +1,63 @@
+# MolSysViewer Documentation Manifest
+# Tracks coverage, status, and metadata for non-course documentation pages.
+
+version: "1.0.0"
+
+homepage:
+  path: "docs/index.ipynb"
+  agents_file: "docs/index.AGENTS.md"
+  status: "in_progress"
+  description: "Linear product-first homepage with logo, install snippet, interactive 3D code example, and citation tabs."
+
+sections:
+  user_guide:
+    path: "docs/content/user"
+    agents_file: "docs/content/user/AGENTS.md"
+    status: "in_progress"
+    groups:
+      - name: "introduction"
+        path: "docs/content/user/introduction"
+        index_file: "docs/content/user/introduction/index.md"
+      - name: "molecular_system"
+        path: "docs/content/user/molecular_system"
+        index_file: "docs/content/user/molecular_system/index.md"
+      - name: "tools"
+        path: "docs/content/user/tools"
+        index_file: "docs/content/user/tools/index.md"
+      - name: "viewer"
+        path: "docs/content/user/viewer"
+        index_file: "docs/content/user/viewer/index.md"
+      - name: "scene_management"
+        path: "docs/content/user/scene_management"
+        index_file: "docs/content/user/scene_management/index.md"
+      - name: "representations"
+        path: "docs/content/user/representations"
+        index_file: "docs/content/user/representations/index.md"
+      - name: "overlays"
+        path: "docs/content/user/overlays"
+        index_file: "docs/content/user/overlays/index.md"
+      - name: "export"
+        path: "docs/content/user/export"
+        index_file: "docs/content/user/export/index.md"
+      - name: "movie"
+        path: "docs/content/user/movie"
+        index_file: "docs/content/user/movie/index.md"
+      - name: "demo_systems"
+        path: "docs/content/user/demo_systems"
+        index_file: "docs/content/user/demo_systems/index.md"
+      - name: "troubleshooting"
+        path: "docs/content/user/troubleshooting"
+        index_file: "docs/content/user/troubleshooting/index.md"
+      - name: "cookbook"
+        path: "docs/content/user/cookbook"
+        index_file: "docs/content/user/cookbook/index.md"
+
+  showcase:
+    path: "docs/content/showcase"
+    agents_file: "docs/content/showcase/AGENTS.md"
+    status: "in_progress"
+
+  developer_hub:
+    path: "docs/content/developer"
+    agents_file: "docs/content/developer/AGENTS.md"
+    status: "in_progress"

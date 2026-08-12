@@ -8,12 +8,12 @@ Goal
 Code sketch
 
 ```python
-import molsysviewer as viewer
+import molsysviewer as msv
 
 centers = [(0,0,0), (3,0,0), (1.5,2,0)]
 radii = [2.0, 1.8, 1.2]
 
-v = viewer.MolSysView()
+v = msv.MolSysView()
 v.show()
 v.shapes.add_pocket_surface(
     atom_indices=[0],  # placeholder; replace with real atom indices for clipping/position

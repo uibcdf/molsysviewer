@@ -21,8 +21,8 @@ meshes
 Add basic shapes:
 
 ```python
-import molsysviewer as viewer
-v = viewer.MolSysView()
+import molsysviewer as msv
+v = msv.MolSysView()
 v.show()
 
 # Transparent sphere

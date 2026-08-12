@@ -7,9 +7,9 @@ Goal
 Code sketch
 
 ```python
-import molsysviewer as viewer
+import molsysviewer as msv
 
-v = viewer.MolSysView()
+v = msv.MolSysView()
 v.show()
 v.shapes.add_interaction_sites(
     centers=[(0,0,0), (3,0,0), (6,0,0)],

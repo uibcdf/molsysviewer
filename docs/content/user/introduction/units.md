@@ -48,17 +48,17 @@ These settings affect how PyUnitWizard standardizes and formats quantities.
 See `molsysviewer.config`:
 
 ```python
-import molsysviewer as viewer
+import molsysviewer as msv
 
-viewer.config.set_default_quantities_form("pint")
-viewer.config.set_default_quantities_parser("pint")
-viewer.config.set_default_standard_units(
+msv.config.set_default_quantities_form("pint")
+msv.config.set_default_quantities_parser("pint")
+msv.config.set_default_standard_units(
     ["nm", "ps", "K", "mole", "amu", "e", "kJ/mol", "kJ/(mol*nm)", "kJ/(mol*nm**2)", "radians"]
 )
 ```
 
 ```{note}
-Use `viewer.config.set_default_standard_units(...)` to change your default units — **not**
+Use `msv.config.set_default_standard_units(...)` to change your default units — **not**
 `pyunitwizard.configure.set_standard_units(...)` directly. MolSysViewer remembers the standard units
 set through its own `config` helper and re-applies them when a viewer is created; a change made only
 through the low-level PyUnitWizard API would be reset to the factory default the next time you build a

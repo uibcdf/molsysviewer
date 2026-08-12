@@ -48,11 +48,11 @@ If you want to change what you get back by default (output form and standard uni
 Example:
 
 ```python
-import molsysviewer as viewer
+import molsysviewer as msv
 
-viewer.config.set_default_quantities_form("pint")
-viewer.config.set_default_quantities_parser("pint")
-viewer.config.set_default_standard_units(
+msv.config.set_default_quantities_form("pint")
+msv.config.set_default_quantities_parser("pint")
+msv.config.set_default_standard_units(
     ["nm", "ps", "K", "mole", "amu", "e", "kJ/mol", "kJ/(mol*nm)", "kJ/(mol*nm**2)", "radians"]
 )
 ```

@@ -7,9 +7,9 @@ Use layers to manage non-structural visuals (shapes, overlays) that belong toget
 ## Create a layer
 
 ```python
-import molsysviewer as viewer
+import molsysviewer as msv
 
-view = viewer.new_view("1CRN")
+view = msv.new_view("1CRN")
 view.show()
 
 pockets = view.layers.add("pockets", kind="shapes")

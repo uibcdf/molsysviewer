@@ -1,5 +1,5 @@
-import molsysviewer as viewer
+import molsysviewer as msv
 
-view = viewer.demo["pentalanine"]
+view = msv.demo["pentalanine"]
 view.show()
-view.export.html("../_static/views/demo_pentalanine.html", title="Pentalanine", shared_runtime="../_static")
+view.export.html("../_static/views/demo_pentalanine.html", title="Pentalanine", shared_runtime="../_static", background="transparent")

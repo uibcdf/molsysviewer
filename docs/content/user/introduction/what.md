@@ -69,9 +69,9 @@ If you do not have MolSysViewer installed yet, start with {doc}`installation`.
 Then come back here and try this first “hello world”.
 
 ```python
-import molsysviewer as viewer
+import molsysviewer as msv
 
-view = viewer.MolSysView()
+view = msv.MolSysView()
 view.show()
 ```
 

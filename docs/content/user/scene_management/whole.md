@@ -8,9 +8,9 @@ If you want different representations for different selections, use {doc}`region
 ## Set a baseline representation
 
 ```python
-import molsysviewer as viewer
+import molsysviewer as msv
 
-view = viewer.MolSysView()
+view = msv.MolSysView()
 view.load("1CRN")
 view.show()
 

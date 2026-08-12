@@ -20,9 +20,9 @@ regions remain visible while their own region visibility is on.
 ## Create a region from a selection
 
 ```python
-import molsysviewer as viewer
+import molsysviewer as msv
 
-view = viewer.MolSysView()
+view = msv.MolSysView()
 view.load("1CRN")
 view.show()
 

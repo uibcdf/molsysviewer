@@ -174,9 +174,9 @@ In tutorial notebooks, the most robust pattern is:
 Example (notebook under `docs/content/**`):
 
 ```python
-import molsysviewer as viewer
+import molsysviewer as msv
 
-view = viewer.demo["1TCD"]
+view = msv.demo["1TCD"]
 view.show()
 ```
 
@@ -294,7 +294,7 @@ Not every mention of code should become a hyperlink.
 - In User Guide, Cookbook, and Showcase examples, import the package as:
 
   ```python
-  import molsysviewer as viewer
+  import molsysviewer as msv
   ```
 
   Keep this consistent across pages. Avoid using multiple aliases (`mv`, `msv`, etc.).

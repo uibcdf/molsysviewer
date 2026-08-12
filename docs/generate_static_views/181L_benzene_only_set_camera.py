@@ -1,9 +1,9 @@
 from pathlib import Path
 
-import molsysviewer as viewer
+import molsysviewer as msv
 
 
-view = viewer.demo['181L']
+view = msv.demo['181L']
 camera_snapshot = {
     'mode': 'perspective',
     'fov': 0.7853981633974483,
@@ -19,4 +19,4 @@ camera_snapshot = {
 }
 view.set_camera_snapshot(camera_snapshot)
 view.show()
-view.export.html("../_static/views/181L_benzene_only_set_camera.html", title="181L", shared_runtime="../_static")
+view.export.html("../_static/views/181L_benzene_only_set_camera.html", title="181L", shared_runtime="../_static", background="transparent")
