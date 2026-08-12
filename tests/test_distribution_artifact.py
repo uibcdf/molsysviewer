@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib
 import os
 import re
 import shutil
@@ -12,6 +13,8 @@ from pathlib import Path
 
 from packaging.requirements import Requirement
 from packaging.utils import canonicalize_name
+
+import molsysviewer as molsysviewer_package
 
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED_RUNTIME_DEPENDENCIES = {
@@ -131,3 +134,48 @@ assert ACTION_CATEGORIES == data['actions']
         capture_output=True,
         text=True,
     )
+
+
+def test_every_declared_console_script_resolves():
+    """A declared entry point that imports nothing is only discovered by a user.
+
+    `pip install` writes the launcher from `pyproject.toml` without ever importing the
+    target, so a module that moves or is renamed leaves a command on the user's PATH that
+    fails at the first invocation, with no test and no build step objecting.
+
+    This was reported as a defect against `molsysviewer-qt`, whose target reads
+    `molsysviewer.standalone_qt:main`, on the evidence that `molsysviewer/standalone_qt.py`
+    is not in the tree. It is not: the module became the package `standalone_qt/`, and the
+    entry point resolves. Nothing had checked either way, which is the real finding.
+    """
+    scripts = tomllib.loads(
+        (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    )["project"]["scripts"]
+
+    assert scripts, "no console scripts are declared"
+
+    for command, target in sorted(scripts.items()):
+        module_name, separator, attribute = target.partition(":")
+        assert separator, f"{command} declares {target!r} without an attribute"
+
+        module = importlib.import_module(module_name)
+        entry = getattr(module, attribute, None)
+
+        assert callable(entry), (
+            f"the {command!r} console script points at {target!r}, which does not resolve "
+            "to a callable"
+        )
+
+
+def test_every_publicly_exported_name_resolves():
+    """`__all__` is a promise, and the lazy re-exports here can break it silently.
+
+    `create_standalone_qt0_window` and `launch_standalone_qt0` import their real
+    implementation inside the function body, so a missing target raises only when someone
+    calls them. Listing a name that cannot be produced is the packaging defect; calling
+    each one is not this test's business.
+    """
+    missing = [name for name in molsysviewer_package.__all__
+               if not hasattr(molsysviewer_package, name)]
+
+    assert missing == [], f"names in __all__ that do not resolve: {missing}"
