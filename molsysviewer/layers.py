@@ -509,22 +509,34 @@ class LayersManager(dict[str, Layer]):
         layer._send_create()  # noqa: SLF001
         return layer
 
+    @signal(tags=["layer", "query"])
+    @digest()
     def tags(self, skip_digestion: bool = False) -> list[str]:
         return list(self.keys())
 
+    @signal(tags=["layer", "query"])
+    @digest()
     def count(self, skip_digestion: bool = False) -> int:
         return len(self)
 
+    @signal(tags=["layer", "query"])
+    @digest()
     def contains(self, tag: str, skip_digestion: bool = False) -> bool:
         return tag in self
 
+    @signal(tags=["layer", "query"])
+    @digest()
     def get(self, tag: str, default=None, skip_digestion: bool = False):
         return super().get(tag, default)
 
+    @signal(tags=["layer", "query"])
+    @digest()
     def records(self, skip_digestion: bool = False) -> list[dict[str, Any]]:
         result = self.info(skip_digestion=True)
         return result if isinstance(result, list) else [result]
 
+    @signal(tags=["layer", "query"])
+    @digest()
     def info(self, tag: str | None = None, skip_digestion: bool = False):
         def summarize(layer: Layer) -> dict[str, Any]:
             return {
@@ -544,6 +556,8 @@ class LayersManager(dict[str, Layer]):
         return [summarize(layer) for layer in self.values()]
 
     @records_scene_history
+    @signal(tags=["layer"])
+    @digest()
     def delete(self, tag: str, skip_digestion: bool = False) -> None:
         layer = super().get(tag)
         if layer is None:
@@ -551,6 +565,8 @@ class LayersManager(dict[str, Layer]):
         layer.delete(skip_digestion=True)
 
     @records_scene_history
+    @signal(tags=["layer"])
+    @digest()
     def clear(self, tag: str | None = None, skip_digestion: bool = False) -> None:
         if tag is not None:
             self.delete(tag, skip_digestion=True)
@@ -559,6 +575,8 @@ class LayersManager(dict[str, Layer]):
             self.delete(layer_tag, skip_digestion=True)
 
     @records_scene_history
+    @signal(tags=["layer"])
+    @digest()
     def set_tag(self, tag: str, new_tag: str, skip_digestion: bool = False) -> Layer:
         layer = super().get(tag)
         if layer is None:
@@ -567,6 +585,8 @@ class LayersManager(dict[str, Layer]):
         return layer
 
     @records_scene_history
+    @signal(tags=["visibility", "layer"])
+    @digest()
     def show(self, tag: str, skip_digestion: bool = False) -> Layer:
         layer = super().get(tag)
         if layer is None:
@@ -575,6 +595,8 @@ class LayersManager(dict[str, Layer]):
         return layer
 
     @records_scene_history
+    @signal(tags=["visibility", "layer"])
+    @digest()
     def hide(self, tag: str, skip_digestion: bool = False) -> Layer:
         layer = super().get(tag)
         if layer is None:

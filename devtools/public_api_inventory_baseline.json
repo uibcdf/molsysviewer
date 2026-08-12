@@ -1,10 +1,10 @@
 {
   "totals": {
     "public_callables": 477,
-    "digested": 312,
-    "undigested": 165,
-    "declared_digesters": 524,
-    "missing_digesters": 56
+    "digested": 323,
+    "undigested": 154,
+    "declared_digesters": 525,
+    "missing_digesters": 55
   },
   "undigested": [
     "molsysviewer.addon_templates.build_reference_demo_view",
@@ -81,17 +81,6 @@
     "view.history.suspended",
     "view.history.undo",
     "view.import_state",
-    "view.layers.clear",
-    "view.layers.contains",
-    "view.layers.count",
-    "view.layers.delete",
-    "view.layers.get",
-    "view.layers.hide",
-    "view.layers.info",
-    "view.layers.records",
-    "view.layers.set_tag",
-    "view.layers.show",
-    "view.layers.tags",
     "view.load_state",
     "view.measurements.add",
     "view.measurements.count",
@@ -183,7 +172,6 @@
     "categories",
     "clear_first",
     "data",
-    "default",
     "demo_key",
     "easing",
     "enabled",
