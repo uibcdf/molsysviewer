@@ -40,10 +40,10 @@ class StateMixin:
         Returns
         -------
         dict
-            Keys: ``version``, ``annotations``, ``measurements``,
-            ``selections``, ``regions``, ``sections``, ``whole``,
-            ``order_high_water_mark``, ``uid_high_water_mark``,
-            ``tag_high_water_marks``.
+            Keys: ``version``, ``active_selection``, ``annotations``, ``layers``,
+            ``measurement_settings``, ``measurements``, ``regions``, ``sections``,
+            ``selections``, ``shapes``, ``whole``, ``order_high_water_mark``,
+            ``uid_high_water_mark``, ``tag_high_water_marks``.
         """
         def _to_python(obj: Any) -> Any:
             if isinstance(obj, dict):

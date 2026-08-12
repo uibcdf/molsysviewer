@@ -16,6 +16,12 @@ compression, workers, shared memory and multiview remain post-1.0.
   validation, review of the final reload fix, README positioning, a small
   MolSysMT handover and the future Mol* version floor.
   Its former Phase 5 opening item is closed.
+- [`what_save_state_promises.md`](what_save_state_promises.md): what a saved state
+  actually restores, raised from outside to keep the paper's reproducibility claim exact.
+  The exclusions are already deliberate; what is missing is a stated boundary between
+  semantic scene state, visual state, molecular data and a portable session. One obstacle
+  is structural rather than unimplemented: **the camera is the frontend's state mirrored
+  back**, so it cannot simply become another key.
 - [`digest_every_public_callable.md`](digest_every_public_callable.md): the release
   owner's rule that every public callable carries `@digest`. Measured: 515 public
   callables are undecorated against 286 decorated, and 482 raw `ValueError`/`TypeError`/

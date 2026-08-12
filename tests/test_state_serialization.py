@@ -273,3 +273,24 @@ def test_load_state_parses_before_mutating_the_current_scene(tmp_path):
         view.load_state(path)
 
     assert view.export_state() == before
+
+
+def test_the_export_state_docstring_lists_the_keys_it_emits():
+    """The docstring named ten of the fourteen keys it produces.
+
+    A `Returns` section that enumerates keys is a contract, and it had fallen four behind
+    as the document grew: `active_selection`, `layers`, `measurement_settings`, `shapes`.
+    A reader trusting it would not know `shapes` round-trips.
+    """
+    import re
+
+    from molsysviewer.demo import demo
+    from molsysviewer.viewer.state import StateMixin
+
+    view = demo["dialanine"]
+    view.widget.send = lambda _message: None  # type: ignore[attr-defined]
+
+    documented = set(re.findall(r"``(\w+)``",
+                                StateMixin.export_state.__doc__.split("Returns", 1)[1]))
+
+    assert documented == set(view.export_state())
