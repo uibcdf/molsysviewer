@@ -126,7 +126,7 @@ that "assumes nm".
 
 ## Upstream helpers (pyunitwizard)
 
-Two helpers were added to PyUnitWizard to support this policy and de-duplicate
+Three helpers were added to PyUnitWizard to support this policy and de-duplicate
 the pattern across the whole suite:
 
 - `puw.ensure_quantity(value, dimensionality=None, to_unit=None, standardized=True,
