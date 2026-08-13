@@ -11,6 +11,10 @@ compression, workers, shared memory and multiview remain post-1.0.
 
 ## Open before 1.0
 
+- [`consolidate_quantity_digesters_on_pyunitwizard_canonical_paths.md`](consolidate_quantity_digesters_on_pyunitwizard_canonical_paths.md):
+  classify legacy physical-magnitude digesters and consolidate compatible paths on the
+  existing `ensure_quantity()` helper, adding explicit canonical branches only where
+  representative interactive benchmarks justify them.
 - [`what_needs_a_human_2026_08.md`](what_needs_a_human_2026_08.md): **read this
   one first.** Five human observations or decisions remain: visible Qt
   validation, review of the final reload fix, README positioning, a small

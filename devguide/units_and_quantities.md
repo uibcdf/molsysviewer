@@ -65,6 +65,11 @@ dimensionality, standardize to nm — and re-raises MolSysViewer's own
 `ArgumentError` (a `ValueError`) with the argument name and a teaching message.
 The digester returns a **standardized nm quantity**.
 
+`ensure_quantity()` already recognizes a quantity in the configured canonical
+unit through PyUnitWizard's cheap metadata path. Do not add a `has_unit()` guard
+around every use of this helper. An explicit canonical branch belongs only in a
+measured hot path that also performs viewer-owned shape or dtype normalization.
+
 Do **not** hand-roll `parse → is_quantity → check → standardize → raise` in each
 digester; that is exactly what `puw.ensure_quantity` centralizes.
 
@@ -126,5 +131,12 @@ the pattern across the whole suite:
 
 - `puw.ensure_quantity(value, dimensionality=None, to_unit=None, standardized=True,
   parser=None, caller=None)` — parse/validate/standardize a quantity; reject bare.
+- `puw.has_unit(value, unit)` — return `True`, `False`, or `None` for a cheap
+  exact-unit query without extracting the magnitude. `False` does not prove
+  dimensional compatibility; `False` and `None` return to general validation at
+  an untrusted boundary.
 - `puw.get_value(..., value_type=float|int)` — extract a Python scalar (with a
   clear error for non-scalar input), closing the `float(get_value(...))` idiom.
+
+The classification and migration of older quantity digesters is tracked in
+[`pending_proposals/consolidate_quantity_digesters_on_pyunitwizard_canonical_paths.md`](pending_proposals/consolidate_quantity_digesters_on_pyunitwizard_canonical_paths.md).
