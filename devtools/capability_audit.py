@@ -105,7 +105,7 @@ CAPABILITIES: tuple[Capability, ...] = (
         api=("view.selections.", "view.active_selection.", "view.select"),
         anchor="molsysviewer/selections.py",
         provenance=MOLSYSMT,
-        docs=None,  # no user page: the selection story lives in MolSysMT's documentation,
+        docs="docs/content/user/scene_management/selections.md",
         unit=("test_selections.py", "test_active_selection.py"),
         e2e=("selection-subpanel", "range-selection"),
         note="Selection syntax is MolSysMT's; MolSysViewer digests and forwards it.",
@@ -136,7 +136,7 @@ CAPABILITIES: tuple[Capability, ...] = (
         api=("view.measurements.",),
         anchor="molsysviewer/measurements.py",
         provenance=PYTHON,
-        docs=None,  # no user page; `overlays/index.md` does not mention measurements
+        docs="docs/content/user/overlays/measurements.md",
         unit=("test_measurements.py",),
         e2e=("measurements-interaction", "measures-subpanel"),
     ),
@@ -185,7 +185,10 @@ CAPABILITIES: tuple[Capability, ...] = (
              "view.zoom"),
         anchor="molsysviewer/viewer/camera.py",
         provenance=BROWSER,
-        docs=None,  # no user page,
+        # Found by writing the pages the audit said were missing: this one never was.
+        # `docs=None` was recorded after looking for `user/scene/camera.md`, without
+        # checking whether another page already owned the capability.
+        docs="docs/content/user/viewer/camera_and_controls.ipynb",
         unit=("test_camera_snapshot_request.py", "test_zoom.py"),
         e2e=("exported-page-framing",),
         note="The snapshot is the frontend's state mirrored back, and is None on a view "
@@ -197,7 +200,7 @@ CAPABILITIES: tuple[Capability, ...] = (
              "view.import_state"),
         anchor="molsysviewer/viewer/state.py",
         provenance=PYTHON,
-        docs=None,  # `export/index.md` does not mention save_state/load_state
+        docs="docs/content/user/export/state.md",
         unit=("test_state_serialization.py", "test_state_v2.py", "test_state_sections.py"),
         note="Semantic scene state only: no molecular system, camera or history. Version 2 "
              "refuses version 1 rather than migrating it.",
