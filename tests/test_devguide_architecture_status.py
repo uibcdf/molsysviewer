@@ -96,4 +96,11 @@ def test_resume_route_does_not_reopen_closed_work_or_orphan_public_digestion():
     assert "finish Phases 9 and 10" not in pending_index
     assert "6. **Implemented; awaiting audit.**" not in master
     assert "digest_every_public_callable.md" in master
-    assert "digest_every_public_callable.md" in checkpoint
+
+    # The checkpoint used to be required to *point at* the digestion proposal, because
+    # the work was open and a resuming session had to find it. Gate 9 closed on
+    # 2026-08-12, so the requirement inverts: the handoff must say it is done and must
+    # not send anyone to redo it. A resume route that reopens closed work is the failure
+    # this test is named for, in either direction.
+    assert "Gate 9 of Phase 10 is done" in checkpoint
+    assert "pending_proposals/digest_every_public_callable.md" not in checkpoint

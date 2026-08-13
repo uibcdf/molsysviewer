@@ -32,12 +32,6 @@ compression, workers, shared memory and multiview remain post-1.0.
   Measured: four MolSysSuite add-ons declare four different things about themselves in an
   untyped `meta` dict, `AddonSpec` has no `status` field, and only MolSysMT is discovered
   on install.
-- [`digest_every_public_callable.md`](digest_every_public_callable.md): the release
-  owner's rule that every public callable carries `@digest`. Measured: 515 public
-  callables are undecorated against 286 decorated, and 482 raw `ValueError`/`TypeError`/
-  `KeyError` never reach the diagnostics catalogue. The cost is not the decorator but
-  declaring the arguments each function introduces, so the job must be sized by argument
-  names rather than by function count.
 - [`pre_1_0_architecture_rework_and_hardening_master_plan.md`](pre_1_0_architecture_rework_and_hardening_master_plan.md):
   canonical execution plan for the corrections, transport/export rework,
   architectural extraction, seam hardening, representative performance work

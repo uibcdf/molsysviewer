@@ -1233,7 +1233,7 @@ not repeated for this documentation slice.
    against. The earlier 286/515 counted implementation helpers and every
    imported name re-exported by its importer (`digest` alone appeared 38 times).
    What remains is executing
-   [`digest_every_public_callable.md`](digest_every_public_callable.md) module by
+   [`digest_every_public_callable.md`](../archive/digest_every_public_callable.md) module by
    module. Decorating names without declaring their arguments does not close this
    gate.
 10. **Human workflow required.** Complete scientific dogfooding on

@@ -1,9 +1,9 @@
 # What needs a human
 
-**Written 2026-08-06 and reconciled on 2026-08-09.** Five items remain, and none
-of them is blocked on implementation effort in this repository: they need a
-screen, a judgement, or a hand on another repository. The former seventh item,
-opening Phase 5, is complete.
+**Written 2026-08-06, reconciled 2026-08-13.** **Three items remain**, and none is
+blocked on implementation effort in this repository: they need a screen or a judgement.
+Items 3, 5 and 7 are closed and struck below rather than deleted, so a reader can tell
+"done" from "never existed".
 
 Each entry says what is needed, from whom, and what it unblocks. When one is
 done, close it **in its home document** — the entries below point there — and
@@ -75,18 +75,11 @@ question is only what a newcomer meets first.
 
 Deciding it archives that document.
 
-## 5. Hand MolSysMT what is waiting in their tree — *another repository*
+## 5. ~~Hand MolSysMT what is waiting in their tree~~ — **closed**
 
-The earlier four-file handover was resolved. Two current changes now sit
-uncommitted in `../molsysmt` and need its maintainer's review:
-
-| File | What it is |
-| --- | --- |
-| `devguide/pending_proposals/known_source_form_and_large_string_detection.md` | bounded source-form detection plus an explicit source-form hint, motivated by a 95k-atom PDB string |
-| one index line | the corresponding entry in `devguide/pending_proposals/README.md` |
-
-*Home:* the matching proposal in this repository and the two-file MolSysMT
-working tree.
+Both handovers were received. The source-form proposal was accepted into
+`molsysmt/devguide/pending_proposals/` and the declared-selection-syntax report answered,
+in their `d5b066a35`. Nothing of ours sits uncommitted in their tree.
 
 ## 6. Mol\* accepted the fix — *the decision is now ours*
 
@@ -116,7 +109,13 @@ the visible Qt observations above; Phase 10 owns the remaining release gates.
 
 It needs no decision now; it is recorded so nobody rediscovers it as a bug.
 
-- **259 python blocks in 63 `.md` files under `docs/content/` are executed by
-  nothing.** The notebooks are executed by `docs/execute_notebooks.py`; the
-  markdown is not. One of those blocks was broken for as long as units have been
-  enforced, and was found by hand. The other 62 files are unverified.
+- **The python blocks in the documentation markdown are executed by almost nothing.**
+  `docs/execute_notebooks.py` runs the notebooks; the markdown is not run.
+  `tests/test_documentation_pages_run.py` now executes three pages, listed in its
+  `EXECUTABLE_PAGES`, and adding a page to that list is how this finding gets retired one
+  page at a time.
+
+  It is no longer hypothetical. A rename to `import molsysviewer as msv` was applied to
+  import lines and not to bodies in four pages, leaving a `NameError` in each
+  (`0c8fd0f2`), and the three pages written on 2026-08-13 contained three defects of their
+  own that the new test caught before anyone read them.

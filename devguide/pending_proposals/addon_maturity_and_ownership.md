@@ -95,5 +95,6 @@ Neither is MolSysViewer's to fix.
 - `molsysviewer/addons.py` — `AddonSpec`, `KNOWN_ADDON_MODULES`, `ADDON_ENTRY_POINT_GROUP`.
 - [`docs/content/developer/addons.md`](../../docs/content/developer/addons.md) — the host
   contract and the ownership statement.
-- [`post_1.0/scene_object_owner_field.md`](post_1.0/scene_object_owner_field.md) — the
-  related open question of whether a scene object records which add-on drew it.
+- [`../archive/scene_object_owner_field.md`](../archive/scene_object_owner_field.md) — the
+  related question of whether a scene object records which add-on drew it. **Resolved**;
+  read it for how ownership was decided there before deciding maturity here.

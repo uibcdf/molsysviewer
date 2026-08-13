@@ -11,6 +11,11 @@ user/developer documentation.
 - [`molsysmovie_plan.md`](molsysmovie_plan.md)
 - [`standalone_qt_prototype_plan.md`](standalone_qt_prototype_plan.md)
 - [`canvas_panel_transition.md`](canvas_panel_transition.md)
+- [`digest_every_public_callable.md`](digest_every_public_callable.md)
+  — gate 9, done 2026-08-12: 448 public callables digested, 0 undigested, 29 exempt with
+  a stated reason, 0 argument names without a digester. Read for the finding rather than
+  the plan: decorating surfaced more defects than it introduced, and the 29 exemptions are
+  why the gate could reach zero honestly.
 - [`migrate_the_standardizer_to_alias_tables.md`](migrate_the_standardizer_to_alias_tables.md)
   — the imperative standardizer became declared `AliasTable`s. Read for the finding
   rather than the plan: the code it replaced tested a caller string nothing produces, so
