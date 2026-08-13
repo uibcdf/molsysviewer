@@ -16,6 +16,11 @@ compression, workers, shared memory and multiview remain post-1.0.
   validation, review of the final reload fix, README positioning, a small
   MolSysMT handover and the future Mol* version floor.
   Its former Phase 5 opening item is closed.
+- [`reuse_attribute_availability_within_one_scene_summary_synchronization.md`](reuse_attribute_availability_within_one_scene_summary_synchronization.md):
+  operation-local reuse of the MolSysMT attribute inventory while synchronizing region
+  and whole summaries. The re-audit behind uibcdf/molsysmt#147 measured 510 adapter
+  queries but only 229 unique pairs and a controlled median reduction from 46.71 ms to
+  26.62 ms. This is independent of MolSysMT's 1.0 gate.
 - [`what_save_state_promises.md`](what_save_state_promises.md): what a saved state
   actually restores, raised from outside to keep the paper's reproducibility claim exact.
   The exclusions are already deliberate; what is missing is a stated boundary between

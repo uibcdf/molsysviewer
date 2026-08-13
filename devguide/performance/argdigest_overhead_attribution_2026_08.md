@@ -1,5 +1,36 @@
 # Attributing the ArgDigest overhead — 2026-08-12
 
+## Correction — 2026-08-13
+
+A new audit instrumented the actual ArgDigest fast path instead of counting every
+decorated call as fully digested. The causal conclusion below is wrong on the current
+workflow:
+
+- the region action makes 589 decorated calls: 21 use ordinary digestion and 568 use
+  `skip_digestion=True`;
+- all 510 form-level `has_attribute` calls use the fast path and perform zero
+  molecular-system assessments;
+- forcing the same bypass at every form predicate changes the measured median from
+  46.62 ms to 46.82 ms, which is no improvement within dispersion;
+- the family count below omitted 36
+  `molsysmt_MolecularMechanics.has_attribute` calls, so the complete total is 510 rather
+  than 434.
+
+The important cost is local to MolSysViewer. One region creation calls
+`_available_region_attributes()` twice: once while building the region summaries and
+again while building the whole summary. Those calls generate 510 adapter queries for
+229 unique `(form, attribute)` pairs. An alternating operation-local reuse probe reduced
+the median from 46.71 ms to 26.62 ms, a 20.10 ms or approximately 43% improvement.
+
+That finding is tracked as uibcdf/molsysviewer#32 and
+`../pending_proposals/reuse_attribute_availability_within_one_scene_summary_synchronization.md`.
+The smaller direct-public-boundary redundancy found in MolSysMT is tracked separately
+as uibcdf/molsysmt#154. MolSysMT withdrew #147 because its reported viewer-side
+boundary-digestion mechanism is absent, not because code was changed to hide it.
+
+The remainder of this document is retained as the 2026-08-12 hypothesis and must not be
+read as the current causal attribution.
+
 `devguide/benchmarks/README.md` §4 reports:
 
 | Telemetry Configuration | Mean (ms) | Overhead (ms) | Slowdown (%) |
