@@ -155,9 +155,17 @@ Two deliberate differences, both about what belongs in a queue:
    pre-1.0 master plan and `what_needs_a_human_2026_08.md` sit at `devguide/`, and the two
    audit inventories in `devguide/audits/`. An issue for an eleven-phase plan would be an
    issue that never closes.
-2. **We have no `devguide_issue.py`.** Opening, syncing and closing on the board is done
-   by hand with `gh`. The front matter and the issues came first on purpose, and a script
-   written before the workflow settles is written against a guess.
+2. **Our archive stays flat, and that is a decision.** MolSysMT splits it into
+   `resolved_bugs/`, `resolved_proposals/` and `withdrawn_bugs/`. Considered on
+   2026-08-14 and declined: they archived *into* that shape from the start, we would have
+   to migrate 28 documents, and moving them breaks references — which is the very
+   argument this protocol makes for issue numbers over paths. The gain is navigation
+   comfort in a directory that is read by search, not by browsing. If it ever does become
+   a problem, the answer is a generated archive index, not moved files.
+
+3. **Opening and closing on the board are done by hand.** `devtools/devguide_issue.py`
+   only ever writes the derived state labels; the two comments the protocol specifies are
+   where the judgement is, and a script would write them badly.
 
 ## Indexes are generated
 
@@ -178,6 +186,23 @@ python devtools/devguide_index.py --check   # fail if stale
 `--check` runs in the suite. A hand-written index of documents that already describe
 themselves is two independent authoritative lists, and ours was the wrong one: it went on
 describing four documents as queue entries after they had been moved out.
+
+## Checking the board against the front matter
+
+The front matter and the board are maintained by different acts — editing a file, and
+clicking on GitHub — so they will drift. Nothing in the suite can catch it: verifying an
+issue needs the network and a token.
+
+```bash
+python devtools/devguide_issue.py sync --check   # report drift, exit non-zero
+python devtools/devguide_issue.py sync           # apply the derived state labels
+```
+
+Run it before a release and after any session that closed or restatused an entry. It
+reports a document whose issue is missing, closed while the document sits in a queue, or
+carrying a state label that disagrees with `status`. The last of those it can repair; the
+others need a person, because either the document should have been archived or the issue
+should not have been closed, and only a human knows which.
 
 Narrative about a closed entry belongs in that entry's own `## Resolution` section, where
 someone will look for it in a year — not in the index of a directory it has already left.

@@ -233,3 +233,28 @@ def test_the_generated_indexes_are_current():
         (completed.stderr or completed.stdout).strip()
         or "devguide_index.py --check failed"
     )
+
+
+def test_the_board_check_exists_and_refuses_to_write_state_into_a_document():
+    """`devguide_issue.py sync` may set labels and nothing else.
+
+    The front matter is the source. A tool that read state back from the board would make
+    the board authoritative for something the document owns, and the two would then agree
+    for the wrong reason. Opening and closing stay by hand because the two comments the
+    protocol specifies are judgement, not templating.
+    """
+    tool = ROOT / "devtools" / "devguide_issue.py"
+
+    assert tool.is_file()
+    source = tool.read_text(encoding="utf-8")
+    assert "never reads state back into a document" in source
+    assert "issue create" not in source, "opening is a human act"
+    assert "issue close" not in source, "closing is a human act"
+
+
+def test_the_protocol_records_the_flat_archive_as_a_decision():
+    """Declined on 2026-08-14. Written down so nobody re-proposes it in six months."""
+    text = (DEVGUIDE / "reporting_protocol.md").read_text(encoding="utf-8")
+
+    assert "archive stays flat" in text
+    assert "moving them breaks references" in text
