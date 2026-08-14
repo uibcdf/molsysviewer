@@ -147,6 +147,22 @@ it before the issue form.
 The **`post-1.0` milestone** carries the deferral. It replaces nothing: the `post_1.0/`
 subdirectories stay, and the milestone makes the same fact visible from the board.
 
+## The ecosystem question, raised
+
+This protocol declares itself ecosystem-wide, and `uibcdf/<repo>#<number>` is a reliable
+reference in every direction only while the vocabularies mean the same thing everywhere.
+Today they are prose duplicated in two repositories.
+
+Raised as [uibcdf/molsysmt#156](https://github.com/uibcdf/molsysmt/issues/156), with the
+distinction we found by adopting it: **the reporting vocabularies travel and the evidence
+labels do not.** `status` and `verification` we took without adapting a word, and they fit
+28 documents of a viewer. Of the five evidence labels in their `DOCUMENT_POLICY.md`, two
+cannot be earned here at all — a report is a report in any repository; a capability
+belongs to the domain.
+
+Their answer changes what we invest in the local tooling, so it is worth knowing before
+adapting it further.
+
 ## Where we differ from MolSysMT
 
 Two deliberate differences, both about what belongs in a queue:
