@@ -14,14 +14,24 @@ archive only after the implementation and regression tests are complete.
 
 ## Current triage
 
-- [`exported_view_background_not_transparent_when_loaded_dark.md`](exported_view_background_not_transparent_when_loaded_dark.md):
-  a view exported with `background="transparent"` is opaque white when the embedding
-  page is dark at load time, and never recovers. Reported from MolSysMT's published
-  documentation. Located in `applyExportedBackground`, which resolves light/dark and
-  calls `toggleBackground` even in transparent mode, where neither is meaningful.
-- [`standalone_qt_live_demo_reload.md`](standalone_qt_live_demo_reload.md):
-  replacing a loaded demo does not update the real Qt scene. It requires a real
-  Qt/WebGL window for the next diagnostic pass.
+Entries are rendered from each report's front matter — edit the reports, not this
+list.
+
+<!-- generated: devguide_index -->
+
+### Partially done (1)
+
+- [`standalone_qt_live_demo_reload.md`](standalone_qt_live_demo_reload.md) — [#35](https://github.com/uibcdf/molsysviewer/issues/35) — In the standalone Qt host, replacing the loaded demo leaves the previous system on screen. *(high, reproduced)*
+
+### Open (1)
+
+- [`exported_view_background_not_transparent_when_loaded_dark.md`](exported_view_background_not_transparent_when_loaded_dark.md) — [#34](https://github.com/uibcdf/molsysviewer/issues/34) — An exported view embedded in a dark page renders opaque white instead of transparent. *(medium, reproduced)*
+
+### Deferred until after 1.0 (1)
+
+- [`standalone_qt_movie_camera_snapshot.md`](post_1.0/standalone_qt_movie_camera_snapshot.md) — [#36](https://github.com/uibcdf/molsysviewer/issues/36) — Movie export in the Qt host fails because the camera snapshot is never mirrored back.
+
+<!-- /generated -->
 
 The movie camera-snapshot defect is confirmed but explicitly deferred under
 [`post_1.0/`](post_1.0/README.md).

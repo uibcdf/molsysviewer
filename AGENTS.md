@@ -116,7 +116,12 @@ The short version:
   repository's `devguide/`.
 - Plans and inventories are **not** queue entries. They live elsewhere in `devguide/`.
 
-`tests/test_reporting_protocol.py` enforces what can be checked offline.
+- The queue READMEs are **generated** from that front matter: after adding, closing or
+  restatusing an entry, run `python devtools/devguide_index.py`. Do not hand-edit the
+  block between the `generated: devguide_index` markers.
+
+`tests/test_reporting_protocol.py` enforces what can be checked offline, including that
+the generated indexes are current.
 
 ## Developer documentation (where to look first)
 

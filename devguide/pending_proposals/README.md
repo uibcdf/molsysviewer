@@ -14,53 +14,51 @@ envelope, the shared manifest and the array-native layout; they were promoted to
 `devguide/` on 2026-08-05 and are normative now. Structure windowing,
 compression, workers, shared memory and multiview remain post-1.0.
 
-## Open before 1.0
+## The queue
 
-- [`consolidate_quantity_digesters_on_pyunitwizard_canonical_paths.md`](consolidate_quantity_digesters_on_pyunitwizard_canonical_paths.md):
-  classify legacy physical-magnitude digesters and consolidate compatible paths on the
-  existing `ensure_quantity()` helper, adding explicit canonical branches only where
-  representative interactive benchmarks justify them.
-- [`reuse_attribute_availability_within_one_scene_summary_synchronization.md`](reuse_attribute_availability_within_one_scene_summary_synchronization.md):
-  operation-local reuse of the MolSysMT attribute inventory while synchronizing region
-  and whole summaries. The re-audit behind uibcdf/molsysmt#147 measured 510 adapter
-  queries but only 229 unique pairs and a controlled median reduction from 46.71 ms to
-  26.62 ms. This is independent of MolSysMT's 1.0 gate.
-- [`what_save_state_promises.md`](what_save_state_promises.md): what a saved state
-  actually restores, raised from outside to keep the paper's reproducibility claim exact.
-  The exclusions are already deliberate; what is missing is a stated boundary between
-  semantic scene state, visual state, molecular data and a portable session. One obstacle
-  is structural rather than unimplemented: **the camera is the frontend's state mirrored
-  back**, so it cannot simply become another key.
-- [`addon_maturity_and_ownership.md`](addon_maturity_and_ownership.md): the ownership half
-  is documented and done; what remains is whether maturity belongs to the host contract.
-  Measured: four MolSysSuite add-ons declare four different things about themselves in an
-  untyped `meta` dict, `AddonSpec` has no `status` field, and only MolSysMT is discovered
-  on install.
-- [`molsysmt_docs_pipeline_analysis.md`](molsysmt_docs_pipeline_analysis.md):
-  their pipeline read at the scale it is about to reach. The scheme is piloted in
-  one notebook; 138 call `msm.view()` and 26 carry a target. The structural
-  finding is that the code a reader sees and the code that produced the picture
-  are two different files with nothing checking they agree, and the proposed
-  direction is to let the tutorial cell generate its own view.
-- [`molsysmt_known_source_form_and_large_string_detection.md`](molsysmt_known_source_form_and_large_string_detection.md):
-  upstream proposal motivated by a 95,000-atom PDB string. It combines bounded,
-  content-aware `get_form()` detection with a public explicit source-form hint for
-  callers that know their input representation by construction. MolSysViewer keeps
-  only a temporary benchmark-level direct converter import until MolSysMT exposes the
-  public path.
-- [`classic_script_runtime_for_offline_bundles.md`](classic_script_runtime_for_offline_bundles.md):
-  **not to be implemented yet.** Building the runtime as a classic script instead
-  of ESM, which would let many shared views open from a disk with no server. The
-  research and the browser measurements are done and recorded; the trigger is a
-  real user with that need.
-- [`first_read_comprehension_gaps_2026_08.md`](first_read_comprehension_gaps_2026_08.md):
-  **five of six findings acted on**; what is left is one positioning decision,
-  what the README leads with. Kept for its evidence — what one uninterrupted
-  first read concluded wrongly, and which document caused each wrong turn. A
-  maintainer cannot produce this about their own project.
-*(A JIT cold-start proposal was drafted here on 2026-07-31 and withdrawn the same
-day: MolSysMT no longer uses Numba. See
-[`../standalone_performance_and_depythonization.md`](../archive/standalone_performance_and_depythonization.md).)*
+Entries are rendered from each proposal's front matter — edit the proposals, not this
+list. Deferred entries also carry the `post-1.0` milestone on the issue board.
+
+<!-- generated: devguide_index -->
+
+### Partially done (2)
+
+- [`addon_maturity_and_ownership.md`](addon_maturity_and_ownership.md) — [#37](https://github.com/uibcdf/molsysviewer/issues/37) — Add-ons declare four different things about their own maturity, in an untyped dict. *(measured)*
+- [`first_read_comprehension_gaps_2026_08.md`](first_read_comprehension_gaps_2026_08.md) — [#40](https://github.com/uibcdf/molsysviewer/issues/40) — What one uninterrupted first read of the project concluded wrongly, and which document caused each wrong turn. *(reproduced)*
+
+### Blocked (1)
+
+- [`molsysmt_known_source_form_and_large_string_detection.md`](molsysmt_known_source_form_and_large_string_detection.md) — [#42](https://github.com/uibcdf/molsysviewer/issues/42) — A large in-memory molecular string enters unbounded filename extension detection. *(measured)* — waiting on uibcdf/molsysmt#151
+
+### Open (5)
+
+- [`classic_script_runtime_for_offline_bundles.md`](classic_script_runtime_for_offline_bundles.md) — [#39](https://github.com/uibcdf/molsysviewer/issues/39) — Build the runtime as a classic script so many shared views open from a disk with no server. *(measured)*
+- [`consolidate_quantity_digesters_on_pyunitwizard_canonical_paths.md`](consolidate_quantity_digesters_on_pyunitwizard_canonical_paths.md) — [#33](https://github.com/uibcdf/molsysviewer/issues/33) — Consolidate quantity digesters on PyUnitWizard canonical paths. *(inspected)*
+- [`molsysmt_docs_pipeline_analysis.md`](molsysmt_docs_pipeline_analysis.md) — [#41](https://github.com/uibcdf/molsysviewer/issues/41) — MolSysMT's documentation pipeline read at the scale it is about to reach. *(measured)*
+- [`reuse_attribute_availability_within_one_scene_summary_synchronization.md`](reuse_attribute_availability_within_one_scene_summary_synchronization.md) — [#32](https://github.com/uibcdf/molsysviewer/issues/32) — One scene-summary synchronization asks the same attribute-availability question repeatedly. *(measured)*
+- [`what_save_state_promises.md`](what_save_state_promises.md) — [#38](https://github.com/uibcdf/molsysviewer/issues/38) — State what a saved state restores, and separate scene state from visual state. *(measured)*
+
+### Deferred until after 1.0 (17)
+
+- [`agent_token_cost_of_non_pytest_tests.md`](post_1.0/agent_token_cost_of_non_pytest_tests.md) — [#43](https://github.com/uibcdf/molsysviewer/issues/43) — Study the token cost of non-pytest test output for agent consumers.
+- [`annotations_mvs_machinery.md`](post_1.0/annotations_mvs_machinery.md) — [#44](https://github.com/uibcdf/molsysviewer/issues/44) — Advanced annotations on Mol*'s MVS machinery.
+- [`canvas_picking_level.md`](post_1.0/canvas_picking_level.md) — [#45](https://github.com/uibcdf/molsysviewer/issues/45) — Configurable canvas picking granularity via the context menu.
+- [`chemical_metadata_loss_sdf_pdb.md`](post_1.0/chemical_metadata_loss_sdf_pdb.md) — [#46](https://github.com/uibcdf/molsysviewer/issues/46) — Preserve enriched chemical metadata from SDF and MOL2.
+- [`export_rework_rough_edges.md`](post_1.0/export_rework_rough_edges.md) — [#47](https://github.com/uibcdf/molsysviewer/issues/47) — Rough edges of the 2026-08 export rework, to review cold.
+- [`interactions_domain.md`](post_1.0/interactions_domain.md) — [#48](https://github.com/uibcdf/molsysviewer/issues/48) — An Interactions domain for derived atom-atom relations.
+- [`multiview_split_screen.md`](post_1.0/multiview_split_screen.md) — [#49](https://github.com/uibcdf/molsysviewer/issues/49) — Multi-view split-screen viewport synchronization.
+- [`proteinview_external_review_and_ideas.md`](post_1.0/proteinview_external_review_and_ideas.md) — [#50](https://github.com/uibcdf/molsysviewer/issues/50) — Idea inventory from an external terminal viewer.
+- [`qt_popout_parity.md`](post_1.0/qt_popout_parity.md) — [#51](https://github.com/uibcdf/molsysviewer/issues/51) — Popout parity in the Qt standalone host.
+- [`qt_render_check_on_a_gpu_runner.md`](post_1.0/qt_render_check_on_a_gpu_runner.md) — [#52](https://github.com/uibcdf/molsysviewer/issues/52) — Automate the Qt render check on a GPU runner.
+- [`receiver_side_structure_barrier.md`](post_1.0/receiver_side_structure_barrier.md) — [#53](https://github.com/uibcdf/molsysviewer/issues/53) — Move the structure barrier to the receiver.
+- [`representative_scale_followups.md`](post_1.0/representative_scale_followups.md) — [#54](https://github.com/uibcdf/molsysviewer/issues/54) — Post-1.0 performance architecture.
+- [`structure_windowing_and_lazy_materialization.md`](post_1.0/structure_windowing_and_lazy_materialization.md) — [#55](https://github.com/uibcdf/molsysviewer/issues/55) — Structure windowing and lazy materialization.
+- [`studio_interactions_subpanel_ui_design.md`](post_1.0/studio_interactions_subpanel_ui_design.md) — [#56](https://github.com/uibcdf/molsysviewer/issues/56) — Studio subpanel for Interactions.
+- [`viewer_mixin_contract_and_caller_resolution.md`](post_1.0/viewer_mixin_contract_and_caller_resolution.md) — [#57](https://github.com/uibcdf/molsysviewer/issues/57) — Generated typing contract for MolSysView mixins.
+- [`viewing_in_the_terminal.md`](post_1.0/viewing_in_the_terminal.md) — [#58](https://github.com/uibcdf/molsysviewer/issues/58) — View a scene as pixels in a terminal.
+- [`visualization_representations_roadmap.md`](post_1.0/visualization_representations_roadmap.md) — [#59](https://github.com/uibcdf/molsysviewer/issues/59) — Advanced representations for pockets, voids, channels and interfaces.
+
+<!-- /generated -->
 
 ## Not in this queue
 
@@ -74,41 +72,6 @@ inventories, and **one theme, one issue** cannot apply to them.
 - [`../audits/transport_popup_audit_followups_2026_08.md`](../audits/transport_popup_audit_followups_2026_08.md)
   and [`../audits/open_items_after_the_2026_08_smoke_round.md`](../audits/open_items_after_the_2026_08_smoke_round.md)
   — the two audit inventories, almost entirely closed.
-
-## Deferred until after 1.0
-
-See [`post_1.0/`](post_1.0/). It contains:
-
-- the approved Interactions domain and Studio design;
-- configurable canvas picking granularity;
-- lazy structure sources and partial materialization;
-- multiview synchronization;
-- advanced annotation, representation, and chemical-metadata work;
-- typing-generation and test-output studies;
-- deeper large-system rendering analysis;
-- [`post_1.0/representative_scale_followups.md`](post_1.0/representative_scale_followups.md):
-  Phase 8's measured next optimizations — typed/dictionary topology transport,
-  bounded profiling-driven structure prefetch, and the Qt lower-copy trigger;
-- [`qt_popout_parity.md`](post_1.0/qt_popout_parity.md): the Qt shell is built
-  with `include_popout=False`, so the entire popup control plane — manifest
-  validation, canonical snapshot, endpoint identity — is exercised only on
-  AnyWidget. Staged at Stage 4 of the host plan, not a defect;
-- [`qt_render_check_on_a_gpu_runner.md`](post_1.0/qt_render_check_on_a_gpu_runner.md):
-  the render gate is closed on real GPU; what is missing is a machine that proves
-  it again automatically;
-- [`proteinview_external_review_and_ideas.md`](post_1.0/proteinview_external_review_and_ideas.md):
-  an idea inventory drawn from reading an external terminal viewer. It is not a
-  design. Its first section records which of the ideas it raises are **already**
-  covered by approved documents here, so read it before opening a proposal about
-  interactions, pockets, or agent integration;
-- [`viewing_in_the_terminal.md`](post_1.0/viewing_in_the_terminal.md): show the
-  scene as pixels in a terminal, from the existing CLI and from Python. The
-  headless pixel source and the CLI argument parsing already exist, so this is
-  one new component plus two triggers. It also records an unbounded dimension
-  argument in today's image export that it does not own.
-
-These remain useful, but they expand product scope or require benchmark and
-upstream decisions. They do not block the current release.
 
 ## Practical decision
 

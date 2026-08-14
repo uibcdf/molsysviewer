@@ -155,10 +155,32 @@ Two deliberate differences, both about what belongs in a queue:
    pre-1.0 master plan and `what_needs_a_human_2026_08.md` sit at `devguide/`, and the two
    audit inventories in `devguide/audits/`. An issue for an eleven-phase plan would be an
    issue that never closes.
-2. **We have no generated indexes and no `devguide_issue.py` yet.** The front matter and
-   the issues came first on purpose; a validator written before the data exists is written
-   against a guess. `tests/test_reporting_protocol.py` checks the parts that are cheap to
-   check today.
+2. **We have no `devguide_issue.py`.** Opening, syncing and closing on the board is done
+   by hand with `gh`. The front matter and the issues came first on purpose, and a script
+   written before the workflow settles is written against a guess.
+
+## Indexes are generated
+
+Each queue README has a hand-written head — how to read the directory, what precedence it
+carries, what it demands — and a block rendered from front matter:
+
+```markdown
+<!-- generated: devguide_index -->
+...
+<!-- /generated -->
+```
+
+```bash
+python devtools/devguide_index.py           # write
+python devtools/devguide_index.py --check   # fail if stale
+```
+
+`--check` runs in the suite. A hand-written index of documents that already describe
+themselves is two independent authoritative lists, and ours was the wrong one: it went on
+describing four documents as queue entries after they had been moved out.
+
+Narrative about a closed entry belongs in that entry's own `## Resolution` section, where
+someone will look for it in a year — not in the index of a directory it has already left.
 
 ## The asymmetry
 

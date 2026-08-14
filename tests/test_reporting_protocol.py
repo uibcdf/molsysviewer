@@ -210,3 +210,26 @@ def test_the_protocol_states_the_corrections_and_security_rules():
 
     assert "Do not edit the original claim" in text
     assert "not opened as a public issue" in text
+
+
+def test_the_generated_indexes_are_current():
+    """The indexes are rendered from front matter, so a stale one means an unrun command.
+
+    This exists because the hand-written version failed: the proposals index went on
+    describing four documents as queue entries after they had been moved out, and it was
+    corrected by hand — the third or fourth hand-edit of these lists in a week. A
+    hand-written index of documents that already describe themselves is two independent
+    authoritative lists, and one of them will be wrong.
+    """
+    import subprocess
+    import sys
+
+    completed = subprocess.run(
+        [sys.executable, str(ROOT / "devtools" / "devguide_index.py"), "--check"],
+        capture_output=True, text=True, cwd=ROOT, timeout=120,
+    )
+
+    assert completed.returncode == 0, (
+        (completed.stderr or completed.stdout).strip()
+        or "devguide_index.py --check failed"
+    )
