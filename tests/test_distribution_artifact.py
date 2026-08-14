@@ -33,7 +33,7 @@ REQUIRED_RUNTIME_RESOURCES = {
     "molsysviewer/viewer.js",
 }
 REQUIRED_RUNTIME_VERSION_FLOORS = {
-    "argdigest": "0.12.0",
+    "argdigest": "0.12.1",
     "molsysmt": "0.22.0",
 }
 

@@ -18,7 +18,7 @@ it stood before the migration.
 from __future__ import annotations
 
 import pytest
-from argdigest import describe_normalization
+from argdigest import ArgumentConsistencyError, describe_normalization
 from argdigest.core.function_loader import load_normalization
 from molsysviewer.demo import demo
 
@@ -80,6 +80,11 @@ def test_attribute_synonyms_reach_get(view, synonym, canonical):
 
     assert list(view.get(selection=selection, element="atom", **{synonym: True})) \
         == list(view.get(selection=selection, element="atom", **{canonical: True}))
+
+
+def test_an_alias_and_its_canonical_name_are_rejected_together(view):
+    with pytest.raises(ArgumentConsistencyError, match="atom_names.*atom_name"):
+        view.get(element="atom", atom_names=True, atom_name=False)
 
 
 def test_attribute_synonyms_reach_contains_and_is_composed_of(view):

@@ -19,7 +19,7 @@ requirements:
   run:
     - python
     - anywidget
-    - argdigest >=0.12.0
+    - argdigest >=0.12.1
     - depdigest
     - molsysmt >=0.22.0
     - numpy

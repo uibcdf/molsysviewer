@@ -90,13 +90,14 @@ the versioned plain-data contract returned by
 `molsysmt.attribute.get_argument_aliases()`. No MolSysMT private alias module is a
 consumer interface.
 
-Wheel and Conda metadata require `argdigest>=0.12.0` and `molsysmt>=0.22.0`; the latter
-introduces this public provider. Both manifests, the public contract and the resulting
-viewer calls are guarded by tests. Do not relax either floor or silently filter malformed
-upstream aliases to accommodate an old release. Canonical and alias keywords are
-alternatives; collision handling belongs to ArgDigest. The original dependency defect
-and the migration history are recorded by `uibcdf/molsysviewer#62` and
-`uibcdf/molsysmt#157`.
+Wheel and Conda metadata require `argdigest>=0.12.1` and `molsysmt>=0.22.0`; the latter
+introduces this public provider, while the former is the first ArgDigest release that
+rejects alias-target collisions before a value can be discarded. Both manifests, the
+public contract and the resulting viewer calls are guarded by tests. Do not relax either
+floor or silently filter malformed upstream aliases to accommodate an old release.
+Canonical and alias keywords are alternatives; simultaneous use raises
+`ArgumentConsistencyError`. The original dependency defect and migration history are
+recorded by `uibcdf/molsysviewer#62` and `uibcdf/molsysmt#157`.
 
 ### Interaction with PyUnitWizard
 

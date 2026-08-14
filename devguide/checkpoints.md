@@ -45,10 +45,12 @@ changes. Normative behavior remains in the contracts linked below.
   `molsysmt>=0.22.0` floor is the schema boundary, and the durable rule is in
   [`digestion_and_dependencies.md`](digestion_and_dependencies.md). MolSysMT issue
   [#157](https://github.com/uibcdf/molsysmt/issues/157) is closed.
-- **ArgDigest still has one pre-1.0 correctness blocker relevant to this seam**:
-  supplying an alias and its canonical keyword together silently keeps whichever value
-  is inserted last. The diagnosis is committed in ArgDigest at `acbf325`; consumers must
-  not invent precedence or comparison rules while that core collision remains open.
+- **The ArgDigest alias-collision blocker is fixed on source `main`** (2026-08-14).
+  Commit `c46cd01` rejects alias-plus-canonical and multi-alias target collisions with
+  `ArgumentConsistencyError` before normalization can discard a value. MolSysViewer has
+  a public regression and raises its wheel and Conda floor to the planned patch release
+  `argdigest>=0.12.1`; publication of that release remains a prerequisite for clean
+  installation dogfooding.
 
 ## Validation observed
 
