@@ -31,13 +31,35 @@ changes. Normative behavior remains in the contracts linked below.
 - Whether the reporting vocabularies become an ecosystem-wide shared source of truth is
   asked at [uibcdf/molsysmt#156](https://github.com/uibcdf/molsysmt/issues/156). Their
   answer changes what is worth investing in the local tooling.
+- **Citation and Zenodo metadata are a checked contract** (2026-08-14).
+  [`release_and_citation.md`](release_and_citation.md) is normative;
+  `devtools/validate_citation.py` holds `CITATION.cff`, `.zenodo.json` and the five
+  derived surfaces to one concept DOI, and is a step of the release gate.
+  `prepare_release.py` updates them in one pass and `verify_zenodo_release.py` checks the
+  archive afterwards, because a pushed tag does not request ingestion and the version DOI
+  arrives asynchronously.
+- **The MolSysMT alias seam is public and closed** (2026-08-14). MolSysViewer commit
+  `5bb01b8e` builds its caller-scoped ArgDigest tables from
+  `molsysmt.attribute.get_argument_aliases()` introduced by MolSysMT commit
+  `4267d414f`; no normalization module imports MolSysMT private alias data. The
+  `molsysmt>=0.22.0` floor is the schema boundary, and the durable rule is in
+  [`digestion_and_dependencies.md`](digestion_and_dependencies.md). MolSysMT issue
+  [#157](https://github.com/uibcdf/molsysmt/issues/157) is closed.
+- **ArgDigest still has one pre-1.0 correctness blocker relevant to this seam**:
+  supplying an alias and its canonical keyword together silently keeps whichever value
+  is inserted last. The diagnosis is committed in ArgDigest at `acbf325`; consumers must
+  not invent precedence or comparison rules while that core collision remains open.
 
 ## Validation observed
 
-- Current slice, 2026-08-14: **1,602 Python passed, 4 skips, exit 0**
-  (`--receptor=llm -n 12`). Three of the skips are environmental — no display, no
-  WebGL, imageio present — and the fourth is an optional MolSysSuite add-on that is not
-  installed here.
+- Latest full run, 2026-08-14: **1,609 Python passed, 4 skips, 1 failed, exit 1**
+  (`python -m pytest --receptor=llm tests/`). The sole failure is independent of the
+  alias migration: executable page block 5 in
+  `docs/content/user/scene_management/selections.md` calls deprecated
+  `add_label()` while the documentation harness promotes its `DeprecationWarning` to an
+  error. Replace it with `add_annotation()` and rerun
+  `tests/test_documentation_pages_run.py`. The focused alias suite passes 23/23. The
+  preceding distributed slice remains **1,607 passed, 4 skips, exit 0**.
 - Gate 9 was verified by behaviour as well as by count: exercising a broad slice of the
   public surface with `UserWarning` promoted to an error produces no
   `DigestNotDigestedWarning`.
@@ -87,7 +109,11 @@ queues all carry it.
 
 Resume in this order:
 
-1. **Widen `EXECUTABLE_PAGES`** in `tests/test_documentation_pages_run.py`. It executes
+1. **Restore the documentation execution gate to green** by migrating block 5 of
+   `docs/content/user/scene_management/selections.md` from deprecated `add_label()` to
+   `add_annotation()`. This is a bounded documentation correction, not a separate design
+   report under [`reporting_protocol.md`](reporting_protocol.md).
+2. **Widen `EXECUTABLE_PAGES`** in `tests/test_documentation_pages_run.py`. It executes
    three documentation pages today; the rest of the markdown is run by nothing, which is
    how a half-applied rename left a `NameError` in four pages. This is the only remaining
    item that needs neither another machine nor a decision.
@@ -96,18 +122,20 @@ Resume in this order:
    observation at all** — trajectory plot, movie, `save_state`/`load_state`, units — and
    two of them are `stable`. See the *Nothing has watched these draw* section of
    [`capability_audit.md`](capability_audit.md).
-2. In parallel when the required workstation is available, close Phase 7's two
+3. In parallel when the required workstation is available, close Phase 7's two
    observations: Qt real-window/GPU and ten human live-demo replacements. Never
    report the existing offscreen/browser evidence as those observations.
-3. Complete scientific dogfooding and the remaining human decisions in
+4. Complete scientific dogfooding and the remaining human decisions in
    [`pending_proposals/what_needs_a_human_2026_08.md`](what_needs_a_human_2026_08.md)
    — three items, all needing a screen or a judgement.
-4. Once sibling releases are ready, close dependency channels; build wheel and
+5. Once sibling releases are ready, close dependency channels; build wheel and
    conda artifacts; verify imports, resources and the one-line path from clean
    installations.
-5. Run `python devtools/release_gate.py` and release only when it exits zero. It
+6. Run `python devtools/release_gate.py` and release only when it exits zero. It
    refuses to be silent: anything it cannot run is `BLOCKED` with the reason, and
-   that is still a non-zero exit.
+   that is still a non-zero exit. Before tagging, `python devtools/prepare_release.py`
+   sets the release fields across every citation surface; after publishing the GitHub
+   Release, the Zenodo verification workflow confirms the archive.
 
 Closed in Phase 10 so far: atomic overlay-state file helpers, notebook CI, opt-in hover
 telemetry, and public-callable digestion. The state helpers are not a molecular-session
