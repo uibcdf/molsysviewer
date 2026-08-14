@@ -89,6 +89,53 @@ if the defect returns.
 **Archive, never delete.** A repository that deletes a closed entry breaks every reference
 into it.
 
+## Filing one
+
+Start from [`templates/report.md`](templates/report.md). **Open the issue first**, to
+obtain the number: a document whose `issue:` still says `#000` fails the guard, and one
+committed before the issue exists leaves the issue naming a path that is not on `main`
+yet.
+
+For a report that arrives from outside, the issue already exists and someone else wrote
+it, possibly with the wrong diagnosis. Attending it means writing the local document and
+answering once, restating *What / How / Why* **in our own terms** — that restatement is
+the point of the comment, not a courtesy. Then remove `needs-triage`, and let the
+document's `verification` field record whether we reproduced it, only inspected it, or
+could not reproduce it at all.
+
+## Corrections
+
+A claim that turns out to be false is corrected, not left standing. Where depends on the
+document's state:
+
+- **In a queue:** correct in place. The document is live.
+- **Archived:** append a dated correction note. **Do not edit the original claim.**
+
+```markdown
+## Correction — 2026-08-13
+
+The section above states that `add_pharmacophore_features` was broken for positional
+callers by the ArgDigest var-positional defect. It was not: it forwards to
+`add_interaction_sites`, which is keyword-only, so a positional call was never possible
+and fails identically with digestion bypassed. The `TypeError` measured was the target's
+own binding. The report's other evidence — the three region booleans — was correct.
+```
+
+That example is real, and it is why this section exists. Rewriting an archived document
+destroys the record of what we believed and when, which is the thing an archive is for. A
+stale benchmark number needs no correction at all — it was true on its date. A claim that
+was **never** true does.
+
+## Security
+
+An exploitable finding is not opened as a public issue. It goes to a
+[private security advisory](https://github.com/uibcdf/molsysviewer/security/advisories/new),
+and the local document stays out of the queues until a fix is released. This protocol
+resumes at that point.
+
+The advisory route is offered in `.github/ISSUE_TEMPLATE/config.yml`, so a reporter meets
+it before the issue form.
+
 ## Labels and milestones
 
 | group | labels |

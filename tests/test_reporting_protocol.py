@@ -143,3 +143,70 @@ def test_the_protocol_is_written_down():
     text = protocol.read_text(encoding="utf-8")
     assert "it deserves an issue" in text
     assert "Archive, never delete" in text
+
+
+# --- the governance that makes the protocol apply from now on -----------------------
+
+
+def test_an_agent_is_routed_to_the_protocol():
+    """A rule nobody is sent to is a rule nobody follows.
+
+    The protocol was written before this test existed, and for one commit nothing pointed
+    at it except the handoff. `CLAUDE.md` delegates to `AGENTS.md`, so routing from there
+    and from the devguide index is enough.
+    """
+    for path in ("AGENTS.md", "devguide/README.md"):
+        text = (ROOT / path).read_text(encoding="utf-8")
+        assert "reporting_protocol.md" in text, f"{path} does not route to the protocol"
+
+
+def test_the_report_template_exists_and_starts_unfilled():
+    """`issue: #000` is deliberate: a copy that forgets the number fails the header check.
+
+    A template pre-filled with a real issue number is worse than none — it would be
+    copied, committed, and point a reader at somebody else's theme.
+    """
+    template = DEVGUIDE / "templates" / "report.md"
+
+    assert template.is_file()
+    text = template.read_text(encoding="utf-8")
+    assert text.startswith("---\n")
+    assert "uibcdf/molsysviewer#000" in text
+    assert not ISSUE.match("uibcdf/molsysviewer#000") is None  # well formed, but a placeholder
+
+
+def test_the_issue_forms_exist_and_carry_the_right_labels():
+    """An incoming report should arrive labelled and marked for triage.
+
+    `needs-triage` on both is what the protocol's "attending a report that came from
+    outside" step removes; without it, an unattended report is indistinguishable from one
+    we have already reproduced.
+    """
+    directory = ROOT / ".github" / "ISSUE_TEMPLATE"
+
+    for name, kind in (("bug_report.md", "bug"), ("proposal.md", "proposal")):
+        form = directory / name
+        assert form.is_file(), f"{name} is missing"
+        header = form.read_text(encoding="utf-8").split("---")[1]
+        assert f"labels: {kind}, needs-triage" in header, f"{name} labels: {header!r}"
+
+
+def test_the_issue_form_config_offers_the_routes_that_keep_the_board_meaningful():
+    """Three things that must not become issues: usage questions, exploits, MolSysMT.
+
+    The board is now the state record — one issue per devguide document — so a usage
+    question arriving as an issue dilutes what the board means at a glance.
+    """
+    config = (ROOT / ".github" / "ISSUE_TEMPLATE" / "config.yml").read_text(encoding="utf-8")
+
+    assert "discussions" in config, "usage questions have nowhere to go"
+    assert "security/advisories/new" in config, "no private route for an exploitable finding"
+    assert "MolSysMT/issues" in config, "selection syntax and formats belong upstream"
+
+
+def test_the_protocol_states_the_corrections_and_security_rules():
+    """Both were missing from the first adoption pass and are the two cheapest to lose."""
+    text = (DEVGUIDE / "reporting_protocol.md").read_text(encoding="utf-8")
+
+    assert "Do not edit the original claim" in text
+    assert "not opened as a public issue" in text

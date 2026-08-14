@@ -93,6 +93,31 @@ validation work instead.
     repository under `devguide/pending_bugs/` (or `pending_proposals/`). See
     [`devguide/pytest_receptor.md`](devguide/pytest_receptor.md).
 
+## Filing a defect or a proposal
+
+**`devguide/reporting_protocol.md` is normative.** Read it before writing anything into
+`devguide/pending_bugs/` or `devguide/pending_proposals/`.
+
+The short version:
+
+- If it deserves a document in one of those two directories, it deserves a GitHub issue.
+  **Open the issue first**, to obtain the number.
+- Start the document from `devguide/templates/report.md`. Every queue entry carries front
+  matter: `summary`, `issue`, `status`, `opened`, `verification`, `area`, and `severity`
+  for a bug.
+- The document holds the analysis and changes continuously. The issue holds state and is
+  written at exactly two moments: open and close.
+- Closing needs a **`guard`** — the test that fails if the defect returns — or, for a
+  proposal whose outcome is a rule, the **`normative`** document that absorbed it. Then the
+  document moves to `devguide/archive/`.
+- **Archive, never delete.** An archived document is immutable evidence: a claim that turns
+  out to be false gets an appended, dated correction, not an edit.
+- Cross-repository references are `uibcdf/<repo>#<number>`, never a path into another
+  repository's `devguide/`.
+- Plans and inventories are **not** queue entries. They live elsewhere in `devguide/`.
+
+`tests/test_reporting_protocol.py` enforces what can be checked offline.
+
 ## Developer documentation (where to look first)
 
 Use `docs/content/developer/index.md` as the entrypoint.

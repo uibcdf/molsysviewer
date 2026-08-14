@@ -26,6 +26,10 @@ documents, and historical audits.
 ## Current status and planning
 
 - [`checkpoints.md`](checkpoints.md): current repository handoff.
+- [`reporting_protocol.md`](reporting_protocol.md): **normative.** How a defect or a
+  proposal enters `pending_bugs/` and `pending_proposals/`, how those stay in step with
+  the GitHub issue board, and what closing one requires. Read it before adding a document
+  to either queue; start from [`templates/report.md`](templates/report.md).
 - [`capability_audit.md`](capability_audit.md): one row per capability — public API,
   provenance, documentation, tests, status and the release it first shipped in.
   **Generated**; regenerate with `python devtools/capability_audit.py --write`. Read it

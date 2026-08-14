@@ -1,0 +1,14 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Question about using MolSysViewer
+    url: https://github.com/uibcdf/molsysviewer/discussions
+    about: Usage questions and "how do I ..." belong in Discussions.
+  - name: Security advisory
+    url: https://github.com/uibcdf/molsysviewer/security/advisories/new
+    about: Report an exploitable problem privately. Please do not open a public issue.
+  - name: Documentation
+    url: https://www.uibcdf.org/MolSysViewer/
+    about: The User Guide, the Cookbook, and the API reference.
+  - name: MolSysMT
+    url: https://github.com/uibcdf/MolSysMT/issues
+    about: Selection syntax, file formats and conversions belong to MolSysMT, not here.
