@@ -13,27 +13,27 @@ remembered.
 `Provenance` answers what the paper needs: whether MolSysViewer *decides* the
 behaviour, delegates it, or merely hosts it.
 
-| Capability | Public API | Public | Digested | Provenance | Docs | Unit | E2E | Status | Since |
-|---|---|---:|---:|---|---|---:|---:|---|---|
-| Whole | `view.whole.` | 16 | 13 | MolSysViewer (Python authority) | [page](../docs/content/user/scene_management/whole.md) | 2 | 1 | stable | 0.5.0 |
-| Regions | `view.regions.`, `view.regions[…].` | 45 | 45 | MolSysViewer (Python authority) | [page](../docs/content/user/scene_management/regions.md) | 4 | 3 | stable | 0.1.0 |
-| Layers | `view.layers.` | 12 | 12 | MolSysViewer (Python authority) | [page](../docs/content/user/scene_management/layers.md) | 2 | 2 | stable | 0.1.0 |
-| Selections and active selection | `view.selections.`, `view.active_selection.`, `view.select` | 29 | 29 | MolSysMT (scientific authority) | [page](../docs/content/user/scene_management/selections.md) | 2 | 2 | stable | 0.8.0 |
-| Representations, styles and presets | `view.styles.`, `view.whole.set_representation` | 35 | 35 | Mol* (rendering authority) | [page](../docs/content/user/representations/types.md) | 3 | 1 | stable | 0.18.0 |
-| Annotations | `view.annotations.` | 22 | 21 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/labels.md) | 1 | 2 | stable | 0.8.0 |
-| Measurements | `view.measurements.` | 20 | 20 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/measurements.md) | 1 | 2 | stable | 0.8.0 |
-| Shapes | `view.shapes.` | 50 | 36 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/shapes/index.md) | 3 | 2 | stable | 0.1.0 |
-| Trajectories and frames | `view.player.` | 11 | 11 | MolSysViewer (Python authority) | [page](../docs/content/user/movie/playback.md) | 2 | 2 | stable | 0.18.0 |
-| Trajectory plot | `view.trajectory_plot.` | 4 | 4 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/trajectory_plot.md) | 2 | 0 | experimental | 0.19.0 |
-| Movie | `view.movie.` | 13 | 13 | MolSysViewer (Python authority) | [page](../docs/content/user/movie/export.md) | 1 | 0 | experimental | 0.18.0 |
-| Camera | `view.camera.`, `view.get_camera_snapshot`, `view.set_camera_snapshot`, `view.zoom` | 11 | 11 | Frontend (mirrored to Python) | [page](../docs/content/user/viewer/camera_and_controls.ipynb) | 2 | 1 | stable | 0.18.0 |
-| save_state / load_state | `view.save_state`, `view.load_state`, `view.export_state`, `view.import_state` | 4 | 4 | MolSysViewer (Python authority) | [page](../docs/content/user/export/state.md) | 3 | 0 | stable | 0.19.0 |
-| HTML export and replay | `view.export.` | 5 | 5 | MolSysViewer (Python authority) | [page](../docs/content/user/export/index.md) | 4 | 2 | stable | 0.9.0 |
-| Popup | `view.build_popup_scene_snapshot` | 1 | 1 | MolSysViewer (Python authority) | [page](../docs/content/developer/standalone_surfaces.md) | 4 | 3 | stable | 0.20.1 |
-| Standalone (Qt host) | `molsysviewer.launch_standalone_qt0`, `molsysviewer.create_standalone_qt0_window` | 2 | 0 | MolSysViewer (Python authority) | [page](../docs/content/developer/standalone_surfaces.md) | 2 | 1 | experimental | 0.19.0 |
-| Add-ons | `molsysviewer.addons.`, `view.addons.` | 54 | 54 | Add-on (external owner) | [page](../docs/content/developer/addons.md) | 2 | 1 | stable | 0.10.0 |
-| MolSysMT integration | `view.get`, `view.contains`, `view.is_composed_of`, `view.convert`, `view.extract` | 15 | 15 | MolSysMT (scientific authority) | [page](../docs/content/user/introduction/molsysmt.md) | 3 | 1 | stable | 0.19.0 |
-| Units | `molsysviewer.config.set_default_standard_units` | 1 | 1 | PyUnitWizard (unit authority) | [page](../docs/content/user/introduction/units.md) | 2 | 0 | stable | 0.5.0 |
+| Capability | Public API | Public | Digested | Provenance | Docs | Evidence | Status | Since |
+|---|---|---:|---:|---|---|---|---|---|
+| Whole | `view.whole.` | 16 | 13 | MolSysViewer (Python authority) | [page](../docs/content/user/scene_management/whole.md) | contract-tested, browser-observed | stable | 0.5.0 |
+| Regions | `view.regions.`, `view.regions[…].` | 45 | 45 | MolSysViewer (Python authority) | [page](../docs/content/user/scene_management/regions.md) | contract-tested, browser-observed | stable | 0.1.0 |
+| Layers | `view.layers.` | 12 | 12 | MolSysViewer (Python authority) | [page](../docs/content/user/scene_management/layers.md) | contract-tested, browser-observed | stable | 0.1.0 |
+| Selections and active selection | `view.selections.`, `view.active_selection.`, `view.select` | 29 | 29 | MolSysMT (scientific authority) | [page](../docs/content/user/scene_management/selections.md) | contract-tested, browser-observed | stable | 0.8.0 |
+| Representations, styles and presets | `view.styles.`, `view.whole.set_representation` | 35 | 35 | Mol* (rendering authority) | [page](../docs/content/user/representations/types.md) | contract-tested, browser-observed | stable | 0.18.0 |
+| Annotations | `view.annotations.` | 22 | 21 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/labels.md) | contract-tested, browser-observed | stable | 0.8.0 |
+| Measurements | `view.measurements.` | 20 | 20 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/measurements.md) | contract-tested, browser-observed | stable | 0.8.0 |
+| Shapes | `view.shapes.` | 50 | 36 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/shapes/index.md) | contract-tested, browser-observed | stable | 0.1.0 |
+| Trajectories and frames | `view.player.` | 11 | 11 | MolSysViewer (Python authority) | [page](../docs/content/user/movie/playback.md) | contract-tested, browser-observed, benchmarked | stable | 0.18.0 |
+| Trajectory plot | `view.trajectory_plot.` | 4 | 4 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/trajectory_plot.md) | contract-tested | experimental | 0.19.0 |
+| Movie | `view.movie.` | 13 | 13 | MolSysViewer (Python authority) | [page](../docs/content/user/movie/export.md) | contract-tested | experimental | 0.18.0 |
+| Camera | `view.camera.`, `view.get_camera_snapshot`, `view.set_camera_snapshot`, `view.zoom` | 11 | 11 | Frontend (mirrored to Python) | [page](../docs/content/user/viewer/camera_and_controls.ipynb) | contract-tested, browser-observed | stable | 0.18.0 |
+| save_state / load_state | `view.save_state`, `view.load_state`, `view.export_state`, `view.import_state` | 4 | 4 | MolSysViewer (Python authority) | [page](../docs/content/user/export/state.md) | contract-tested | stable | 0.19.0 |
+| HTML export and replay | `view.export.` | 5 | 5 | MolSysViewer (Python authority) | [page](../docs/content/user/export/index.md) | contract-tested, browser-observed | stable | 0.9.0 |
+| Popup | `view.build_popup_scene_snapshot` | 1 | 1 | MolSysViewer (Python authority) | [page](../docs/content/developer/standalone_surfaces.md) | contract-tested, browser-observed, benchmarked | stable | 0.20.1 |
+| Standalone (Qt host) | `molsysviewer.launch_standalone_qt0`, `molsysviewer.create_standalone_qt0_window` | 2 | 0 | MolSysViewer (Python authority) | [page](../docs/content/developer/standalone_surfaces.md) | contract-tested, browser-observed, benchmarked, human-observed | experimental | 0.19.0 |
+| Add-ons | `molsysviewer.addons.`, `view.addons.` | 54 | 54 | Add-on (external owner) | [page](../docs/content/developer/addons.md) | contract-tested, browser-observed | stable | 0.10.0 |
+| MolSysMT integration | `view.get`, `view.contains`, `view.is_composed_of`, `view.convert`, `view.extract` | 15 | 15 | MolSysMT (scientific authority) | [page](../docs/content/user/introduction/molsysmt.md) | contract-tested, browser-observed | stable | 0.19.0 |
+| Units | `molsysviewer.config.set_default_standard_units` | 1 | 1 | PyUnitWizard (unit authority) | [page](../docs/content/user/introduction/units.md) | contract-tested | stable | 0.5.0 |
 
 ## What a row cannot hold
 
@@ -49,7 +49,42 @@ behaviour, delegates it, or merely hosts it.
 - **MolSysMT integration** — Delegates with `skip_digestion=True`, so argument names are normalised on this side.
 - **Units** — Physical magnitudes are quantities, never bare numbers.
 
-## Reading the status column
+## Nothing has watched these draw
+
+No E2E suite opens these in a browser and asserts what appeared. For a viewer
+that is the sharpest gap there is, and it is why `browser-observed` exists as
+a label rather than as a number in a column:
+
+- Trajectory plot
+- Movie
+- save_state / load_state
+- Units
+
+Two of them are already `experimental` and say so. `save_state / load_state`
+and `Units` are `stable`, which is defensible — neither draws anything — but
+it is the kind of claim that should be made on purpose rather than inherited.
+
+## Two columns, two questions
+
+**Evidence** answers *how do we know it works*. The labels are independent, not a
+ladder: a capability may be benchmarked and never browser-observed.
+
+- `implemented` — the code path exists and is reachable from the public API
+- `contract-tested` — Python tests exercise the documented behaviour
+- `browser-observed` — an E2E suite drives it in a real browser and asserts what it drew
+- `benchmarked` — a reproducible benchmark records environment and methodology
+- `human-observed` — someone has watched it on a real screen
+
+Adapted from MolSysMT's `DOCUMENT_POLICY.md`. Their `Parity-tested` and
+`Scientifically validated` are not here: both are their questions — comparing
+equivalent forms, comparing against an independent oracle. A viewer renders what
+MolSysMT computes, so the equivalent question is whether anyone watched it draw.
+
+This is a different axis from `verification` in
+[`reporting_protocol.md`](reporting_protocol.md), which qualifies how well a
+*report* was checked rather than how well a *capability* is verified.
+
+**Status** answers *may I depend on it*.
 
 - `stable` — the public surface is documented, digested and covered by tests, and
   changing it is a deliberate act.

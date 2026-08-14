@@ -132,3 +132,74 @@ def test_the_generator_runs_as_a_command():
 
     assert completed.returncode == 0, completed.stderr
     assert "| Capability |" in completed.stdout
+
+
+@pytest.mark.parametrize("capability", CAPABILITIES, ids=lambda c: c.name)
+def test_evidence_is_derived_and_never_asserted(capability, audit):
+    """Four of the five labels come from what the audit already knows.
+
+    Only `benchmarked` and `human-observed` are declared, and both must name where the
+    evidence is. A label a row simply claims about itself is the failure the whole audit
+    exists to prevent.
+    """
+    from capability_audit import EVIDENCE
+
+    row = next(item for item in audit["rows"] if item["capability"] == capability.name)
+
+    assert set(row["evidence"]) <= set(EVIDENCE), row["evidence"]
+    assert "implemented" in row["evidence"]
+    assert ("contract-tested" in row["evidence"]) is bool(capability.unit)
+    assert ("browser-observed" in row["evidence"]) is bool(capability.e2e)
+
+
+@pytest.mark.parametrize(
+    "capability",
+    [c for c in CAPABILITIES if c.benchmark],
+    ids=lambda c: c.name,
+)
+def test_a_benchmarked_capability_names_a_document_that_exists(capability):
+    """`benchmarked` without a record is the claim, not the evidence."""
+    assert (ROOT / "devguide" / capability.benchmark).is_file(), capability.benchmark
+
+
+@pytest.mark.parametrize(
+    "capability",
+    [c for c in CAPABILITIES if c.human_observed],
+    ids=lambda c: c.name,
+)
+def test_human_observation_carries_its_date(capability):
+    """Somebody watched it *on some day*, and the day is most of the information.
+
+    An undated "we looked at it" ages into a claim nobody can check. The Qt entry says
+    2026-07-04 and says that the session found a defect, which is what a person watching
+    is for.
+    """
+    import re
+
+    assert re.match(r"^\d{4}-\d{2}-\d{2}", capability.human_observed), capability.human_observed
+
+
+def test_the_document_names_what_nothing_has_watched_draw():
+    """The finding is the point of the column, so it must survive regeneration.
+
+    Four capabilities have no browser observation, and two of them are `stable`. That is
+    defensible — neither draws anything — but it is a claim the document should make out
+    loud rather than leave as a zero somebody has to notice.
+    """
+    text = DOCUMENT.read_text(encoding="utf-8")
+
+    assert "## Nothing has watched these draw" in text
+    for name in ("Trajectory plot", "Movie", "save_state / load_state", "Units"):
+        assert name in text.split("## Nothing has watched these draw", 1)[1].split("##", 1)[0]
+
+
+def test_the_two_axes_are_not_confused_with_each_other():
+    """`evidence` qualifies a capability; `verification` qualifies a report.
+
+    They read alike and mean different things, so the document says so where a reader
+    meets both.
+    """
+    text = DOCUMENT.read_text(encoding="utf-8")
+
+    assert "Two columns, two questions" in text
+    assert "reporting_protocol.md" in text

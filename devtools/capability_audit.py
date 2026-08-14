@@ -55,10 +55,36 @@ class Capability:
     #: E2E suite names, without the `.e2e.ts`.
     e2e: tuple[str, ...] = ()
     status: str = "stable"
+    #: A reproducible benchmark that records environment and methodology, if one exists.
+    benchmark: str | None = None
+    #: Set when someone has watched this on a real screen, with the date.
+    human_observed: str | None = None
     #: Set when the row's honest reading needs a sentence the columns cannot hold.
     note: str | None = None
     aliases: tuple[str, ...] = field(default_factory=tuple)
 
+
+#: How we know a capability works. Adapted from MolSysMT's `DOCUMENT_POLICY.md` evidence
+#: labels, which qualify a *feature* rather than a report — a different axis from the
+#: `verification` field in `devguide/reporting_protocol.md`, which qualifies a report.
+#:
+#: Their `Parity-tested` and `Scientifically validated` are not here. Both are MolSysMT's
+#: questions: comparing equivalent forms, and comparing results against an independent
+#: oracle. A viewer renders what MolSysMT computes, so its equivalent question is **did
+#: anyone watch it draw** — and that is the one that has caught real defects here. A
+#: headless harness that draws once when idle reports everything fine; Chrome's
+#: `--virtual-time-budget` fast-forwards the clock without running frames; nobody had ever
+#: opened an exported page and looked at its camera until a suite did.
+#:
+#: The labels are independent, not a ladder. A capability may be benchmarked and never
+#: browser-observed.
+EVIDENCE = {
+    "implemented": "the code path exists and is reachable from the public API",
+    "contract-tested": "Python tests exercise the documented behaviour",
+    "browser-observed": "an E2E suite drives it in a real browser and asserts what it drew",
+    "benchmarked": "a reproducible benchmark records environment and methodology",
+    "human-observed": "someone has watched it on a real screen",
+}
 
 #: Provenance vocabulary. The distinction the paper needs: what MolSysViewer decides,
 #: what it delegates, and what it merely hosts.
@@ -158,6 +184,7 @@ CAPABILITIES: tuple[Capability, ...] = (
         docs="docs/content/user/movie/playback.md",
         unit=("test_playback_digesters.py", "test_structure_stream_ordering.py"),
         e2e=("shape-trajectory", "array-native-load"),
+        benchmark="performance/trajectory_transport_baseline_2026_07.md",
     ),
     Capability(
         name="Trajectory plot",
@@ -224,6 +251,7 @@ CAPABILITIES: tuple[Capability, ...] = (
         unit=("test_popup_snapshot.py", "test_popup_snapshot_fidelity.py",
               "test_popup_snapshot_completeness.py", "test_transport_ownership.py"),
         e2e=("popup-channel", "endpoint-lifecycle", "panel-popup-welcome"),
+        benchmark="performance/qt_payload_copies_and_endpoint_isolation_2026_08.md",
     ),
     Capability(
         name="Standalone (Qt host)",
@@ -234,6 +262,10 @@ CAPABILITIES: tuple[Capability, ...] = (
         unit=("test_standalone.py", "test_qt_transport_contract.py"),
         e2e=("qt-live-reload",),
         status="experimental",
+        benchmark="performance/qt_transport_baseline_2026_07.md",
+        human_observed="2026-07-04 — rendering, transport, the persistent view, context "
+                       "menus and camera interaction. The session also found the live "
+                       "reload defect (#35), which is what a person watching is for.",
         note="Transport is pinned by contract; the render path has no automated "
              "observation on a real GPU and visible window.",
     ),
@@ -301,6 +333,26 @@ def _api_evidence(capability: Capability, inventory: dict[str, Any]) -> tuple[in
     return len(matching), sum(1 for item in matching if item["digested"])
 
 
+def _evidence(capability: Capability) -> list[str]:
+    """Four of the five are already known; only two are ever declared.
+
+    That is the point of deriving them: the audit already records which tests and which
+    E2E suites cover a capability, so naming what those counts *mean* costs nothing and
+    makes a missing one legible. "No browser has ever seen this draw" is a sentence; a
+    zero in a column is a number someone has to interpret.
+    """
+    labels = ["implemented"]
+    if capability.unit:
+        labels.append("contract-tested")
+    if capability.e2e:
+        labels.append("browser-observed")
+    if capability.benchmark:
+        labels.append("benchmarked")
+    if capability.human_observed:
+        labels.append("human-observed")
+    return labels
+
+
 def build_audit() -> dict[str, Any]:
     from public_api_inventory import build_inventory
 
@@ -318,6 +370,9 @@ def build_audit() -> dict[str, Any]:
             "unit_tests": list(capability.unit),
             "e2e_suites": list(capability.e2e),
             "status": capability.status,
+            "evidence": _evidence(capability),
+            "benchmark": capability.benchmark,
+            "human_observed": capability.human_observed,
             "since": _first_release_containing(capability.anchor),
             "note": capability.note,
         })
@@ -341,15 +396,18 @@ def _markdown(audit: dict[str, Any]) -> str:
         "`Provenance` answers what the paper needs: whether MolSysViewer *decides* the",
         "behaviour, delegates it, or merely hosts it.",
         "",
-        "| Capability | Public API | Public | Digested | Provenance | Docs | Unit | E2E | Status | Since |",
-        "|---|---|---:|---:|---|---|---:|---:|---|---|",
+        "| Capability | Public API | Public | Digested | Provenance | Docs | Evidence | Status | Since |",
+        "|---|---|---:|---:|---|---|---|---|---|",
     ]
     for row in audit["rows"]:
         docs = f"[page]({_relative(row['docs'])})" if row["docs"] else "—"
+        # The evidence set is the column that answers "how do we know"; the test and
+        # suite counts that produce it are in the JSON for anyone who wants them.
+        evidence = ", ".join(label for label in row["evidence"] if label != "implemented")
         lines.append(
             f"| {row['capability']} | `{'`, `'.join(row['api'])}` | {row['public_callables']} "
-            f"| {row['digested']} | {row['provenance']} | {docs} | {len(row['unit_tests'])} "
-            f"| {len(row['e2e_suites'])} | {row['status']} | {row['since']} |"
+            f"| {row['digested']} | {row['provenance']} | {docs} | {evidence or '—'} "
+            f"| {row['status']} | {row['since']} |"
         )
 
     undocumented = [row["capability"] for row in audit["rows"] if not row["docs"]]
@@ -371,9 +429,47 @@ def _markdown(audit: dict[str, Any]) -> str:
         for row in notes:
             lines.append(f"- **{row['capability']}** — {row['note']}")
 
+    unobserved = [row["capability"] for row in audit["rows"]
+                  if "browser-observed" not in row["evidence"]]
+    if unobserved:
+        lines += [
+            "",
+            "## Nothing has watched these draw",
+            "",
+            "No E2E suite opens these in a browser and asserts what appeared. For a viewer",
+            "that is the sharpest gap there is, and it is why `browser-observed` exists as",
+            "a label rather than as a number in a column:",
+            "",
+        ]
+        lines += [f"- {name}" for name in unobserved]
+        lines += [
+            "",
+            "Two of them are already `experimental` and say so. `save_state / load_state`",
+            "and `Units` are `stable`, which is defensible — neither draws anything — but",
+            "it is the kind of claim that should be made on purpose rather than inherited.",
+        ]
+
     lines += [
         "",
-        "## Reading the status column",
+        "## Two columns, two questions",
+        "",
+        "**Evidence** answers *how do we know it works*. The labels are independent, not a",
+        "ladder: a capability may be benchmarked and never browser-observed.",
+        "",
+    ]
+    lines += [f"- `{label}` — {meaning}" for label, meaning in EVIDENCE.items()]
+    lines += [
+        "",
+        "Adapted from MolSysMT's `DOCUMENT_POLICY.md`. Their `Parity-tested` and",
+        "`Scientifically validated` are not here: both are their questions — comparing",
+        "equivalent forms, comparing against an independent oracle. A viewer renders what",
+        "MolSysMT computes, so the equivalent question is whether anyone watched it draw.",
+        "",
+        "This is a different axis from `verification` in",
+        "[`reporting_protocol.md`](reporting_protocol.md), which qualifies how well a",
+        "*report* was checked rather than how well a *capability* is verified.",
+        "",
+        "**Status** answers *may I depend on it*.",
         "",
         "- `stable` — the public surface is documented, digested and covered by tests, and",
         "  changing it is a deliberate act.",
