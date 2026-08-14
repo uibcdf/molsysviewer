@@ -20,7 +20,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import shutil
 import subprocess
 import sys
@@ -73,6 +72,8 @@ STEPS = (
          [sys.executable, "-m", "pytest", "tests/", "-q", "-x"]),
     Step("devguide", "generated indexes are current",
          [sys.executable, "devtools/devguide_index.py", "--check"]),
+    Step("citation", "citation and Zenodo metadata agree",
+         [sys.executable, "devtools/validate_citation.py"]),
     # The capability audit's currency, the API inventory baseline and the wheel build are
     # covered by the suite above and are deliberately not repeated here. A gate step that
     # ran their writers instead of their checks would regenerate rather than refuse, which

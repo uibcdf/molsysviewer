@@ -235,6 +235,15 @@ MolSysViewer is the visualisation engine for the **UIBCDF MolSys ecosystem**:
 
 ---
 
+## Citation
+
+Use the stable concept DOI [10.5281/zenodo.18072956](https://doi.org/10.5281/zenodo.18072956)
+when citing MolSysViewer generally. For reproducible work, cite the distinct version DOI
+shown by Zenodo for the exact release you used. GitHub also renders the repository's
+`CITATION.cff` through **Cite this repository**.
+
+---
+
 ## License
 
 MIT License.

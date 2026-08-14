@@ -27,10 +27,12 @@ No contributor or AI agent may alter or remove the following core elements:
    - Centered logo figure referencing `_static/logo.svg` with `60%` width.
    - Tagline: *"A Mol\*-powered interactive molecular viewer for Jupyter and structural analysis."*
    - **Badges Block Requirements:**
-     - **Release Badge:** MUST match current package version (`v0.8.0` / `molsysviewer.__version__`); hardcoded stale version strings like `v0.7.0` are forbidden.
+     - **Release Badge:** MUST match the release prepared in `CITATION.cff` and the
+       package version; hardcoded stale version strings are forbidden.
      - **License Badge:** MUST target `https://github.com/uibcdf/molsysviewer/blob/main/LICENSE`.
      - **Conda & Python Badges:** Conda channel (`uibcdf`) and supported Python versions (`3.11 | 3.12 | 3.13`).
-     - **Zenodo DOI Badge:** Zenodo release DOI (`10.5281/zenodo.18072956`).
+     - **Zenodo DOI Badge:** stable MolSysViewer concept DOI
+       (`10.5281/zenodo.18072956`), never a frozen version DOI.
 
 2. **Installation Block:**
    - Section heading: `## Install it`

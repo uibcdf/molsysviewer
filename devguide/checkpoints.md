@@ -19,14 +19,22 @@ changes. Normative behavior remains in the contracts linked below.
   never use it as architectural evidence.
 - `molsysviewer/viewer.js` was regenerated with `npm run build:runtime`; it is a
   generated artifact, never a source file.
-- **Reports are coordinated with the issue board** (2026-08-14). All 28 documents in
+- **Reports are coordinated with the issue board** (2026-08-14). All 29 documents in
   `pending_bugs/` and `pending_proposals/` carry front matter and a GitHub issue; the
   queue READMEs are generated; `devtools/release_gate.py` is gate 11's command. See
   [`reporting_protocol.md`](reporting_protocol.md).
+- Two commands need the network and live outside the suite:
+  `python devtools/devguide_issue.py sync --check` compares the board with the front
+  matter, and `python devtools/devguide_index.py --check` (which does run in the suite)
+  keeps the queue READMEs honest. Run the first before a release and after any session
+  that closed or restatused an entry.
+- Whether the reporting vocabularies become an ecosystem-wide shared source of truth is
+  asked at [uibcdf/molsysmt#156](https://github.com/uibcdf/molsysmt/issues/156). Their
+  answer changes what is worth investing in the local tooling.
 
 ## Validation observed
 
-- Current slice, 2026-08-14: **1,597 Python passed, 4 skips, exit 0**
+- Current slice, 2026-08-14: **1,602 Python passed, 4 skips, exit 0**
   (`--receptor=llm -n 12`). Three of the skips are environmental — no display, no
   WebGL, imageio present — and the fourth is an optional MolSysSuite add-on that is not
   installed here.

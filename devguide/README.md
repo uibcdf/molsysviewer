@@ -19,6 +19,8 @@ Use these documents in this order:
    Python/TypeScript boundary and the supporting UIBCDF tooling.
 5. [`checkpoints.md`](checkpoints.md) is the current handoff. It must stay short
    and must not accumulate history.
+6. [`release_and_citation.md`](release_and_citation.md) defines the DOI, Zenodo,
+   `CITATION.cff`, and post-release verification lifecycle.
 
 When documents disagree, the contracts and current code win over plans, vision
 documents, and historical audits.

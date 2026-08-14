@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use MolSysViewer, please cite the software using this metadata."
+title: MolSysViewer
+type: software
+authors:
+  - family-names: Prada-Gracia
+    given-names: Diego
+    orcid: "https://orcid.org/0000-0003-3375-870X"
+    affiliation: Hospital Infantil de México Federico Gómez (HIMFG) – UIBCDF
+  - family-names: Moreno-Vargas
+    given-names: Liliana M.
+    orcid: "https://orcid.org/0000-0003-2812-1499"
+    affiliation: Hospital Infantil de México Federico Gómez (HIMFG) – UIBCDF
+version: 0.20.1
+date-released: 2026-08-08
+doi: 10.5281/zenodo.18072956
+url: "https://github.com/uibcdf/molsysviewer"
+repository-code: "https://github.com/uibcdf/molsysviewer"
+license: MIT
+abstract: >-
+  A Mol*-powered interactive molecular viewer for Jupyter, designed to turn
+  exploratory molecular visualization into reproducible scene state.
+keywords:
+  - molecular visualization
+  - Jupyter
+  - Mol*
+  - computational chemistry
+  - structural biology

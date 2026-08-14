@@ -41,6 +41,7 @@ testing.md
 warnings.md
 smonitor.md
 releasing.md
+release_and_citation.md
 ```
 
 ```{toctree}

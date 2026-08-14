@@ -1,0 +1,31 @@
+name: Verify Zenodo release
+
+on:
+  release:
+    types: [released, prereleased]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Published version to verify (for example, 0.21.0)"
+        required: true
+        type: string
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || github.ref }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Verify the archived Zenodo version
+        env:
+          RELEASE_VERSION: ${{ github.event.release.tag_name || inputs.version }}
+        run: |
+          VERSION="${RELEASE_VERSION#v}"
+          python devtools/verify_zenodo_release.py "$VERSION"

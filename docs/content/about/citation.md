@@ -8,7 +8,8 @@ We recommend citing both:
 - The Zenodo **concept DOI** (all versions, immutable entry).
 - The Zenodo **version DOI** for the specific version you used.
 
-Both DOIs are available on the MolSysViewer Zenodo page.
+The concept DOI is stable. Zenodo lists the distinct version DOI after it archives
+each GitHub Release.
 
 ::::{tab-set}
 
@@ -19,13 +20,14 @@ Coming soon...
 :::
 :::{tab-item} Software
 
-Concept DOI (all versions): *TODO: add the immutable Zenodo concept DOI here.*
+Concept DOI (all versions):
+[10.5281/zenodo.18072956](https://doi.org/10.5281/zenodo.18072956).
 
-Diego Prada-Gracia & Liliana M. Moreno-Vargas. (2023). uibcdf/MolSysViewer: 0.8.1 (0.8.1). Zenodo. https://doi.org/10.5281/zenodo.8092688
+Diego Prada-Gracia & Liliana M. Moreno-Vargas. (2026). MolSysViewer
+(Version 0.20.1). Zenodo. https://doi.org/10.5281/zenodo.18072956
 
 {download}`BibTeX <../../_static/bibtex/software.bib>`
 
 :::
 
 ::::
-

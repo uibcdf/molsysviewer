@@ -2,6 +2,18 @@
 
 Use this page when you cut a release or publish the JS runtime.
 
+## Citation and source preservation
+
+A release is not complete when its packages are uploaded. Before tagging, run
+`python devtools/prepare_release.py X.Y.Z` and the citation step in the release
+gate. After publishing the GitHub Release, Zenodo must archive the tagged source
+and `python devtools/verify_zenodo_release.py X.Y.Z` must pass. A pushed tag alone
+does not trigger Zenodo.
+
+See {doc}`release_and_citation` for the contributor procedure and
+[`devguide/release_and_citation.md`](https://github.com/uibcdf/molsysviewer/blob/main/devguide/release_and_citation.md)
+for the normative metadata and recovery contract.
+
 ## Versioning
 
 - The Python version is produced by `versioningit` from Git tags.

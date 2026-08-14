@@ -123,6 +123,19 @@ The short version:
 `tests/test_reporting_protocol.py` enforces what can be checked offline, including that
 the generated indexes are current.
 
+## Citation and preserved releases
+
+- Read `devguide/release_and_citation.md` before preparing or publishing a release.
+- `CITATION.cff` is the canonical user-facing citation record. `.zenodo.json` owns
+  Zenodo-specific metadata and takes precedence during GitHub ingestion.
+- The stable project DOI is the MolSysViewer concept DOI
+  `10.5281/zenodo.18072956`. General public surfaces use it; an exact scientific
+  workflow cites the distinct version DOI created by Zenodo.
+- A Git tag alone is not a preserved release. Publish a GitHub Release and verify
+  Zenodo ingestion before declaring the citation lifecycle complete.
+- Run `python devtools/validate_citation.py --expected-version X.Y.Z` before tagging.
+  Never move a published tag or DOI to repair metadata.
+
 ## Developer documentation (where to look first)
 
 Use `docs/content/developer/index.md` as the entrypoint.
