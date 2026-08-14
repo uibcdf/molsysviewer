@@ -53,13 +53,13 @@ changes. Normative behavior remains in the contracts linked below.
 ## Validation observed
 
 - Latest full run, 2026-08-14: **1,609 Python passed, 4 skips, 1 failed, exit 1**
-  (`python -m pytest --receptor=llm tests/`). The sole failure is independent of the
-  alias migration: executable page block 5 in
-  `docs/content/user/scene_management/selections.md` calls deprecated
+  (`python -m pytest --receptor=llm tests/`). Its sole failure was executable page block
+  5 in `docs/content/user/scene_management/selections.md`, which still called deprecated
   `add_label()` while the documentation harness promotes its `DeprecationWarning` to an
-  error. Replace it with `add_annotation()` and rerun
-  `tests/test_documentation_pages_run.py`. The focused alias suite passes 23/23. The
-  preceding distributed slice remains **1,607 passed, 4 skips, exit 0**.
+  error. The page now uses the canonical annotation manager and passes the focused gate:
+  **4/4** in `tests/test_documentation_pages_run.py`. The full suite was not repeated for
+  this documentation-only correction. The focused alias suite passes 23/23, and the
+  preceding distributed full slice remains **1,607 passed, 4 skips, exit 0**.
 - Gate 9 was verified by behaviour as well as by count: exercising a broad slice of the
   public surface with `UserWarning` promoted to an error produces no
   `DigestNotDigestedWarning`.
@@ -109,11 +109,7 @@ queues all carry it.
 
 Resume in this order:
 
-1. **Restore the documentation execution gate to green** by migrating block 5 of
-   `docs/content/user/scene_management/selections.md` from deprecated `add_label()` to
-   `add_annotation()`. This is a bounded documentation correction, not a separate design
-   report under [`reporting_protocol.md`](reporting_protocol.md).
-2. **Widen `EXECUTABLE_PAGES`** in `tests/test_documentation_pages_run.py`. It executes
+1. **Widen `EXECUTABLE_PAGES`** in `tests/test_documentation_pages_run.py`. It executes
    three documentation pages today; the rest of the markdown is run by nothing, which is
    how a half-applied rename left a `NameError` in four pages. This is the only remaining
    item that needs neither another machine nor a decision.
@@ -122,16 +118,16 @@ Resume in this order:
    observation at all** — trajectory plot, movie, `save_state`/`load_state`, units — and
    two of them are `stable`. See the *Nothing has watched these draw* section of
    [`capability_audit.md`](capability_audit.md).
-3. In parallel when the required workstation is available, close Phase 7's two
+2. In parallel when the required workstation is available, close Phase 7's two
    observations: Qt real-window/GPU and ten human live-demo replacements. Never
    report the existing offscreen/browser evidence as those observations.
-4. Complete scientific dogfooding and the remaining human decisions in
+3. Complete scientific dogfooding and the remaining human decisions in
    [`pending_proposals/what_needs_a_human_2026_08.md`](what_needs_a_human_2026_08.md)
    — three items, all needing a screen or a judgement.
-5. Once sibling releases are ready, close dependency channels; build wheel and
+4. Once sibling releases are ready, close dependency channels; build wheel and
    conda artifacts; verify imports, resources and the one-line path from clean
    installations.
-6. Run `python devtools/release_gate.py` and release only when it exits zero. It
+5. Run `python devtools/release_gate.py` and release only when it exits zero. It
    refuses to be silent: anything it cannot run is `BLOCKED` with the reason, and
    that is still a non-zero exit. Before tagging, `python devtools/prepare_release.py`
    sets the release fields across every citation surface; after publishing the GitHub

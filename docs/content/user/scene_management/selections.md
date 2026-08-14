@@ -54,13 +54,14 @@ selection.activate()                 # make it the active selection again
 selection.focus()                    # move the camera to it
 ```
 
-`add_label` is available too, with one constraint worth knowing before you reach for it:
-the label needs somewhere definite to sit, so the selection must resolve to **exactly one
-group**.
+To annotate a stored selection, resolve its atoms and pass them to the canonical
+annotation manager. A label needs a definite anchor, so this example stores exactly one
+group.
 
 ```python
 view.selections.add_selection(tag="res10", selection="group_index==10")
-view.selections["res10"].add_label(text="catalytic")
+res10 = view.selections["res10"].info()
+view.annotations.add_annotation(text="catalytic", atom_indices=res10["atom_indices"])
 ```
 
 The one that changes the picture is `new_region`, which turns the set into something drawn:
