@@ -1,3 +1,17 @@
+---
+summary: View a scene as pixels in a terminal.
+issue: uibcdf/molsysviewer#58
+status: open
+opened: 2026-08-02
+closed:
+verification: inspected
+area: [cli]
+guard:
+normative:
+blocked_by: []
+supersedes: []
+---
+
 # Proposal: viewing a scene in the terminal
 
 **Status:** post-1.0 proposal, not approved. Drafted 2026-08-02.

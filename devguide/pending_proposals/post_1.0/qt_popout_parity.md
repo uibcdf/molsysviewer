@@ -1,3 +1,17 @@
+---
+summary: Popout parity in the Qt standalone host.
+issue: uibcdf/molsysviewer#51
+status: open
+opened: 2026-07-31
+closed:
+verification: inspected
+area: [standalone, qt]
+guard:
+normative:
+blocked_by: []
+supersedes: []
+---
+
 # Popout parity in the Qt standalone host
 
 **Status:** post-1.0, and deliberately staged rather than missing.

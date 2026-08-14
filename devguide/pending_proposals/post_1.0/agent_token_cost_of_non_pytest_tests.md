@@ -1,3 +1,17 @@
+---
+summary: Study the token cost of non-pytest test output for agent consumers.
+issue: uibcdf/molsysviewer#43
+status: open
+opened: 2026-07-30
+closed:
+verification: inspected
+area: [tests, docs]
+guard:
+normative:
+blocked_by: []
+supersedes: []
+---
+
 # Proposal: Study the token cost of non-pytest test output for agent consumers
 
 **Status:** post-1.0 study. Not a build decision.

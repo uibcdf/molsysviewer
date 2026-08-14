@@ -1,3 +1,17 @@
+---
+summary: A large in-memory molecular string enters unbounded filename extension detection.
+issue: uibcdf/molsysviewer#42
+status: blocked
+opened: 2026-08-05
+closed:
+verification: measured
+area: [molsysmt, performance]
+guard:
+normative:
+blocked_by: [uibcdf/molsysmt#151]
+supersedes: []
+---
+
 # Known source forms and bounded detection of large molecular strings
 
 **Status:** proposed for upstream discussion with MolSysMT

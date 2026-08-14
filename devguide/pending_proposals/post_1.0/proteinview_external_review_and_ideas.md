@@ -1,3 +1,17 @@
+---
+summary: Idea inventory from an external terminal viewer.
+issue: uibcdf/molsysviewer#50
+status: open
+opened: 2026-08-02
+closed:
+verification: inspected
+area: [docs]
+guard:
+normative:
+blocked_by: []
+supersedes: []
+---
+
 # Post-1.0 ideas from an external review of ProteinView
 
 **Status:** idea inventory, post-1.0. Not an approved design. Each surviving item

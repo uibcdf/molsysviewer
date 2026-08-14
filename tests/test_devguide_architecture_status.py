@@ -83,9 +83,9 @@ def test_qt_docs_distinguish_control_channel_from_binary_payload_scheme():
 def test_resume_route_does_not_reopen_closed_work_or_orphan_public_digestion():
     contracts = _text("scene_contracts.md")
     pending_index = _text("pending_proposals/README.md")
-    master = _text(
-        "pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md"
-    )
+    # The plan is not a report and left the queue on 2026-08-14; only single-theme
+    # bugs and proposals live in `pending_*` now.
+    master = _text("pre_1_0_architecture_rework_and_hardening_master_plan.md")
     checkpoint = _text("checkpoints.md")
 
     assert not (

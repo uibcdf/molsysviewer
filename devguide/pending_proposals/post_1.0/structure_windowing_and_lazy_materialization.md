@@ -1,3 +1,17 @@
+---
+summary: Structure windowing and lazy materialization.
+issue: uibcdf/molsysviewer#55
+status: open
+opened: 2026-07-30
+closed:
+verification: inspected
+area: [transport, performance]
+guard:
+normative:
+blocked_by: []
+supersedes: []
+---
+
 # Structure windowing and lazy materialization
 
 **Status:** post-1.0 research and contract design. Not implemented.

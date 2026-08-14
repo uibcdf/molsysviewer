@@ -1,3 +1,18 @@
+---
+summary: An exported view embedded in a dark page renders opaque white instead of transparent.
+issue: uibcdf/molsysviewer#34
+status: open
+opened: 2026-08-08
+closed:
+severity: medium
+verification: reproduced
+area: [export, embedding]
+guard:
+normative:
+blocked_by: []
+supersedes: []
+---
+
 # An exported view loaded into a dark page is opaque white, not transparent
 
 **Reported:** 2026-08-08, from MolSysMT, after its documentation was published for

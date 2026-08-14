@@ -1,3 +1,17 @@
+---
+summary: Post-1.0 performance architecture.
+issue: uibcdf/molsysviewer#54
+status: open
+opened: 2026-08-09
+closed:
+verification: inspected
+area: [performance]
+guard:
+normative:
+blocked_by: []
+supersedes: []
+---
+
 # Post-1.0 performance architecture
 
 **Status:** proposed. This is the canonical post-1.0 performance strategy.

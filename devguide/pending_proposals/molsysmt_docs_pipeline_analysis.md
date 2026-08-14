@@ -1,3 +1,17 @@
+---
+summary: MolSysMT's documentation pipeline read at the scale it is about to reach.
+issue: uibcdf/molsysviewer#41
+status: open
+opened: 2026-08-04
+closed:
+verification: measured
+area: [docs, molsysmt]
+guard:
+normative:
+blocked_by: []
+supersedes: []
+---
+
 # MolSysMT's documentation pipeline, read at the scale it is about to reach
 
 **Status:** analysis, 2026-08-04. Offered, not requested — MolSysMT may already

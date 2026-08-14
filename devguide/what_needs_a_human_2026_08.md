@@ -63,7 +63,7 @@ The explicit-state option was selected and implemented. Hover transport is off
 by default; `hover_target.info()` reports `telemetry_disabled` rather than a
 plausible empty target, and callback registration activates transport without a
 reload. The completed design record is
-[`../archive/opt_in_hover_telemetry.md`](../archive/opt_in_hover_telemetry.md).
+[`../archive/opt_in_hover_telemetry.md`](archive/opt_in_hover_telemetry.md).
 
 ## 4. Decide what the README leads with — *positioning, not work*
 
@@ -96,7 +96,7 @@ Only after that release exists, and only after re-verifying against it, is
 retiring `takeCameraAuthority` and `camera_stranded_inside_scene` on the table —
 and that is a *behaviour* decision, since it returns Mol\*'s opportunistic
 re-framing. The four steps are in
-[`../archive/report_molstar_empty_scene_camera_bounds.md`](../archive/report_molstar_empty_scene_camera_bounds.md).
+[`../archive/report_molstar_empty_scene_camera_bounds.md`](archive/report_molstar_empty_scene_camera_bounds.md).
 
 ## 7. ~~Open Phase 5, or decide not to~~ — **closed**
 

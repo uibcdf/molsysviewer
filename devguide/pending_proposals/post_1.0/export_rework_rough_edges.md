@@ -1,3 +1,17 @@
+---
+summary: Rough edges of the 2026-08 export rework, to review cold.
+issue: uibcdf/molsysviewer#47
+status: open
+opened: 2026-08-04
+closed:
+verification: inspected
+area: [export]
+guard:
+normative:
+blocked_by: []
+supersedes: []
+---
+
 # Rough edges of the 2026-08 export rework, to review cold
 
 **Status:** post-1.0 review. Nothing here is broken and nothing here blocks

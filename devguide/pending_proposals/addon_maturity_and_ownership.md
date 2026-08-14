@@ -1,3 +1,17 @@
+---
+summary: Add-ons declare four different things about their own maturity, in an untyped dict.
+issue: uibcdf/molsysviewer#37
+status: partial
+opened: 2026-08-12
+closed:
+verification: measured
+area: [addons, docs]
+guard:
+normative:
+blocked_by: []
+supersedes: []
+---
+
 # What an add-on says about its own maturity
 
 **Status:** the vocabulary is **decided** (below); adoption is each toolkit's, and none has

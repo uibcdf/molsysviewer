@@ -1,3 +1,17 @@
+---
+summary: Automate the Qt render check on a GPU runner.
+issue: uibcdf/molsysviewer#52
+status: open
+opened: 2026-07-31
+closed:
+verification: inspected
+area: [standalone, qt, ci]
+guard:
+normative:
+blocked_by: []
+supersedes: []
+---
+
 # Automating the Qt render check on a GPU runner
 
 **Status:** post-1.0. Infrastructure, not code.

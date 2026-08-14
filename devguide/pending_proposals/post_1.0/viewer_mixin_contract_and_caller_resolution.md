@@ -1,3 +1,17 @@
+---
+summary: Generated typing contract for MolSysView mixins.
+issue: uibcdf/molsysviewer#57
+status: open
+opened: 2026-07-03
+closed:
+verification: inspected
+area: [typing]
+guard:
+normative:
+blocked_by: []
+supersedes: []
+---
+
 # Post-1.0 proposal: generated typing contract for `MolSysView` mixins
 
 **Status:** deferred until after 1.0.

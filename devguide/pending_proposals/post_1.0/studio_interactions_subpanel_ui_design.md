@@ -1,3 +1,17 @@
+---
+summary: Studio subpanel for Interactions.
+issue: uibcdf/molsysviewer#56
+status: open
+opened: 2026-07-30
+closed:
+verification: inspected
+area: [interaction, ui]
+guard:
+normative:
+blocked_by: []
+supersedes: []
+---
+
 # Studio Subpanel — Interactions (UI Design Specification)
 
 **Status:** Post-1.0 UI specification (2026-07-24). Companion to [the Interactions domain spec](interactions_domain.md).

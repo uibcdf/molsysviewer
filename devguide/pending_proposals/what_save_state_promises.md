@@ -1,3 +1,17 @@
+---
+summary: State what a saved state restores, and separate scene state from visual state.
+issue: uibcdf/molsysviewer#38
+status: open
+opened: 2026-08-12
+closed:
+verification: measured
+area: [state, export]
+guard:
+normative:
+blocked_by: []
+supersedes: []
+---
+
 # What `save_state()` promises
 
 **Status:** open. **Raised:** 2026-08-12, from outside the project, to make the paper's
@@ -113,6 +127,6 @@ anywhere in the repository today; the point is to keep it that way.
 ## Related
 
 - `viewer/state.py` — `export_state`, `import_state`, `save_state`, `load_state`.
-- Gate 6 of [`pre_1_0_architecture_rework_and_hardening_master_plan.md`](pre_1_0_architecture_rework_and_hardening_master_plan.md),
+- Gate 6 of [`pre_1_0_architecture_rework_and_hardening_master_plan.md`](../pre_1_0_architecture_rework_and_hardening_master_plan.md),
   which shipped the file helpers and states the same exclusions.
 - `figures.py` — `FigureSpec.camera_snapshot`, the existing home for saved framing.

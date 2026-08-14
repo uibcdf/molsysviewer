@@ -1,3 +1,17 @@
+---
+summary: Build the runtime as a classic script so many shared views open from a disk with no server.
+issue: uibcdf/molsysviewer#39
+status: open
+opened: 2026-08-04
+closed:
+verification: measured
+area: [export, runtime]
+guard:
+normative:
+blocked_by: []
+supersedes: []
+---
+
 # A classic-script runtime, for the bundle nobody has asked for yet
 
 **Status:** deliberately not done, 2026-08-04. This file exists so the day

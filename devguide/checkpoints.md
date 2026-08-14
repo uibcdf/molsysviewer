@@ -68,6 +68,11 @@ Main findings:
 MolSysViewer does.** It is generated; regenerate with
 `python devtools/capability_audit.py --write`.
 
+**A defect or a proposal is filed under
+[`reporting_protocol.md`](reporting_protocol.md)** — front matter, a GitHub issue, and a
+`guard` named at close. Adopted 2026-08-14 from MolSysMT; the 28 documents in the two
+queues all carry it.
+
 Resume in this order:
 
 1. **Widen `EXECUTABLE_PAGES`** in `tests/test_documentation_pages_run.py`. It executes
@@ -78,7 +83,7 @@ Resume in this order:
    observations: Qt real-window/GPU and ten human live-demo replacements. Never
    report the existing offscreen/browser evidence as those observations.
 3. Complete scientific dogfooding and the remaining human decisions in
-   [`pending_proposals/what_needs_a_human_2026_08.md`](pending_proposals/what_needs_a_human_2026_08.md)
+   [`pending_proposals/what_needs_a_human_2026_08.md`](what_needs_a_human_2026_08.md)
    — three items, all needing a screen or a judgement.
 4. Once sibling releases are ready, close dependency channels; build wheel and
    conda artifacts; verify imports, resources and the one-line path from clean
@@ -101,7 +106,7 @@ bundle; hover is runtime/session state rather than scene state.
 ## Resume cautions
 
 - Read
-  [`pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md`](pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md),
+  [`pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md`](pre_1_0_architecture_rework_and_hardening_master_plan.md),
   [`scene_contracts.md`](scene_contracts.md),
   [`data_plane_architecture.md`](data_plane_architecture.md) and
   [`runtime_message_router.md`](runtime_message_router.md) before changing the

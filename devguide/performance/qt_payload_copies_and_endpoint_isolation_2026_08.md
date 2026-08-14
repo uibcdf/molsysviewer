@@ -1,7 +1,7 @@
 # Qt payload copies, and endpoint-scoped scene deferral
 
 **Measured 2026-08-06, linux.** Closes items 7 and 8 of
-[`../pending_proposals/transport_popup_audit_followups_2026_08.md`](../pending_proposals/transport_popup_audit_followups_2026_08.md).
+[`../pending_proposals/transport_popup_audit_followups_2026_08.md`](../audits/transport_popup_audit_followups_2026_08.md).
 Both were "measure before deciding" items; neither produces a change here, and
 both now have a number instead of an expectation.
 

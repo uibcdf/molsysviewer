@@ -1,3 +1,17 @@
+---
+summary: Configurable canvas picking granularity via the context menu.
+issue: uibcdf/molsysviewer#45
+status: open
+opened: 2026-07-30
+closed:
+verification: inspected
+area: [interaction]
+guard:
+normative:
+blocked_by: []
+supersedes: []
+---
+
 # Proposal: Canvas Picking Level Selection via Context Menu
 
 **Status:** post-1.0 design.

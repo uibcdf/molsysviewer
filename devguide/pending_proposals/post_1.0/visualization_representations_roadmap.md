@@ -1,3 +1,17 @@
+---
+summary: Advanced representations for pockets, voids, channels and interfaces.
+issue: uibcdf/molsysviewer#59
+status: open
+opened: 2026-07-03
+closed:
+verification: inspected
+area: [shapes, representations]
+guard:
+normative:
+blocked_by: []
+supersedes: []
+---
+
 # Proposal: Advanced Visualization Representations for Pockets, Voids, Channels, Interfaces, and Dry Components
 
 ## Abstract

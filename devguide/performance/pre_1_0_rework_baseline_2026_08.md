@@ -3,7 +3,7 @@
 ## Purpose and status
 
 This document is the Phase 0b measurement record for
-[`pre_1_0_architecture_rework_and_hardening_master_plan.md`](../pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md).
+[`pre_1_0_architecture_rework_and_hardening_master_plan.md`](../pre_1_0_architecture_rework_and_hardening_master_plan.md).
 
 **Status:** measured on 2026-08-02. Required automated gates are green. The
 real-window Qt check and direct visual inspection of the generated static HTML

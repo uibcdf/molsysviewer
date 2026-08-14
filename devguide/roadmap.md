@@ -56,7 +56,7 @@ fallback, canonical static/live projection, endpoint ownership, seam evidence
 and representative performance/memory gates. Phase 9 reconciled durable
 documentation; Phase 10 owns the remaining product/release gates. The canonical
 dashboard is
-[`pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md`](pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md).
+[`pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md`](pre_1_0_architecture_rework_and_hardening_master_plan.md).
 
 The durable contracts record what was built and why:
 

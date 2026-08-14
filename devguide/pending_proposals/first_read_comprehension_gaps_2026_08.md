@@ -1,3 +1,17 @@
+---
+summary: What one uninterrupted first read of the project concluded wrongly, and which document caused each wrong turn.
+issue: uibcdf/molsysviewer#40
+status: partial
+opened: 2026-08-06
+closed:
+verification: reproduced
+area: [docs]
+guard:
+normative:
+blocked_by: []
+supersedes: []
+---
+
 # What a first read got wrong, and what that says about the documentation
 
 **Status: acted on 2026-08-06. One item left, and it is a decision, not work** —

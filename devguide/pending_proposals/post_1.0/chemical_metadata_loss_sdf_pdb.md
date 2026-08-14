@@ -1,3 +1,17 @@
+---
+summary: Preserve enriched chemical metadata from SDF and MOL2.
+issue: uibcdf/molsysviewer#46
+status: open
+opened: 2026-07-03
+closed:
+verification: inspected
+area: [molsysmt, forms]
+guard:
+normative:
+blocked_by: []
+supersedes: []
+---
+
 # Propuesta post-1.0: metadatos quimicos SDF/MOL2 enriquecidos
 
 **Estado:** post-1.0

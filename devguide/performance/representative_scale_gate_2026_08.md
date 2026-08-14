@@ -3,7 +3,7 @@
 ## Purpose and status
 
 This is the Phase 8 measurement record for
-[`pre_1_0_architecture_rework_and_hardening_master_plan.md`](../pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md).
+[`pre_1_0_architecture_rework_and_hardening_master_plan.md`](../pre_1_0_architecture_rework_and_hardening_master_plan.md).
 It measures atom count and structure count independently, using real molecular
 systems. It is a baseline, not a claim that every cell is interactive at 60 FPS.
 

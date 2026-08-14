@@ -4,7 +4,7 @@
 an assistant can do:** A3 (validate the Qt host on a real screen), A5 (a human
 looks at `34755fb9`) and E1 (hand MolSysMT the four files waiting in their tree).
 All three are collected, with what they need, in
-[`what_needs_a_human_2026_08.md`](what_needs_a_human_2026_08.md). D2 is a product
+[`what_needs_a_human_2026_08.md`](../what_needs_a_human_2026_08.md). D2 is a product
 question, not an item.
 
 Closed items keep one line and a pointer. Their original bodies are in the git
@@ -21,7 +21,7 @@ careless: *a document claiming work remains ages exactly like a document claimin
 work is pending, and only the second kind gets re-read.*
 
 Its execution order is superseded by
-[`pre_1_0_architecture_rework_and_hardening_master_plan.md`](pre_1_0_architecture_rework_and_hardening_master_plan.md).
+[`pre_1_0_architecture_rework_and_hardening_master_plan.md`](../pre_1_0_architecture_rework_and_hardening_master_plan.md).
 
 ## Z. ~~Broken right now~~ — both resolved, verified 2026-08-06 (2)
 

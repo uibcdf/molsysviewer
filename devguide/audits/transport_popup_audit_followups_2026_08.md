@@ -1,7 +1,7 @@
 # Transport and popup audit follow-ups
 
 **Status:** audit record, swept 2026-08-06 and closed out the same day — **items 1 to 8 are all done or measured**, each marked in its own title. **Items 1 to 9 are all done, measured or verified.** What remains is 10 to 12, which are standing boundaries rather than work. Its execution order is superseded by
-[`pre_1_0_architecture_rework_and_hardening_master_plan.md`](pre_1_0_architecture_rework_and_hardening_master_plan.md).
+[`pre_1_0_architecture_rework_and_hardening_master_plan.md`](../pre_1_0_architecture_rework_and_hardening_master_plan.md).
 
 This document records the additional work found after R2, D3, D4, the Qt
 real-window validation, and Contracts S8/S9 had landed. It complements
@@ -150,7 +150,7 @@ silently reclassified as complete.
 ## Execution order
 
 This audit no longer carries an independent recommended order. Follow
-[`pre_1_0_architecture_rework_and_hardening_master_plan.md`](pre_1_0_architecture_rework_and_hardening_master_plan.md),
+[`pre_1_0_architecture_rework_and_hardening_master_plan.md`](../pre_1_0_architecture_rework_and_hardening_master_plan.md),
 which begins with the broken distribution artifact and a green complete
 baseline, then closes the active transport/manifest defects and transversal
 guards before architectural rework. This document remains the evidence and

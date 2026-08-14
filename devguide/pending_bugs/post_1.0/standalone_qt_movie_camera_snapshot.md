@@ -1,3 +1,18 @@
+---
+summary: Movie export in the Qt host fails because the camera snapshot is never mirrored back.
+issue: uibcdf/molsysviewer#36
+status: open
+opened: 2026-07-04
+closed:
+severity: low
+verification: reproduced
+area: [standalone, qt, movie]
+guard:
+normative:
+blocked_by: []
+supersedes: []
+---
+
 # Standalone Qt movie export lacks a camera snapshot
 
 **Status:** confirmed, deferred until after 1.0.

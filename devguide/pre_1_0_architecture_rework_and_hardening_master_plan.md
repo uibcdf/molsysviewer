@@ -11,11 +11,11 @@ still keeps.
 This plan supersedes the execution order in the audit inventories. Those remain
 the evidence and defect records:
 
-- [`open_items_after_the_2026_08_smoke_round.md`](open_items_after_the_2026_08_smoke_round.md);
-- [`transport_popup_audit_followups_2026_08.md`](transport_popup_audit_followups_2026_08.md).
+- [`open_items_after_the_2026_08_smoke_round.md`](audits/open_items_after_the_2026_08_smoke_round.md);
+- [`transport_popup_audit_followups_2026_08.md`](audits/transport_popup_audit_followups_2026_08.md).
 
 Normative scene behavior continues to live in
-[`../scene_contracts.md`](../scene_contracts.md). If this plan and a scene
+[`../scene_contracts.md`](scene_contracts.md). If this plan and a scene
 contract disagree, the contract wins until it is deliberately amended in the
 same change as the implementation.
 
@@ -1003,7 +1003,7 @@ Mutation ledger:
 Not done in this slice: no change to completion-wait timeout semantics, no
 frontend-orchestrator decomposition, no structure windowing and no dependency
 pinning. The independent audit closed this phase on 2026-08-09; see
-[`../audits/pre_1_0_phases_5_6_8_9_10_audit_2026_08.md`](../audits/pre_1_0_phases_5_6_8_9_10_audit_2026_08.md).
+[`../audits/pre_1_0_phases_5_6_8_9_10_audit_2026_08.md`](audits/pre_1_0_phases_5_6_8_9_10_audit_2026_08.md).
 The developer scratch notebook was not used as evidence or included in the
 implementation.
 
@@ -1029,7 +1029,7 @@ parity test. No prediction about hypothetical future edits is used as evidence.
 #### Phase 6 implementation evidence — 2026-08-08
 
 The durable ownership table is
-[`../transport_state_ownership.md`](../transport_state_ownership.md). The audit
+[`../transport_state_ownership.md`](transport_state_ownership.md). The audit
 confirmed that `StructureTransferManager` is already the sole transfer-state
 authority and `PopupSnapshotMixin` is already the sole canonical/static
 projector. No extraction of runtime dispatch or frontend orchestrators was
@@ -1062,7 +1062,7 @@ Not done: no behavior change to the transfer protocol, no TypeScript movement,
 no general `core.py` decomposition and no compatibility alias for the removed
 private dictionaries. The independent audit closed this phase on 2026-08-09;
 see
-[`../audits/pre_1_0_phases_5_6_8_9_10_audit_2026_08.md`](../audits/pre_1_0_phases_5_6_8_9_10_audit_2026_08.md).
+[`../audits/pre_1_0_phases_5_6_8_9_10_audit_2026_08.md`](audits/pre_1_0_phases_5_6_8_9_10_audit_2026_08.md).
 
 ### Phase 7 — Missing seam evidence
 
@@ -1233,7 +1233,7 @@ not repeated for this documentation slice.
    against. The earlier 286/515 counted implementation helpers and every
    imported name re-exported by its importer (`digest` alone appeared 38 times).
    What remains is executing
-   [`digest_every_public_callable.md`](../archive/digest_every_public_callable.md) module by
+   [`digest_every_public_callable.md`](archive/digest_every_public_callable.md) module by
    module. Decorating names without declaring their arguments does not close this
    gate.
 10. **Human workflow required.** Complete scientific dogfooding on

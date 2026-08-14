@@ -1,3 +1,17 @@
+---
+summary: An Interactions domain for derived atom-atom relations.
+issue: uibcdf/molsysviewer#48
+status: open
+opened: 2026-07-30
+closed:
+verification: inspected
+area: [interaction, scene]
+guard:
+normative:
+blocked_by: []
+supersedes: []
+---
+
 # Proposal: `Interactions` — a scene domain for derived atom–atom relations
 
 **Status:** approved post-1.0 design (finalized 2026-07-20).

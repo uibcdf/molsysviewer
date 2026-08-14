@@ -1,3 +1,17 @@
+---
+summary: Multi-view split-screen viewport synchronization.
+issue: uibcdf/molsysviewer#49
+status: open
+opened: 2026-07-30
+closed:
+verification: inspected
+area: [viewer]
+guard:
+normative:
+blocked_by: []
+supersedes: []
+---
+
 # Proposal: Multi-View Split-Screen Viewport Synchronization
 
 **Status:** post-1.0 design.

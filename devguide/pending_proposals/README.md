@@ -1,5 +1,10 @@
 # Pending proposals
 
+Every entry is filed and closed under [`../reporting_protocol.md`](../reporting_protocol.md):
+it carries front matter and is tracked by a GitHub issue. **Only single-theme proposals
+live here** — plans and inventories are not queue entries and sit elsewhere in the
+devguide.
+
 Only unresolved designs belong here. Implemented plans are promoted to durable
 documentation or removed; Git retains their development history.
 
@@ -15,11 +20,6 @@ compression, workers, shared memory and multiview remain post-1.0.
   classify legacy physical-magnitude digesters and consolidate compatible paths on the
   existing `ensure_quantity()` helper, adding explicit canonical branches only where
   representative interactive benchmarks justify them.
-- [`what_needs_a_human_2026_08.md`](what_needs_a_human_2026_08.md): **read this
-  one first.** Five human observations or decisions remain: visible Qt
-  validation, review of the final reload fix, README positioning, a small
-  MolSysMT handover and the future Mol* version floor.
-  Its former Phase 5 opening item is closed.
 - [`reuse_attribute_availability_within_one_scene_summary_synchronization.md`](reuse_attribute_availability_within_one_scene_summary_synchronization.md):
   operation-local reuse of the MolSysMT attribute inventory while synchronizing region
   and whole summaries. The re-audit behind uibcdf/molsysmt#147 measured 510 adapter
@@ -36,16 +36,6 @@ compression, workers, shared memory and multiview remain post-1.0.
   Measured: four MolSysSuite add-ons declare four different things about themselves in an
   untyped `meta` dict, `AddonSpec` has no `status` field, and only MolSysMT is discovered
   on install.
-- [`pre_1_0_architecture_rework_and_hardening_master_plan.md`](pre_1_0_architecture_rework_and_hardening_master_plan.md):
-  canonical execution plan for the corrections, transport/export rework,
-  architectural extraction, seam hardening, representative performance work
-  and release gates required before 1.0. The audit documents below remain its
-  evidence, not competing execution plans.
-- [`transport_popup_audit_followups_2026_08.md`](transport_popup_audit_followups_2026_08.md)
-  and [`open_items_after_the_2026_08_smoke_round.md`](open_items_after_the_2026_08_smoke_round.md):
-  the two audit inventories. **Items 1–9, and sixteen of nineteen, are closed.**
-  What remains in either is collected in `what_needs_a_human_2026_08.md`. Closed
-  items keep one line and a pointer, so neither reads as a work queue any more.
 - [`molsysmt_docs_pipeline_analysis.md`](molsysmt_docs_pipeline_analysis.md):
   their pipeline read at the scale it is about to reach. The scheme is piloted in
   one notebook; 138 call `msm.view()` and 26 carry a target. The structural
@@ -71,6 +61,19 @@ compression, workers, shared memory and multiview remain post-1.0.
 *(A JIT cold-start proposal was drafted here on 2026-07-31 and withdrawn the same
 day: MolSysMT no longer uses Numba. See
 [`../standalone_performance_and_depythonization.md`](../archive/standalone_performance_and_depythonization.md).)*
+
+## Not in this queue
+
+Three documents used to be listed here and are not queue entries: they are a plan and two
+inventories, and **one theme, one issue** cannot apply to them.
+
+- [`../what_needs_a_human_2026_08.md`](../what_needs_a_human_2026_08.md) — **read this one
+  first.** Three observations or decisions that no work here can close.
+- [`../pre_1_0_architecture_rework_and_hardening_master_plan.md`](../pre_1_0_architecture_rework_and_hardening_master_plan.md)
+  — the canonical execution plan and its phase dashboard.
+- [`../audits/transport_popup_audit_followups_2026_08.md`](../audits/transport_popup_audit_followups_2026_08.md)
+  and [`../audits/open_items_after_the_2026_08_smoke_round.md`](../audits/open_items_after_the_2026_08_smoke_round.md)
+  — the two audit inventories, almost entirely closed.
 
 ## Deferred until after 1.0
 

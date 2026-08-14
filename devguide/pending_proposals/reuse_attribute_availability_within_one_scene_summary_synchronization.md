@@ -1,6 +1,19 @@
+---
+summary: One scene-summary synchronization asks the same attribute-availability question repeatedly.
+issue: uibcdf/molsysviewer#32
+status: open
+opened: 2026-08-13
+closed:
+verification: measured
+area: [performance, scene]
+guard:
+normative:
+blocked_by: []
+supersedes: []
+---
+
 # Reuse Attribute Availability Within One Scene-Summary Synchronization
 
-**Issue:** uibcdf/molsysviewer#32
 **Reported:** 2026-08-13, while independently re-auditing the causal diagnosis in
 uibcdf/molsysmt#147.
 **Status:** proposed; independent of the MolSysMT 1.0 release gate.

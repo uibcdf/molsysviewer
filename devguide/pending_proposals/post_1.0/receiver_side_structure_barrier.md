@@ -1,3 +1,17 @@
+---
+summary: Move the structure barrier to the receiver.
+issue: uibcdf/molsysviewer#53
+status: open
+opened: 2026-07-31
+closed:
+verification: inspected
+area: [transport]
+guard:
+normative:
+blocked_by: []
+supersedes: []
+---
+
 # Move the structure barrier to the receiver
 
 **Filed 2026-07-31, out of the defect that produced Contract S8.**

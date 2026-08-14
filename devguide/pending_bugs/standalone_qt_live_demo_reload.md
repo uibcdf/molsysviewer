@@ -1,3 +1,18 @@
+---
+summary: In the standalone Qt host, replacing the loaded demo leaves the previous system on screen.
+issue: uibcdf/molsysviewer#35
+status: partial
+opened: 2026-07-04
+closed:
+severity: high
+verification: reproduced
+area: [standalone, qt]
+guard:
+normative:
+blocked_by: []
+supersedes: []
+---
+
 # Standalone Qt — live demo replacement does not update the scene
 
 **Status:** fix implemented and protected; visible-window validation pending.

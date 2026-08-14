@@ -1,5 +1,9 @@
 # Pending Bugs
 
+Every entry is filed and closed under [`../reporting_protocol.md`](../reporting_protocol.md):
+it carries front matter, is tracked by a GitHub issue, and closes only when it names the
+test that fails if the defect returns.
+
 This directory contains confirmed or reproducible defects that affect current
 MolSysViewer behavior. Bug reports are evidence and implementation queues, not
 future API proposals.

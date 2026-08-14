@@ -1,3 +1,17 @@
+---
+summary: Advanced annotations on Mol*'s MVS machinery.
+issue: uibcdf/molsysviewer#44
+status: open
+opened: 2026-07-13
+closed:
+verification: inspected
+area: [annotations]
+guard:
+normative:
+blocked_by: []
+supersedes: []
+---
+
 # Propuesta post-1.0: anotaciones avanzadas sobre la maquinaria MVS de Mol*
 
 **Estado:** post-1.0 (decisión tomada el 2026-07-12)
