@@ -227,13 +227,13 @@ def test_the_element_tables_declare_only_combinations_that_exist(registry):
     assert "bond_order" in by_element["bond"]
 
 
-def test_the_element_tables_stay_identical_to_molsysmts_own(registry):
+def test_the_element_tables_stay_identical_to_molsysmts_public_contract(registry):
     """`view.get` forwards to `msm.get`, so the real combinations are theirs to define.
 
     Re-emitting their tables under this caller is what makes drift impossible; this pins
     that the re-emission is faithful rather than a copy that has started to age.
     """
-    from molsysmt._private.argdigest.normalization.get_element_names import TABLES as upstream
+    from molsysmt.attribute import get_argument_aliases
 
     ours = {
         (table["when"]["element"], tuple(sorted(table["aliases"].items())))
@@ -241,8 +241,8 @@ def test_the_element_tables_stay_identical_to_molsysmts_own(registry):
         if table["when"]
     }
     theirs = {
-        (table.when["element"], tuple(sorted(table.aliases.items())))
-        for table in upstream
+        (element, tuple(sorted(aliases.items())))
+        for element, aliases in get_argument_aliases()['element_attribute_aliases'].items()
     }
 
     assert ours == theirs
@@ -255,14 +255,27 @@ def test_the_upstream_attribute_alias_catalogue_satisfies_argdigests_contract():
     rejects that table, which made MolSysViewer fail during import until the dependency
     floor named the first compatible MolSysMT release.
     """
-    from molsysmt.attribute import _attribute_synonyms
+    from molsysmt.attribute import get_argument_aliases
 
-    assert _attribute_synonyms
+    synonyms = get_argument_aliases()['attribute_synonyms']
+
+    assert synonyms
     assert not {
         source: target
-        for source, target in _attribute_synonyms.items()
+        for source, target in synonyms.items()
         if source == target
     }
+
+
+def test_normalization_does_not_import_molsysmt_private_alias_data():
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    normalization = root / 'molsysviewer' / '_private' / 'argdigest' / 'normalization'
+    source = '\n'.join(path.read_text(encoding='utf-8') for path in normalization.glob('*.py'))
+
+    assert 'molsysmt._private' not in source
+    assert 'molsysmt.attribute._attribute_synonyms' not in source
 
 
 def test_there_is_no_second_mechanism_deciding_renames():

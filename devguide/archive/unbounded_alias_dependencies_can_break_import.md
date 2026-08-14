@@ -76,3 +76,12 @@ from the upstream catalogue.
 The private cross-package import remains bounded technical debt rather than an unstated
 API. Its replacement by a public MolSysMT provider is tracked independently by
 `uibcdf/molsysmt#157` and documented in `devguide/digestion_and_dependencies.md`.
+
+## Correction — 2026-08-14
+
+The final paragraph above described the state when this report was archived. MolSysMT
+issue `uibcdf/molsysmt#157` subsequently introduced the public, versioned
+`molsysmt.attribute.get_argument_aliases()` provider. MolSysViewer now builds its
+caller-scoped tables exclusively from that plain-data contract; the two private imports
+named in this record have been removed. The dependency floor remains necessary because
+0.22.0 is the first MolSysMT release that provides the supported integration API.

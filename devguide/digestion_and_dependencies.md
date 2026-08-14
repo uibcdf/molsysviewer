@@ -85,21 +85,18 @@ function accepts.
 #### Cross-package alias contract
 
 The query wrappers validate arguments in MolSysViewer and then delegate to MolSysMT with
-`skip_digestion=True`. They therefore need MolSysMT's attribute aliases on the viewer
-side. The current bridge imports `molsysmt.attribute._attribute_synonyms` and MolSysMT's
-private context-dependent tables, re-scoping them to MolSysViewer's real callers.
+`skip_digestion=True`. They therefore build their caller-scoped `AliasTable` objects from
+the versioned plain-data contract returned by
+`molsysmt.attribute.get_argument_aliases()`. No MolSysMT private alias module is a
+consumer interface.
 
-This is a temporary, explicitly versioned private seam, not permission to consume
-arbitrary sibling internals. Wheel and Conda metadata require `argdigest>=0.12.0` and
-`molsysmt>=0.22.0`; the latter is the first planned release containing the identity-free
-alias catalogue. Both manifests and the runtime catalogue are guarded by tests. Do not
-relax either floor or silently filter malformed upstream aliases to accommodate an old
-release.
-
-The durable replacement is tracked by `uibcdf/molsysmt#157`: MolSysMT should expose
-read-only plain alias data through a supported public provider. Once available,
-MolSysViewer must migrate both private imports to it and retain the caller-scope tests.
-The consumer defect and its evidence are recorded by `uibcdf/molsysviewer#62`.
+Wheel and Conda metadata require `argdigest>=0.12.0` and `molsysmt>=0.22.0`; the latter
+introduces this public provider. Both manifests, the public contract and the resulting
+viewer calls are guarded by tests. Do not relax either floor or silently filter malformed
+upstream aliases to accommodate an old release. Canonical and alias keywords are
+alternatives; collision handling belongs to ArgDigest. The original dependency defect
+and the migration history are recorded by `uibcdf/molsysviewer#62` and
+`uibcdf/molsysmt#157`.
 
 ### Interaction with PyUnitWizard
 

@@ -1,7 +1,7 @@
 """The attribute synonyms, scoped to the viewer methods that take attribute names.
 
-`molsysmt.attribute._attribute_synonyms` is the source of truth; this points at it rather
-than copying, so the two cannot drift apart.
+`molsysmt.attribute.get_argument_aliases()` is the public source of truth. This module
+scopes its semantic data to MolSysViewer's concrete callers.
 
 **The scope is not incidental**, in either direction.
 
@@ -25,8 +25,7 @@ otherwise. `Whole.get` deliberately does *not* appear: it is a pure forwarder th
 """
 
 from argdigest import AliasTable
-
-from molsysmt.attribute import _attribute_synonyms
+from molsysmt.attribute import get_argument_aliases
 
 #: Digest here, forward with `skip_digestion=True`: the last chance to rename.
 _ATTRIBUTE_TAKING_CALLERS = (
@@ -40,10 +39,12 @@ _ATTRIBUTE_TAKING_CALLERS = (
     'molsysviewer.whole.is_composed_of',
 )
 
+_ALIASES = get_argument_aliases()['attribute_synonyms']
+
 TABLES = [
     AliasTable(
         applies_to=caller,
-        aliases=dict(_attribute_synonyms),
+        aliases=_ALIASES,
         description='plural and anatomical synonyms of the canonical attribute names',
     )
     for caller in _ATTRIBUTE_TAKING_CALLERS
