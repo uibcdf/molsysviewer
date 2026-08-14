@@ -1238,8 +1238,12 @@ not repeated for this documentation slice.
    gate.
 10. **Human workflow required.** Complete scientific dogfooding on
    representative laboratory workflows.
-11. **Pending all preceding gates.** Run the final smoke matrix and
-    release-version consistency checks.
+11. **Pending all preceding gates; the command exists.**
+    `python devtools/release_gate.py` runs the final smoke matrix and the
+    release-version consistency checks in one place. It reports `BLOCKED` with a
+    reason for anything it cannot run and exits non-zero — a gate that skips what
+    it cannot do passes on an untested release. Today `qt` is blocked on a screen
+    and `conda` on gates 1-5; everything else runs. `--list` shows both.
 
 **Exit:** no open pre-1.0 gate remains in `path_to_1_0.md`.
 

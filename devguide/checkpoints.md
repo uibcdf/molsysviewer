@@ -88,7 +88,9 @@ Resume in this order:
 4. Once sibling releases are ready, close dependency channels; build wheel and
    conda artifacts; verify imports, resources and the one-line path from clean
    installations.
-5. Run the final smoke/version matrix and release only with no open pre-1.0 gate.
+5. Run `python devtools/release_gate.py` and release only when it exits zero. It
+   refuses to be silent: anything it cannot run is `BLOCKED` with the reason, and
+   that is still a non-zero exit.
 
 Closed in Phase 10 so far: atomic overlay-state file helpers, notebook CI, opt-in hover
 telemetry, and public-callable digestion. The state helpers are not a molecular-session
