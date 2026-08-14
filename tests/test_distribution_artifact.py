@@ -32,10 +32,19 @@ REQUIRED_RUNTIME_RESOURCES = {
     "molsysviewer/runtime_actions.json",
     "molsysviewer/viewer.js",
 }
+REQUIRED_RUNTIME_VERSION_FLOORS = {
+    "argdigest": "0.12.0",
+    "molsysmt": "0.22.0",
+}
 
 
 def _dependency_names(requirements: list[str]) -> set[str]:
     return {canonicalize_name(Requirement(item).name) for item in requirements}
+
+
+def _dependencies_by_name(requirements: list[str]) -> dict[str, Requirement]:
+    parsed = (Requirement(item) for item in requirements)
+    return {canonicalize_name(item.name): item for item in parsed}
 
 
 def _conda_run_dependencies(recipe: str) -> set[str]:
@@ -71,6 +80,26 @@ def test_distribution_manifests_name_runtime_dependencies_and_resources():
 
     recipe = (ROOT / "devtools" / "conda-build" / "meta.yaml").read_text(encoding="utf-8")
     assert REQUIRED_RUNTIME_DEPENDENCIES <= _conda_run_dependencies(recipe)
+
+
+def test_distribution_manifests_bound_the_shared_alias_contract():
+    """A resolver-valid dependency set must also be import-compatible.
+
+    ArgDigest 0.12.0 rejects self-aliases. MolSysMT 0.12.0 still exposed the identity
+    entry ``constraints -> constraints``, and MolSysViewer imports that alias catalogue
+    while constructing its own caller-scoped tables. With no floors in either manifest,
+    the resolver admitted a combination that failed during ``import molsysviewer``.
+    """
+    pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    wheel_requirements = _dependencies_by_name(pyproject["project"]["dependencies"])
+
+    recipe = (ROOT / "devtools" / "conda-build" / "meta.yaml").read_text(encoding="utf-8")
+    for dependency, floor in REQUIRED_RUNTIME_VERSION_FLOORS.items():
+        assert str(wheel_requirements[dependency].specifier) == f">={floor}"
+        assert re.search(
+            rf"(?m)^\s*-\s+{re.escape(dependency)}\s+>={re.escape(floor)}\s*$",
+            recipe,
+        ), f"the Conda recipe does not require {dependency}>={floor}"
 
 
 def test_built_wheel_imports_from_packaged_runtime_manifest(tmp_path):

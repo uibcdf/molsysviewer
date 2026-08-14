@@ -18,12 +18,9 @@ it stood before the migration.
 from __future__ import annotations
 
 import pytest
-
 from argdigest import describe_normalization
 from argdigest.core.function_loader import load_normalization
-
 from molsysviewer.demo import demo
-
 
 NORMALIZATION_SOURCE = "molsysviewer._private.argdigest.normalization"
 
@@ -249,6 +246,23 @@ def test_the_element_tables_stay_identical_to_molsysmts_own(registry):
     }
 
     assert ours == theirs
+
+
+def test_the_upstream_attribute_alias_catalogue_satisfies_argdigests_contract():
+    """The imported catalogue is executable configuration, not arbitrary metadata.
+
+    MolSysMT 0.12.0 included ``constraints -> constraints``. ArgDigest correctly
+    rejects that table, which made MolSysViewer fail during import until the dependency
+    floor named the first compatible MolSysMT release.
+    """
+    from molsysmt.attribute import _attribute_synonyms
+
+    assert _attribute_synonyms
+    assert not {
+        source: target
+        for source, target in _attribute_synonyms.items()
+        if source == target
+    }
 
 
 def test_there_is_no_second_mechanism_deciding_renames():

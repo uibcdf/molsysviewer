@@ -19,9 +19,9 @@ requirements:
   run:
     - python
     - anywidget
-    - argdigest
+    - argdigest >=0.12.0
     - depdigest
-    - molsysmt
+    - molsysmt >=0.22.0
     - numpy
     - packaging
     - pyunitwizard

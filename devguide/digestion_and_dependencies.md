@@ -82,6 +82,25 @@ function accepts.
   deciding the same rename is how that goes unnoticed — see
   [`archive/migrate_the_standardizer_to_alias_tables.md`](archive/migrate_the_standardizer_to_alias_tables.md).
 
+#### Cross-package alias contract
+
+The query wrappers validate arguments in MolSysViewer and then delegate to MolSysMT with
+`skip_digestion=True`. They therefore need MolSysMT's attribute aliases on the viewer
+side. The current bridge imports `molsysmt.attribute._attribute_synonyms` and MolSysMT's
+private context-dependent tables, re-scoping them to MolSysViewer's real callers.
+
+This is a temporary, explicitly versioned private seam, not permission to consume
+arbitrary sibling internals. Wheel and Conda metadata require `argdigest>=0.12.0` and
+`molsysmt>=0.22.0`; the latter is the first planned release containing the identity-free
+alias catalogue. Both manifests and the runtime catalogue are guarded by tests. Do not
+relax either floor or silently filter malformed upstream aliases to accommodate an old
+release.
+
+The durable replacement is tracked by `uibcdf/molsysmt#157`: MolSysMT should expose
+read-only plain alias data through a supported public provider. Once available,
+MolSysViewer must migrate both private imports to it and retain the caller-scope tests.
+The consumer defect and its evidence are recorded by `uibcdf/molsysviewer#62`.
+
 ### Interaction with PyUnitWizard
 
 Some digesters are unit-aware and must remain aligned with the local `molsysviewer._pyunitwizard.puw` instance.
