@@ -153,9 +153,14 @@ This protocol declares itself ecosystem-wide, and `uibcdf/<repo>#<number>` is a 
 reference in every direction only while the vocabularies mean the same thing everywhere.
 Today they are prose duplicated in two repositories.
 
-Raised as [uibcdf/molsysmt#156](https://github.com/uibcdf/molsysmt/issues/156), with the
-distinction we found by adopting it: **the reporting vocabularies travel and the evidence
-labels do not.** `status` and `verification` we took without adapting a word, and they fit
+Raised as [uibcdf/molsysmt#156](https://github.com/uibcdf/molsysmt/issues/156). The aim
+asked for there is the widest one: **a vocabulary every MolSysSuite tool can adopt
+unchanged, including the ones that do not exist yet** — with the test that if a new tool
+could not use a value on its first day, it does not belong in the shared set.
+
+That test is what excludes the evidence labels, and the exclusion serves universality
+rather than carving out an exception for us: **the reporting vocabularies travel and the
+evidence labels do not.** `status` and `verification` we took without adapting a word, and they fit
 28 documents of a viewer. Of the five evidence labels in their `DOCUMENT_POLICY.md`, two
 cannot be earned here at all — a report is a report in any repository; a capability
 belongs to the domain.
