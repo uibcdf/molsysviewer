@@ -5,8 +5,8 @@ changes. Normative behavior remains in the contracts linked below.
 
 ## Repository state
 
-- Branch: `main`, pushed. The latest committed slice is the three missing user
-  documentation pages and the test that executes them.
+- Branch: `main`, pushed. The latest committed slice adopted MolSysMT's reporting
+  protocol for the two work queues and built the governance around it.
 - Phases 5, 6, 8 and 9 and the Phase 10 persistence slice were independently
   audited and closed on 2026-08-09. Phase 8 evidence remains in
   [`performance/representative_scale_gate_2026_08.md`](performance/representative_scale_gate_2026_08.md).
@@ -19,10 +19,14 @@ changes. Normative behavior remains in the contracts linked below.
   never use it as architectural evidence.
 - `molsysviewer/viewer.js` was regenerated with `npm run build:runtime`; it is a
   generated artifact, never a source file.
+- **Reports are coordinated with the issue board** (2026-08-14). All 28 documents in
+  `pending_bugs/` and `pending_proposals/` carry front matter and a GitHub issue; the
+  queue READMEs are generated; `devtools/release_gate.py` is gate 11's command. See
+  [`reporting_protocol.md`](reporting_protocol.md).
 
 ## Validation observed
 
-- Current slice, 2026-08-13: **1,470 Python passed, 4 skips, exit 0**
+- Current slice, 2026-08-14: **1,597 Python passed, 4 skips, exit 0**
   (`--receptor=llm -n 12`). Three of the skips are environmental — no display, no
   WebGL, imageio present — and the fourth is an optional MolSysSuite add-on that is not
   installed here.
@@ -79,6 +83,11 @@ Resume in this order:
    three documentation pages today; the rest of the markdown is run by nothing, which is
    how a half-applied rename left a `NameError` in four pages. This is the only remaining
    item that needs neither another machine nor a decision.
+
+   The audit's second-sharpest gap is next to it: **four capabilities have no browser
+   observation at all** — trajectory plot, movie, `save_state`/`load_state`, units — and
+   two of them are `stable`. See the *Nothing has watched these draw* section of
+   [`capability_audit.md`](capability_audit.md).
 2. In parallel when the required workstation is available, close Phase 7's two
    observations: Qt real-window/GPU and ten human live-demo replacements. Never
    report the existing offscreen/browser evidence as those observations.
