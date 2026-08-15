@@ -54,17 +54,24 @@ changes. Normative behavior remains in the contracts linked below.
 
 ## Validation observed
 
-- Latest full run, 2026-08-14: **1,609 Python passed, 4 skips, 1 failed, exit 1**
-  (`python -m pytest --receptor=llm tests/`). Its sole failure was executable page block
-  5 in `docs/content/user/scene_management/selections.md`, which still called deprecated
-  `add_label()` while the documentation harness promotes its `DeprecationWarning` to an
-  error. The page now uses the canonical annotation manager and passes the focused gate:
-  **4/4** in `tests/test_documentation_pages_run.py`. The full suite was not repeated for
-  this documentation-only correction. The focused alias suite passes 23/23, and the
-  preceding distributed full slice remains **1,607 passed, 4 skips, exit 0**.
+- Latest full run, 2026-08-15: **1,612 Python passed, 4 skips, exit 0**
+  (`python -m pytest --receptor=llm -n 12 tests/`). The `selections.md` failure of
+  2026-08-14 is closed: the page called deprecated `add_label()` while the documentation
+  harness promotes `DeprecationWarning` to an error, and it now uses the canonical
+  annotation manager. The failure was deterministic, not flaky — the warnings-registry
+  explanation was tested directly and falsified. The suite ran green three consecutive
+  times at 1,611 before the guard below was added.
 - Gate 9 was verified by behaviour as well as by count: exercising a broad slice of the
   public surface with `UserWarning` promoted to an error produces no
   `DigestNotDigestedWarning`.
+- **No documented example may call a deprecated API** (2026-08-15).
+  `test_no_documented_example_calls_a_deprecated_api` reads the deprecations out of the
+  package's own warning messages and checks every python block and notebook cell under
+  `docs/content` against them, scoped by function — `add_set_alpha_spheres(centers=…)` is
+  correct and `add_sphere(centers=…)` is not, so a check on the bare name would flag 59
+  correct examples. It found one survivor the running gate could not see:
+  `showcase/pharmacophore.ipynb` still called `add_pharmacophore_features()`, now
+  `add_interaction_sites()`. Running a page is not what makes its example wrong.
 - The latest frontend validation remains the Phase 8/9 result: **273 JS**, `tsc` clean,
   **30/30 E2E**, `build:runtime` and `test:perf` green. **No TypeScript changed since**,
   so it was not re-run.
@@ -114,7 +121,9 @@ Resume in this order:
 1. **Widen `EXECUTABLE_PAGES`** in `tests/test_documentation_pages_run.py`. It executes
    three documentation pages today; the rest of the markdown is run by nothing, which is
    how a half-applied rename left a `NameError` in four pages. This is the only remaining
-   item that needs neither another machine nor a decision.
+   item that needs neither another machine nor a decision. What the whole tree already has
+   is the *static* half — every page parses and none calls a deprecated API — so what
+   widening buys is the `NameError` class of defect, which only running finds.
 
    The audit's second-sharpest gap is next to it: **four capabilities have no browser
    observation at all** — trajectory plot, movie, `save_state`/`load_state`, units — and
