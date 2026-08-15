@@ -37,10 +37,15 @@ print(json.dumps({"before": before, "materialized": materialized}))
     )
     result = json.loads(completed.stdout)
 
+    # `_pyunitwizard` is deliberately *not* lazy. The unit policy is declared
+    # when this package is imported, so that `puw.configure.report()` describes
+    # the session from the start and a user calling PyUnitWizard directly after
+    # importing molsysviewer does not get NoStandardsError. Everything else on
+    # the public surface stays lazy, which is what the rest of this asserts.
     assert result["before"] == {
         "demo": False,
         "viewer": False,
-        "pyunitwizard": False,
+        "pyunitwizard": True,
         "config": False,
         "checked_dep": True,
     }
