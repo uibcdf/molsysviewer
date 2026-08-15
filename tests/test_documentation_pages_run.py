@@ -15,6 +15,8 @@ them: block two is allowed to use what block one defined.
 
 from __future__ import annotations
 
+import ast
+import json
 import re
 import warnings
 from pathlib import Path
@@ -94,3 +96,138 @@ def test_every_documented_page_is_reachable_from_a_toctree():
             missing.append(relative)
 
     assert missing == [], f"pages not listed in their section's toctree: {missing}"
+
+
+# --- no documented example teaches a deprecated call -------------------------------
+#
+# The three executable pages already catch this by running: the harness above promotes
+# `DeprecationWarning` to an error, which is how a `Selection.add_label(...)` example
+# was caught. But that only covers three markdown pages out of the whole documentation
+# tree, and the deprecation is what a reader copies — running the page is not what makes
+# the example wrong. This reads every page instead, statically, so the rest of the
+# documentation is covered before `EXECUTABLE_PAGES` grows to meet it.
+
+SUBJECT = re.compile(
+    r'^(?:The |the )?[\'"`]?([A-Za-z_][\w.]*)[\'"`]?(\(\.\.\.\)|\(\))?(?: parameter)? is deprecated'
+)
+
+
+def _deprecations() -> tuple[set[str], dict[str, set[str]]]:
+    """Read what is deprecated out of the source, rather than restating it here.
+
+    A hand-written list is a second place to forget: it would still be describing today's
+    deprecations after the next one is added. Every `DeprecationWarning` in the package
+    names its subject in the first words of its message, so the message is the declaration.
+
+    A warning raised straight from the function body deprecates the **function**; one
+    raised under a condition deprecates an **argument** of the function it sits in — the
+    distinction matters because `add_set_alpha_spheres(centers=...)` is correct while
+    `add_sphere(centers=...)` is not, and a check on the bare name `centers` flags 59
+    correct examples.
+    """
+    callables: set[str] = set()
+    keywords: dict[str, set[str]] = {}
+
+    for path in sorted((ROOT / "molsysviewer").rglob("*.py")):
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        for function in ast.walk(tree):
+            if not isinstance(function, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                continue
+            unconditional = {
+                id(call)
+                for statement in function.body
+                if isinstance(statement, ast.Expr)
+                for call in ast.walk(statement)
+            }
+            for node in ast.walk(function):
+                if not isinstance(node, ast.Call):
+                    continue
+                if not ast.unparse(node.func).endswith("warn"):
+                    continue
+                if "DeprecationWarning" not in ast.unparse(node):
+                    continue
+                if not node.args or not isinstance(node.args[0], ast.Constant):
+                    continue
+                match = SUBJECT.match(str(node.args[0].value).strip())
+                assert match, (
+                    f"{path.relative_to(ROOT)}: a deprecation message must open with what it "
+                    f"deprecates, or nothing can tell the documentation about it: "
+                    f"{node.args[0].value!r}"
+                )
+                name = match.group(1).split(".")[-1]
+                if id(node) in unconditional and name == function.name:
+                    callables.add(name)
+                elif not function.name.startswith("_"):
+                    # A private helper's deprecated argument is only reachable through a
+                    # public method that also declares it, and those are already whole
+                    # deprecated functions (`add_label`, `set_group_index`). Attributing it
+                    # to the helper would name something no example can call.
+                    keywords.setdefault(function.name, set()).add(name)
+
+    return callables, keywords
+
+
+def _documentation_blocks() -> list[tuple[str, int, str]]:
+    """Every python block and code cell under `docs/content`, as (page, number, source)."""
+    blocks = []
+    for page in sorted((ROOT / "docs" / "content").rglob("*.md")):
+        relative = str(page.relative_to(ROOT))
+        for number, match in enumerate(BLOCK.finditer(page.read_text(encoding="utf-8")), 1):
+            blocks.append((relative, number, match.group(1)))
+    for notebook in sorted((ROOT / "docs" / "content").rglob("*.ipynb")):
+        relative = str(notebook.relative_to(ROOT))
+        document = json.loads(notebook.read_text(encoding="utf-8"))
+        for number, cell in enumerate(document.get("cells", []), 1):
+            if cell.get("cell_type") != "code":
+                continue
+            # `!rm …` and `%timeit …` are IPython, not python, and never a library call.
+            # Dropped line by line rather than by cell, because a cell that opens with a
+            # comment and then shells out is still mostly python worth checking.
+            source = "\n".join(
+                line
+                for line in "".join(cell.get("source", [])).splitlines()
+                if not line.lstrip().startswith(("!", "%"))
+            )
+            if not source.strip():
+                continue
+            blocks.append((relative, number, source))
+    return blocks
+
+
+def test_no_documented_example_calls_a_deprecated_api():
+    """What the documentation shows is what a reader will write.
+
+    `scene_management/selections.md` taught `view.selections[tag].add_label(text=...)`,
+    which delegates to the deprecated `annotations.add_label` — so the page was telling
+    readers to write a call the library itself asks them to stop writing. The receiver is
+    deliberately ignored: that example's deprecation was one delegation away from the name
+    that carries it.
+
+    Killed by restoring the `add_label(...)` line in that page, and by re-spelling
+    `add_sphere(center=…)` as `centers=`.
+    """
+    callables, keywords = _deprecations()
+    assert callables, "no deprecated callable was found; the derivation has stopped working"
+
+    found = []
+    for relative, number, source in _documentation_blocks():
+        try:
+            tree = ast.parse(source)
+        except SyntaxError as error:
+            pytest.fail(
+                f"{relative}, block {number} is not valid python, so nothing can check what "
+                f"it teaches:\n{source}\n{error}"
+            )
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
+                continue
+            called = ast.unparse(node.func).split(".")[-1]
+            if called in callables:
+                found.append(f"{relative}, block {number}: {called}() is deprecated")
+            for keyword in node.keywords:
+                if keyword.arg in keywords.get(called, ()):
+                    found.append(
+                        f"{relative}, block {number}: {called}({keyword.arg}=…) is deprecated"
+                    )
+
+    assert found == [], "documented examples use deprecated APIs:\n" + "\n".join(found)
