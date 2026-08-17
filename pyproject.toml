@@ -17,7 +17,7 @@ dependencies = [
   "numpy",
   "packaging>=23",
   "pyunitwizard",
-  "smonitor",
+  "smonitor>=0.13.0",
   "traitlets>=5",
 ]
 license = "MIT"
