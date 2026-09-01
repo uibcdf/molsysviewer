@@ -3,7 +3,9 @@
 **Status:** durable requirement (not a phase). Owner: whoever touches viewer
 state. Current mechanism: `view.export_state()` / `view.import_state()`, plus
 the thin file helpers `view.save_state()` / `view.load_state()`; document
-`version: 2` (landed Phase 6 of the scene rework).
+`version: 2` (landed Phase 6 of the scene rework). Since 2026-09-01 there is also
+`view.save_session()` / `molsysviewer.load_session()`, which carry the molecular
+system as well (§The session file).
 
 ---
 
@@ -63,6 +65,48 @@ missing operand) raises rather than loading half a session.
 do not define a `.msv` bundle and do not broaden the reproducible unit: the
 molecular system, camera and undo history remain outside the file.
 
+## The session file
+
+`view.save_session(path)` writes the scene **and the system it was built on**;
+`molsysviewer.load_session(path)` reopens it with nothing loaded first. That is
+the whole difference, and the reason the format exists: a state document cannot
+keep the promise at the top of this file on its own, because reopening one
+requires the user to already have the right structure and to know which one it
+was.
+
+The file is a zip holding three members:
+
+| member | what it is |
+| --- | --- |
+| `manifest.json` | format, version, and what structure is inside |
+| `state.json` | the `export_state` document, unchanged |
+| `structure.h5msm` | the molecular system, in MolSysMT's own form |
+
+**Why `.h5msm` and not `.bcif`.** MolSysMT writes `.pdb` and `.h5msm` from a
+`MolSys`, and not `.bcif` — the usual preference for binary CIF over PDB is about
+*reading* what a user supplies, and does not apply to what we write here. Of the
+two available, `.pdb` collapses chains, misassigns waters, and carries one
+structure where a trajectory has thousands. Measured: `.h5msm` round-trips 62
+atoms across 5,000 structures, in 0.17 s out and 0.15 s back.
+
+**The property the format depends on.** A structure that survived the round trip
+in every respect *except* the fields the topological fingerprint is taken over
+would produce a session that warns, on reopening, that its own structure is not
+the one its own state was written for. That the fingerprint survives is
+measured, and guarded by
+`test_the_reopened_session_does_not_warn_about_its_own_structure`.
+
+**The manifest repeats the structure's identity** from the state document on
+purpose, so a reader — a person, a tool, a future migration — can tell what is in
+the file without parsing the scene.
+
+**Still open: size.** A session is as large as its trajectory (a 5,000-frame
+pentalanine is 3.5 MB before compression; a solvated protein trajectory is not).
+There is no budget, no warning and no downsampling. `scale_budget.py` already has
+the machinery for the equivalent question on load, and reusing it here is the
+obvious first move — but the threshold is a policy decision, not an
+implementation detail, so it is recorded here rather than guessed.
+
 ## The rule for every future change
 
 **When you add state a user can create or change, you extend the document in
@@ -81,10 +125,11 @@ new capability:
 
 ## Known gaps and open questions (keep this list honest)
 
-- **The structure is not in the document.** Reload requires the same structure
-  loaded first. Whether a session should bundle (a reference to, or a copy of)
-  its structure is an open product question. Until decided, document this
-  limitation wherever save/load is surfaced to users.
+- ~~**The structure is not in the document.**~~ **Closed 2026-09-01 (#38).** It
+  still is not, and now that is a property of `save_state` rather than a gap:
+  the open product question was answered by adding a second unit rather than by
+  growing the first. See §The session file. A *state* document remains the
+  overlay applied onto a structure the caller has already loaded.
 - **No v1 reader.** v2 is the only accepted version by design (no external users
   yet). The moment there *are* saved sessions in the wild, a version-migration
   policy becomes a real obligation, not an optional one.
@@ -151,6 +196,12 @@ without deciding the questions in this section first.
 ## Where the mechanism lives
 
 - `molsysviewer/viewer/state.py` — `export_state` / `import_state`, `STATE_VERSION`.
+- `molsysviewer/session.py` — `save_session` / `load_session`, `SESSION_VERSION`.
+- `tests/test_session_bundle.py` — the session round-trip, the trajectory, the
+  refusals and the fingerprint guard.
+- `tests/test_state_structure_identity.py` — re-resolution onto a different
+  system; `tests/test_state_view_state.py` — the vantage point;
+  `tests/test_state_focus_overlays.py` — focus overlays as state.
 - `tests/test_state_v2.py` — the round-trip, overlap-winner, high-water-mark,
   topological-order, transient-filter and whole-restore tests.
 - `scene_contracts.md` §C — the normative contract this implements.

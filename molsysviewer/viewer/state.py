@@ -300,6 +300,19 @@ class StateMixin:
 
     @signal(tags=["state"])
     @digest()
+    def save_session(self, path: str | os.PathLike[str], skip_digestion: bool = False) -> None:
+        """Write the scene **and the system it was built on** to one portable file.
+
+        The difference from :meth:`save_state` is the whole point: a state document is
+        applied onto a structure the user must already have loaded and must know to load,
+        while a session reopens on its own through :func:`molsysviewer.load_session`.
+        """
+        from ..session import save_session
+
+        save_session(self, path)
+
+    @signal(tags=["state"])
+    @digest()
     def load_state(
         self,
         path: str | os.PathLike[str],
