@@ -365,22 +365,32 @@ def test_import_restores_order_high_water_mark():
     assert fresh.order > target.regions["b"].order
 
 
-def test_export_filters_transient_overlay_regions():
+def test_export_filters_ephemeral_regions_and_keeps_focus_unmanageable():
+    """The original assertion here was that a focus overlay must not survive a round trip
+    "as a manageable region". That intent stands; what changed is that the two halves are
+    now separate. A focus overlay does survive -- it is a representation the user put on
+    the scene and left there -- but it is still managed through `styles.clear_focus`
+    rather than as a region. Only the scaffolding is filtered out of the document."""
     source = _mute(demo["dialanine"])
     source.regions.add(atom_indices=[0, 1], tag="keep", skip_digestion=True)
-    # A transient focus overlay registers as a region internally; it must not
-    # survive a round trip as a manageable region.
-    source.styles.focus(atom_indices=[2, 3], representation="spacefill", skip_digestion=True)
+    source.regions.add(atom_indices=[4, 5], tag="plane-region1", skip_digestion=True)
+    focus_tag = source.styles.focus(
+        atom_indices=[2, 3], representation="spacefill", skip_digestion=True
+    )
 
     state = source.export_state()
 
     exported_tags = {r["tag"] for r in state["regions"]}
     assert "keep" in exported_tags
-    assert not any(source._TRANSIENT_REGION_TAG.fullmatch(t) for t in exported_tags)  # noqa: SLF001
+    assert focus_tag in exported_tags
+    assert not any(source._EPHEMERAL_REGION_TAG.fullmatch(t) for t in exported_tags)  # noqa: SLF001
 
     target = _mute(demo["dialanine"])
     target.import_state(state)
-    assert not any(target._TRANSIENT_REGION_TAG.fullmatch(t) for t in target.regions)  # noqa: SLF001
+    assert not any(target._EPHEMERAL_REGION_TAG.fullmatch(t) for t in target.regions)  # noqa: SLF001
+    # Back as a focus, and still not one of the regions the user is asked to manage.
+    assert target.styles.focus_tags() == [focus_tag]
+    assert focus_tag not in [r.get("tag") for r in target._region_summary_records()]  # noqa: SLF001
 
 
 def test_import_restores_boolean_region_in_topological_order():

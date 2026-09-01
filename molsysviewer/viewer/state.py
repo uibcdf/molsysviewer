@@ -111,7 +111,7 @@ class StateMixin:
 
         regions = []
         for tag, region in self._regions.items():
-            if self._TRANSIENT_REGION_TAG.fullmatch(tag):
+            if self._EPHEMERAL_REGION_TAG.fullmatch(tag):
                 continue
             if region.atom_indices is None:
                 continue
@@ -227,6 +227,7 @@ class StateMixin:
         return _to_python({
             "version": STATE_VERSION,
             **({"view": view_state} if (view_state := self._export_view_state()) else {}),
+            **({"focus": focus_state} if (focus_state := self._export_focus_overlays()) else {}),
             # Absent when no system is loaded, and absent from every document written
             # before this key existed. Contract S5's additive-key rule: a reader that
             # does not find it imports cleanly, and must not be told off for it.
@@ -434,6 +435,7 @@ class StateMixin:
                         layer.hide(skip_digestion=True)
                 self._restore_selections(state.get("selections", []), on_conflict=on_conflict)
                 self._restore_active_selection(state.get("active_selection"))
+                self._restore_focus_overlays(state.get("focus"))
                 self._restore_view_state(state.get("view"))
                 self._send_resolved_atom_colors(replay=True)
                 self._sync_whole_summary_runtime()
@@ -478,6 +480,60 @@ class StateMixin:
         identity = _structure_identity(molsys)
         self._structure_identity_memo = (marker, identity)
         return identity
+
+    def _export_focus_overlays(self) -> dict:
+        """Which regions are focus overlays, and the style each was given.
+
+        The overlay's *visual* is its region, which the document already carries. What it
+        does not carry without this is the fact that the region is a focus at all --
+        without it a restored focus comes back as an ordinary region, `styles.focus_tags`
+        reports nothing and `styles.clear_focus` cannot remove what it can no longer see.
+        """
+        registry = getattr(getattr(self, "styles", None), "_focus_registry", None)
+        if not registry:
+            return {}
+        overlays = {}
+        for tag, entry in registry.items():
+            style = entry.get("style")
+            overlays[str(tag)] = {
+                "region_tag": str(entry.get("region_tag") or tag),
+                "style": {
+                    "representation": getattr(style, "representation", None),
+                    "params": dict(getattr(style, "params", {}) or {}),
+                },
+            }
+        return overlays
+
+    def _restore_focus_overlays(self, recorded: Any) -> None:
+        """Re-register restored regions as the focus overlays they were saved as.
+
+        The regions themselves are already back by the time this runs; this only puts the
+        overlay identity back on top of them. An entry whose region did not survive the
+        import is dropped rather than registered against nothing.
+        """
+        styles = getattr(self, "styles", None)
+        if styles is None or not isinstance(recorded, dict):
+            return
+        from ..styles import Style
+
+        for tag, entry in recorded.items():
+            if not isinstance(entry, dict):
+                continue
+            region_tag = str(entry.get("region_tag") or tag)
+            if self.regions.get(region_tag) is None:
+                continue
+            spec = entry.get("style") or {}
+            representation = spec.get("representation")
+            if not isinstance(representation, str):
+                continue
+            styles._focus_registry[str(tag)] = {  # noqa: SLF001
+                "style": Style(
+                    representation=representation,
+                    kind="focus",
+                    params=dict(spec.get("params") or {}),
+                ),
+                "region_tag": region_tag,
+            }
 
     def _restore_view_state(self, recorded: Any) -> None:
         """Put the camera, the frame and the playback settings back.

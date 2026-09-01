@@ -35,8 +35,23 @@ class RegionsMixin:
         ("ion", "n_ions"),
         ("water", "n_waters"),
     )
+    # Two different questions were being asked through one pattern.
+    #
+    # `_TRANSIENT_REGION_TAG` answers "does the user manage this region directly?" A
+    # focus overlay is managed through `styles.clear_focus`, not as a region, so it
+    # stays here and out of the region listings.
+    #
+    # `_EPHEMERAL_REGION_TAG` answers "does this region outlive the operation that made
+    # it?" Orientation and plane regions are scaffolding built by an operation and gone
+    # with it. A focus overlay is not: it is a visible representation the user put on the
+    # scene and left there, so it belongs in a saved state. Conflating the two meant a
+    # focus survived a save only if the user had named it, since the pattern below
+    # matches auto-generated tags alone.
     _TRANSIENT_REGION_TAG = re.compile(
         r"^(?:(?:orientation|plane)-(?:region)?\d+|focus\d+)$"
+    )
+    _EPHEMERAL_REGION_TAG = re.compile(
+        r"^(?:orientation|plane)-(?:region)?\d+$"
     )
 
     def _enrich_interaction_payload(self, payload: dict) -> dict:

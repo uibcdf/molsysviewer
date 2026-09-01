@@ -427,7 +427,26 @@ representation. On a state-**None** region:
 `styles.focus()`, `show_orientation_axes()` and `show_best_fit_plane()` register `Region`
 objects (`focus<n>`, `orientation-region<n>`, `plane-region<n>`), matched by
 `_TRANSIENT_REGION_TAG`. They are exempt from this contract's GUI rules: never listed, never
-serialised (§C.2), never counted for overlap, never given a colour layer (§B.6).
+counted for overlap, never given a colour layer (§B.6).
+
+**Amended 2026-09-01 (uibcdf/molsysviewer#67): "transient" was answering two questions.**
+One is whether the user manages the region directly; the other is whether it outlives the
+operation that made it. Orientation and plane regions answer no to both — they are
+scaffolding, and `_EPHEMERAL_REGION_TAG` now names exactly those. A focus overlay answers
+no to the first and **yes** to the second: it is a representation the user put on the
+scene and left there, so it is saved (§C.2) while remaining unlisted and managed through
+`styles.clear_focus()` rather than as a region.
+
+The conflation was invisible while nothing had to be saved, and surfaced as an asymmetry
+no user could predict: `_TRANSIENT_REGION_TAG` matches `focus<n>`, the auto-generated
+form, so a focus survived a save only if the user had passed a tag — and then came back
+demoted to an ordinary region, since the focus registry was not serialised either.
+
+A focus overlay is therefore state under Contract C, and the document carries both halves:
+its region, which is its visual realisation (Contract V), and its registry entry, which is
+what makes it a focus rather than a region that happens to look like one. The camera half
+of "focusing" is not state here at all — `camera.focus_selection()` is a camera move, and
+what persists is the camera it produced, recorded in the document's `view` key.
 
 At rest they are all in state **Own**. `styles.focus()` passes a representation to
 `new_region` directly (`styles.py:642-648`, and it raises without one). The geometry overlays
@@ -722,9 +741,25 @@ none of which are exported today.
 after a reload keep winning over the ones restored from disk. A counter that restarts at zero
 would silently invert the precedence of every overlap.
 
-`version` becomes `2`. `import_state` reads v1 (identity only, regions restored
-in state **None**, no colours) and v2. Transient tags matching
-`_TRANSIENT_REGION_TAG` are **filtered on export**, not only in the summary.
+`version` becomes `2`. Scaffolding tags matching `_EPHEMERAL_REGION_TAG` — orientation
+and plane overlays — are **filtered on export**, not only in the summary. Focus overlays
+are not: see the amendment in §A.5.
+
+**Amended 2026-09-01.** Two clauses here had gone stale against the code:
+
+- *The reader no longer accepts v1.* `import_state` raises on a v1 document. Decided
+  deliberately: nobody holds a v1 state, since none has been published, and v2 is what
+  MolSysViewer 1.0 will ship. The compatibility promise starts at v2 — a document from an
+  older v2 build loads, with limitations and a warning, rather than failing.
+- *The filter is `_EPHEMERAL_REGION_TAG`, not `_TRANSIENT_REGION_TAG`.* The two were the
+  same pattern until #67 separated them.
+
+The document has since gained three additive keys under Contract S5, each absent when it
+has nothing to say: **`structure`** (the system the document was written from — its atom
+count and a topological fingerprint), **`view`** (the vantage point: camera, structure
+index, playback) and **`focus`** (which regions are focus overlays, and with which style).
+Objects that hold atoms also carry those atoms' identity beside their indices, which is
+what lets a document be re-resolved onto a different system (uibcdf/molsysviewer#66).
 
 ### C.3 Round-trip is the acceptance criterion
 
