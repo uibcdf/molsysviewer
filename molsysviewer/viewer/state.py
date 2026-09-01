@@ -13,7 +13,11 @@ from pathlib import Path
 import tempfile
 from typing import Any
 
-from .._private.smonitor.warnings import StateStructureDiffersWarning, warn
+from .._private.smonitor.warnings import (
+    StateStructureDiffersWarning,
+    StateStructureIndexOutOfRangeWarning,
+    warn,
+)
 from .._private.smonitor_emit import emit_suppressed_exception
 from ..regions import Region
 from ..shapes._registry import register_shape_layer
@@ -76,7 +80,7 @@ class StateMixin:
             Keys: ``version``, ``active_selection``, ``annotations``, ``layers``,
             ``measurement_settings``, ``measurements``, ``regions``, ``sections``,
             ``selections``, ``shapes``, ``whole``, ``order_high_water_mark``,
-            ``uid_high_water_mark``, ``tag_high_water_marks``, ``structure``.
+            ``uid_high_water_mark``, ``tag_high_water_marks``, ``structure``, ``view``.
 
             ``structure`` records the system the document was written from -- its atom
             count and a topological fingerprint -- and is absent when no system is
@@ -84,6 +88,11 @@ class StateMixin:
             -- chain id, group id, group name and atom name -- beside their indices,
             which is what lets :meth:`import_state` re-resolve them onto a different
             system. A document without these keys imports cleanly.
+
+            ``view`` records the vantage point rather than the objects: the camera, the
+            structure index and the playback settings. It is absent when there is
+            nothing to record -- no frontend has ever been ready and no system is
+            loaded.
         """
         def _to_python(obj: Any) -> Any:
             if isinstance(obj, dict):
@@ -217,6 +226,7 @@ class StateMixin:
 
         return _to_python({
             "version": STATE_VERSION,
+            **({"view": view_state} if (view_state := self._export_view_state()) else {}),
             # Absent when no system is loaded, and absent from every document written
             # before this key existed. Contract S5's additive-key rule: a reader that
             # does not find it imports cleanly, and must not be told off for it.
@@ -247,11 +257,24 @@ class StateMixin:
     def save_state(self, path: str | os.PathLike[str]) -> None:
         """Write the current overlay state to a UTF-8 JSON file atomically.
 
-        This is the file counterpart of :meth:`export_state`. It does not
-        include the molecular system, camera, or undo history. Load the same
-        (or a compatible) structure before passing the file to
-        :meth:`load_state`.
+        This is the file counterpart of :meth:`export_state`. It does not include
+        the molecular system or the undo history. It does include the camera, the
+        structure index and the playback settings, and unlike :meth:`export_state`
+        it asks the frontend for a fresh camera first, so the file records the view
+        as it was when the save was asked for. Load the same (or a compatible)
+        structure before passing the file to :meth:`load_state`.
         """
+        # A save is a deliberate act, not a checkpoint, so it can afford the round trip
+        # that `export_state` cannot: the camera written here is the one on screen at the
+        # moment of saving, not the one the frontend last happened to push. Best-effort --
+        # a viewer with no live frontend simply keeps the camera it already knew.
+        request = getattr(self, "_request_camera_snapshot", None)
+        if callable(request):
+            try:
+                request()
+            except Exception:
+                pass
+
         destination = Path(path)
         temporary_path: Path | None = None
         try:
@@ -411,6 +434,7 @@ class StateMixin:
                         layer.hide(skip_digestion=True)
                 self._restore_selections(state.get("selections", []), on_conflict=on_conflict)
                 self._restore_active_selection(state.get("active_selection"))
+                self._restore_view_state(state.get("view"))
                 self._send_resolved_atom_colors(replay=True)
                 self._sync_whole_summary_runtime()
                 self._region_order_counter = max(
@@ -454,6 +478,100 @@ class StateMixin:
         identity = _structure_identity(molsys)
         self._structure_identity_memo = (marker, identity)
         return identity
+
+    def _restore_view_state(self, recorded: Any) -> None:
+        """Put the camera, the frame and the playback settings back.
+
+        The structure index is the one field here that can be wrong rather than merely
+        different: the fingerprint is topological, so the same system with a shorter
+        trajectory matches it and may not have the frame the document names. Moving to
+        the nearest available frame would answer a question nobody asked, so the frame is
+        left where it is and the discrepancy is reported.
+        """
+        if not isinstance(recorded, dict):
+            return
+
+        camera = recorded.get("camera")
+        if isinstance(camera, dict) and camera:
+            self.camera.set_snapshot(camera, duration_ms=0, skip_digestion=True)
+
+        player = getattr(self, "player", None)
+        if player is None:
+            return
+
+        playback = recorded.get("playback")
+        if isinstance(playback, dict):
+            for field, setter in (
+                ("fps", "set_fps"),
+                ("step_size", "set_step_size"),
+                ("mode", "set_mode"),
+                ("direction", "set_direction"),
+            ):
+                value = playback.get(field)
+                method = getattr(player, setter, None)
+                if value is not None and callable(method):
+                    try:
+                        method(value, skip_digestion=True)
+                    except Exception:
+                        pass
+
+        index = recorded.get("structure_index")
+        if isinstance(index, int):
+            n_structures = int(getattr(player, "n_structures", 0) or 0)
+            if 0 <= index < n_structures:
+                player.go_to_structure(index, skip_digestion=True)
+            else:
+                warn(
+                    StateStructureIndexOutOfRangeWarning(
+                        extra={"saved_index": index, "n_structures": n_structures},
+                    ),
+                    stacklevel=4,
+                )
+
+        if isinstance(playback, dict) and playback.get("playing"):
+            play = getattr(player, "play", None)
+            if callable(play):
+                try:
+                    play(skip_digestion=True)
+                except Exception:
+                    pass
+
+    def _export_view_state(self) -> dict:
+        """Where the user was looking and what they were looking at.
+
+        Everything else in the document describes objects the user built. This describes
+        the vantage point: a scene restored to the right atoms but a different camera and
+        a different frame is not the scene that was saved, and for a trajectory the frame
+        is a scientific claim, not a preference.
+
+        The camera is read from what the frontend last pushed -- it debounces camera
+        changes to Python every 300 ms -- and never requested here, because
+        `export_state` runs on every undoable operation and a blocking round trip per
+        checkpoint would be unaffordable. :meth:`save_state`, which is a deliberate act
+        by a user rather than a checkpoint, refreshes it first.
+
+        The key is absent when there is nothing to record: no frontend has ever been
+        ready (a viewer never displayed, a headless run) and no system is loaded.
+        """
+        view_state: dict[str, Any] = {}
+        camera = getattr(self, "_last_camera_snapshot", None)
+        if isinstance(camera, dict) and camera:
+            view_state["camera"] = dict(camera)
+        player = getattr(self, "player", None)
+        if player is not None and self._molsys is not None:
+            try:
+                view_state["structure_index"] = int(player.index)
+                view_state["playback"] = {
+                    "fps": int(player.fps),
+                    "step_size": int(player.step_size),
+                    "mode": str(player.mode),
+                    "direction": str(player.direction),
+                    "playing": bool(player.is_playing),
+                }
+            except Exception:
+                view_state.pop("structure_index", None)
+                view_state.pop("playback", None)
+        return view_state
 
     def _selection_records_with_identity(self) -> list[dict]:
         """Saved selections, each carrying what its atoms are as well as where they sat."""

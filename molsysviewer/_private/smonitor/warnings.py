@@ -135,3 +135,15 @@ class StateStructureDiffersWarning(MolSysViewerCatalogWarning, UserWarning):
     """
 
     catalog_entry = "state_structure_differs"
+
+
+class StateStructureIndexOutOfRangeWarning(MolSysViewerCatalogWarning, UserWarning):
+    """A saved structure index does not exist in the loaded trajectory.
+
+    The fingerprint is topological, so the same molecular system with a different number
+    of frames is a legitimate target for a state document -- and its saved frame may
+    simply not be there. Clamping to the last frame would answer a question the document
+    did not ask; the frame is left alone and the discrepancy is said out loud.
+    """
+
+    catalog_entry = "state_structure_index_out_of_range"

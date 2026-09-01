@@ -127,6 +127,12 @@ CATALOG = {
         "category": "performance",
         "level": "WARNING",
     },
+    "state_structure_index_out_of_range": {
+        "code": "MOLSYSVIEWER-STATE-STRUCTURE-INDEX-OUT-OF-RANGE",
+        "source": "molsysviewer.state",
+        "category": "state",
+        "level": "WARNING",
+    },
     "state_structure_differs": {
         "code": "MOLSYSVIEWER-STATE-STRUCTURE-DIFFERS",
         "source": "molsysviewer.state",
@@ -242,6 +248,11 @@ MESSAGES = {
         "example structure_indices=range(0, {structures}, {stride}) ({kept} structures). "
         "Raise the ceiling with molsysviewer.config.set_structure_scale_budget(bytes) if "
         "this machine can hold it."
+    ),
+    "state_structure_index_out_of_range": (
+        "This state was saved at structure {saved_index}, but the loaded system has "
+        "{n_structures}. The frame was left where it is rather than moved somewhere the "
+        "document did not ask for."
     ),
     "state_structure_differs": (
         "This state was saved from a different system ({saved_atoms} atoms; this one has "
