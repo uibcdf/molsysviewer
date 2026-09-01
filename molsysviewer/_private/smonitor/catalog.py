@@ -228,7 +228,15 @@ MESSAGES = {
     "not_supported_syntax": "Not supported syntax: {syntax}.",
     "not_with_this_form": "Not with this form.",
     "not_digested_argument": "The argument '{argument}' in '{caller}' has no digester. (Standard: ArgDigest style='package')",
-    "structure_scale_over_budget": "This selection materializes {structures} structures of {atoms} atoms, about {size} of coordinates, over the {budget} budget.",
+    "structure_scale_over_budget": (
+        "This selection materializes {structures} structures of {atoms} atoms, about "
+        "{size} of coordinates, over the {budget} budget. Every selected structure is "
+        "held in memory, and a canvas popup doubles the renderer-side cost, so the "
+        "browser tab may run out of memory. To stay under budget, load a subset, for "
+        "example structure_indices=range(0, {structures}, {stride}) ({kept} structures). "
+        "Raise the ceiling with molsysviewer.config.set_structure_scale_budget(bytes) if "
+        "this machine can hold it."
+    ),
     "structure_data_stream_fallback": "The array-native structure stream failed and fell back to JSON: {reason}",
     "camera_stranded_inside_scene": (
         "The camera was left {distance} from its target, inside a scene of radius "

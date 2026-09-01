@@ -120,3 +120,35 @@ def test_a_real_load_over_a_lowered_budget_warns():
             view.load(msm.systems["pentalanine"]["traj_pentalanine.h5msm"])
     finally:
         scale_budget.DEFAULT_COORDINATE_BUDGET_BYTES = original
+
+
+def test_the_over_budget_warning_is_catalog_backed_and_emitted_once():
+    """Coded and structured, from one template rather than two authorings.
+
+    Until 2026-09-01 this sentence was written twice -- as the catalog template and as an
+    f-string handed to `warnings.warn` -- and the user read the f-string, so the catalog
+    was the source of nothing and its template could not be guarded without a hollow test.
+
+    Mutation: hand `warnings.warn` a plain string here again, and the code and the
+    structured fields below are gone.
+    """
+    import warnings as _warnings
+
+    from molsysviewer._private.scale_budget import StructureScaleWarning, check_structure_scale
+
+    with _warnings.catch_warnings(record=True) as caught:
+        _warnings.simplefilter("always")
+        check_structure_scale(n_atoms=314568, n_structures=100, budget_bytes=1)
+
+    assert len(caught) == 1, "the budget warning must be emitted exactly once"
+    warning = caught[0].message
+    assert isinstance(warning, StructureScaleWarning)
+    assert warning.code == "MOLSYSVIEWER-STRUCTURE-SCALE-OVER-BUDGET"
+
+    # The numbers reach the event as fields, not only inside a rendered sentence:
+    # SMONITOR_GUIDE.md 3.3.1 is about exactly this.
+    for field in ("structures", "atoms", "size", "budget", "stride", "kept"):
+        assert field in warning.extra, f"{field} never reaches the structured event"
+
+    assert "314568 atoms" in str(warning)
+    assert "structure_indices=range(" in str(warning), "the way forward is still offered"

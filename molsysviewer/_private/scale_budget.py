@@ -17,9 +17,9 @@ large trajectory, and only the user knows their machine.
 
 import warnings
 
-from smonitor.integrations import context_extra, emit_from_catalog
+from smonitor.integrations import context_extra
 
-from .smonitor import CATALOG, META, PACKAGE_ROOT
+from .smonitor.warnings import StructureScaleWarning, warn
 
 #: Coordinate bytes on the wire per atom per structure: float32 x, y, z.
 _BYTES_PER_ATOM_STRUCTURE = 3 * 4
@@ -29,10 +29,6 @@ _BYTES_PER_ATOM_STRUCTURE = 3 * 4
 #: tend to put a browser tab under real pressure — and a canvas popup doubles
 #: the renderer-side cost, because two Mol* instances each keep their own axes.
 DEFAULT_COORDINATE_BUDGET_BYTES = 256 * 1024 * 1024
-
-
-class StructureScaleWarning(UserWarning):
-    """A load whose materialized coordinates exceed the configured budget."""
 
 
 def coordinate_bytes(n_atoms: int, n_structures: int) -> int:
@@ -79,30 +75,28 @@ def check_structure_scale(
     kept = -(-n_structures // stride)
     # The signal catalog is how this project reports conditions worth watching;
     # the warning stays for the notebook user reading it inline.
-    emit_from_catalog(
-        CATALOG["structure_scale_over_budget"],
-        package_root=PACKAGE_ROOT,
-        meta=META,
-        extra=context_extra(
-            caller="molsysviewer.loaders.load_from_molsysmt",
-            operation="materialize-selected-structures",
-            failure_class="scale_over_budget",
-            last_failure_reason=(
-                f"{total} coordinate bytes for {n_structures} structures of "
-                f"{n_atoms} atoms exceed the {budget_bytes} byte budget"
+    # One emission, not two. Until 2026-09-01 this built the same sentence twice: once
+    # as the catalog template through `emit_from_catalog`, and once as an f-string handed
+    # to `warnings.warn`. The user read the f-string, so the catalog was not the source of
+    # anything, and no test could guard the template without being hollow. `warn` emits
+    # the coded, structured event *and* raises the Python warning, so `pytest.warns`,
+    # `filterwarnings` and `simplefilter("error")` keep working unchanged.
+    warn(
+        StructureScaleWarning(
+            extra=context_extra(
+                caller="molsysviewer.loaders.load_from_molsysmt",
+                operation="materialize-selected-structures",
+                failure_class="scale_over_budget",
+                extra={
+                    "structures": n_structures,
+                    "atoms": n_atoms,
+                    "size": _human(total),
+                    "budget": _human(budget_bytes),
+                    "stride": stride,
+                    "kept": kept,
+                },
             ),
         ),
-    )
-    warnings.warn(
-        f"This selection materializes {n_structures} structures of {n_atoms} atoms, "
-        f"about {_human(total)} of coordinates, over the {_human(budget_bytes)} budget. "
-        f"Every selected structure is held in memory, and a canvas popup doubles the "
-        f"renderer-side cost, so the browser tab may run out of memory. "
-        f"To stay under budget, load a subset, for example "
-        f"structure_indices=range(0, {n_structures}, {stride}) "
-        f"({kept} structures). Raise the ceiling with "
-        f"molsysviewer.config.set_structure_scale_budget(bytes) if this machine can hold it.",
-        StructureScaleWarning,
         stacklevel=stacklevel,
     )
     return total
