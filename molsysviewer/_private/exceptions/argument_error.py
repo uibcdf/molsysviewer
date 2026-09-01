@@ -19,7 +19,7 @@ class ArgumentError(ValueError):
                 "argument": argument,
                 "value": value,
                 "caller": caller,
-                "detail": message,
+                "detail": message or "",
             },
             default_message=default_message,
         )

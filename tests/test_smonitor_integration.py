@@ -178,3 +178,76 @@ def test_public_digest_entrypoints_have_signal_decorators():
                         missing.append(f"{path}:{node.name}.{item.name}")
 
     assert missing == []
+
+
+# --- the catalog's message templates must actually reach SMonitor ------------------
+#
+# Until 2026-09-01 none of them did. `CODES` was keyed by catalog key and held plain
+# strings; SMonitor looks a template up by *code* and reads a per-profile field off a
+# *dict*, so every lookup missed and `message_from_catalog` fell back to the
+# `default_message` its caller passes. Nothing looked broken because every caller passes
+# one, which is exactly why this needs a test rather than a reader.
+
+def test_every_catalog_entry_has_a_template_smonitor_can_resolve():
+    """Keyed by code, valued by a per-profile dict, with a message for every profile.
+
+    Mutation: key `CODES` by the catalog key again, or give an entry a plain string,
+    and this fails.
+    """
+    from molsysviewer._private.smonitor.catalog import CATALOG, CODES, MESSAGES, PROFILES_FIELDS
+
+    for key, template in MESSAGES.items():
+        code = CATALOG[key]["code"]
+        assert code in CODES, f"{key}: no template reachable under its code {code!r}"
+        entry = CODES[code]
+        assert isinstance(entry, dict), f"{code}: template must be a dict, not {type(entry).__name__}"
+        for field in PROFILES_FIELDS:
+            assert entry.get(field) == template, f"{code}: {field} does not carry the template"
+
+
+def test_a_catalog_message_renders_its_template_rather_than_the_fallback():
+    """The fallback is what hid the defect, so the test must be able to see past it.
+
+    A `default_message` that could never be mistaken for the template is the only way
+    to tell "the template rendered" from "the caller's default was returned".
+    """
+    from molsysviewer._private.smonitor_emit import message_from_catalog
+
+    message = message_from_catalog(
+        "argument_error",
+        extra={"argument": "selection", "value": 3, "caller": "molsysviewer.viewer.get"},
+        default_message="THIS FALLBACK MUST NOT BE WHAT COMES BACK",
+    )
+    assert "THIS FALLBACK" not in message
+    assert "selection" in message and "molsysviewer.viewer.get" in message
+
+
+def test_a_rendered_catalog_message_leaves_no_unfilled_placeholder():
+    """A placeholder nobody fills renders literally, as `{file}` did for years.
+
+    SMonitor leaves an unknown placeholder untouched rather than raising, so a template
+    that names a field its caller does not pass is invisible until a user reads the
+    message. `file_already_handled` asked for `{file}` while its only caller passed
+    `filename`; nobody saw it because no template rendered at all.
+
+    **What this cannot cover, and why.** The scale-budget warning authors its sentence
+    twice -- once as the catalog template, once as a hardcoded f-string handed to
+    `warnings.warn` -- so the text a user reads there does not come through the catalog
+    and a mutation of its structured fields cannot be seen from here. Guarding it needs
+    that call site migrated to the diagnostic bundle's `warn()`, which emits and warns
+    from one template. Until then, asserting on its Python warning would be a test that
+    passes when the thing it names is removed.
+    """
+    import re
+
+    from molsysviewer._private.exceptions import ArgumentError, FileAlreadyHandledError
+
+    rendered = [
+        str(FileAlreadyHandledError("system.pdb")),
+        str(ArgumentError("selection", 3, caller="molsysviewer.viewer.get")),
+    ]
+    for message in rendered:
+        assert message, "a catalog message came back empty"
+        assert not re.search(r"\{\w+\}", message), f"unfilled placeholder in: {message}"
+
+    assert "system.pdb" in rendered[0]

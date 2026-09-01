@@ -201,9 +201,21 @@ CATALOG = {
     },
 }
 
-CODES = {
-    "argument_error": "Error in {caller} due to the {argument} argument with value {value}.",
-    "file_already_handled": "The file {file} is already handled.",
+#: One message per catalog entry, keyed the way this file is authored: by the catalog
+#: key, not by the code. `CODES` below is derived from it.
+#:
+#: Until 2026-09-01 this dict *was* `CODES`, and none of its templates ever rendered.
+#: SMonitor resolves a template with `self._codes.get(code)` and then reads a
+#: per-profile field off it (`manager.py`), so it needs a mapping **from the code
+#: string** to a **dict**. This one was keyed by catalog key and held plain strings, so
+#: every lookup missed and `message_from_catalog` fell back to the `default_message` its
+#: caller passed. Nothing looked broken because every caller passes one -- which is also
+#: how it survived: the fallback hid the defect completely, while
+#: `devguide/smonitor.md` rule 1 ("zero string hardcoding") was satisfied on paper and
+#: defeated in practice.
+MESSAGES = {
+    "argument_error": "Error in {caller} due to the {argument} argument with value {value}.{detail}",
+    "file_already_handled": "The file {filename} is already handled.",
     "iterator_error": "Error in iterator: {detail}.",
     "library_not_found": "The python library {library} was not found. (Caller: {caller})",
     "molecular_system_needed": "A molecular system is needed.",
@@ -241,6 +253,37 @@ CODES = {
     "payload_invalid_bond_pairs": "Invalid bond pairs in payload: {detail}",
     "payload_invalid_bond_indices": "Invalid bond indices in payload: {detail}",
 }
+
+
+#: The fields SMonitor reads, one per profile plus the `message` its `dev`/`debug`
+#: branch falls back to.
+PROFILES_FIELDS = ("user_message", "qa_message", "agent_message", "dev_message", "message")
+
+
+def _code_entry(template: str) -> dict:
+    """One template, every profile.
+
+    SMonitor picks the field by profile and does **not** fall back between them: under
+    `qa` it reads `qa_message` and gets an empty string when only `user_message` exists.
+    These diagnostics say the same thing to everyone, so the entry is built from one
+    string rather than repeating it four times and letting the copies drift.
+    """
+
+    return {field: template for field in PROFILES_FIELDS}
+
+
+#: What SMonitor actually consumes: keyed by the code string, valued by a per-profile
+#: dict. Derived, never hand-written -- a second hand-maintained list of the same
+#: messages is the drift this repository spends its guards on.
+CODES = {
+    CATALOG[key]["code"]: _code_entry(template)
+    for key, template in MESSAGES.items()
+    if key in CATALOG
+}
+
+#: Templates whose catalog entry disappeared would be silently unreachable.
+_ORPHAN_MESSAGES = sorted(set(MESSAGES) - set(CATALOG))
+assert not _ORPHAN_MESSAGES, f"MESSAGES entries with no CATALOG entry: {_ORPHAN_MESSAGES}"
 
 SIGNALS = {
     "molsysviewer.new_view.new_view": {"extra_required": ["load_mode", "syntax", "reused_view", "molecular_system_form"]},
