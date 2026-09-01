@@ -122,3 +122,16 @@ class StructureStreamFallbackWarning(MolSysViewerCatalogWarning, RuntimeWarning)
     """The array-native path failed and the JSON payload was delivered instead."""
 
     catalog_entry = "structure_data_stream_fallback"
+
+
+class StateStructureDiffersWarning(MolSysViewerCatalogWarning, UserWarning):
+    """A state was written from a system with the same atom count but a different topology.
+
+    Not an error: two compatible systems can differ in atom naming -- the same protein
+    read from two formats, a topology rebuilt by a different path -- and refusing would
+    break the portability the document promises. But the indices may address other atoms
+    than they were written for, which is the kind of plausible-wrong the project treats
+    as worse than a loud failure, so it says so.
+    """
+
+    catalog_entry = "state_structure_differs"

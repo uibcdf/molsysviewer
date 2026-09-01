@@ -127,6 +127,12 @@ CATALOG = {
         "category": "performance",
         "level": "WARNING",
     },
+    "state_structure_differs": {
+        "code": "MOLSYSVIEWER-STATE-STRUCTURE-DIFFERS",
+        "source": "molsysviewer.state",
+        "category": "state",
+        "level": "WARNING",
+    },
     "structure_data_stream_fallback": {
         "code": "MOLSYSVIEWER-STRUCTURE-DATA-STREAM-FALLBACK",
         "source": "molsysviewer.viewer.transport",
@@ -236,6 +242,12 @@ MESSAGES = {
         "example structure_indices=range(0, {structures}, {stride}) ({kept} structures). "
         "Raise the ceiling with molsysviewer.config.set_structure_scale_budget(bytes) if "
         "this machine can hold it."
+    ),
+    "state_structure_differs": (
+        "This state was saved from a different system ({saved_atoms} atoms; this one has "
+        "{current_atoms}), so its stored atom indices do not address the same atoms here. "
+        "Objects that kept a recipe were re-resolved against the loaded system; those that "
+        "could not be are marked broken. Check that they landed where you expect."
     ),
     "structure_data_stream_fallback": "The array-native structure stream failed and fell back to JSON: {reason}",
     "camera_stranded_inside_scene": (

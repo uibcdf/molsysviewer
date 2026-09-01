@@ -44,7 +44,13 @@ def test_export_state_v2_captures_scene_objects_layers_and_structured_anchor():
 
     state = view.export_state()
 
-    assert state["annotations"][0]["anchor"] == {"type": "atoms", "indices": [0, 1]}
+    anchor = state["annotations"][0]["anchor"]
+    assert anchor["type"] == "atoms"
+    assert anchor["indices"] == [0, 1]
+    # `identity` joined the anchor as an additive key (Contract S5): what each anchored
+    # atom *is*, so the annotation can be re-resolved onto another system. One entry per
+    # index, each naming chain, group and atom.
+    assert [entry[-1] for entry in anchor["identity"]] == ["H1", "CH3"]
     assert "atom_indices" not in state["annotations"][0]["options"]
     assert state["annotations"][0]["hidden"] is True
     assert state["measurements"][0]["hidden"] is True
