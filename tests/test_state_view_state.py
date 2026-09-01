@@ -126,3 +126,42 @@ def test_export_state_never_blocks_on_the_frontend():
     view.export_state()
 
     assert not asked
+
+
+def test_undo_restores_the_scene_without_moving_the_camera_or_the_frame():
+    """`export_state` serves two masters, and only one of them wants the vantage point.
+
+    A state document records where the user was looking. An undo checkpoint must not:
+    undoing an annotation is not consent to have the camera moved and the trajectory
+    rewound. This is a regression guard -- when `view` first landed in the document it
+    went into the undo snapshots with it.
+    """
+    view = _with_camera(_mute(demo["pentalanine"]))
+    view.player.go_to_structure(100)
+    view.annotations.add("site", atom_indices=[0, 1], tag="a1")
+
+    # The user then looks somewhere else and moves along the trajectory.
+    view._last_camera_snapshot = {"position": [9.0, 9.0, 9.0]}  # noqa: SLF001
+    view.player.go_to_structure(200)
+
+    view.history.undo()
+
+    assert view.annotations.tags() == [], "the annotation was not undone"
+    assert view.camera.get_snapshot() == {"position": [9.0, 9.0, 9.0]}
+    assert view.player.index == 200
+
+
+def test_a_camera_move_alone_does_not_make_a_checkpoint_look_like_a_change():
+    """The second reason the vantage point stays out of checkpoints.
+
+    Snapshots are compared to skip redundant ones. With the camera inside, a no-op
+    operation after any camera move compares unequal and pushes a checkpoint that undoes
+    nothing.
+    """
+    view = _with_camera(_mute(demo["dialanine"]))
+    view.annotations.add("site", atom_indices=[0, 1], tag="a1")
+    before = view.history._encode(view.history._scene_snapshot())  # noqa: SLF001
+
+    view._last_camera_snapshot = {"position": [7.0, 7.0, 7.0]}  # noqa: SLF001
+
+    assert view.history._encode(view.history._scene_snapshot()) == before  # noqa: SLF001

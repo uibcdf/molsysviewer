@@ -105,7 +105,7 @@ class SceneHistory:
         if self._depth == 0:
             already_coalesced = self._coalescing_depth > 0 and operation_key in self._coalesced_keys
             if not already_coalesced:
-                snapshot = self._encode(self._view.export_state())
+                snapshot = self._encode(self._scene_snapshot())
                 # Skip a redundant checkpoint when the previous operation left the
                 # scene unchanged (e.g. a validation that raised, or a no-op call),
                 # so undo never lands on an identical state.
@@ -155,7 +155,7 @@ class SceneHistory:
         """Restore the scene to before the last mutating operation."""
         if not self._undo:
             return False
-        current = self._encode(self._view.export_state())
+        current = self._encode(self._scene_snapshot())
         snapshot = self._undo.pop()
         self._undo_bytes -= len(snapshot)
         self._redo.append(current)
@@ -170,7 +170,7 @@ class SceneHistory:
         """Re-apply the operation most recently undone."""
         if not self._redo:
             return False
-        current = self._encode(self._view.export_state())
+        current = self._encode(self._scene_snapshot())
         snapshot = self._redo.pop()
         self._redo_bytes -= len(snapshot)
         self._undo.append(current)
@@ -237,6 +237,24 @@ class SceneHistory:
             separators=(",", ":"),
             sort_keys=True,
         ).encode("utf-8")
+
+    def _scene_snapshot(self) -> dict:
+        """The scene as a checkpoint sees it: the objects, never the vantage point.
+
+        `export_state` serves two masters. As the state document it records where the
+        user was looking -- camera, structure index, playback -- because reopening a
+        saved scene from a default camera at frame zero is not reopening it. As an undo
+        checkpoint it must not: undo is for what the user built, and yanking the camera
+        back because they undid an unrelated annotation would be the viewer overruling
+        them about something they never asked to change.
+
+        It would also break checkpointing itself. Snapshots are compared to skip
+        redundant ones, and with the camera inside, a no-op operation after any camera
+        move would compare unequal and push a checkpoint that undoes nothing.
+        """
+        state = self._view.export_state()
+        state.pop("view", None)
+        return state
 
     @staticmethod
     def _decode(snapshot: bytes) -> dict:
