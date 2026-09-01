@@ -1,13 +1,13 @@
 ---
 summary: State what a saved state restores, and separate scene state from visual state.
 issue: uibcdf/molsysviewer#38
-status: open
+status: resolved
 opened: 2026-08-12
-closed:
+closed: 2026-09-01
 verification: measured
 area: [state, export]
-guard:
-normative:
+guard: tests/test_session_bundle.py::test_a_session_reopens_with_nothing_loaded_first
+normative: devguide/session_reproducibility.md, devguide/scene_contracts.md
 blocked_by: []
 supersedes: []
 ---
@@ -97,32 +97,100 @@ rows rather than at the end:
    and is not implied by anything shipped. If it is ever built it is a new entry point
    (`save_session`), not a wider `save_state`.
 
-## Open decisions
+## Open decisions — **all five answered 2026-09-01**
 
-Each is a decision, not work waiting for a decision already made.
+Each was a decision, not work waiting for a decision already made. Kept as written, with
+what was decided under each.
 
 1. **Does `save_state` grow, or does `save_session` appear?** Growing it changes what
    existing files mean; adding one keeps today's document exactly as portable as it is.
+
+   > **Both.** The question assumed an exclusive choice and the answer was not one.
+   > `save_state` grew by what belongs to a scene — the vantage point and the identity of
+   > the structure it was written from — and `save_session` appeared for what belongs to a
+   > session, which is the molecular system. Growing it was safe because nobody holds a v2
+   > document yet.
 2. **What does the camera do** — request-and-wait, mirror-and-mark, or stay with
    `FigureSpec`?
+
+   > **Both, split by caller.** The frontend already mirrors the camera to Python every
+   > 300 ms, so `export_state` reads what it holds and never asks: it runs on every
+   > undoable operation and could not afford a round trip. `save_state` requests and
+   > waits, because a save is a deliberate act and a save inside the debounce window
+   > would otherwise record the previous view.
 3. **Is a state document bound to a structure?** Even a checksum turns a confusing late
    failure into a refusal at load. This is the cheapest item here and the highest value.
+
+   > **Bound, but not refused — re-resolved.** The checksum is there (atom count plus a
+   > topological fingerprint), and refusal on mismatch was implemented and then withdrawn:
+   > too strict, since loading onto a related structure is a capability Contract S7 tests,
+   > and too weak, since it never fires on a system of the same size whose indices mean
+   > other atoms. The fingerprint became a trigger instead: on a mismatch, objects are
+   > re-resolved by recipe or by atom identity, and what cannot be resolved is marked
+   > broken (uibcdf/molsysviewer#66).
 4. **Is version 2 a format users may keep?** If yes, migrations become a release gate.
+
+   > **Yes, from v2 onward.** v1 is not read and never will be — nobody holds one. The
+   > policy is that a document from an older v2 build loads, with limitations and a
+   > warning, rather than failing; additive keys (Contract S5) are what makes that
+   > possible, and `structure`, `view` and `focus` were all added that way.
 5. **Do the omissions in row 2 belong in the semantic document at all,** or are they
    session state that only a portable session should carry? The current structure index is
    the interesting case: it is arguably scientific rather than visual.
 
+   > **In the document, under `view`.** The structure index settled it: for a trajectory
+   > it is a claim about which structure was being looked at, not a preference. The
+   > boundary that turned out to matter was a different one — the undo checkpoint, which
+   > takes the same projection and must *not* carry the vantage point, or undoing an
+   > annotation would move the camera.
+
 ## What can be claimed today
 
-Precisely this, and it is worth stating rather than softening:
+*Rewritten 2026-09-01. The paragraph this replaces is kept below, because the difference
+between the two is the work.*
 
-> A saved state restores the semantic content of a scene — regions with the selections that
-> produced them, overlays, measurements, colours and representations — onto any compatible
-> structure. It does not restore the camera, the current structure, or global visual
-> configuration, and it does not carry the molecular system.
+> A saved **state** restores the semantic content of a scene — regions with the selections
+> that produced them, overlays, measurements, colours and representations — together with
+> the vantage point it was saved from: the camera, the structure index and the playback
+> settings. It restores onto any compatible structure, and onto a *different* structure it
+> re-resolves what it can and marks the rest broken rather than placing it somewhere
+> plausible. It does not carry the molecular system.
+>
+> A saved **session** carries the molecular system as well, and reopens with nothing
+> loaded first.
 
-Not "complete session reproducibility", and not "pixel-perfect". Neither phrase appears
-anywhere in the repository today; the point is to keep it that way.
+Still not "pixel-perfect": global visual configuration — scene style, background,
+lighting — remains outside both. Neither phrase appears in the repository, and the point
+is still to keep it that way.
+
+The claim this replaces, for the record:
+
+> *A saved state restores the semantic content of a scene — regions with the selections
+> that produced them, overlays, measurements, colours and representations — onto any
+> compatible structure. It does not restore the camera, the current structure, or global
+> visual configuration, and it does not carry the molecular system.*
+
+## Resolution
+
+Delivered across four commits, one per row of "the four things":
+
+| | commit | what landed |
+| --- | --- | --- |
+| structure binding | `4ac9c612` | identity, and re-resolution onto a different system (#66) |
+| visual state | `17ce154b` | the `view` key; `792ce2c9` kept it out of undo checkpoints |
+| focus as state | `739ef94c` | a focus overlay is saved and comes back a focus (#67) |
+| portable session | `c065d3a2` | `save_session` / `load_session`, a `.msv` bundle |
+
+Two defects were found underneath the proposal rather than by it — #66, a region recipe
+the document carried and import ignored, and #67, a focus overlay that survived a save
+only if the user had named it. Both are archived separately.
+
+The durable rules went to `session_reproducibility.md` (the session file, and the size
+question still open) and to `scene_contracts.md` (§A.5, §C.2).
+
+**Not done, and deliberately:** a session has no size budget. It is as large as its
+trajectory, and `scale_budget.py` already holds the machinery for the equivalent question
+on load — but the threshold is policy, so it is recorded rather than guessed.
 
 ## Related
 

@@ -81,3 +81,7 @@ Completed work, kept for the reasoning:
 - [`focus_overlay_survives_a_save_only_if_named.md`](focus_overlay_survives_a_save_only_if_named.md)
   — one pattern was answering two questions: does the user manage this region, and does it
   outlive the operation that made it. Read for why splitting a predicate beat loosening it.
+- [`what_save_state_promises.md`](what_save_state_promises.md)
+  — the proposal that became #38's four slices. Read for the five open decisions and what
+  each was answered with: notably that binding a state to its structure meant re-resolving
+  onto a different one, not refusing it.
