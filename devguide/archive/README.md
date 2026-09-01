@@ -78,3 +78,6 @@ Completed work, kept for the reasoning:
   — a region is its recipe (Contract R), but import restored the atoms the recipe had
   selected on the *other* system. Read for what was refuted: refusing an import when the
   atom counts differ is both too strict and too weak.
+- [`focus_overlay_survives_a_save_only_if_named.md`](focus_overlay_survives_a_save_only_if_named.md)
+  — one pattern was answering two questions: does the user manage this region, and does it
+  outlive the operation that made it. Read for why splitting a predicate beat loosening it.
