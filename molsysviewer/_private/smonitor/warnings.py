@@ -69,3 +69,56 @@ class StructureScaleWarning(MolSysViewerCatalogWarning, UserWarning):
 
     catalog_entry = "structure_scale_over_budget"
 
+
+class RegionWithoutOwnVisualWarning(MolSysViewerCatalogWarning, UserWarning):
+    """`show()` or `hide()` on a region that paints nothing of its own.
+
+    Contract A.3 requires this to be a no-op *that warns*: a region in state None is
+    painted by the whole, so there is nothing of its own to reveal or conceal.
+    """
+
+    catalog_entry = "region_without_own_visual"
+
+
+class RegionOverlapWarning(MolSysViewerCatalogWarning, UserWarning):
+    """Two visible regions draw the same atoms, which z-fights."""
+
+    catalog_entry = "region_overlaps_visible_regions"
+
+
+class EmptySelectionWarning(MolSysViewerCatalogWarning, UserWarning):
+    """A selection query matched no atoms."""
+
+    catalog_entry = "selection_resolved_to_no_atoms"
+
+
+class SceneHistoryOverBudgetWarning(MolSysViewerCatalogWarning, RuntimeWarning):
+    """Undo/redo checkpoints were discarded to stay inside the byte budget.
+
+    `session_reproducibility.md` requires this to be observable rather than silent:
+    crossing the budget costs the user history they may be about to reach for.
+    """
+
+    catalog_entry = "scene_history_over_budget"
+
+
+class IndexMapDegradedWarning(MolSysViewerCatalogWarning, RuntimeWarning):
+    """The atom index map could not be built and falls back to identity."""
+
+    catalog_entry = "index_map_degraded"
+
+
+class IndexMapDroppedIndicesWarning(MolSysViewerCatalogWarning, RuntimeWarning):
+    """Indices that no longer address an atom were dropped in a translation.
+
+    Contract S7 treats a destroyed anchor as a *state*, never a silent deletion. A
+    coded event is what lets anything downstream see that a translation lost atoms.
+    """
+
+    catalog_entry = "index_map_dropped_indices"
+
+
+class StructureStreamFallbackWarning(MolSysViewerCatalogWarning, RuntimeWarning):
+    """The array-native path failed and the JSON payload was delivered instead."""
+
+    catalog_entry = "structure_data_stream_fallback"
