@@ -93,6 +93,17 @@ validation work instead.
     repository under `devguide/pending_bugs/` (or `pending_proposals/`). See
     [`devguide/pytest_receptor.md`](devguide/pytest_receptor.md).
 
+## The developer guide (`devguide/`)
+
+[`devguide/AGENTS.md`](devguide/AGENTS.md) governs that directory and refines this file
+there. The rule worth knowing before opening it: **`archive/` and `audits/` are history,
+not instructions.** Read them through
+[`devguide/archive/README.md`](devguide/archive/README.md) and
+[`devguide/audits/README.md`](devguide/audits/README.md) — one line per document, saying
+what it decided — and open a document itself only for a question you can name, such as a
+contract pointing at it for its rationale, a decision being reopened, or a claim that
+needs its evidence. Asked to "read the devguide", that is 23 % of it you do not read.
+
 ## Filing a defect or a proposal
 
 **`devguide/reporting_protocol.md` is normative.** Read it before writing anything into
