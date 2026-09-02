@@ -38,6 +38,73 @@ on:
   workflow_dispatch:
 
 jobs:
+  qt-pipeline:
+    # Runs the two Qt observations that had been reported as impossible without a screen.
+    # They are not: under Xvfb with software WebGL both complete, which nobody had tried
+    # since the 2026-08-09 attempt to attach to a real display failed on X authorization.
+    #
+    # **What this establishes and what it does not.** These assert that the Qt pipeline
+    # *completes* -- the bridge becomes ready, the payload is served over the custom
+    # scheme, and the structure finishes loading through a real WebGL context. Nothing
+    # reads the framebuffer. uibcdf/molsysviewer#64 is the standing proof that completion
+    # and correctness are different questions: every atom arrived, the load finished, and
+    # fifty-nine of sixty protein copies were missing from the picture.
+    #
+    # So this job does not close Phase 7's item in `devguide/what_needs_a_human_2026_08.md`
+    # and must never be recorded as the human observation. It catches a Qt host that is
+    # broken outright, which until now nothing did.
+    name: Qt pipeline completes (Xvfb, software WebGL)
+    if: >
+      !(
+        (github.event_name == 'push' && contains(github.event.head_commit.message, '[skip ci]'))
+        ||
+        (github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[skip ci]'))
+      )
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup conda env with the Qt stack
+      uses: mamba-org/setup-micromamba@v3.2.1
+      with:
+        environment-file: devtools/conda-envs/test_env.yaml
+        environment-name: test
+        condarc: |
+          channels:
+            - uibcdf
+            - conda-forge
+            - ambermd
+          channel_priority: strict
+        create-args: >-
+          python=3.13
+          pyside6-addons-uibcdf
+
+    - name: Install package
+      shell: bash -l {0}
+      run: |
+        python -m pip install . --no-deps
+
+    - name: Xvfb and the software GL stack
+      shell: bash -l {0}
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y xvfb libgl1 libegl1
+
+    - name: Qt transport round-trip in a real Qt process
+      shell: bash -l {0}
+      run: |
+        xvfb-run -a pytest -k qt_live_model_smoke_real_window -v --no-header
+
+    - name: The structure finishes loading through WebGL
+      shell: bash -l {0}
+      env:
+        MOLSYSVIEWER_QT_GPU_TEST: "1"
+        QTWEBENGINE_CHROMIUM_FLAGS: "--use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader"
+      run: |
+        xvfb-run -a pytest -k full_render_gpu -v --no-header
+
   test:
     name: Test on ${{ matrix.cfg.os }}, Python ${{ matrix.cfg.python-version }}
     if: >

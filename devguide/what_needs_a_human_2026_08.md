@@ -39,6 +39,54 @@ The check was retried on 2026-08-09. This executor had only an SSH session;
 user-owned desktop process to attach to. The item remains open rather than
 substituting an offscreen or virtual-display result.
 
+**Correction, 2026-09-02: both tests do run here, and pass.** The sentence above records a
+decision not to substitute a virtual display; it was read afterwards as a finding that one
+could not be used, which is not the same thing and was never measured. Under `xvfb-run`
+with software WebGL, `qt_live_model_smoke_real_window` runs (it skips only on an empty
+`DISPLAY`) and `full_render_gpu` runs and reaches its `assert success` — the structure
+finishes loading through a real WebGL context.
+
+They are now a CI job, `qt-pipeline` in `CI.yaml`, because catching a Qt host that is
+broken outright is worth having and nothing was doing it.
+
+**This does not close the item, and the job says so in its own comment.** Those tests
+assert that the pipeline *completes*: the bridge becomes ready, the payload is served, the
+load finishes. Nothing reads the framebuffer. `uibcdf/molsysviewer#64` is the standing
+proof that this is a different question from correctness — every atom arrived, the load
+completed, and fifty-nine of sixty protein copies were absent from the picture. A software
+render that finishes would have reported that scene as fine.
+
+So what still needs a human at a screen is unchanged and is narrower than "validate Qt": it
+is **A3**, whether `takeCameraAuthority` frames the structure correctly on Qt, which is a
+question about what the image shows and not about whether the load returned.
+
+### Maintainer exemption for the 0.21.0 conda release — 2026-09-02
+
+Granted by the maintainer, scoped deliberately narrowly, and recorded here rather than
+agreed in conversation so that its limits outlive the discussion.
+
+**What it covers.** Publishing the `noarch` conda artefact of 0.21.0 while A3 is
+unobserved. That artefact does not install Qt: `pyside6-addons-uibcdf` and the four
+packages beneath it are a separate manual install, the `standalone` extra in
+`pyproject.toml` is deliberately empty, and the Qt stack is `linux-64` only. A user
+installing MolSysViewer from conda receives the Jupyter widget, whose render path *is*
+observed — 31 E2E suites in a real browser.
+
+**What it does not cover.** Any claim that the Qt host is validated. It stays
+`experimental` in `capability_audit.md`, and A3 stays open in this document. The exemption
+is for one release of a package that does not ship the thing in question; it is not a
+judgement that the question stopped mattering.
+
+**Why it is defensible.** The gate exists to stop an unobserved render path being
+presented as working. Here it was blocking a package that contains no Qt dependency, on
+behalf of an `experimental` capability, while the release itself is what unblocks another
+project's supported Python 3.13 installation path (`uibcdf/molsysmt#195`). The proportion
+was wrong, not the principle.
+
+**What lifts it.** A session at a machine with a display running the two commands above
+against 0.21.0 or later, and confirming that Qt frames a loaded structure the way the
+exported page was confirmed to on 2026-08-06.
+
 **`pending_bugs/standalone_qt_live_demo_reload.md` — the fix is in, the
 confirmation is not.** Its closure criteria are explicitly manual: alternate two
 visually distinguishable demos at least ten times, confirm each replacement shows

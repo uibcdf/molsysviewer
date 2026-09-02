@@ -285,8 +285,11 @@ CAPABILITIES: tuple[Capability, ...] = (
         human_observed="2026-07-04 — rendering, transport, the persistent view, context "
                        "menus and camera interaction. The session also found the live "
                        "reload defect (#35), which is what a person watching is for.",
-        note="Transport is pinned by contract; the render path has no automated "
-             "observation on a real GPU and visible window.",
+        note="Transport is pinned by contract. Since 2026-09-02 the `qt-pipeline` CI job "
+             "asserts under Xvfb that the pipeline completes -- bridge ready, payload "
+             "served, structure loaded through software WebGL. That is not the render "
+             "being correct: nothing reads the framebuffer, and #64 is the standing proof "
+             "the two differ. A real GPU and a visible window remain unobserved.",
     ),
     Capability(
         name="Add-ons",

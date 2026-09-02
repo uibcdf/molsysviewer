@@ -46,7 +46,7 @@ behaviour, delegates it, or merely hosts it.
 - **Camera** — The snapshot is the frontend's state mirrored back, and is None on a view that never rendered. Contract S9 holds camera authority.
 - **save_state / load_state** — The scene and the vantage point it was saved from: no molecular system and no history. Records the structure it was written from, and re-resolves onto a different one rather than replaying indices that mean other atoms. Version 2 refuses version 1 rather than migrating it.
 - **save_session / load_session** — A `.msv` bundle carrying the molecular system alongside the state, so it reopens with nothing loaded first. No size budget: a session is as large as its trajectory.
-- **Standalone (Qt host)** — Transport is pinned by contract; the render path has no automated observation on a real GPU and visible window.
+- **Standalone (Qt host)** — Transport is pinned by contract. Since 2026-09-02 the `qt-pipeline` CI job asserts under Xvfb that the pipeline completes -- bridge ready, payload served, structure loaded through software WebGL. That is not the render being correct: nothing reads the framebuffer, and #64 is the standing proof the two differ. A real GPU and a visible window remain unobserved.
 - **Add-ons** — MolSysViewer owns the host contract; each toolkit owns and ships its integration. Maturity is declared per add-on.
 - **MolSysMT integration** — Delegates with `skip_digestion=True`, so argument names are normalised on this side.
 - **Units** — Physical magnitudes are quantities, never bare numbers.
