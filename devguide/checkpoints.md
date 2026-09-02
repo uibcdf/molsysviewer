@@ -97,8 +97,14 @@ pairing with each per-python molsysmt build, which is what noarch was adopted fo
   `msv.new_view("1TRS")`, raises `ModuleNotFoundError: No module named 'mmcif'` in a clean
   environment. MolSysMT imports `mmcif` on the PDB-identifier path and declares it in
   neither its recipe nor its `pyproject`; the shared development environment has it from
-  PyPI, so no source-tree test could see it. RCSB's `mmcif` is **not on conda-forge** under
-  any name — `mmcif_pdbx` is a different project. Reported as `uibcdf/molsysmt#200`.
+  PyPI, so no source-tree test could see it. Reported as `uibcdf/molsysmt#200`, where the
+  first version of the report was wrong about the remedy: it said the module is not on
+  conda-forge under any name — true — and concluded it was therefore hard to declare, which
+  does not follow. **`uibcdf/py-mmcif` exists**, in this ecosystem's own channel, which is
+  where it packages what conda-forge does not carry. Checking conda-forge and stopping
+  there was the error; the correction is on the issue. What survives is one undeclared
+  dependency, and the observation that `py-mmcif` publishes only `linux-64` and
+  `osx-arm64` while 0.22.0 is staged for four platforms.
 
   Everything else in that environment works: demos, `export_state`, and HTML export with
   the `color-scheme` fix present in the artefact.
