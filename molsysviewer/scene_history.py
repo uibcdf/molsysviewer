@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import json
-import warnings
 from contextlib import contextmanager
 
 from ._private.argdigest import digest
+from ._private.smonitor.warnings import SceneHistoryOverBudgetWarning, warn
 from functools import wraps
 from typing import Any
 
@@ -273,11 +273,8 @@ class SceneHistory:
         over_budget = self._undo_bytes + self._redo_bytes > self._byte_limit
         if (evicted or over_budget) and not self._budget_warning_emitted:
             budget_mib = self._byte_limit / (1024 * 1024)
-            warnings.warn(
-                f"Scene history exceeded its {budget_mib:g} MiB storage budget; "
-                "oldest undo/redo checkpoints were discarded where possible while "
-                "preserving the current scene and newest checkpoint.",
-                RuntimeWarning,
+            warn(
+                SceneHistoryOverBudgetWarning(extra={"budget": f"{budget_mib:g}"}),
                 stacklevel=3,
             )
             self._budget_warning_emitted = True

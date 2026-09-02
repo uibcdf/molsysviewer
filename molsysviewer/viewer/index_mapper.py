@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 from typing import Any
-import warnings
 import numpy as np
 import molsysmt as msm
 
+from .._private.smonitor.warnings import (
+    IndexMapDegradedWarning,
+    IndexMapDroppedIndicesWarning,
+    warn,
+)
 from .._private.smonitor_emit import emit_suppressed_exception
 
 class IndexMapper:
@@ -49,7 +53,7 @@ class IndexMapper:
                     exc,
                     context={"selection": repr(selection), "syntax": syntax},
                 )
-                warnings.warn(self.degraded_reason, RuntimeWarning, stacklevel=2)
+                warn(IndexMapDegradedWarning(self.degraded_reason), stacklevel=2)
                 try:
                     n_atoms = int(msm.get(molecular_system, element="system", n_atoms=True))
                 except Exception as fallback_exc:
@@ -105,9 +109,10 @@ class IndexMapper:
     def _record_dropped_indices(self, context: str, dropped: list[int]) -> None:
         self.last_dropped_indices[context] = dropped
         if dropped:
-            warnings.warn(
-                f"IndexMapper dropped {len(dropped)} unmapped index/indices in {context}: {dropped}",
-                RuntimeWarning,
+            warn(
+                IndexMapDroppedIndicesWarning(
+                    extra={"count": len(dropped), "context": context, "dropped": dropped},
+                ),
                 stacklevel=2,
             )
 
@@ -116,7 +121,7 @@ class IndexMapper:
             return list(values)
         except TypeError as exc:
             self.last_translation_error = f"{context} expected an iterable, got {type(values).__name__}: {exc}"
-            warnings.warn(self.last_translation_error, RuntimeWarning, stacklevel=2)
+            warn(IndexMapDegradedWarning(self.last_translation_error), stacklevel=2)
             return []
 
     def to_local_atom(self, original_index: int | None) -> int | None:

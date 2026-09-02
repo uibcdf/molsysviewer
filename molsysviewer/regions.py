@@ -3,13 +3,13 @@ from __future__ import annotations
 from copy import deepcopy
 from types import MappingProxyType
 from typing import Any, Dict, List, Optional
-import warnings
 
 import molsysmt as msm
 from depdigest import dep_digest
 from smonitor import signal
 from ._private.argdigest import digest
 from ._private.exceptions import ArgumentError
+from ._private.smonitor.warnings import RegionWithoutOwnVisualWarning, warn
 from ._private.smonitor_emit import emit_suppressed_exception
 from .colors import expand_values_to_atoms, normalize_color
 from .scene_history import records_scene_history
@@ -1131,9 +1131,10 @@ class Region:
     def show(self, skip_digestion: bool = False) -> None:
         """Show this region (all attached representations)."""
         if not self._has_own_visual():
-            warnings.warn(
-                f"Region {self.tag!r} has no own representation to show.",
-                UserWarning,
+            warn(
+                RegionWithoutOwnVisualWarning(
+                    extra={"tag": repr(self.tag), "action": "show"},
+                ),
                 stacklevel=2,
             )
             return
@@ -1147,9 +1148,10 @@ class Region:
     def hide(self, skip_digestion: bool = False) -> None:
         """Hide this region (all attached representations)."""
         if not self._has_own_visual():
-            warnings.warn(
-                f"Region {self.tag!r} has no own representation to hide.",
-                UserWarning,
+            warn(
+                RegionWithoutOwnVisualWarning(
+                    extra={"tag": repr(self.tag), "action": "hide"},
+                ),
                 stacklevel=2,
             )
             return

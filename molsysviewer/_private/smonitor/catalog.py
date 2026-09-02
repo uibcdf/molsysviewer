@@ -193,6 +193,42 @@ CATALOG = {
         "category": "payload",
         "level": "DEBUG",
     },
+    "region_without_own_visual": {
+        "code": "MOLSYSVIEWER-REGION-WITHOUT-OWN-VISUAL",
+        "source": "molsysviewer.regions",
+        "category": "scene",
+        "level": "WARNING",
+    },
+    "region_overlaps_visible_regions": {
+        "code": "MOLSYSVIEWER-REGION-OVERLAPS-VISIBLE-REGIONS",
+        "source": "molsysviewer.regions",
+        "category": "scene",
+        "level": "WARNING",
+    },
+    "selection_resolved_to_no_atoms": {
+        "code": "MOLSYSVIEWER-SELECTION-RESOLVED-TO-NO-ATOMS",
+        "source": "molsysviewer.new_view",
+        "category": "selection",
+        "level": "WARNING",
+    },
+    "scene_history_over_budget": {
+        "code": "MOLSYSVIEWER-SCENE-HISTORY-OVER-BUDGET",
+        "source": "molsysviewer.scene_history",
+        "category": "state",
+        "level": "WARNING",
+    },
+    "index_map_degraded": {
+        "code": "MOLSYSVIEWER-INDEX-MAP-DEGRADED",
+        "source": "molsysviewer.viewer.index_mapper",
+        "category": "state",
+        "level": "WARNING",
+    },
+    "index_map_dropped_indices": {
+        "code": "MOLSYSVIEWER-INDEX-MAP-DROPPED-INDICES",
+        "source": "molsysviewer.viewer.index_mapper",
+        "category": "state",
+        "level": "WARNING",
+    },
     "suppressed_exception": {
         "code": "MOLSYSVIEWER-SUPPRESSED-EXCEPTION",
         "source": "molsysviewer.state",
@@ -253,6 +289,26 @@ MESSAGES = {
         "This state was saved at structure {saved_index}, but the loaded system has "
         "{n_structures}. The frame was left where it is rather than moved somewhere the "
         "document did not ask for."
+    ),
+    "region_without_own_visual": (
+        "Region {tag} has no own representation to {action}."
+    ),
+    "region_overlaps_visible_regions": (
+        "Region {tag} overlaps visible represented region(s) {overlaps}. Overlapping "
+        "region representations can produce z-fighting; use difference(), "
+        "intersection(), or union() to compose non-overlapping regions."
+    ),
+    "selection_resolved_to_no_atoms": (
+        "The selection query {selection} resolved to zero atoms. Showing the whole "
+        "molecular system instead to prevent an empty screen."
+    ),
+    "scene_history_over_budget": (
+        "Scene history exceeded its {budget} MiB storage budget; oldest undo/redo "
+        "checkpoints were discarded where possible while preserving the current scene "
+        "and newest checkpoint."
+    ),
+    "index_map_dropped_indices": (
+        "IndexMapper dropped {count} unmapped index/indices in {context}: {dropped}"
     ),
     "state_structure_differs": (
         "This state was saved from a different system ({saved_atoms} atoms; this one has "

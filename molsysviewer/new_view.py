@@ -2,12 +2,12 @@
 from __future__ import annotations
 
 from typing import Any, Sequence, Union, Literal
-import warnings
 
 from smonitor import signal
 
 from .viewer import MolSysView
 from ._private.argdigest import digest
+from ._private.smonitor.warnings import EmptySelectionWarning, warn
 from depdigest import dep_digest
 
 Selection = Union[str, Sequence[int]]
@@ -107,10 +107,8 @@ def new_view(
     if callable(select):
         selected_atoms = list(select(selection=selection, syntax=syntax, skip_digestion=True))
     if selected_atoms == []:
-        warnings.warn(
-            f"The selection query {selection!r} resolved to zero atoms. "
-            "Showing the whole molecular system instead to prevent an empty screen.",
-            UserWarning,
+        warn(
+            EmptySelectionWarning(extra={"selection": repr(selection)}),
             stacklevel=2,
         )
         return view

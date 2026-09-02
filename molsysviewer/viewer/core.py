@@ -22,6 +22,7 @@ from .._pyunitwizard import puw
 from .._private.argdigest import digest
 from .._private.argdigest.argument.viewer_mode import digest_viewer_mode
 from .._private.smonitor import CATALOG, PACKAGE_ROOT, META
+from .._private.smonitor.warnings import StructureStreamFallbackWarning, warn
 from .._private.smonitor_emit import emit_suppressed_exception
 from .._private.variables import is_all
 from ..widget import MolSysViewerWidget
@@ -1085,9 +1086,10 @@ class MolSysView(
                 manager.fallback(
                     f"connector failed while starting structure transfer: {exc}"
                 )
-            warnings.warn(
-                f"Array-native AnyWidget delivery failed; using JSON fallback: {exc}",
-                RuntimeWarning,
+            warn(
+                StructureStreamFallbackWarning(
+                    f"Array-native AnyWidget delivery failed; using JSON fallback: {exc}",
+                ),
                 stacklevel=2,
             )
             return False
@@ -1212,9 +1214,10 @@ class MolSysView(
                 last_failure_reason=reason,
             ),
         )
-        warnings.warn(
-            f"Array-native stream failed; using JSON fallback: {reason}",
-            RuntimeWarning,
+        warn(
+            StructureStreamFallbackWarning(
+                f"Array-native stream failed; using JSON fallback: {reason}",
+            ),
             stacklevel=2,
         )
         target_endpoint_id = transfer.target_endpoint_id

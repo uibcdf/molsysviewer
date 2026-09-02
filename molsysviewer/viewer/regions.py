@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import re
 import time
-import warnings
 from contextlib import contextmanager
 from typing import Any, Mapping
 
@@ -14,6 +13,7 @@ from depdigest import dep_digest
 
 from .._private.argdigest import digest
 from .._private.smonitor import CATALOG, PACKAGE_ROOT, META
+from .._private.smonitor.warnings import RegionOverlapWarning, warn
 from .._private.smonitor_emit import emit_suppressed_exception
 from ..regions import Region
 from .representations import normalize_representation_type
@@ -730,11 +730,10 @@ class RegionsMixin:
         overlaps = self._overlapping_visual_region_tags(atom_indices, exclude_tag=exclude_tag)
         if not overlaps:
             return
-        warnings.warn(
-            f"Region {tag!r} overlaps visible represented region(s) {', '.join(overlaps)}. "
-            "Overlapping region representations can produce z-fighting; use "
-            "difference(), intersection(), or union() to compose non-overlapping regions.",
-            UserWarning,
+        warn(
+            RegionOverlapWarning(
+                extra={"tag": repr(tag), "overlaps": ", ".join(overlaps)},
+            ),
             stacklevel=stacklevel,
         )
 
