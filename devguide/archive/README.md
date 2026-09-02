@@ -85,3 +85,7 @@ Completed work, kept for the reasoning:
   — the proposal that became #38's four slices. Read for the five open decisions and what
   each was answered with: notably that binding a state to its structure meant re-resolving
   onto a different one, not refusing it.
+- [`bioassembly_copies_lose_their_chain_hierarchy.md`](bioassembly_copies_lose_their_chain_hierarchy.md)
+  — 60 copies of a capsid drew their waters and one protein. Read for what was refuted:
+  there was no per-chain ceiling, and contiguity does not save a repeated label —
+  Mol* groups by the value it finds.
