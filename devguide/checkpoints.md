@@ -80,7 +80,15 @@ that their recipe has no `test:` section and so their build resolves nothing. Th
 that reasoning and were right to: a package conda can upload but nobody can install is not
 validation. Staging replaced it.
 
-**Our candidate:** `b0888d9a`, version **0.21.0** (confirmed). At that commit
+**Step 3 is already done, 2026-09-02.** MolSysMT staged 0.22.0 ahead of the window --
+twelve artefacts, linux-64 / linux-aarch64 / osx-64 / osx-arm64 x py311/312/313, all
+labelled `staging`, real per-platform builds. Our package was built and tested against
+them with `devtools/build_against_staging.sh`, and all five checks they asked for pass:
+both imports, both packaged runtime resources, the solved environment honouring
+`molsysmt>=0.22.0`, and resolution on all three interpreters -- the *same* noarch artefact
+pairing with each per-python molsysmt build, which is what noarch was adopted for.
+
+**Our candidate:** `15c9a39b`, version **0.21.0** (confirmed). At that commit
 `devtools/release_gate.py` reports **9 passed, 0 failed, 2 blocked** — `conda` blocked by
 this very coordination, and `qt` blocked for want of a `DISPLAY`. The Qt gate is stated to
 them explicitly rather than glossed; see [`what_needs_a_human_2026_08.md`](what_needs_a_human_2026_08.md).
