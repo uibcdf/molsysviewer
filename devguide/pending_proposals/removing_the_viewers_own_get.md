@@ -107,9 +107,15 @@ functions_with_boolean = (
 digests on its own and is refused. The attributes that do work on a region are largely the
 ones with *no* digester at all, which pass through unvalidated.
 
-This is worth reporting on its own, and it is also evidence for this proposal: three
-parallel `get` surfaces, each digesting against a hand-maintained allow-list of caller
-names, is a shape that produces exactly this.
+This is evidence for the proposal: three parallel `get` surfaces, each digesting against a
+hand-maintained allow-list of caller names, is a shape that produces exactly this.
+
+**It is tracked here and nowhere else, by decision (2026-09-02).** It could have been filed
+as its own bug, and was not: under Option C it stops existing without being fixed, so
+opening a report that the chosen fix would close by accident would put the same defect in
+two queues. The consequence is that this proposal now carries a live defect as well as a
+design question — if it is deferred past 1.0, `region.get` stays broken for 77 of 118
+attributes, and §7's third question is what has to be answered first.
 
 ## 5. Options
 
