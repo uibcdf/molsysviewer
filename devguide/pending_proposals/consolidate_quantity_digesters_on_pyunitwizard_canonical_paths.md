@@ -139,3 +139,35 @@ Guard: `test_the_scalar_length_digesters_go_through_the_shared_boundary`, mutati
 against restoring each of the three. It pins the *message*, not the plumbing — the policy
 exists because a bare number is a silent nm/angstrom scale error, and an error that does
 not name a unit leaves the caller guessing which one this API wanted.
+
+## Second slice — 2026-09-02
+
+The remaining six scalar `[L]` digesters were re-examined before deciding whether to
+migrate them, and the answer changed twice.
+
+**They are healthier than the pair that produced #69.** All six declare a dimensionality,
+so none accepts seconds, none reads a bare numeric string as radians, and none returns a
+non-numeric string unchanged. `extra_radius` and `min_radius` were the outliers precisely
+because they declared none — which is why the audit found a crash there and not here.
+Migrating the six is therefore consistency work, not defect work, and it is safe to leave
+until after the release window.
+
+**One of them was broken anyway, in a way the smell test missed.** `bond_length` has a
+caller-conditional branch for functions taking a list of lengths, and this copy had drifted
+from MolSysMT's original into a version that could never return: `output = []` sat inside
+the loop, so only the last element would have survived, and the guard asked
+`puw.check(bond_length, ...)` about the whole list rather than the element, which is always
+`False`. Every list was rejected.
+
+It is unreachable from MolSysViewer — no caller here ends in `add_harmonic_bond_force`,
+which is a MolSysMT function. Repaired by synchronizing with the original rather than
+deleted, so the copy stays faithful, and guarded.
+
+**The lesson is not about digesters.** This directory is a copy of MolSysMT's, and the
+copy drifted. On the same day, the same shape of problem appeared twice more: a CSS rule
+they had already found and we had not, and a conda recipe defect reported to them that
+this project then turned out to share. Duplicated infrastructure between sibling
+repositories is costing this ecosystem the same defect two and three times over. That is
+worth its own decision, and it is not this proposal's to make.
+
+**Still open:** the five remaining branched digesters, as consistency work.
