@@ -112,3 +112,101 @@ html[data-theme="light"] {
   --sd-color-tabs-underline-active: hsla(210, 34%, 60%, 1);
  }
 
+/* --------------------------------------------------------------------------
+   Imported from MolSysMT's docs/_static/custom.css on 2026-09-02, unchanged.
+   The two documentation sites are siblings on the same theme, and theirs is
+   further along; a rule that had to be rediscovered here once already (the
+   iframe container below) is one rule too many. Keep this block in step with
+   theirs rather than editing it locally.
+   -------------------------------------------------------------------------- */
+html[data-theme="dark"] {
+  --pst-color-navbar-bg: var(--pst-color-background);
+  --pst-color-header-bg: var(--pst-color-background);
+}
+
+html[data-theme="dark"] .bd-header {
+  background-color: var(--pst-color-background) !important;
+  border-bottom: 1px solid var(--pst-color-border) !important;
+}
+
+/*********************************************
+* Custom Admonition: Learning Outcomes
+* Pale red box style without icon
+*********************************************/
+
+div.admonition.admonition-learning-outcomes,
+div.admonition.learning-outcomes {
+  border-color: hsl(355deg 65% 75%);
+  background-color: hsl(355deg 100% 98%);
+}
+
+html[data-theme="dark"] div.admonition.admonition-learning-outcomes,
+html[data-theme="dark"] div.admonition.learning-outcomes {
+  border-color: hsl(355deg 50% 45%);
+  background-color: hsl(355deg 30% 15%);
+}
+
+div.admonition.admonition-learning-outcomes > .admonition-title,
+div.admonition.learning-outcomes > .admonition-title {
+  background-color: hsl(355deg 70% 92%);
+  color: hsl(355deg 60% 25%);
+}
+
+html[data-theme="dark"] div.admonition.admonition-learning-outcomes > .admonition-title,
+html[data-theme="dark"] div.admonition.learning-outcomes > .admonition-title {
+  background-color: hsl(355deg 40% 25%);
+  color: hsl(355deg 75% 90%);
+}
+
+div.admonition.admonition-learning-outcomes > .admonition-title::before,
+div.admonition.learning-outcomes > .admonition-title::before,
+div.admonition.admonition-learning-outcomes > .admonition-title::after,
+div.admonition.learning-outcomes > .admonition-title::after {
+  content: none !important;
+}
+
+/*********************************************
+* Dark / Light Mode Responsive Logo Classes
+*********************************************/
+html[data-theme="light"] .only-dark,
+html[data-theme="light"] .logo-dark {
+  display: none !important;
+}
+
+html[data-theme="dark"] .only-light,
+html[data-theme="dark"] .logo-light {
+  display: none !important;
+}
+
+/*********************************************
+* Centered DataFrames & Clean Table Layout
+*********************************************/
+table.dataframe {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  border-collapse: collapse !important;
+  margin-top: 1.25rem !important;
+  margin-bottom: 1.25rem !important;
+}
+
+table.dataframe th,
+table.dataframe td {
+  border-left: none !important;
+  border-right: none !important;
+  padding: 8px 16px !important;
+  text-align: right !important;
+}
+
+
+/*********************************************
+* Clean MolSysViewer Iframe Container Layout
+*********************************************/
+/* pydata-sphinx-theme gives notebook HTML outputs a light box in dark mode, for
+   pandas tables and widgets authored against a light background. An embedded
+   viewer is neither: the box became a light-grey frame around the canvas, 8px on
+   each side, visible only in dark mode. Adopted from MolSysMT's docs, where the
+   same rule keeps their embedded views clean. */
+html[data-theme="dark"] .bd-content div.cell_output .text_html:has(iframe) {
+  background-color: transparent !important;
+  padding: 0 !important;
+}
