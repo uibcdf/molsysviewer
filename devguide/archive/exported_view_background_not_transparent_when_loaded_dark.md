@@ -1,13 +1,13 @@
 ---
 summary: An exported view embedded in a dark page renders opaque white instead of transparent.
 issue: uibcdf/molsysviewer#34
-status: open
+status: resolved
 opened: 2026-08-08
-closed:
+closed: 2026-09-02
 severity: medium
 verification: reproduced
 area: [export, embedding]
-guard:
+guard: tests/test_export_runtime_source.py::test_an_embedded_transparent_page_declares_its_colour_scheme
 normative:
 blocked_by: []
 supersedes: []
@@ -89,6 +89,12 @@ embedded. What remains is the 3D canvas, painted by the runtime on top of the
 document.
 
 ## 5. Where it happens
+
+> **Superseded 2026-09-02. Everything in this section is refuted; it is kept because the
+> refutation is the useful part.** The mechanism was never in `applyExportedBackground`,
+> nor anywhere in the runtime, nor in Mol\*. See §9.
+
+
 
 `applyExportedBackground(controller, mode)` in the runtime bundle, called from the
 export bootstrap as
@@ -202,3 +208,68 @@ parent document, which a cross-origin embed would deny.
 Served over HTTP next to the exported view and its `viewer.js`. Switching the body
 background between `#101010` and `#ffffff` and reloading reproduces both cases with
 no documentation toolchain involved.
+
+---
+
+## 9. Resolution — 2026-09-02
+
+**The cause was outside both documents.**
+
+The exported page never declared `color-scheme`. A document that declares none is treated
+as **light**, and a light document whose `html` and `body` are transparent is painted over
+the browser's own base canvas — which is **white**. Embedded in a light page that white
+matches the host and nobody sees it; embedded in a dark one it is the opaque white
+rectangle of §2.
+
+The fix is one declaration, inside the branch that already runs only when the page is
+embedded and transparent:
+
+```css
+html { color-scheme: light dark; }
+```
+
+`light dark` rather than a fixed value: an embedded document's used scheme follows its
+embedder, so the base canvas now matches the host in both directions instead of trading
+one wrong colour for another.
+
+### What was refuted, and how
+
+Both candidates in §5, and four more raised while chasing it. All were eliminated by
+measurement in a real browser with the defect on screen:
+
+| claim | how it fell |
+| --- | --- |
+| `toggleBackground` clobbers the transparency | `transparentBackground` read back **`true`** in the failing state |
+| the `appliedColour` short-circuit prevents recovery | same — the flag was never lost |
+| antialiasing or postprocessing suppress the transparent clear | both switched off live; still white |
+| the WebGL context lacks alpha | `getContextAttributes().alpha` was **`true`** |
+| the canvas is painting `backgroundColor` | set to pure green; **nothing changed on screen** |
+| some element behind the canvas is white | every element from the canvas out to the host's `<body>` computed to `rgba(0,0,0,0)` |
+
+The green test is the one that turned the investigation around. Once it was clear that
+nothing in either DOM was painting the white, only the browser's compositing was left.
+
+### The asymmetry in §2 did not reproduce
+
+The behaviour follows the *current* theme, not the theme at load. Loading light and
+switching to dark, or the reverse, both end in the same state. §2 is left as written
+because it is what was observed then, and the discrepancy is itself worth knowing.
+
+### Why no test could have caught this
+
+Headless Chromium without WebGL flags renders the page's **init-failure overlay**, not the
+scene, so pixel assertions there measure an error screen. With software WebGL
+(`--use-angle=swiftshader`) the scene renders and the defect **does not appear** — the
+transparent path behaves correctly. It needs a real GPU, which places this in the same
+family as Phase 7's Qt observation in `what_needs_a_human_2026_08.md`: a defect only a
+real browser on real hardware can see.
+
+Guards: `test_an_embedded_transparent_page_declares_its_colour_scheme` and
+`test_only_the_transparent_page_declares_a_colour_scheme`, both mutation-verified. They
+pin the declaration and its scope — the other three background modes must not carry it,
+since they paint their own opaque background and never expose the base canvas.
+
+**All eleven static views under `docs/_static/views/` were regenerated**, because the fix
+travels in the exported HTML and not in `viewer.js`: an already-exported view keeps the
+defect until it is written again. MolSysMT carry the same kind of pre-generated views and
+were told in `uibcdf/molsysmt#199`.

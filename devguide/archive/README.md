@@ -89,3 +89,7 @@ Completed work, kept for the reasoning:
   — 60 copies of a capsid drew their waters and one protein. Read for what was refuted:
   there was no per-chain ceiling, and contiguity does not save a repeated label —
   Mol* groups by the value it finds.
+- [`exported_view_background_not_transparent_when_loaded_dark.md`](exported_view_background_not_transparent_when_loaded_dark.md)
+  — a transparent view showed white on a dark page. Read for the elimination: six
+  mechanisms refuted by measurement, and the one that mattered was outside both documents —
+  a missing `color-scheme` letting the browser's white base canvas show through.

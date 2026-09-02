@@ -390,6 +390,46 @@ def test_a_transparent_page_defers_to_the_host_only_when_embedded(tmp_path):
     )
 
 
+def test_an_embedded_transparent_page_declares_its_colour_scheme(tmp_path):
+    """The other half of transparency, and the half that was missing.
+
+    Making `html` and `body` transparent is not enough. A document that declares no
+    `color-scheme` is treated as light, and a light document with a transparent
+    background is painted over the browser's own base canvas -- which is **white**.
+    Embedded in a light page that white matches the host and is invisible; embedded in a
+    dark one it is an opaque white rectangle (uibcdf/molsysviewer#34).
+
+    `light dark` rather than a fixed value: an embedded document's used scheme follows
+    its embedder, so this makes the base canvas match the host in both directions rather
+    than trading one wrong colour for another.
+
+    The declaration belongs inside the embedded-only branch. A transparent page opened on
+    its own paints its own background, so its base canvas is never visible, and the fixed
+    modes below must not carry it at all.
+    """
+    html = _page(tmp_path, background="transparent")
+
+    embedded_branch = html.split("window.self !== window.top", 1)[1]
+    assert "color-scheme: light dark" in embedded_branch, (
+        "a transparent page embedded in a dark host will show the browser's white base "
+        "canvas through it"
+    )
+
+
+@pytest.mark.parametrize("mode", ["auto", "white", "dark"])
+def test_only_the_transparent_page_declares_a_colour_scheme(tmp_path, mode):
+    """The fix is scoped, and this is what keeps it scoped.
+
+    Every other mode paints an opaque background of its own, so the base canvas is
+    covered and declaring a scheme would change appearance for no reason.
+    """
+    html = _page(tmp_path, background=mode)
+
+    assert not re.search(r"(?<!prefers-)color-scheme\s*:", html), (
+        f"background={mode!r} declares a colour scheme it does not need"
+    )
+
+
 @pytest.mark.parametrize("fixed", ["white", "dark"])
 def test_a_fixed_page_ignores_the_reader(tmp_path, fixed):
     html = _page(tmp_path, background=fixed)
