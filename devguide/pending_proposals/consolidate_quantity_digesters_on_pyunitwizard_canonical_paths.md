@@ -171,3 +171,49 @@ repositories is costing this ecosystem the same defect two and three times over.
 worth its own decision, and it is not this proposal's to make.
 
 **Still open:** the five remaining branched digesters, as consistency work.
+
+## Third slice — 2026-09-02 — the remaining five cannot be consolidated, and why
+
+Setting out to migrate the last five branched scalar-length digesters, the premise turned
+out to be wrong. **None of `threshold`, `distance_threshold`, `switch_distance`,
+`cutoff_distance` or `max_bond_length` corresponds to any argument in MolSysViewer's public
+API.** Zero signatures carry those names, and outside the digester directory they are
+mentioned essentially nowhere.
+
+They are copies of MolSysMT's, and they say so in their own code. `threshold` accepts a
+value only when the caller is in one of two hard-coded allow-lists, and every name in them
+is a MolSysMT function — `molsysmt.structure.get_contacts.get_contacts` and the like.
+Nothing in this package can be in those lists, so the digester rejects everything it is
+given. Consolidating them onto the shared helper would be polishing code that cannot run.
+
+Two are worse than dead. `switch_distance` and `cutoff_distance` raise **AttributeError**
+when called without a `caller`, because this copy dropped the `caller is not None` guard
+that MolSysMT's has. `threshold` also carries `molsysmt.thirds.nglview...` where theirs
+says `molsysmt.third_party.nglview...` — a stale name that would not match even if a
+MolSysMT caller reached it. More drift, of the kind `uibcdf/molsysviewer#70` is about.
+
+### How much of the directory is in this state
+
+| | |
+| --- | ---: |
+| digesters in the directory | 581 |
+| whose name appears in a signature somewhere in this package | 308 (53%) |
+| **with no appearance at all** | **273 (46%)** |
+
+The estimate comes from scanning parameter names across the package and is a heuristic, so
+treat it as approximate. Spot-checked in both directions: `angle_threshold`, `acceptors`,
+`alternate_location` and `N_terminal` have zero mentions outside the directory, while
+`selection`, `extra_radius` and `duration` have 457, 32 and 51.
+
+### What this proposal can and cannot now conclude
+
+The consolidation this proposal asked for is **done for everything it can apply to**: the
+three pure digesters, plus `extra_radius` and `min_radius`, which were reachable and
+carried real defects (`uibcdf/molsysviewer#69`).
+
+What remains is not consolidation. It is the question of what a package should do with
+roughly half a directory copied from a sibling and unreachable here — delete, keep
+synchronized, or leave. That is `uibcdf/molsysviewer#70`'s question, and this measurement
+is the first instalment of the "separate legitimate divergence from drift" work it asks
+for. It is **not this proposal's to answer**, and deleting 273 files is not a change to
+make without a decision.
