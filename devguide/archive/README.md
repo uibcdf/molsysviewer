@@ -97,3 +97,7 @@ Completed work, kept for the reasoning:
   — one synchronization asked the molecular system twice for the same attribute inventory;
   removing the second traversal took `regions.add` from 46.6 ms to 26.8 ms. Read for why
   the value is passed rather than cached.
+- [`camera_focus_on_object_and_the_units_of_its_arguments.md`](camera_focus_on_object_and_the_units_of_its_arguments.md)
+  — a public camera method that raised with its own default. Read for how one argument name
+  came to carry three readings of its unit, and why the tempting fix would have hidden the
+  factor of ten instead of removing it.

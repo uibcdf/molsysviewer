@@ -1,18 +1,18 @@
-from molsysviewer._private.exceptions import ArgumentError
-from molsysviewer._pyunitwizard import puw
+from .._quantity import digest_length_quantity
 
 
 def digest_extra_radius(extra_radius, caller=None):
+    """An optional camera padding radius, as a length.
+
+    Rewritten under uibcdf/molsysviewer#69. It used to accept a quantity of any
+    dimensionality (seconds were standardized to picoseconds), read a bare number as
+    angstroms while the callers that consume it treat the same argument as nanometres,
+    turn the string "4.0" into four **radians** -- PyUnitWizard reads a bare numeric
+    string as dimensionless -- and return a non-numeric string unchanged.
+
+    A padding radius is a length. Requiring the unit is what stops the factor of ten
+    between the two readings of this same argument from being applied silently.
+    """
     if extra_radius is None:
-        return extra_radius
-    if puw.is_quantity(extra_radius):
-        return puw.standardize(extra_radius)
-    if isinstance(extra_radius, (int, float)):
-        return puw.quantity(extra_radius, "angstroms", standardized=True)
-    if isinstance(extra_radius, str):
-        try:
-            value = float(extra_radius)
-        except ValueError:
-            return extra_radius
-        return puw.quantity(value, "angstroms", standardized=True)
-    raise ArgumentError("extra_radius", value=extra_radius, caller=caller, message=None)
+        return None
+    return digest_length_quantity(extra_radius, "extra_radius", caller=caller)

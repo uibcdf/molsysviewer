@@ -45,7 +45,7 @@ def test_empty_shape_focus_warns_and_zooms_scene_center():
     )
 
     with pytest.warns(UserWarning, match="empty shape .empty."):
-        shape.focus(duration_ms=0, extra_radius=0.5)
+        shape.focus(duration="0 ms", extra_radius="0.5 nanometers")
 
     assert view._test_message_log[-1] == {  # noqa: SLF001
         "op": "zoom_to_position",

@@ -7,6 +7,7 @@ from typing import Any, Dict, Optional
 from smonitor import signal
 
 from ._private.argdigest import digest
+from .viewer.utils import quantity_value_in_unit
 from . import pyunitwizard as puw
 from .scene_history import records_scene_history
 
@@ -1113,7 +1114,12 @@ class Shape(SceneObject):
             raise NotImplementedError(f"set_length_scale is not implemented for shape op {op!r}.")
         self._apply_displacement_update(length_scale=float(length_scale))
 
-    def focus(self, duration_ms: int = 250, extra_radius: float = 0.5) -> None:
+    def focus(
+        self,
+        duration: Any = "250 ms",
+        duration_ms: Any | None = None,
+        extra_radius: Any = "0.5 nanometers",
+    ) -> None:
         """Center the camera on this shape.
 
         Extracts all geometric coordinates from the shape message, computes
@@ -1127,6 +1133,8 @@ class Shape(SceneObject):
         extra_radius
             Extra padding added to the bounding radius (nm, default 0.5).
         """
+        if duration_ms is not None:
+            duration = duration_ms
         msg = self._require_shape_message()
         op = msg.get("op", "")
         options = msg.get("options") if isinstance(msg.get("options"), dict) else {}
@@ -1138,7 +1146,7 @@ class Shape(SceneObject):
                 stacklevel=2,
             )
         center_nm, radius_nm = _bounding_sphere_nm(points)
-        radius_nm = max(radius_nm + float(extra_radius), 0.5)
+        radius_nm = max(radius_nm + quantity_value_in_unit(extra_radius, "nanometers"), 0.5)
         # Convert nm → Å (scene coordinates match atomic coordinates which are in Å)
         center_ang = [v * _NM_TO_ANGSTROM for v in center_nm]
         radius_ang = radius_nm * _NM_TO_ANGSTROM
@@ -1146,7 +1154,7 @@ class Shape(SceneObject):
             "op": "zoom_to_position",
             "center": center_ang,
             "radius": radius_ang,
-            "duration_ms": int(duration_ms),
+            "duration_ms": int(quantity_value_in_unit(duration, "milliseconds")),
         })
 
 
@@ -1252,7 +1260,12 @@ class Measurement(SceneObject):
         arr = _np.asarray(puw.get_value(coords, to_unit="nm"))
         return puw.standardize(puw.quantity(arr[0].tolist(), "nm"))
 
-    def focus(self, duration_ms: int = 250, extra_radius: float = 0.5) -> None:
+    def focus(
+        self,
+        duration: Any = "250 ms",
+        duration_ms: Any | None = None,
+        extra_radius: Any = "0.5 nanometers",
+    ) -> None:
         """Center the camera on the atoms involved in this measurement.
 
         Uses the actual 3D coordinates of the endpoint atoms to compute a tight
@@ -1266,6 +1279,8 @@ class Measurement(SceneObject):
         extra_radius
             Extra padding added to the bounding radius (nm, default 0.5).
         """
+        if duration_ms is not None:
+            duration = duration_ms
         history = getattr(self._view, "_measurement_history", [])
         record = next((r for r in history if r.get("tag") == self.tag), None)
         if record is None:
@@ -1307,18 +1322,22 @@ class Measurement(SceneObject):
                     ]
                     if points:
                         center_nm, radius_nm = _bounding_sphere_nm(points)
-                        radius_nm = max(radius_nm + float(extra_radius), 0.5)
+                        radius_nm = max(radius_nm + quantity_value_in_unit(extra_radius, "nanometers"), 0.5)
                         self._view._send({  # noqa: SLF001
                             "op": "zoom_to_position",
                             "center": [v * _NM_TO_ANGSTROM for v in center_nm],
                             "radius": radius_nm * _NM_TO_ANGSTROM,
-                            "duration_ms": int(duration_ms),
+                            "duration_ms": int(quantity_value_in_unit(duration, "milliseconds")),
                         })
                         return
             except Exception:
                 pass
         # Fallback: use the public zoom() path (may zoom out further than ideal)
-        self._view.zoom(selection=flat, duration_ms=duration_ms, skip_digestion=True)  # noqa: SLF001
+        self._view.zoom(  # noqa: SLF001
+            selection=flat,
+            duration_ms=quantity_value_in_unit(duration, "milliseconds"),
+            skip_digestion=True,
+        )
 
 
 class Section(SceneObject):

@@ -3,13 +3,15 @@ from __future__ import annotations
 import json
 from typing import Any
 
-import molsysmt as msm
+# Unused in this module's own body, and load-bearing anyway: `tests/test_zoom.py`
+# patches `molsysviewer.viewer.camera.msm.select` through this name. Removed once by
+# `ruff --fix` acting on its F401, which broke that patch target.
+import molsysmt as msm  # noqa: F401
 from smonitor import signal
 
 from .._private.argdigest import digest
-from .. import pyunitwizard as puw
 from ..regions import Region
-from .signals import zoom_signal_extra, camera_snapshot_extra
+from .signals import camera_snapshot_extra, zoom_signal_extra
 from .utils import quantity_value_in_unit
 
 
@@ -178,8 +180,9 @@ class CameraManager:
         tag: str,
         *,
         kind: str | None = None,
-        duration_ms: int = 250,
-        extra_radius: float = 0.5,
+        duration: Any = "250 ms",
+        duration_ms: Any | None = None,
+        extra_radius: Any = "0.5 nanometers",
         skip_digestion: bool = False,
     ) -> None:
         """Center the camera on a tagged scene object (shape, measurement, region, or annotation).
@@ -191,11 +194,17 @@ class CameraManager:
         ----------
         tag
             Tag of the scene object to focus on.
+        duration
+            Transition duration (any time unit supported by PyUnitWizard).
         duration_ms
-            Camera transition duration in milliseconds.
+            Backward-compatible alias for *duration*. Overrides *duration* if given.
         extra_radius
-            Extra padding around the object's bounding sphere (nm).
+            Extra padding around the object's bounding sphere, as a length with an
+            explicit unit. A bare number is refused: this argument reached three
+            different readings of what it meant before uibcdf/molsysviewer#69.
         """
+        if duration_ms is not None:
+            duration = duration_ms
         view = self._view  # noqa: SLF001
         if kind == "region" or (kind is None and tag in view._regions):  # noqa: SLF001
             if kind is None:
@@ -206,7 +215,7 @@ class CameraManager:
                 raise KeyError(f"Unknown region tag: {tag!r}")
             self.focus_region(
                 view._regions[tag],  # noqa: SLF001
-                duration_ms=duration_ms,
+                duration=duration,
                 extra_radius=f"{quantity_value_in_unit(extra_radius, 'angstroms')} angstroms",
                 skip_digestion=True,
             )
@@ -225,7 +234,7 @@ class CameraManager:
             raise NotImplementedError(
                 f"Objects of kind {getattr(obj, 'kind', '?')!r} do not support focus()."
             )
-        obj.focus(duration_ms=duration_ms, extra_radius=extra_radius)
+        obj.focus(duration=duration, extra_radius=extra_radius)
 
     @signal(tags=["camera"])
     @digest()
@@ -260,7 +269,8 @@ class CameraManager:
         self,
         snapshot: dict,
         *,
-        duration_ms: int = 0,
+        duration: Any = "0 ms",
+        duration_ms: Any | None = None,
         skip_digestion: bool = False,
     ) -> None:
         """Apply a previously saved camera snapshot.
@@ -269,16 +279,16 @@ class CameraManager:
         ----------
         snapshot
             Camera snapshot dict (Mol* format).
+        duration
+            Transition duration (any time unit supported by PyUnitWizard).
         duration_ms
-            Transition duration in milliseconds.
+            Backward-compatible alias for *duration*. Overrides *duration* if given.
         """
         if not snapshot:
             return
-        duration_value = (
-            int(puw.get_value(duration_ms, to_unit="ms"))
-            if puw.is_quantity(duration_ms)
-            else int(duration_ms)
-        )
+        if duration_ms is not None:
+            duration = duration_ms
+        duration_value = int(quantity_value_in_unit(duration, "ms"))
         self._view._last_camera_snapshot = dict(snapshot)  # noqa: SLF001
         self._view._send(  # noqa: SLF001
             {
