@@ -88,6 +88,21 @@ both imports, both packaged runtime resources, the solved environment honouring
 `molsysmt>=0.22.0`, and resolution on all three interpreters -- the *same* noarch artefact
 pairing with each per-python molsysmt build, which is what noarch was adopted for.
 
+**Phase 10 gates 4 and 5, run against the installed artefact rather than the source tree**
+(2026-09-02), which is what they had been waiting for:
+
+- **Gate 4 passes.** `runtime_actions.json` (5 397 B) and `viewer.js` (6 410 531 B, md5
+  `992bf3d6`, matching the committed one) are both readable from the installed package.
+- **Gate 5 fails, and not on our side.** The README's one-line path,
+  `msv.new_view("1TRS")`, raises `ModuleNotFoundError: No module named 'mmcif'` in a clean
+  environment. MolSysMT imports `mmcif` on the PDB-identifier path and declares it in
+  neither its recipe nor its `pyproject`; the shared development environment has it from
+  PyPI, so no source-tree test could see it. RCSB's `mmcif` is **not on conda-forge** under
+  any name — `mmcif_pdbx` is a different project. Reported as `uibcdf/molsysmt#200`.
+
+  Everything else in that environment works: demos, `export_state`, and HTML export with
+  the `color-scheme` fix present in the artefact.
+
 **Our candidate:** `15c9a39b`, version **0.21.0** (confirmed). At that commit
 `devtools/release_gate.py` reports **9 passed, 0 failed, 2 blocked** — `conda` blocked by
 this very coordination, and `qt` blocked for want of a `DISPLAY`. The Qt gate is stated to
