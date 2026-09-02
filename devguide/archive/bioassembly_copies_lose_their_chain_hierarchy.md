@@ -118,3 +118,27 @@ an identity that moves when the system is reordered is not an identity. The 60 c
 genuinely indistinguishable by any label-based scheme, because they *are* identical except
 in position. Onto the same assembly the fingerprint matches and the stored indices are
 used directly, so the ordinary case is unaffected.
+
+
+---
+
+## Correction appended 2026-09-02 — the limitation below is gone
+
+The section above records that a state document cannot re-resolve onto a bioassembly,
+because the atom identity `(chain_id, group_id, group_name, atom_name)` had 1 588 distinct
+values for 95 280 atoms, and argues the limitation is not fixable by switching to
+`chain_index`, since an index is positional.
+
+That argument still holds and the limitation no longer applies: **MolSysMT removed the
+ambiguity at its source.** `uibcdf/molsysmt#198`, reported from here, is fixed in their
+`2f6c46f3c` — bioassembly copies now receive unique chain IDs while keeping the repeated
+author chain names.
+
+Re-measured on 2BUK bioassembly 1 with their fix in place: `chain_id` now carries 300
+distinct values, and the identity tuple is 95 280 distinct for 95 280 atoms, **zero
+ambiguous**. Verified end to end: an annotation on an atom of copy 7 (index 3016) restores
+onto a trimmed copy of the same assembly at index 3009, unbroken.
+
+Worth keeping as a shape rather than a fact about one bug. The limitation was real, it was
+correctly diagnosed as unfixable *from here*, and it was removed by fixing the thing that
+caused it in the package that owned it. Reporting it was what made that possible.
