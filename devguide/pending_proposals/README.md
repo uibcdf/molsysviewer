@@ -31,13 +31,14 @@ list. Deferred entries also carry the `post-1.0` milestone on the issue board.
 
 - [`molsysmt_known_source_form_and_large_string_detection.md`](molsysmt_known_source_form_and_large_string_detection.md) — [#42](https://github.com/uibcdf/molsysviewer/issues/42) — A large in-memory molecular string enters unbounded filename extension detection. *(measured)* — waiting on uibcdf/molsysmt#151
 
-### Open (5)
+### Open (6)
 
 - [`classic_script_runtime_for_offline_bundles.md`](classic_script_runtime_for_offline_bundles.md) — [#39](https://github.com/uibcdf/molsysviewer/issues/39) — Build the runtime as a classic script so many shared views open from a disk with no server. *(measured)*
 - [`duplicated_infrastructure_across_the_ecosystem.md`](duplicated_infrastructure_across_the_ecosystem.md) — [#70](https://github.com/uibcdf/molsysviewer/issues/70) — Duplicated infrastructure across the MolSysSuite repositories keeps costing the same defect twice. *(measured)*
 - [`evidence_a_stable_capability_has_not_earned.md`](evidence_a_stable_capability_has_not_earned.md) — [#65](https://github.com/uibcdf/molsysviewer/issues/65) — Four capabilities declare an evidence level nothing has observed, and the release gate cannot tell. *(measured)*
 - [`evidence_labels_beyond_the_capability_audit.md`](evidence_labels_beyond_the_capability_audit.md) — [#61](https://github.com/uibcdf/molsysviewer/issues/61) — Decide whether the evidence labels govern the whole devguide or only the capability audit. *(measured)*
 - [`molsysmt_docs_pipeline_analysis.md`](molsysmt_docs_pipeline_analysis.md) — [#41](https://github.com/uibcdf/molsysviewer/issues/41) — MolSysMT's documentation pipeline read at the scale it is about to reach. *(measured)*
+- [`removing_the_viewers_own_get.md`](removing_the_viewers_own_get.md) — [#71](https://github.com/uibcdf/molsysviewer/issues/71) — Evaluate removing the viewer's own get(), now that msm.get(view) works. *(measured)*
 
 ### Deferred until after 1.0 (17)
 
