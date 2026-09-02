@@ -125,10 +125,14 @@ Resume in this order:
    is the *static* half — every page parses and none calls a deprecated API — so what
    widening buys is the `NameError` class of defect, which only running finds.
 
-   The audit's second-sharpest gap is next to it: **four capabilities have no browser
-   observation at all** — trajectory plot, movie, `save_state`/`load_state`, units — and
-   two of them are `stable`. See the *Nothing has watched these draw* section of
-   [`capability_audit.md`](capability_audit.md).
+   The audit's second-sharpest gap is next to it: **five capabilities have no browser
+   observation at all** — trajectory plot, movie, `save_state`/`load_state`,
+   `save_session`/`load_session`, units. Three are `experimental` and say so; the other
+   two are `stable`. See the *Nothing has watched these draw* section of
+   [`capability_audit.md`](capability_audit.md), and
+   [`pending_proposals/evidence_a_stable_capability_has_not_earned.md`](pending_proposals/evidence_a_stable_capability_has_not_earned.md)
+   (uibcdf/molsysviewer#65), which is the entry that asks for the decision rather than the
+   suites.
 2. In parallel when the required workstation is available, close Phase 7's two
    observations: Qt real-window/GPU and ten human live-demo replacements. Never
    report the existing offscreen/browser evidence as those observations.
@@ -145,14 +149,23 @@ Resume in this order:
    Release, the Zenodo verification workflow confirms the archive.
 
 Closed in Phase 10 so far: atomic overlay-state file helpers, notebook CI, opt-in hover
-telemetry, and public-callable digestion. The state helpers are not a molecular-session
-bundle; hover is runtime/session state rather than scene state.
+telemetry, and public-callable digestion. Hover is runtime/session state rather than scene
+state.
 
-### Two proposals waiting on a decision, not on work
+*Updated 2026-09-02:* the state helpers were "not a molecular-session bundle" until #38
+closed. There is now a second unit rather than a wider first one — `view.save_session()` /
+`molsysviewer.load_session()` write a `.msv` carrying the molecular system, while
+`save_state` still writes the overlay and the vantage point alone.
 
-- [`pending_proposals/what_save_state_promises.md`](pending_proposals/what_save_state_promises.md)
-  — five numbered decisions about what a saved state means. The cheapest and most valuable
-  is binding a state document to the structure it was written from.
+### One proposal waiting on a decision, not on work
+
+`what_save_state_promises.md` was the other. Its five decisions were answered on
+2026-09-01 and it is now
+[`archive/what_save_state_promises.md`](archive/what_save_state_promises.md); the
+cheapest and most valuable of them — binding a state document to the structure it was
+written from — was answered by re-resolving onto a different structure rather than by
+refusing it.
+
 - [`pending_proposals/addon_maturity_and_ownership.md`](pending_proposals/addon_maturity_and_ownership.md)
   — the maturity vocabulary is defined; each toolkit adopts it by re-declaring
   `meta["status"]`. Until then the README reports what each add-on says today.

@@ -28,6 +28,7 @@ behaviour, delegates it, or merely hosts it.
 | Movie | `view.movie.` | 13 | 13 | MolSysViewer (Python authority) | [page](../docs/content/user/movie/export.md) | contract-tested | experimental | 0.18.0 |
 | Camera | `view.camera.`, `view.get_camera_snapshot`, `view.set_camera_snapshot`, `view.zoom` | 11 | 11 | Frontend (mirrored to Python) | [page](../docs/content/user/viewer/camera_and_controls.ipynb) | contract-tested, browser-observed | stable | 0.18.0 |
 | save_state / load_state | `view.save_state`, `view.load_state`, `view.export_state`, `view.import_state` | 4 | 4 | MolSysViewer (Python authority) | [page](../docs/content/user/export/state.md) | contract-tested | stable | 0.19.0 |
+| save_session / load_session | `view.save_session`, `molsysviewer.load_session` | 2 | 2 | MolSysViewer (Python authority) | [page](../docs/content/user/export/state.md) | contract-tested | experimental | unreleased |
 | HTML export and replay | `view.export.` | 5 | 5 | MolSysViewer (Python authority) | [page](../docs/content/user/export/index.md) | contract-tested, browser-observed | stable | 0.9.0 |
 | Popup | `view.build_popup_scene_snapshot` | 1 | 1 | MolSysViewer (Python authority) | [page](../docs/content/developer/standalone_surfaces.md) | contract-tested, browser-observed, benchmarked | stable | 0.20.1 |
 | Standalone (Qt host) | `molsysviewer.launch_standalone_qt0`, `molsysviewer.create_standalone_qt0_window` | 2 | 0 | MolSysViewer (Python authority) | [page](../docs/content/developer/standalone_surfaces.md) | contract-tested, browser-observed, benchmarked, human-observed | experimental | 0.19.0 |
@@ -43,7 +44,8 @@ behaviour, delegates it, or merely hosts it.
 - **Trajectory plot** — No E2E suite opens it in a browser.
 - **Movie** — Export depends on an external encoder and is not exercised in CI.
 - **Camera** — The snapshot is the frontend's state mirrored back, and is None on a view that never rendered. Contract S9 holds camera authority.
-- **save_state / load_state** — Semantic scene state only: no molecular system, camera or history. Version 2 refuses version 1 rather than migrating it.
+- **save_state / load_state** — The scene and the vantage point it was saved from: no molecular system and no history. Records the structure it was written from, and re-resolves onto a different one rather than replaying indices that mean other atoms. Version 2 refuses version 1 rather than migrating it.
+- **save_session / load_session** — A `.msv` bundle carrying the molecular system alongside the state, so it reopens with nothing loaded first. No size budget: a session is as large as its trajectory.
 - **Standalone (Qt host)** — Transport is pinned by contract; the render path has no automated observation on a real GPU and visible window.
 - **Add-ons** — MolSysViewer owns the host contract; each toolkit owns and ships its integration. Maturity is declared per add-on.
 - **MolSysMT integration** — Delegates with `skip_digestion=True`, so argument names are normalised on this side.
@@ -58,11 +60,10 @@ a label rather than as a number in a column:
 - Trajectory plot
 - Movie
 - save_state / load_state
+- save_session / load_session
 - Units
 
-Two of them are already `experimental` and say so. `save_state / load_state`
-and `Units` are `stable`, which is defensible — neither draws anything — but
-it is the kind of claim that should be made on purpose rather than inherited.
+Three of them are already `experimental` and say so. `save_state / load_state` and `Units` are `stable`, which is defensible — none of them draws anything — but it is the kind of claim that should be made on purpose rather than inherited.
 
 ## Two columns, two questions
 

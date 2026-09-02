@@ -121,8 +121,10 @@ and must not be merged into this.
 
 **Deliberately not proposed:** raising or lowering any capability's `status`. Whether
 `save_state` deserves `stable` is a judgement for whoever answers
-[`what_save_state_promises.md`](what_save_state_promises.md); this entry only asks that
-the answer be written down.
+[`what_save_state_promises.md`](../archive/what_save_state_promises.md); this entry only
+asks that the answer be written down. *(2026-09-02: that document is now resolved, and
+`save_state` kept `stable`. `save_session` was declared `experimental` on purpose — the
+first capability added since this entry not to inherit the default.)*
 
 ## Acceptance criteria
 

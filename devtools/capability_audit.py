@@ -228,9 +228,28 @@ CAPABILITIES: tuple[Capability, ...] = (
         anchor="molsysviewer/viewer/state.py",
         provenance=PYTHON,
         docs="docs/content/user/export/state.md",
-        unit=("test_state_serialization.py", "test_state_v2.py", "test_state_sections.py"),
-        note="Semantic scene state only: no molecular system, camera or history. Version 2 "
+        unit=("test_state_serialization.py", "test_state_v2.py", "test_state_sections.py",
+              "test_state_structure_identity.py", "test_state_view_state.py",
+              "test_state_focus_overlays.py"),
+        note="The scene and the vantage point it was saved from: no molecular system and no "
+             "history. Records the structure it was written from, and re-resolves onto a "
+             "different one rather than replaying indices that mean other atoms. Version 2 "
              "refuses version 1 rather than migrating it.",
+    ),
+    Capability(
+        name="save_session / load_session",
+        api=("view.save_session", "molsysviewer.load_session"),
+        anchor="molsysviewer/session.py",
+        provenance=PYTHON,
+        docs="docs/content/user/export/state.md",
+        unit=("test_session_bundle.py",),
+        # Declared experimental on purpose rather than inheriting the default. It is
+        # unreleased, nothing has watched it draw, and its size policy is an open
+        # question -- which is exactly the inheritance uibcdf/molsysviewer#65 is about.
+        status="experimental",
+        note="A `.msv` bundle carrying the molecular system alongside the state, so it "
+             "reopens with nothing loaded first. No size budget: a session is as large as "
+             "its trajectory.",
     ),
     Capability(
         name="HTML export and replay",
@@ -444,9 +463,7 @@ def _markdown(audit: dict[str, Any]) -> str:
         lines += [f"- {name}" for name in unobserved]
         lines += [
             "",
-            "Two of them are already `experimental` and say so. `save_state / load_state`",
-            "and `Units` are `stable`, which is defensible — neither draws anything — but",
-            "it is the kind of claim that should be made on purpose rather than inherited.",
+            _experimental_sentence(audit, unobserved),
         ]
 
     lines += [
@@ -483,6 +500,32 @@ def _markdown(audit: dict[str, Any]) -> str:
         "",
     ]
     return "\n".join(lines)
+
+
+def _experimental_sentence(audit: dict[str, Any], unobserved: list[str]) -> str:
+    """How many of the unwatched capabilities own up to it, counted rather than typed.
+
+    This sentence was a literal "Two of them", which was true when it was written and
+    silently wrong the first time a capability was added to the list -- the same decay
+    the audit exists to catch, in the audit itself.
+    """
+    by_name = {row["capability"]: row["status"] for row in audit["rows"]}
+    experimental = [name for name in unobserved if by_name.get(name) == "experimental"]
+    stable = [name for name in unobserved if by_name.get(name) == "stable"]
+    words = {0: "None", 1: "One", 2: "Two", 3: "Three", 4: "Four", 5: "Five"}
+    head = f"{words.get(len(experimental), str(len(experimental)))} of them "
+    head += "is" if len(experimental) == 1 else "are"
+    head += " already `experimental` and say so."
+    if not stable:
+        return head
+    quoted = [f"`{name}`" for name in stable]
+    named = quoted[0] if len(quoted) == 1 else ", ".join(quoted[:-1]) + f" and {quoted[-1]}"
+    return (
+        f"{head} {named} {'is' if len(stable) == 1 else 'are'} `stable`, which is "
+        f"defensible — {'it does not draw' if len(stable) == 1 else 'none of them draws'} "
+        "anything — but it is the kind of claim that "
+        "should be made on purpose rather than inherited."
+    )
 
 
 def _relative(path: str) -> str:

@@ -36,7 +36,12 @@ REQUIRED_CAPABILITIES = {
     "Whole", "Regions", "Layers", "Selections and active selection",
     "Representations, styles and presets", "Annotations", "Measurements", "Shapes",
     "Trajectories and frames", "Trajectory plot", "Movie", "Camera",
-    "save_state / load_state", "HTML export and replay", "Popup",
+    "save_state / load_state",
+    # Added 2026-09-02 with the capability itself (#38): a session carries the molecular
+    # system, which a state document deliberately does not, so it is a second capability
+    # rather than a wider first one.
+    "save_session / load_session",
+    "HTML export and replay", "Popup",
     "Standalone (Qt host)", "Add-ons", "MolSysMT integration", "Units",
 }
 

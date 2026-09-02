@@ -51,7 +51,7 @@ is why a state file applies to a compatible structure rather than only to the ex
 was written from.
 
 Those exclusions are deliberate, and the boundary is being made explicit before 1.0 —
-see `devguide/pending_proposals/what_save_state_promises.md`. The camera is the one that
+see `devguide/archive/what_save_state_promises.md`. The camera is the one that
 is not simply unimplemented: it is the frontend's state, mirrored back to Python, and is
 absent on a viewer that has never rendered.
 
