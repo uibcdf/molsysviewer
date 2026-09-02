@@ -7,6 +7,9 @@ representations — to a JSON file, and `load_state` puts it back on a viewer.
 is what keeps the file small and shareable: the same scene can be applied to any compatible
 structure, and the file describes your work rather than duplicating the data.
 
+If you would rather have one file that reopens on its own, system included, that is a
+{doc}`session`.
+
 ## Saving
 
 ```python
@@ -41,19 +44,26 @@ other.measurements.tags()
 | In | Not in |
 | --- | --- |
 | regions, with the selection that produced each one | the molecular system |
-| annotations, measurements, shapes | the camera |
-| stored selections and the active selection | undo/redo history |
-| layers and clipping sections | global visual settings (background, lighting, fog) |
-| the whole's representation and colour | the current structure index |
+| annotations, measurements, shapes | undo/redo history |
+| stored selections and the active selection | global visual settings (background, lighting, fog) |
+| layers and clipping sections | |
+| the whole's representation and colour | |
+| **the vantage point**: camera, current structure index, playback settings | |
 
-A region is stored as **the rule that produced it**, not as a list of atom indices. That
-is why a state file applies to a compatible structure rather than only to the exact one it
-was written from.
+The vantage point travels under a `view` key. A scene restored to the right atoms but a
+different camera and a different frame is not the scene that was saved, so `save_state`
+asks the frontend for a **fresh** camera before writing. `export_state()` cannot do that —
+it has no round trip to wait for — so it records the last camera the frontend pushed. On a
+viewer that has never rendered there is no camera at all, and the key is simply absent.
 
-Those exclusions are deliberate, and the boundary is being made explicit before 1.0 —
-see `devguide/archive/what_save_state_promises.md`. The camera is the one that
-is not simply unimplemented: it is the frontend's state, mirrored back to Python, and is
-absent on a viewer that has never rendered.
+A region is stored as **the rule that produced it** *and* as the atoms that rule resolved
+to. Onto the same structure the atoms are used. Onto a different one the rule is
+re-resolved, because replaying the indices would address different atoms — which is what
+used to happen. Anything without a rule is re-resolved by atom identity instead, and what
+cannot be resolved either way arrives marked broken, with a warning naming the mismatch.
+
+The remaining exclusions are deliberate; the boundary is set out in
+`devguide/archive/what_save_state_promises.md`.
 
 ## Restoring onto a scene that is not empty
 
@@ -107,6 +117,10 @@ MolSysViewer version that wrote them until a migration path is decided.
 
 ## What this is not
 
-This is not a session bundle. It does not reproduce a screenshot, and it makes no claim
-to: the camera, the current frame and the global visual settings are all outside it. If
-you want the picture, {doc}`html_export` carries the scene and its rendering together.
+**It is not a session.** It carries no molecular system, so reopening it means knowing
+which structure it was built on and loading that first. When you want the file to reopen
+on its own, use {doc}`session` instead.
+
+**It is not a picture.** Global visual settings — background, lighting, fog — are outside
+it, and it makes no claim to reproducing a screenshot. If you want the image, {doc}`html_export`
+carries the scene and its rendering together.

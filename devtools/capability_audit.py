@@ -241,7 +241,7 @@ CAPABILITIES: tuple[Capability, ...] = (
         api=("view.save_session", "molsysviewer.load_session"),
         anchor="molsysviewer/session.py",
         provenance=PYTHON,
-        docs="docs/content/user/export/state.md",
+        docs="docs/content/user/export/session.md",
         unit=("test_session_bundle.py",),
         # Declared experimental on purpose rather than inheriting the default. It is
         # unreleased, nothing has watched it draw, and its size policy is an open

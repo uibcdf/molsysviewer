@@ -46,6 +46,28 @@ REQUIRED_CAPABILITIES = {
 }
 
 
+#: Capability entry points that no documentation mentions yet, and where the gap is.
+#:
+#: `uibcdf/molsysviewer#68` was one instance of this — `save_session` shipped with no page
+#: naming it — and the guard written to catch it found eight more. Fixing those is a
+#: documentation job of its own (`uibcdf/molsysviewer#72`), not a condition for closing
+#: #68, so they are pinned here: a **new** gap fails, these are tracked. The nine gaps
+#: the guard found in `public_api.md` were fixed rather than pinned -- an index line is
+#: cheap; a user page is not.
+#:
+#: Nothing may be added to this list to make a failure go away. Adding an entry means
+#: deciding, on purpose, to ship a capability users cannot find.
+KNOWN_UNDOCUMENTED = frozenset({
+    ("view.player.", "page"),
+    ("view.contains", "page"),
+    ("view.is_composed_of", "page"),
+    ("view.convert", "page"),
+    ("view.extract", "page"),
+    ("view.build_popup_scene_snapshot", "page"),
+    ("molsysviewer.launch_standalone_qt0", "page"),
+})
+
+
 @pytest.fixture(scope="module")
 def audit():
     return build_audit()
@@ -82,6 +104,71 @@ def test_every_row_names_a_public_api_that_exists(capability, audit):
 
     assert row["public_callables"] > 0, (
         f"{capability.name} declares {capability.api} and no public callable matches"
+    )
+
+
+@pytest.mark.parametrize("capability", CAPABILITIES, ids=lambda c: c.name)
+def test_every_capability_is_documented_where_its_row_points(capability):
+    """The direction `test_public_api_docs.py` does not check: does the doc mention it?
+
+    That test verifies every *documented* symbol exists. Nothing verified the converse, so
+    `save_session` and `load_session` shipped with no prose page naming them and no line in
+    `public_api.md` — `uibcdf/molsysviewer#68`. A capability whose own row links a page that
+    never mentions it is a capability users cannot find.
+
+    Both places are checked because they fail apart: `public_api.md` is the developer
+    index, the linked page is where a user is sent.
+    """
+    page = ROOT / capability.docs
+    assert page.exists(), f"{capability.name} links {capability.docs}, which does not exist"
+
+    page_text = page.read_text(encoding="utf-8")
+    api_text = (ROOT / "docs" / "content" / "developer" / "public_api.md").read_text(
+        encoding="utf-8"
+    )
+
+    for entry_point in capability.api:
+        # A row may declare a prefix (`view.layers.`), a whole name (`view.save_state`)
+        # or an indexed form (`view.regions[…].`). The bare attribute is what prose
+        # actually writes, so reduce every shape to that.
+        name = entry_point.rstrip(".").split(".")[-1].split("[")[0]
+
+        if (entry_point, "page") not in KNOWN_UNDOCUMENTED:
+            assert name in page_text, (
+                f"{capability.name} points at {capability.docs}, which never mentions "
+                f"{entry_point!r}. A user sent there cannot find the capability."
+            )
+        if (entry_point, "public_api") not in KNOWN_UNDOCUMENTED:
+            assert name in api_text, (
+                f"{capability.name} declares {entry_point!r} and public_api.md does not "
+                f"mention it."
+            )
+
+
+def test_the_undocumented_baseline_does_not_rot():
+    """An entry that got documented must leave the list, or the list stops meaning anything.
+
+    Without this, documenting something would silently keep its exemption and the next
+    regression on the same symbol would pass.
+    """
+    api_text = (ROOT / "docs" / "content" / "developer" / "public_api.md").read_text(
+        encoding="utf-8"
+    )
+    pages = {c.api: (ROOT / c.docs) for c in CAPABILITIES}
+
+    stale = []
+    for entry_point, where in KNOWN_UNDOCUMENTED:
+        name = entry_point.rstrip(".").split(".")[-1].split("[")[0]
+        if where == "public_api":
+            if name in api_text:
+                stale.append((entry_point, where))
+        else:
+            for api, page in pages.items():
+                if entry_point in api and name in page.read_text(encoding="utf-8"):
+                    stale.append((entry_point, where))
+
+    assert stale == [], (
+        f"these are documented now — remove them from KNOWN_UNDOCUMENTED: {stale}"
     )
 
 

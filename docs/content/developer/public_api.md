@@ -313,8 +313,35 @@ the same tag; APIs resolve identity as `(domain, tag)`.
   - `clear_first=True` wipes existing scene objects, clipping sections, selections, and regions before replay
 - `view.save_state(path)` / `view.load_state(path, *, clear_first=True, on_conflict="raise")`
   - atomic UTF-8 JSON file convenience around `export_state()` / `import_state()`
-  - stores overlay state only; the molecular system, camera, and undo history are not bundled
-  - load the same or a compatible structure before calling `load_state()`
+  - stores the scene **and the vantage point**: camera, current structure index and
+    playback settings travel under a `view` key. `save_state` requests a fresh camera from
+    the frontend before writing; `export_state` records the last one pushed
+  - the molecular system, undo history and global visual settings are not bundled
+  - load the same or a compatible structure before calling `load_state()`; onto a
+    different structure, region recipes are re-resolved and everything else is matched by
+    atom identity, with whatever fails marked broken
+- `view.save_session(path)` / `molsysviewer.load_session(path)`
+  - a `.msv` zip carrying `manifest.json`, `state.json` and `structure.h5msm`
+  - unlike `load_state`, nothing has to be loaded first: `load_session` returns a viewer
+    already showing the system and the scene
+  - no size budget — a session is as large as its trajectory
+  - format `version: 1`, declared **experimental**
+- `view.get_camera_snapshot(*, pretty=False)` / `view.set_camera_snapshot(snapshot, *, duration_ms=0)`
+  - the camera as a plain dict, mirrored back from the frontend; `None` on a viewer that
+    has never rendered. `pretty=True` returns it as formatted JSON
+- `view.zoom(selection="all", ..., *, duration="250 ms", extra_radius="4.0 angstroms", min_radius="1.0 angstroms")`
+  - frames a selection. The three durations and radii are quantities, not bare numbers —
+    `duration_ms` remains as a deprecated alias
+- `view.whole.set_representation(representation=None, *, preset=None, **params)`
+  - the whole's own representation, distinct from any region's
+- `view.player.` — `play()`, `pause()`, `go_to_first()`, `go_to_last()`,
+  `go_to_structure(i)`, and the `index`, `fps`, `mode`, `direction`, `is_playing`,
+  `n_structures` properties
+- `view.trajectory_plot.` — `show()`, `hide()`, `update()`, `clear()`
+- `view.build_popup_scene_snapshot(mode, endpoint=None, include_molecular=True)`
+  - the message list a popup surface replays to reach the current scene
+- `molsysviewer.config.set_default_standard_units(standards)`
+  - the unit standards new quantities are expressed in
 - `view.set_structure(index)`
 - `view.play(fps=..., step=...)`
 - `view.pause()`
