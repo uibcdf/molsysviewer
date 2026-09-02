@@ -246,3 +246,31 @@ Attributed by config source, `threshold` is theirs; ours is never consulted.
 The corrected figure, from six independent tests rather than one heuristic, is **120 of
 581**. What was done with them, and the evidence for each, is in
 `devtools/quarantine/README.md`.
+
+### Second correction — 2026-09-02 — the five *are* reached, through the surface the first correction found
+
+The third slice said the five branched digesters "can never fire here" because no public
+signature carries their names. The correction posted hours later found the surface that
+argument misses — `**kwargs` forwarded to `msm.get` — and did not go back to re-test the
+five against it. Doing that now:
+
+```
+view.get(element='atom', threshold=True)
+  -> molsysviewer/_private/argdigest/argument/threshold.py, line 32, in digest_threshold
+view.get(element='atom', switch_distance=True)
+  -> .../switch_distance.py, line 18, in digest_switch_distance
+```
+
+**Our digesters execute.** All five are consulted through `view.get`; `switch_distance` and
+`cutoff_distance` are MolSysMT attributes besides. They survived the quarantine of
+`uibcdf/molsysviewer#70` for that reason, and correctly so.
+
+What they do once consulted is reject, every time, because their caller allow-lists name
+only MolSysMT functions and the caller here is `molsysviewer.viewer.get`. That rejection
+matches MolSysMT: over the 118 attributes, `view.get` and `msm.get` accept the same 105 and
+refuse the same 13, these two among them. So the behaviour is right, and the earlier
+conclusion — that consolidating them changes nothing observable — still holds.
+
+But "unreachable" was the wrong reason, given twice. The accurate statement is: **reached,
+always rejecting, in agreement with MolSysMT.** Under `uibcdf/molsysviewer#71` option C
+they stop being ours to consolidate at all, which is where this thread now leads.
