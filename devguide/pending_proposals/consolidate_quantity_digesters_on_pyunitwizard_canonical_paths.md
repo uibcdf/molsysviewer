@@ -1,12 +1,12 @@
 ---
 summary: Consolidate quantity digesters on PyUnitWizard canonical paths.
 issue: uibcdf/molsysviewer#33
-status: open
+status: partial
 opened: 2026-08-13
 closed:
 verification: inspected
 area: [argdigest, performance, units]
-guard:
+guard: tests/test_digestion_helpers.py::test_the_scalar_length_digesters_go_through_the_shared_boundary
 normative:
 blocked_by: []
 supersedes: []
@@ -101,3 +101,41 @@ The work depends on the PyUnitWizard version documented by the synchronized guid
 main risks are changing local exception types, accidentally accepting bare magnitudes,
 and treating dimensionless direction vectors as lengths.
 
+
+---
+
+## Audit and first slice — 2026-09-02
+
+The proposal asked for the inventory before implementation. Here it is, over the 69
+digesters that touch a physical magnitude: **17 already use the shared helper, 52 hand-roll
+the sequence.** Of those 52, far fewer are migratable than the count suggests:
+
+| group | n | migratable to the scalar helper |
+| --- | ---: | --- |
+| `[L]¹` scalar, **pure pattern** | **3** | yes — line-for-line identical |
+| `[L]¹` scalar, extra branches | 6 | one at a time, each a judgement |
+| `[L]¹` array (box, coordinates, …) | 11 | no — different contract |
+| no declared dimensionality | 28 | mostly not quantities at all |
+| `[L]²`, `[T]`, `[K]` | 4 | own contracts |
+
+**Done: the three pure ones** — `distance`, `length`, `z0`. Each was the same twelve lines
+and each raised with `message=None`, so a caller passing `3.5` was told only that the
+argument was wrong. They now say which unit to add and which mistake it prevents. That is
+the user-visible half of this proposal, and it was free.
+
+**Not done, deliberately: the six with branches** — `bond_length` (6 extra conditions),
+`threshold` (4), `distance_threshold` (4), `switch_distance` (3), `cutoff_distance` (2),
+`max_bond_length` (1). Almost all of them are caller-conditional optionality: `cutoff_distance`,
+for instance, returns `None` only when the caller is a MolSysMT form conversion. Each is a
+small decision about when `None` is valid, and getting one wrong changes what the public
+API accepts. Six such decisions days before freezing a release candidate is the wrong
+trade; they are cheap and safe to do after.
+
+**Also outstanding:** the 28 with no declared dimensionality have not been individually
+confirmed as non-quantities. That is the remaining inventory work, and it is what would
+turn this from `partial` into `resolved`.
+
+Guard: `test_the_scalar_length_digesters_go_through_the_shared_boundary`, mutation-verified
+against restoring each of the three. It pins the *message*, not the plumbing — the policy
+exists because a bare number is a silent nm/angstrom scale error, and an error that does
+not name a unit leaves the caller guessing which one this API wanted.
