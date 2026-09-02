@@ -52,6 +52,75 @@ changes. Normative behavior remains in the contracts linked below.
   `argdigest>=0.12.1`; publication of that release remains a prerequisite for clean
   installation dogfooding.
 
+## Release 0.21.0 is coordinated with MolSysMT 0.22.0 — in flight
+
+Agreed with the MolSysMT maintainers on 2026-09-02. **Do not cut the tag on our side
+first**, and do not lower the floor to unblock it.
+
+The two conda recipes require each other, and only one side can move alone. Ours declares
+`molsysmt >=0.22.0`, which is correct and must not be relaxed: MolSysViewer imports
+`molsysmt.attribute.get_argument_aliases()` at module import time with no fallback, and
+0.22.0 is the first MolSysMT release that provides it. A lower floor yields a package that
+installs and then fails on import.
+
+The agreed sequence, and the reason for it:
+
+1. MolSysMT prepares 0.22.0 and builds **real** per-platform conda packages into a staging
+   label. Their recipe grew a native extension (`molsysmt._rust`) and their workflow was
+   converting an Ubuntu build for other platforms, which they are fixing first, along with
+   adding a `test:` section.
+2. We build and test our candidate against those staging packages — a condarc change, not
+   a code change.
+3. Both verified in clean environments, then promoted: MolSysMT first, us immediately
+   after.
+4. `uibcdf/molsysmt#195` closes when 3.11/3.12/3.13 install and import for both.
+
+An earlier draft of this plan proposed that MolSysMT simply publish first, on the grounds
+that their recipe has no `test:` section and so their build resolves nothing. They declined
+that reasoning and were right to: a package conda can upload but nobody can install is not
+validation. Staging replaced it.
+
+**Our candidate:** `b0888d9a`, version **0.21.0** (confirmed). At that commit
+`devtools/release_gate.py` reports **9 passed, 0 failed, 2 blocked** — `conda` blocked by
+this very coordination, and `qt` blocked for want of a `DISPLAY`. The Qt gate is stated to
+them explicitly rather than glossed; see [`what_needs_a_human_2026_08.md`](what_needs_a_human_2026_08.md).
+
+Written up for them in `/tmp/conda-release-coordination.md` and
+`/tmp/molsysviewer-release-candidate.md` (scratch, not repository files — regenerate from
+this section if needed).
+
+**The conda package is `noarch: python` since 2026-09-02**, agreed with them for 0.21.0.
+One artefact, build string `py_1`, instead of one per interpreter per platform — which is
+how the channel came to hold no 3.13 build while the workflow had been running a
+3.11/3.12/3.13 matrix for months. The workflow lost its matrix with it: building the same
+file three times and uploading it three times is not a matrix.
+
+Verified locally by building the artefact and reading it, not by rendering alone:
+`subdir: noarch`, `platform` and `arch` null, `runtime_actions.json` and `viewer.js` both
+inside `site-packages/molsysviewer/`, and zero compiled binaries among 1 270 files.
+
+The recipe bounds python `>=3.11,<3.14` on purpose. Publishing one artefact per
+interpreter used to bound the claim implicitly; an open `>=3.11` would offer the package
+to 3.14 the day it exists, which is the drift
+`test_the_published_python_matrix_is_the_one_we_actually_test` was written about. **Raise
+the ceiling when the test matrix gains the version, not before.**
+
+**When the standalone Qt host leaves Linux, it becomes a second output, not a reason to
+undo this.** Its Qt stack (`pyside6-addons-uibcdf` and the four packages under it) is
+`linux-64` only today, and a macOS or Windows build will need a different dependency set —
+which a noarch package cannot express, since it carries one set of metadata. The conda
+pattern for that is a per-platform `molsysviewer-qt` output depending on this noarch core,
+the way `matplotlib` depends on `matplotlib-base`. The `molsysviewer-qt` entry point ships
+in the core harmlessly: without PySide6 it raises `QT_IMPORT_ERROR`, which names the
+package to install.
+
+Previously open and now closed: whether to move our package to
+`noarch: python`. They agreed and asked that the candidate demonstrate five things from the
+noarch artefact itself; three are verified above and the remaining two — resolution on
+3.11/3.12/3.13, and the `molsysmt>=0.22.0` floor honoured by a solved environment — need
+their staging channel and are encoded in the recipe's `test:` section so they run at build
+time in the window.
+
 ## Validation observed
 
 - Latest full run, 2026-08-15: **1,612 Python passed, 4 skips, exit 0**

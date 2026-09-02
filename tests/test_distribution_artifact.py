@@ -82,6 +82,34 @@ def test_distribution_manifests_name_runtime_dependencies_and_resources():
     assert REQUIRED_RUNTIME_DEPENDENCIES <= _conda_run_dependencies(recipe)
 
 
+def test_the_conda_recipe_stays_noarch_and_agrees_with_requires_python():
+    """Two invariants that failed silently once each.
+
+    `noarch: python` is what makes one artefact serve every interpreter. Before it, the
+    workflow built a 3.11/3.12/3.13 matrix and the channel still ended up with no 3.13
+    build at all -- twelve places for one to go missing, and nothing that noticed. Adopted
+    2026-09-02 in coordination with the MolSysMT maintainers, who depend on this package
+    and were blocked by exactly that gap (uibcdf/molsysmt#195).
+
+    The floor is checked against `requires-python` because they drifted apart before: the
+    artefacts still on the channel are py310, built when the wheel allowed 3.10.
+    """
+    recipe = (ROOT / "devtools" / "conda-build" / "meta.yaml").read_text(encoding="utf-8")
+    assert re.search(r"(?m)^\s*noarch:\s*python\s*$", recipe), (
+        "the conda recipe is no longer noarch; one artefact per interpreter and platform "
+        "is how the channel came to have no 3.13 build"
+    )
+
+    pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    requires_python = pyproject["project"]["requires-python"]
+    floor = requires_python.lstrip(">=").strip()
+    assert re.search(rf"(?m)^\s*-\s+python\s+>={re.escape(floor)},", recipe), (
+        f"pyproject requires-python is {requires_python!r}; the recipe must constrain "
+        f"python >={floor} so the published package cannot claim interpreters the wheel "
+        "refuses"
+    )
+
+
 def test_every_floor_the_wheel_declares_survives_into_the_conda_recipe():
     """Derived, not enumerated: the pair above pins two floors by name, and four others
     had quietly gone missing from the recipe while `pyproject.toml` still declared them.
@@ -282,12 +310,19 @@ def test_the_published_python_matrix_is_the_one_we_actually_test():
         f"{sorted(SUPPORTED_PYTHON_VERSIONS)}"
     )
 
-    built = _matrix_versions(
-        "build_and_upload_conda_packages.yaml", r'"(3\.\d+)"'
-    )
-    assert built == set(SUPPORTED_PYTHON_VERSIONS), (
-        f"conda publishes {sorted(built)} against a tested "
-        f"{sorted(SUPPORTED_PYTHON_VERSIONS)}"
+    # Since 2026-09-02 conda publishes one noarch artefact instead of one per
+    # interpreter, so the workflow no longer carries a matrix to compare against. What
+    # bounds the published claim now is the recipe's own constraint, and it must bound it:
+    # an open `>=3.11` would offer the package to 3.14 the day it exists, which is the
+    # drift described above with a different mechanism.
+    recipe = (ROOT / "devtools" / "conda-build" / "meta.yaml").read_text(encoding="utf-8")
+    lowest = min(SUPPORTED_PYTHON_VERSIONS)
+    ceiling = f"3.{int(max(SUPPORTED_PYTHON_VERSIONS).split('.')[1]) + 1}"
+    assert re.search(
+        rf"(?m)^\s*-\s+python\s+>={re.escape(lowest)},<{re.escape(ceiling)}\s*$", recipe
+    ), (
+        f"the conda recipe must constrain python >={lowest},<{ceiling} so the noarch "
+        f"artefact claims exactly the tested set {sorted(SUPPORTED_PYTHON_VERSIONS)}"
     )
 
 

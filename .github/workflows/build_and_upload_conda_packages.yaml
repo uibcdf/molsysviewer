@@ -14,17 +14,18 @@ on:
 
 jobs:
   conda_deployment_with_new_tag:
-    name: Conda deployment of package with Python ${{ matrix.python-version }}
+    name: Conda deployment of the noarch package
     runs-on: ubuntu-latest
     env:
       # `release.tag_name` is empty on anything that is not a release event, which
       # made the manual path build a package with no version at all.
       RELEASE_VERSION: ${{ github.event.release.tag_name || github.ref_name }}
-    strategy:
-      fail-fast: false  # do not cancel all in-progress jobs if any job variation fails
-      matrix:
-        #os: ubuntu-latest #[macOS-latest, ubuntu-latest]
-        python-version: ["3.11", "3.12", "3.13"]
+    # No interpreter matrix since 2026-09-02: the recipe is `noarch: python`, so the
+    # build produces one artefact that serves every interpreter and platform. Running the
+    # matrix would build the same file three times and upload it three times.
+    #
+    # The interpreter below is only what the build itself runs on. The published package
+    # constrains `python >=3.11` from the recipe, not from this line.
 
     steps:
 
@@ -40,7 +41,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.13"
 
       - name: Setup conda env
         uses: mamba-org/setup-micromamba@v3.2.1
@@ -53,7 +54,7 @@ jobs:
               - conda-forge
             channel_priority: strict
           create-args: >-
-            python=${{ matrix.python-version }}
+            python=3.13
 
       - name: Info conda
         shell: bash -l {0}
@@ -69,8 +70,16 @@ jobs:
           mambabuild: false
           user: uibcdf
           label: main
-          conda_build_args: --python ${{ matrix.python-version }} --package-format tar.bz2
-          platform_linux-64: true
-          platform_osx-64: true
-          platform_osx-arm64: true
+          conda_build_args: --package-format tar.bz2
+          # No per-platform conversion: the recipe is `noarch: python`, so conda build
+          # writes one artefact under `noarch/` that is already valid everywhere.
+          # Converting it would upload duplicates of the same file into subdirectories
+          # nobody needs to look in.
+          #
+          # `platform_host` is deliberately left at its default of true -- it is what
+          # keeps the built artefact instead of deleting it after conversion, and with
+          # every conversion flag false it is the only thing that gets uploaded.
+          platform_linux-64: false
+          platform_osx-64: false
+          platform_osx-arm64: false
           token: ${{ secrets.ANACONDA_UIBCDF_TOKEN }} # Replace with the right name of your secret

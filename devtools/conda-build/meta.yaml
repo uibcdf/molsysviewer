@@ -6,18 +6,34 @@ source:
   path: ../../   # repo root (adjust if your layout differs)
 
 build:
+  # The package is pure Python plus a platform-independent JavaScript bundle: there is no
+  # compiled extension anywhere in it, and no dependency varies by interpreter or by
+  # platform. One artefact therefore serves every combination, and the interpreter matrix
+  # stops being twelve places a build can be missing -- which is how the channel came to
+  # have no 3.13 build while the workflow had been building a 3.13 matrix for months.
+  #
+  # A noarch package carries one set of metadata, so it cannot express a dependency that
+  # differs by platform. The standalone Qt host will need exactly that (its Qt stack is
+  # linux-64 only today), and when it leaves Linux it becomes a second, per-platform
+  # output that depends on this one -- not a reason to make this one per-platform.
+  noarch: python
   number: 1
 
 requirements:
   host:
-    - python
+    - python >=3.11
     - pip
     - setuptools >=64
     - versioningit >=3
     - wheel
     - nodejs  # for npm and building viewer.js
   run:
-    - python
+    # Bounded above on purpose. Publishing one artefact per interpreter used to bound the
+    # claim implicitly -- py311, py312, py313 and nothing else. A noarch package with an
+    # open `>=3.11` would silently offer itself to 3.14 the day it exists, which is the
+    # failure `test_the_published_python_matrix_is_the_one_we_actually_test` was written
+    # about. Raise the ceiling when the test matrix gains the version, not before.
+    - python >=3.11,<3.14
     - anywidget >=0.9.15
     - argdigest >=0.12.1
     - depdigest
@@ -29,11 +45,19 @@ requirements:
     - traitlets >=5
 
 test:
+  # Agreed with the MolSysMT maintainers on 2026-09-02 as what the 0.21.0 candidate must
+  # demonstrate from the noarch artefact itself, rather than from a source checkout.
   imports:
     - molsysviewer
     - molsysviewer.runtime_contract
   commands:
+    # Both packaged runtime resources travel inside the artefact.
     - python -c "from importlib.resources import files; assert files('molsysviewer').joinpath('runtime_actions.json').is_file()"
+    - python -c "from importlib.resources import files; assert files('molsysviewer').joinpath('viewer.js').is_file()"
+    # The floor is not merely declared: the environment conda actually solved honours it.
+    - python -c "import molsysmt; from packaging.version import Version; assert Version(molsysmt.__version__.split('+')[0]) >= Version('0.22.0'), molsysmt.__version__"
+    # The interpreter this artefact was installed onto is one we claim to support.
+    - python -c "import sys; assert sys.version_info[:2] >= (3, 11), sys.version_info"
 
 about:
   home: "https://github.com/uibcdf/molsysviewer"
