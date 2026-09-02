@@ -18,15 +18,15 @@ requirements:
     - nodejs  # for npm and building viewer.js
   run:
     - python
-    - anywidget
+    - anywidget >=0.9.15
     - argdigest >=0.12.1
     - depdigest
     - molsysmt >=0.22.0
     - numpy
-    - packaging
+    - packaging >=23
     - pyunitwizard
-    - smonitor
-    - traitlets
+    - smonitor >=0.13.0
+    - traitlets >=5
 
 test:
   imports:

@@ -82,6 +82,37 @@ def test_distribution_manifests_name_runtime_dependencies_and_resources():
     assert REQUIRED_RUNTIME_DEPENDENCIES <= _conda_run_dependencies(recipe)
 
 
+def test_every_floor_the_wheel_declares_survives_into_the_conda_recipe():
+    """Derived, not enumerated: the pair above pins two floors by name, and four others
+    had quietly gone missing from the recipe while `pyproject.toml` still declared them.
+
+    A conda user could therefore resolve `smonitor` below 0.13.0 and import a build whose
+    catalog classes take their arguments in the other order -- the wheel refused that
+    combination and the conda package accepted it. Enumerating floors is what let the
+    drift happen, so this asks the manifests about each other instead.
+
+    Reported against a sibling package as uibcdf/molsysmt#193 before it was noticed here.
+    """
+    pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    wheel_requirements = _dependencies_by_name(pyproject["project"]["dependencies"])
+    recipe = (ROOT / "devtools" / "conda-build" / "meta.yaml").read_text(encoding="utf-8")
+
+    missing = []
+    for name, requirement in wheel_requirements.items():
+        floor = next(
+            (spec.version for spec in requirement.specifier if spec.operator == ">="), None
+        )
+        if floor is None:
+            continue
+        if not re.search(rf"(?m)^\s*-\s+{re.escape(name)}\s+>={re.escape(floor)}\b", recipe):
+            missing.append(f"{name}>={floor}")
+
+    assert missing == [], (
+        "the conda recipe does not carry these floors that pyproject.toml declares, so "
+        f"conda would resolve combinations the wheel refuses: {missing}"
+    )
+
+
 def test_distribution_manifests_bound_the_shared_alias_contract():
     """A resolver-valid dependency set must also be import-compatible.
 
