@@ -217,3 +217,32 @@ synchronized, or leave. That is `uibcdf/molsysviewer#70`'s question, and this me
 is the first instalment of the "separate legitimate divergence from drift" work it asks
 for. It is **not this proposal's to answer**, and deleting 273 files is not a change to
 make without a decision.
+
+### Correction — 2026-09-02 — the 46% figure above is wrong, and so was the spot-check
+
+The measurement recorded earlier the same day said **273 of 581 (46%)**. It was produced by
+asking whether each digester's name appears in a signature, which is not what reachability
+means here, and it is wrong in both directions.
+
+**It missed the largest source of reach.** ArgDigest resolves a digester by argument name
+at call time — `plan.digesters.get(argname)` for each bound parameter. The `get`-shaped
+methods take `**kwargs` and forward to `msm.get`, and no domain is declared for them, so
+**every MolSysMT attribute and alias is a name that can arrive here**: 278 of them, none of
+which appears in any signature of ours. `alternate_location` was one of the four names the
+spot-check offered as confirmed-dead; it is a MolSysMT attribute, and
+`view.get(alternate_location=True)` reaches its digester. The spot-check confirmed nothing
+— it re-ran the same flawed test.
+
+Two smaller misses: the scan skipped `*args`, so `others` looked dead, and names that
+arrive as dictionary keys rather than parameters (`molstar_color_theme`, `size_scheme`)
+were invisible to it.
+
+**The claim it was made to support survived.** The five branched digesters really are
+unreachable, but the earlier session's evidence for that was contaminated too: a runtime
+recorder patched `load_argument_digesters` globally, and MolSysMT uses ArgDigest as well,
+so it recorded *their* lookups as ours. `threshold` showed up as consulted for that reason.
+Attributed by config source, `threshold` is theirs; ours is never consulted.
+
+The corrected figure, from six independent tests rather than one heuristic, is **120 of
+581**. What was done with them, and the evidence for each, is in
+`devtools/quarantine/README.md`.
