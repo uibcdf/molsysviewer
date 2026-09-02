@@ -534,8 +534,11 @@ class RegionsMixin:
         )
         return [name for name in self._REGION_ATTRIBUTE_CANDIDATES if name in available]
 
-    def _region_summary_records(self) -> list[dict[str, Any]]:
-        available_attributes = self._available_region_attributes()
+    def _region_summary_records(
+        self, available_attributes: list[str] | None = None
+    ) -> list[dict[str, Any]]:
+        if available_attributes is None:
+            available_attributes = self._available_region_attributes()
         manageable = {
             tag: region
             for tag, region in self._regions.items()
@@ -585,17 +588,30 @@ class RegionsMixin:
         if getattr(self, "_region_batch_depth", 0) > 0:
             self._region_batch_summary_dirty = True
             return
+        # One inventory for the whole synchronization. Both summaries ask the molecular
+        # system the same question -- which of the region attributes it actually carries --
+        # and traversing it twice was 43% of `regions.add`: measured 46.71 ms against
+        # 26.62 ms on `demo['dialanine']` with the second traversal removed
+        # (uibcdf/molsysviewer#32).
+        #
+        # Deliberately operation-local, and passed rather than stored. A cache on the view
+        # or on the molecular system would have to know when the system changes underneath
+        # it, and a live edit that adds atoms changes exactly this answer. The value lives
+        # for one synchronization, which is the longest it is provably still true.
+        available_attributes = self._available_region_attributes()
         self._send_runtime_only(
             {
                 "op": "set_region_summaries",
-                "regions": self._region_summary_records(),
+                "regions": self._region_summary_records(available_attributes),
                 "representations": self.representations,
                 "presets": self.presets,
             }
         )
-        self._sync_whole_summary_runtime()
+        self._sync_whole_summary_runtime(available_attributes)
 
-    def _whole_summary_record(self) -> dict[str, Any]:
+    def _whole_summary_record(
+        self, available_attributes: list[str] | None = None
+    ) -> dict[str, Any]:
         inheriting_count = 0
         none_state_count = 0
         for region in self._regions.values():
@@ -648,7 +664,11 @@ class RegionsMixin:
             "visible": self.whole.visible,
             "color_scheme": self.whole.color_scheme,
             "scene_style_name": self.whole.scene_style_name,
-            "available_attributes": self._available_region_attributes(),
+            "available_attributes": (
+                self._available_region_attributes()
+                if available_attributes is None
+                else available_attributes
+            ),
             "color_schemes": self.styles.structural_color_schemes(skip_digestion=True),
             "inheriting_region_count": inheriting_count,
             "none_state_region_count": none_state_count,
@@ -657,14 +677,16 @@ class RegionsMixin:
             "contains": contains,
         }
 
-    def _sync_whole_summary_runtime(self) -> None:
+    def _sync_whole_summary_runtime(
+        self, available_attributes: list[str] | None = None
+    ) -> None:
         if getattr(self, "_region_batch_depth", 0) > 0:
             self._region_batch_summary_dirty = True
             return
         self._send_runtime_only(
             {
                 "op": "set_whole_summary",
-                **self._whole_summary_record(),
+                **self._whole_summary_record(available_attributes),
             }
         )
 

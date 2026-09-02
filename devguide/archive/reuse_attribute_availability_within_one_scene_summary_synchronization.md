@@ -1,12 +1,12 @@
 ---
 summary: One scene-summary synchronization asks the same attribute-availability question repeatedly.
 issue: uibcdf/molsysviewer#32
-status: open
+status: resolved
 opened: 2026-08-13
-closed:
+closed: 2026-09-02
 verification: measured
 area: [performance, scene]
-guard:
+guard: tests/test_phase12_whole_panel.py::test_one_synchronization_asks_the_system_for_its_attributes_once
 normative:
 blocked_by: []
 supersedes: []
@@ -114,3 +114,32 @@ Measured 2026-08-13 on the shared MolSysSuite development host with Python 3.13,
 MolSysViewer and MolSysMT checkouts, and the bundled dialanine demo. The widget send path
 was replaced with a no-op to isolate Python synchronization work. The audit scripts were
 session scratchpads and are not product code.
+
+---
+
+## Resolution — 2026-09-02
+
+Implemented as shape 1 of the two the proposal offered: `_sync_region_summaries_runtime`
+builds the inventory once and passes it to `_region_summary_records` and
+`_sync_whole_summary_runtime`, both of which keep computing it themselves when called
+without one, so no other caller changes.
+
+Measured on `demo['dialanine'].regions.add(selection='atom_index < 3')`, nine runs each:
+
+| | median |
+| --- | ---: |
+| before | 46.64 ms |
+| after | **26.76 ms** |
+
+The proposal predicted 46.71 → 26.62. It was right to within the noise, which is worth
+recording: the probe it was written from measured the real thing and not an artefact of
+its own memoizer.
+
+**Passed, not stored**, as the proposal insisted. A cache on the view or on the molecular
+system would have to know when the system changes underneath it, and a live edit that adds
+atoms changes exactly this answer. One synchronization is the longest the value is
+provably still true.
+
+Guard: `test_one_synchronization_asks_the_system_for_its_attributes_once`, which counts the
+calls within one sync and is mutation-verified against restoring either traversal. It pins
+the reuse *inside* a synchronization and deliberately says nothing about across them.

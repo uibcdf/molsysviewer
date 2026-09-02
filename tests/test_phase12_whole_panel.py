@@ -134,3 +134,44 @@ def test_reset_all_colors_is_undoable_for_whole_and_region_layers():
     assert view.history.undo()
     assert view._atom_color_layers["whole"]  # noqa: SLF001
     assert view._atom_color_layers["A"]  # noqa: SLF001
+
+
+def test_one_synchronization_asks_the_system_for_its_attributes_once():
+    """Both summaries need the same inventory, and traversing for it twice was 43%.
+
+    `_sync_region_summaries_runtime` builds the region summaries and then the whole
+    summary, and each used to call `_available_region_attributes()` for itself. The cost
+    is not argument digestion -- every form-level predicate underneath already passes
+    `skip_digestion=True` -- it is the traversal. Measured on `demo['dialanine']`:
+    `regions.add` took 46.6 ms with two traversals and 26.8 ms with one
+    (uibcdf/molsysviewer#32).
+
+    The value is passed, not stored. A cache on the view or on the molecular system would
+    have to know when the system changes underneath it, and a live edit that adds atoms
+    changes exactly this answer; one synchronization is the longest it is provably still
+    true. This guard therefore pins the reuse *within* a sync and says nothing about
+    across syncs, which must keep re-asking.
+    """
+    view = _fresh_view()
+    calls = {"n": 0}
+    original = type(view)._available_region_attributes  # noqa: SLF001
+
+    def counting(self):
+        calls["n"] += 1
+        return original(self)
+
+    type(view)._available_region_attributes = counting  # noqa: SLF001
+    try:
+        view.regions.add(atom_indices=[0, 1], tag="one")
+        during_first = calls["n"]
+        calls["n"] = 0
+        view._sync_region_summaries_runtime()  # noqa: SLF001
+        during_sync = calls["n"]
+    finally:
+        type(view)._available_region_attributes = original  # noqa: SLF001
+
+    assert during_sync == 1, (
+        f"one synchronization asked the molecular system {during_sync} times for the same "
+        "attribute inventory; both summaries must share one"
+    )
+    assert during_first >= 1, "the inventory was never built at all"

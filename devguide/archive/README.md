@@ -93,3 +93,7 @@ Completed work, kept for the reasoning:
   — a transparent view showed white on a dark page. Read for the elimination: six
   mechanisms refuted by measurement, and the one that mattered was outside both documents —
   a missing `color-scheme` letting the browser's white base canvas show through.
+- [`reuse_attribute_availability_within_one_scene_summary_synchronization.md`](reuse_attribute_availability_within_one_scene_summary_synchronization.md)
+  — one synchronization asked the molecular system twice for the same attribute inventory;
+  removing the second traversal took `regions.add` from 46.6 ms to 26.8 ms. Read for why
+  the value is passed rather than cached.

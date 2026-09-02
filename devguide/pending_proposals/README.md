@@ -30,14 +30,13 @@ list. Deferred entries also carry the `post-1.0` milestone on the issue board.
 
 - [`molsysmt_known_source_form_and_large_string_detection.md`](molsysmt_known_source_form_and_large_string_detection.md) — [#42](https://github.com/uibcdf/molsysviewer/issues/42) — A large in-memory molecular string enters unbounded filename extension detection. *(measured)* — waiting on uibcdf/molsysmt#151
 
-### Open (6)
+### Open (5)
 
 - [`classic_script_runtime_for_offline_bundles.md`](classic_script_runtime_for_offline_bundles.md) — [#39](https://github.com/uibcdf/molsysviewer/issues/39) — Build the runtime as a classic script so many shared views open from a disk with no server. *(measured)*
 - [`consolidate_quantity_digesters_on_pyunitwizard_canonical_paths.md`](consolidate_quantity_digesters_on_pyunitwizard_canonical_paths.md) — [#33](https://github.com/uibcdf/molsysviewer/issues/33) — Consolidate quantity digesters on PyUnitWizard canonical paths. *(inspected)*
 - [`evidence_a_stable_capability_has_not_earned.md`](evidence_a_stable_capability_has_not_earned.md) — [#65](https://github.com/uibcdf/molsysviewer/issues/65) — Four capabilities declare an evidence level nothing has observed, and the release gate cannot tell. *(measured)*
 - [`evidence_labels_beyond_the_capability_audit.md`](evidence_labels_beyond_the_capability_audit.md) — [#61](https://github.com/uibcdf/molsysviewer/issues/61) — Decide whether the evidence labels govern the whole devguide or only the capability audit. *(measured)*
 - [`molsysmt_docs_pipeline_analysis.md`](molsysmt_docs_pipeline_analysis.md) — [#41](https://github.com/uibcdf/molsysviewer/issues/41) — MolSysMT's documentation pipeline read at the scale it is about to reach. *(measured)*
-- [`reuse_attribute_availability_within_one_scene_summary_synchronization.md`](reuse_attribute_availability_within_one_scene_summary_synchronization.md) — [#32](https://github.com/uibcdf/molsysviewer/issues/32) — One scene-summary synchronization asks the same attribute-availability question repeatedly. *(measured)*
 
 ### Deferred until after 1.0 (17)
 
