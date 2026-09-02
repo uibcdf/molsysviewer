@@ -140266,6 +140266,9 @@ function createAtomSiteTableFromAxes(payload, atomCount2, axes) {
   const residueNames = ensureStringArray(atoms2.residue_name, atomCount2, () => "RES");
   const groupTypes = ensureStringArray(atoms2.group_type, atomCount2, () => "");
   const chainIds = ensureStringArray(atoms2.chain_id, atomCount2, () => "A");
+  const chainIndex2 = atoms2.chain_index ? ensureNumericArray(atoms2.chain_index, atomCount2, () => 0) : null;
+  const residueIndex2 = atoms2.residue_index ? ensureNumericArray(atoms2.residue_index, atomCount2, () => 0) : null;
+  const labelAsymIds = chainIndex2 ? Array.from(chainIndex2, (value) => String(value)) : chainIds;
   const entityIds = ensureStringArray(atoms2.entity_id, atomCount2, () => "1");
   const charges = ensureNumericArray(atoms2.formal_charge, atomCount2, () => 0);
   const molId = ensureNumericArray(atoms2.molecule_id, atomCount2, () => 0);
@@ -140281,10 +140284,10 @@ function createAtomSiteTableFromAxes(payload, atomCount2, axes) {
     label_alt_id: Column.ofConst("", atomCount2, Column.Schema.str),
     label_comp_id: Column.ofStringArray(residueNames),
     auth_comp_id: Column.ofStringArray(residueNames),
-    label_asym_id: Column.ofStringArray(chainIds),
+    label_asym_id: Column.ofStringArray(labelAsymIds),
     auth_asym_id: Column.ofStringArray(chainIds),
     label_entity_id: Column.ofStringArray(entityIds),
-    label_seq_id: Column.ofIntArray(residueIds),
+    label_seq_id: Column.ofIntArray(residueIndex2 ?? residueIds),
     auth_seq_id: Column.ofIntArray(residueIds),
     pdbx_PDB_model_num: Column.ofConst(1, atomCount2, Column.Schema.int),
     pdbx_PDB_ins_code: Column.ofConst("", atomCount2, Column.Schema.str),

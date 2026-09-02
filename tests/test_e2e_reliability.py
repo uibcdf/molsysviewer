@@ -35,7 +35,12 @@ def test_e2e_runner_inventory_matches_every_scientific_suite():
     # page as a file and pins that it frames its own scene. The export inherits
     # camera authority and has no Python to ask again, and nothing had ever
     # looked at its camera.
-    assert len(expected) == 30
+    # 31 since 2026-09-02: `bioassembly-chain-identity`, which pins that copies
+    # sharing an author chain label still build one chain of hierarchy each.
+    # Mol* groups by the label's value, so a 60-copy assembly collapsed into the
+    # asymmetric unit's five chains: every atom arrived and only one copy could
+    # be traced as cartoon (uibcdf/molsysviewer#64).
+    assert len(expected) == 31
     assert declared == expected
 
 

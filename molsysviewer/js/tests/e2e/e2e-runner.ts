@@ -37,6 +37,7 @@ const SUITES = [
     "scene-contracts",
     "scene-object-identity",
     "scene-object-panel-roundtrip",
+    "bioassembly-chain-identity",
 ] as const;
 
 function runSuite(name: string, endpoint: string): Promise<void> {

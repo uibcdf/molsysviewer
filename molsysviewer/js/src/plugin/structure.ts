@@ -39,6 +39,8 @@ export interface MolSysAtomPayload {
     residue_name?: string[];
     group_type?: string[];
     chain_id?: string[];
+    chain_index?: number[];
+    residue_index?: number[];
     entity_id?: string[];
     formal_charge?: number[];
     molecule_id?: number[];
@@ -370,6 +372,20 @@ function createAtomSiteTableFromAxes(
     const residueNames = ensureStringArray(atoms.residue_name, atomCount, () => "RES");
     const groupTypes = ensureStringArray(atoms.group_type, atomCount, () => "");
     const chainIds = ensureStringArray(atoms.chain_id, atomCount, () => "A");
+    // mmCIF keeps two identities per chain and residue, and the difference is the whole
+    // of uibcdf/molsysviewer#64. `auth_*` is the author's label -- chain A, residue 12 --
+    // which a bioassembly deliberately repeats across its copies. `label_*` is the
+    // internal identity, which must not repeat: Mol* groups atoms into chains and
+    // residues by the value it finds there, not by where the value changes, so 60 copies
+    // labelled A-E collapsed into five chains' worth of hierarchy. Every atom arrived;
+    // only one copy could be traced as cartoon.
+    //
+    // When the producer sends the indices, they carry the internal identity and the
+    // labels stay where the user can see them. When it does not -- an older payload, or
+    // another producer -- the labels do both jobs, exactly as before.
+    const chainIndex = atoms.chain_index ? ensureNumericArray(atoms.chain_index, atomCount, () => 0) : null;
+    const residueIndex = atoms.residue_index ? ensureNumericArray(atoms.residue_index, atomCount, () => 0) : null;
+    const labelAsymIds = chainIndex ? Array.from(chainIndex, (value: number) => String(value)) : chainIds;
     const entityIds = ensureStringArray(atoms.entity_id, atomCount, () => "1");
     const charges = ensureNumericArray(atoms.formal_charge, atomCount, () => 0);
 
@@ -388,10 +404,10 @@ function createAtomSiteTableFromAxes(
         label_alt_id: Column.ofConst("", atomCount, Column.Schema.str),
         label_comp_id: Column.ofStringArray(residueNames),
         auth_comp_id: Column.ofStringArray(residueNames),
-        label_asym_id: Column.ofStringArray(chainIds),
+        label_asym_id: Column.ofStringArray(labelAsymIds),
         auth_asym_id: Column.ofStringArray(chainIds),
         label_entity_id: Column.ofStringArray(entityIds),
-        label_seq_id: Column.ofIntArray(residueIds),
+        label_seq_id: Column.ofIntArray(residueIndex ?? residueIds),
         auth_seq_id: Column.ofIntArray(residueIds),
         pdbx_PDB_model_num: Column.ofConst(1, atomCount, Column.Schema.int),
         pdbx_PDB_ins_code: Column.ofConst("", atomCount, Column.Schema.str),

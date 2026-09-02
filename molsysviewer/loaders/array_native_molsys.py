@@ -79,6 +79,18 @@ def serialize_static_molsys_payload(molsys: Any, n_atoms: int) -> dict[str, Any]
         "residue_id": _column(_atom_attribute(molsys, "group_id"), n_atoms, default=1, cast=int),
         "residue_name": _column(_atom_attribute(molsys, "group_name"), n_atoms, default="RES", cast=str),
         "chain_id": _column(_atom_attribute(molsys, "chain_id"), n_atoms, default="A", cast=str),
+        # `chain_id` and `group_id` are *author* labels, and a bioassembly reuses them:
+        # 2BUK's 60 copies all call their chains A-E, so 300 chains arrive under 5 distinct
+        # values and 20 700 residues under 345. Mol* groups by the value, so the copies
+        # collapsed into one chain's worth of hierarchy and only one could be drawn as
+        # cartoon -- while the waters, which are per-atom points needing no hierarchy, all
+        # appeared (uibcdf/molsysviewer#64).
+        #
+        # These two indices are the internal identity mmCIF keeps separate from the author
+        # label for exactly this reason. They feed `label_asym_id` and `label_seq_id`; the
+        # labels above still feed `auth_*`, which is what a user sees and selects by.
+        "chain_index": _column(_atom_attribute(molsys, "chain_index"), n_atoms, default=lambda i: 0, cast=int),
+        "residue_index": _column(_atom_attribute(molsys, "group_index"), n_atoms, default=lambda i: 0, cast=int),
         "entity_id": _column(_atom_attribute(molsys, "entity_id"), n_atoms, default="1", cast=str),
         "element_symbol": _column(_atom_attribute(molsys, "atom_type"), n_atoms, default="C", cast=str),
         "formal_charge": _column(_atom_attribute(molsys, "formal_charge"), n_atoms, default=0, cast=int),
