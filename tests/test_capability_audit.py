@@ -48,24 +48,15 @@ REQUIRED_CAPABILITIES = {
 
 #: Capability entry points that no documentation mentions yet, and where the gap is.
 #:
-#: `uibcdf/molsysviewer#68` was one instance of this — `save_session` shipped with no page
-#: naming it — and the guard written to catch it found eight more. Fixing those is a
-#: documentation job of its own (`uibcdf/molsysviewer#72`), not a condition for closing
-#: #68, so they are pinned here: a **new** gap fails, these are tracked. The nine gaps
-#: the guard found in `public_api.md` were fixed rather than pinned -- an index line is
-#: cheap; a user page is not.
+#: **Empty, and meant to stay that way.** `uibcdf/molsysviewer#68` was one instance —
+#: `save_session` shipped with no page naming it — and the guard written to catch it found
+#: fifteen more. Nine were index lines in `public_api.md` and were fixed on the spot; the
+#: seven that needed user-facing prose were `uibcdf/molsysviewer#72`, and writing it emptied
+#: this list.
 #:
-#: Nothing may be added to this list to make a failure go away. Adding an entry means
-#: deciding, on purpose, to ship a capability users cannot find.
-KNOWN_UNDOCUMENTED = frozenset({
-    ("view.player.", "page"),
-    ("view.contains", "page"),
-    ("view.is_composed_of", "page"),
-    ("view.convert", "page"),
-    ("view.extract", "page"),
-    ("view.build_popup_scene_snapshot", "page"),
-    ("molsysviewer.launch_standalone_qt0", "page"),
-})
+#: Nothing may be added here to make a failure go away. Adding an entry means deciding, on
+#: purpose, to ship a capability users cannot find.
+KNOWN_UNDOCUMENTED = frozenset()
 
 
 @pytest.fixture(scope="module")

@@ -5,6 +5,38 @@ They differ in *transport* (how Python and the JS runtime exchange messages) and
 in *lifecycle*. Do not conflate them — especially, do not use the exported HTML
 as the internal mechanism of the Qt app.
 
+## How each one is entered
+
+The table below is about mechanism; these are the names you actually call.
+
+| Surface | Entry point |
+| --- | --- |
+| AnyWidget / Jupyter | `msv.new_view(...)`, or `msv.demo[...]` |
+| Qt live shell | `molsysviewer.launch_standalone_qt0(molecular_system, ...)`, or the `molsysviewer-qt` console script |
+| Exported HTML | `molsysviewer.build_standalone0_html(...)`, and `view.export.write_html(...)` for the ordinary case |
+| Docs / static views | the same builder, driven by the docs pipeline |
+
+`launch_standalone_qt0` opens the window **and runs the Qt event loop**, so it does not
+return until the window closes. When you need the window without surrendering the thread —
+embedding it in a Qt application of your own, or driving it from a test — call
+`create_standalone_qt0_window` instead, which takes the same arguments minus `exec_app` and
+hands back the objects it built.
+
+Both accept the loading arguments a view accepts (`selection`, `structure_indices`,
+`syntax`, `load_mode`), the chrome switches (`include_controls`, `include_popout`,
+`width`, `height`, `title`), and the add-on switches (`discover_addons`, `addon_modules`).
+
+### Reaching the current scene from another surface
+
+`view.build_popup_scene_snapshot(mode, endpoint=None, include_molecular=True)` returns the
+list of messages a second surface must replay to arrive at the scene the view is showing
+now — the popup's equivalent of what the exported HTML embeds. `mode` is the surface being
+built for (`"canvas"` or `"panel"`); `include_molecular=False` omits the structure payload
+when the receiver already has it.
+
+It is a *snapshot*, not a subscription: what it returns is true at the moment it is called,
+and a later change reaches the popup as an ordinary live message.
+
 ## The four surfaces
 
 | Surface | Transport (Python → JS / JS → Python) | Runtime lifecycle |

@@ -17,7 +17,9 @@ Use `view.movie` when you need to:
 - tell a visual story by showing/hiding regions at specific moments,
 - produce a reproducible `.mp4` or `.gif` for a paper or presentation.
 
-If you just want a static image, use `view.export.image()` instead.
+If you just want a static image, use `view.export.image()` instead. And if all you want
+is to *step through a trajectory*, that is `view.player`, not a movie — see
+{doc}`playback`.
 
 ## Overview
 
@@ -44,5 +46,5 @@ export
 ```
 
 - {doc}`timeline` — keyframes, builders, and serialization.
-- {doc}`playback` — browser preview.
+- {doc}`playback` — the trajectory player (`view.player`) and the movie preview.
 - {doc}`export` — video export and format options.
