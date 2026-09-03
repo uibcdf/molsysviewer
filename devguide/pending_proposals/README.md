@@ -38,7 +38,7 @@ list. Deferred entries also carry the `post-1.0` milestone on the issue board.
 - [`evidence_a_stable_capability_has_not_earned.md`](evidence_a_stable_capability_has_not_earned.md) — [#65](https://github.com/uibcdf/molsysviewer/issues/65) — Four capabilities declare an evidence level nothing has observed, and the release gate cannot tell. *(measured)*
 - [`evidence_labels_beyond_the_capability_audit.md`](evidence_labels_beyond_the_capability_audit.md) — [#61](https://github.com/uibcdf/molsysviewer/issues/61) — Decide whether the evidence labels govern the whole devguide or only the capability audit. *(measured)*
 - [`molsysmt_docs_pipeline_analysis.md`](molsysmt_docs_pipeline_analysis.md) — [#41](https://github.com/uibcdf/molsysviewer/issues/41) — MolSysMT's documentation pipeline read at the scale it is about to reach. *(measured)*
-- [`removing_the_viewers_own_get.md`](removing_the_viewers_own_get.md) — [#71](https://github.com/uibcdf/molsysviewer/issues/71) — Evaluate removing the viewer's own get(), now that msm.get(view) works. *(measured)*
+- [`removing_the_viewers_molsysmt_facing_methods.md`](removing_the_viewers_molsysmt_facing_methods.md) — [#71](https://github.com/uibcdf/molsysviewer/issues/71) — Evaluate removing the viewer's MolSysMT-facing methods, now that msm.* answers on a view. *(measured)*
 
 ### Deferred until after 1.0 (17)
 

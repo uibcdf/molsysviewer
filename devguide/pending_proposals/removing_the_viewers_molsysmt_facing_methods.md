@@ -1,5 +1,5 @@
 ---
-summary: Evaluate removing the viewer's own get(), now that msm.get(view) works.
+summary: Evaluate removing the viewer's MolSysMT-facing methods, now that msm.* answers on a view.
 issue: uibcdf/molsysviewer#71
 status: open
 opened: 2026-09-02
@@ -12,7 +12,7 @@ blocked_by: []
 supersedes: []
 ---
 
-# Removing the viewer's own `get()`
+# Removing the viewer's MolSysMT-facing methods
 
 **Proposed:** 2026-09-02. MolSysMT can already answer `msm.get(view, ...)`, so the
 viewer's own `get` may be a second way to do one thing. Removing it would leave a smaller,
@@ -202,3 +202,37 @@ digesting their `**kwargs` here — captures the prize without the split. Option
 genuinely available the moment MolSysMT registers forms for `Region` and `Whole`, which is
 now the *only* thing standing between this proposal and its full version. §7's second
 question was the secondary one; it is the first one.
+
+
+## Scope — 2026-09-03 — this was never only about `get`
+
+Written as a question about one method, because that is how it arrived. The correction
+above forced a re-measurement of the rest, and the answer is the same for almost all of
+them. **Six of the seven MolSysMT-facing methods already work when called as `msm.f(view)`.**
+
+| method | `msm.f(view)` | shape on our side |
+| --- | :-: | --- |
+| `get` | ✅ | `**kwargs`, attribute names, normalization table |
+| `contains` | ✅ | `**kwargs`, attribute names, normalization table |
+| `is_composed_of` | ✅ | `**kwargs`, attribute names, normalization table |
+| `convert` | ✅ | `**kwargs`, but conversion options rather than attributes |
+| `info` | ✅ | closed signature |
+| `select` | ✅ | closed signature |
+| `extract` | ❌ | closed signature — fails on `uibcdf/molsysmt#204`, their bug |
+
+**They are not one family, and the difference decides what Option C can touch.** Only the
+first three digest attribute names out of `**kwargs` and carry the normalization tables, so
+only those three are what §3 measured as provably redundant. `convert` forwards `**kwargs`
+too, but they are not attribute names. `info`, `select` and `extract` have closed
+signatures whose arguments are digested like any other — nothing about them is duplicated
+work.
+
+So the proposal splits cleanly:
+
+- **Option C applies to `get`, `contains`, `is_composed_of`.** That is where the redundant
+  digestion, both normalization modules and the `region.get` allow-list defect live.
+- **Option A applies to all seven**, and is blocked on the same single thing for all of
+  them: `Region` and `Whole` are not MolSysMT forms.
+
+Nothing here changes the recommendation. It widens what Option A would remove and narrows
+what Option C touches, and it means the issue is about the surface, not the method.
