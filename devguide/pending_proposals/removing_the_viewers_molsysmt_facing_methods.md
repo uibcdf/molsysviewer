@@ -288,3 +288,78 @@ way to do a thing, and the removal of an entire class of drift.
 
 The counterweight is that the convenience is partly illusory already: `region.get` refuses
 two thirds of the attributes `msm.get` answers, and has since it was written.
+
+
+## The third home — 2026-09-03 — this was decided once already, and half carried out
+
+The options above were posed as *keep on the view* or *remove entirely*. There is a third
+place, it already exists, and the project already put half of this family in it.
+
+### `view.addons.molsysmt` is real, and MolSysMT owns it
+
+`molsysviewer_molsysmt` is a package **inside the MolSysMT repository**, shipped by their
+`pyproject.toml` (`include = ["molsysmt*", "molsysviewer_molsysmt*"]`) and registered as
+`[project.entry-points."molsysviewer.addons"] molsysmt = "molsysviewer_molsysmt"`. Since
+`molsysmt>=0.22.0` is a hard dependency here, it is always installed, always available and
+enabled by default.
+
+It already carries a `basic` namespace: **`add`, `append_structures`, `remove`, `set`**.
+
+### The family is split down the middle, mutating from querying
+
+| | on the view | in the addon |
+| --- | :-: | :-: |
+| `add`, `append_structures`, `remove`, `set` | — | ✅ |
+| `get`, `contains`, `is_composed_of`, `convert`, `extract`, `info`, `select` | ✅ | — |
+
+Complementary, no overlap. One family of MolSysMT operations, two owners, one line between
+them that no document argues for.
+
+### And `public_api.md` already states the policy
+
+Under **Removed before 1.0** it records that `view.{remove, add, set, append_structures}`,
+`view.whole.{...}` and the whole `molsysviewer.tools.basic.{get, select, info, convert,
+contains, compare, is_composed_of}` family were taken out, and then says:
+
+> Pure molecular-system reads should use `molsysmt.*(view, ...)`. Live molecular edits on an
+> existing viewer are provided by the MolSysMT addon namespace: `view.addons.molsysmt.basic.*`.
+
+**Both halves of what this proposal is circling are already written down as the project's
+direction.** What is not settled is how far the first sentence reaches, and it admits two
+readings:
+
+*Narrow.* It is migration guidance for the removed free functions: "you used
+`molsysviewer.tools.basic.get`; use `msm.get` now." It says nothing about `view.get`.
+
+*Wide.* It is a statement about where reads belong, in which case `view.get`,
+`region.get` and `whole.get` contradict a policy this repository has published since
+b3b1fde9.
+
+Settling that is the decision. It is not a measurement, and no further measuring will
+produce it.
+
+### The two questions are orthogonal, which is what makes this tractable
+
+The discussion keeps binding together two things that can be decided separately:
+
+**Who digests?** Answered, and not by taste: MolSysMT. Our copies accept exactly the same
+105 of 118 attributes theirs do, with zero difference in either direction. Option C removes
+that duplication — and both normalization modules, and the `region.get` allow-list defect —
+**without touching a single name a user types**.
+
+**Where does the name live?** View, addon, or nowhere. This is the ergonomics-versus-surface
+judgement, and after Option C it is no longer urgent, because the maintenance cost that
+makes it feel urgent will already be gone.
+
+The addon does soften the ergonomic objection: `view.addons.molsysmt.basic.get(...)` is
+still reachable by tab-completion from the view and needs no import. It is longer, and it
+can be disabled — `msv.addons.disable("molsysmt")` — which would be an odd way to lose the
+ability to read a system when MolSysMT is a hard dependency. If reads move there, that
+disable path needs an answer.
+
+### Recommendation, unchanged in substance
+
+Do Option C, which is free. Then settle the narrow-versus-wide reading of the policy
+sentence deliberately, as an API decision, with the addon as a third destination rather than
+a binary. Nothing about that second step is blocked, and nothing about it is urgent once the
+first is done.
