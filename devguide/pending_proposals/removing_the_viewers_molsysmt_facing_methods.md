@@ -236,3 +236,55 @@ So the proposal splits cleanly:
 
 Nothing here changes the recommendation. It widens what Option A would remove and narrows
 what Option C touches, and it means the issue is about the surface, not the method.
+
+
+## Correction — 2026-09-03 — the `Region`/`Whole` objection dissolves; nothing is blocked
+
+Written while preparing a request to MolSysMT to register forms for `Region` and `Whole`,
+which §2 named as the one thing standing between this proposal and its full version. The
+request was not sent, because **neither needs a form.**
+
+**`Whole` is the system.** `whole.get(element='atom', atom_name=True)` and
+`msm.get(view, element='atom', atom_name=True)` return the same values. There is nothing
+for a form to add: the whole *is* what `msm.get(view)` already answers about.
+
+**`Region` is a selection.** Not by analogy — by construction. `Region.get` resolves
+`self.atom_indices` and then calls `self._view.get(selection=scope, ...)`. It **is**
+`msm.get(view, selection=region.atom_indices, ...)`, spelled differently:
+
+```python
+region.get(element='atom', index=True)
+msm.get(view, element='atom', selection=list(region.atom_indices), atom_index=True)
+# identical
+```
+
+They cannot diverge, including for a frame-dependent region, because both read the same
+`atom_indices` attribute at the same moment.
+
+And the `msm` route is **strictly better today**: it answers the 77 of 118 attributes that
+§4's allow-list defect makes `region.get` refuse.
+
+```python
+msm.get(view, element='atom', selection=list(region.atom_indices), atom_name=True)
+# ['N', 'CA', 'C', 'O', ...]   -- region.get(element='atom', name=True) raises
+```
+
+### What this changes
+
+**§2's remaining conclusion is withdrawn.** It said removing these methods from the view
+alone would split the API by object, because `msm.get(region)` and `msm.get(whole)` fail.
+They do fail — and it does not matter, because neither is the call a user would make. The
+region case is a `selection` argument and the whole case is the plain call.
+
+**Option A is not blocked.** Nothing has to happen in MolSysMT first. §7's questions 1 and 2
+are answered: no form work is needed, so the only open question is the first one — whether
+`.get` on a viewer is *wanted* as ergonomics.
+
+**That is now the whole decision, and it is a judgement rather than a measurement.** The
+cost of Option A is real and is not technical: `view.<TAB>` in a notebook stops showing
+these, and a user has to know MolSysMT exists and import it. For a viewer — often somebody's
+first contact with the suite — that is a genuine loss to weigh against a smaller API, one
+way to do a thing, and the removal of an entire class of drift.
+
+The counterweight is that the convenience is partly illusory already: `region.get` refuses
+two thirds of the attributes `msm.get` answers, and has since it was written.
