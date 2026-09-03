@@ -155,3 +155,50 @@ schedule, whichever option is eventually chosen.
    proposal and belongs with them.
 3. Is §4 a bug fix (add `molsysviewer.regions.get` to 40 allow-lists) or is it another
    argument for deleting the copies? Under Option C it disappears without being fixed.
+
+
+## Correction — 2026-09-03 — §2's table was wrong about `contains`, and the conclusion moves
+
+Prompted by the observation that `msm.contains(view)` and `msm.is_composed_of(view)` ought
+to work as well as `msm.get(view)`. They do. **The table in §2 is wrong.**
+
+It recorded `msm.contains(view)` as raising `NotWithThisFormError`. That measurement passed
+`molecule_type="water"`, and the failure is the **argument shape, not the form** — the same
+call fails identically on a plain `molsysmt.MolSys`:
+
+| call | `view` | `MolSys` |
+| --- | :-: | :-: |
+| `msm.contains(obj, water=True)` | ✅ | ✅ |
+| `msm.contains(obj, molecule_type="water")` | ❌ | ❌ |
+
+So MolSysMT answers **four** of the five on a view, not two:
+
+| | `view` | `region` | `whole` |
+| --- | :-: | :-: | :-: |
+| `msm.get` | ✅ | ❌ | ❌ |
+| `msm.contains` | ✅ | ❌ | ❌ |
+| `msm.is_composed_of` | ✅ | ❌ | ❌ |
+| `msm.convert` | ✅ | ❌ | ❌ |
+| `msm.extract` | ❌ | ❌ | ❌ |
+
+`msm.extract(view)` fails for an unrelated reason, and it is theirs:
+`form/molsysviewer_MolSysView/extract.py` was written with the *public* signature rather
+than the form-level one the dispatcher calls, so it raises `TypeError` on every call.
+Reported as `uibcdf/molsysmt#204`. It is not evidence about this proposal — once fixed, the
+view column is complete.
+
+### What this changes
+
+**§2's second conclusion is withdrawn.** "The family is not uniformly replaceable even on
+the view" rested on `msm.contains` failing. It does not fail. On a view, the whole family
+is replaceable today except for one bug on their side.
+
+**§2's first conclusion stands, and is now the whole objection.** `Region` and `Whole` are
+still not MolSysMT forms, so `msm.get`, `msm.contains` and `msm.is_composed_of` all fail on
+them. Removing these methods from the view alone would still split the API by object.
+
+**The recommendation is unchanged, and better supported.** Option C — keep the methods, stop
+digesting their `**kwargs` here — captures the prize without the split. Option A becomes
+genuinely available the moment MolSysMT registers forms for `Region` and `Whole`, which is
+now the *only* thing standing between this proposal and its full version. §7's second
+question was the secondary one; it is the first one.
