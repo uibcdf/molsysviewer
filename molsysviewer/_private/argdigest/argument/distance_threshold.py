@@ -12,6 +12,16 @@ common_functions_with_distance_threshold_and_None = [
 
 def digest_distance_threshold(distance_threshold, caller=None):
 
+    if isinstance(distance_threshold, str):
+        # MolSysMT lets pint's UndefinedUnitError escape here. This package's contract is
+        # that a bad argument raises its own ArgumentError, so the parse is contained.
+        try:
+            distance_threshold = puw.parse.parse(distance_threshold)
+        except Exception as exc:
+            raise ArgumentError(
+                'distance_threshold', value=distance_threshold, caller=caller, message=None,
+            ) from exc
+
     if caller in common_functions_with_distance_threshold:
 
         if puw.is_quantity(distance_threshold):

@@ -9,10 +9,20 @@ common_functions_with_threshold = [
 
 common_functions_with_threshold_and_None = [
     'molsysmt.structure.get_neighbors.get_neighbors',
-    'molsysmt.thirds.nglview.add_contacts.add_contacts',
+    'molsysmt.third_party.nglview.add_contacts.add_contacts',
 ]
 
 def digest_threshold(threshold, caller=None):
+
+    if isinstance(threshold, str):
+        # MolSysMT lets pint's UndefinedUnitError escape here. This package's contract is
+        # that a bad argument raises its own ArgumentError, so the parse is contained.
+        try:
+            threshold = puw.parse.parse(threshold)
+        except Exception as exc:
+            raise ArgumentError(
+                'threshold', value=threshold, caller=caller, message=None,
+            ) from exc
 
     if caller in common_functions_with_threshold:
 

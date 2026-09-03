@@ -274,3 +274,58 @@ conclusion — that consolidating them changes nothing observable — still hold
 But "unreachable" was the wrong reason, given twice. The accurate statement is: **reached,
 always rejecting, in agreement with MolSysMT.** Under `uibcdf/molsysviewer#71` option C
 they stop being ours to consolidate at all, which is where this thread now leads.
+
+## Fourth slice — 2026-09-02 — the five, done, and what the two earlier readings got wrong
+
+The five were finally read against MolSysMT's *current* versions, which had moved to
+`molsysmt/_private/argdigest/argument/`. That reading corrected the last wrong premise:
+`puw.is_quantity("3.5 angstroms")` is **True**, so the branched copies already accepted
+strings. They were never as narrow as the third slice assumed.
+
+Behaviour was pinned before touching anything — five digesters × six callers × six values,
+**180 combinations** — and the same table was taken afterwards. That is what made the work
+safe, and it caught two regressions that reasoning had not.
+
+### What each one got, and why they differ
+
+**Consolidated onto `digest_length_quantity`:** `switch_distance`, `cutoff_distance`,
+`max_bond_length`. Their branching was not semantic — it was a `caller.startswith` reached
+before the value was tested, which is why they raised `AttributeError` for *every* value
+when no caller was given. Twelve of the 180 combinations were that crash, and those twelve
+are the only cells the whole change moved.
+
+**Synchronized with MolSysMT instead:** `threshold`, `distance_threshold`. Their branching
+*is* semantic — a caller allow-list deciding whether a value is accepted at all — so
+consolidating would have discarded it. Syncing also fixed the stale
+`molsysmt.thirds.nglview` (theirs says `third_party`) and picked up the explicit
+`puw.parse.parse` step ours lacked.
+
+### The two regressions the table caught
+
+Both were introduced by me and would have shipped on reasoning alone.
+
+*Syncing wholesale let pint through.* MolSysMT's version calls `puw.parse.parse` unguarded,
+so `threshold("hola")` raised `UndefinedUnitError` — a foreign exception type, against this
+package's contract that a bad argument raises its own `ArgumentError`. Twelve combinations.
+The parse is now contained. **This is a deliberate divergence from MolSysMT**, and worth
+offering to them.
+
+*A blanket `None` guard widened a rule.* `switch_distance` and `max_bond_length` accept
+`None` from anybody; `cutoff_distance` accepted it only from a form converter matching
+`molsysmt.form.` **and** two `.to_` segments. A uniform guard turned five caller/`None`
+pairs from a refusal into a silent `None`. The narrower rule was restored.
+
+`import numpy as np` is unused in the two synced files. It is left in place: it is
+pre-existing, it is in MolSysMT's copy too, and a third divergence for a dead import would
+cost more at the next diff than it saves.
+
+### Closing
+
+`tests/test_length_digesters.py` covers all seven `[L]` digesters — the five plus
+`extra_radius` and `min_radius` from the second slice, which had no test at all.
+Mutation-verified: reintroducing the `caller.startswith` crash fails eight cases,
+un-containing the parse fails the error-contract case.
+
+This closes the proposal. Every digester it can reach is on the shared helper; the two that
+are not are documented above as caller-gated by design, and a fifth reading is not going to
+change that.
