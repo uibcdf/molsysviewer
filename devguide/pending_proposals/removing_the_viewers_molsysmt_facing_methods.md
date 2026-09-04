@@ -526,3 +526,68 @@ gate has to be answered another way.
 
 Neither is a reason not to do it. Both are reasons it is a deliberate change with a written
 rationale rather than a decorator deletion.
+
+
+## Decisions — 2026-09-04
+
+Three, taken in discussion, with what each one costs measured rather than estimated.
+
+### 1. The error names the owner the user invoked
+
+A user who called something in MolSysViewer must not read a message blaming MolSysMT. So
+delegation cannot mean delegating the error too.
+
+ArgDigest gives no way to do this from the outside: the caller is computed inside the
+decorator as `f"{owner_module}.{fn.__name__}"`, with no override. The forwarder therefore
+has to catch and re-raise — **which this repository already decided one layer down**.
+`_quantity.py` does exactly this for PyUnitWizard, and says why:
+
+> Here we only re-raise as MolSysViewer's own `ArgumentError` (a `ValueError`) so the viewer
+> keeps a single, consistent error contract and argument-named messages.
+
+Mechanically clean, because MolSysMT's `ArgumentError` carries structured fields rather than
+only a sentence:
+
+```python
+exc.extra == {'argument': 'atom_name', 'value': 123, 'caller': 'molsysmt.basic.get.get', ...}
+```
+
+So the re-raise reproduces the argument and value exactly and replaces only the caller,
+chaining the original with `from exc` so the provenance survives for anyone debugging.
+
+### 2. These forwarders are exempt from Phase 9
+
+Gate 9 requires every public callable to carry `@digest()`. A forwarder whose every
+parameter belongs to the callee is precisely the case where decorating means digesting
+twice, and the second digestion is the one that mattered. The exemption in
+`devtools/public_api_inventory.py` covers *pure variadic forwarders* — `*args, **kwargs`,
+naming none — which does not describe these: `view.get` names eight parameters, and all
+eight are `msm.get`'s.
+
+The exemption widens, deliberately, to **named forwarders every one of whose parameters
+belongs to the callee**, with the callee's digestion being what runs. That is a real rule,
+checkable against the two signatures, not a hole.
+
+### 3. `view.get` goes; `region.get` and `whole.get` stay
+
+The whole *is* the system and a region *is* a selection over it, so those two are where the
+question has a subject. On the view it is a third spelling of `view.whole.get`.
+
+Removal footprint, counted:
+
+| method | destination | code | tests | docs |
+| --- | --- | ---: | ---: | ---: |
+| `get` | `whole.get` / `region.get` | 23 | 12 | 52 |
+| `select` | `whole.select` / `region.select` | 13 | 41 | 46 |
+| `info` | `whole.info` / `region.info` | 14 | 5 | 42 |
+| `contains` | `whole.contains` / `region.contains` | 8 | 3 | 2 |
+| `is_composed_of` | `whole.is_composed_of` / … | 3 | 3 | 2 |
+| `convert` | **no destination yet** | 0 | 1 | 1 |
+
+`convert` is the one with nowhere to go: neither `Whole` nor `Region` has it, so it goes to
+`msm.convert(view, ...)` or to the addon, and that is a fourth decision.
+
+**Staying on the view**, established earlier and unchanged: `extract`, because it returns a
+new *view* carrying the scene and is not a question about the molecular system; and `show`,
+as the notebook display trigger. `hide` leaves, but its atom-masking half needs a
+destination first — `view.atom_mask` is a bare NumPy array today, not a namespace.
