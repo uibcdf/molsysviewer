@@ -19,20 +19,54 @@ def _close_registered_molsysviewer_widgets() -> None:
     from molsysviewer.addons import AddonPanelWidget
     from molsysviewer.widget import MolSysViewerWidget
 
+    # Every widget is closed even if one of them refuses. A bare loop stops at the first
+    # exception and leaves every widget after it registered in `_instances` for the rest of
+    # the session -- and a registered widget that is later finalised with a live comm
+    # raises inside `Widget.__del__`, which pytest turns into an unraisable warning and
+    # xdist can choke on while shipping it to the controller. Measured: one failing
+    # `view.close()` left all four widgets of that moment behind.
+    #
+    # `uibcdf/molsysviewer#76`. The failures swallowed here belong to whatever test already
+    # failed; re-raising them would replace a real diagnosis with a teardown error.
+    failures = []
     for widget in list(_instances.values()):
         if not isinstance(widget, (MolSysViewerWidget, AddonPanelWidget)):
             continue
-        view_ref = getattr(widget, "_molsysviewer_view_ref", None)
-        view = view_ref() if callable(view_ref) else None
-        if view is not None:
-            view.close()
-            continue
-        layout = getattr(widget, "layout", None)
-        widget.close()
-        if layout is not widget:
-            close_layout = getattr(layout, "close", None)
-            if callable(close_layout):
-                close_layout()
+        try:
+            view_ref = getattr(widget, "_molsysviewer_view_ref", None)
+            view = view_ref() if callable(view_ref) else None
+            if view is not None:
+                view.close()
+                continue
+            layout = getattr(widget, "layout", None)
+            widget.close()
+            if layout is not widget:
+                close_layout = getattr(layout, "close", None)
+                if callable(close_layout):
+                    close_layout()
+        except Exception as exc:  # noqa: BLE001 - teardown must not hide behind one widget
+            failures.append(exc)
+            # Unregister by hand so nothing is finalised holding a live comm, which is the
+            # state that produces the unraisable. The layout goes too: it is a widget of
+            # its own, and leaving it behind leaks the same problem one object over.
+            for stranded in (widget, getattr(widget, "layout", None)):
+                if stranded is None:
+                    continue
+                _instances.pop(getattr(stranded, "model_id", None), None)
+                stranded_comm = getattr(stranded, "comm", None)
+                if stranded_comm is not None:
+                    try:
+                        stranded_comm.close()
+                    except Exception:  # noqa: BLE001 - best effort, teardown is already failing
+                        pass
+                    stranded.comm = None
+
+    if failures:
+        print(
+            f"warning: {len(failures)} widget(s) failed to close during teardown; "
+            f"first: {type(failures[0]).__name__}: {failures[0]}",
+            file=sys.stderr,
+        )
 
 
 @pytest.fixture(autouse=True)
