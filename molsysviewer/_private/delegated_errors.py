@@ -1,0 +1,45 @@
+"""Re-raise a delegated library's argument error as this package's own.
+
+MolSysViewer forwards argument checking to the library that owns the argument —
+`uibcdf/molsysviewer#71` measures why: our copies of MolSysMT's attribute digesters accept
+exactly the same values theirs do, so the second check is duplication, not safety.
+
+But delegating the *check* must not delegate the *message*. Someone who called
+`whole.convert(...)` and reads an error blaming `molsysmt.basic.convert.convert` for an
+argument they never passed to MolSysMT has been handed a puzzle instead of a fault. So the
+caller is replaced and only the caller.
+
+This is the same decision `_private/argdigest/_quantity.py` already took for PyUnitWizard,
+one layer down, and for the same stated reason: one consistent error contract with
+argument-named messages.
+
+ArgDigest offers no way to do this from the outside — it computes the caller inside the
+decorator as `<owner module>.<function name>`, with no override — so it is done here, on the
+way out.
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
+from .exceptions import ArgumentError
+
+
+def as_our_argument_error(exc: BaseException, caller: str) -> BaseException:
+    """Return `exc` restated as our `ArgumentError`, or `exc` itself if it is not one.
+
+    Returns rather than raises, so the call site keeps `raise ... from exc` visible and the
+    original traceback stays chained: the delegated library remains findable by anyone
+    debugging, and invisible to anyone merely using.
+    """
+    extra = getattr(exc, "extra", None)
+    if not isinstance(extra, dict) or "argument" not in extra:
+        # Not a structured argument error — a conversion failure, a missing file, anything
+        # else. Restating those would claim knowledge we do not have.
+        return exc
+
+    return ArgumentError(
+        extra["argument"],
+        value=extra.get("value"),
+        caller=caller,
+    )

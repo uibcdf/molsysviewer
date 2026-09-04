@@ -7,6 +7,7 @@ from smonitor import signal
 
 from . import pyunitwizard as puw
 from ._private.argdigest import digest
+from ._private.delegated_errors import as_our_argument_error
 from ._private.exceptions import ArgumentError
 from .colors import expand_values_to_atoms, normalize_color
 from .scene_history import records_scene_history
@@ -185,6 +186,41 @@ class Whole:
             skip_digestion=True,
             **kwargs,
         )
+
+    @signal(tags=["convert", "whole"])
+    def convert(
+        self,
+        to_form: str = "molsysmt.MolSys",
+        *,
+        structure_indices: Any = "all",
+        syntax: str = "MolSysMT",
+        skip_digestion: bool = False,
+        **kwargs: Any,
+    ):
+        """Convert the whole system to another MolSysMT form.
+
+        The whole *is* the molecular system, so this is `msm.convert` on it. A region
+        converts its own subset instead; see :meth:`Region.convert`.
+
+        Digestion is MolSysMT's: every argument here is theirs, and duplicating their
+        checks is what `uibcdf/molsysviewer#71` is about. What is not theirs is the
+        caller a user reads in an error, so their `ArgumentError` is re-raised as this
+        package's, naming the method that was actually called.
+        """
+        view = self._view
+        if view._molsys is None:  # noqa: SLF001
+            raise ValueError("No molecular system loaded. Load a system before calling convert().")
+        try:
+            return msm.convert(
+                view._molsys,  # noqa: SLF001
+                to_form=to_form,
+                structure_indices=structure_indices,
+                syntax=syntax,
+                skip_digestion=skip_digestion,
+                **kwargs,
+            )
+        except Exception as exc:
+            raise as_our_argument_error(exc, "molsysviewer.whole.convert") from exc
 
     @signal(tags=["camera", "whole"])
     @digest()

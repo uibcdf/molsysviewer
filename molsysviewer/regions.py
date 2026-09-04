@@ -8,6 +8,7 @@ import molsysmt as msm
 from depdigest import dep_digest
 from smonitor import signal
 from ._private.argdigest import digest
+from ._private.delegated_errors import as_our_argument_error
 from ._private.exceptions import ArgumentError
 from ._private.smonitor.warnings import RegionWithoutOwnVisualWarning, warn
 from ._private.smonitor_emit import emit_suppressed_exception
@@ -569,6 +570,43 @@ class Region:
             selected = self._intersect_indices(selected, masked)
 
         return self._intersect_indices(selected, scope)
+
+    @signal(tags=["region", "convert"])
+    def convert(
+        self,
+        to_form: str = "molsysmt.MolSys",
+        *,
+        structure_indices: Any = "all",
+        syntax: str = "MolSysMT",
+        skip_digestion: bool = False,
+        **kwargs: Any,
+    ):
+        """Convert this region's own atoms to another MolSysMT form.
+
+        A region *is* a selection over the view's system, so converting it is `msm.convert`
+        with that selection — the same scoping :meth:`get` already has, where the whole
+        answers for everything and a region answers for its atoms.
+
+        Digestion is MolSysMT's; only the caller named in an error is ours. See
+        `uibcdf/molsysviewer#71`.
+        """
+        molsys = self._view._molsys  # noqa: SLF001
+        if molsys is None:
+            raise ValueError("No molecular system loaded. Load a system before calling convert().")
+        atom_indices = self.atom_indices
+        selection = "all" if atom_indices is None else list(atom_indices)
+        try:
+            return msm.convert(
+                molsys,
+                to_form=to_form,
+                selection=selection,
+                structure_indices=structure_indices,
+                syntax=syntax,
+                skip_digestion=skip_digestion,
+                **kwargs,
+            )
+        except Exception as exc:
+            raise as_our_argument_error(exc, "molsysviewer.regions.convert") from exc
 
     @signal(tags=["region", "query"])
     @digest()
