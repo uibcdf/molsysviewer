@@ -23,7 +23,7 @@ view.active_selection.is_empty()
 ```
 
 `set` takes a MolSysMT selection expression, so anything you can write for
-`view.select(...)` works here. It replaces whatever was active; `clear()` empties it.
+`view.whole.select(...)` works here. It replaces whatever was active; `clear()` empties it.
 
 ## Keeping one
 
@@ -104,5 +104,5 @@ click will do next.
 - Selection expressions are MolSysMT's, not MolSysViewer's. When one does not resolve the
   way you expect, the syntax question belongs upstream — see
   {doc}`../troubleshooting/selection_issues`.
-- `view.select(...)` returns atom indices without storing anything. Use it when you want
+- `view.whole.select(...)` returns atom indices without storing anything. Use it when you want
   the numbers, not a named set.

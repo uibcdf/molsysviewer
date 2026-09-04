@@ -10,6 +10,7 @@ from smonitor import signal
 from ._private.argdigest import digest
 from ._private.delegated_errors import as_our_argument_error
 from ._private.exceptions import ArgumentError
+from ._private.variables import is_all
 from ._private.smonitor.warnings import RegionWithoutOwnVisualWarning, warn
 from ._private.smonitor_emit import emit_suppressed_exception
 from .colors import expand_values_to_atoms, normalize_color
@@ -535,41 +536,44 @@ class Region:
         syntax="MolSysMT",
         skip_digestion=False,
     ):
-        """Select indices, scoped to this region."""
+        """Select indices, scoped to this region.
+
+        The scoping is MolSysMT's `mask`, which means exactly this: answer `selection`, but
+        only within these elements. It is levelled — a `mask` is read at the same element
+        as `element=`, so a region's atoms have to be expressed as *that* element's indices
+        first, which is what `_scoped_indices_for_element` returns.
+
+        A caller's own `mask` composes with the region's rather than replacing it: asking a
+        region for a subset cannot widen it.
+        """
         scope = self._scoped_indices_for_element(element)
         if scope is None:
-            return self._view.select(  # noqa: SLF001
-                selection=selection,
-                structure_indices=structure_indices,
-                element=element,
-                mask=mask,
-                syntax=syntax,
-                skip_digestion=True,
-            )
-
-        if selection == "all" and (mask is None or mask == "all"):
-            return scope
-
-        selected = self._view.select(  # noqa: SLF001
-            selection=selection,
-            structure_indices=structure_indices,
-            element=element,
-            mask=None,
-            syntax=syntax,
-            skip_digestion=True,
-        )
-        if mask is not None and mask != "all":
-            masked = self._view.select(  # noqa: SLF001
+            effective_mask = mask
+        elif mask is None or is_all(mask):
+            effective_mask = list(scope)
+        else:
+            caller_mask = msm.select(
+                self._view._molsys,  # noqa: SLF001
                 selection=mask,
                 structure_indices=structure_indices,
                 element=element,
-                mask=None,
                 syntax=syntax,
                 skip_digestion=True,
             )
-            selected = self._intersect_indices(selected, masked)
+            effective_mask = self._intersect_indices(caller_mask, scope)
 
-        return self._intersect_indices(selected, scope)
+        try:
+            return msm.select(
+                self._view._molsys,  # noqa: SLF001
+                selection=selection,
+                structure_indices=structure_indices,
+                element=element,
+                mask=effective_mask,
+                syntax=syntax,
+                skip_digestion=skip_digestion,
+            )
+        except Exception as exc:
+            raise as_our_argument_error(exc, "molsysviewer.regions.select") from exc
 
     @signal(tags=["region", "convert"])
     def convert(

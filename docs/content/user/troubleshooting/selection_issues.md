@@ -3,7 +3,7 @@
 
 ## Empty selection
 
-If `view.select(...)` returns an empty list:
+If `view.whole.select(...)` returns an empty list:
 
 1. **Check that the system is loaded.** `view.molsys` must not be `None`.
 2. **Check the selection string syntax.** MolSysViewer delegates selection
@@ -12,7 +12,7 @@ If `view.select(...)` returns an empty list:
 
 ```python
 # Quick validation — print the atom count
-indices = view.select("chain A")
+indices = view.whole.select("chain A")
 print(len(indices), "atoms selected")
 ```
 
@@ -29,14 +29,14 @@ If your selection matches more atoms than expected:
 - Inspect what you selected:
 
 ```python
-indices = view.select("resname HOH")
+indices = view.whole.select("resname HOH")
 print(f"Selected {len(indices)} water atoms")
 ```
 
 ## Selection does not create a region
 
 `view.create_region(selection=..., tag=...)` requires a non-empty atom-index
-list. Check that `view.select(selection)` is non-empty first.
+list. Check that `view.whole.select(selection)` is non-empty first.
 
 ## Active selection out of sync
 
@@ -48,5 +48,5 @@ view.active_selection.clear()   # reset both Python and frontend state
 
 ## Selection after `remove()` or `set()`
 
-After a structural edit, atom indices are remapped. Re-run `view.select(...)`
+After a structural edit, atom indices are remapped. Re-run `view.whole.select(...)`
 after the edit rather than reusing a cached index list.

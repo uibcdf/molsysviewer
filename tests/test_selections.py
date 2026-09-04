@@ -3,7 +3,7 @@ from _edit_helpers import apply_remove
 
 
 def _seed_group_selection(view, group_index=1):
-    atom_indices = list(view.select(selection=f"group_index=={group_index}"))
+    atom_indices = list(view.whole.select(selection=f"group_index=={group_index}"))
     event = {
         "event": "interaction_active_selection_changed",
         "source_kind": "element",
@@ -154,7 +154,7 @@ def test_persistent_selection_records_are_exported_and_remapped_on_remove():
 
 def test_query_selection_provenance_replays_after_system_edit():
     view = demo["dialanine"]
-    selected = list(view.select(selection="group_index==1"))
+    selected = list(view.whole.select(selection="group_index==1"))
 
     view.selections.add_selection("query-picked", "group_index==1")
 
@@ -167,7 +167,7 @@ def test_query_selection_provenance_replays_after_system_edit():
 
     apply_remove(view, selection="group_index==0")
 
-    reevaluated = list(view.select(selection="group_index==1"))
+    reevaluated = list(view.whole.select(selection="group_index==1"))
     remapped = view.selections.info("query-picked")
     assert remapped["atom_indices"] == reevaluated
     assert remapped["recipe"][0]["expression"] == "group_index==1"
@@ -176,8 +176,8 @@ def test_query_selection_provenance_replays_after_system_edit():
 
 def test_selection_frontend_actions():
     view = demo["dialanine"]
-    g0 = list(view.select(selection="group_index==0"))
-    g1 = list(view.select(selection="group_index==1"))
+    g0 = list(view.whole.select(selection="group_index==0"))
+    g1 = list(view.whole.select(selection="group_index==1"))
 
     # Seed active selection and save as "picked-g0"
     view.active_selection.set(g0)

@@ -3,10 +3,12 @@ from __future__ import annotations
 import json
 from typing import Any
 
-# Unused in this module's own body, and load-bearing anyway: `tests/test_zoom.py`
-# patches `molsysviewer.viewer.camera.msm.select` through this name. Removed once by
-# `ruff --fix` acting on its F401, which broke that patch target.
-import molsysmt as msm  # noqa: F401
+# `zoom` resolves its selection through `msm.select` -- since uibcdf/molsysviewer#71 it
+# calls MolSysMT directly rather than through the viewer's own removed `select`.
+# `tests/test_zoom.py` patches `molsysviewer.viewer.camera.msm.select` through this name,
+# which used to be the *only* reason the import existed: `ruff --fix` removed it once on
+# its F401 and broke that patch target. It is now used as well as patched.
+import molsysmt as msm
 from smonitor import signal
 
 from .._private.argdigest import digest
@@ -81,9 +83,11 @@ class CameraManager:
         if view._molsys is None:  # noqa: SLF001
             raise ValueError("No molecular system loaded. Load a system before calling zoom().")
 
-        atom_indices = view.select(
+        atom_indices = msm.select(
+            view._molsys,  # noqa: SLF001
             selection=selection,
             structure_indices=structure_indices,
+            element="atom",
             syntax=syntax,
             skip_digestion=True,
         )

@@ -37,7 +37,7 @@ view.contains(lipid=True)                      # False — no lipid at all
 Both narrow a system down; they differ in what you get back.
 
 ```python
-molsys = view.convert(to_form="molsysmt.MolSys")           # a MolSysMT object
+molsys = view.whole.convert(to_form="molsysmt.MolSys")           # a MolSysMT object
 protein = view.extract(selection='molecule_type=="protein"')  # another view
 ```
 
@@ -54,5 +54,5 @@ at once.
 If you are new to these ideas, the best starting point is:
 
 - {doc}`../molecular_system/molecular_system`
-- {doc}`../molecular_system/get` — `view.get` in depth
+- {doc}`../molecular_system/get` — `view.whole.get` in depth
 - {doc}`../tools/basic/extract` — `extract` as a scene operation

@@ -379,8 +379,8 @@ def test_region_set_color_by_attribute_rejects_missing_attribute():
 
 def test_region_frontend_actions_route_through_public_api():
     view = demo["dialanine"]
-    group_0 = list(view.select(selection="group_index==0"))
-    group_1 = list(view.select(selection="group_index==1"))
+    group_0 = list(view.whole.select(selection="group_index==0"))
+    group_1 = list(view.whole.select(selection="group_index==1"))
     view.regions.add(atom_indices=group_0, tag="left", skip_digestion=True)
     view.regions.add(atom_indices=group_1, tag="right", skip_digestion=True)
 

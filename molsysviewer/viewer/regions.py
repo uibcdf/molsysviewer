@@ -361,7 +361,8 @@ class RegionsMixin:
         if self._molsys is None:
             raise ValueError("No molecular system loaded. Load a system before splitting into regions.")
 
-        atom_indices = self.select(
+        atom_indices = msm.select(
+            self._molsys,
             selection=selection,
             structure_indices=structure_indices,
             element="atom",
@@ -964,7 +965,8 @@ class RegionsMixin:
             )
         if self._molsys is None:
             raise ValueError("No molecular system loaded.")
-        atom_indices = self.select(
+        atom_indices = msm.select(
+            self._molsys,
             selection=selection,
             structure_indices=structure_indices,
             element="atom",

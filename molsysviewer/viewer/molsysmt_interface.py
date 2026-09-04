@@ -1,19 +1,13 @@
 from __future__ import annotations
 
 
-import time
-import inspect
-from typing import Any, Mapping
+from typing import Any
 
-import numpy as np
 import molsysmt as msm
 from smonitor import signal
-from depdigest import dep_digest
 from .._private.delegated_errors import as_our_argument_error
 
-from .._pyunitwizard import puw
 from .._private.argdigest import digest
-from .._private.variables import is_all
 
 
 class MolSysMTInterfaceMixin:
@@ -326,109 +320,6 @@ class MolSysMTInterfaceMixin:
         the half that has moved.
         """
         return self._convert_info_output(self._viewer_info_records(), output_type)
-
-    @signal(tags=["selection"])
-    @digest()
-    def select(
-        self,
-        selection="all",
-        structure_indices="all",
-        element="atom",
-        mask=None,
-        syntax="MolSysMT",
-        skip_digestion=False,
-    ):
-        """Select indices from the current molecular system (MolSysMT selection language).
-
-        Notes
-        -----
-        This method intentionally focuses on the common workflow: returning indices.
-        """
-        local_res = msm.select(
-            self._molsys,
-            selection=selection,
-            structure_indices=structure_indices,
-            element=element,
-            mask=mask,
-            syntax=syntax,
-            skip_digestion=True,
-        )
-        return local_res
-
-    @signal(tags=["query"])
-    def get(
-        self,
-        element="system",
-        selection="all",
-        structure_indices="all",
-        mask=None,
-        syntax="MolSysMT",
-        get_missing_bonds=True,
-        output_type="values",
-        skip_digestion=False,
-        **kwargs,
-    ):
-        """Retrieve attribute values from the current molecular system (MolSysMT get).
-
-        Digestion is MolSysMT's. Every argument here is theirs -- this signature is
-        `msm.get`'s -- and our copies of their attribute digesters were measured to accept
-        exactly the same values, so a second pass was duplication rather than safety
-        (`uibcdf/molsysviewer#71`).
-
-        What is not delegated is the message. Their `ArgumentError` is restated as ours so
-        the caller a user reads is the method they actually called.
-        """
-        try:
-            return msm.get(
-                self._molsys,
-                element=element,
-                selection=selection,
-                structure_indices=structure_indices,
-                mask=mask,
-                syntax=syntax,
-                get_missing_bonds=get_missing_bonds,
-                output_type=output_type,
-                skip_digestion=skip_digestion,
-                **kwargs,
-            )
-        except Exception as exc:
-            raise as_our_argument_error(exc, "molsysviewer.viewer.get") from exc
-
-    @signal(tags=["convert"])
-    @dep_digest("molsysmt")
-    def convert(
-        self,
-        to_form="molsysmt.MolSys",
-        *,
-        selection="all",
-        structure_indices="all",
-        syntax="MolSysMT",
-        skip_digestion=False,
-        **kwargs,
-    ):
-        """Convert this viewer to another form.
-
-        Notes
-        -----
-        The initial implementation delegates conversion to the current
-        molecular system stored in the view. Future target forms may support
-        richer viewer-state-aware conversions when MolSysMT exposes them.
-        """
-        if self._molsys is None:
-            raise ValueError("No molecular system loaded. Load a system before calling convert().")
-
-        try:
-            return msm.convert(
-                self._molsys,
-                to_form=to_form,
-                selection=selection,
-                structure_indices=structure_indices,
-                syntax=syntax,
-                skip_digestion=skip_digestion,
-                **kwargs,
-            )
-        except Exception as exc:
-            raise as_our_argument_error(exc, "molsysviewer.viewer.convert") from exc
 
     @signal(tags=["query"])
     @digest()

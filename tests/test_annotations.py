@@ -7,7 +7,7 @@ from molsysviewer import demo
 
 def test_group_label_registers_annotation_layer_and_export_message():
     view = demo["dialanine"]
-    expected_atom_indices = list(view.select(selection="group_index==0"))
+    expected_atom_indices = list(view.whole.select(selection="group_index==0"))
 
     layer = view.annotations.add_annotation(text="Group 0", selection="group_index==0", tag="notes")
 
@@ -80,8 +80,8 @@ def test_annotation_manager_supports_query_and_layer_operations():
         "layer_tag": "notes",
         "text": "Group 0",
         "style": {},
-        "n_atoms": len(view.select(selection="group_index==0")),
-        "atom_indices": list(view.select(selection="group_index==0")),
+        "n_atoms": len(view.whole.select(selection="group_index==0")),
+        "atom_indices": list(view.whole.select(selection="group_index==0")),
         "visible": True,
         "active": True,
         "broken": False,
@@ -209,7 +209,7 @@ def test_annotation_manager_set_anchor_reanchors_in_canonical_export():
     view = demo["dialanine"]
     view.annotations.add_annotation(text="Anchor", selection="group_index==0", tag="notes")
 
-    expected_atom_indices = list(view.select(selection="group_index==1"))
+    expected_atom_indices = list(view.whole.select(selection="group_index==1"))
     view.annotations.set_anchor("notes", selection="group_index==1")
 
     assert view.annotations.info("notes")["atom_indices"] == expected_atom_indices
@@ -223,7 +223,7 @@ def test_annotation_manager_set_anchor_accepts_explicit_atom_indices():
     view = demo["dialanine"]
     view.annotations.add_annotation(text="Anchor", selection="group_index==0", tag="notes")
 
-    explicit = list(view.select(selection="group_index==1"))
+    explicit = list(view.whole.select(selection="group_index==1"))
     view.annotations.set_anchor("notes", atom_indices=explicit)
 
     assert view.annotations.info("notes")["atom_indices"] == explicit
@@ -233,7 +233,7 @@ def test_annotation_manager_set_group_index_is_deprecated_wrapper():
     view = demo["dialanine"]
     view.annotations.add_annotation(text="Anchor", selection="group_index==0", tag="notes")
 
-    expected_atom_indices = list(view.select(selection="group_index==1"))
+    expected_atom_indices = list(view.whole.select(selection="group_index==1"))
     with pytest.warns(DeprecationWarning, match="set_group_index"):
         view.annotations.set_group_index("notes", 1)
 
@@ -242,7 +242,7 @@ def test_annotation_manager_set_group_index_is_deprecated_wrapper():
 
 def test_add_annotation_with_style_stores_style_in_message():
     view = demo["dialanine"]
-    expected_atom_indices = list(view.select(selection="group_index==0"))
+    expected_atom_indices = list(view.whole.select(selection="group_index==0"))
 
     view.annotations.add_annotation(
         text="Styled",

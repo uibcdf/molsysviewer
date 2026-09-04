@@ -7,7 +7,7 @@ from molsysviewer.loaders.load_molsysmt import load_from_molsysmt
 
 
 def _seed_group_selection(view, group_index=1):
-    atom_indices = list(view.select(selection=f"group_index=={group_index}"))
+    atom_indices = list(view.whole.select(selection=f"group_index=={group_index}"))
     event = {
         "event": "interaction_active_selection_changed",
         "source_kind": "element",
@@ -75,7 +75,7 @@ def test_active_selection_focus_new_region_and_add_label_delegate_to_reproducibl
 def test_active_selection_set_selects_atoms_and_emits_frontend_message():
     view = demo["dialanine"]
 
-    expected = sorted(int(i) for i in view.select(selection="group_index==1"))
+    expected = sorted(int(i) for i in view.whole.select(selection="group_index==1"))
     result = view.active_selection.set("group_index==1")
 
     assert result is view.active_selection
@@ -108,8 +108,8 @@ def test_combine_selection_indices_rejects_unknown_ops():
 
 def test_context_action_apply_selection_query_combines_with_active_selection():
     view = demo["dialanine"]
-    group_0 = list(view.select(selection="group_index==0"))
-    group_1 = list(view.select(selection="group_index==1"))
+    group_0 = list(view.whole.select(selection="group_index==0"))
+    group_1 = list(view.whole.select(selection="group_index==1"))
     view.active_selection.set(group_0)
 
     view._handle_frontend_event(  # noqa: SLF001
@@ -149,7 +149,7 @@ def test_context_action_apply_selection_query_combines_with_active_selection():
 
 def test_active_selection_all_none_invert_operations_and_recipe():
     view = demo["dialanine"]
-    group_0 = list(view.select(selection="group_index==0"))
+    group_0 = list(view.whole.select(selection="group_index==0"))
     n_atoms = int(view._molsys.get_n_atoms())  # noqa: SLF001
     view.active_selection.set(group_0)
 
@@ -247,7 +247,7 @@ def test_context_action_preview_selection_query_is_runtime_only():
     assert sent[-1]["op"] == "selection_query_preview"
     assert sent[-1]["request_id"] == 7
     assert sent[-1]["ok"] is True
-    assert sent[-1]["count"] == len(view.select(selection="group_index==1"))
+    assert sent[-1]["count"] == len(view.whole.select(selection="group_index==1"))
 
 
 def test_context_action_apply_selection_query_error_keeps_active_selection():
@@ -300,7 +300,7 @@ def test_context_action_preview_selection_query_error_is_inline_runtime_only():
 
 def test_context_action_expand_selection_to_hierarchical_levels():
     view = demo["dialanine"]
-    group_1 = list(view.select(selection="group_index==1"))
+    group_1 = list(view.whole.select(selection="group_index==1"))
     view.active_selection.set(group_1[:2])
 
     view._handle_frontend_event(  # noqa: SLF001
@@ -359,7 +359,7 @@ def test_context_action_spatial_expand_selection_matches_native_within():
     view = demo["dialanine"]
     view.active_selection.set([0, 1])
     expected = list(
-        view.select(
+        view.whole.select(
             selection="all within 4 angstroms of atom_index in [0, 1]",
             syntax="MolSysMT",
             element="atom",

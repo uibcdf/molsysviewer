@@ -139,9 +139,34 @@ class Whole:
     # --- MolSysMT query helpers (delegated to MolSysView) ---
 
     @signal(tags=["selection", "whole"])
-    def select(self, *args: Any, skip_digestion: bool = False, **kwargs: Any):
-        """Select indices from the whole system (delegates to `MolSysView.select`)."""
-        return self._view.select(*args, skip_digestion=skip_digestion, **kwargs)
+    def select(
+        self,
+        selection: Any = "all",
+        structure_indices: Any = "all",
+        element: str = "atom",
+        mask: Any = None,
+        syntax: str = "MolSysMT",
+        skip_digestion: bool = False,
+    ):
+        """Select indices in **the molecular system**.
+
+        The whole *is* the system, so this is `msm.select` on it. A region scopes the same
+        call to its own elements with MolSysMT's `mask`; see :meth:`Region.select`.
+
+        Digested by MolSysMT; only the caller named in an error is ours.
+        """
+        try:
+            return msm.select(
+                self._view._molsys,  # noqa: SLF001
+                selection=selection,
+                structure_indices=structure_indices,
+                element=element,
+                mask=mask,
+                syntax=syntax,
+                skip_digestion=skip_digestion,
+            )
+        except Exception as exc:
+            raise as_our_argument_error(exc, "molsysviewer.whole.select") from exc
 
     @signal(tags=["query", "whole"])
     def get(self, *args: Any, skip_digestion: bool = False, **kwargs: Any):

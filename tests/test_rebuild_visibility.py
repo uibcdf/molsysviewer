@@ -280,7 +280,7 @@ def test_export_messages_ordered_after_remove_then_append():
     view = demo["pentalanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
-    atom_indices = list(view.select(selection="group_index==2"))
+    atom_indices = list(view.whole.select(selection="group_index==2"))
     view.regions.add(atom_indices=atom_indices, tag="site", skip_digestion=True)
     view.annotations.add_annotation(
         text="Site label",
@@ -316,7 +316,7 @@ def test_export_messages_region_atom_indices_remapped_after_rebuild_chain():
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
     # Use atoms well above index 3 so the remap is predictable
-    atom_indices_before = list(view.select(selection="group_index==3"))
+    atom_indices_before = list(view.whole.select(selection="group_index==3"))
     view.regions.add(atom_indices=atom_indices_before, tag="stable", skip_digestion=True)
 
     # Remove atoms 0..2 — indices shift by -3

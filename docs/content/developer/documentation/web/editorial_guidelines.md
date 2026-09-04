@@ -247,7 +247,7 @@ Readers often scan the sidebar for the name of the method they remember (for exa
 When a page documents a specific user-facing method:
 
 - Prefer short, obvious titles (for example “Getting attributes”, “Quick info”, “Removing elements”).
-- Include the exact method name early in the page (for example “This page documents `view.get(...)`.").
+- Include the exact method name early in the page (for example “This page documents `view.whole.get(...)`.").
 
 ## User-facing API naming (avoid unit suffixes)
 

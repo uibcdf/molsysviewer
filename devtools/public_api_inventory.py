@@ -83,22 +83,22 @@ DELIBERATELY_NOT_DIGESTED: dict[str, str] = {
         "lazy import wrapper; the imported callable is the one with a signature",
     "molsysviewer.launch_standalone_qt0":
         "lazy import wrapper; the imported callable is the one with a signature",
-    "view.get":
-        "named delegating forwarder: its signature is msm.get's, and MolSysMT digests it",
-    "view.convert":
-        "named delegating forwarder to msm.convert; MolSysMT digests it",
     "view.whole.get":
         "named delegating forwarder to msm.get; the whole *is* the system",
+    "view.whole.info":
+        "named delegating forwarder to msm.info; the whole *is* the system",
+    "view.whole.select":
+        "named delegating forwarder to msm.select; the whole *is* the system",
+    "view.regions[…].info":
+        "named delegating forwarder to msm.info, masked to the region's atoms",
+    "view.regions[…].select":
+        "named delegating forwarder to msm.select, with the region's elements as mask",
     "view.regions[…].get":
         "named delegating forwarder to msm.get, scoped to the region's atoms",
     "view.whole.convert":
         "named delegating forwarder to msm.convert; the whole *is* the system",
     "view.regions[…].convert":
         "named delegating forwarder to msm.convert, scoped to the region's atoms",
-    "view.whole.info":
-        "pure forwarder to view.info, which digests",
-    "view.whole.select":
-        "pure forwarder to view.select, which digests",
     "view.annotations.add":
         "alias forwarding to add_annotation, which digests",
     "view.history.coalescing":

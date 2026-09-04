@@ -9,7 +9,7 @@ from _edit_helpers import apply_remove
 
 
 def _seed_group_selection(view, group_index):
-    atom_indices = list(view.select(selection=f"group_index=={group_index}"))
+    atom_indices = list(view.whole.select(selection=f"group_index=={group_index}"))
     event = {
         "event": "interaction_active_selection_changed",
         "source_kind": "element",
@@ -100,7 +100,7 @@ def test_context_action_create_region_from_selection_executes_python_bridge():
 
 def test_context_action_save_selection_executes_python_bridge():
     view = demo["dialanine"]
-    atom_indices = list(view.select(selection="group_index==0"))
+    atom_indices = list(view.whole.select(selection="group_index==0"))
     view._handle_frontend_event(  # noqa: SLF001
         {
             "event": "interaction_active_selection_changed",
@@ -220,7 +220,7 @@ def test_context_action_remove_selection_prefers_molsysmt_addon_bridge():
 
 def test_context_action_activate_selection_executes_python_bridge():
     view = demo["dialanine"]
-    atom_indices = list(view.select(selection="group_index==1"))
+    atom_indices = list(view.whole.select(selection="group_index==1"))
     view._handle_frontend_event(  # noqa: SLF001
         {
             "event": "interaction_active_selection_changed",
@@ -258,7 +258,7 @@ def test_context_action_activate_selection_executes_python_bridge():
 
 def test_add_label_from_active_selection_creates_replayable_annotation():
     view = demo["dialanine"]
-    atom_indices = list(view.select(selection="group_index==0"))
+    atom_indices = list(view.whole.select(selection="group_index==0"))
     event = {
         "event": "interaction_active_selection_changed",
         "source_kind": "element",
@@ -297,7 +297,7 @@ def test_add_label_from_active_selection_creates_replayable_annotation():
 
 def test_context_action_add_label_from_selection_executes_python_bridge():
     view = demo["dialanine"]
-    atom_indices = list(view.select(selection="group_index==0"))
+    atom_indices = list(view.whole.select(selection="group_index==0"))
     view._handle_frontend_event(  # noqa: SLF001
         {
             "event": "interaction_active_selection_changed",
@@ -334,7 +334,7 @@ def test_context_action_add_label_from_selection_executes_python_bridge():
 
 def test_context_action_delete_annotation_executes_python_bridge():
     view = demo["dialanine"]
-    atom_indices = list(view.select(selection="group_index==0"))
+    atom_indices = list(view.whole.select(selection="group_index==0"))
     view.annotations.add_label(text="Picked group", group_index=0, tag="picked-label")
 
     view._handle_frontend_event(  # noqa: SLF001
@@ -496,7 +496,7 @@ def _seed_multi_group_selection(view, group_indices):
     """Seed an active-selection event spanning multiple residue groups."""
     atom_indices = []
     for gi in group_indices:
-        atom_indices.extend(list(view.select(selection=f"group_index=={gi}")))
+        atom_indices.extend(list(view.whole.select(selection=f"group_index=={gi}")))
     event = {
         "event": "interaction_active_selection_changed",
         "source_kind": "element",
@@ -620,7 +620,7 @@ def test_scientific_workflow_region_rename_styled_label_measurement_export():
     assert view.annotations.count() == 1
 
     # Step 3: distance measurement between group 0 atom 0 and group 2 atom 0
-    group_2_atoms = list(view.select(selection="group_index==2"))
+    group_2_atoms = list(view.whole.select(selection="group_index==2"))
     view._handle_frontend_event(  # noqa: SLF001
         {
             "event": "interaction_measurement_created",
@@ -655,7 +655,7 @@ def test_scientific_workflow_region_rename_styled_label_measurement_export():
 def test_full_reproducible_workflow_exports_region_selection_label_and_measurement():
     view = demo["dialanine"]
     group_1_atoms = _seed_group_selection(view, 1)
-    group_2_atoms = list(view.select(selection="group_index==2"))
+    group_2_atoms = list(view.whole.select(selection="group_index==2"))
 
     region = view.active_selection.new_region(tag="picked-region", representation="ball_and_stick")
     selection = view.active_selection.save("picked")
@@ -702,7 +702,7 @@ def test_full_reproducible_workflow_exports_region_selection_label_and_measureme
 def test_full_reproducible_workflow_remaps_region_selection_label_and_measurement_on_remove():
     view = demo["dialanine"]
     group_1_atoms = _seed_group_selection(view, 1)
-    group_2_atoms = list(view.select(selection="group_index==2"))
+    group_2_atoms = list(view.whole.select(selection="group_index==2"))
 
     view.active_selection.new_region(tag="picked-region", representation="ball_and_stick")
     view.active_selection.save("picked")
@@ -719,8 +719,8 @@ def test_full_reproducible_workflow_remaps_region_selection_label_and_measuremen
 
     apply_remove(view, selection="group_index==0")
 
-    remapped_group_0_atoms = list(view.select(selection="group_index==0"))
-    remapped_group_1_atoms = list(view.select(selection="group_index==1"))
+    remapped_group_0_atoms = list(view.whole.select(selection="group_index==0"))
+    remapped_group_1_atoms = list(view.whole.select(selection="group_index==1"))
     endpoint_labels = list(
         msm.get(
             view._molsys,  # noqa: SLF001

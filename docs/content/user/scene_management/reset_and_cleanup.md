@@ -18,8 +18,8 @@ If you want a quick, practical workflow, prefer these methods over mutating `vie
 
 ```python
 # Query helpers (MolSysMT under the hood)
-view.select("atom_name == 'CA'")
-view.get(element="system", n_atoms=True)
+view.whole.select("atom_name == 'CA'")
+view.whole.get(element="system", n_atoms=True)
 view.whole.info(element="system")
 ```
 

@@ -8,7 +8,7 @@ import sys
 def test_build_export_messages_captures_reproducible_workbench_state_end_to_end():
     view = demo["dialanine"]
 
-    atom_indices = list(view.select(selection="group_index==1"))
+    atom_indices = list(view.whole.select(selection="group_index==1"))
     view._handle_frontend_event(  # noqa: SLF001
         {
             "event": "interaction_active_selection_changed",

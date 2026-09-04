@@ -60,6 +60,26 @@ def test_a_region_scopes_element_level_attributes_to_its_own_atoms():
     assert list(region.get(element="atom", index=True)) == [0, 1, 2]
 
 
+def test_a_callers_mask_narrows_a_region_and_cannot_widen_it():
+    """`mask` composes with the region's scope rather than replacing it.
+
+    A region is a subset; asking it a question with a mask of your own can only narrow it
+    further. Replacing instead of composing was measured to answer for the whole system —
+    497 atoms instead of the region's 248 — which is the wrong answer to a question asked
+    of a region.
+    """
+    view = demo["1TCD"]
+    view.make_regions_by("chain")
+    regions = view.regions
+    region = list(regions.values())[0] if hasattr(regions, "values") else regions[0]
+
+    scoped = region.select(selection="all", element="atom", mask='atom_name=="CA"')
+    everywhere = view.whole.select(selection='atom_name=="CA"', element="atom")
+
+    assert len(scoped) < len(everywhere), (len(scoped), len(everywhere))
+    assert set(scoped) <= set(region.atom_indices)
+
+
 def test_a_regions_system_level_attributes_are_the_whole_systems():
     """Surprising, pre-existing, and worth pinning so it is a decision rather than a bug.
 
@@ -181,7 +201,7 @@ def test_tools_basic_merge_returns_new_view_from_multiple_views():
 def test_object_api_convert_delegates_to_current_molecular_system():
     view = demo["dialanine"]
 
-    converted = view.convert(to_form="molsysmt.MolSys")
+    converted = view.whole.convert(to_form="molsysmt.MolSys")
 
     assert msm.get(converted, element="system", n_atoms=True, skip_digestion=True) == 22
     assert msm.get(converted, element="system", n_structures=True, skip_digestion=True) == 1

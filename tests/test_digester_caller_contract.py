@@ -10,10 +10,11 @@ its whitelist names its own function, so the failure mode that guard existed for
 recur in that form. What can still break is the thing a user cares about, and that is what
 is asked here instead: **does the attribute answer?**
 
-The question is asked of all three objects, because they used to differ. `region.get`
-refused 77 of the 118 attributes `view.get` answered, for exactly the whitelist reason
-above — its caller was in no list. Delegation made the three agree; this keeps them
-agreeing.
+The question is asked of both objects that answer it, because they used to differ:
+`region.get` refused 77 of the 118 attributes the view answered, for exactly the whitelist
+reason above — its caller was in no list. Delegation made them agree; this keeps them
+agreeing. The view itself no longer answers at all — `view.get` was removed in phase D of
+`uibcdf/molsysviewer#75`, and the whole is where the system is asked.
 """
 
 from __future__ import annotations
@@ -56,34 +57,36 @@ def _answered(target) -> set[str]:
     return answered
 
 
-def test_the_view_answers_most_of_the_attribute_surface(view):
+def test_the_whole_answers_most_of_the_attribute_surface(view):
     """A floor, not an exact count: MolSysMT refusing some of its own is theirs to decide."""
-    assert len(_answered(view)) >= 100
+    assert len(_answered(view.whole)) >= 100
 
 
-def test_the_whole_answers_exactly_what_the_view_does(view):
-    """The whole *is* the system, so a difference here is a bug on our side by definition."""
-    assert _answered(view.whole) == _answered(view)
-
-
-def test_a_region_answers_exactly_what_the_view_does(view, region):
+def test_a_region_answers_exactly_what_the_whole_does(view, region):
     """The regression this file was rewritten for.
 
-    Before delegation a region answered 41 of 118 where the view answered 105 — not
+    Before delegation a region answered 41 of 118 where the system answered 105 — not
     because a region is different, but because our copies whitelisted
-    `molsysviewer.viewer.get` and never `molsysviewer.regions.get`.
+    `molsysviewer.viewer.get` and never `molsysviewer.regions.get`. A region holds fewer
+    atoms, not fewer *kinds of question*.
     """
-    assert _answered(region) == _answered(view)
+    assert _answered(region) == _answered(view.whole)
 
 
-@pytest.mark.parametrize("owner", ["view", "whole", "region"])
+def test_the_view_itself_no_longer_answers_about_the_system():
+    """Phase D: the question has one place to be asked, and it is not the view."""
+    import molsysviewer as msv
+
+    assert not hasattr(msv.demo["1TCD"], "get")
+
+
+@pytest.mark.parametrize("owner", ["whole", "region"])
 def test_a_rejected_value_names_the_method_the_user_called(view, region, owner):
     """Delegated digestion must not delegate the message. See `_private/delegated_errors.py`."""
     from molsysviewer._private.exceptions import ArgumentError
 
-    target = {"view": view, "whole": view.whole, "region": region}[owner]
+    target = {"whole": view.whole, "region": region}[owner]
     expected = {
-        "view": "molsysviewer.viewer.get",
         "whole": "molsysviewer.whole.get",
         "region": "molsysviewer.regions.get",
     }[owner]

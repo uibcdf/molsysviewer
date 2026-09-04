@@ -39,10 +39,10 @@ def test_molsysmt_loaded_subselection():
     
     assert view._atom_index_mapper is not None
     assert view._structure_index_mapper is None
-    assert view._atom_index_mapper.original_atoms == list(orig_view.select("group_index==1"))
+    assert view._atom_index_mapper.original_atoms == list(orig_view.whole.select("group_index==1"))
     assert view._atom_index_mapper.original_structures is None
     # Runtime queries use the loaded `_molsys` index space.
-    selected = view.select("all")
+    selected = view.whole.select("all")
     assert list(selected) == list(range(10))
     
     # Active selection picking event emulation

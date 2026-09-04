@@ -9,7 +9,7 @@ run, 4,674 digested calls across 210 distinct callers matched none of them.
 The consequence was user-visible, not cosmetic. `view.get` forwards to `msm.get` with
 `skip_digestion=True` — deliberately, since the arguments are digested once, here — so
 MolSysMT's own normalization never runs on it either. Nothing renamed anything, and
-`view.get(element='group', index=True)` raised `KeyError: 'index'`.
+`view.whole.get(element='group', index=True)` raised `KeyError: 'index'`.
 
 So the tests below are the port's only real evidence. Each one fails against the code as
 it stood before the migration.
@@ -62,8 +62,8 @@ def test_a_bare_element_name_means_the_attribute_of_that_element(view, element, 
     """`element='group', name=True` is `group_name`, and must agree with spelling it out."""
     selection = "atom_index==[0,1]"
 
-    through_bare_name = view.get(selection=selection, element=element, **{bare: True})
-    spelled_out = view.get(selection=selection, element=element, **{canonical: True})
+    through_bare_name = view.whole.get(selection=selection, element=element, **{bare: True})
+    spelled_out = view.whole.get(selection=selection, element=element, **{canonical: True})
 
     assert list(through_bare_name) == list(spelled_out)
 
@@ -72,8 +72,8 @@ def test_the_same_bare_name_follows_the_element_it_was_asked_about(view):
     """`name` is not one attribute: it is whichever the element makes it."""
     selection = "atom_index==[0,1]"
 
-    assert list(view.get(selection=selection, element="atom", name=True)) == ["H1", "CH3"]
-    assert list(view.get(selection=selection, element="group", name=True)) == ["ACE"]
+    assert list(view.whole.get(selection=selection, element="atom", name=True)) == ["H1", "CH3"]
+    assert list(view.whole.get(selection=selection, element="group", name=True)) == ["ACE"]
 
 
 @pytest.mark.parametrize("synonym, canonical", [("atom_names", "atom_name"),
@@ -81,13 +81,13 @@ def test_the_same_bare_name_follows_the_element_it_was_asked_about(view):
 def test_attribute_synonyms_reach_get(view, synonym, canonical):
     selection = "atom_index==[0,1]"
 
-    assert list(view.get(selection=selection, element="atom", **{synonym: True})) \
-        == list(view.get(selection=selection, element="atom", **{canonical: True}))
+    assert list(view.whole.get(selection=selection, element="atom", **{synonym: True})) \
+        == list(view.whole.get(selection=selection, element="atom", **{canonical: True}))
 
 
 def test_an_alias_and_its_canonical_name_are_rejected_together(view):
     with pytest.raises(ArgumentConsistencyError, match="atom_names.*atom_name"):
-        view.get(element="atom", atom_names=True, atom_name=False)
+        view.whole.get(element="atom", atom_names=True, atom_name=False)
 
 
 def test_attribute_synonyms_reach_get(view):
@@ -127,7 +127,7 @@ def test_a_pure_forwarder_needs_no_table_of_its_own(view):
     instead mean renaming twice.
     """
     assert list(view.whole.get(element="group", index=True)) \
-        == list(view.get(element="group", group_index=True))
+        == list(view.whole.get(element="group", group_index=True))
 
 
 def test_every_method_that_forwards_undigested_kwargs_has_a_table(registry):
@@ -196,7 +196,7 @@ def test_the_synonyms_are_not_declared_globally(registry):
 
 def test_a_real_atom_indices_argument_survives_untouched(view):
     """The end of the same trap, exercised rather than asserted about the tables."""
-    assert list(view.select(selection="atom_index==[0,1]")) == [0, 1]
+    assert list(view.whole.select(selection="atom_index==[0,1]")) == [0, 1]
 
 
 def test_the_normalization_package_is_empty_and_says_why():

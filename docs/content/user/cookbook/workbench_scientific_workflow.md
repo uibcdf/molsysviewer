@@ -47,7 +47,7 @@ Here we isolate the central ALA residue and leave the rest as-is:
 
 ```python
 # Atom indices for the ALA residue (group_index 1 in dialanine)
-ala_atoms = list(view.select(selection="group_index==1"))
+ala_atoms = list(view.whole.select(selection="group_index==1"))
 
 # ALA residue: ball-and-stick to highlight it
 region_ala = view.regions.add(
@@ -72,7 +72,7 @@ No panel interaction is needed — regions are Python-first.
 Add a label on the ACE cap (N-terminal side):
 
 ```python
-ace_atoms = list(view.select(selection="group_index==0"))
+ace_atoms = list(view.whole.select(selection="group_index==0"))
 view.annotations.add_annotation(
     text="ACE cap",
     atom_indices=ace_atoms,
@@ -103,8 +103,8 @@ Add a distance measurement between the backbone nitrogen and alpha-carbon
 of the ALA residue:
 
 ```python
-n_atom  = list(view.select(selection="group_index==1 and atom_name=='N'"))
-ca_atom = list(view.select(selection="group_index==1 and atom_name=='CA'"))
+n_atom  = list(view.whole.select(selection="group_index==1 and atom_name=='N'"))
+ca_atom = list(view.whole.select(selection="group_index==1 and atom_name=='CA'"))
 
 dist = view.measurements.add_distance(
     selection_a=n_atom,
@@ -174,7 +174,7 @@ exactly what you built, with no dependency on the original notebook.
 ## API surfaces used
 
 - `view.set_panel_mode(panel=...)`
-- `view.select(selection=...)`
+- `view.whole.select(selection=...)`
 - `view.regions.add(atom_indices=..., tag=..., representation=...)`
 - `view.regions.add(complement_of_regions=..., tag=..., representation=...)`
 - `view.annotations.add_annotation(text=..., atom_indices=..., tag=..., label_style=...)`

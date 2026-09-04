@@ -574,7 +574,8 @@ class MolSysView(
             raise ValueError("Selection query requires a non-empty expression.")
         return [
             int(item)
-            for item in self.select(
+            for item in msm.select(
+                self._molsys,
                 selection=selection.strip(),
                 syntax=syntax,
                 element="atom",

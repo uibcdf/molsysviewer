@@ -483,7 +483,11 @@ class SelectionsManager:
             raise ValueError("No molecular system loaded.")
         resolved = [
             int(i)
-            for i in self._view.select(
+            # `msm.select` directly: the viewer's own `select` was removed in
+            # uibcdf/molsysviewer#71, and internal code has no reason to reach MolSysMT
+            # through a public façade.
+            for i in msm.select(
+                self._view._molsys,  # noqa: SLF001
                 selection=selection,
                 element=element,
                 mask=mask,
