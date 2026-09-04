@@ -34,5 +34,6 @@ import "./webgl-status-overlay.test";
 import "./trajectory-plot-overlay.test";
 import "./projected-trajectory-controls.test";
 import "./remote-file-controls.test";
+import "./remote-surface-controls.test";
 import "./font-assets.test";
 import "./runtime-action-manifest.test";

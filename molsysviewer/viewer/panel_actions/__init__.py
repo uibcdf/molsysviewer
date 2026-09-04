@@ -37,7 +37,6 @@ HANDLERS = _build_handlers()
 # These names belong to the closed TypeScript PanelAction vocabulary but are
 # intentionally consumed by the browser before the Python dispatch seam.
 FRONTEND_LOCAL_PANEL_ACTIONS = frozenset({
-    "reset_view",
     "undo_active_selection",
     "redo_active_selection",
     "begin_scene_history_coalescing",

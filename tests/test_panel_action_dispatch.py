@@ -37,6 +37,17 @@ def test_every_declared_context_only_action_has_a_handler():
     assert CONTEXT_ONLY_ACTIONS <= set(HANDLERS)
 
 
+def test_remote_reset_view_routes_through_the_python_authority():
+    view = demo["pentalanine"]
+    sent = []
+    view.widget.send = lambda message: sent.append(message)  # type: ignore[method-assign]
+    view._ready = True  # noqa: SLF001
+
+    dispatch_panel_action(view, {"action": "reset_view"})
+
+    assert sent[-1] == {"op": "reset_view", "options": {}}
+
+
 def test_trajectory_context_actions_mutate_python_authority_and_project_summary():
     view = demo["pentalanine"]
     sent = []

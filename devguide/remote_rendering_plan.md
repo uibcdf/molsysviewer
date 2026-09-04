@@ -810,6 +810,26 @@ and implement the minimum required server-rendered control parity explicitly;
 do not claim that the present video client is indistinguishable from the full
 standalone. Quality adaptation and complete UI parity remain separate work.
 
+The 1.0 parity inventory is deliberately capability-based rather than
+pixel-based:
+
+| Surface | 1.0 decision | Reason |
+|---|---|---|
+| Reset camera | Required | Recovery from a lost viewpoint is basic viewport operation; the command already belongs to the canonical scene API. |
+| Fullscreen | Required and client-local | It changes only the local browser/Qt presentation and needs no server protocol. |
+| Accurate Help and `H` | Required and client-local | Remote users must be shown only controls that actually exist in that placement. |
+| Open/close Studio and `N`/`W` | Required and client-local | The projected workbench is already the server-rendered editing surface. |
+| Target-aware context menu | Required before claiming interaction parity | Its actions are canonical, but the DOM menu cannot be captured in canvas video; target projection and a local menu are needed. |
+| Background, spin and swing toolbar state | Required only through the existing Studio controls for 1.0 | Duplicating toggles in the canvas toolbar without authoritative projected state would create misleading controls. |
+| Popup/second window | Post-1.0 | The current service intentionally owns one human endpoint; adding a second endpoint changes lifecycle and collaboration policy. |
+| Identical layout and styling | Post-1.0 | Functional parity is required; pixel identity across native, browser and video-backed surfaces is not. |
+| Adaptive video quality | Post-1.0 quality work | Explicit bounded video parameters already make the placement operable without hiding network-dependent policy. |
+
+The first parity tranche adds shared remote `Reset`, `Full`, `Help` and `Panel`
+chrome. Reset remains a command through the Python authority; fullscreen, help
+and panel visibility stay client-local. The remote help variant omits the
+context-menu shortcut until target-aware projection is implemented.
+
 - Declare server dependency rather than relying on a transitive package.
 - Add token, origin, malformed-message, rate/size and isolation guards.
 - Document LAN/VPN, reverse proxy and configurable ICE deployment.

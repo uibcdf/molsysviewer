@@ -6,6 +6,7 @@ import {
 } from "../ui/group-panel";
 import { ProjectedTrajectoryControls } from "../ui/projected-trajectory-controls";
 import { RemoteFileControls, type RemoteUploadResult } from "../ui/remote-file-controls";
+import { RemoteSurfaceControls } from "../ui/remote-surface-controls";
 
 export type RemoteWorkbenchAction = {
     action: string;
@@ -29,6 +30,7 @@ export class RemoteWorkbench {
     readonly panel: GroupPanel;
     readonly trajectory: ProjectedTrajectoryControls;
     readonly files: RemoteFileControls;
+    readonly controls: RemoteSurfaceControls;
     private savedSelections: SavedSelectionSummary[] = [];
     private wholeSummary: any = null;
     private regions: any[] = [];
@@ -71,6 +73,10 @@ export class RemoteWorkbench {
             this.emitAction(action, details);
         });
         this.files = new RemoteFileControls(host, upload);
+        this.controls = new RemoteSurfaceControls(host, {
+            resetView: () => this.emitAction("reset_view"),
+            togglePanel: () => this.panel.setExpanded(!this.panel.isExpanded()),
+        });
     }
 
     apply(message: ViewerMessage | Record<string, unknown>): void {
@@ -248,6 +254,7 @@ export class RemoteWorkbench {
     }
 
     dispose(): void {
+        this.controls.dispose();
         this.files.dispose();
         this.trajectory.dispose();
         this.panel.dispose();

@@ -90,6 +90,14 @@ server GPU and your pointer and keyboard input travel back to the render worker.
 The workbench and reproducible mutations still use the same Python authority in
 both cases.
 
+The server-rendered surface provides local `Reset`, `Full`, `Help`, and `Panel`
+controls around the video viewport. Reset is sent through the authoritative
+session; fullscreen, help, and panel visibility are local presentation actions.
+The complete target-aware right-click menu is not yet projected from the render
+worker, so do not expect exact UI parity with client rendering in the 1.0
+preview. Background, spin, swing, and other scene controls remain available in
+Studio.
+
 ## Understand the network path
 
 The SSH forward carries the session page, authentication, uploads, downloads,

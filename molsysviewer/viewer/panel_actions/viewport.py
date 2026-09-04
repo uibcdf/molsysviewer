@@ -42,6 +42,11 @@ def toggle_background(view: Any, content: Mapping[str, Any]) -> None:
     view.scene.set_background(content.get("mode", "dark"))
 
 
+def reset_view(view: Any, content: Mapping[str, Any]) -> None:
+    del content
+    view.camera.reset(skip_digestion=True)
+
+
 def toggle_spin(view: Any, content: Mapping[str, Any]) -> None:
     view.scene.spin(enabled=bool(content.get("enabled", True)))
 
@@ -152,6 +157,7 @@ def download_image(view: Any, content: Mapping[str, Any]) -> None:
 
 
 HANDLERS = {
+    "reset_view": reset_view,
     "toggle_background": toggle_background,
     "toggle_spin": toggle_spin,
     "toggle_swing": toggle_swing,

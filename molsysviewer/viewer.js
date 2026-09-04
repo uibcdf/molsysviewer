@@ -166451,6 +166451,25 @@ var PopupHostManager = class {
 };
 
 // src/ui/help-overlay.ts
+var DEFAULT_SECTIONS = {
+  mouse: [
+    ["Left drag", "Rotate"],
+    ["Right drag", "Pan"],
+    ["Scroll", "Zoom"],
+    ["Left click", "Select element"],
+    ["Shift + Click", "Add to selection"],
+    ["Shift + Alt + Click", "Range selection (same chain)"],
+    ["Double click", "Focus on element"],
+    ["Right click", "Context menu"]
+  ],
+  keyboard: [
+    ["N", "Open / close Studio"],
+    ["W", "Open / close Workbench"],
+    ["V", "Toggle canvas visibility"],
+    ["H", "Toggle this help"],
+    ["Esc", "Close panel / cancel"]
+  ]
+};
 function injectHelpStyles() {
   const styleId = "molsysviewer-help-styles";
   if (document.getElementById(styleId)) return;
@@ -166576,7 +166595,7 @@ function makeSection(heading, rows) {
   return section;
 }
 var HelpOverlay = class {
-  constructor(host) {
+  constructor(host, sections = DEFAULT_SECTIONS) {
     this.host = host;
     this.visible = false;
     injectHelpStyles();
@@ -166608,23 +166627,8 @@ var HelpOverlay = class {
     card8.appendChild(header2);
     const grid = document.createElement("div");
     grid.className = "molsysviewer-help-grid";
-    grid.appendChild(makeSection("Mouse", [
-      ["Left drag", "Rotate"],
-      ["Right drag", "Pan"],
-      ["Scroll", "Zoom"],
-      ["Left click", "Select element"],
-      ["Shift + Click", "Add to selection"],
-      ["Shift + Alt + Click", "Range selection (same chain)"],
-      ["Double click", "Focus on element"],
-      ["Right click", "Context menu"]
-    ]));
-    grid.appendChild(makeSection("Keyboard", [
-      ["N", "Open / close Studio"],
-      ["W", "Open / close Workbench"],
-      ["V", "Toggle canvas visibility"],
-      ["H", "Toggle this help"],
-      ["Esc", "Close panel / cancel"]
-    ]));
+    grid.appendChild(makeSection("Mouse", sections.mouse));
+    grid.appendChild(makeSection("Keyboard", sections.keyboard));
     card8.appendChild(grid);
     this.root.addEventListener("pointerdown", (ev) => {
       if (ev.target === this.root) this.hide();
@@ -168843,6 +168847,105 @@ var RemoteFileControls = class {
   }
 };
 
+// src/ui/remote-surface-controls.ts
+var REMOTE_HELP = {
+  mouse: [
+    ["Left drag", "Rotate"],
+    ["Right drag", "Pan"],
+    ["Scroll", "Zoom"],
+    ["Left click", "Select element"],
+    ["Shift + Click", "Add to selection"],
+    ["Shift + Alt + Click", "Range selection (same chain)"],
+    ["Double click", "Focus on element"]
+  ],
+  keyboard: [
+    ["N / W", "Open / close Studio"],
+    ["H", "Toggle this help"],
+    ["Esc", "Close panel / help"]
+  ]
+};
+var RemoteSurfaceControls = class {
+  constructor(host, options) {
+    this.host = host;
+    this.options = options;
+    this.onKeyDown = (event) => {
+      if (event.target?.closest?.("input, textarea, [contenteditable]")) return;
+      if (!this.host.contains(event.target)) return;
+      const key2 = event.key.toLowerCase();
+      if (key2 === "h" && !this.help.isVisible()) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.help.show();
+      } else if (key2 === "n" || key2 === "w") {
+        event.preventDefault();
+        event.stopPropagation();
+        this.options.togglePanel();
+      }
+    };
+    this.updateFullscreenLabel = () => {
+      this.fullscreenButton.textContent = document.fullscreenElement ? "Exit" : "Full";
+      this.fullscreenButton.title = document.fullscreenElement ? "Exit fullscreen" : "Fullscreen";
+    };
+    this.root = document.createElement("div");
+    this.root.setAttribute("data-molsysviewer-remote-controls", "true");
+    Object.assign(this.root.style, {
+      position: "absolute",
+      top: "12px",
+      right: "12px",
+      zIndex: "4",
+      display: "flex",
+      gap: "4px",
+      pointerEvents: "auto"
+    });
+    this.addButton("Reset", "Reset remote camera", () => this.options.resetView());
+    this.fullscreenButton = this.addButton("Full", "Fullscreen", () => {
+      void this.toggleFullscreen();
+    });
+    this.help = new HelpOverlay(host, REMOTE_HELP);
+    this.addButton("Help", "Help (H)", () => this.help.toggle());
+    this.addButton("Panel", "Open or close Studio (N / W)", () => {
+      this.options.togglePanel();
+    });
+    host.appendChild(this.root);
+    window.addEventListener("keydown", this.onKeyDown, true);
+    document.addEventListener("fullscreenchange", this.updateFullscreenLabel);
+  }
+  dispose() {
+    window.removeEventListener("keydown", this.onKeyDown, true);
+    document.removeEventListener("fullscreenchange", this.updateFullscreenLabel);
+    this.help.dispose();
+    this.root.remove();
+  }
+  addButton(label2, title, callback) {
+    const button2 = document.createElement("button");
+    button2.type = "button";
+    button2.textContent = label2;
+    button2.title = title;
+    button2.setAttribute("data-molsysviewer-remote-control", label2.toLowerCase());
+    Object.assign(button2.style, {
+      height: "22px",
+      padding: "2px 6px",
+      border: "1px solid rgba(255,255,255,.5)",
+      borderRadius: "4px",
+      background: "rgba(0,0,0,.5)",
+      color: "#fff",
+      font: "11px/16px system-ui,sans-serif",
+      cursor: "default"
+    });
+    button2.addEventListener("click", callback);
+    this.root.appendChild(button2);
+    return button2;
+  }
+  async toggleFullscreen() {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else await this.host.requestFullscreen();
+    } catch (error2) {
+      console.error("[MolSysViewer remote client] fullscreen failed", error2);
+    }
+  }
+};
+
 // src/remote/remote-workbench.ts
 var RemoteWorkbench = class {
   constructor(host, emit, download2 = () => void 0, upload = async () => {
@@ -168883,6 +168986,10 @@ var RemoteWorkbench = class {
       this.emitAction(action, details);
     });
     this.files = new RemoteFileControls(host, upload);
+    this.controls = new RemoteSurfaceControls(host, {
+      resetView: () => this.emitAction("reset_view"),
+      togglePanel: () => this.panel.setExpanded(!this.panel.isExpanded())
+    });
   }
   apply(message) {
     const msg = message;
@@ -169044,6 +169151,7 @@ var RemoteWorkbench = class {
     }
   }
   dispose() {
+    this.controls.dispose();
     this.files.dispose();
     this.trajectory.dispose();
     this.panel.dispose();
