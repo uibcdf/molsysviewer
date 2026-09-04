@@ -475,3 +475,54 @@ result from the library that owns the answer.
 MolSysMT's 391, and **234 are names they do not have** — `alpha`, `ambient`, `at_time_ms`,
 `addon`, `tag`, and the rest of the viewer's own vocabulary. Those are ours and stay. Only
 the MolSysMT attribute names are the duplicates worth deleting.
+
+
+### Correction — the decorator should come off, not be tuned
+
+`strictness="ignore"` was the wrong shape: it tunes a decorator that has no reason to be
+there. On a pure forwarder the right change is to **remove `@digest()`** and forward
+`skip_digestion` instead of forcing it:
+
+```python
+@signal(tags=["query"])
+def get(self, element="system", ..., skip_digestion=False, **kwargs):
+    return msm.get(self._molsys, element=element, ..., skip_digestion=skip_digestion, **kwargs)
+```
+
+Three measurements say the decorator carries nothing here.
+
+**Its named parameters are MolSysMT's.** `view.get`'s signature *is* `msm.get`'s, minus
+`molecular_system` and `chemical_state`. Every one of them is digested correctly downstream.
+
+**Its normalization is MolSysMT's too.** `msm.get` resolves bare names and synonyms on its
+own — `element='group', name=True`, `element='atom', index=True` and `residue_name=True` all
+answer correctly against a plain `MolSys`. Both modules in
+`_private/argdigest/normalization/` re-scope tables MolSysMT already applies.
+
+**Forwarding `skip_digestion` keeps the 40 internal fast-path call sites working**, and
+gives the argument a truer meaning than it has now: today `view.get(skip_digestion=True)`
+skips *our* digestion and MolSysMT is told to skip regardless; after the change it means
+what it says.
+
+Prototyped: 105 accepted, 13 refused, unchanged. `region.get(element='group', index=True)`
+now works — the `[True]` wrap of the previous section disappears, because our digester never
+runs. `region.get(element='atom', name=True)` still fails, because `Region.get` keeps its own
+`@digest()` and its own copy of the defect: the change has to be made on all three of `view`,
+`Region` and `Whole`, not one.
+
+### What it collides with, and both are decisions rather than obstacles
+
+**Errors change provenance.** `test_digester_caller_contract` asserts that a bad value raises
+*this package's* `ArgumentError` naming *our* caller. Delegated, it raises MolSysMT's, naming
+theirs. That is arguably better — the library that owns the argument reports it — but it is
+user-visible and the guard says so on purpose.
+
+**Phase 9's gate says every public callable carries `@digest()`.** Removing it makes
+`view.get` undigested and `test_capability_audit` notices immediately. The inventory has an
+exemption for *pure variadic forwarders*, defined as taking `*args, **kwargs` and naming
+none of them — `view.get` names eight, so it does not qualify as written. Either the
+exemption widens to *named* forwarders whose every parameter belongs to the callee, or the
+gate has to be answered another way.
+
+Neither is a reason not to do it. Both are reasons it is a deliberate change with a written
+rationale rather than a decorator deletion.
