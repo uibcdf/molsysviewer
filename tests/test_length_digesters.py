@@ -23,19 +23,15 @@ from __future__ import annotations
 import pytest
 
 from molsysviewer._pyunitwizard import puw
-from molsysviewer._private.argdigest.argument.cutoff_distance import digest_cutoff_distance
 from molsysviewer._private.argdigest.argument.distance_threshold import digest_distance_threshold
 from molsysviewer._private.argdigest.argument.extra_radius import digest_extra_radius
 from molsysviewer._private.argdigest.argument.max_bond_length import digest_max_bond_length
 from molsysviewer._private.argdigest.argument.min_radius import digest_min_radius
-from molsysviewer._private.argdigest.argument.switch_distance import digest_switch_distance
 from molsysviewer._private.argdigest.argument.threshold import digest_threshold
 from molsysviewer._private.exceptions import ArgumentError
 
 #: Every digester here, with a caller each one accepts values for.
 DIGESTERS = [
-    (digest_switch_distance, "molsysviewer.viewer.get"),
-    (digest_cutoff_distance, "molsysviewer.viewer.get"),
     (digest_max_bond_length, "molsysviewer.viewer.get"),
     (digest_extra_radius, "molsysviewer.viewer.zoom"),
     (digest_min_radius, "molsysviewer.viewer.zoom"),
@@ -44,8 +40,10 @@ DIGESTERS = [
 ]
 IDS = [fn.__name__ for fn, _ in DIGESTERS]
 
-#: The two whose branched versions crashed instead of refusing.
-CRASHED_WITHOUT_A_CALLER = [digest_switch_distance, digest_cutoff_distance]
+#: `switch_distance` and `cutoff_distance` were here too, and are gone: they are MolSysMT
+#: attribute names, so `uibcdf/molsysviewer#71` moved our copies to quarantine when the
+#: `get` family stopped digesting. `max_bond_length` stays because nothing else does.
+CRASHED_WITHOUT_A_CALLER = [digest_max_bond_length]
 
 
 @pytest.mark.parametrize(("digest", "caller"), DIGESTERS, ids=IDS)
@@ -90,16 +88,11 @@ def test_no_caller_is_answered_rather_than_crashed(digest, value):
 @pytest.mark.parametrize(
     ("digest", "caller", "accepted"),
     [
-        (digest_switch_distance, "molsysviewer.viewer.get", True),
         (digest_max_bond_length, "molsysviewer.viewer.get", True),
-        (digest_cutoff_distance, "molsysviewer.viewer.get", False),
         # The form branch is `.startswith("molsysmt.form.")` **and** two `.to_` segments;
         # one segment is not enough, which is why both of these appear here.
-        (digest_cutoff_distance, "molsysmt.form.molsysmt_MolSys.to_molsysmt_Structures", False),
-        (digest_cutoff_distance, "molsysmt.form.file_pdb.to_molsysmt_MolSys.to_molsysmt_MolSys", True),
     ],
-    ids=["switch_distance", "max_bond_length", "cutoff_distance/viewer",
-         "cutoff_distance/one-to", "cutoff_distance/two-to"],
+    ids=["max_bond_length"],
 )
 def test_none_is_accepted_exactly_where_it_was_before(digest, caller, accepted):
     if accepted:

@@ -15,8 +15,8 @@ behaviour, delegates it, or merely hosts it.
 
 | Capability | Public API | Public | Digested | Provenance | Docs | Evidence | Status | Since |
 |---|---|---:|---:|---|---|---|---|---|
-| Whole | `view.whole.` | 17 | 13 | MolSysViewer (Python authority) | [page](../docs/content/user/scene_management/whole.md) | contract-tested, browser-observed | stable | 0.5.0 |
-| Regions | `view.regions.`, `view.regions[…].` | 46 | 45 | MolSysViewer (Python authority) | [page](../docs/content/user/scene_management/regions.md) | contract-tested, browser-observed | stable | 0.1.0 |
+| Whole | `view.whole.` | 15 | 11 | MolSysViewer (Python authority) | [page](../docs/content/user/scene_management/whole.md) | contract-tested, browser-observed | stable | 0.5.0 |
+| Regions | `view.regions.`, `view.regions[…].` | 44 | 42 | MolSysViewer (Python authority) | [page](../docs/content/user/scene_management/regions.md) | contract-tested, browser-observed | stable | 0.1.0 |
 | Layers | `view.layers.` | 12 | 12 | MolSysViewer (Python authority) | [page](../docs/content/user/scene_management/layers.md) | contract-tested, browser-observed | stable | 0.1.0 |
 | Selections and active selection | `view.selections.`, `view.active_selection.`, `view.select` | 29 | 29 | MolSysMT (scientific authority) | [page](../docs/content/user/scene_management/selections.md) | contract-tested, browser-observed | stable | 0.8.0 |
 | Representations, styles and presets | `view.styles.`, `view.whole.set_representation` | 35 | 35 | Mol* (rendering authority) | [page](../docs/content/user/representations/types.md) | contract-tested, browser-observed | stable | 0.18.0 |
@@ -33,7 +33,7 @@ behaviour, delegates it, or merely hosts it.
 | Popup | `view.build_popup_scene_snapshot` | 1 | 1 | MolSysViewer (Python authority) | [page](../docs/content/developer/standalone_surfaces.md) | contract-tested, browser-observed, benchmarked | stable | 0.20.1 |
 | Standalone (Qt host) | `molsysviewer.launch_standalone_qt0`, `molsysviewer.create_standalone_qt0_window` | 2 | 0 | MolSysViewer (Python authority) | [page](../docs/content/developer/standalone_surfaces.md) | contract-tested, browser-observed, benchmarked, human-observed | experimental | 0.19.0 |
 | Add-ons | `molsysviewer.addons.`, `view.addons.` | 54 | 54 | Add-on (external owner) | [page](../docs/content/developer/addons.md) | contract-tested, browser-observed | stable | 0.10.0 |
-| MolSysMT integration | `view.get`, `view.contains`, `view.is_composed_of`, `view.convert`, `view.extract` | 15 | 15 | MolSysMT (scientific authority) | [page](../docs/content/user/introduction/molsysmt.md) | contract-tested, browser-observed | stable | 0.19.0 |
+| MolSysMT integration | `view.get`, `view.convert`, `view.extract`, `view.whole.get`, `view.whole.convert`, `view.regions[…].get`, `view.regions[…].convert` | 19 | 13 | MolSysMT (scientific authority) | [page](../docs/content/user/introduction/molsysmt.md) | contract-tested, browser-observed | stable | 0.19.0 |
 | Units | `molsysviewer.config.set_default_standard_units` | 1 | 1 | PyUnitWizard (unit authority) | [page](../docs/content/user/introduction/units.md) | contract-tested | stable | 0.5.0 |
 
 ## What a row cannot hold
@@ -48,7 +48,7 @@ behaviour, delegates it, or merely hosts it.
 - **save_session / load_session** — A `.msv` bundle carrying the molecular system alongside the state, so it reopens with nothing loaded first. No size budget: a session is as large as its trajectory.
 - **Standalone (Qt host)** — Transport is pinned by contract. Since 2026-09-02 the `qt-pipeline` CI job asserts under Xvfb that the pipeline completes -- bridge ready, payload served, structure loaded through software WebGL. That is not the render being correct: nothing reads the framebuffer, and #64 is the standing proof the two differ. A real GPU and a visible window remain unobserved.
 - **Add-ons** — MolSysViewer owns the host contract; each toolkit owns and ships its integration. Maturity is declared per add-on.
-- **MolSysMT integration** — Delegates with `skip_digestion=True`, so argument names are normalised on this side.
+- **MolSysMT integration** — Digestion is MolSysMT's; only the caller named in an error is ours. `contains` and `is_composed_of` were removed -- `get` answers both (`get(n_waters=True) > 0`, and the set of `molecule_type`) and `msm.*` still has them. See uibcdf/molsysviewer#71.
 - **Units** — Physical magnitudes are quantities, never bare numbers.
 
 ## Nothing has watched these draw

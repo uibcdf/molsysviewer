@@ -29,25 +29,49 @@ def test_tools_basic_concatenate_structures_accepts_molecular_systems():
     assert msm.get(result._molsys, element="system", n_structures=True, skip_digestion=True) == 2  # noqa: SLF001
 
 
-def test_object_api_contains_extract_and_is_composed_of():
+def test_extract_returns_a_view_of_the_subset():
     view = demo["dialanine"]
-
-    assert view.contains(n_peptides=True) is True
-    assert view.is_composed_of(n_molecules=1) is True
 
     subset = view.extract(selection=[0, 1, 2], debug_js=True)
     assert isinstance(subset, MolSysView)
     assert msm.get(subset._molsys, element="system", n_atoms=True, skip_digestion=True) == 3  # noqa: SLF001
 
 
-def test_region_and_whole_contains_and_is_composed_of_use_scoped_semantics():
+def test_get_answers_what_contains_and_is_composed_of_used_to_wrap():
+    """The two questions survive; the two methods that wrapped them do not.
+
+    `contains` and `is_composed_of` were removed from the view, the whole and regions in
+    `uibcdf/molsysviewer#71` — `get` already carries the information, and `msm.contains`
+    and `msm.is_composed_of` are still there for anyone who wants the direct form. This
+    pins the translation rather than leaving it to a changelog.
+    """
+    view = demo["dialanine"]
+
+    # was: view.contains(n_peptides=True) is True
+    assert view.whole.get(n_peptides=True) > 0
+    # was: view.is_composed_of(n_molecules=1) is True
+    assert view.whole.get(n_molecules=True) == 1
+
+
+def test_a_region_scopes_element_level_attributes_to_its_own_atoms():
     view = demo["dialanine"]
     region = view.regions.add(atom_indices=[0, 1, 2], tag="frag", skip_digestion=True)
 
-    assert view.whole.contains(n_peptides=True) is True
-    assert view.whole.is_composed_of(n_molecules=1) is True
-    assert region.contains(selection=[0], n_atoms=True) is True
-    assert region.is_composed_of(n_atoms=3) is True
+    assert list(region.get(element="atom", index=True)) == [0, 1, 2]
+
+
+def test_a_regions_system_level_attributes_are_the_whole_systems():
+    """Surprising, pre-existing, and worth pinning so it is a decision rather than a bug.
+
+    `Region.get` scopes by element. A *system*-level attribute has no element to scope by,
+    so it answers for the system the region lives in — `n_atoms` on a three-atom region is
+    the system's 22, not 3.
+    """
+    view = demo["dialanine"]
+    region = view.regions.add(atom_indices=[0, 1, 2], tag="frag2", skip_digestion=True)
+
+    assert region.get(n_atoms=True) == view.whole.get(n_atoms=True)
+    assert len(region.get(element="atom", index=True)) == 3
 
 
 def test_focus_selection_focus_region_and_region_focus_emit_zoom_messages():

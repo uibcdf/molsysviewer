@@ -77,11 +77,7 @@ def test_core_public_api_does_not_emit_missing_digester_warnings(tmp_path):
         view.get_camera_snapshot(pretty=True)
         view.set_camera_snapshot({"target": [0, 0, 0], "position": [1, 1, 1], "up": [0, 1, 0]}, duration_ms=125)
         view.whole.set_representation(preset="polymer-cartoon")
-        view.contains("all")
-        view.is_composed_of("all")
         view.extract(selection=[0, 1], syntax="MolSysMT")
-        view.whole.contains("all")
-        view.whole.is_composed_of("all")
         view.styles.apply(style=Style(preset="polymer-cartoon", name="Polymers"))
         view.styles.add("publication", Style(preset="polymer-cartoon"), description="Publication baseline", source="runtime")
         view.styles.load_project_config(str(project_config_path), apply_default=False)
@@ -103,8 +99,6 @@ def test_core_public_api_does_not_emit_missing_digester_warnings(tmp_path):
         view.addons.workspace_specs()
         view.addons.panel_specs()
         region.set_representation(preset="polymer-cartoon")
-        region.contains("all")
-        region.is_composed_of("all")
         layer.set_tag("audit-layer-2")
         view.export.html(
             tmp_path / "audit.html",

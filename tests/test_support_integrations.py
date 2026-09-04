@@ -84,49 +84,69 @@ def test_make_coordinates_like_normalizes_plain_sequences():
     assert puw.get_unit(output) == puw.get_unit(coords)
 
 
-def test_contract_wrappers_bypass_redigestion_after_local_digest():
+def test_scoped_wrappers_pass_skip_digestion_through_instead_of_forcing_it():
+    """The contract `uibcdf/molsysviewer#71` replaced, and why the replacement is the point.
+
+    These wrappers used to digest locally and then forward to the view with
+    `skip_digestion=True`, so MolSysMT never checked what it was about to consume. That is
+    what let two copies of the same rules drift: our `group_index` returned `True` for one
+    caller and `[True]` for another, and `region.get` refused 77 of the 118 attributes
+    `msm.get` answers.
+
+    Now they forward to MolSysMT and pass `skip_digestion` **through**. The argument means
+    what it says: `True` skips digestion everywhere, and the default checks once, where the
+    arguments are owned.
+    """
+    import molsysmt as msm
+
     from molsysviewer.demo import demo
 
     view = demo["dialanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
     region = view.regions.add(atom_indices=[0, 1, 2], tag="frag", representation="sticks", skip_digestion=True)
 
-    observed: list[tuple[str, object]] = []
+    observed: list[object] = []
+    original = msm.get
 
-    def fake_contains(*args, **kwargs):
-        observed.append(("contains", kwargs.get("skip_digestion")))
-        return True
+    def spy(*args, **kwargs):
+        observed.append(kwargs.get("skip_digestion"))
+        return original(*args, **kwargs)
 
-    def fake_get(*args, **kwargs):
-        observed.append(("get", kwargs.get("skip_digestion")))
-        return {"ok": True}
+    msm.get = spy  # type: ignore[assignment]
+    try:
+        region.get(element="atom", index=True)
+        view.whole.get(element="atom", index=True)
+        # A canonical name, because `skip_digestion=True` skips the renaming too:
+        # the bare `index` is resolved *by* digestion, so asking for no digestion and
+        # then a bare name is a contradiction. That is the argument meaning what it says.
+        region.get(element="atom", atom_index=True, skip_digestion=True)
+    finally:
+        msm.get = original  # type: ignore[assignment]
 
-    def fake_info(*args, **kwargs):
-        observed.append(("info", kwargs.get("skip_digestion")))
-        return {"ok": True}
+    assert observed[:2] == [False, False], (
+        f"the default must let MolSysMT digest, got {observed[:2]}"
+    )
+    assert observed[2] is True, "skip_digestion=True must reach MolSysMT, not be swallowed"
 
-    def fake_select(*args, **kwargs):
-        observed.append(("select", kwargs.get("skip_digestion")))
-        return [0, 1]
 
-    def fake_is_composed_of(*args, **kwargs):
-        observed.append(("is_composed_of", kwargs.get("skip_digestion")))
-        return True
+def test_skipping_digestion_also_skips_the_renaming():
+    """Measured while writing the test above, and worth pinning rather than rediscovering.
 
-    view.contains = fake_contains  # type: ignore[method-assign]
-    view.get = fake_get  # type: ignore[method-assign]
-    view.info = fake_info  # type: ignore[method-assign]
-    view.select = fake_select  # type: ignore[method-assign]
-    view.is_composed_of = fake_is_composed_of  # type: ignore[method-assign]
+    Bare names and synonyms are resolved *by* digestion. `skip_digestion=True` therefore
+    means no rename either, and `get(element="atom", index=True, skip_digestion=True)`
+    raises `KeyError: 'index'`. Not a defect — the argument doing exactly what it says —
+    but a sharp edge for anyone reaching for the fast path.
+    """
+    from molsysviewer.demo import demo
 
-    region.contains("all")
-    region.get()
-    region.info()
-    region.select("all")
-    region.is_composed_of("all")
+    view = demo["dialanine"]
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
-    assert observed
-    assert all(value is True for _, value in observed)
+    assert list(view.whole.get(element="atom", index=True)) \
+        == list(view.whole.get(element="atom", atom_index=True, skip_digestion=True))
+
+    with pytest.raises(KeyError):
+        view.whole.get(element="atom", index=True, skip_digestion=True)
 
 
 def test_thin_variadic_forwarders_do_not_carry_digest_decorators():

@@ -304,16 +304,18 @@ CAPABILITIES: tuple[Capability, ...] = (
     ),
     Capability(
         name="MolSysMT integration",
-        api=("view.get", "view.contains", "view.is_composed_of", "view.convert",
-             "view.extract"),
+        api=("view.get", "view.convert", "view.extract", "view.whole.get",
+             "view.whole.convert", "view.regions[…].get", "view.regions[…].convert"),
         anchor="molsysviewer/viewer/molsysmt_interface.py",
         provenance=MOLSYSMT,
         docs="docs/content/user/introduction/molsysmt.md",
         unit=("test_argument_name_normalization.py", "test_support_integrations.py",
               "test_tools_basic.py"),
         e2e=("structure-data-relay",),
-        note="Delegates with `skip_digestion=True`, so argument names are normalised on "
-             "this side.",
+        note="Digestion is MolSysMT's; only the caller named in an error is ours. "
+             "`contains` and `is_composed_of` were removed -- `get` answers both "
+             "(`get(n_waters=True) > 0`, and the set of `molecule_type`) and `msm.*` "
+             "still has them. See uibcdf/molsysviewer#71.",
     ),
     Capability(
         name="Units",

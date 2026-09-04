@@ -61,6 +61,17 @@ NOT_USER_ARGUMENTS = frozenset({"self", "cls", "skip_digestion"})
 #: a layer — `devguide/digestion_and_dependencies.md` says so explicitly. A context
 #: manager is not a call whose arguments can be judged at all.
 #:
+#: A *named delegating forwarder* is the same case with the parameters written out: every
+#: one of them belongs to the callee, and the callee digests them. `view.get`'s signature
+#: **is** `msm.get`'s, minus the system, so decorating it means digesting the same call
+#: twice with two copies of the same rules — and the copies had already drifted:
+#: `group_index` returned `True` for one caller and `[True]` for another, and
+#: `region.get` refused 77 of 118 attributes that `msm.get` answers.
+#:
+#: The test is checkable rather than a matter of taste: **compare the two signatures.** If
+#: a parameter is not the callee's, the forwarder is not pure and the exemption does not
+#: apply. See `uibcdf/molsysviewer#71`.
+#:
 #: Every entry needs a reason, and the reason has to survive being read by someone who
 #: suspects it is an excuse.
 DELIBERATELY_NOT_DIGESTED: dict[str, str] = {
@@ -72,9 +83,18 @@ DELIBERATELY_NOT_DIGESTED: dict[str, str] = {
         "lazy import wrapper; the imported callable is the one with a signature",
     "molsysviewer.launch_standalone_qt0":
         "lazy import wrapper; the imported callable is the one with a signature",
+    "view.get":
+        "named delegating forwarder: its signature is msm.get's, and MolSysMT digests it",
+    "view.convert":
+        "named delegating forwarder to msm.convert; MolSysMT digests it",
     "view.whole.get":
-        "pure forwarder to view.get, which digests; it passes skip_digestion through "
-        "rather than forcing it, so digesting here would digest the same call twice",
+        "named delegating forwarder to msm.get; the whole *is* the system",
+    "view.regions[…].get":
+        "named delegating forwarder to msm.get, scoped to the region's atoms",
+    "view.whole.convert":
+        "named delegating forwarder to msm.convert; the whole *is* the system",
+    "view.regions[…].convert":
+        "named delegating forwarder to msm.convert, scoped to the region's atoms",
     "view.whole.info":
         "pure forwarder to view.info, which digests",
     "view.whole.select":

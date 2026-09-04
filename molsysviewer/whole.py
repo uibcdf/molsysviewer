@@ -145,47 +145,21 @@ class Whole:
 
     @signal(tags=["query", "whole"])
     def get(self, *args: Any, skip_digestion: bool = False, **kwargs: Any):
-        """Retrieve values from the whole system (delegates to `MolSysView.get`)."""
-        return self._view.get(*args, skip_digestion=skip_digestion, **kwargs)
+        """Retrieve values from the whole system.
+
+        The whole *is* the molecular system, so this is `msm.get` on it, digested by
+        MolSysMT. Only the caller named in an error is ours: someone who called
+        `whole.get` must not read a message about `msm.basic.get.get`.
+        """
+        try:
+            return msm.get(self._view._molsys, *args, skip_digestion=skip_digestion, **kwargs)  # noqa: SLF001
+        except Exception as exc:
+            raise as_our_argument_error(exc, "molsysviewer.whole.get") from exc
 
     @signal(tags=["query", "whole"])
     def info(self, *args: Any, skip_digestion: bool = False, **kwargs: Any):
         """Show a summary table for the whole system (delegates to `MolSysView.info`)."""
         return self._view.info(*args, skip_digestion=skip_digestion, **kwargs)
-
-    @signal(tags=["query", "whole"])
-    @digest()
-    def contains(
-        self,
-        selection="all",
-        syntax="MolSysMT",
-        skip_digestion: bool = False,
-        **kwargs: Any,
-    ):
-        """Check whether the whole system contains the requested features."""
-        return self._view.contains(
-            selection=selection,
-            syntax=syntax,
-            skip_digestion=True,
-            **kwargs,
-        )
-
-    @signal(tags=["query", "whole"])
-    @digest()
-    def is_composed_of(
-        self,
-        selection="all",
-        syntax="MolSysMT",
-        skip_digestion: bool = False,
-        **kwargs: Any,
-    ):
-        """Check whether the whole system is composed of the requested classes/counts."""
-        return self._view.is_composed_of(
-            selection=selection,
-            syntax=syntax,
-            skip_digestion=True,
-            **kwargs,
-        )
 
     @signal(tags=["convert", "whole"])
     def convert(

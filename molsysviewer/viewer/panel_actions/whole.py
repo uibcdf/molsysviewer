@@ -102,7 +102,15 @@ def get_whole_details(view: Any, content: Mapping[str, Any]) -> None:
             ))
         except Exception:
             contains[token] = 0
-        composed_of[token] = bool(view.whole.is_composed_of(skip_digestion=True, **{attribute: True}))
+        # `msm.is_composed_of` directly, like the `contains` probe two lines up: the
+        # viewer's own wrappers were removed in uibcdf/molsysviewer#71, and internal code
+        # has no reason to go through a public façade to reach MolSysMT.
+        try:
+            composed_of[token] = bool(msm.is_composed_of(
+                view._molsys, skip_digestion=True, **{attribute: True},
+            ))
+        except Exception:
+            composed_of[token] = False
     view._send_runtime_only({
         "op": "whole_details",
         "request_id": content.get("request_id"),

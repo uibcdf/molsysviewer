@@ -609,7 +609,6 @@ class Region:
             raise as_our_argument_error(exc, "molsysviewer.regions.convert") from exc
 
     @signal(tags=["region", "query"])
-    @digest()
     def get(
         self,
         element="system",
@@ -622,53 +621,47 @@ class Region:
         skip_digestion=False,
         **kwargs,
     ):
-        """Retrieve values, scoped to this region."""
+        """Retrieve values, scoped to this region.
+
+        A region *is* a selection over the view's system, so this is `msm.get` with that
+        selection. Digestion is MolSysMT's: our copies of their attribute digesters were
+        measured to accept exactly the same values (`uibcdf/molsysviewer#71`), and one of
+        them silently wrapped a boolean into a list for this caller, which is the kind of
+        divergence a second copy produces and a delegated check cannot.
+
+        Only the caller named in an error is ours.
+        """
         scope = self._scoped_indices_for_element(element)
-        if scope is None:
-            return self._view.get(  # noqa: SLF001
-                element=element,
+
+        if scope is None or element == "system":
+            resolved_selection = selection
+            resolved_mask = mask
+        else:
+            resolved_selection = self.select(
                 selection=selection,
                 structure_indices=structure_indices,
+                element=element,
                 mask=mask,
+                syntax=syntax,
+                skip_digestion=True,
+            )
+            resolved_mask = None
+
+        try:
+            return msm.get(
+                self._view._molsys,  # noqa: SLF001
+                element=element,
+                selection=resolved_selection,
+                structure_indices=structure_indices,
+                mask=resolved_mask,
                 syntax=syntax,
                 get_missing_bonds=get_missing_bonds,
                 output_type=output_type,
-                skip_digestion=True,
+                skip_digestion=skip_digestion,
                 **kwargs,
             )
-
-        if element == "system":
-            return self._view.get(  # noqa: SLF001
-                element=element,
-                selection=selection,
-                structure_indices=structure_indices,
-                mask=mask,
-                syntax=syntax,
-                get_missing_bonds=get_missing_bonds,
-                output_type=output_type,
-                skip_digestion=True,
-                **kwargs,
-            )
-
-        indices = self.select(
-            selection=selection,
-            structure_indices=structure_indices,
-            element=element,
-            mask=mask,
-            syntax=syntax,
-            skip_digestion=True,
-        )
-        return self._view.get(  # noqa: SLF001
-            element=element,
-            selection=indices,
-            structure_indices=structure_indices,
-            mask=None,
-            syntax=syntax,
-            get_missing_bonds=get_missing_bonds,
-            output_type=output_type,
-            skip_digestion=True,
-            **kwargs,
-        )
+        except Exception as exc:
+            raise as_our_argument_error(exc, "molsysviewer.regions.get") from exc
 
     def _region_info_records(self) -> list[dict]:
         """Build the region-state rows for the info table."""
@@ -761,68 +754,6 @@ class Region:
             mask=mask,
             output_type=output_type,
             skip_digestion=True,
-        )
-
-    @signal(tags=["region", "query"])
-    @digest()
-    def contains(
-        self,
-        selection="all",
-        syntax="MolSysMT",
-        skip_digestion=False,
-        **kwargs,
-    ) -> bool:
-        """Check whether this region contains the requested features."""
-        if self.atom_indices is None:
-            return self._view.contains(  # noqa: SLF001
-                selection=selection,
-                syntax=syntax,
-                skip_digestion=True,
-                **kwargs,
-            )
-
-        scoped = self.select(
-            selection=selection,
-            element="atom",
-            syntax=syntax,
-            skip_digestion=True,
-        )
-        return self._view.contains(  # noqa: SLF001
-            selection=scoped,
-            syntax=syntax,
-            skip_digestion=True,
-            **kwargs,
-        )
-
-    @signal(tags=["region", "query"])
-    @digest()
-    def is_composed_of(
-        self,
-        selection="all",
-        syntax="MolSysMT",
-        skip_digestion=False,
-        **kwargs,
-    ) -> bool:
-        """Check whether this region is composed of the requested classes/counts."""
-        if self.atom_indices is None:
-            return self._view.is_composed_of(  # noqa: SLF001
-                selection=selection,
-                syntax=syntax,
-                skip_digestion=True,
-                **kwargs,
-            )
-
-        scoped = self.select(
-            selection=selection,
-            element="atom",
-            syntax=syntax,
-            skip_digestion=True,
-        )
-        return self._view.is_composed_of(  # noqa: SLF001
-            selection=scoped,
-            syntax=syntax,
-            skip_digestion=True,
-            **kwargs,
         )
 
     @signal(tags=["region", "query"])

@@ -52,3 +52,34 @@ The single failure was `test_the_totals_are_the_ones_the_gate_is_tracking`, repo
 192 of the 461 surviving digesters correspond to no *named* public argument. They stay
 because they are reachable anyway: `view.get(b_factor=True)` and its 277 siblings arrive
 through `**kwargs`, and test 3 is what separates them from these 120.
+
+
+---
+
+## Second batch — 2026-09-04 — 99 more, and this time by construction
+
+`uibcdf/molsysviewer#71` phase C stopped the `get` family digesting its own `**kwargs`:
+the forwarders lost `@digest()`, pass `skip_digestion` through instead of forcing it, and
+MolSysMT digests what it is about to consume. Measured before and after — the same 105 of
+118 attributes accepted, the same 13 refused.
+
+That surface was the **only** thing keeping our copies of MolSysMT's attribute digesters
+reachable. With it gone they answer to nothing: 99 names that are MolSysMT attributes, are
+not a public argument of ours, and were not consulted once across a recorded full-suite run
+attributed by config source.
+
+The directory goes from 461 to 362.
+
+Verified the same way as the first batch and with the same result: `STRICTNESS` temporarily
+`"error"`, full suite, **zero `No digester for`**. The three failures it did produce were
+tests naming what had moved, not code needing it — and one of them is worth reading, because
+it is the reason this batch exists:
+`tests/test_digester_caller_contract.py` existed *entirely* to check that our copies accepted
+our own caller, after 58 of 81 query arguments were found rejected for months under a green
+suite. That file has been rewritten to ask whether the attribute answers, of all three
+objects, because the failure it guarded cannot recur in a library that owns its own
+whitelist.
+
+Two of the seven `[L]` digesters consolidated in `uibcdf/molsysviewer#33` are in this batch:
+`switch_distance` and `cutoff_distance` are MolSysMT attribute names, so they left with the
+rest. `max_bond_length`, `threshold` and `distance_threshold` are not, and stayed.

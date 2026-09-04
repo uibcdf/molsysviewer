@@ -1,15 +1,12 @@
 {
   "totals": {
-    "public_callables": 481,
-    "digested": 450,
-    "undigested": 2,
-    "exempt": 29,
-    "declared_digesters": 461,
+    "public_callables": 475,
+    "digested": 441,
+    "undigested": 0,
+    "exempt": 34,
+    "declared_digesters": 362,
     "missing_digesters": 0
   },
-  "undigested": [
-    "view.regions[\u2026].convert",
-    "view.whole.convert"
-  ],
+  "undigested": [],
   "missing_digesters": []
 }

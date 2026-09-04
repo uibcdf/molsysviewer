@@ -17,6 +17,9 @@ it stood before the migration.
 
 from __future__ import annotations
 
+import pathlib
+import re
+
 import pytest
 from argdigest import ArgumentConsistencyError, describe_normalization
 from argdigest.core.function_loader import load_normalization
@@ -87,10 +90,15 @@ def test_an_alias_and_its_canonical_name_are_rejected_together(view):
         view.get(element="atom", atom_names=True, atom_name=False)
 
 
-def test_attribute_synonyms_reach_contains_and_is_composed_of(view):
-    """Both delegate with `skip_digestion=True`, so both need the rename on this side."""
-    assert view.contains(selection="all", n_waters=0) is True
-    assert view.is_composed_of(selection="all", n_waters=0) is False
+def test_attribute_synonyms_reach_get(view):
+    """`contains` and `is_composed_of` were removed; `get` carries the same names.
+
+    The rename that mattered to them still has to happen, and now MolSysMT is the one
+    doing it — see `uibcdf/molsysviewer#71`.
+    """
+    assert view.whole.get(n_waters=True) == 0
+    assert list(view.whole.get(element="group", name=True)) \
+        == list(view.whole.get(element="group", group_name=True))
 
 
 def test_a_region_gets_the_same_renames_as_the_view(view):
@@ -104,12 +112,11 @@ def test_a_region_gets_the_same_renames_as_the_view(view):
 
     assert list(region.get(element="group", index=True)) \
         == list(region.get(element="group", group_index=True))
-    assert region.contains(n_waters=0) is True
 
 
 def test_the_whole_gets_the_synonyms_too(view):
-    assert view.whole.contains(n_waters=0) is True
-    assert view.whole.is_composed_of(n_waters=0) is False
+    assert list(view.whole.get(element="group", residue_name=True)) \
+        == list(view.whole.get(element="group", group_name=True))
 
 
 def test_a_pure_forwarder_needs_no_table_of_its_own(view):
@@ -192,103 +199,43 @@ def test_a_real_atom_indices_argument_survives_untouched(view):
     assert list(view.select(selection="atom_index==[0,1]")) == [0, 1]
 
 
-def test_only_the_three_delegating_methods_carry_the_synonyms(registry):
-    carriers = {
-        table["applies_to"]
-        for table in describe_normalization(registry)
-        if table["when"] is None
-    }
+def test_the_normalization_package_is_empty_and_says_why():
+    """The two tables are gone, and their absence is the claim being made.
 
-    assert carriers == {
-        "molsysviewer.viewer.get",
-        "molsysviewer.viewer.contains",
-        "molsysviewer.viewer.is_composed_of",
-        "molsysviewer.regions.get",
-        "molsysviewer.regions.contains",
-        "molsysviewer.regions.is_composed_of",
-        "molsysviewer.whole.contains",
-        "molsysviewer.whole.is_composed_of",
-    }
+    They scoped MolSysMT's synonym and bare-name tables to eight callers, and existed
+    only because those callers digested here and forwarded with `skip_digestion=True` —
+    the last layer that could rename anything. `uibcdf/molsysviewer#71` removed that
+    shape, so MolSysMT renames what it is about to consume.
 
-
-# --- the tables themselves ---------------------------------------------------------
-
-
-def test_the_element_tables_declare_only_combinations_that_exist(registry):
-    """Written out, never generated: a template would accept `bond_name` and `atom_order`.
-
-    Both would produce an attribute name nothing defines, and an error far downstream
-    from the call that caused it.
+    Pinned because a table reappearing is not a bug in itself: it means a method acquired
+    that shape again, and *that* is what needs looking at.
     """
-    by_element = {
-        table["when"]["element"]: set(table["aliases"].values())
-        for table in describe_normalization(registry, caller="molsysviewer.viewer.get")
-        if table["when"]
-    }
+    from argdigest.core.function_loader import load_normalization
 
-    assert "bond_name" not in by_element["bond"]
-    assert "atom_order" not in by_element["atom"]
-    assert "chain_order" not in by_element["chain"]
-    assert "bond_order" in by_element["bond"]
+    registry = load_normalization("molsysviewer._private.argdigest.normalization")
+    tables = describe_normalization(registry) if registry is not None else []
+
+    assert tables == [], (
+        "normalization tables are back. A method somewhere digests its own arguments and "
+        f"forwards them with skip_digestion=True; find it before trusting the table: {tables}"
+    )
 
 
-def test_the_element_tables_stay_identical_to_molsysmts_public_contract(registry):
-    """`view.get` forwards to `msm.get`, so the real combinations are theirs to define.
+@pytest.mark.parametrize(
+    ("kwargs", "canonical"),
+    [
+        ({"element": "group", "name": True}, {"element": "group", "group_name": True}),
+        ({"element": "atom", "name": True}, {"element": "atom", "atom_name": True}),
+        ({"element": "group", "index": True}, {"element": "group", "group_index": True}),
+        ({"element": "group", "residue_name": True}, {"element": "group", "group_name": True}),
+    ],
+    ids=["group/name", "atom/name", "group/index", "residue_name"],
+)
+def test_the_renames_still_happen_now_that_molsysmt_does_them(view, kwargs, canonical):
+    """The behaviour the deleted tables existed to produce, checked where a user meets it.
 
-    Re-emitting their tables under this caller is what makes drift impossible; this pins
-    that the re-emission is faithful rather than a copy that has started to age.
+    This is the guard that matters: it does not care *who* renames, only that a bare name
+    and a synonym still answer what the canonical name answers. It fails if a future
+    forwarder starts swallowing them again, which is what the tables were written for.
     """
-    from molsysmt.attribute import get_argument_aliases
-
-    ours = {
-        (table["when"]["element"], tuple(sorted(table["aliases"].items())))
-        for table in describe_normalization(registry, caller="molsysviewer.viewer.get")
-        if table["when"]
-    }
-    theirs = {
-        (element, tuple(sorted(aliases.items())))
-        for element, aliases in get_argument_aliases()['element_attribute_aliases'].items()
-    }
-
-    assert ours == theirs
-
-
-def test_the_upstream_attribute_alias_catalogue_satisfies_argdigests_contract():
-    """The imported catalogue is executable configuration, not arbitrary metadata.
-
-    MolSysMT 0.12.0 included ``constraints -> constraints``. ArgDigest correctly
-    rejects that table, which made MolSysViewer fail during import until the dependency
-    floor named the first compatible MolSysMT release.
-    """
-    from molsysmt.attribute import get_argument_aliases
-
-    synonyms = get_argument_aliases()['attribute_synonyms']
-
-    assert synonyms
-    assert not {
-        source: target
-        for source, target in synonyms.items()
-        if source == target
-    }
-
-
-def test_normalization_does_not_import_molsysmt_private_alias_data():
-    from pathlib import Path
-
-    root = Path(__file__).resolve().parents[1]
-    normalization = root / 'molsysviewer' / '_private' / 'argdigest' / 'normalization'
-    source = '\n'.join(path.read_text(encoding='utf-8') for path in normalization.glob('*.py'))
-
-    assert 'molsysmt._private' not in source
-    assert 'molsysmt.attribute._attribute_synonyms' not in source
-
-
-def test_there_is_no_second_mechanism_deciding_renames():
-    """A half-migrated standardizer is worse than an unmigrated one."""
-    import molsysviewer._argdigest as configuration
-
-    assert configuration.NORMALIZATION_SOURCE == NORMALIZATION_SOURCE
-    assert not hasattr(configuration, "STANDARDIZER")
-
-    with pytest.raises(ModuleNotFoundError):
-        __import__("molsysviewer._private.argdigest.argument_names_standardization")
+    assert list(view.whole.get(**kwargs)) == list(view.whole.get(**canonical))

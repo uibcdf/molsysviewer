@@ -1,115 +1,94 @@
-"""Every query digester must accept the viewer as its own caller.
+"""Every MolSysMT attribute must answer through the viewer, whoever digests it.
 
-ArgDigest hands each digester the fully qualified name of whoever is calling
-(`molsysviewer.viewer.get`), and each digester is a whitelist of callers. The
-digesters were written for MolSysMT's callers; when MolSysViewer wrapped the same
-query API, its caller name was in no whitelist, so calls fell through to the
-final `raise`. 58 of 81 query arguments were rejected that way, for months, under
-a green suite.
+This file used to ask a narrower question. The digesters here were copied from MolSysMT,
+each one a whitelist of callers, and none of those whitelists knew MolSysViewer — so 58 of
+81 query arguments were rejected for months under a green suite. The guard was: *does our
+copy accept our caller?*
 
-The boundary audit asked "does a digester exist for this argument?" and found 26
-missing. It never asked the second question — "does it accept the viewer calling
-it?" — which is what this guard adds. Existing is not accepting.
+`uibcdf/molsysviewer#71` removed the copies. MolSysMT digests its own arguments now, and
+its whitelist names its own function, so the failure mode that guard existed for cannot
+recur in that form. What can still break is the thing a user cares about, and that is what
+is asked here instead: **does the attribute answer?**
 
-An `ArgumentError` here means our own contract rejects our own public API. Any
-other exception belongs to MolSysMT (for instance an attribute that needs an
-explicit `element=`, or one this form cannot provide) and is out of scope.
+The question is asked of all three objects, because they used to differ. `region.get`
+refused 77 of the 118 attributes `view.get` answered, for exactly the whitelist reason
+above — its caller was in no list. Delegation made the three agree; this keeps them
+agreeing.
 """
 
-import re
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
+from molsysmt.attribute import attributes
 
 from molsysviewer import demo
-from molsysviewer._private.exceptions import ArgumentError
 
-ARGUMENT_DIR = (
-    Path(__file__).resolve().parents[1]
-    / "molsysviewer" / "_private" / "argdigest" / "argument"
-)
-
-#: Arguments the digesters themselves declare as MolSysMT-style query flags,
-#: derived from the source rather than hardcoded, so a new one is covered the
-#: day it is added.
-QUERY_ARGUMENTS = sorted(
-    path.stem
-    for path in ARGUMENT_DIR.glob("*.py")
-    if "molsysmt.basic.get.get" in path.read_text(encoding="utf-8")
-)
-
-#: Not query flags: these appear in a `get` branch but describe *how* to answer,
-#: not *what* to ask for.
-NOT_QUERY_FLAGS = {"output_type", "mask"}
+#: MolSysMT's own attribute names, from their public data rather than a list of ours.
+ATTRIBUTES = sorted(attributes.keys() if isinstance(attributes, dict) else attributes)
 
 
 @pytest.fixture(scope="module")
 def view():
-    return demo["dialanine"]
+    v = demo["1TCD"]
+    v.make_regions_by("chain")
+    return v
 
 
-def test_the_query_argument_inventory_is_not_empty():
-    # If this ever collapses to nothing, the sweep below silently passes.
-    assert len(QUERY_ARGUMENTS) > 50
+@pytest.fixture(scope="module")
+def region(view):
+    regions = view.regions
+    return list(regions.values())[0] if hasattr(regions, "values") else regions[0]
 
 
-@pytest.mark.parametrize("argument", [a for a in QUERY_ARGUMENTS if a not in NOT_QUERY_FLAGS])
-def test_a_query_digester_accepts_the_viewer_as_caller(view, argument):
-    try:
-        view.get(**{argument: True})
-    except ArgumentError as error:
-        pytest.fail(
-            f"digest_{argument} rejects its own caller: {error}\n"
-            f"Add 'molsysviewer.viewer.get' to the accepted callers in "
-            f"{ARGUMENT_DIR.name}/{argument}.py"
-        )
-    except Exception:
-        # MolSysMT's business: needs element=, or not available in this form.
-        pass
+def test_the_attribute_inventory_is_not_empty():
+    """If this collapses, every sweep below passes by asking nothing."""
+    assert len(ATTRIBUTES) > 100
 
 
-def test_every_query_digester_names_the_viewer_caller():
-    """Static twin of the sweep above: catches the gap without executing a query.
+def _answered(target) -> set[str]:
+    answered = set()
+    for name in ATTRIBUTES:
+        try:
+            target.get(element="atom", **{name: True})
+        except Exception:
+            continue
+        answered.add(name)
+    return answered
 
-    The call-based test can be masked when MolSysMT raises before the digester is
-    reached; this one reads the source directly.
+
+def test_the_view_answers_most_of_the_attribute_surface(view):
+    """A floor, not an exact count: MolSysMT refusing some of its own is theirs to decide."""
+    assert len(_answered(view)) >= 100
+
+
+def test_the_whole_answers_exactly_what_the_view_does(view):
+    """The whole *is* the system, so a difference here is a bug on our side by definition."""
+    assert _answered(view.whole) == _answered(view)
+
+
+def test_a_region_answers_exactly_what_the_view_does(view, region):
+    """The regression this file was rewritten for.
+
+    Before delegation a region answered 41 of 118 where the view answered 105 — not
+    because a region is different, but because our copies whitelisted
+    `molsysviewer.viewer.get` and never `molsysviewer.regions.get`.
     """
-    missing = [
-        argument
-        for argument in QUERY_ARGUMENTS
-        if "molsysviewer.viewer.get"
-        not in (ARGUMENT_DIR / f"{argument}.py").read_text(encoding="utf-8")
-    ]
-    assert not missing, (
-        "these query digesters never accept 'molsysviewer.viewer.get', so "
-        f"view.get(...) raises for them: {missing}"
-    )
+    assert _answered(region) == _answered(view)
 
 
-def test_the_caller_reaching_a_digester_is_the_one_whitelisted(view):
-    """Pin the caller string itself, since the whitelists are literal matches.
+@pytest.mark.parametrize("owner", ["view", "whole", "region"])
+def test_a_rejected_value_names_the_method_the_user_called(view, region, owner):
+    """Delegated digestion must not delegate the message. See `_private/delegated_errors.py`."""
+    from molsysviewer._private.exceptions import ArgumentError
 
-    If ArgDigest ever changes how it builds the caller, or the viewer package is
-    reorganized, every whitelist silently stops matching. This fails loudly
-    instead.
+    target = {"view": view, "whole": view.whole, "region": region}[owner]
+    expected = {
+        "view": "molsysviewer.viewer.get",
+        "whole": "molsysviewer.whole.get",
+        "region": "molsysviewer.regions.get",
+    }[owner]
 
-    The caller is read back from a deliberate rejection rather than by patching a
-    digester: ArgDigest resolves each digester once and caches it, so a late
-    monkeypatch never runs and the check would silently pass.
-    """
-    with pytest.raises(ArgumentError) as rejection:
-        view.get(n_structures="not a boolean")
+    with pytest.raises(ArgumentError) as raised:
+        target.get(element="atom", atom_name=123)
 
-    assert "molsysviewer.viewer.get" in str(rejection.value), (
-        f"the caller reaching the digester changed ({rejection.value}); every "
-        "whitelist matching 'molsysviewer.viewer.get' literally is now dead"
-    )
-
-
-def test_solvate_and_neighbour_arguments_are_left_out_on_purpose():
-    """These look like query flags but are not, and must not be blanket-patched."""
-    for argument in ("n_anions", "n_cations", "n_neighbors"):
-        source = (ARGUMENT_DIR / f"{argument}.py").read_text(encoding="utf-8")
-        assert "molsysmt.basic.get.get" not in source, (
-            f"{argument} became a query flag; it must now be covered by the sweep"
-        )
+    assert expected in str(raised.value)
