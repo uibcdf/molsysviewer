@@ -649,3 +649,64 @@ v.hide(selection=...)        # messages sent: ['update_visibility']
 Writing it directly changes what Python believes and leaves the screen showing something
 else. If the atom-mask family is kept, that attribute needs to stop being a bare array; if
 the family goes, the attribute goes with it.
+
+
+## What `atom_mask` buys, measured — 2026-09-04
+
+Asked directly: if visibility is managed through the whole and regions, what is the mask
+for? Three answers, and the third decides it.
+
+### It buys one thing regions do not give for free
+
+The mask is a **cross-cutting filter**; regions are a **partition**. `view.hide(water)`
+subtracts those atoms from *every* representation at once, including from inside a region
+that contains them, without redefining that region. To do the same with regions you rewrite
+the region — which `difference()` and `intersection()` can express, but as a change to what
+the region *is*, not as a filter over what is drawn.
+
+That is a real difference. It is also the only one.
+
+### It reaches the picture everywhere, and the document nowhere
+
+| destination | carries the mask |
+| --- | :-: |
+| the live frontend (`update_visibility`) | ✅ |
+| popup snapshot (`visible_atom_indices`) | ✅ |
+| HTML export (`_build_export_messages`) | ✅ |
+| **`export_state` / `save_state` / `save_session`** | ❌ |
+
+Measured end to end:
+
+```python
+a.hide(selection='molecule_type=="water"')   # 3818 of 3983 visible
+b.import_state(a.export_state())             # 3983 visible — the hiding is gone
+```
+
+**Hide the waters, save your work, reload it, and the waters are back.** Nothing warns. The
+mask survives everywhere the *picture* travels and is lost everywhere the *scene document*
+travels, and `what_save_state_promises.md` does not mention it in either direction.
+
+### And the attribute is a raw array with no invalidation
+
+`view.atom_mask` is public and writable, and writing it sends nothing:
+
+```python
+v.atom_mask[:100] = False    # messages to the frontend: []
+```
+
+Python then believes something the screen does not show.
+
+### Recommendation
+
+**Remove the family** — `view.hide(selection)`, `view.show(selection)`'s masking half,
+`view.isolate`, and `view.atom_mask` with them.
+
+The argument is not that regions can express everything the mask can; they cannot, quite.
+It is that **the mask is already outside the scene document**, so every use of it is work a
+user loses on save without being told. Keeping it means fixing that first — adding the mask
+to the state contract, versioning the document, and giving the attribute an invalidating
+setter. That is strictly more work than removing it, for a capability whose remaining
+advantage is saving a `difference()` call.
+
+`view.show` keeps its display-trigger half. What leaves is the `selection` argument, which
+is the masking half wearing the same name.
