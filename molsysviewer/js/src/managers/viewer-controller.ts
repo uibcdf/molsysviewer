@@ -11,6 +11,7 @@ import { PluginCommands } from "molstar/lib/mol-plugin/commands";
 import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
 import { ButtonsType } from "molstar/lib/mol-util/input/input-observer";
+import { Vec2 } from "molstar/lib/mol-math/linear-algebra";
 
 import { VARELA_ROUND_WOFF2_DATA_URL } from "../assets/varela-round/font-data";
 import { ViewerMessage, KnownViewerMessage } from "../messages/viewer-messages";
@@ -1363,11 +1364,21 @@ export class MolSysViewerController {
                 event.preventDefault();
                 event.stopPropagation();
 
-                const hoverEv = this.plugin.behaviors.interaction.hover.value;
+                const canvas = this.plugin.canvas3dContext?.canvas;
+                const canvas3d = this.plugin.canvas3d;
+                let current = this.plugin.behaviors.interaction.hover.value?.current;
+                if (canvas && canvas3d) {
+                    const rect = canvas.getBoundingClientRect();
+                    const pick = canvas3d.identify(Vec2.create(
+                        event.clientX - rect.left,
+                        event.clientY - rect.top,
+                    ));
+                    current = canvas3d.getLoci(pick?.id);
+                }
                 let payload: ContextInteractionPayload;
 
-                if (hoverEv && hoverEv.current && hoverEv.current.loci) {
-                    const tooltipTag = (hoverEv.current.repr as any)?.props?.tooltip?.trim();
+                if (current?.loci && !Loci.isEmpty(current.loci)) {
+                    const tooltipTag = (current.repr as any)?.props?.tooltip?.trim();
                     if (tooltipTag && this.annotations.hasTag(tooltipTag)) {
                         const spec = this.annotations.getSpec(tooltipTag);
                         payload = {
@@ -1391,10 +1402,10 @@ export class MolSysViewerController {
                             page_y: event.clientY,
                         };
                     } else {
-                        payload = normalizeContextPayloadFromLoci(hoverEv.current.loci, event.clientX, event.clientY);
+                        payload = normalizeContextPayloadFromLoci(current.loci, event.clientX, event.clientY);
                         payload = this.normalizeManagedContextPayload(payload);
                     }
-                    this.lastContextLoci = hoverEv.current.loci;
+                    this.lastContextLoci = current.loci;
                 } else {
                     payload = {
                         event: "interaction_context_menu",

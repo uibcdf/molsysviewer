@@ -161804,10 +161804,20 @@ var MolSysViewerController = class _MolSysViewerController {
       const handleCanvasContextMenu = (event) => {
         event.preventDefault();
         event.stopPropagation();
-        const hoverEv = this.plugin.behaviors.interaction.hover.value;
+        const canvas = this.plugin.canvas3dContext?.canvas;
+        const canvas3d = this.plugin.canvas3d;
+        let current2 = this.plugin.behaviors.interaction.hover.value?.current;
+        if (canvas && canvas3d) {
+          const rect = canvas.getBoundingClientRect();
+          const pick2 = canvas3d.identify(Vec2.create(
+            event.clientX - rect.left,
+            event.clientY - rect.top
+          ));
+          current2 = canvas3d.getLoci(pick2?.id);
+        }
         let payload;
-        if (hoverEv && hoverEv.current && hoverEv.current.loci) {
-          const tooltipTag = hoverEv.current.repr?.props?.tooltip?.trim();
+        if (current2?.loci && !Loci2.isEmpty(current2.loci)) {
+          const tooltipTag = current2.repr?.props?.tooltip?.trim();
           if (tooltipTag && this.annotations.hasTag(tooltipTag)) {
             const spec = this.annotations.getSpec(tooltipTag);
             payload = {
@@ -161831,10 +161841,10 @@ var MolSysViewerController = class _MolSysViewerController {
               page_y: event.clientY
             };
           } else {
-            payload = normalizeContextPayloadFromLoci(hoverEv.current.loci, event.clientX, event.clientY);
+            payload = normalizeContextPayloadFromLoci(current2.loci, event.clientX, event.clientY);
             payload = this.normalizeManagedContextPayload(payload);
           }
-          this.lastContextLoci = hoverEv.current.loci;
+          this.lastContextLoci = current2.loci;
         } else {
           payload = {
             event: "interaction_context_menu",

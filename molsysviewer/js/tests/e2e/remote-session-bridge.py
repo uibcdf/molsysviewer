@@ -102,6 +102,8 @@ async def main() -> None:
                     "n_atoms": int(view._molsys.get_n_atoms()) if view._molsys is not None else 0,
                     "label": view._last_label,
                     "active_selection_count": len(view.active_selection.atom_indices),
+                    "context_kind": (view.get_last_context_event() or {}).get("kind"),
+                    "context_action": (view._last_context_action_event or {}).get("action"),  # noqa: SLF001
                     "service_failure": service.failure,
                     "worker_host_failure": service.worker_host.failure,
                     "worker_recovery_count": service.worker_recovery_count,

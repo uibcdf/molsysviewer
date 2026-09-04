@@ -563,7 +563,7 @@ diagnostics make a recurrence distinguishable from ICE, codec or decoder failure
 The shared Export panel now completes both server-rendered workflows. PNG
 requests are rendered by the GPU worker and returned to Python; standalone HTML
 is built directly from Python's canonical snapshot. Neither writes to a path on
-the server. Both become bounded, session-ephemeral artifacts (24 MiB each, four
+the server. Both become bounded, session-ephemeral artifacts (32 MiB each, four
 retained), receive unguessable URLs, and are downloadable only with the
 session's `HttpOnly` cookie. The browser client validates same-origin URLs and
 the E2E verifies the downloaded PNG signature and self-contained HTML document.
@@ -840,6 +840,14 @@ gateway correctly. Distance/angle/dihedral tool startup, viewer-mode changes,
 canvas hiding and a second workbench surface remain hidden until their remote
 semantics are implemented; an unavailable action must not be presented as if
 it worked.
+
+Restoring MolSysMT's canonical 5000-frame pentalanine H5MSM artifact exposed a
+hidden E2E dependency on its accidentally truncated 100-frame replacement: the
+self-contained HTML export is 24.07 MiB and narrowly exceeded the original
+24 MiB remote-artifact ceiling. The bounded ceiling is now 32 MiB (still four
+ephemeral artifacts per session), which admits the official demo without
+weakening the single-session retention model or teaching the test to use a
+reduced trajectory.
 
 - Declare server dependency rather than relying on a transitive package.
 - Add token, origin, malformed-message, rate/size and isolation guards.

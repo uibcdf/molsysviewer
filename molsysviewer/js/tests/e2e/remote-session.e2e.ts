@@ -263,6 +263,7 @@ async function run(): Promise<void> {
         await page.waitForTimeout(500);
 
         let picked = false;
+        let pickedPoint: { x: number; y: number } | null = null;
         for (const y of [0.4, 0.5, 0.6]) {
             for (const x of [0.35, 0.45, 0.5, 0.55, 0.65]) {
                 await page.mouse.click(box!.x + box!.width * x, box!.y + box!.height * y);
@@ -270,11 +271,32 @@ async function run(): Promise<void> {
                 picked = await page.evaluate(() =>
                     (window as any).__molsysviewerRemoteClient.workbench.activeSelectionAtomCount > 0
                 );
-                if (picked) break;
+                if (picked) {
+                    pickedPoint = { x, y };
+                    break;
+                }
             }
             if (picked) break;
         }
         assert.ok(picked, "remote pointer input must produce an authoritative molecular selection");
+        assert.ok(pickedPoint);
+
+        await page.mouse.click(
+            box!.x + box!.width * pickedPoint!.x,
+            box!.y + box!.height * pickedPoint!.y,
+            { button: "right" },
+        );
+        const contextMenu = page.locator('[data-molsysviewer-context-menu="true"]');
+        await contextMenu.waitFor({ state: "visible", timeout: 5_000 });
+        const contextTitle = await page.locator('[data-molsysviewer-context-menu-title="true"]').textContent();
+        assert.notEqual(contextTitle, "Canvas", "worker picking must project the molecular target, not an empty fallback");
+        assert.equal(
+            await page.getByRole("button", { name: "Distance", exact: true }).count(),
+            0,
+            "unsupported remote measurement startup must not be offered",
+        );
+        await page.getByRole("button", { name: "Focus Target", exact: true }).click();
+        await contextMenu.waitFor({ state: "hidden", timeout: 5_000 });
 
         await page.locator('[data-molsysviewer-upload-input="true"]').setInputFiles({
             name: "uploaded.pdb",
@@ -290,9 +312,13 @@ async function run(): Promise<void> {
         const result = await waitForPrefixedJson(lines, "MSV_REMOTE_RESULT=");
         const {
             active_selection_count: activeSelectionCount,
+            context_kind: contextKind,
+            context_action: contextAction,
             worker_peer_diagnostics: workerPeerDiagnostics,
             ...lifecycle
         } = result;
+        assert.equal(contextKind, "structure");
+        assert.equal(contextAction, "focus_target");
         assert.equal(activeSelectionCount, 0, "replacing the molecular system must clear stale selection indices");
         assert.ok(
             workerPeerDiagnostics?.stats?.some((item: any) =>

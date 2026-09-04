@@ -28,6 +28,8 @@ _LOCAL_CLIENT_CAPABILITIES = frozenset(
 )
 _VIEWER_JS = Path(__file__).resolve().parents[1] / "viewer.js"
 _MAX_UPLOAD_BYTES = 64 * 1024 * 1024
+_MAX_DOWNLOAD_BYTES = 32 * 1024 * 1024
+_MAX_DOWNLOAD_ARTIFACTS = 4
 _MAX_AUTH_BODY_BYTES = 4 * 1024
 _MAX_CLIENT_MESSAGE_BYTES = 1024 * 1024
 _MAX_AUTH_FAILURES = 8
@@ -429,8 +431,8 @@ class RemoteSessionService:
     def _publish_download(self, filename: str, media_type: str, data: bytes) -> str:
         if not isinstance(data, bytes) or not data:
             raise ValueError("download artifact must contain bytes")
-        if len(data) > 24 * 1024 * 1024:
-            raise ValueError("download artifact exceeds the 24 MiB session limit")
+        if len(data) > _MAX_DOWNLOAD_BYTES:
+            raise ValueError("download artifact exceeds the 32 MiB session limit")
         artifact_id = secrets.token_urlsafe(24)
         basename = Path(filename).name
         safe_filename = "".join(
@@ -440,7 +442,7 @@ class RemoteSessionService:
             for character in basename
         ) or "molsysviewer-download"
         self._downloads[artifact_id] = (safe_filename, str(media_type), data)
-        while len(self._downloads) > 4:
+        while len(self._downloads) > _MAX_DOWNLOAD_ARTIFACTS:
             self._downloads.popitem(last=False)
         return f"/session/download/{artifact_id}"
 
