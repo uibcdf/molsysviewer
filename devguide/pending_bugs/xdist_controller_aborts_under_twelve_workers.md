@@ -5,7 +5,7 @@ status: open
 opened: 2026-09-04
 closed:
 severity: low
-verification: observed
+verification: measured
 area: [testing, tooling]
 guard:
 normative:

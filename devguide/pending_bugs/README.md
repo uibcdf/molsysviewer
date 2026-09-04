@@ -25,7 +25,7 @@ list.
 
 ### Open (1)
 
-- [`xdist_controller_aborts_under_twelve_workers.md`](xdist_controller_aborts_under_twelve_workers.md) — [#76](https://github.com/uibcdf/molsysviewer/issues/76) — With pytest -n 12 the xdist controller aborts mid-run and reports a partial result. *(low, observed)*
+- [`xdist_controller_aborts_under_twelve_workers.md`](xdist_controller_aborts_under_twelve_workers.md) — [#76](https://github.com/uibcdf/molsysviewer/issues/76) — With pytest -n 12 the xdist controller aborts mid-run and reports a partial result. *(low, measured)*
 
 ### Deferred until after 1.0 (1)
 
