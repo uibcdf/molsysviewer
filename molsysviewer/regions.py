@@ -694,67 +694,48 @@ class Region:
         self,
         element="system",
         selection="all",
+        structure_indices="all",
         syntax="MolSysMT",
-        mask="all",
         output_type="styler",
         skip_digestion=False,
     ):
-        """Show a summary table, scoped to this region.
+        """Summarise **the molecular system, masked to this region's atoms**, and only that.
 
-        Returns a ``RegionInfo`` with a *molsys* section (filtered to the region's
-        atoms) and a *region* section (tag, atom count, visibility, representation).
-        When the region has no fixed atom set, delegates to the full viewer info.
+        A region is a selection over the view's system, so this is `msm.info` with that
+        selection. What the scene does with the region -- its representation, visibility,
+        layer -- is `view.info()`, which lists every scene object including this one.
+
+        One subject each: before `uibcdf/molsysviewer#71` this returned a two-section
+        `RegionInfo` mixing the two, and `view.info` mixed them the other way round under a
+        `source` argument.
+
+        Digested by MolSysMT; only the caller named in an error is ours.
         """
-        from .viewer.core import RegionInfo  # noqa: PLC0415 – avoid circular import at module level
-
-        # --- element != "system": scope to region atoms for that element ---
-        scope = self._scoped_indices_for_element(element)
-        if element != "system" and scope is not None:
-            indices = self.select(
+        atom_indices = self.atom_indices
+        if atom_indices is None:
+            resolved_selection = selection
+        else:
+            # Intersect the region's atoms with whatever the caller asked for, which is
+            # what `select` already does, rather than choosing one over the other.
+            resolved_selection = self.select(
                 selection=selection,
-                element=element,
-                mask=mask,
+                element="atom",
                 syntax=syntax,
-                skip_digestion=True,
-            )
-            return self._view.info(  # noqa: SLF001
-                element=element,
-                selection=indices,
-                syntax=syntax,
-                mask="all",
-                output_type=output_type,
                 skip_digestion=True,
             )
 
-        # --- element == "system" with defined atom_indices: return RegionInfo ---
-        if self.atom_indices is not None:
-            molsys_section = self._view.info(  # noqa: SLF001
-                element="system",
-                selection=list(self.atom_indices),
+        try:
+            return msm.info(
+                self._view._molsys,  # noqa: SLF001
+                element=element,
+                selection=resolved_selection,
+                structure_indices=structure_indices,
                 syntax=syntax,
-                mask="all",
-                source="molsys",
                 output_type=output_type,
-                skip_digestion=True,
+                skip_digestion=skip_digestion,
             )
-            region_section = self._view._convert_info_output(  # noqa: SLF001
-                self._region_info_records(), output_type
-            )
-            return RegionInfo(
-                tag=self.tag,
-                molsys_section=molsys_section,
-                region_section=region_section,
-            )
-
-        # --- fallback: region covers the full system ---
-        return self._view.info(  # noqa: SLF001
-            element=element,
-            selection=selection,
-            syntax=syntax,
-            mask=mask,
-            output_type=output_type,
-            skip_digestion=True,
-        )
+        except Exception as exc:
+            raise as_our_argument_error(exc, "molsysviewer.regions.info") from exc
 
     @signal(tags=["region", "query"])
     @digest()

@@ -108,11 +108,15 @@ edits on an existing viewer are provided by the MolSysMT addon namespace:
     measurements, layers, and index mappings)
   - does not define molecular edit semantics; those belong to MolSysMT or an
     add-on
-- `contains(...)`
 - `convert(...)`
-- `extract(...)`
-- `is_composed_of(...)`
-- `info(source="all" | "molsys" | "view", output_type="styler" | "dataframe" | "dictionary", ...)`
+- `extract(...)` — returns a new **view** of a structural subset, with the scene migrated
+- `info(output_type="styler" | "dataframe" | "dictionary")`
+  - **the scene**: one row per scene object across whole, loads, styles, regions,
+    annotations, layers and the active selection. It says nothing about the molecular
+    system — that is `view.whole.info(...)`, and for a subset, `region.info(...)`
+  - `contains` and `is_composed_of` were removed: `get` carries the same information
+    (`whole.get(n_waters=True) > 0`, and the set of `molecule_type`), and `msm.contains`
+    and `msm.is_composed_of` still accept a view
 - `focus_selection(...)`
 - `focus_region(...)`
 - `make_regions_by(...)`

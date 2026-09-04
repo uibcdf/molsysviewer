@@ -8,7 +8,7 @@ MolSysViewer does not invent its own definition of a molecular system. Instead, 
 
 - When you load data, MolSysViewer relies on MolSysMT to interpret topology and structures.
 - When you write selections, MolSysViewer relies on MolSysMT to parse and evaluate them.
-- When you call helpers like `view.get(...)`, `view.info(...)`, or `view.select(...)`, you are using MolSysMT concepts through a viewer-oriented API.
+- When you ask the whole or a region about the system — `view.whole.get(...)`, `view.whole.info(...)`, `view.whole.select(...)`, and their `region` counterparts — you are using MolSysMT concepts through a viewer-oriented API.
 
 ## The methods a view borrows from MolSysMT
 
@@ -17,7 +17,8 @@ MolSysMT's own argument names, so what you know from `msm` transfers directly.
 
 ### Asking what the system holds
 
-`view.get(...)` reads attributes, and `view.info(...)` prints the summary table. Two more
+`view.whole.get(...)` reads attributes and `view.whole.info(...)` prints the summary table; a
+region answers the same two questions about its own atoms. Two more
 answer yes or no, and the difference between them is worth having straight:
 
 ```python

@@ -33,7 +33,6 @@ _LAZY_ATTRIBUTES = {
     "Style": (".styles", "Style"),
     "FigureSpec": (".figures", "FigureSpec"),
     "MolSysView": (".viewer", "MolSysView"),
-    "ViewerInfo": (".viewer", "ViewerInfo"),
 }
 
 for _name in (
@@ -152,7 +151,6 @@ def launch_standalone_qt0(*args, **kwargs):
 
 __all__ = [
     "MolSysView",
-    "ViewerInfo",
     "new_view",
     "load_session",
     "demo",

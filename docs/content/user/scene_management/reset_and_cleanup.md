@@ -20,7 +20,7 @@ If you want a quick, practical workflow, prefer these methods over mutating `vie
 # Query helpers (MolSysMT under the hood)
 view.select("atom_name == 'CA'")
 view.get(element="system", n_atoms=True)
-view.info(element="system")
+view.whole.info(element="system")
 ```
 
 ## Edit the loaded system (MolSysMT addon)

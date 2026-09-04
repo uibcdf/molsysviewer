@@ -1,3 +1,3 @@
-from .core import MolSysView, ViewerInfo
+from .core import MolSysView
 
-__all__ = ["MolSysView", "ViewerInfo"]
+__all__ = ["MolSysView"]

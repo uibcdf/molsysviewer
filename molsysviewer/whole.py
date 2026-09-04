@@ -157,9 +157,35 @@ class Whole:
             raise as_our_argument_error(exc, "molsysviewer.whole.get") from exc
 
     @signal(tags=["query", "whole"])
-    def info(self, *args: Any, skip_digestion: bool = False, **kwargs: Any):
-        """Show a summary table for the whole system (delegates to `MolSysView.info`)."""
-        return self._view.info(*args, skip_digestion=skip_digestion, **kwargs)
+    def info(
+        self,
+        element: str = "system",
+        selection: Any = "all",
+        structure_indices: Any = "all",
+        syntax: str = "MolSysMT",
+        output_type: str = "styler",
+        skip_digestion: bool = False,
+    ):
+        """Summarise **the molecular system**, and only that.
+
+        The whole *is* the system, so this is `msm.info` on it. What the scene does with it
+        -- representations, visibility, layers -- is `view.info()`; a subset of the system
+        is `region.info()`. One subject each (`uibcdf/molsysviewer#71`).
+
+        Digested by MolSysMT; only the caller named in an error is ours.
+        """
+        try:
+            return msm.info(
+                self._view._molsys,  # noqa: SLF001
+                element=element,
+                selection=selection,
+                structure_indices=structure_indices,
+                syntax=syntax,
+                output_type=output_type,
+                skip_digestion=skip_digestion,
+            )
+        except Exception as exc:
+            raise as_our_argument_error(exc, "molsysviewer.whole.info") from exc
 
     @signal(tags=["convert", "whole"])
     def convert(

@@ -312,39 +312,20 @@ class MolSysMTInterfaceMixin:
 
     @signal(tags=["query"])
     @digest()
-    def info(self,
-             element='system',
-             selection='all',
-             syntax='MolSysMT',
-             mask='all',
-             source='all',
-             output_type='styler',
-             skip_digestion=False
-            ):
-        if source == "view":
-            return self._convert_info_output(self._viewer_info_records(), output_type)
+    def info(self, output_type='styler', skip_digestion=False):
+        """Summarise **the view**: what is in the scene and how it is drawn.
 
-        kwargs = dict(
-            element=element,
-            selection=selection,
-            syntax=syntax,
-            skip_digestion=True,
-        )
-        if "mask" in inspect.signature(msm.info).parameters:
-            kwargs["mask"] = mask
-        molsys_info = msm.info(self._molsys, **kwargs)
+        One row per scene object across its sections -- the whole, the loads, the styles,
+        the regions, the annotations, the layers and the active selection -- with what each
+        one shows, whether it is visible, and which representation and preset it carries.
 
-        if source == "molsys":
-            return self._convert_info_output(molsys_info, output_type)
-
-        if source == "all":
-            from .core import ViewerInfo
-            return ViewerInfo(
-                molsys_section=self._convert_info_output(molsys_info, output_type),
-                view_section=self._convert_info_output(self._viewer_info_records(), output_type),
-            )
-
-        raise ValueError("info(source=...) only accepts 'all', 'molsys', or 'view'.")
+        It says nothing about the molecular system. That is `whole.info()`, and for a
+        subset of it, `region.info()`. Each of the three describes one subject, which is
+        the change `uibcdf/molsysviewer#71` made: `info` used to mean either depending on a
+        `source` argument, and `element`/`selection`/`syntax`/`mask` only ever applied to
+        the half that has moved.
+        """
+        return self._convert_info_output(self._viewer_info_records(), output_type)
 
     @signal(tags=["selection"])
     @digest()
