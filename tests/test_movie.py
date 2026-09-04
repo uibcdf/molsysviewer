@@ -484,7 +484,7 @@ def test_export_requires_imageio():
 
 
 def test_export_requires_two_keyframes():
-    imageio = pytest.importorskip("imageio")
+    pytest.importorskip("imageio")  # the call skips; the name was never used
     m = make_movie()
     with pytest.raises(ValueError):
         m.export("out.mp4")
@@ -510,8 +510,6 @@ def test_export_sends_correct_message(tmp_path):
     # Build a tiny 1×1 PNG encoded as a data URI
     fake_png = imageio.imwrite("<bytes>", np.zeros((1, 1, 3), dtype="uint8"), format="png")
     data_uri = "data:image/png;base64," + base64.b64encode(fake_png).decode()
-
-    result = {}
 
     def simulate_js():
         """Wait until the play_movie message is sent, then feed frames."""

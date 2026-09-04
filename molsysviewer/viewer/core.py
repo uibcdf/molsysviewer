@@ -2320,7 +2320,6 @@ class MolSysView(
         if self._molsys is None:
             raise ValueError("No molecular system loaded. Load a system before mutating the view.")
 
-        n_atoms = int(self._molsys.get_n_atoms())
         # A rebuild supersedes any in-flight generation before replacing its
         # lazy fallback. This makes it impossible for an old timeout to
         # serialize the newly edited MolSys under the old generation.
