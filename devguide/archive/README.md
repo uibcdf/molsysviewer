@@ -106,3 +106,8 @@ Completed work, kept for the reasoning:
   had removed. Read for why a guard asking "does this prefix match anything" passes for the
   worst of the three: `view.get` was absorbing ten unrelated `view.get_*` event accessors
   into a row attributed to MolSysMT, inflating it from 7 public callables to 17.
+- [`xdist_controller_aborts_under_twelve_workers.md`](xdist_controller_aborts_under_twelve_workers.md)
+  — half of all `-n 12` runs died with `KeyError: <WorkerController gwN>`. Read for the two
+  wrong turns: the warning classes were rejected correctly in the first pass and the real
+  cause was the *import* that looking one up triggers, and three clean plain runs almost
+  produced a false report against our own pytest plugin.

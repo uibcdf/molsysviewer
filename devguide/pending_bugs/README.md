@@ -19,10 +19,9 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Partially done (2)
+### Partially done (1)
 
 - [`standalone_qt_live_demo_reload.md`](standalone_qt_live_demo_reload.md) — [#35](https://github.com/uibcdf/molsysviewer/issues/35) — In the standalone Qt host, replacing the loaded demo leaves the previous system on screen. *(high, reproduced)*
-- [`xdist_controller_aborts_under_twelve_workers.md`](xdist_controller_aborts_under_twelve_workers.md) — [#76](https://github.com/uibcdf/molsysviewer/issues/76) — With pytest -n 12 the xdist controller aborts mid-run and reports a partial result. *(low, measured)*
 
 ### Open (1)
 

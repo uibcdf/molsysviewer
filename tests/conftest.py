@@ -13,6 +13,30 @@ if repo_root_str not in sys.path:
     sys.path.insert(0, repo_root_str)
 
 
+# Import both packages in the controller's main thread, before any worker starts.
+#
+# This is not a convenience import -- it is the fix for uibcdf/molsysviewer#76, and
+# removing it brings back an internal error that aborts roughly half of all `-n 12` runs.
+#
+# Under xdist the controller schedules but never collects, so it never imports either
+# package. When a worker emits a warning whose class lives in `molsysmt.*`, xdist sends
+# the class's module name to the controller, and `unserialize_warning_message` calls
+# `importlib.import_module` on it **from the receiver thread**. That is a full, cold
+# `import molsysmt`, which reaches `molsysmt/_pyunitwizard.py` and calls
+# `puw.configure.set_standard_units`. PyUnitWizard's `dict_translate_quantity` is a
+# module-level dict filled incrementally by `load_library`, so a thread that reads it
+# while another is still filling it sees `dict_translate_quantity['string']['pint']`
+# missing and raises `KeyError: 'pint'`. `unserialize_warning_message` guards only
+# `TypeError`, so the KeyError kills the receiver thread, the node goes down mid-test,
+# and the scheduler then aborts with `KeyError: <WorkerController gwN>` -- the symptom
+# #76 was originally filed under, two steps removed from its cause.
+#
+# Importing here means `sys.modules` already holds them by the time any warning crosses,
+# so `import_module` is a dict lookup and no import runs in the receiver thread at all.
+import molsysmt  # noqa: E402,F401
+import molsysviewer  # noqa: E402,F401
+
+
 def _close_registered_molsysviewer_widgets() -> None:
     from ipywidgets.widgets.widget import _instances
 
