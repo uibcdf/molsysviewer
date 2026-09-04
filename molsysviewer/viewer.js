@@ -169234,9 +169234,6 @@ async function bootRemoteBrowserClient(options) {
   let reconnectTimer = 0;
   let disconnectTimer = 0;
   let mediaRouteTimer = 0;
-  let videoWatchdogTimer = 0;
-  let videoFrameCallback = 0;
-  let lastVideoFrameAt = performance.now();
   let reconnectAttempt = 0;
   const maxReconnectAttempts = 3;
   const setStatus = (state, text) => {
@@ -169244,22 +169241,6 @@ async function bootRemoteBrowserClient(options) {
     status.textContent = text;
     status.style.display = state === "ready" ? "none" : "block";
   };
-  const observeVideoFrame = () => {
-    lastVideoFrameAt = performance.now();
-    if (!closed && "requestVideoFrameCallback" in video) {
-      videoFrameCallback = video.requestVideoFrameCallback(observeVideoFrame);
-    }
-  };
-  if ("requestVideoFrameCallback" in video) {
-    videoFrameCallback = video.requestVideoFrameCallback(observeVideoFrame);
-  }
-  videoWatchdogTimer = window.setInterval(() => {
-    if (connection?.connectionState === "connected" && video.srcObject && performance.now() - lastVideoFrameAt > 8e3) {
-      lastVideoFrameAt = performance.now();
-      setStatus("degraded", "Remote video stopped; reconnecting\u2026");
-      socket?.close(4003, "video frames stalled");
-    }
-  }, 1e3);
   const sendJson = (value) => {
     if (!socket || socket.readyState !== WebSocket.OPEN) throw new Error("remote client socket is not open");
     socket.send(JSON.stringify(value));
@@ -169447,7 +169428,6 @@ async function bootRemoteBrowserClient(options) {
     const kind = packet.kind;
     const payload = packet.payload;
     if (kind === "offer") {
-      lastVideoFrameAt = performance.now();
       connection?.close();
       const peer = new RTCPeerConnection({ iceServers: options.iceServers ?? [] });
       connection = peer;
@@ -169673,10 +169653,6 @@ async function bootRemoteBrowserClient(options) {
       closed = true;
       window.clearTimeout(reconnectTimer);
       window.clearTimeout(disconnectTimer);
-      window.clearInterval(videoWatchdogTimer);
-      if (videoFrameCallback && "cancelVideoFrameCallback" in video) {
-        video.cancelVideoFrameCallback(videoFrameCallback);
-      }
       if (moveFrame) cancelAnimationFrame(moveFrame);
       workbench.dispose();
       stopPeer();

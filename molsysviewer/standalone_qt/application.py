@@ -141,6 +141,55 @@ def _install_remote_qt_chrome(
     profile.downloadRequested.connect(handle_download)
 
 
+def _install_remote_qt_status_bridge(*, window: Any, webview: Any, QTimer: Any) -> Any:
+    """Mirror the shared remote page status in the native Qt status bar."""
+    status_bar = window.statusBar()
+    timer = QTimer(window)
+    timer.setInterval(500)
+
+    script = """(() => {
+        const element = document.querySelector('[data-molsysviewer-remote-status]');
+        if (!element) return null;
+        return {
+            state: element.getAttribute('data-molsysviewer-remote-status'),
+            text: element.textContent || ''
+        };
+    })()"""
+
+    def update_status(value: Any) -> None:
+        if not isinstance(value, dict):
+            return
+        state = value.get("state")
+        if state == "ready":
+            status_bar.clearMessage()
+            return
+        text = value.get("text")
+        if isinstance(text, str) and text.strip():
+            status_bar.showMessage(text.strip())
+
+    def poll_status() -> None:
+        webview.page().runJavaScript(script, update_status)
+
+    def load_started() -> None:
+        timer.stop()
+        status_bar.showMessage("Connecting to remote MolSysViewer session…")
+
+    def load_finished(success: bool) -> None:
+        if not success:
+            timer.stop()
+            status_bar.showMessage("Could not load the remote MolSysViewer session.")
+            return
+        status_bar.showMessage("Remote session loaded; negotiating connection…")
+        poll_status()
+        timer.start()
+
+    timer.timeout.connect(poll_status)
+    webview.loadStarted.connect(load_started)
+    webview.loadFinished.connect(load_finished)
+    window._molsysviewer_remote_status_timer = timer
+    return timer
+
+
 def _get_helper(name: str) -> Any:
     m = sys.modules.get("molsysviewer.standalone_qt")
     if m is not None and hasattr(m, name):
@@ -369,7 +418,6 @@ def create_remote_qt_window(
     if hasattr(window, "resize"):
         window.resize(width, height)
     webview = qt["QWebEngineView"](window)
-    webview.setUrl(qt["QUrl"](session_url))
     window.setCentralWidget(webview)
     _install_remote_qt_chrome(
         window=window,
@@ -377,7 +425,12 @@ def create_remote_qt_window(
         QAction=qt["QAction"],
         QFileDialog=qt["QFileDialog"],
     )
-    window.statusBar().showMessage("Connecting to remote MolSysViewer session…")
+    _install_remote_qt_status_bridge(
+        window=window,
+        webview=webview,
+        QTimer=qt["QTimer"],
+    )
+    webview.setUrl(qt["QUrl"](session_url))
     return {
         "app": app,
         "window": window,

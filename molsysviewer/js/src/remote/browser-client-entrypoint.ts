@@ -83,9 +83,6 @@ export async function bootRemoteBrowserClient(
     let reconnectTimer = 0;
     let disconnectTimer = 0;
     let mediaRouteTimer = 0;
-    let videoWatchdogTimer = 0;
-    let videoFrameCallback = 0;
-    let lastVideoFrameAt = performance.now();
     let reconnectAttempt = 0;
     const maxReconnectAttempts = 3;
 
@@ -94,26 +91,6 @@ export async function bootRemoteBrowserClient(
         status.textContent = text;
         status.style.display = state === "ready" ? "none" : "block";
     };
-    const observeVideoFrame = () => {
-        lastVideoFrameAt = performance.now();
-        if (!closed && "requestVideoFrameCallback" in video) {
-            videoFrameCallback = video.requestVideoFrameCallback(observeVideoFrame);
-        }
-    };
-    if ("requestVideoFrameCallback" in video) {
-        videoFrameCallback = video.requestVideoFrameCallback(observeVideoFrame);
-    }
-    videoWatchdogTimer = window.setInterval(() => {
-        if (
-            connection?.connectionState === "connected"
-            && video.srcObject
-            && performance.now() - lastVideoFrameAt > 8_000
-        ) {
-            lastVideoFrameAt = performance.now();
-            setStatus("degraded", "Remote video stopped; reconnecting…");
-            socket?.close(4003, "video frames stalled");
-        }
-    }, 1_000);
     const sendJson = (value: Record<string, unknown>) => {
         if (!socket || socket.readyState !== WebSocket.OPEN) throw new Error("remote client socket is not open");
         socket.send(JSON.stringify(value));
@@ -309,7 +286,6 @@ export async function bootRemoteBrowserClient(
         const kind = packet.kind as string;
         const payload = packet.payload as Record<string, unknown>;
         if (kind === "offer") {
-            lastVideoFrameAt = performance.now();
             connection?.close();
             const peer = new RTCPeerConnection({ iceServers: options.iceServers ?? [] });
             connection = peer;
@@ -557,10 +533,6 @@ export async function bootRemoteBrowserClient(
             closed = true;
             window.clearTimeout(reconnectTimer);
             window.clearTimeout(disconnectTimer);
-            window.clearInterval(videoWatchdogTimer);
-            if (videoFrameCallback && "cancelVideoFrameCallback" in video) {
-                video.cancelVideoFrameCallback(videoFrameCallback);
-            }
             if (moveFrame) cancelAnimationFrame(moveFrame);
             workbench.dispose();
             stopPeer();

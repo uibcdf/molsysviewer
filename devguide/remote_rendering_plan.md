@@ -723,11 +723,12 @@ covers the race where Chromium and its socket have both disappeared before the
 monitor wakes.
 
 Static scenes are not classified as stalled merely because Mol* has nothing new
-to draw. The worker requests one captured keepalive frame every two seconds; the
-browser watchdog acts only when a stream exists, WebRTC says `connected`, and no
-decoded frame callback has arrived for eight seconds. It then uses the existing
-bounded reconnect path. This makes an encoder/video stall observable without
-forcing continuous 30-fps scene redraws.
+to draw. The worker requests one captured keepalive frame every two seconds, but
+the 2026-09-04 Qt smoke showed that Chromium can still omit unchanged canvas
+frames. The former client-side eight-second decoded-frame watchdog therefore
+closed healthy peers repeatedly and was removed. Recovery currently follows
+the WebRTC connection states. A future frozen-media detector must use RTP/media
+statistics that distinguish an unchanged scene from a broken route.
 
 **Foreground server CLI implemented 2026-09-02.** `molsysviewer-server` is a
 thin public adapter over that service. It requires explicit placement, supports
@@ -774,7 +775,11 @@ peers exposed only UDP host candidates hidden behind unrelated mDNS names, so
 ICE remained `new` despite a stable SDP exchange. An authenticated coturn relay
 bound to spika loopback and forwarded to nauta over SSH as TURN/TCP established
 the media and data-channel path. The client displayed pentalanine, accepted
-camera input and advanced playback.
+camera input and advanced playback. The native Qt client then passed the same
+functional smoke: rotate, scroll zoom, atom picking with residue highlight,
+trajectory play and direct frame-slider navigation all worked. Qt now mirrors
+the shared page connection state in its native status bar and clears it once
+the remote peer is ready.
 
 The smoke also exposed the correct failure UX and a performance follow-up. A
 15-second route deadline now replaces an indefinite `Starting remote video`

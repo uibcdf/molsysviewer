@@ -815,6 +815,10 @@ def test_create_remote_qt_window_reuses_authenticated_session_page(monkeypatch):
         def connect(self, callback):
             self._callbacks.append(callback)
 
+        def emit(self, *args):
+            for callback in self._callbacks:
+                callback(*args)
+
     class FakeAction:
         def __init__(self, text, _parent=None):
             self.text = text
@@ -847,6 +851,9 @@ def test_create_remote_qt_window_reuses_authenticated_session_page(monkeypatch):
 
         def showMessage(self, message):
             self.messages.append(message)
+
+        def clearMessage(self):
+            self.messages.append("")
 
     class FakeWindow:
         def __init__(self):
@@ -887,10 +894,12 @@ def test_create_remote_qt_window_reuses_authenticated_session_page(monkeypatch):
         def runJavaScript(self, script, callback=None):
             self.scripts.append(script)
             if callback is not None:
-                callback(True)
+                callback(self.result)
 
         def profile(self):
             return self._profile
+
+        result = None
 
     class FakeWebView:
         def __init__(self, parent):
@@ -898,9 +907,13 @@ def test_create_remote_qt_window_reuses_authenticated_session_page(monkeypatch):
             self.url = None
             self._page = FakePage()
             self.reloaded = False
+            self.loadStarted = FakeSignal()
+            self.loadFinished = FakeSignal()
 
         def setUrl(self, url):
             self.url = url
+            self.loadStarted.emit()
+            self.loadFinished.emit(True)
 
         def page(self):
             return self._page
@@ -915,6 +928,22 @@ def test_create_remote_qt_window_reuses_authenticated_session_page(monkeypatch):
         def getSaveFileName(cls, *_args):
             return cls.selected, ""
 
+    class FakeTimer:
+        def __init__(self, parent):
+            self.parent = parent
+            self.interval = None
+            self.timeout = FakeSignal()
+            self.running = False
+
+        def setInterval(self, interval):
+            self.interval = interval
+
+        def start(self):
+            self.running = True
+
+        def stop(self):
+            self.running = False
+
     fake_app = object()
     monkeypatch.setattr(
         standalone_qt,
@@ -926,6 +955,7 @@ def test_create_remote_qt_window_reuses_authenticated_session_page(monkeypatch):
             "QUrl": lambda value: value,
             "QAction": FakeAction,
             "QFileDialog": FakeFileDialog,
+            "QTimer": FakeTimer,
         },
     )
     monkeypatch.setattr(
@@ -941,8 +971,27 @@ def test_create_remote_qt_window_reuses_authenticated_session_page(monkeypatch):
     assert runtime["window"].central is runtime["webview"]
     assert runtime["window"].size == (1200, 800)
     assert runtime["window"].status.messages == [
-        "Connecting to remote MolSysViewer session…"
+        "Connecting to remote MolSysViewer session…",
+        "Remote session loaded; negotiating connection…",
     ]
+    timer = runtime["window"]._molsysviewer_remote_status_timer
+    assert timer.interval == 500
+    assert timer.running is True
+    runtime["webview"]._page.result = {
+        "state": "negotiating",
+        "text": "Starting remote video…",
+    }
+    timer.timeout.emit()
+    assert runtime["window"].status.messages[-1] == "Starting remote video…"
+    runtime["webview"]._page.result = {"state": "ready", "text": "Connected"}
+    timer.timeout.emit()
+    assert runtime["window"].status.messages[-1] == ""
+    runtime["webview"].loadStarted.emit()
+    runtime["webview"].loadFinished.emit(False)
+    assert timer.running is False
+    assert runtime["window"].status.messages[-1] == (
+        "Could not load the remote MolSysViewer session."
+    )
     assert [menu.title for menu in runtime["window"].menu_bar.menus] == [
         "File", "View", "Export"
     ]
