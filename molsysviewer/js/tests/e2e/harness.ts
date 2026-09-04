@@ -1770,11 +1770,7 @@ export async function probeRegionOrderOwnership(
         representation: "ball-and-stick",
         params: { alpha: 1 },
     });
-    await profiled.handleMessage({
-        op: "update_visibility",
-        options: { visible_atom_indices: atomRange(1, 12), version: 1 },
-    });
-    const composed = recordCase("user-mask-and-region-ownership-coexist", "__order_a__", "__order_b__", [0, 1]);
+    const composed = recordCase("region-ownership-composes", "__order_a__", "__order_b__", [0, 1]);
 
     return { cases: [initial, raised, translucent, composed] };
 }

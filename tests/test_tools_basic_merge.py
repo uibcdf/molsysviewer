@@ -18,18 +18,14 @@ def test_tools_basic_merge_merges_scene_state_and_resolves_tag_collisions():
     region_a.hide(skip_digestion=True)
     pocket_a = view_a.shapes.add_pocket_surface(atom_indices=[0, 1, 2], tag="pocket", skip_digestion=True)
     pocket_a.hide(skip_digestion=True)
-    view_a._atom_mask[2] = False  # visibility is a region concern now; the mask survives only as internal state (#75 phase E)
 
-    view_a._update_visibility_in_frontend()
 
     view_b.regions.add(atom_indices=[0, 1], tag="frag", representation="line", skip_digestion=True)
     analysis_b = view_b.layers.add("analysis", kind="annotation", meta={"owner": "b"}, skip_digestion=True)
     analysis_b.hide(skip_digestion=True)
     pocket_b = view_b.shapes.add_links(atom_pairs=[[0, 1]], tag="pocket", skip_digestion=True)
     pocket_b.hide(skip_digestion=True)
-    view_b._atom_mask[0] = False  # visibility is a region concern now; the mask survives only as internal state (#75 phase E)
 
-    view_b._update_visibility_in_frontend()
 
     result = tools.basic.merge([view_a, view_b], debug_js=True)
 
@@ -67,48 +63,3 @@ def test_tools_basic_merge_merges_scene_state_and_resolves_tag_collisions():
     )
     assert links_msg["options"]["atom_pairs"] == [[22, 23]]
 
-    visibility_msg = next(msg for msg in reversed(result._test_message_log) if msg.get("op") == "update_visibility")  # noqa: SLF001
-    assert visibility_msg["options"]["visible_atom_indices"] == [
-        0,
-        1,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8,
-        9,
-        10,
-        11,
-        12,
-        13,
-        14,
-        15,
-        16,
-        17,
-        18,
-        19,
-        20,
-        21,
-        23,
-        24,
-        25,
-        26,
-        27,
-        28,
-        29,
-        30,
-        31,
-        32,
-        33,
-        34,
-        35,
-        36,
-        37,
-        38,
-        39,
-        40,
-        41,
-        42,
-        43,
-    ]

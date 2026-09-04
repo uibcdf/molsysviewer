@@ -2224,3 +2224,29 @@ A mechanical acceptance criterion, in the spirit of the Phase 12 brief:
 grep -n "handleMessage" molsysviewer/js/src/managers/viewer-controller.ts | grep -i "hide_layer\|show_layer"
 # -> must not appear inside refreshAddonsPanel
 ```
+
+
+## Correction — 2026-09-04 — the user mask this document composes against is gone
+
+Three passages above reason about `currentVisibleIndices` / `atom_mask` as a standing
+constraint: the ownership mask must *compose* with the user's mask rather than overwrite it,
+and `updateVisibility` is listed as one of the three transparency writers.
+
+**There is no user mask any more.** `uibcdf/molsysviewer#75` phase E removed
+`view.hide(selection)`, `view.isolate(...)` and the `selection` half of `view.show()`, and
+phase E2 removed the wire protocol behind them — `update_visibility`, its delta messages, its
+versioning and its resync handler — from Python, from `state-handlers.ts` and from the
+rebuilt bundle.
+
+The reason is recorded with the removal: the mask reached the live frontend, the popup
+snapshot and the HTML export, and never reached `export_state`. Hiding atoms, saving and
+reloading brought them back with no warning.
+
+**What the passages above still get right**, and why they are corrected here rather than
+edited: the *measurement* stands — transparency over hidden atoms on existing components is
+what avoids a rebuild — and so does the composition rule, now with one term fewer. The two
+writers that remain are `setFocusFade` and the ownership mask, and
+`applyComposedTransparency` composes exactly those.
+
+`view.isolate()` is named above as something the transparency path backs. It no longer
+exists; `region.show_only()` does, and it is the surviving half of that sentence.

@@ -245,13 +245,6 @@ class MolSysView(
         self._active_selection_recipe: list[dict[str, Any]] = []
         self._last_tool_state_event: dict | None = None
         self._webgl_context_lost: bool = False
-        # Visibility wire protocol: the frontend keeps a versioned visible-atom set
-        # and we send small deltas live. Canonical projectors regenerate the full
-        # state from _atom_mask. `_last_visibility_mask` is the last mask we
-        # computed a delta against; `_visibility_version` is the monotonic version
-        # both sides track.
-        self._last_visibility_mask = None
-        self._visibility_version: int = 0
         self._last_measurement_created_event: dict | None = None
         self._last_panel_mode_state_event: dict | None = None
         self._shape_render_status: dict[str, dict] = {}
@@ -352,7 +345,6 @@ class MolSysView(
         self.selection = None
         self.structure_indices = None
         self._molsys = None
-        self._atom_mask = None
         self.structure_mask = None
 
         self.shapes = ShapesManager(self)
@@ -1518,11 +1510,6 @@ class MolSysView(
                 package_root=PACKAGE_ROOT,
                 meta=META,
             )
-        elif event == "request_visibility_resync":
-            # The frontend's visibility version drifted from a delta's base version
-            # (missed/out-of-order message or a bug); resend the authoritative full
-            # state so the delta protocol self-heals.
-            self._resend_full_visibility()
         elif event == "scene_history_undo":
             self.history.undo()
             return
@@ -2335,7 +2322,6 @@ class MolSysView(
         *,
         label: str | None = None,
         atom_index_map: dict[int, int] | None = None,
-        visible_atom_indices: list[int] | None = None,
     ) -> None:
         if self._molsys is None:
             raise ValueError("No molecular system loaded. Load a system before mutating the view.")
@@ -2346,13 +2332,6 @@ class MolSysView(
         # serialize the newly edited MolSys under the old generation.
         self._cancel_binary_structure_stream("molecular system rebuilt")
         molecular_projection = self._new_lazy_molecular_projection(label=label)
-        self._atom_mask = np.ones(n_atoms, dtype=bool)
-        if visible_atom_indices is not None:
-            self._atom_mask[:] = False
-            keep = self._remap_indices(visible_atom_indices, atom_index_map)
-            if keep:
-                self._atom_mask[keep] = True
-
         for tag, region in list(self._regions.items()):
             if region.atom_indices is None:
                 continue
@@ -2373,7 +2352,6 @@ class MolSysView(
 
         # Force the next visibility update to send a full state (the frontend is
         # reset by the rebuild, so a delta against the old mask would be wrong).
-        self._last_visibility_mask = None
         # The undo/redo snapshots reference the pre-edit index space; a system
         # edit invalidates them.
         history = getattr(self, "history", None)
@@ -2485,7 +2463,6 @@ class MolSysView(
         for msg in self._player_replay_messages():
             self._send_replay(msg)
 
-        self._update_visibility_in_frontend()
         self._sync_annotation_summaries_runtime()
         self._sync_measurement_summaries_runtime()
         self._sync_shape_summaries_runtime()
@@ -2499,7 +2476,6 @@ class MolSysView(
         *,
         atom_index_map: dict[int, int] | None = None,
         label: str | None = None,
-        visible_atom_indices: list[int] | None = None,
         load_blocks: str = "keep",
         appended_n_atoms: int | None = None,
         skip_digestion: bool = False,
@@ -2510,7 +2486,7 @@ class MolSysView(
         callers. Molecular edit semantics belong to MolSysMT or an addon; this
         method only applies the resulting system to the live viewer and remaps
         viewer-owned state such as regions, selections, shapes, annotations,
-        measurements, visibility, per-atom colors, and the load-block accounting.
+        measurements, per-atom colors, and the load-block accounting.
 
         Parameters
         ----------
@@ -2522,10 +2498,6 @@ class MolSysView(
         label
             Optional label for the rebuilt payload. Defaults to the current
             view label.
-        visible_atom_indices
-            Optional list of visible atom indices in the pre-edit system. When
-            omitted, the current visibility state is captured before replacing
-            the system.
         load_blocks
             Load-block accounting policy after the edit: ``"keep"`` (default,
             leave the blocks as-is, e.g. coordinate/attribute edits), ``"collapse"``
@@ -2544,7 +2516,6 @@ class MolSysView(
                 f"apply_system_edit(load_blocks={load_blocks!r}) must be 'keep', 'collapse', or 'append'."
             )
 
-        visible = self._visible_atom_indices if visible_atom_indices is None else visible_atom_indices
         effective_label = self._last_label if label is None else label
         self._molsys = new_molsys
         self.molecular_system = new_molsys
@@ -2553,7 +2524,6 @@ class MolSysView(
         self._rebuild_view_from_current_molsys(
             label=effective_label,
             atom_index_map=atom_index_map,
-            visible_atom_indices=visible,
         )
 
         # Reconcile load-block accounting so callers (view.add/remove and addons)
@@ -2608,14 +2578,6 @@ class MolSysView(
         return list(self._load_blocks)
 
     @property
-    def _visible_atom_indices(self):
-        """Return the indices of currently visible atoms."""
-        if self._atom_mask is None:
-            return None
-        # Use a plain list so the payload is JSON-serializable.
-        return np.nonzero(self._atom_mask)[0].tolist()
-
-    @property
     def visible_structure_indices(self):
         """Return the indices of currently visible structures."""
         if self.structure_mask is None:
@@ -2637,73 +2599,6 @@ class MolSysView(
         self._atom_color_map.clear()
         self._send({"op": "clear_atom_colors"})
         self._sync_whole_summary_runtime()
-
-    def _update_visibility_in_frontend(self):
-        if self._atom_mask is None:
-            return
-        new_mask = self._atom_mask
-        last_mask = self._last_visibility_mask
-
-        # No-op if nothing changed: avoids version churn and redundant traffic.
-        # (Rebuilds reset _last_visibility_mask to None, so a post-rebuild sync is
-        # never skipped here.)
-        if (
-            last_mask is not None
-            and last_mask.shape == new_mask.shape
-            and np.array_equal(last_mask, new_mask)
-        ):
-            return
-
-        self._visibility_version += 1
-        version = self._visibility_version
-        visible = self._visible_atom_indices
-        full_msg = {
-            "op": "update_visibility",
-            "options": {"visible_atom_indices": visible, "version": version},
-        }
-        self._last_visibility_mask = new_mask.copy()
-
-        # Build a delta when we are live and have a comparable prior mask, and only
-        # if it is actually smaller than the full visible list.
-        delta_msg = None
-        if self._ready and last_mask is not None and last_mask.shape == new_mask.shape:
-            changed = np.nonzero(new_mask != last_mask)[0]
-            if changed.size and changed.size < len(visible):
-                shown = changed[new_mask[changed]].tolist()
-                hidden = changed[~new_mask[changed]].tolist()
-                delta_msg = {
-                    "op": "update_visibility_delta",
-                    "options": {
-                        "base_version": version - 1,
-                        "version": version,
-                        "shown": shown,
-                        "hidden": hidden,
-                    },
-                }
-
-        if delta_msg is not None:
-            # The atom mask is authoritative; put only the smaller delta on the
-            # live wire. Canonical snapshots regenerate the full state from it.
-            self._send_runtime_only(delta_msg)
-        else:
-            # First send, post-rebuild, not-ready, or a delta that is not smaller.
-            self._send(full_msg)
-
-    def _resend_full_visibility(self):
-        """Send the authoritative full visibility state at the current version.
-
-        Used to answer a frontend `request_visibility_resync` (version mismatch),
-        making the delta protocol self-healing without leaving the viewer stale.
-        """
-        if self._atom_mask is None:
-            return
-        self._send_runtime_only({
-            "op": "update_visibility",
-            "options": {
-                "visible_atom_indices": self._visible_atom_indices,
-                "version": self._visibility_version,
-            },
-        })
 
     # --- Export helpers for docs/notebooks ---
 

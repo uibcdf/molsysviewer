@@ -154,18 +154,6 @@ def _import_extracted_state(
     if result._section_history:  # noqa: SLF001
         result._send({"op": "set_sections", "sections": list(result._section_history)})  # noqa: SLF001
 
-    # ── Atom visibility ────────────────────────────────────────────────────
-    if result._atom_mask is not None:
-        result._atom_mask[:] = False
-    visible = source._visible_atom_indices
-    if visible and result._atom_mask is not None:
-        remapped_visible = [
-            atom_index_map[int(i)] for i in visible if int(i) in atom_index_map
-        ]
-        if remapped_visible:
-            result._atom_mask[remapped_visible] = True
-    result._update_visibility_in_frontend()  # noqa: SLF001
-
     # ── Box ────────────────────────────────────────────────────────────────
     box_record = getattr(source, "_box_record", None)
     if box_record is not None:

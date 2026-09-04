@@ -19,9 +19,7 @@ def test_load_string_uses_molsysmt():
     view = MolSysView(debug_js=True)
     view.load(PDB_TEXT)
     assert view._molsys is not None
-    assert view._atom_mask is not None
     expected_atoms = msm.get(view._molsys, element="atom", n_atoms=True)
-    assert len(view._atom_mask) == expected_atoms
     assert any(msg.get("op") == "load_molsys_payload" for msg in view._test_message_log)
 
 
@@ -33,8 +31,6 @@ def test_load_molsys_payload_or_direct_json_fallback():
     view = MolSysView(debug_js=True)
     view.load(molsys)
     assert view._molsys is not None
-    assert view._atom_mask is not None
     expected_atoms = msm.get(view._molsys, element="atom", n_atoms=True)
-    assert len(view._atom_mask) == expected_atoms
     ops = {msg.get("op") for msg in view._test_message_log}
     assert ops & {"load_molsys_payload", "load_structure_from_string"}

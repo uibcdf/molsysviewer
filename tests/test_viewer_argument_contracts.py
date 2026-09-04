@@ -82,10 +82,6 @@ def test_an_append_that_added_no_atoms_is_refused(view):
         view.apply_system_edit(view.molsys, load_blocks="append", appended_n_atoms=0)
 
 
-def test_visible_atom_indices_are_indices(view):
-    with pytest.raises(ArgumentError, match="visible_atom_indices"):
-        view.apply_system_edit(view.molsys, visible_atom_indices=[-1])
-
 
 def test_every_refusal_names_the_call_that_caused_it(view):
     """The upgrade over a bare ValueError, stated once rather than in every test above."""

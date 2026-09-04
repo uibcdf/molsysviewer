@@ -10,7 +10,6 @@ from molsysviewer.demo import demo
 def _normalized(messages: list[dict]) -> list[dict]:
     result = deepcopy(messages)
     for message in result:
-        if message.get("op") == "update_visibility":
             message.get("options", {}).pop("version", None)
     return result
 

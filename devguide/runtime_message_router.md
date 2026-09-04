@@ -341,7 +341,7 @@ membership, visibility; (6) shapes/annotations/measurements from live records
 via the projector; (7) consolidated `set_sections`; (8) object and layer
 visibility after their members exist; (9) resolved colours after components
 exist; (10) saved selections and active selection; (11) measurement settings;
-(12) full `update_visibility`; (13) current frame and playback; (14) camera last,
+(12) current frame and playback; (13) camera last,
 from the host as ephemeral state.
 
 **Panel snapshot:** the current-state summaries plus saved selections, active

@@ -188,7 +188,6 @@ def test_a_full_scene_keeps_canvas_and_panel_projections_separate():
         "set_whole_representation",
         "create_region",
         "add_sphere",
-        "update_visibility",
         "set_trajectory_frame",
     ):
         assert op in canvas_ops, f"canvas snapshot is missing {op}"
@@ -196,7 +195,7 @@ def test_a_full_scene_keeps_canvas_and_panel_projections_separate():
     # The panel gets UI state and no geometry.
     for op in ("set_region_summaries", "set_shape_summaries", "set_history_state"):
         assert op in panel_ops, f"panel snapshot is missing {op}"
-    for op in ("load_molsys_payload", "add_sphere", "create_region", "update_visibility"):
+    for op in ("load_molsys_payload", "add_sphere", "create_region"):
         assert op not in panel_ops, f"panel snapshot must not contain {op}"
 
     # Camera is host-local ephemeral state in both modes.

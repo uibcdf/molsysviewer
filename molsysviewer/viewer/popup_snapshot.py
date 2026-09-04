@@ -166,17 +166,6 @@ class PopupSnapshotMixin:
             **deepcopy(self.measurements.settings(skip_digestion=True)),
         })
 
-        # 12. full visibility (version is a monotonic counter; ignored by the
-        #     size invariant).
-        if self._atom_mask is not None:
-            messages.append({
-                "op": "update_visibility",
-                "options": {
-                    "visible_atom_indices": list(self._visible_atom_indices),
-                    "version": self._visibility_version,
-                },
-            })
-
         # 13. current frame and playback. The settings are current state; the play
         #     action is only replayed when playback is actually running.
         messages.append({"op": "set_trajectory_frame", "index": int(self._current_structure_index)})

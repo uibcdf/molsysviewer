@@ -41,8 +41,6 @@ import {
     ShowWholeMessage,
     ShowLayerMessage,
     ShowRegionMessage,
-    UpdateVisibilityMessage,
-    UpdateVisibilityDeltaMessage,
     ZoomMessage,
 } from "../../messages/viewer-messages";
 import { LoadedStructure } from "../../plugin/structure";
@@ -135,12 +133,10 @@ export class StateHandlers {
     private readonly pendingLayerVisibility = new Map<string, boolean>();
     private readonly pendingRegions: CreateRegionMessage[] = [];
     private regionStyleOptions = { representations: [] as string[], presets: [] as string[] };
-    private pendingVisibility?: number[];
     private focusFadeIndices?: number[];
     private focusFadeValue = 0;
     private showOnlyRegionTag?: string;
     private transparencyInitialized = false;
-    private previousUserHiddenKey = "";
     private previousFadedKey = "";
     private previousFocusFadeValue = 0;
     private previousShowOnlyWholeMask = false;
@@ -149,8 +145,6 @@ export class StateHandlers {
     // Versioned visibility state for the delta protocol: the last applied visible
     // atom indices and the version they were stamped with. A delta only applies
     // when its base_version matches; otherwise we ask the kernel for a full resync.
-    private currentVisibleIndices: number[] | null = null;
-    private visibilityVersion = 0;
     private requestedGlobalHidden: boolean | null = null;
     private pendingZoom?: ZoomMessage;
 
@@ -358,14 +352,6 @@ export class StateHandlers {
         return indices;
     }
 
-    private hiddenAtomIndicesFromUserMask(structure: Structure): number[] | undefined {
-        const indices = this.currentVisibleIndices;
-        if (!Array.isArray(indices)) return undefined;
-        if (indices.length === 0) return this.allAtomIndices(structure);
-        const visibleSet = new Set(indices);
-        return this.allAtomIndices(structure).filter(index => !visibleSet.has(index));
-    }
-
     private unionAtomIndices(...sets: Array<number[] | undefined>): number[] {
         const union = new Set<number>();
         for (const values of sets) {
@@ -530,7 +516,6 @@ export class StateHandlers {
         const { all, whole, regions } = this.splitComponentsByRegionOwnership();
         if (all.length === 0) return;
 
-        const userHidden = this.hiddenAtomIndicesFromUserMask(structure);
         const faded = this.focusFadeValue > 0
             ? this.complementAtomIndices(structure, this.focusFadeIndices)
             : undefined;
@@ -538,13 +523,11 @@ export class StateHandlers {
         const regionOwnershipKey = this.regionOwnershipKey();
         const showOnlyWholeMaskActive = !!this.showOnlyRegionTag;
         const showOnlyWholeMask = showOnlyWholeMaskActive ? this.allAtomIndices(structure) : undefined;
-        const wholeHidden = this.unionAtomIndices(userHidden, this.ownedOpaqueAtomIndices(), showOnlyWholeMask);
+        const wholeHidden = this.unionAtomIndices(this.ownedOpaqueAtomIndices(), showOnlyWholeMask);
 
-        const userHiddenKey = this.atomIndexKey(userHidden);
         const fadedKey = this.atomIndexKey(faded);
         const requiresFullRebuild =
             !this.transparencyInitialized
-            || userHiddenKey !== this.previousUserHiddenKey
             || fadedKey !== this.previousFadedKey
             || this.focusFadeValue !== this.previousFocusFadeValue
             || showOnlyWholeMaskActive !== this.previousShowOnlyWholeMask
@@ -557,7 +540,7 @@ export class StateHandlers {
             for (const entry of this.regionIndex.values()) {
                 const components = this.componentForRegionEntry(entry, regions);
                 if (components.length === 0) continue;
-                const regionHidden = this.unionAtomIndices(userHidden, this.regionOwnedByHigherOrderAtomIndices(entry));
+                const regionHidden = this.unionAtomIndices(this.regionOwnedByHigherOrderAtomIndices(entry));
                 if (regionHidden.length > 0) {
                     await this.applyTransparencyLayer(components, regionHidden, 1);
                 }
@@ -571,7 +554,6 @@ export class StateHandlers {
         } else {
             const previousOwned = this.previousOwnedOpaqueIndices;
             const nextOwned = new Set(ownedOpaque);
-            const userHiddenSet = new Set(userHidden ?? []);
             const fadedSet = new Set(faded ?? []);
             const added = ownedOpaque.filter(index => !previousOwned.has(index));
             const removed = Array.from(previousOwned).filter(index => !nextOwned.has(index));
@@ -584,7 +566,6 @@ export class StateHandlers {
                 const fadedReleased: number[] = [];
                 const clearReleased: number[] = [];
                 for (const index of removed) {
-                    if (userHiddenSet.has(index)) continue;
                     if (fadedSet.has(index)) {
                         fadedReleased.push(index);
                     } else {
@@ -601,52 +582,11 @@ export class StateHandlers {
         }
 
         this.transparencyInitialized = true;
-        this.previousUserHiddenKey = userHiddenKey;
         this.previousFadedKey = fadedKey;
         this.previousFocusFadeValue = this.focusFadeValue;
         this.previousShowOnlyWholeMask = showOnlyWholeMaskActive;
         this.previousRegionOwnershipKey = regionOwnershipKey;
         this.previousOwnedOpaqueIndices = new Set(ownedOpaque);
-    }
-
-    async updateVisibility(msg: UpdateVisibilityMessage | number[] | undefined) {
-        const indices = Array.isArray(msg) || msg === undefined ? msg : msg.options?.visible_atom_indices;
-        const version = (Array.isArray(msg) || msg === undefined) ? undefined : msg.options?.version;
-        if (Array.isArray(indices)) {
-            this.currentVisibleIndices = indices;
-            if (typeof version === "number") this.visibilityVersion = version;
-        }
-        await this.applyVisibility(indices);
-    }
-
-    async updateVisibilityDelta(msg: UpdateVisibilityDeltaMessage) {
-        const opts = msg.options;
-        if (!opts) return;
-        // Apply only on top of the exact version we currently hold; otherwise the
-        // stream drifted (missed/out-of-order message or a bug) and we ask the
-        // kernel for the authoritative full state instead of applying blindly.
-        if (this.currentVisibleIndices === null || opts.base_version !== this.visibilityVersion) {
-            this.callbacks.notify({ event: "request_visibility_resync" });
-            return;
-        }
-        const set = new Set(this.currentVisibleIndices);
-        for (const i of opts.shown ?? []) set.add(i);
-        for (const i of opts.hidden ?? []) set.delete(i);
-        const nextIndices = Array.from(set);
-        this.currentVisibleIndices = nextIndices;
-        this.visibilityVersion = opts.version;
-        await this.applyVisibility(nextIndices);
-    }
-
-    private async applyVisibility(indices: number[] | undefined) {
-        const structure = this.callbacks.getStructure();
-        if (!structure) {
-            if (Array.isArray(indices)) {
-                this.pendingVisibility = indices;
-            }
-            return;
-        }
-        await this.applyComposedTransparency();
     }
 
     async setFocusFade(msg: SetFocusFadeMessage) {
@@ -1690,11 +1630,6 @@ export class StateHandlers {
 
     // Public method to be called by Loader/Controller when structure is ready
     async onStructureLoaded() {
-        if (this.pendingVisibility) {
-            const pending = this.pendingVisibility;
-            this.pendingVisibility = void 0;
-            await this.updateVisibility(pending);
-        }
         if (this.pendingZoom) {
             const pending = this.pendingZoom;
             this.pendingZoom = void 0;
@@ -1733,7 +1668,6 @@ export class StateHandlers {
         this.focusFadeValue = 0;
         this.showOnlyRegionTag = undefined;
         this.transparencyInitialized = false;
-        this.previousUserHiddenKey = "";
         this.previousFadedKey = "";
         this.previousFocusFadeValue = 0;
         this.previousShowOnlyWholeMask = false;

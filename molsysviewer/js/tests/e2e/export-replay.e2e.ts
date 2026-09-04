@@ -225,16 +225,9 @@ async function run() {
     }, EXPECTED.annotationTag);
     assert.ok(hasLabelAfterReload, "annotation should be present after second replay (standalone reload)");
 
-    // ── Scenario 4: canonical full visibility is accepted ────────────────────
-    console.log("[E2E export-replay] Scenario: update_visibility handled gracefully");
-
-    await page.evaluate(async () => {
-        const c = (window as any).__controller;
-        await c.handleMessage({
-            op: "update_visibility",
-            options: { visible_atom_indices: [0, 1, 2, 3] },
-        });
-    });
+    // Scenario 4 checked that a canonical `update_visibility` replayed without error. The
+    // op was removed with the atom mask in uibcdf/molsysviewer#75 phase E2, and an exported
+    // page no longer carries one.
 
     await browser.close();
 

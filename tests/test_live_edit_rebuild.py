@@ -29,9 +29,7 @@ def test_apply_system_edit_reconciles_external_molsysmt_edit():
         tag="links",
         skip_digestion=True,
     )
-    view._atom_mask[2] = False  # visibility is a region concern now; the mask survives only as internal state (#75 phase E)
 
-    view._update_visibility_in_frontend()
 
     old_n_atoms = int(msm.get(view.molsys, element="system", n_atoms=True, skip_digestion=True))
     removed = {0}
@@ -48,10 +46,6 @@ def test_apply_system_edit_reconciles_external_molsysmt_edit():
 
     assert view.molsys is new_molsys
     assert view.regions["frag"].atom_indices == (0, 1)
-    assert view._atom_mask is not None
-    assert len(view._atom_mask) == 21
-    assert bool(view._atom_mask[0]) is True
-    assert bool(view._atom_mask[1]) is False
 
     payload_msg = next(msg for msg in view._test_message_log if msg.get("op") == "load_molsys_payload")
     assert len(payload_msg["payload"]["atoms"]["atom_id"]) == 21
@@ -104,9 +98,6 @@ def test_append_structures_rebuild_preserves_state_and_sets_multiple_structures(
     apply_append_structures(view, demo["dialanine"]._molsys)  # noqa: SLF001
 
     assert view.regions["frag"].atom_indices == (0, 1, 2)
-    assert view._atom_mask is not None
-    assert len(view._atom_mask) == 22
-    assert view._atom_mask.all()
 
     ops = [msg.get("op") for msg in view._test_message_log]
     assert ops[:2] == ["clear_all", "load_molsys_payload"]
@@ -161,7 +152,6 @@ def test_load_mode_append_structures_supports_topology_only_view():
     view.molecular_system = topology_only
     view.selection = "all"
     view.structure_indices = "all"
-    view._atom_mask = np.ones(topology_only.topology.get_n_atoms(), dtype=bool)
     view._last_label = "topology"  # noqa: SLF001
 
     view.load(demo["dialanine"]._molsys, mode="append_structures", skip_digestion=True)  # noqa: SLF001
@@ -230,10 +220,6 @@ def test_add_rebuild_preserves_state_and_expands_atom_payload(monkeypatch):
     apply_add(view, demo["dialanine"]._molsys)  # noqa: SLF001
 
     assert view.regions["frag"].atom_indices == (0, 1, 2)
-    assert view._atom_mask is not None
-    assert len(view._atom_mask) == 44
-    assert view._atom_mask[:22].all()
-    assert not view._atom_mask[22:].any()
 
     ops = [msg.get("op") for msg in view._test_message_log]
     assert ops[:2] == ["clear_all", "load_molsys_payload"]
@@ -256,9 +242,6 @@ def test_add_rebuild_preserves_state_and_expands_atom_payload(monkeypatch):
 
     assert {"op": "hide_layer", "tag": "pocket", "kind": "shape"} in view._test_message_log
     assert {"op": "hide_region", "tag": "frag"} in view._test_message_log
-
-    visibility_msg = next(msg for msg in reversed(view._test_message_log) if msg.get("op") == "update_visibility")
-    assert visibility_msg["options"]["visible_atom_indices"] == list(range(22))
 
 
 def test_set_rebuild_updates_group_name_and_preserves_hidden_state():
@@ -449,7 +432,6 @@ def test_consecutive_live_edits_keep_replay_state_consistent(monkeypatch):
         "set_region_representation",
         "hide_region",
         "add_pocket_surface",
-        "update_visibility",
     ]
 
     payload_msg = next(msg for msg in view._test_message_log if msg.get("op") == "load_molsys_payload")
@@ -468,10 +450,6 @@ def test_consecutive_live_edits_keep_replay_state_consistent(monkeypatch):
         if msg.get("op") == "add_pocket_surface" and msg.get("options", {}).get("tag") == "pocket"
     )
     assert pocket_msg["options"]["atom_indices"] == [0, 1]
-
-    visibility_msg = next(msg for msg in reversed(view._test_message_log) if msg.get("op") == "update_visibility")
-    assert visibility_msg["options"]["visible_atom_indices"] == list(range(21))
-
 
 
 def test_remove_rebuild_drops_orphaned_regions_and_shapes_but_keeps_anchored_objects_broken():
@@ -646,8 +624,6 @@ def test_canonical_export_after_live_edit_chain_reflects_current_state(monkeypat
     )
     assert pocket_msg["options"]["atom_indices"] == [0, 1]
 
-    visibility = next(msg for msg in exported if msg.get("op") == "update_visibility")
-    assert visibility["options"]["visible_atom_indices"] == view._visible_atom_indices
 
 
 def test_remove_rebuild_remaps_regions_shapes_and_visibility():
@@ -681,19 +657,12 @@ def test_remove_rebuild_remaps_regions_shapes_and_visibility():
         skip_digestion=True,
     )
 
-    view._atom_mask[2] = False  # visibility is a region concern now; the mask survives only as internal state (#75 phase E)
 
-
-    view._update_visibility_in_frontend()
     view.whole.hide(skip_digestion=True)
 
     apply_remove(view, selection=[0])
 
     assert view.regions["frag"].atom_indices == (0, 1)
-    assert view._atom_mask is not None
-    assert len(view._atom_mask) == 21
-    assert bool(view._atom_mask[0]) is True
-    assert bool(view._atom_mask[1]) is False
 
     ops = [msg.get("op") for msg in view._test_message_log]
     assert ops[:3] == ["clear_all", "load_molsys_payload", "hide_whole"]
@@ -722,30 +691,6 @@ def test_remove_rebuild_remaps_regions_shapes_and_visibility():
         msg.get("op") == "add_pocket_surface" and msg.get("options", {}).get("tag") == "dropme"
         for msg in view._test_message_log
     )
-
-    visibility_msg = next(msg for msg in reversed(view._test_message_log) if msg.get("op") == "update_visibility")
-    assert visibility_msg["options"]["visible_atom_indices"] == [
-        0,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8,
-        9,
-        10,
-        11,
-        12,
-        13,
-        14,
-        15,
-        16,
-        17,
-        18,
-        19,
-        20,
-    ]
 
 
 def test_remove_rebuild_remaps_and_replays_per_atom_colors():

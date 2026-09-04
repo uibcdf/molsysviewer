@@ -59,24 +59,16 @@ This is the **ground truth** for:
 - masses,
 - geometry computations.
 
-## 2.2. `atom_mask`
-Boolean mask controlling **visibility** of atoms in the viewer.
+## 2.2. Visibility
 
-- `True` → atom visible
-- `False` → atom hidden
+There is no atom-visibility mask. The viewer had one — `atom_mask`, a boolean per atom, with
+a `visible_atom_indices` property and a versioned wire protocol — and it was removed before
+1.0 (`uibcdf/molsysviewer#75`, phases E and E2).
 
-Consistent with MolSysMT’s internal semantics.
-
-## 2.3. `visible_atom_indices`
-A computed property:
-
-```python
-@property
-def visible_atom_indices(self):
-    return np.where(self.atom_mask)[0]
-```
-
-Used to inform Mol\* which atoms are displayed.
+It reached the live frontend, the popup snapshot and the HTML export, and never reached
+`export_state`: atoms hidden through it came back on reload, silently. What is drawn is now
+decided by the whole and by regions, each of which owns its own visibility, and both of which
+travel with a saved scene.
 
 ---
 
@@ -93,8 +85,6 @@ class BasicModule:
 
 Modules can access:
 - `self._view._molsys`
-- `self._view.atom_mask`
-- `self._view.visible_atom_indices`
 - message-sending helpers for frontend communication.
 
 ---
@@ -261,7 +251,7 @@ Examples:
 ```python
 {"op": "center_on_atoms", "atom_indices": [...]}
 {"op": "add_spheres", "centers": [...], "radii": [...], "color": ...}
-{"op": "update_visibility", "visible_indices": [...]}
+{"op": "set_regions_visibility", "regions": {...}}
 {"op": "add_measurement", "kind": "distance", "atoms": [...], "label": "12.3 Å"}
 ```
 

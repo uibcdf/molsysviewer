@@ -2380,8 +2380,6 @@ export class MolSysViewerController {
                 case "clear_shapes_by_tag": await this.scene.clearShapesByTag(msg); break;
 
                 // State/Region Ops
-                case "update_visibility": await this.state.updateVisibility(msg); break;
-                case "update_visibility_delta": await this.state.updateVisibilityDelta(msg); break;
                 case "set_focus_fade": await this.state.setFocusFade(msg); break;
                 case "create_region": {
                     await this.state.createRegion(msg);

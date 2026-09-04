@@ -52,7 +52,6 @@ const LAST_WRITE_WINS_OPS = new Set([
     "set_canvas_visibility",
     "set_legend",
     "set_trajectory_plot",
-    "update_visibility",
 ]);
 
 function operation(message: ViewerMessage): string {

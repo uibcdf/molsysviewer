@@ -98,7 +98,7 @@ inputs too.
 
 ## Visibility model
 
-Python owns `atom_mask` (boolean per atom).
+Atom visibility is owned by regions and by the whole, not by a global mask; the `atom_mask` this once described was removed in `uibcdf/molsysviewer#75`.
 Python sends visible indices to TS.
 TS computes hidden atoms and applies transparency via Mol* helpers.
 
@@ -162,7 +162,6 @@ Common operations include:
   - `load_structure_from_string` (legacy path; prefer payloads when available)
   - `load_pdb_id`, `load_url` (when delegating to Mol*)
 - Visibility:
-  - `update_visibility`
   - `show_whole`, `hide_whole`
 - Regions:
   - `create_region`, `set_region_representation`

@@ -11,7 +11,7 @@ It is still useful as a conceptual map, but the current source of truth is alway
 Responsibilities
 
 - Own the widget (`MolSysViewerWidget`) and the underlying MolSysMT system (`_molsys`).
-- Maintain visibility masks (`atom_mask`, `structure_mask`) and compute `visible_atom_indices`.
+- Maintain the structure mask. Atom visibility is a region concern; the atom mask was removed in `uibcdf/molsysviewer#75`.
 - Expose the public Python API for:
   - Loading (`load`, `load_pdb_string`, `load_mmcif_string`, `load_pdb_id`, `load_from_url`).
   - Visibility (`show`, `hide`, `isolate`).
@@ -57,7 +57,7 @@ In practice, `MolSysView` plays multiple “logical module” roles:
 Modules
 
 - `load_molsysmt.py`
-  - Converts inputs to `molsysmt.MolSys`, creates `atom_mask`, and records a
+  - Converts inputs to `molsysmt.MolSys` and records a
     generation-bound lazy molecular projection.
   - The array-native and portable-JSON encoders both read MolSys directly;
     portable JSON is materialized only for compatibility or export consumers.

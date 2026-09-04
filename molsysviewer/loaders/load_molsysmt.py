@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 import molsysmt as msm
-import numpy as np
 
 from .._private import scale_budget
 from .._private.argdigest import digest
@@ -82,7 +81,6 @@ def load_from_molsysmt(
 
     n_atoms = int(view._molsys.get_n_atoms())
     n_structures = int(view._molsys.structures.n_structures)
-    view._atom_mask = np.ones(n_atoms, dtype=bool)
 
     # This warning concerns materialized coordinates and therefore applies to
     # both the binary path and the lazy JSON fallback.

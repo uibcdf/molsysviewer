@@ -260,24 +260,6 @@ export type LoadStructureFromUrlMessage = {
     label?: string;
 };
 
-export type UpdateVisibilityMessage = {
-    op: "update_visibility";
-    options?: {
-        visible_atom_indices?: number[];
-        version?: number;
-    };
-};
-
-export type UpdateVisibilityDeltaMessage = {
-    op: "update_visibility_delta";
-    options?: {
-        base_version: number;
-        version: number;
-        shown?: number[];
-        hidden?: number[];
-    };
-};
-
 export type SetFocusFadeMessage = {
     op: "set_focus_fade";
     options?: {
@@ -934,8 +916,6 @@ export type KnownViewerMessage =
     LoadMolSysPayloadRefMessage |
     LoadStructureFromUrlMessage |
     LoadPdbIdMessage |
-    UpdateVisibilityMessage |
-    UpdateVisibilityDeltaMessage |
     SetFocusFadeMessage |
     SetTrajectoryPlotMessage |
     ClearSceneMessage |

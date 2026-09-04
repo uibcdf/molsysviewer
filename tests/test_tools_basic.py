@@ -15,8 +15,6 @@ def test_tools_basic_concatenate_structures_returns_new_view_from_views():
     assert result is not view_a
     assert result is not view_b
     assert msm.get(result._molsys, element="system", n_structures=True, skip_digestion=True) == 2  # noqa: SLF001
-    assert result._atom_mask is not None
-    assert len(result._atom_mask) == msm.get(result._molsys, element="system", n_atoms=True, skip_digestion=True)  # noqa: SLF001
 
 
 def test_tools_basic_concatenate_structures_accepts_molecular_systems():
@@ -145,7 +143,6 @@ def test_region_show_only_uses_ownership_without_mutating_user_visibility():
 
     region.show_only()
 
-    assert view._visible_atom_indices == list(range(22))
     assert region._hidden is False  # noqa: SLF001
     assert other._hidden is True  # noqa: SLF001
     assert view._test_message_log[-1] == {"op": "show_only_region", "tag": "frag"}  # noqa: SLF001
@@ -171,9 +168,7 @@ def test_tools_basic_copy_returns_independent_view_with_scene_state():
     region.hide(skip_digestion=True)
     pocket = view.shapes.add_pocket_surface(atom_indices=[0, 1, 2], tag="pocket", skip_digestion=True)
     pocket.hide(skip_digestion=True)
-    view._atom_mask[2] = False  # visibility is a region concern now; the mask survives only as internal state (#75 phase E)
 
-    view._update_visibility_in_frontend()
 
     result = tools.copy(view, debug_js=True)
 

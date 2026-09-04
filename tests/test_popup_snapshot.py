@@ -16,7 +16,6 @@ MOLECULAR_OR_STRUCTURAL_OPS = {
     "load_molsys_payload",
     "load_molsys_array_payload",
     "set_atom_colors",
-    "update_visibility",
     "create_region",
     "set_sections",
     "show_whole",
@@ -41,8 +40,6 @@ def _normalize(messages: list[dict]) -> list[dict]:
     out = []
     for message in messages:
         message = deepcopy(message)
-        if message.get("op") == "update_visibility":
-            message.get("options", {}).pop("version", None)
         out.append(message)
     return out
 

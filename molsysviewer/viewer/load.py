@@ -228,7 +228,6 @@ class LoadMixin:
             skip_digestion=True,
         )
         added_n_atoms = int(added_molsys.get_n_atoms())
-        visible = self._visible_atom_indices
         msm.add(
             self._molsys,
             added_molsys,
@@ -242,7 +241,6 @@ class LoadMixin:
         self.apply_system_edit(
             self._molsys,
             label=label,
-            visible_atom_indices=visible,
             load_blocks="append",
             appended_n_atoms=added_n_atoms,
         )

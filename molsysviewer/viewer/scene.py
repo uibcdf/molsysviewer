@@ -327,8 +327,7 @@ class SceneMixin:
             value=coordinates,
             skip_digestion=True,
         )
-        visible = self._visible_atom_indices
-        self.apply_system_edit(self._molsys, visible_atom_indices=visible)
+        self.apply_system_edit(self._molsys)
 
     @signal(tags=["viewer"])
     @digest()
@@ -393,7 +392,6 @@ class SceneMixin:
         self.selection = None
         self.structure_indices = None
         self._molsys = None
-        self._atom_mask = None
         self.structure_mask = None
         self._regions.clear()
         dict.clear(self._layers)
