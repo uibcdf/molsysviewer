@@ -136,7 +136,7 @@ CAPABILITIES: tuple[Capability, ...] = (
     ),
     Capability(
         name="Selections and active selection",
-        api=("view.selections.", "view.active_selection.", "view.select"),
+        api=("view.selections.", "view.active_selection."),
         anchor="molsysviewer/selections.py",
         provenance=MOLSYSMT,
         docs="docs/content/user/scene_management/selections.md",
@@ -316,7 +316,12 @@ CAPABILITIES: tuple[Capability, ...] = (
     ),
     Capability(
         name="MolSysMT integration",
-        api=("view.get", "view.convert", "view.extract", "view.whole.get",
+        # `view.get`, `view.select` and `view.convert` were here until 2026-09-04 and had
+        # not existed since the 0.22 API simplification removed them. `view.convert`
+        # matched nothing; `view.get` was worse -- prefix matching absorbed ten unrelated
+        # `view.get_*` event accessors into a row whose provenance is MolSysMT's
+        # (uibcdf/molsysviewer#79).
+        api=("view.extract", "view.whole.get",
              "view.whole.convert", "view.regions[…].get", "view.regions[…].convert"),
         anchor="molsysviewer/viewer/molsysmt_interface.py",
         provenance=MOLSYSMT,

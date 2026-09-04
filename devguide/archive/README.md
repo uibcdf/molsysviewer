@@ -101,3 +101,8 @@ Completed work, kept for the reasoning:
   — a public camera method that raised with its own default. Read for how one argument name
   came to carry three readings of its unit, and why the tempting fix would have hidden the
   factor of ten instead of removing it.
+- [`capability_audit_advertises_removed_methods.md`](capability_audit_advertises_removed_methods.md)
+  — the generated capability audit named three public methods that the 0.22 simplification
+  had removed. Read for why a guard asking "does this prefix match anything" passes for the
+  worst of the three: `view.get` was absorbing ten unrelated `view.get_*` event accessors
+  into a row attributed to MolSysMT, inflating it from 7 public callables to 17.

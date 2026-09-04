@@ -27,6 +27,7 @@ from capability_audit import (  # noqa: E402
     _markdown,
     build_audit,
 )
+from public_api_inventory import build_inventory  # noqa: E402
 
 E2E_ROOT = ROOT / "molsysviewer" / "js" / "tests" / "e2e"
 
@@ -64,6 +65,16 @@ def audit():
     return build_audit()
 
 
+@pytest.fixture(scope="module")
+def inventory_paths():
+    """Module-scoped because `build_inventory` costs ~3.9 s and ~557 MiB per call.
+
+    The parametrised guard below runs once per capability; calling it inside the test
+    would pay that twenty times over, in each of twelve xdist workers at once.
+    """
+    return {item["path"] for item in build_inventory()["callables"]}
+
+
 def test_every_required_capability_has_a_row():
     assert {capability.name for capability in CAPABILITIES} == REQUIRED_CAPABILITIES
 
@@ -96,6 +107,40 @@ def test_every_row_names_a_public_api_that_exists(capability, audit):
     assert row["public_callables"] > 0, (
         f"{capability.name} declares {capability.api} and no public callable matches"
     )
+
+
+@pytest.mark.parametrize("capability", CAPABILITIES, ids=lambda c: c.name)
+def test_every_declared_api_entry_resolves_on_its_own(capability, inventory_paths):
+    """The row-level check above is not enough, and uibcdf/molsysviewer#79 is the proof.
+
+    It asks whether a *row* matches anything, so a dead entry sitting beside live siblings
+    is invisible. `view.convert` sat in the MolSysMT row for the whole of 0.22 matching
+    nothing at all, and the row stayed green on the strength of `view.extract`.
+
+    `view.get` was worse. It had been removed too, but `_api_evidence` matches by prefix,
+    so it absorbed ten unrelated methods that merely start with those characters --
+    `view.get_camera_snapshot`, `view.get_last_click_event` and eight more frontend event
+    accessors -- into a row whose provenance is declared "MolSysMT (scientific authority)".
+    The row did not just survive; it reported 17 public callables where it has 7. A guard
+    asking "does this prefix match anything" passes for `view.get`, which is precisely the
+    entry that was lying.
+
+    The distinction is punctuation, and the table is already written with it: an entry
+    ending in `.` is a namespace and needs at least one member; an entry that does not name
+    one callable and must resolve exactly. Nothing extra has to be declared.
+    """
+    for entry in capability.api:
+        if entry.endswith("."):
+            assert any(path.startswith(entry) for path in inventory_paths), (
+                f"{capability.name} declares the namespace {entry!r} and it has no public "
+                f"members; the row describes a surface the inventory cannot see"
+            )
+        else:
+            assert entry in inventory_paths, (
+                f"{capability.name} declares {entry!r}, which does not exist. If a longer "
+                f"unrelated name shares its prefix the row will still look healthy and its "
+                f"public count will be inflated -- see uibcdf/molsysviewer#79"
+            )
 
 
 @pytest.mark.parametrize("capability", CAPABILITIES, ids=lambda c: c.name)
