@@ -15,7 +15,6 @@ anything. It is a warning, never a refusal: a large machine is allowed to load a
 large trajectory, and only the user knows their machine.
 """
 
-import warnings
 
 from smonitor.integrations import context_extra
 

@@ -5,7 +5,6 @@ import sys
 from typing import Any, Sequence
 
 from ..demo import demo
-from .application import launch_standalone_qt0
 
 
 def _get_helper(name: str) -> Any:

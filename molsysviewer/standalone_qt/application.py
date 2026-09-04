@@ -5,7 +5,11 @@ import tempfile
 from typing import Any, Sequence
 
 from ..standalone import build_standalone0_html
-from .utils import (
+# `_get_helper` resolves these **by name** -- `getattr(module, name)` first, then
+# `globals()[name]`. Ruff cannot see a string lookup, so it reports every one of them
+# as unused: they are load-bearing, and deleting them breaks the Qt host at runtime
+# with a KeyError no test would attribute to the import.
+from .utils import (  # noqa: F401
     _import_qt,
     _get_or_create_application,
     _load_qt_shell_state,
@@ -14,7 +18,7 @@ from .utils import (
     _install_qt_message_bridge,
     _load_molecular_system_into_qt_host,
 )
-from .menus import _install_menu_bar
+from .menus import _install_menu_bar  # noqa: F401 - resolved by name, see above
 
 
 def _get_helper(name: str) -> Any:

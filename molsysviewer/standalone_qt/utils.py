@@ -4,9 +4,7 @@ import json
 import logging
 import os
 from pathlib import Path
-import shutil
 import sys
-import tempfile
 import time
 from typing import Any, Sequence
 from urllib.parse import parse_qs, urlparse

@@ -1,7 +1,6 @@
 import pytest
 from molsysviewer import demo
 import molsysmt as msm
-import numpy as np
 from molsysviewer.viewer.index_mapper import IndexMapper
 from molsysviewer.loaders.load_molsysmt import load_from_molsysmt
 

@@ -5,7 +5,11 @@ from pathlib import Path
 from typing import Any
 
 from ..demo import demo
-from .utils import (
+# `_get_helper` resolves these **by name** -- `getattr(module, name)` first, then
+# `globals()[name]`. Ruff cannot see a string lookup, so it reports every one of them
+# as unused: they are load-bearing, and deleting them breaks the Qt host at runtime
+# with a KeyError no test would attribute to the import.
+from .utils import (  # noqa: F401
     _rebuild_qt_html,
     _persist_shell_state,
     _show_status,

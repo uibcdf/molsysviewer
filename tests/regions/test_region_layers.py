@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import warnings
 
-import pytest
 
 from molsysviewer.demo import demo
 from molsysviewer import pyunitwizard as puw

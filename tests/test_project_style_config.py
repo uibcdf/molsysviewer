@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from molsysviewer import MolSysView, addons
+from molsysviewer import MolSysView
 from molsysviewer.config import load_project_config
 
 

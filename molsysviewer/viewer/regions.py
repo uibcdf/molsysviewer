@@ -9,7 +9,6 @@ from typing import Any, Mapping
 import molsysmt as msm
 from smonitor.integrations import emit_from_catalog
 from smonitor import signal
-from depdigest import dep_digest
 
 from .._private.argdigest import digest
 from .._private.smonitor import CATALOG, PACKAGE_ROOT, META
