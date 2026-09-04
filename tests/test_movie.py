@@ -557,3 +557,36 @@ def test_export_decode_frame_helper():
     result = _decode_frame(uri)
     assert result.shape[:2] == (2, 2)
     assert result[0, 0, 0] == 255
+
+
+def test_the_writer_gets_the_frame_rate_argument_it_accepts(tmp_path):
+    """Pillow dropped `fps` for `duration`; the video writers kept `fps`.
+
+    Passing `fps` to both is what made every GIF export emit a deprecation warning -- seven
+    of them across the suite, counting the `imread` one that came with the bare `imageio`
+    module. Choosing by suffix is what keeps both quiet and correct.
+    """
+    from molsysviewer.viewer.movie import _frame_rate_kwargs
+
+    assert _frame_rate_kwargs(tmp_path / "out.gif", 25) == {"duration": 40.0}
+    assert _frame_rate_kwargs(tmp_path / "out.GIF", 25) == {"duration": 40.0}
+    assert _frame_rate_kwargs(tmp_path / "out.mp4", 25) == {"fps": 25}
+
+
+def test_writing_a_gif_emits_no_deprecation(tmp_path):
+    """The behaviour the helper exists for, checked where a user meets it."""
+    import warnings
+
+    import numpy as np
+    import imageio.v2 as imageio
+
+    from molsysviewer.viewer.movie import _frame_rate_kwargs
+
+    path = tmp_path / "probe.gif"
+    frame = np.zeros((8, 8, 3), dtype=np.uint8)
+    with warnings.catch_warnings(record=True) as recorded:
+        warnings.simplefilter("always")
+        imageio.mimwrite(str(path), [frame, frame], **_frame_rate_kwargs(path, 25))
+
+    deprecations = [w for w in recorded if issubclass(w.category, DeprecationWarning)]
+    assert deprecations == [], [str(w.message) for w in deprecations]
