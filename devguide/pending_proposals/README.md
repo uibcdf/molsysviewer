@@ -21,11 +21,10 @@ list. Deferred entries also carry the `post-1.0` milestone on the issue board.
 
 <!-- generated: devguide_index -->
 
-### Partially done (3)
+### Partially done (2)
 
 - [`addon_maturity_and_ownership.md`](addon_maturity_and_ownership.md) — [#37](https://github.com/uibcdf/molsysviewer/issues/37) — Add-ons declare four different things about their own maturity, in an untyped dict. *(measured)*
 - [`consolidate_quantity_digesters_on_pyunitwizard_canonical_paths.md`](consolidate_quantity_digesters_on_pyunitwizard_canonical_paths.md) — [#33](https://github.com/uibcdf/molsysviewer/issues/33) — Consolidate quantity digesters on PyUnitWizard canonical paths. *(inspected)*
-- [`first_read_comprehension_gaps_2026_08.md`](first_read_comprehension_gaps_2026_08.md) — [#40](https://github.com/uibcdf/molsysviewer/issues/40) — What one uninterrupted first read of the project concluded wrongly, and which document caused each wrong turn. *(reproduced)*
 
 ### Blocked (1)
 

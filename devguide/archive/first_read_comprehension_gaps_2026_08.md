@@ -1,9 +1,9 @@
 ---
 summary: What one uninterrupted first read of the project concluded wrongly, and which document caused each wrong turn.
 issue: uibcdf/molsysviewer#40
-status: partial
+status: closed
 opened: 2026-08-06
-closed:
+closed: 2026-09-04
 verification: reproduced
 area: [docs]
 guard:
@@ -282,3 +282,21 @@ not a fix.
 though region order itself was preserved. The Phase 10 persistence slice now
 normalizes the watermark after reconstruction and protects exact document
 round-trip by mutation test.
+
+
+## Closed — 2026-09-04 — the sixth finding, and why it waited
+
+Five of the six were acted on when this was written. Finding 2 was left, and left
+deliberately: it asked what a newcomer should meet first, which is a product judgement this
+document had no standing to make. `uibcdf/molsysviewer#40` carried it until it was decided.
+
+**Decided: the quick start leads.** Seventy-two lines of feature bullets sat between the
+title and the first line of code, in a 251-line README; the inventory now follows.
+
+The finding's own remedy had already landed separately — the quick start's last snippet
+closes the loop, saving a scene and restoring it, with a sentence naming what happened. What
+was missing was that anybody reaching the README saw sixty bullets first. Now they see the
+loop.
+
+Checked rather than assumed: all seven Python blocks of the quick start were executed after
+the move, and none of them touches API that 0.22 removed.
