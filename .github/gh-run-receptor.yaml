@@ -1,0 +1,14 @@
+schema_version: 1
+workflows:
+  - match:
+      path: .github/workflows/CI.yaml
+    profile: ci
+  - match:
+      path: .github/workflows/CI_e2e.yaml
+    profile: ci
+  - match:
+      path: .github/workflows/ruff.yaml
+    profile: ci
+  - match:
+      path: .github/workflows/build_and_upload_conda_packages.yaml
+    profile: conda

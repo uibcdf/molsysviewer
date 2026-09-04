@@ -59,6 +59,15 @@ Current CI note:
   green state is temporarily gated by the publication cadence of sibling
   dependency packages in conda, especially APIs from `smonitor` used by the
   current MolSysViewer code.
+- MolSysViewer adopts the pinned `gh-run-receptor` 0.4.0 contract through
+  `.github/gh-run-receptor.yaml` (uibcdf/gh-run-receptor#6). Exact-path rules
+  select the CI profile for `CI`, `CI_e2e`, and Ruff, and the Conda profile for
+  the noarch package workflow. The Conda rule deliberately omits
+  `expected_platforms`: this workflow builds one `noarch: python` artifact and
+  must not claim the native-platform matrix used by MolSysMT. Documentation
+  workflows remain on the generic profile until a documentation-specific
+  profile exists. These diagnostic rules do not alter workflow execution or
+  release gating.
 
 ---
 
