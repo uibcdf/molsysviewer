@@ -411,6 +411,8 @@ class SceneMixin:
         self._measurement_history.clear()
         self._section_history.clear()
         self._selection_history.clear()
+        self._last_active_selection_event = None
+        self._active_selection_recipe.clear()
         self._scene_look.clear()
         self._clear_dynamic_region_cache()
         self._player_state.clear()
@@ -426,6 +428,7 @@ class SceneMixin:
                 "options": {},
             }
         )
+        self._sync_trajectory_summary_runtime()
 
     @signal(tags=["camera"], extra_factory=_camera_snapshot_extra)
     @digest()

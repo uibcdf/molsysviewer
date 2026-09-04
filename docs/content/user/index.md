@@ -12,6 +12,7 @@ introduction/index.md
 molecular_system/index.md
 tools/index.md
 viewer/index.md
+remote/index.md
 scene_management/index.md
 representations/index.md
 overlays/index.md

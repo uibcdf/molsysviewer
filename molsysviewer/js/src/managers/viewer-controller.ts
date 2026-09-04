@@ -12,6 +12,7 @@ import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
 import { ButtonsType } from "molstar/lib/mol-util/input/input-observer";
 
+import { VARELA_ROUND_WOFF2_DATA_URL } from "../assets/varela-round/font-data";
 import { ViewerMessage, KnownViewerMessage } from "../messages/viewer-messages";
 import { LoadedStructure } from "../plugin/structure";
 import { LoaderHandlers } from "./handlers/loader-handlers";
@@ -3807,14 +3808,18 @@ export class MolSysViewerController {
     private showWelcomeCard(): void {
         if (this.welcomeCard) return;
 
-        // Load Varela Round font dynamically from Google Fonts
-        let fontLink = document.getElementById("molsysviewer-font-varela") as HTMLLinkElement | null;
-        if (!fontLink) {
-            fontLink = document.createElement("link");
-            fontLink.id = "molsysviewer-font-varela";
-            fontLink.rel = "stylesheet";
-            fontLink.href = "https://fonts.googleapis.com/css2?family=Varela+Round&display=swap";
-            document.head.appendChild(fontLink);
+        let fontStyle = document.getElementById("molsysviewer-font-varela") as HTMLStyleElement | null;
+        if (!fontStyle) {
+            fontStyle = document.createElement("style");
+            fontStyle.id = "molsysviewer-font-varela";
+            fontStyle.textContent = `@font-face {
+                font-family: "Varela Round";
+                src: url("${VARELA_ROUND_WOFF2_DATA_URL}") format("woff2");
+                font-style: normal;
+                font-weight: 400;
+                font-display: swap;
+            }`;
+            document.head.appendChild(fontStyle);
         }
 
         const card = document.createElement("div");
@@ -3879,7 +3884,7 @@ export class MolSysViewerController {
             webkitTextFillColor: "transparent",
             letterSpacing: "-0.02em",
             textAlign: "center",
-            fontFamily: "'Varela Round', system-ui, sans-serif",
+            fontFamily: "'Varela Round', system-ui, -apple-system, sans-serif",
         });
         titleEl.textContent = "MolSysViewer";
         card.appendChild(titleEl);
@@ -3917,7 +3922,7 @@ export class MolSysViewerController {
             alignItems: "center",
             marginBottom: "6px",
             fontSize: "9px",
-            fontFamily: "system-ui, -apple-system, sans-serif",
+            fontFamily: "'Varela Round', system-ui, -apple-system, sans-serif",
             userSelect: "none",
         });
 
@@ -3982,7 +3987,7 @@ export class MolSysViewerController {
             textAlign: "center",
             marginTop: "4px",
             boxShadow: "0 4px 12px rgba(206, 80, 39, 0.25)",
-            fontFamily: "'Varela Round', system-ui, sans-serif",
+            fontFamily: "system-ui, -apple-system, sans-serif",
         });
         btn.textContent = "Load Trial Structure (1CRN)";
 

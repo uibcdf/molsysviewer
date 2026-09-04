@@ -1,6 +1,72 @@
 {
   "protocol_version": 1,
-  "comment": "Shared Python<->TypeScript action contract for the AnyWidget runtime seam (R1). Python (viewer/runtime_router.py) and TypeScript (js/src/messages/runtime-actions.ts) both load THIS file so every action is classified identically. `actions` are browser->Python; category is the RuntimeEnvelope direction the action must carry, and the envelope action must equal the payload `event`. `outbound_requests` are Python->browser requests and must never be accepted as browser-originated. `popup_actions` are the host<->popup wire actions, mapped to the directions each may legitimately carry; `molsysviewer-sync-op` is deliberately bidirectional (a projection from the host, a command from the popup), which is exactly why the direction must be declared in the envelope rather than inferred from the sender. `qt_transport` are delivery-level events the Qt bridge answers itself and never forwards to the view; `qt_test_actions` are explicit test-only events forwarded by Qt without weakening the product-action boundary. The AnyWidget comm has no equivalent transport probe. `raw` is the pre-runtime/source bootstrap (both directions), never enveloped in R1. `data_plane` travels on the array-native binary seam (both directions), not the control-plane envelope. Domain projection ops (Python->browser) are authored and trusted by the Python authority and are wrapped with direction 'projection'; they are intentionally not enumerated. NOTE: interaction_measurement_created and section_moved are still compatibility paths where the frontend acts before Python confirms; R1 protects and deduplicates them but does not yet fully normalize 'Python first, projection after' (a later slice). `frontend_authoritative` is the subset of `actions` the browser performs itself and merely reports to Python — measurements, an active-selection pick, a section drag. They are the compatibility paths noted above, and naming them has a second use: a page with no authority behind it (a static export) can tell the difference between a control that silently cannot work there and one that already did the work before telling anybody.",
+  "comment": "Shared Python<->TypeScript runtime contract. Python and TypeScript load THIS file so action categories, rendering placements, endpoint roles and endpoint capabilities cannot drift. `actions` are browser->Python; category is the RuntimeEnvelope direction the action must carry, and the envelope action must equal the payload `event`. `outbound_requests` are Python->browser requests and must never be accepted as browser-originated. `popup_actions` are the host<->popup wire actions and allowed directions. `endpoint_role_capabilities` declares the maximum capabilities each authenticated role may register; a live endpoint may use a subset subject to its rendering-placement invariants. `qt_transport` are delivery-level events handled by the Qt bridge. `raw` is bootstrap traffic and `data_plane` is array-native binary traffic, neither enveloped. Domain projection ops are Python-authored and intentionally not enumerated. `frontend_authoritative` names compatibility paths where the frontend currently performs work before reporting it.",
+  "render_placements": [
+    "client",
+    "server"
+  ],
+  "endpoint_role_capabilities": {
+    "python": [
+      "authority"
+    ],
+    "widget-host": [
+      "command-origin",
+      "input-send",
+      "render",
+      "structure-receive",
+      "workbench"
+    ],
+    "qt-host": [
+      "command-origin",
+      "input-send",
+      "native-host",
+      "render",
+      "structure-receive",
+      "workbench"
+    ],
+    "canvas": [
+      "render",
+      "structure-receive"
+    ],
+    "panel-popup": [
+      "command-origin",
+      "input-send",
+      "workbench"
+    ],
+    "canvas-popup": [
+      "command-origin",
+      "input-send",
+      "render",
+      "structure-receive",
+      "workbench"
+    ],
+    "browser-client": [
+      "command-origin",
+      "input-send",
+      "render",
+      "structure-receive",
+      "video-receive",
+      "workbench"
+    ],
+    "qt-client": [
+      "command-origin",
+      "input-send",
+      "native-host",
+      "render",
+      "structure-receive",
+      "video-receive",
+      "workbench"
+    ],
+    "render-worker": [
+      "input-receive",
+      "render",
+      "structure-receive",
+      "video-send"
+    ],
+    "agent": [
+      "command-origin"
+    ]
+  },
   "actions": {
     "interaction_active_selection_changed": "command",
     "interaction_context_action": "command",

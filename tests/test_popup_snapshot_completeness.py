@@ -118,6 +118,27 @@ def test_every_summary_projection_reaches_the_panel_snapshot():
         )
 
 
+def test_panel_snapshot_carries_authoritative_trajectory_state():
+    view = _view()
+    view.player.go_to_structure(3, skip_digestion=True)
+    summary = next(
+        message
+        for message in view.build_popup_scene_snapshot("panel")
+        if message.get("op") == "set_trajectory_summary"
+    )
+
+    assert summary == {
+        "op": "set_trajectory_summary",
+        "frame": 3,
+        "frame_count": view.player.n_structures,
+        "is_playing": False,
+        "fps": 30,
+        "step": 1,
+        "mode": "loop",
+        "direction": "forward",
+    }
+
+
 def test_every_summary_projection_is_resent_on_ready():
     """The other late-attaching frontend: a fresh canvas that emits `ready`.
 

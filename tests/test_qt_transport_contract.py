@@ -9,9 +9,7 @@ to the control channel fails loudly instead of dropping them.
 from pathlib import Path
 
 import pytest
-
 from molsysviewer.standalone_qt.view_channel import QtViewChannel
-from molsysviewer.widget import MolSysViewerWidget
 
 
 class _FakeBridge:
@@ -30,9 +28,9 @@ def _channel():
 
 
 def test_the_anywidget_buffer_path_cannot_reach_qt_by_construction():
-    # `_binary_structure_transport_limit` gates on the AnyWidget connector, so a
-    # Qt channel never negotiates the array-native transport.
-    assert not issubclass(QtViewChannel, MolSysViewerWidget)
+    # Negotiation follows an explicit transport capability; Qt's control
+    # channel remains JSON-only even though remote WebSockets can carry buffers.
+    assert QtViewChannel.supports_array_native_buffers is False
 
 
 def test_qt_refuses_buffers_instead_of_dropping_them():

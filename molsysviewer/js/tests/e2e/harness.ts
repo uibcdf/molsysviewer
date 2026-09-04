@@ -22,6 +22,9 @@ import {
     type ArrayNativeMolSysMetadata,
 } from "../../src/messages/array-native-transport";
 import { PopupHostManager } from "../../src/managers/popup-host";
+import { RemoteInputAdapter } from "../../src/messages/remote-input-adapter";
+
+export { RemoteInputAdapter };
 
 declare global {
     // eslint-disable-next-line no-var
@@ -46,6 +49,7 @@ declare global {
         probeWidgetSeam: typeof probeWidgetSeam;
         probePanelHierarchyRefreshAtWidgetSeam: typeof probePanelHierarchyRefreshAtWidgetSeam;
         profileRepresentativeArrayNativeLoad: typeof profileRepresentativeArrayNativeLoad;
+        RemoteInputAdapter: typeof RemoteInputAdapter;
     } | undefined;
 }
 
@@ -1797,6 +1801,7 @@ if (typeof window !== "undefined") {
         probeWidgetSeam,
         probePanelHierarchyRefreshAtWidgetSeam,
         profileRepresentativeArrayNativeLoad,
+        RemoteInputAdapter,
     };
 }
 

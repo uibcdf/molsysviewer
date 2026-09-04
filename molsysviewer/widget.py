@@ -78,6 +78,7 @@ export default {
 
 
 class MolSysViewerWidget(anywidget.AnyWidget):
+    supports_array_native_buffers = True
     _viewer_js_source = _VIEWER_JS_PATH.read_text(encoding="utf-8")
     _esm = _WIDGET_BOOTSTRAP_ESM
 

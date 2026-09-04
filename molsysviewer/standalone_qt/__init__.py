@@ -42,13 +42,20 @@ from .utils import (
 )
 from .view_channel import QtViewChannel
 from .menus import _install_menu_bar
-from .application import create_standalone_qt0_window, launch_standalone_qt0
+from .application import (
+    create_remote_qt_window,
+    create_standalone_qt0_window,
+    launch_remote_qt,
+    launch_standalone_qt0,
+)
 from .main import _build_arg_parser, main
 
 __all__ = [
     "QT_IMPORT_ERROR",
     "QT_STATE_FILENAME",
     "create_standalone_qt0_window",
+    "create_remote_qt_window",
+    "launch_remote_qt",
     "launch_standalone_qt0",
     "main",
 ]

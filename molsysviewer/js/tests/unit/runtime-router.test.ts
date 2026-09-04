@@ -6,6 +6,11 @@ import {
     RuntimeEnvelope,
     RuntimeMessageRouter,
 } from "../../src/messages/runtime-router";
+import {
+    ENDPOINT_CAPABILITIES,
+    ENDPOINT_ROLE_CAPABILITIES,
+    RENDER_PLACEMENTS,
+} from "../../src/messages/runtime-actions";
 
 function makeRouter(maxProcessedCommands = 1024) {
     const router = new RuntimeMessageRouter("view-a", "session-a", maxProcessedCommands);
@@ -156,4 +161,58 @@ test("runtime router bounds command deduplication state", () => {
     assert.strictEqual(router.route(third).status, "accepted");
     assert.strictEqual(router.route(first).status, "accepted");
     assert.strictEqual(router.route(third).status, "duplicate");
+});
+
+test("remote placement, roles, and capabilities come from the shared manifest", () => {
+    assert.deepStrictEqual([...RENDER_PLACEMENTS].sort(), ["client", "server"]);
+    assert.strictEqual(ENDPOINT_ROLE_CAPABILITIES.has("browser-client"), true);
+    assert.strictEqual(ENDPOINT_ROLE_CAPABILITIES.has("qt-client"), true);
+    assert.strictEqual(ENDPOINT_ROLE_CAPABILITIES.has("render-worker"), true);
+    assert.strictEqual(ENDPOINT_ROLE_CAPABILITIES.get("qt-client")?.has("native-host"), true);
+    assert.strictEqual(ENDPOINT_CAPABILITIES.has("video-send"), true);
+});
+
+test("runtime router recognizes remote endpoints as projection recipients", () => {
+    const router = makeRouter();
+    router.registerEndpoint({ endpointId: "browser", role: "browser-client" });
+    router.registerEndpoint({ endpointId: "worker", role: "render-worker" });
+    const projection = envelope({
+        endpointId: "python",
+        messageId: "projection-remote",
+        direction: "projection",
+    });
+
+    const result = router.route(projection);
+    assert.strictEqual(result.status, "accepted");
+    if (result.status === "accepted") {
+        assert.deepStrictEqual(result.recipientEndpointIds, [
+            "host", "canvas", "popup", "browser", "worker",
+        ]);
+    }
+});
+
+test("runtime envelope provenance fields are paired and typed", () => {
+    const router = makeRouter();
+    assert.deepStrictEqual(router.route(envelope({ actorId: "human:one" })), {
+        status: "rejected",
+        reason: "malformed-envelope",
+        detail: "Runtime envelope is malformed",
+    });
+    assert.deepStrictEqual(router.route(envelope({
+        actorId: "human:one",
+        actorKind: "human",
+        causationId: "request-1",
+        operationId: "operation-1",
+        deadlineUnixMs: 2_000_000_000_000,
+    })).status, "accepted");
+    assert.deepStrictEqual(router.route(envelope({
+        messageId: "bad-deadline",
+        actorId: "human:one",
+        actorKind: "human",
+        deadlineUnixMs: -1,
+    })), {
+        status: "rejected",
+        reason: "malformed-envelope",
+        detail: "Runtime envelope is malformed",
+    });
 });

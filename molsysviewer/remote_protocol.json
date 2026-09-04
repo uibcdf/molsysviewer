@@ -1,0 +1,32 @@
+{
+  "protocol_version": 1,
+  "signaling_kinds": [
+    "offer",
+    "answer",
+    "ice-candidate",
+    "ice-complete"
+  ],
+  "input_kinds": [
+    "pointer",
+    "wheel",
+    "key"
+  ],
+  "pointer_phases": [
+    "move",
+    "down",
+    "up",
+    "cancel"
+  ],
+  "pointer_types": [
+    "mouse",
+    "pen",
+    "touch"
+  ],
+  "key_phases": [
+    "down",
+    "up"
+  ],
+  "max_key_code_length": 64,
+  "max_viewport_dimension": 32768,
+  "max_device_pixel_ratio": 16
+}

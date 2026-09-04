@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import sys
 import tempfile
+import json
+from pathlib import Path
 from typing import Any, Sequence
+from urllib.parse import urlsplit
 
 from ..standalone import build_standalone0_html
 from .utils import (
@@ -15,6 +18,127 @@ from .utils import (
     _load_molecular_system_into_qt_host,
 )
 from .menus import _install_menu_bar
+
+
+def _run_remote_page_action(
+    webview: Any, selector: str, callback=None, *, reveal_selector: str | None = None
+) -> None:
+    """Activate one stable control in the shared authenticated session page."""
+    target = json.dumps(selector)
+    reveal = json.dumps(reveal_selector) if reveal_selector else "null"
+    script = f"""(() => {{
+        const activate = () => {{
+            const element = document.querySelector({target});
+            if (!element) return false;
+            element.click();
+            return true;
+        }};
+        if (activate()) return true;
+        const reveal = {reveal};
+        if (!reveal) return false;
+        const control = document.querySelector(reveal);
+        if (!control) return false;
+        control.click();
+        window.setTimeout(activate, 100);
+        return true;
+    }})()"""
+    webview.page().runJavaScript(script, callback)
+
+
+def _install_remote_qt_chrome(
+    *, window: Any, webview: Any, QAction: Any, QFileDialog: Any
+) -> None:
+    """Install native menus and download handling around the shared web client."""
+    menu_bar = window.menuBar()
+    file_menu = menu_bar.addMenu("File")
+    view_menu = menu_bar.addMenu("View")
+    export_menu = menu_bar.addMenu("Export")
+
+    def add_action(menu, label: str, callback, shortcut: str | None = None):
+        action = QAction(label, window)
+        if shortcut and hasattr(action, "setShortcut"):
+            action.setShortcut(shortcut)
+        action.triggered.connect(callback)
+        menu.addAction(action)
+        return action
+
+    def page_action(
+        selector: str, missing_message: str, *, reveal_selector: str | None = None
+    ):
+        return lambda *_: _run_remote_page_action(
+            webview,
+            selector,
+            lambda found: None
+            if found
+            else window.statusBar().showMessage(missing_message),
+            reveal_selector=reveal_selector,
+        )
+
+    add_action(
+        file_menu,
+        "Open Molecular File…",
+        page_action(
+            '[data-molsysviewer-upload-button="true"]',
+            "The remote session has no upload control.",
+        ),
+        "Ctrl+O",
+    )
+    add_action(file_menu, "Close", lambda *_: window.close(), "Ctrl+W")
+    add_action(view_menu, "Reload Session", lambda *_: webview.reload(), "Ctrl+R")
+    add_action(
+        export_menu,
+        "Download PNG Image",
+        page_action(
+            '[data-molsysviewer-export-image="true"]',
+            "The remote session has no PNG export control.",
+            reveal_selector='[data-molsysviewer-group-panel-tab="export"]',
+        ),
+        "Ctrl+Shift+E",
+    )
+    add_action(
+        export_menu,
+        "Download Standalone HTML View",
+        page_action(
+            '[data-molsysviewer-export-html="true"]',
+            "The remote session has no HTML export control.",
+            reveal_selector='[data-molsysviewer-group-panel-tab="export"]',
+        ),
+        "Ctrl+Shift+S",
+    )
+
+    page = webview.page()
+    profile = page.profile()
+    active_downloads: list[Any] = []
+    window._molsysviewer_remote_downloads = active_downloads
+
+    def handle_download(download: Any) -> None:
+        suggested = Path(str(download.suggestedFileName() or "molsysviewer-download")).name
+        selected, _filter = QFileDialog.getSaveFileName(
+            window,
+            "Save remote MolSysViewer download",
+            suggested,
+            "All files (*)",
+        )
+        if not selected:
+            download.cancel()
+            return
+        destination = Path(selected).expanduser().resolve()
+        download.setDownloadDirectory(str(destination.parent))
+        download.setDownloadFileName(destination.name)
+        active_downloads.append(download)
+
+        def finished() -> None:
+            if not download.isFinished():
+                return
+            if download in active_downloads:
+                active_downloads.remove(download)
+            window.statusBar().showMessage(f"Downloaded: {destination.name}")
+
+        download.isFinishedChanged.connect(finished)
+        download.accept()
+        window.statusBar().showMessage(f"Downloading: {destination.name}")
+
+    profile.downloadRequested.connect(handle_download)
 
 
 def _get_helper(name: str) -> Any:
@@ -209,6 +333,73 @@ def launch_standalone_qt0(
         addon_modules=addon_modules,
         apply_project_config=apply_project_config,
         debug_js=debug_js,
+        app_argv=app_argv,
+        width=width,
+        height=height,
+    )
+    runtime["window"].show()
+    runtime["exit_code"] = runtime["app"].exec() if exec_app else None
+    return runtime
+
+
+def create_remote_qt_window(
+    session_url: str,
+    *,
+    title: str = "MolSysViewer Remote",
+    app_argv: Sequence[str] | None = None,
+    width: int = 1440,
+    height: int = 960,
+) -> dict[str, Any]:
+    """Create the native Qt shell for one authenticated remote session.
+
+    The page is the same session client used by a normal browser. Qt therefore
+    contributes window management and WebEngine presentation without owning a
+    second remote protocol or a second :class:`MolSysView`.
+    """
+    if not isinstance(session_url, str) or not session_url:
+        raise ValueError("session_url must be a non-empty HTTP(S) URL")
+    parsed = urlsplit(session_url)
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        raise ValueError("session_url must be an absolute HTTP(S) URL")
+
+    qt = _get_helper("_import_qt")()
+    app = _get_helper("_get_or_create_application")(qt["QApplication"], app_argv)
+    window = qt["QMainWindow"]()
+    window.setWindowTitle(title)
+    if hasattr(window, "resize"):
+        window.resize(width, height)
+    webview = qt["QWebEngineView"](window)
+    webview.setUrl(qt["QUrl"](session_url))
+    window.setCentralWidget(webview)
+    _install_remote_qt_chrome(
+        window=window,
+        webview=webview,
+        QAction=qt["QAction"],
+        QFileDialog=qt["QFileDialog"],
+    )
+    window.statusBar().showMessage("Connecting to remote MolSysViewer session…")
+    return {
+        "app": app,
+        "window": window,
+        "webview": webview,
+        "session_url": session_url,
+        "title": title,
+    }
+
+
+def launch_remote_qt(
+    session_url: str,
+    *,
+    title: str = "MolSysViewer Remote",
+    app_argv: Sequence[str] | None = None,
+    width: int = 1440,
+    height: int = 960,
+    exec_app: bool = True,
+) -> dict[str, Any]:
+    """Show the native client for a remotely hosted MolSysViewer session."""
+    runtime = create_remote_qt_window(
+        session_url,
+        title=title,
         app_argv=app_argv,
         width=width,
         height=height,

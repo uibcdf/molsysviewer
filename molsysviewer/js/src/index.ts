@@ -20,6 +20,14 @@ import { PopupReplayLog } from "./messages/popup-replay-log";
 import { WidgetEnvelopeAdapter } from "./messages/widget-envelope";
 import { ACTION_CATEGORIES, FRONTEND_AUTHORITATIVE } from "./messages/runtime-actions";
 
+export { RemoteInputAdapter } from "./messages/remote-input-adapter";
+export { bootRenderWorker } from "./remote/render-worker-entrypoint";
+export { bootRemoteBrowserClient } from "./remote/browser-client-entrypoint";
+export { bootRemoteRenderedClient } from "./remote/client-rendering-entrypoint";
+export { RemoteWorkbench } from "./remote/remote-workbench";
+export { ProjectedTrajectoryControls } from "./ui/projected-trajectory-controls";
+export { RemoteFileControls } from "./ui/remote-file-controls";
+
 /**
  * Given an `interaction_measurement_created` event, build the corresponding
  * `add_*_measurement` op that can be replayed in another canvas.
@@ -46,6 +54,25 @@ function buildMeasurementOpFromInteractionEvent(event: any): ViewerMessage | nul
             endpoint_atom_indices: event.endpoint_atom_indices,
         },
     } as unknown as ViewerMessage;
+}
+
+function trajectorySyncToAuthority(msg: ViewerMessage): Record<string, unknown> | null {
+    if (msg.op === "set_trajectory_frame") {
+        return { event: "interaction_context_action", action: msg.op, index: msg.index };
+    }
+    if (msg.op === "step_trajectory") {
+        return { event: "interaction_context_action", action: msg.op, by: msg.by };
+    }
+    if (msg.op === "set_trajectory_playback") {
+        return {
+            event: "interaction_context_action",
+            action: msg.op,
+            playback_action: msg.action,
+            ...(msg.fps === undefined ? {} : { fps: msg.fps }),
+            ...(msg.step === undefined ? {} : { step: msg.step }),
+        };
+    }
+    return null;
 }
 
 const parseInitialTrajectoryInfo = (msgs: ViewerMessage[] | undefined) => {
@@ -727,8 +754,7 @@ function setupWidgetResizer(
  * The generated bundle lives at ../viewer.js and should be rebuilt manually.
  * Do not edit viewer.js directly; modify TS sources under js/src/ instead.
  */
-export default {
-    render({ model, el }: { model: any; el: HTMLElement }) {
+export function render({ model, el }: { model: any; el: HTMLElement }) {
         const debug = !!model.get("debug_js");
 
         // R1 seam: every browser->Python message goes through sendToPython, which
@@ -738,6 +764,11 @@ export default {
         const envelopeAdapter = new WidgetEnvelopeAdapter(
             String(model.get("runtime_viewer_id") || ""),
             String(model.get("runtime_session_id") || ""),
+            model.get("runtime_endpoint_id") ? {
+                endpointId: String(model.get("runtime_endpoint_id")),
+                actorId: String(model.get("runtime_actor_id") || ""),
+                actorKind: model.get("runtime_actor_kind") || undefined,
+            } : undefined,
         );
         const reportContractRejection = (seam: string, reason: string, detail: string) => {
             console.error(`[MolSysViewer] runtime contract rejected ${seam} (${reason}): ${detail}`);
@@ -1036,7 +1067,11 @@ export default {
                 overlay = buildControls(
                     c,
                     model,
-                    (msg) => popupMgr.send("molsysviewer-sync-op", msg),
+                    (msg) => {
+                        popupMgr.send("molsysviewer-sync-op", msg);
+                        const authorityAction = trajectorySyncToAuthority(msg);
+                        if (authorityAction) sendToPython(authorityAction);
+                    },
                     target,
                     enablePopout ? () => popupMgr.open("canvas") : undefined,
                     {
@@ -1523,5 +1558,6 @@ export default {
             popupMgr.dispose();
             arrayNativeStream.dispose();
         };
-    },
-};
+}
+
+export default { render };

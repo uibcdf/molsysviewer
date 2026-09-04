@@ -432,6 +432,7 @@ export const buildControls = (
 
 
     const traj = document.createElement("div");
+    traj.setAttribute("data-molsysviewer-trajectory-controls", "true");
     traj.style.display = "flex";
     traj.style.alignItems = "center";
     traj.style.gap = "6px";
@@ -482,6 +483,7 @@ export const buildControls = (
                 });
             }
           });
+    btnPlayPause.setAttribute("data-molsysviewer-trajectory-playback", "play");
     if (isMinimal) {
         btnPrev = makeMinimalTrajButton(`<rect x="3" y="3" width="2" height="10" fill="currentColor"/><polygon points="12,3 6,8 12,13" fill="currentColor"/>`, "Previous Step", () => {
             c.stepTrajectory(-currentStep);
@@ -507,8 +509,11 @@ export const buildControls = (
             sendSync({ op: "step_trajectory", by: currentStep });
         });
     }
+    btnPrev?.setAttribute("data-molsysviewer-trajectory-step", "previous");
+    btnNext?.setAttribute("data-molsysviewer-trajectory-step", "next");
 
     const slider = document.createElement("input");
+    slider.setAttribute("data-molsysviewer-trajectory-frame", "true");
     slider.type = "range";
     slider.min = "0";
     slider.max = "0";
@@ -542,6 +547,7 @@ export const buildControls = (
     updateSliderBg();
 
     const label = document.createElement("span");
+    label.setAttribute("data-molsysviewer-trajectory-label", "true");
     if (isMinimal) {
         label.style.color = "rgba(255, 255, 255, 0.85)";
         label.style.fontSize = "11px";
@@ -593,6 +599,7 @@ export const buildControls = (
             currentStep = n;
             const state = c.trajectory.getTrajectoryState();
             if (state.isPlaying) {
+                btnPlayPause.setAttribute("data-molsysviewer-trajectory-playback", "stop");
                 c.playTrajectory({ fps: currentFps, step: currentStep });
             }
         }, "Step size", isMinimal);
@@ -785,6 +792,7 @@ export const buildControls = (
                 }
                 btnPlayPause.title = "Pause Trajectory";
             } else {
+                btnPlayPause.setAttribute("data-molsysviewer-trajectory-playback", "play");
                 if (isMinimal) {
                     btnPlayPause.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;"><polygon points="5,3 13,8 5,13" fill="currentColor"/></svg>`;
                 } else {

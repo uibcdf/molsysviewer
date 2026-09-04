@@ -1,6 +1,6 @@
 # Development roadmap
 
-**Updated:** 2026-08-09
+**Updated:** 2026-09-02
 
 This roadmap states current priorities. Release gating lives in
 [`path_to_1_0.md`](path_to_1_0.md), normative behavior in
@@ -46,6 +46,30 @@ These are the release gates:
 8. Close the decided `@digest` policy over the supported public callable
    surface, with argument digesters and catalogued diagnostics rather than
    decoration-only coverage.
+9. Deliver the accepted single-user remote-session slice: explicit
+   `render_on="client" | "server"`, browser and Qt clients, managed real-GPU
+   render worker, VP8 WebRTC transport, authenticated session routing and the
+   documented spika-to-nauta acceptance path. See
+   [`remote_rendering_plan.md`](remote_rendering_plan.md). RRS0 and RRS1 are
+   complete. RRS2 is complete: the server-rendered browser workflow covers the managed
+   worker, array-native loading, authenticated VP8 video/input, controller-free
+   workbench and trajectory controls, upload/export and reconnect. Browser
+   client rendering now uses the same gateway and exact full frontend entrypoint
+   and has portable WebGL/array-native, reconnect, direct canvas camera/picking,
+   authoritative Whole/selection/trajectory actions, local-PNG/canonical-HTML
+   export and authenticated replacement-upload E2E evidence. RRS3 now has the
+   shared Qt `--connect` shell, native menus/shortcuts, upload activation and
+   save-dialog-managed downloads; visible nauta acceptance, followed by RRS4
+   hardening, remains. RRS4 lifecycle work now includes one bounded automatic
+   render-worker recovery with canonical scene retransmission and WebRTC
+   renegotiation, plus a static-scene-safe video-stall watchdog. Shared visible
+   connection states and the loopback token/origin/rate/size/session-isolation
+   baseline are now guarded; clean deployment and visible nauta acceptance
+   remain. The 1.0 deployment
+   surface includes a public `molsysviewer-server` command limited to one
+   foreground session. Background services, durable/multi-session management,
+   institutional identity, managed TURN, scheduler integration, GPU pools and
+   MolSys-AI lifecycle remain post-1.0 and must compose the same session API.
 
 ## Active pre-1.0 execution
 
@@ -75,8 +99,11 @@ post-1.0 research.
 
 Startup/message-cost work is closed: message replay is no longer synchronized
 per queued message, the public package is lazy, and the relevant ecosystem
-overhead was addressed upstream. Configurable picking, Interactions, multiview,
-compression, worker offload, and shared-memory transport remain post-1.0. See
+overhead was addressed upstream. The server render worker is now an accepted
+pre-1.0 standalone placement and does not change scientific residency.
+Configurable picking, Interactions, multiview, general computation/serialization
+worker offload, compression and shared-memory transport remain post-1.0. See
+[`remote_rendering_plan.md`](remote_rendering_plan.md) and
 [`pending_proposals/README.md`](pending_proposals/README.md).
 
 ## Post-1.0
@@ -88,6 +115,8 @@ compression, worker offload, and shared-memory transport remain post-1.0. See
 - Lazy structure sources and partial materialization.
 - Large-system rendering tiers that require Mol* upstream work.
 - Cross-platform standalone packaging.
+- Managed TURN, multi-user remote collaboration, GPU worker pools and cluster
+  scheduling beyond the single-session remote-rendering contract.
 - Advanced rendering and cinematic/VR directions.
 
 ## Decision filter

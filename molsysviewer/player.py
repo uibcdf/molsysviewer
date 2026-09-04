@@ -56,6 +56,11 @@ class PlayerManager:
             "is_playing": self._is_playing,
         }
 
+    def _sync_summary(self) -> None:
+        sync = getattr(self._view, "_sync_trajectory_summary_runtime", None)
+        if callable(sync):
+            sync()
+
     def _reset_state(self) -> None:
         self._fps = 30
         self._step_size = 1
@@ -118,6 +123,7 @@ class PlayerManager:
         """
         self._view._send({"op": "set_trajectory_frame", "index": int(index)})  # noqa: SLF001
         self._view._current_structure_index = int(index)  # noqa: SLF001
+        self._sync_summary()
         # NPT: auto-update box when box is visible
         box_record = getattr(self._view, "_box_record", None)  # noqa: SLF001
         if box_record is not None:
@@ -150,7 +156,7 @@ class PlayerManager:
         total = self.n_structures
         if total == 0:
             return
-        
+
         new_index = (self.index + int(n)) % total
         self.go_to_structure(new_index, skip_digestion=True)
 
@@ -161,7 +167,7 @@ class PlayerManager:
         total = self.n_structures
         if total == 0:
             return
-        
+
         new_index = (self.index - int(n)) % total
         self.go_to_structure(new_index, skip_digestion=True)
 
@@ -206,6 +212,7 @@ class PlayerManager:
         self._is_playing = True
         self._store_state()
         self._view._send(self._playback_message(action="play"))  # noqa: SLF001
+        self._sync_summary()
 
     @signal(tags=["structures"])
     @digest()
@@ -214,6 +221,7 @@ class PlayerManager:
         self._view._send({"op": "set_trajectory_playback", "action": "stop"})  # noqa: SLF001
         self._is_playing = False
         self._store_state()
+        self._sync_summary()
 
     # ── Setters ────────────────────────────────────────────────────────────
 
@@ -227,6 +235,7 @@ class PlayerManager:
         self._fps = int(fps)
         self._store_state()
         self._view._send({"op": "set_trajectory_playback", "fps": self._fps})  # noqa: SLF001
+        self._sync_summary()
 
     @signal(tags=["structures"])
     @digest()
@@ -238,6 +247,7 @@ class PlayerManager:
         """
         self._step_size = int(step_size)
         self._store_state()
+        self._sync_summary()
 
     @signal(tags=["structures"])
     @digest()
@@ -245,6 +255,7 @@ class PlayerManager:
         """Set the playback mode (``"loop"``, ``"once"``, ``"ping-pong"``)."""
         self._mode = str(mode)
         self._store_state()
+        self._sync_summary()
 
     @signal(tags=["structures"])
     @digest()
@@ -252,6 +263,7 @@ class PlayerManager:
         """Set the playback direction (``"forward"`` or ``"backward"``)."""
         self._direction = str(direction)
         self._store_state()
+        self._sync_summary()
 
 
 __all__ = ["PlayerManager"]

@@ -140,7 +140,15 @@ def set_figure_spec(view: Any, content: Mapping[str, Any]) -> None:
 
 def export_html(view: Any, content: Mapping[str, Any]) -> None:
     del content
-    view.export.html("molsysviewer_export.html")
+    if callable(getattr(view.widget, "publish_download", None)):
+        view._request_remote_html_download()
+    else:
+        view.export.html("molsysviewer_export.html")
+
+
+def download_image(view: Any, content: Mapping[str, Any]) -> None:
+    del content
+    view._request_remote_image_download()
 
 
 HANDLERS = {
@@ -156,5 +164,6 @@ HANDLERS = {
     "set_section_invert": set_section_invert,
     "remove_section": remove_section,
     "set_figure_spec": set_figure_spec,
+    "download_image": download_image,
     "export_html": export_html,
 }

@@ -27,6 +27,7 @@ _MESSAGE_SEQUENCE = itertools.count(1)
 _MANIFEST_PATH = Path(__file__).resolve().parent / "runtime_actions.json"
 
 _VALID_CATEGORIES = {"command", "event", "request", "ack", "error"}
+ACTOR_KINDS = frozenset({"human", "agent", "system"})
 
 
 def _load_manifest() -> tuple[
@@ -78,6 +79,44 @@ def _load_manifest() -> tuple[
 ) = _load_manifest()
 
 
+def _load_endpoint_vocabulary() -> tuple[
+    frozenset[str],
+    dict[str, frozenset[str]],
+    frozenset[str],
+]:
+    def valid_name(value: Any) -> bool:
+        return isinstance(value, str) and value.strip() != ""
+
+    data = json.loads(_MANIFEST_PATH.read_text(encoding="utf-8"))
+    placements = frozenset(str(item) for item in data.get("render_placements", ()))
+    if placements != {"client", "server"}:
+        raise ValueError(
+            "runtime_actions.json render_placements must be exactly client and server"
+        )
+    raw_roles = data.get("endpoint_role_capabilities")
+    if not isinstance(raw_roles, Mapping) or not raw_roles:
+        raise ValueError("runtime_actions.json endpoint_role_capabilities must be a mapping")
+    roles: dict[str, frozenset[str]] = {}
+    for raw_role, raw_capabilities in raw_roles.items():
+        role = str(raw_role)
+        if not valid_name(role) or not isinstance(raw_capabilities, list):
+            raise ValueError("runtime_actions.json has an invalid endpoint role")
+        capabilities = tuple(str(item) for item in raw_capabilities)
+        if any(not valid_name(item) for item in capabilities):
+            raise ValueError(f"runtime_actions.json role {role} has an invalid capability")
+        if len(capabilities) != len(set(capabilities)):
+            raise ValueError(f"runtime_actions.json role {role} repeats a capability")
+        roles[role] = frozenset(capabilities)
+    capabilities = frozenset().union(*roles.values())
+    return placements, roles, capabilities
+
+
+RENDER_PLACEMENTS, ENDPOINT_ROLE_CAPABILITIES, ENDPOINT_CAPABILITIES = (
+    _load_endpoint_vocabulary()
+)
+ENDPOINT_ROLES = frozenset(ENDPOINT_ROLE_CAPABILITIES)
+
+
 def category_of(action: str) -> str | None:
     """Manifest category for a browser-originated action, or ``None`` if unknown."""
     return ACTION_CATEGORIES.get(action)
@@ -118,6 +157,11 @@ class RuntimeEnvelope:
     target_endpoint_id: str | None = None
     correlation_id: str | None = None
     generation: int | None = None
+    actor_id: str | None = None
+    actor_kind: str | None = None
+    causation_id: str | None = None
+    operation_id: str | None = None
+    deadline_unix_ms: int | None = None
 
 
 def validate_envelope_shape(value: Any) -> RuntimeEnvelope | None:
@@ -136,6 +180,27 @@ def validate_envelope_shape(value: Any) -> RuntimeEnvelope | None:
     correlation = value.get("correlationId")
     if correlation is not None and not _non_empty_str(correlation):
         return None
+    actor_id = value.get("actorId")
+    actor_kind = value.get("actorKind")
+    if (actor_id is None) != (actor_kind is None):
+        return None
+    if actor_id is not None and not _non_empty_str(actor_id):
+        return None
+    if actor_kind is not None and actor_kind not in ACTOR_KINDS:
+        return None
+    causation_id = value.get("causationId")
+    if causation_id is not None and not _non_empty_str(causation_id):
+        return None
+    operation_id = value.get("operationId")
+    if operation_id is not None and not _non_empty_str(operation_id):
+        return None
+    deadline_unix_ms = value.get("deadlineUnixMs")
+    if deadline_unix_ms is not None and (
+        not isinstance(deadline_unix_ms, int)
+        or isinstance(deadline_unix_ms, bool)
+        or deadline_unix_ms < 0
+    ):
+        return None
     generation = value.get("generation")
     if generation is not None and (not isinstance(generation, int) or isinstance(generation, bool) or generation < 0):
         return None
@@ -153,6 +218,11 @@ def validate_envelope_shape(value: Any) -> RuntimeEnvelope | None:
         target_endpoint_id=target,
         correlation_id=correlation,
         generation=generation,
+        actor_id=actor_id,
+        actor_kind=actor_kind,
+        causation_id=causation_id,
+        operation_id=operation_id,
+        deadline_unix_ms=deadline_unix_ms,
     )
 
 

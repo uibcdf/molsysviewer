@@ -6,6 +6,12 @@ open questions are what host shape carries the final experience, what stays
 shared with the notebook and popup hosts, and how to get there without forking
 the product.
 
+The accepted extension for remote sessions and explicit client/server rendering
+placement lives in [`remote_rendering_plan.md`](remote_rendering_plan.md). It
+keeps this document's Qt shell and ownership boundary; connecting to a server
+changes the connector and rendering endpoint, not the standalone product
+identity.
+
 ## Core Position
 
 One workbench model, one scene/state model, one add-on/workspace model, multiple
@@ -99,6 +105,11 @@ app window, and notebook, popup and standalone keep sharing one core viewer
 model. It is the best balance visible between real software feel, reuse of the
 current runtime, fit with the Python ecosystem, and keeping standalone from
 becoming a second product.
+
+The same shell is also the preferred native client for a remotely hosted
+session. With client rendering it embeds the full runtime as today; with server
+rendering it embeds the shared UI-only workbench and a WebRTC video viewport.
+Native menus, dialogs and shortcuts remain host-owned in both cases.
 
 ## What The First Qt Spike Already Taught Us
 

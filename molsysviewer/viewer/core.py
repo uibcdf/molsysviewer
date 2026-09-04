@@ -190,8 +190,9 @@ class MolSysView(
         self._frontend_capabilities: dict[str, Any] = {}
         self._binary_viewer_id = f"view-{uuid.uuid4()}"
         self._binary_session_id = f"session-{uuid.uuid4()}"
-        # R1 envelope authority: only the AnyWidget connector uses envelopes; Qt and
-        # other transports keep raw messages (see _send_widget_message / _handle_msg).
+        # R1 envelope authority: AnyWidget validates here. A remote connector
+        # owns its session-level envelope router and hands this core the accepted
+        # domain payload, while Qt keeps raw local messages.
         self._runtime_router: WidgetRuntimeRouter | None = None
         if isinstance(self.widget, MolSysViewerWidget):
             self.widget.runtime_viewer_id = self._binary_viewer_id
@@ -199,6 +200,9 @@ class MolSysView(
             self._runtime_router = WidgetRuntimeRouter(
                 self._binary_viewer_id, self._binary_session_id
             )
+        bind_runtime_identity = getattr(self.widget, "bind_runtime_identity", None)
+        if callable(bind_runtime_identity):
+            bind_runtime_identity(self._binary_viewer_id, self._binary_session_id)
         # D3 backpressure: a frontend that never acknowledges must not pin the
         # retained float32 arrays forever. The deadline is checked on main-thread
         # entry points only (never from a timer thread, which would make
@@ -229,6 +233,7 @@ class MolSysView(
         self._last_camera_snapshot: dict | None = None
         self._current_figure_spec: dict | None = None
         self._last_image_export_event: dict | None = None
+        self._pending_remote_image_downloads: dict[str, str] = {}
         self._movie_export_frames: list | None = None
         self._movie_export_done: bool = False
         self._last_hover_event: dict | None = None
@@ -340,6 +345,11 @@ class MolSysView(
 
         self._widget_message_callback = _handle_msg
         self.widget.on_msg(self._widget_message_callback)
+        on_runtime_request = getattr(self.widget, "on_runtime_request", None)
+        if callable(on_runtime_request):
+            on_runtime_request(self._handle_connector_runtime_request)
+        if hasattr(self.widget, "upload_consumer"):
+            self.widget.upload_consumer = self._consume_remote_upload
 
         self.molecular_system = None
         self.selection = None
@@ -839,7 +849,7 @@ class MolSysView(
     def _binary_structure_transport_limit(self) -> int | None:
         versions = self._frontend_capabilities.get("binary_structure_data")
         if (
-            not isinstance(self.widget, MolSysViewerWidget)
+            not bool(getattr(self.widget, "supports_array_native_buffers", False))
             or not isinstance(versions, (list, tuple))
             or ARRAY_NATIVE_PROTOCOL_VERSION not in versions
         ):
@@ -1230,11 +1240,11 @@ class MolSysView(
         """Hand a message to the connector, bypassing the structure-stream gate.
 
         The connector owns its wire format: ``MolSysViewerWidget.send`` wraps
-        control-plane messages in a RuntimeEnvelope (R1), while Qt and other
-        transports keep raw messages. ``raw``/``data_plane`` messages and their
-        buffers pass through unwrapped. The ``initial_messages`` trait keeps
-        domain messages because wrapping happens below this chokepoint, at the
-        widget.
+        control-plane messages in a RuntimeEnvelope (R1). A remote connector
+        applies its session envelope at the same seam; Qt keeps raw local
+        messages. ``raw``/``data_plane`` messages and their buffers pass through
+        unwrapped. The ``initial_messages`` trait keeps domain messages because
+        wrapping happens below this chokepoint, at the connector.
         """
         if buffers is None:
             self.widget.send(message)
@@ -1293,6 +1303,11 @@ class MolSysView(
                 context={"reason": result.reason},
             )
 
+    def _handle_connector_runtime_request(self, request: Any) -> None:
+        """Serve a request whose transport already validated its envelope."""
+        if getattr(request, "action", None) == "request_popup_scene_snapshot":
+            self._answer_popup_scene_snapshot(request)
+
     def _answer_popup_scene_snapshot(self, request: Any) -> None:
         """Serve `request_popup_scene_snapshot` with the canonical projection.
 
@@ -1332,8 +1347,13 @@ class MolSysView(
                 context={"mode": mode},
             )
             return
+        runtime_router = self._runtime_router
+        if runtime_router is None:
+            runtime_router = getattr(self.widget, "router", None)
+        if runtime_router is None:
+            raise RuntimeError("popup snapshot request has no runtime router")
         self._send_widget_message(
-            self._runtime_router.correlated_projection(
+            runtime_router.correlated_projection(
                 request,
                 action="popup_scene_snapshot",
                 payload={
@@ -1472,6 +1492,7 @@ class MolSysView(
                 self._last_camera_snapshot = snapshot
         elif event == "image_export":
             self._last_image_export_event = dict(content)
+            self._complete_remote_image_download(content)
         elif event == "movie_frame":
             if self._movie_export_frames is not None:
                 self._movie_export_frames.append(dict(content))
@@ -1660,6 +1681,16 @@ class MolSysView(
                     enriched["count_atoms"] = len(atom_indices)
 
             self._last_active_selection_event = enriched
+            if _selection_changed:
+                # A split remote session has two consumers: the render worker
+                # already knows the pick it produced, while the UI-only client
+                # does not. Reproject the accepted authoritative selection so
+                # every endpoint converges. Applying it again in an embedded or
+                # worker canvas is idempotent and emits no new interaction.
+                self._send_runtime_only({
+                    "op": "set_active_selection",
+                    "atom_indices": list(atom_indices),
+                })
             if atom_indices:
                 self._set_active_selection_recipe(
                     [
@@ -1706,6 +1737,7 @@ class MolSysView(
             self._current_structure_index = frame
             self.player._is_playing = bool(content.get("is_playing", False))  # noqa: SLF001
             self.player._store_state()  # noqa: SLF001
+            self._sync_trajectory_summary_runtime()
             self._sync_measurement_summaries_runtime()
             if self._frame_change_callbacks:
                 frame_event = {
@@ -2466,6 +2498,7 @@ class MolSysView(
         self._sync_annotation_summaries_runtime()
         self._sync_measurement_summaries_runtime()
         self._sync_shape_summaries_runtime()
+        self._sync_trajectory_summary_runtime()
 
     @signal(tags=["edit"])
     @signal(tags=["viewer", "structures"])
@@ -2540,6 +2573,21 @@ class MolSysView(
 
     def _local_structure_index_for_player(self) -> int:
         return int(self._current_structure_index)
+
+    def _trajectory_summary_message(self) -> dict[str, Any]:
+        return {
+            "op": "set_trajectory_summary",
+            "frame": int(self._current_structure_index),
+            "frame_count": int(self.player.n_structures),
+            "is_playing": bool(self.player._is_playing),  # noqa: SLF001
+            "fps": int(self.player._fps),  # noqa: SLF001
+            "step": int(self.player._step_size),  # noqa: SLF001
+            "mode": str(self.player._mode),  # noqa: SLF001
+            "direction": str(self.player._direction),  # noqa: SLF001
+        }
+
+    def _sync_trajectory_summary_runtime(self) -> None:
+        self._send_runtime_only(self._trajectory_summary_message())
 
     def _player_replay_messages(self) -> list[dict]:
         messages: list[dict] = []
@@ -2817,6 +2865,158 @@ class MolSysView(
                 return dict(current)
             time.sleep(0.01)
         return None
+
+    def _request_remote_image_download(self) -> None:
+        router = getattr(self.widget, "router", None)
+        publish = getattr(self.widget, "publish_download", None)
+        if router is None or not callable(publish):
+            raise RuntimeError("remote image download requires a remote session transport")
+        worker_endpoint = next(
+            (
+                endpoint.endpoint_id
+                for endpoint in router.endpoints
+                if endpoint.role == "render-worker" and "render" in endpoint.capabilities
+            ),
+            None,
+        )
+        client_endpoint = next(
+            (
+                endpoint.endpoint_id
+                for endpoint in router.endpoints
+                if endpoint.role in {"browser-client", "qt-client"}
+                and "workbench" in endpoint.capabilities
+            ),
+            None,
+        )
+        if worker_endpoint is None or client_endpoint is None:
+            raise RuntimeError("remote image download requires an attached client and render worker")
+
+        request_id = f"image-download-{uuid.uuid4()}"
+        figure = dict(self._current_figure_spec or {})
+        variants = figure.get("figure_variants")
+        payload = {
+            "op": "request_image_export",
+            "request_id": request_id,
+            "scale": float(figure.get("figure_scale", 2.0)),
+            "preset": str(figure.get("figure_preset", "publication-light")),
+            "transparent": isinstance(variants, list) and "transparent" in variants,
+        }
+        self._pending_remote_image_downloads[request_id] = client_endpoint
+        try:
+            self._send_widget_message(
+                router.wrap_outbound(
+                    payload,
+                    target_endpoint_id=worker_endpoint,
+                    operation_id=request_id,
+                )
+            )
+        except Exception:
+            self._pending_remote_image_downloads.pop(request_id, None)
+            raise
+
+    def _consume_remote_upload(self, path: str, filename: str) -> Mapping[str, Any]:
+        label = filename.rsplit("/", 1)[-1].rsplit("\\", 1)[-1]
+        if "." in label:
+            label = label.rsplit(".", 1)[0]
+        self.load(
+            path,
+            mode="replace",
+            label=label or None,
+            skip_digestion=True,
+        )
+        return {
+            "filename": filename,
+            "n_atoms": int(self._molsys.get_n_atoms()) if self._molsys is not None else 0,
+            "n_structures": int(self.player.n_structures),
+        }
+
+    def _request_remote_html_download(self) -> None:
+        router = getattr(self.widget, "router", None)
+        publish = getattr(self.widget, "publish_download", None)
+        if router is None or not callable(publish):
+            raise RuntimeError("remote HTML download requires a remote session transport")
+        client_endpoint = next(
+            (
+                endpoint.endpoint_id
+                for endpoint in router.endpoints
+                if endpoint.role in {"browser-client", "qt-client"}
+                and "workbench" in endpoint.capabilities
+            ),
+            None,
+        )
+        if client_endpoint is None:
+            raise RuntimeError("remote HTML download requires an attached client")
+        html = self._build_lite_html(
+            title="MolSysViewer",
+            include_controls=True,
+            include_popout=True,
+            messages=self._build_export_messages(),
+            inline_messages=True,
+            runtime_source=MolSysViewerWidget._viewer_js_source,
+            background="auto",
+        )
+        url = publish("molsysviewer.html", "text/html", html.encode("utf-8"))
+        projection = {
+            "op": "remote_download_ready",
+            "request_id": f"html-download-{uuid.uuid4()}",
+            "filename": "molsysviewer.html",
+            "media_type": "text/html",
+            "url": url,
+        }
+        self._send_widget_message(
+            router.wrap_outbound(projection, target_endpoint_id=client_endpoint)
+        )
+
+    def _complete_remote_image_download(self, content: Mapping[str, Any]) -> None:
+        request_id = content.get("request_id")
+        if not isinstance(request_id, str):
+            return
+        client_endpoint = self._pending_remote_image_downloads.pop(request_id, None)
+        if client_endpoint is None:
+            return
+        router = getattr(self.widget, "router", None)
+        if router is None:
+            return
+
+        if content.get("success") is False or content.get("error_type"):
+            message = str(content.get("message") or "The render worker could not export the image.")
+            projection = {
+                "op": "remote_download_failed",
+                "request_id": request_id,
+                "message": message,
+            }
+        else:
+            data_uri = content.get("data_uri")
+            prefix = "data:image/png;base64,"
+            if not isinstance(data_uri, str) or not data_uri.startswith(prefix):
+                projection = {
+                    "op": "remote_download_failed",
+                    "request_id": request_id,
+                    "message": "The render worker returned an invalid PNG payload.",
+                }
+            else:
+                try:
+                    image_bytes = base64.b64decode(data_uri[len(prefix):], validate=True)
+                    url = self.widget.publish_download(
+                        "molsysviewer.png", "image/png", image_bytes
+                    )
+                except Exception as error:
+                    projection = {
+                        "op": "remote_download_failed",
+                        "request_id": request_id,
+                        "message": str(error),
+                    }
+                else:
+                    projection = {
+                        "op": "remote_download_ready",
+                        "request_id": request_id,
+                        "filename": "molsysviewer.png",
+                        "media_type": "image/png",
+                        "url": url,
+                    }
+        self._send_widget_message(
+            router.wrap_outbound(projection, target_endpoint_id=client_endpoint)
+        )
 
     def _export_image_headless(
         self,
