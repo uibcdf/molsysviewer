@@ -792,16 +792,34 @@ representative bandwidth measurements as quality work after the four-mode
 functional smoke matrix; do not encode spika-specific timing or topology into
 defaults.
 
+**Four-mode visual matrix completed 2026-09-05.** With Python authoritative on
+spika and the clients on nauta through the same SSH jump, both client-rendered
+placements (browser and native Qt shell) displayed pentalanine sharply and
+fluidly. Camera rotation, zoom, picking, trajectory playback and seeking all
+worked. They also retained the full local viewer surface, including the Mol*
+context menu and the Reset and Help controls. Client rendering required no
+TURN media path because scene data and commands use the authenticated session
+transport while Mol*/WebGL execute on nauta.
+
+Both server-rendered placements passed the functional interaction smoke after
+TURN/TCP was supplied, but they exposed an intentional implementation gap that
+must not be mistaken for visual parity: their UI-only projected workbench does
+not yet reproduce every control owned by the integrated viewer. Reset, Help
+and the complete context-menu experience were visibly absent. For 1.0, define
+and implement the minimum required server-rendered control parity explicitly;
+do not claim that the present video client is indistinguishable from the full
+standalone. Quality adaptation and complete UI parity remain separate work.
+
 - Declare server dependency rather than relying on a transitive package.
 - Add token, origin, malformed-message, rate/size and isolation guards.
 - Document LAN/VPN, reverse proxy and configurable ICE deployment.
 - Synchronize the UIBCDF Qt package family.
 - Add diagnostics and release-facing failures.
 
-The loopback gateway items above are implemented and guarded. Final closure is
-the visible browser/Qt matrix from nauta and repetition from a clean supported
-installed environment; broader proxy/TURN administration remains outside the
-direct single-session server boundary.
+The loopback gateway items above are implemented and guarded, and the visible
+browser/Qt matrix from nauta is complete. Final closure still requires
+repetition from a clean supported installed environment; broader proxy/TURN
+administration remains outside the direct single-session server boundary.
 
 **Exit:** all four combinations pass, packaging is reproducible, and the
 documented spika-to-nauta workflow repeats from a clean supported environment.
