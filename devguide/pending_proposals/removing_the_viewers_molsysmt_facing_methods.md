@@ -363,3 +363,56 @@ Do Option C, which is free. Then settle the narrow-versus-wide reading of the po
 sentence deliberately, as an API decision, with the addon as a third destination rather than
 a binary. Nothing about that second step is blocked, and nothing about it is urgent once the
 first is done.
+
+
+## The namespace already exists, and it is `view.whole` — 2026-09-04
+
+Raised as a different discomfort: too many bare functions at the first level of the API,
+when `regions`, `annotations`, `measurements` and the rest live in namespaces. Should these
+get a module too?
+
+They already have one.
+
+```python
+view.get(element='atom', atom_name=True)        == view.whole.get(element='atom', atom_name=True)
+view.select('molecule_type=="protein"')         == view.whole.select('molecule_type=="protein"')
+view.contains(water=True)                       == view.whole.contains(water=True)
+view.is_composed_of(water=True)                 == view.whole.is_composed_of(water=True)
+view.info()                                     == view.whole.info()
+```
+
+All five verified identical. They must be: **the whole *is* the system**, so a question
+asked of the view and the same question asked of its whole cannot differ. The top-level
+five are a façade over `view.whole`.
+
+`convert` and `extract` are the exception — `view.whole` has neither.
+
+### What that settles
+
+**No new module should be created.** Not because the addon covers it — that was the
+instinct, and it is nearly right for a different reason — but because inventing `view.basic`
+would be a *fourth* spelling of one operation, beside `msm.get(view, ...)`, `view.get(...)`
+and `view.whole.get(...)`. A namespace introduced to reduce clutter that adds a name is a
+net loss.
+
+**The decluttering wanted here is cheaper than this proposal.** Removing the five bare reads
+costs a user no capability at all: `view.whole.get(...)` already answers identically, needs
+no import, and is still reachable by tab-completion. That is a strictly smaller change than
+Option A, and it does not depend on MolSysMT, on the addon, or on settling the policy
+sentence.
+
+### And the clutter is mostly somewhere else
+
+Measured on a live view: **24 namespaces, 73 bare methods, 14 properties.** The MolSysMT
+seven are under 10% of the bare methods, and unlike many of the rest they are not duplicates
+of a namespace — except that, per above, five of them are.
+
+Verified duplicate façades beyond these: `view.play`, `view.pause` and `view.set_play_speed`
+over `view.player`; `view.get_camera_snapshot`, `view.set_camera_snapshot`,
+`view.reset_camera`, `view.zoom`, `view.focus_region` and `view.focus_selection` over
+`view.camera`; `view.show` and `view.hide` over `view.whole`.
+
+**That is the real answer to "too many loose functions", and it is a separate proposal from
+this one.** It removes spellings without removing capability, which is the cheapest kind of
+API reduction there is. This proposal, by contrast, is about who *owns* the operation, and
+stays what it was: do Option C, then settle where the name lives.
