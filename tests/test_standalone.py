@@ -977,13 +977,14 @@ def test_create_remote_qt_window_reuses_authenticated_session_page(monkeypatch):
     timer = runtime["window"]._molsysviewer_remote_status_timer
     assert timer.interval == 500
     assert timer.running is True
-    runtime["webview"]._page.result = {
-        "state": "negotiating",
-        "text": "Starting remote video…",
-    }
+    runtime["webview"]._page.result = json.dumps(
+        {"state": "negotiating", "text": "Starting remote video…"}
+    )
     timer.timeout.emit()
     assert runtime["window"].status.messages[-1] == "Starting remote video…"
-    runtime["webview"]._page.result = {"state": "ready", "text": "Connected"}
+    runtime["webview"]._page.result = json.dumps(
+        {"state": "ready", "text": "Connected"}
+    )
     timer.timeout.emit()
     assert runtime["window"].status.messages[-1] == ""
     runtime["webview"].loadStarted.emit()

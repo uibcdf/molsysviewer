@@ -150,13 +150,18 @@ def _install_remote_qt_status_bridge(*, window: Any, webview: Any, QTimer: Any) 
     script = """(() => {
         const element = document.querySelector('[data-molsysviewer-remote-status]');
         if (!element) return null;
-        return {
+        return JSON.stringify({
             state: element.getAttribute('data-molsysviewer-remote-status'),
             text: element.textContent || ''
-        };
+        });
     })()"""
 
     def update_status(value: Any) -> None:
+        if isinstance(value, str):
+            try:
+                value = json.loads(value)
+            except json.JSONDecodeError:
+                return
         if not isinstance(value, dict):
             return
         state = value.get("state")
