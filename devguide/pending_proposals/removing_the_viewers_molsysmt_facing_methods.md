@@ -591,3 +591,61 @@ Removal footprint, counted:
 new *view* carrying the scene and is not a question about the molecular system; and `show`,
 as the notebook display trigger. `hide` leaves, but its atom-masking half needs a
 destination first — `view.atom_mask` is a bare NumPy array today, not a namespace.
+
+
+## `convert`, and the `hide` question — 2026-09-04
+
+### `convert` fits `Whole` and `Region`, with `get`'s own semantics
+
+Measured on 1TCD, 3983 atoms, region `A` of 1906:
+
+| | result |
+| --- | --- |
+| `msm.convert(view, to_form='molsysmt.MolSys')` | `MolSys`, **3983** atoms |
+| region subset, extracted then converted | `MolSys`, **1906** atoms |
+
+So `whole.convert(...)` is the whole system and `region.convert(...)` is that region's
+subset — the same scoping `get` already has, where the whole answers for everything and a
+region answers for its atoms. Neither exists today; both are one method each, and the fourth
+decision is answered: `convert` goes where the rest go, not to `msm.*` and not to the addon.
+
+### `hide` is not equivalent to hiding a region, except in one scene model
+
+The proposal was: if a user can make a region of a set of atoms and hide it, `view.hide` is
+redundant. Measured, the two are different mechanisms:
+
+```
+view.hide(selection='molecule_type=="water"')   atom_mask 3983 -> 3818
+region('water').hide()                          atom_mask 3983 -> 3983
+```
+
+`view.hide` writes `atom_mask`, a boolean over atoms deciding whether an atom is drawn **at
+all, by anything**. `region.hide()` hides one region's *own representation* and touches no
+mask, so **the whole keeps painting those atoms** and they stay on screen.
+
+The equivalence holds in exactly one model: **the whole hidden, regions doing the painting.**
+There, hiding a region does remove its atoms from the picture — not because the mask changed
+but because nothing paints them any more. In the default model, where the whole paints
+everything, there is no region-based equivalent.
+
+So `hide` can go, but the decision is larger than one method: it is a decision that
+MolSysViewer's visibility model is **opt-in painting by regions** rather than **opt-out
+masking of a painted whole**. That is a scene-semantics choice, and it belongs with contract
+A rather than in this proposal.
+
+### It is three methods, and a raw array
+
+The atom-mask family is `view.hide(selection)`, `view.show(selection)` and
+**`view.isolate(selection)`** — "show only these, hide everything else". All three write
+`atom_mask`, and all three fall together.
+
+And `view.atom_mask` is a **public, writable NumPy array** with no invalidation:
+
+```python
+v.atom_mask[:100] = False    # messages sent to the frontend: []
+v.hide(selection=...)        # messages sent: ['update_visibility']
+```
+
+Writing it directly changes what Python believes and leaves the screen showing something
+else. If the atom-mask family is kept, that attribute needs to stop being a bare array; if
+the family goes, the attribute goes with it.
