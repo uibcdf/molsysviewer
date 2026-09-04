@@ -105,20 +105,32 @@ def _import_extracted_state(
         if getattr(region, "_hidden", False):
             new_region.hide(skip_digestion=True)
 
+    # An overlay arrives in two halves, and migrating only one is what
+    # `uibcdf/molsysviewer#74` was: the replayable message, which `records()` reads and
+    # which `_send` records on its own, and the Python object in `_scene_objects`, which
+    # `tags()` and `get()` read and which nothing here used to create. A view missing the
+    # second half draws correctly and then raises `AttributeError` the first time
+    # `export_state` resolves a record through `get()` -- so it could not be saved, and
+    # any scene-recording operation on it crashed.
+    #
+    # `_send` records the message, exactly as it does on the normal add path. Appending
+    # here as well is what doubled shapes and annotations; measurements escaped only
+    # because their recorder de-duplicates by tag.
+
     # ── Shapes ─────────────────────────────────────────────────────────────
     # _remap_shape_message returns None for atom-anchored shapes whose atoms
     # are entirely absent; world-space shapes (no atom_indices) always pass.
     for msg in getattr(source, "_shape_history", []):  # noqa: SLF001
         remapped = source._remap_shape_message(msg, atom_index_map)  # noqa: SLF001
         if remapped is not None:
-            result._shape_history.append(remapped)  # noqa: SLF001
+            _register_overlay(result, "shape", remapped)
             result._send(remapped)  # noqa: SLF001
 
     # ── Annotations ────────────────────────────────────────────────────────
     for msg in getattr(source, "_annotation_history", []):  # noqa: SLF001
         remapped = source._remap_shape_message(msg, atom_index_map)  # noqa: SLF001
         if remapped is not None:
-            result._annotation_history.append(remapped)  # noqa: SLF001
+            _register_overlay(result, "annotation", remapped)
             result._send(remapped)  # noqa: SLF001
 
     # ── Measurements ───────────────────────────────────────────────────────
@@ -126,7 +138,7 @@ def _import_extracted_state(
     for msg in getattr(source, "_measurement_history", []):  # noqa: SLF001
         remapped = source._remap_measurement_message(msg, atom_index_map)  # noqa: SLF001
         if remapped is not None:
-            result._measurement_history.append(remapped)  # noqa: SLF001
+            _register_overlay(result, "measurement", remapped)
             result._send(remapped)  # noqa: SLF001
 
     # ── Saved selections ───────────────────────────────────────────────────
@@ -254,3 +266,33 @@ def extract(
     )
     _import_extracted_state(result, view, atom_index_map)
     return result
+
+
+def _register_overlay(view, kind: str, message: dict) -> None:
+    """Create the Python object for a migrated overlay, the way its own add path does.
+
+    Registration happens *before* the message is sent, matching the normal path, where
+    `_ensure_layer` runs and only then `_send`: `_send` synchronises scene-object
+    summaries, and it has to find the object to summarise it.
+
+    A message that carries no usable tag is skipped rather than guessed at: it will still
+    draw, which is what it did before, and inventing a tag would be worse than the gap.
+    """
+    # `_tag_from_message` because the shape ops carry their tag inside `options` while
+    # annotations and measurements carry it at the top level. Reading only the top level
+    # silently skipped every shape.
+    tag = view._tag_from_message(message)  # noqa: SLF001
+    if not tag:
+        return
+    options = message.get("options") or {}
+    layer_tag = options.get("layer_tag")
+    layer_tag = layer_tag if isinstance(layer_tag, str) and layer_tag else None
+
+    if kind == "shape":
+        from ...shapes._registry import register_shape_layer
+
+        register_shape_layer(view, tag, layer_tag=layer_tag)
+        return
+
+    collection = getattr(view, "annotations" if kind == "annotation" else "measurements")
+    collection._ensure_layer(tag, layer_tag=layer_tag)  # noqa: SLF001

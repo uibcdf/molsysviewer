@@ -1,13 +1,13 @@
 ---
 summary: view.extract migrates overlay history messages but never registers the objects, so the extracted view cannot be saved.
 issue: uibcdf/molsysviewer#74
-status: open
+status: closed
 opened: 2026-09-04
-closed:
+closed: 2026-09-04
 severity: high
 verification: reproduced
 area: [scene, state, tools]
-guard:
+guard: tests/test_extract_migrates_whole_overlays.py
 normative:
 blocked_by: []
 supersedes: []
@@ -73,3 +73,39 @@ then `_send`-ing a message whose normal handling appends again; not confirmed.
 Extract a view carrying a measurement and an annotation, then `export_state()` it, and
 assert `records()` and `tags()` agree on both sides. No test does that today, which is why
 a capability this visible could be this broken.
+
+
+## Fixed — 2026-09-04
+
+An overlay arrives in two halves, and migrating one of them is what this was. `_send`
+already records the replayable message, exactly as it does on the normal add path; what
+nothing created was the Python object in `_scene_objects` that `tags()` and `get()` read.
+
+So the fix is smaller than the report suggested: **stop appending the message by hand** —
+that append, on top of `_send`'s own, is what doubled shapes and annotations, and
+measurements escaped only because their recorder de-duplicates by tag — and **register the
+object before sending**, the order the normal path uses, because `_send` synchronises
+scene-object summaries and has to find the object to summarise it.
+
+One detail cost a round: the shape ops carry their tag inside `options` while annotations
+and measurements carry it at the top level, so reading only the top level silently skipped
+every shape and left `shapes` at `1/1 → 1/0` while the other two were already fixed. The
+view's own `_tag_from_message` knows both shapes and is used instead.
+
+| | source | extracted, before | extracted, after |
+| --- | --- | --- | --- |
+| shapes | 1/1 | 2/0 | **1/1** |
+| annotations | 1/1 | 2/0 | **1/1** |
+| measurements | 1/1 | 1/0 | **1/1** |
+| regions | 1/1 | 1/1 | 1/1 |
+
+*(records/tags)*
+
+`tests/test_extract_migrates_whole_overlays.py` checks the two halves separately, because
+either can be present without the other and `records()` alone is what made this look fine.
+It also pins the conditional case: an overlay whose atoms all fall outside the subset is
+dropped by the remapper, and registering it anyway would leave an object with no message —
+the mirror of the defect.
+
+Mutation-verified: removing the registration fails the save, the scene-operation and the
+conditional guards; restoring the by-hand append fails the duplication guard.

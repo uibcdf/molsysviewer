@@ -23,10 +23,6 @@ list.
 
 - [`standalone_qt_live_demo_reload.md`](standalone_qt_live_demo_reload.md) — [#35](https://github.com/uibcdf/molsysviewer/issues/35) — In the standalone Qt host, replacing the loaded demo leaves the previous system on screen. *(high, reproduced)*
 
-### Open (1)
-
-- [`extract_migrates_history_but_not_objects.md`](extract_migrates_history_but_not_objects.md) — [#74](https://github.com/uibcdf/molsysviewer/issues/74) — view.extract migrates overlay history messages but never registers the objects, so the extracted view cannot be saved. *(high, reproduced)*
-
 ### Deferred until after 1.0 (1)
 
 - [`standalone_qt_movie_camera_snapshot.md`](post_1.0/standalone_qt_movie_camera_snapshot.md) — [#36](https://github.com/uibcdf/molsysviewer/issues/36) — Movie export in the Qt host fails because the camera snapshot is never mirrored back.
