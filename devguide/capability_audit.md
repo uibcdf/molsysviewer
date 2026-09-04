@@ -70,6 +70,14 @@ Three of them are already `experimental` and say so. `save_state / load_state` a
 **Evidence** answers *how do we know it works*. The labels are independent, not a
 ladder: a capability may be benchmarked and never browser-observed.
 
+**They live here and nowhere else.** Four of the five are derived from what this
+audit already knows, and a hand-written label elsewhere would be an assertion --
+the thing this table exists to replace. No devguide document describes a
+capability: all nineteen capability pages are in `docs/`. A devguide document
+without an evidence label is not making a weaker claim, it is making a different
+kind of claim. Decided in `uibcdf/molsysviewer#61`; the record is
+`devguide/archive/evidence_labels_beyond_the_capability_audit.md`.
+
 - `implemented` — the code path exists and is reachable from the public API
 - `contract-tested` — Python tests exercise the documented behaviour
 - `browser-observed` — an E2E suite drives it in a real browser and asserts what it drew
