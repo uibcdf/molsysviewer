@@ -74,9 +74,29 @@ Removed before 1.0:
 - `view.{remove, add, set, append_structures}`
 - `view.whole.{remove, add, set, append_structures}`
 
-Pure molecular-system reads should use `molsysmt.*(view, ...)`. Live molecular
-edits on an existing viewer are provided by the MolSysMT addon namespace:
+Removed in 0.22 (`uibcdf/molsysviewer#71`, executed in `#75`):
+
+- `view.{get, select, convert}` — ask the whole or a region: `view.whole.get(...)`,
+  `region.get(...)`. They are thin wrappers over MolSysMT, so `msm.get(view, ...)` works too
+- `view.contains` and `view.is_composed_of`, and their `whole` and `region` counterparts —
+  `get` carries the same information (`whole.get(n_waters=True) > 0`, and the set of
+  `molecule_type`), and `msm.contains(view, ...)` still answers directly
+- `view.{hide, isolate}`, the `selection` half of `view.show()`, `view.atom_mask` and
+  `view.visible_atom_indices` — the cross-cutting atom mask never reached `export_state`,
+  so anything hidden through it came back on reload. Visibility belongs to the whole and to
+  regions, which a saved scene does carry
+- `ViewerInfo` and `RegionInfo`, with the two-section output they held: each `info` now
+  answers about one subject
+- `apply_system_edit(..., visible_atom_indices=...)`
+
+Added in the same change: `whole.convert(...)` and `region.convert(...)`.
+
+Pure molecular-system reads should use `view.whole.*`, `region.*`, or `molsysmt.*(view, ...)`.
+Live molecular edits on an existing viewer are provided by the MolSysMT addon namespace:
 `view.addons.molsysmt.basic.*`.
+
+The user-facing translation table is in
+{doc}`../user/introduction/migrating_to_0_22`.
 
 `MolSysView` is also explicitly growing an inspection-oriented object API beyond the minimal viewer shell. Public user-facing methods now include:
 

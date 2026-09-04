@@ -2,6 +2,7 @@
 
 This page tracks major architectural and documentation milestones.
 
+- 2026-09-04: **0.22 — the viewer stops answering about the molecular system.** `view.{get, select, convert, contains, is_composed_of}` removed; the whole and regions answer instead, and `convert` was added to both. `info` split so each object describes one subject: `view.info()` is the scene, `whole.info()` and `region.info()` are the system. The cross-cutting atom-visibility mask is gone — `view.{hide, isolate}`, `view.show(selection)`, `atom_mask`, `visible_atom_indices` and the `update_visibility` wire protocol with its deltas, versioning and resync handler, in Python and TypeScript; `viewer.js` rebuilt. Visibility belongs to the whole and to regions, which a saved scene carries and the mask never did. Digestion of the surviving wrappers is delegated to MolSysMT — measured identical over its 118 attributes — which fixed `region.get` refusing 77 of them, and retired 99 copied digesters and both normalization modules. Migration table: `docs/content/user/introduction/migrating_to_0_22.md`. Proposal `uibcdf/molsysviewer#71`, execution `#75`.
 - 2025-11-18: Initial developer docs structure created.
 - 2025-11-21: Shapes and loaders refactor; API simplified.
 - 2025-12-07: Popup sync, regions/layers/whole, and trajectory controls stabilized.

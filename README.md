@@ -21,78 +21,6 @@ Documentation: https://www.uibcdf.org/molsysviewer
 
 ---
 
-## Features
-
-### Interactive 3D visualisation
-- Load PDB/mmCIF strings, remote PDB IDs, URLs, or native MolSysMT systems
-- High-quality Mol\* rendering: cartoon, surface, ball-and-stick, spacefill, and more
-- Built-in representation styles and publication-ready presets
-- Multi-structure trajectory playback with configurable frame rate
-
-### Python-driven scene management
-- **Regions** — named atom subsets with independent visibility, colour, and representation
-- **Layers** — non-structural visual groups (shapes, overlays) with tag-based lifecycle
-- **Styles** — reusable scene recipes applied globally or per region
-- `view.whole`, `view.regions`, `view.layers` as first-class Python objects
-
-### Scientific overlays (shapes)
-- Displacement vectors, link shapes, H-bond overlays, anisotropy ellipsoids
-- Pocket blobs, pocket surfaces, channel tubes
-- Pharmacophore glyphs (donors, acceptors, hydrophobic patches, aromatic rings)
-- Sphere and triangle-face primitives
-- All shapes are structure-aware: they follow atoms across trajectory frames
-
-### Annotations and measurements
-- Persistent labels anchored to atom selections (`view.annotations`)
-- Interactive distance, angle, and dihedral measurements (`view.measurements`)
-- Canvas pickability: hover and click events on labels and measurements
-- All artifacts survive export/replay/rebuild cycles
-
-### Canvas interaction and callbacks
-- Click, hover, and context-menu events forwarded to Python
-- `region_tags` enrichment on every interaction payload
-- `view.on_hover(fn)` / `view.on_click(fn)` reactive callbacks
-- Active selection bridge: canvas selection → named region/selection/label
-
-### Export and embedding
-- `view.export.html(...)` — self-contained interactive HTML (standalone or CDN-lite)
-- `view.export.figure(...)` — publication-quality PNG/SVG snapshots
-- `view.export.figure_publication_set(...)` — full light/dark/transparent bundle
-- `view.movie.export(...)` — animated GIF or MP4 from trajectory frames
-- State serialisation: `view.export_state()` / `view.import_state()`
-
-### Addon system
-MolSysViewer has a first-class addon API that lets external packages add
-workspaces, panels, context actions, and shape providers without modifying the core:
-
-Each MolSysSuite integration is shipped **by its own toolkit**, as a package inside that
-toolkit's repository — installing the toolkit installs its add-on. There is no separate
-`molsysviewer-*` distribution to install.
-
-| Import as | Shipped by | What it adds | Maturity |
-|---|---|---|---|
-| `molsysviewer_molsysmt` | MolSysMT | 10-panel workspace: inspect, select, colour, H-bonds, topology, PBC, mechanics, build | alpha |
-| `molsysviewer_topomt` | TopoMT | Pocket detection and topography visualisation | undeclared |
-| `molsysviewer_elastnetmt` | ElastNetMT | GNM/ANM elastic network modes and contact network overlays | skeleton |
-| `molsysviewer_pharmacophoremt` | PharmacophoresMT | Structure-based pharmacophore glyph overlays | skeleton |
-
-**Maturity is what each add-on declares about itself**, so the column reports rather than
-grades. The shared vocabulary — `experimental`, `development`, `beta`, `stable` — is
-defined in
-[`devguide/pending_proposals/addon_maturity_and_ownership.md`](devguide/pending_proposals/addon_maturity_and_ownership.md);
-the values above predate it, and each toolkit adopts it when it re-declares. Until then,
-read `skeleton` as `experimental`, `alpha` as `development`, and `undeclared` as exactly
-that.
-
-All four integrations exist and work. **None of them is production-ready today**, and only
-MolSysMT's is tested against the host and discovered on install.
-
-### Canvas UX modes
-- `controls_mode="minimal"` — 3-icon cluster + keyboard shortcuts (N/W/H)
-- `panel_mode_style="floating"` — centred overlay panel, no viewport shift
-
----
-
 ## Quick start
 
 ```python
@@ -177,9 +105,81 @@ restored.load_state("scene-state.json")
 
 `restored` now carries the same regions, colours, representations, visibility and
 overlays as the view you had been clicking around in. That round trip — not the
-feature list above — is what MolSysViewer is for. The file stores scene state,
+feature list below — is what MolSysViewer is for. The file stores scene state,
 not the molecular system itself, so load the same or a compatible structure
 before calling `load_state()`.
+
+---
+
+## Features
+
+### Interactive 3D visualisation
+- Load PDB/mmCIF strings, remote PDB IDs, URLs, or native MolSysMT systems
+- High-quality Mol\* rendering: cartoon, surface, ball-and-stick, spacefill, and more
+- Built-in representation styles and publication-ready presets
+- Multi-structure trajectory playback with configurable frame rate
+
+### Python-driven scene management
+- **Regions** — named atom subsets with independent visibility, colour, and representation
+- **Layers** — non-structural visual groups (shapes, overlays) with tag-based lifecycle
+- **Styles** — reusable scene recipes applied globally or per region
+- `view.whole`, `view.regions`, `view.layers` as first-class Python objects
+
+### Scientific overlays (shapes)
+- Displacement vectors, link shapes, H-bond overlays, anisotropy ellipsoids
+- Pocket blobs, pocket surfaces, channel tubes
+- Pharmacophore glyphs (donors, acceptors, hydrophobic patches, aromatic rings)
+- Sphere and triangle-face primitives
+- All shapes are structure-aware: they follow atoms across trajectory frames
+
+### Annotations and measurements
+- Persistent labels anchored to atom selections (`view.annotations`)
+- Interactive distance, angle, and dihedral measurements (`view.measurements`)
+- Canvas pickability: hover and click events on labels and measurements
+- All artifacts survive export/replay/rebuild cycles
+
+### Canvas interaction and callbacks
+- Click, hover, and context-menu events forwarded to Python
+- `region_tags` enrichment on every interaction payload
+- `view.on_hover(fn)` / `view.on_click(fn)` reactive callbacks
+- Active selection bridge: canvas selection → named region/selection/label
+
+### Export and embedding
+- `view.export.html(...)` — self-contained interactive HTML (standalone or CDN-lite)
+- `view.export.figure(...)` — publication-quality PNG/SVG snapshots
+- `view.export.figure_publication_set(...)` — full light/dark/transparent bundle
+- `view.movie.export(...)` — animated GIF or MP4 from trajectory frames
+- State serialisation: `view.export_state()` / `view.import_state()`
+
+### Addon system
+MolSysViewer has a first-class addon API that lets external packages add
+workspaces, panels, context actions, and shape providers without modifying the core:
+
+Each MolSysSuite integration is shipped **by its own toolkit**, as a package inside that
+toolkit's repository — installing the toolkit installs its add-on. There is no separate
+`molsysviewer-*` distribution to install.
+
+| Import as | Shipped by | What it adds | Maturity |
+|---|---|---|---|
+| `molsysviewer_molsysmt` | MolSysMT | 10-panel workspace: inspect, select, colour, H-bonds, topology, PBC, mechanics, build | alpha |
+| `molsysviewer_topomt` | TopoMT | Pocket detection and topography visualisation | undeclared |
+| `molsysviewer_elastnetmt` | ElastNetMT | GNM/ANM elastic network modes and contact network overlays | skeleton |
+| `molsysviewer_pharmacophoremt` | PharmacophoresMT | Structure-based pharmacophore glyph overlays | skeleton |
+
+**Maturity is what each add-on declares about itself**, so the column reports rather than
+grades. The shared vocabulary — `experimental`, `development`, `beta`, `stable` — is
+defined in
+[`devguide/pending_proposals/addon_maturity_and_ownership.md`](devguide/pending_proposals/addon_maturity_and_ownership.md);
+the values above predate it, and each toolkit adopts it when it re-declares. Until then,
+read `skeleton` as `experimental`, `alpha` as `development`, and `undeclared` as exactly
+that.
+
+All four integrations exist and work. **None of them is production-ready today**, and only
+MolSysMT's is tested against the host and discovered on install.
+
+### Canvas UX modes
+- `controls_mode="minimal"` — 3-icon cluster + keyboard shortcuts (N/W/H)
+- `panel_mode_style="floating"` — centred overlay panel, no viewport shift
 
 ---
 

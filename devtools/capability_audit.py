@@ -61,6 +61,14 @@ class Capability:
     human_observed: str | None = None
     #: Set when the row's honest reading needs a sentence the columns cannot hold.
     note: str | None = None
+    #: Required of a `stable` capability that nothing has watched draw: why the label is
+    #: deserved anyway. `uibcdf/molsysviewer#65` exists because two rows carried `stable`
+    #: with no browser evidence and no statement that this was decided rather than
+    #: inherited, and 1.0 is what turns an inherited claim into a published one.
+    #:
+    #: It is not an escape hatch. A capability that *draws* cannot answer this sentence
+    #: honestly, and the guard says so: it accepts only the reason that nothing is drawn.
+    stable_without_drawing: str | None = None
     aliases: tuple[str, ...] = field(default_factory=tuple)
 
 
@@ -231,6 +239,10 @@ CAPABILITIES: tuple[Capability, ...] = (
         unit=("test_state_serialization.py", "test_state_v2.py", "test_state_sections.py",
               "test_state_structure_identity.py", "test_state_view_state.py",
               "test_state_focus_overlays.py"),
+        stable_without_drawing="Nothing about it is rendered: it writes a JSON document and "
+                               "reads one back. Its contract is version 2 refusing version 1, "
+                               "and the re-resolution onto a different structure -- both "
+                               "checked by contract tests, neither visible on a screen.",
         note="The scene and the vantage point it was saved from: no molecular system and no "
              "history. Records the structure it was written from, and re-resolves onto a "
              "different one rather than replaying indices that mean other atoms. Version 2 "
@@ -324,6 +336,9 @@ CAPABILITIES: tuple[Capability, ...] = (
         provenance="PyUnitWizard (unit authority)",
         docs="docs/content/user/introduction/units.md",
         unit=("test_public_output_units.py", "test_boundary_digesters.py"),
+        stable_without_drawing="A policy about argument values, enforced before anything "
+                               "reaches the frontend. There is no pixel it could be watched "
+                               "producing.",
         note="Physical magnitudes are quantities, never bare numbers.",
     ),
 )

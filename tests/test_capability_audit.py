@@ -163,6 +163,46 @@ def test_the_undocumented_baseline_does_not_rot():
     )
 
 
+@pytest.mark.parametrize("capability", CAPABILITIES, ids=lambda c: c.name)
+def test_a_stable_capability_has_earned_the_label(capability):
+    """`uibcdf/molsysviewer#65`: nothing stopped a `stable` claim being inherited.
+
+    A capability is `stable` on evidence, and for a viewer the strongest evidence is that
+    somebody or something watched it draw. Two rows carried the label with neither an E2E
+    suite nor a human observation, and the audit itself called that "the kind of claim that
+    should be made on purpose rather than inherited". Nothing had made it on purpose.
+
+    So a `stable` capability must carry one of three things: an E2E suite, a dated human
+    observation, or a written statement that it draws nothing and therefore cannot have
+    either. The third is a claim in its own right, and the next test checks it is not used
+    to wave away something that does draw.
+    """
+    if capability.status != "stable":
+        return
+
+    assert capability.e2e or capability.human_observed or capability.stable_without_drawing, (
+        f"{capability.name} is declared stable with no browser evidence and no reason given. "
+        f"Add an E2E suite, a dated human_observed, or state in stable_without_drawing why "
+        f"it draws nothing."
+    )
+
+
+@pytest.mark.parametrize("capability", CAPABILITIES, ids=lambda c: c.name)
+def test_the_draws_nothing_claim_is_not_an_escape_hatch(capability):
+    """A capability that has watched evidence cannot also claim it draws nothing.
+
+    Without this, `stable_without_drawing` would be a sentence anybody could add to silence
+    the test above, which would make the exemption worse than no exemption.
+    """
+    if not capability.stable_without_drawing:
+        return
+
+    assert not capability.e2e and not capability.human_observed, (
+        f"{capability.name} claims it draws nothing, yet carries browser evidence "
+        f"({capability.e2e or capability.human_observed}). One of the two is wrong."
+    )
+
+
 def test_the_generated_document_is_current(audit):
     """The document is generated, so a stale one means somebody edited the source only."""
     assert DOCUMENT.exists(), "run python devtools/capability_audit.py --write"

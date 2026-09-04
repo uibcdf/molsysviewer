@@ -1,12 +1,12 @@
 ---
 summary: Evaluate removing the viewer's MolSysMT-facing methods, now that msm.* answers on a view.
 issue: uibcdf/molsysviewer#71
-status: open
+status: closed
 opened: 2026-09-02
-closed:
+closed: 2026-09-04
 verification: measured
 area: [api, argdigest, molsysmt]
-guard:
+guard: tests/test_digester_caller_contract.py, tests/test_view_info.py
 normative:
 blocked_by: []
 supersedes: []
@@ -710,3 +710,20 @@ advantage is saving a `difference()` call.
 
 `view.show` keeps its display-trigger half. What leaves is the `selection` argument, which
 is the masking half wearing the same name.
+
+
+## Closed — 2026-09-04
+
+Executed in `uibcdf/molsysviewer#75`, all five phases. The translation for every removed
+call is `docs/content/user/introduction/migrating_to_0_22.md`.
+
+**The recommendation this document made was Option C, and what shipped went further** — the
+methods were removed from the view, not merely undigested — because the discussion that
+followed answered §7's first question: `.get` on a viewer was not wanted as ergonomics once
+`view.whole` was seen to be the namespace it already had.
+
+Three of this document's own conclusions were withdrawn as the measurements improved: that
+`msm.contains(view)` failed, that `Region` and `Whole` needed MolSysMT forms, and that the
+digester directory was where the prize lay. Each correction is dated above rather than
+edited away, because the pattern is the point: every one of them came from reasoning that
+looked sound and a measurement that had not been taken.
