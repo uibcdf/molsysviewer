@@ -21,76 +21,40 @@ def _ensure_structure_visibility_supported(structure_indices: Any) -> None:
 class VisibilityMixin:
     @signal(tags=["visibility"])
     @digest()
-    def hide(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT", skip_digestion: bool = False):
-        """Hide atoms matching the given selection (MolSysMT syntax by default)."""
-        _ensure_structure_visibility_supported(structure_indices)
-        if self.atom_mask is None or self._molsys is None:
-            return
+    def show(
+        self,
+        *,
+        force: bool = False,
+        skip_digestion: bool = False,
+        viewer_mode: str | None = None,
+        controls_mode: str | None = None,
+        panel_mode_style: str | None = None,
+        height: str | None = None,
+    ):
+        """Display the widget, the way `pyplot.show()` displays a figure.
 
-        if is_all(selection):
-            # Hide everything: atoms + all reps (global + regions)
-            self.atom_mask[:] = False
-            self._update_visibility_in_frontend()
-            # Hide all representations in the frontend
-            self._send({"op": "hide_whole", "target": "all"})
-        else:
-            atom_indices = msm.select(self._molsys, selection=selection, syntax=syntax, skip_digestion=True)
-            self.atom_mask[atom_indices] = False
+        This is the notebook trigger and nothing else. It used to also take a `selection`
+        and edit the atom-visibility mask, which is the half `uibcdf/molsysviewer#71`
+        removed: what is drawn is decided by the whole and by regions, each of which has
+        its own `show()` and `hide()`.
 
-        self._update_visibility_in_frontend()
-
-    @signal(tags=["visibility"])
-    @digest()
-    def show(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT", *, force: bool = False, skip_digestion: bool = False, viewer_mode: str | None = None, controls_mode: str | None = None, panel_mode_style: str | None = None, height: str | None = None):
-        """Show the widget (first call or if `force=True`) and optionally adjust visibility or change viewer modes."""
-        _ensure_structure_visibility_supported(structure_indices)
+        Returns the widget on the first call, or on any call with `force=True`; `None`
+        afterwards, so re-showing in a loop does not stack widgets.
+        """
         if viewer_mode is not None or controls_mode is not None or panel_mode_style is not None:
-            self._apply_view_modes(viewer_mode=viewer_mode, controls_mode=controls_mode, panel_mode_style=panel_mode_style)
+            self._apply_view_modes(
+                viewer_mode=viewer_mode,
+                controls_mode=controls_mode,
+                panel_mode_style=panel_mode_style,
+            )
         if height is not None:
             self.widget.layout.height = height
 
-        # (1) Apply visibility changes if a system is loaded
-        if self._molsys is not None and self.atom_mask is not None:
-            if is_all(selection) and is_all(structure_indices):
-                # Reset visibility: show all atoms
-                self.atom_mask[:] = True
-                self._update_visibility_in_frontend()
-                # Show all representations in the frontend (global + regions)
-                self._send({"op": "show_whole", "target": "all"})
-                # Re-apply the user's intent about the baseline/global view
-                self._send({"op": "show_whole" if self.whole.visible else "hide_whole", "target": "whole"})
-            elif not (is_all(selection) and is_all(structure_indices)):
-                # Partial "show": turn on only the requested selection
-                atom_indices = msm.select(self._molsys, selection=selection, syntax=syntax, skip_digestion=True)
-                self.atom_mask[atom_indices] = True
-                self._update_visibility_in_frontend()
-
-        # (2) Handle first-time or forced visualisation
         if force or not self._already_shown:
             self._already_shown = True
             return self.widget
 
-        # (3) Subsequent calls without force do not return the widget
         return None
-
-    @signal(tags=["visibility"])
-    @digest()
-    def isolate(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT", skip_digestion: bool = False):
-        """Show only the atoms in `selection`; hide everything else (reset if selection == 'all')."""
-        _ensure_structure_visibility_supported(structure_indices)
-        if self.atom_mask is None or self._molsys is None:
-            return
-
-        if is_all(selection):
-            # Isolating "all" → same as reset visibility
-            self.atom_mask[:] = True
-            self._update_visibility_in_frontend()
-            return
-
-        atom_indices = msm.select(self._molsys, selection=selection, syntax=syntax, skip_digestion=True)
-        self.atom_mask[:] = False
-        self.atom_mask[atom_indices] = True
-        self._update_visibility_in_frontend()
 
     @signal(tags=["visibility"])
     @digest()

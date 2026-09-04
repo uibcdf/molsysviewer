@@ -18,14 +18,18 @@ def test_tools_basic_merge_merges_scene_state_and_resolves_tag_collisions():
     region_a.hide(skip_digestion=True)
     pocket_a = view_a.shapes.add_pocket_surface(atom_indices=[0, 1, 2], tag="pocket", skip_digestion=True)
     pocket_a.hide(skip_digestion=True)
-    view_a.hide(selection=[2], skip_digestion=True)
+    view_a._atom_mask[2] = False  # visibility is a region concern now; the mask survives only as internal state (#75 phase E)
+
+    view_a._update_visibility_in_frontend()
 
     view_b.regions.add(atom_indices=[0, 1], tag="frag", representation="line", skip_digestion=True)
     analysis_b = view_b.layers.add("analysis", kind="annotation", meta={"owner": "b"}, skip_digestion=True)
     analysis_b.hide(skip_digestion=True)
     pocket_b = view_b.shapes.add_links(atom_pairs=[[0, 1]], tag="pocket", skip_digestion=True)
     pocket_b.hide(skip_digestion=True)
-    view_b.hide(selection=[0], skip_digestion=True)
+    view_b._atom_mask[0] = False  # visibility is a region concern now; the mask survives only as internal state (#75 phase E)
+
+    view_b._update_visibility_in_frontend()
 
     result = tools.basic.merge([view_a, view_b], debug_js=True)
 

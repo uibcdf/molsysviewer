@@ -8,7 +8,7 @@ def _ready_view_with_capture(n_atoms: int = 10):
     sent: list = []
     view.widget.send = lambda msg: sent.append(msg)  # type: ignore[attr-defined]
     view._ready = True  # noqa: SLF001
-    view.atom_mask = np.ones(n_atoms, dtype=bool)
+    view._atom_mask = np.ones(n_atoms, dtype=bool)
     return view, sent
 
 
@@ -27,7 +27,7 @@ def test_small_change_sends_delta_but_projects_full_current_state():
     view, sent = _ready_view_with_capture()
     view._update_visibility_in_frontend()  # noqa: SLF001  (full, v1)
 
-    view.atom_mask[3] = False
+    view._atom_mask[3] = False
     sent.clear()
     view._update_visibility_in_frontend()  # noqa: SLF001
 
@@ -58,7 +58,7 @@ def test_no_change_sends_nothing():
 def test_resync_request_resends_full_state_at_current_version():
     view, sent = _ready_view_with_capture()
     view._update_visibility_in_frontend()  # noqa: SLF001  (v1)
-    view.atom_mask[3] = False
+    view._atom_mask[3] = False
     view._update_visibility_in_frontend()  # noqa: SLF001  (delta -> v2)
 
     sent.clear()
@@ -75,8 +75,8 @@ def test_large_change_sends_full_not_delta():
 
     # Hide almost everything: the change set is not smaller than the visible list,
     # so a full state is sent instead of a delta.
-    view.atom_mask[:] = False
-    view.atom_mask[0] = True
+    view._atom_mask[:] = False
+    view._atom_mask[0] = True
     sent.clear()
     view._update_visibility_in_frontend()  # noqa: SLF001
 

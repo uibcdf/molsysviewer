@@ -125,7 +125,8 @@ def test_a_broad_sweep_of_the_public_api_stays_wire_safe():
     )
     view.measurements.add_distance(selection_a=[0], selection_b=[10], tag="d1")
     view.whole.set_representation("cartoon")
-    view.show(selection="atom_index < 20")
+    view.regions.add(selection="atom_index < 20", tag="sweep", representation="line")
+    view.show()
 
     assert sent, "the sweep must actually emit messages"
     _assert_wire_safe(sent, "public API sweep")

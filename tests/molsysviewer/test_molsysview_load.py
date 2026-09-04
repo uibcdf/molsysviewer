@@ -53,8 +53,8 @@ def test_molsysview_load_uses_molsysmt_payload():
     assert view._molsys is not None  # noqa: SLF001
     n_atoms = msm.get(view._molsys, element="atom", n_atoms=True)  # noqa: SLF001
     assert n_atoms == 4
-    assert view.atom_mask is not None  # noqa: SLF001
-    assert view.atom_mask.tolist() == [True] * n_atoms  # noqa: SLF001
+    assert view._atom_mask is not None  # noqa: SLF001
+    assert view._atom_mask.tolist() == [True] * n_atoms  # noqa: SLF001
 
     # The scene is retained for the ready handshake, but not sent before the widget is ready.
     msg = next(  # noqa: SLF001

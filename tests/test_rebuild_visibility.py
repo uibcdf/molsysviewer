@@ -55,7 +55,7 @@ def test_global_hide_after_rebuild_does_not_duplicate_hide_region():
         if m.get("op") == "hide_region" and m.get("tag") == "site"
     )
 
-    view.hide(skip_digestion=True)
+    view.whole.hide(skip_digestion=True)
 
     post_hide_count = sum(
         1 for m in view._test_message_log  # noqa: SLF001

@@ -24,24 +24,17 @@ view.whole.hide()
 view.whole.show()
 ```
 
-Atom-mask visibility is a separate selection-level operation:
+There is no second, selection-level mechanism. `view.hide(...)`, `view.show(selection)` and
+`view.isolate(...)` wrote an atom-visibility mask and were removed before 1.0: the mask
+never travelled with a saved scene, so anything hidden that way came back on reload with no
+warning. {doc}`atom_masking` has the migration and the reasoning.
+
+To take a selection out of the picture, make it a region and hide that:
 
 ```python
-# Hide only a selection (MolSysMT syntax)
-view.hide('molecule_type == "water"')
-
-# Show only a selection — everything else stays as-is
-view.show('group_name == "LIG"')
-```
-
-`view.isolate()` is a combined hide-all + show-selection in one call:
-
-```python
-# Show only chain A, hide everything else
-view.isolate('chain_name == "A"')
-
-# Restore full visibility
-view.isolate("all")
+view.whole.hide()                                       # nothing painted by default
+waters = view.regions.add(selection='molecule_type=="water"', tag="waters")
+waters.hide()
 ```
 
 ---
@@ -87,9 +80,8 @@ layer.show()
   own visuals remain controlled by their region visibility.
 - A region in state None (no own representation or preset) is painted by the
   whole, so it disappears while the whole is hidden.
-- `view.show(...)`, `view.hide(...)`, and `view.isolate(...)` operate on the
-  atom mask. They compose with whole and region visibility rather than deleting
-  regions.
+- `view.show()` displays the widget and nothing else. It does not touch what the
+  whole and the regions decided — that was the atom-mask half, and it is gone.
 - A region hidden explicitly with `region.hide()` stays hidden until
   `region.show()` is called — region-level intent is preserved.
 
@@ -100,14 +92,20 @@ layer.show()
 **Hide solvent before export:**
 
 ```python
-view.hide('molecule_type == "water" or molecule_type == "ion"')
+view.whole.hide()
+view.regions.add(selection='not (molecule_type=="water" or molecule_type=="ion")',
+                 tag="dry", representation="cartoon")
 view.export.html("dry_scene.html")
 ```
+
+The region is the thing that gets exported, saved and restored — which the mask never was.
 
 **Focus on a ligand:**
 
 ```python
-view.isolate('group_name == "LIG"')
+view.whole.hide()
+view.regions.add(selection='group_name=="LIG"', tag="ligand",
+                 representation="ball-and-stick")
 ```
 
 **Toggle an overlay layer during exploration:**

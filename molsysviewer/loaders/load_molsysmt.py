@@ -82,7 +82,7 @@ def load_from_molsysmt(
 
     n_atoms = int(view._molsys.get_n_atoms())
     n_structures = int(view._molsys.structures.n_structures)
-    view.atom_mask = np.ones(n_atoms, dtype=bool)
+    view._atom_mask = np.ones(n_atoms, dtype=bool)
 
     # This warning concerns materialized coordinates and therefore applies to
     # both the binary path and the lazy JSON fallback.

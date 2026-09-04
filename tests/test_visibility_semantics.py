@@ -1,3 +1,18 @@
+"""What is drawn is decided by the whole and by regions. `show()` only displays.
+
+Before `uibcdf/molsysviewer#71` phase E, the view carried a second, cross-cutting mechanism:
+`atom_mask`, written by `view.hide(selection)`, `view.isolate(selection)` and the
+`selection` half of `view.show()`. It subtracted atoms from *every* representation at once.
+
+It was removed because it never reached the scene document — `export_state` did not carry
+it, so hiding atoms, saving and reloading brought them back with no warning — while it did
+reach the frontend, the popup and the HTML export. A feature whose effect vanishes on save
+is half a feature.
+
+What this file guards now is the property that replaced it: **`show()` is the notebook
+trigger and nothing else**, so what the whole and the regions decided survives it.
+"""
+
 from __future__ import annotations
 
 import pytest
@@ -7,100 +22,62 @@ pytest.importorskip("molsysmt")
 from molsysviewer.demo import demo
 
 
-def test_whole_hide_stays_sticky_across_show_all():
-    view = demo["dialanine"]
-    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+@pytest.fixture
+def view():
+    v = demo["dialanine"]
+    v.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+    return v
 
+
+@pytest.fixture
+def sent(view, monkeypatch):
+    log: list[str] = []
+    original = view._send  # noqa: SLF001
+    monkeypatch.setattr(
+        view, "_send", lambda msg, *a, **k: (log.append(msg.get("op")), original(msg, *a, **k))[1]
+    )
+    return log
+
+
+def test_show_does_not_disturb_what_the_whole_and_the_regions_decided(view, sent):
+    """The regression phase E could have introduced, and the reason `show` was split.
+
+    `show()` used to reset every visibility decision on its way to displaying the widget,
+    because displaying and deciding shared one method.
+    """
+    region = view.regions.add(
+        atom_indices=[0, 1, 2], tag="frag", representation="sticks", skip_digestion=True
+    )
     view.whole.hide(skip_digestion=True)
-    view.show(skip_digestion=True)
-
-    assert view._global_hidden is True  # noqa: SLF001
-    assert view.visible_atom_indices == list(range(22))
-    assert [msg.get("op") for msg in view._test_message_log[-3:]] == [
-        "update_visibility",
-        "show_whole",
-        "hide_whole",
-    ]
-    assert view._test_message_log[-1] == {"op": "hide_whole", "target": "whole"}  # noqa: SLF001
-
-
-def test_hidden_region_and_layer_survive_global_hide_show_cycle():
-    view = demo["dialanine"]
-    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
-
-    region = view.regions.add(
-        atom_indices=[0, 1, 2],
-        tag="frag",
-        representation="sticks",
-        skip_digestion=True,
-    )
     region.hide(skip_digestion=True)
 
-    pocket_layer = view.shapes.add_pocket_surface(
-        atom_indices=[0, 1, 2],
-        tag="pocket",
-        skip_digestion=True,
-    )
-    pocket_layer.hide(skip_digestion=True)
-
-    view.hide(skip_digestion=True)
+    sent.clear()
     view.show(skip_digestion=True)
 
-    assert view.regions["frag"]._hidden is True  # noqa: SLF001
-    assert view.layers["pocket"]._hidden is True  # noqa: SLF001
-    assert view.visible_atom_indices == list(range(22))
-    assert not any(msg.get("op") == "show_region" and msg.get("tag") == "frag" for msg in view._test_message_log)
-    assert not any(msg.get("op") == "show_layer" and msg.get("tag") == "pocket" for msg in view._test_message_log)
-    assert [msg.get("op") for msg in view._test_message_log[-3:]] == [
-        "update_visibility",
-        "show_whole",
-        "show_whole",
-    ]
-    assert view._test_message_log[-1] == {"op": "show_whole", "target": "whole"}  # noqa: SLF001
+    assert view._global_hidden is True, "show() un-hid the whole"  # noqa: SLF001
+    assert region.visible is False, "show() un-hid a region"
+    assert sent == [], f"show() is a display trigger and must emit nothing: {sent}"
 
 
-def test_show_all_resets_partial_atom_visibility_without_clearing_hidden_region_state():
-    view = demo["dialanine"]
-    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+def test_show_returns_the_widget_once_and_then_on_demand(view):
+    """`pyplot.show()` semantics: re-showing in a loop must not stack widgets."""
+    assert view.show(skip_digestion=True) is not None
+    assert view.show(skip_digestion=True) is None
+    assert view.show(force=True, skip_digestion=True) is not None
 
-    region = view.regions.add(
-        atom_indices=[0, 1, 2],
-        tag="frag",
-        representation="sticks",
-        skip_digestion=True,
-    )
-    region.hide(skip_digestion=True)
 
-    view.hide(selection=[5], skip_digestion=True)
-    assert bool(view.atom_mask[5]) is False
+def test_the_cross_cutting_mask_is_gone(view):
+    """Named so the removal is a decision on the record rather than a gap.
 
-    view.show(skip_digestion=True)
+    The equivalent is a region: make one for the atoms you want gone and hide it, with the
+    whole hidden so nothing else paints them.
+    """
+    for removed in ("hide", "isolate", "atom_mask", "visible_atom_indices"):
+        assert not hasattr(view, removed), f"view.{removed} came back without a decision"
 
-    assert bool(view.atom_mask[5]) is True
-    assert view.regions["frag"]._hidden is True  # noqa: SLF001
-    assert not any(msg.get("op") == "show_region" and msg.get("tag") == "frag" for msg in view._test_message_log)
-    visibility_msg = next(msg for msg in reversed(view._test_message_log) if msg.get("op") == "update_visibility")
-    assert visibility_msg["options"]["visible_atom_indices"] == list(range(22))
 
-@pytest.mark.parametrize(
-    "operation",
-    [
-        lambda view: view.hide(selection="all", structure_indices=[0], skip_digestion=True),
-        lambda view: view.show(selection="all", structure_indices=[0], skip_digestion=True),
-        lambda view: view.isolate(selection="all", structure_indices=[0], skip_digestion=True),
-        lambda view: view.focus_with_fade(selection="all", structure_indices=[0], skip_digestion=True),
-    ],
-)
-def test_visibility_rejects_per_structure_visibility_until_supported(operation):
-    view = demo["chicken_villin_HP35"]
-    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
-    mask_before = None if view.atom_mask is None else view.atom_mask.copy()
-    history_len = len(view._test_message_log)  # noqa: SLF001
-
-    with pytest.raises(NotImplementedError, match="Per-structure visibility is not supported"):
-        operation(view)
-
-    assert len(view._test_message_log) == history_len  # noqa: SLF001
-    if mask_before is not None:
-        assert view.atom_mask is not None
-        assert view.atom_mask.tolist() == mask_before.tolist()
+def test_show_no_longer_takes_a_selection(view):
+    """Loudly, so a call written for the old meaning cannot silently display everything."""
+    with pytest.raises(Exception) as raised:
+        view.show(selection=[0, 1], skip_digestion=True)
+    assert "does not accept" in str(raised.value) or "unexpected keyword" in str(raised.value)

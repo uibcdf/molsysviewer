@@ -122,8 +122,8 @@ def _import_view_state(result: MolSysView, source_views: list[MolSysView]) -> No
     if not primary.whole.visible:
         result.whole.hide(skip_digestion=True)
 
-    if result.atom_mask is not None:
-        result.atom_mask[:] = False
+    if result._atom_mask is not None:
+        result._atom_mask[:] = False
 
     atom_offset = 0
     used_region_tags: set[str] = set()
@@ -196,9 +196,9 @@ def _import_view_state(result: MolSysView, source_views: list[MolSysView]) -> No
             if source_layer is not None and getattr(source_layer, "_hidden", False):
                 result.layers[new_tag].hide(skip_digestion=True)
 
-        visible = getattr(view, "visible_atom_indices", None)
+        visible = getattr(view, "_visible_atom_indices", None)
         if visible:
-            result.atom_mask[_remap_indices(list(visible), atom_offset)] = True
+            result._atom_mask[_remap_indices(list(visible), atom_offset)] = True
 
         # ── Per-atom colors (accumulated with offset) ──────────────────────
         atom_color_map = getattr(view, "_atom_color_map", {})

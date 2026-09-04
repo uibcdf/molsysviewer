@@ -168,11 +168,11 @@ class PopupSnapshotMixin:
 
         # 12. full visibility (version is a monotonic counter; ignored by the
         #     size invariant).
-        if self.atom_mask is not None:
+        if self._atom_mask is not None:
             messages.append({
                 "op": "update_visibility",
                 "options": {
-                    "visible_atom_indices": list(self.visible_atom_indices),
+                    "visible_atom_indices": list(self._visible_atom_indices),
                     "version": self._visibility_version,
                 },
             })

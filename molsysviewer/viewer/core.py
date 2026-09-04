@@ -247,7 +247,7 @@ class MolSysView(
         self._webgl_context_lost: bool = False
         # Visibility wire protocol: the frontend keeps a versioned visible-atom set
         # and we send small deltas live. Canonical projectors regenerate the full
-        # state from atom_mask. `_last_visibility_mask` is the last mask we
+        # state from _atom_mask. `_last_visibility_mask` is the last mask we
         # computed a delta against; `_visibility_version` is the monotonic version
         # both sides track.
         self._last_visibility_mask = None
@@ -352,7 +352,7 @@ class MolSysView(
         self.selection = None
         self.structure_indices = None
         self._molsys = None
-        self.atom_mask = None
+        self._atom_mask = None
         self.structure_mask = None
 
         self.shapes = ShapesManager(self)
@@ -2346,12 +2346,12 @@ class MolSysView(
         # serialize the newly edited MolSys under the old generation.
         self._cancel_binary_structure_stream("molecular system rebuilt")
         molecular_projection = self._new_lazy_molecular_projection(label=label)
-        self.atom_mask = np.ones(n_atoms, dtype=bool)
+        self._atom_mask = np.ones(n_atoms, dtype=bool)
         if visible_atom_indices is not None:
-            self.atom_mask[:] = False
+            self._atom_mask[:] = False
             keep = self._remap_indices(visible_atom_indices, atom_index_map)
             if keep:
-                self.atom_mask[keep] = True
+                self._atom_mask[keep] = True
 
         for tag, region in list(self._regions.items()):
             if region.atom_indices is None:
@@ -2544,7 +2544,7 @@ class MolSysView(
                 f"apply_system_edit(load_blocks={load_blocks!r}) must be 'keep', 'collapse', or 'append'."
             )
 
-        visible = self.visible_atom_indices if visible_atom_indices is None else visible_atom_indices
+        visible = self._visible_atom_indices if visible_atom_indices is None else visible_atom_indices
         effective_label = self._last_label if label is None else label
         self._molsys = new_molsys
         self.molecular_system = new_molsys
@@ -2608,12 +2608,12 @@ class MolSysView(
         return list(self._load_blocks)
 
     @property
-    def visible_atom_indices(self):
+    def _visible_atom_indices(self):
         """Return the indices of currently visible atoms."""
-        if self.atom_mask is None:
+        if self._atom_mask is None:
             return None
         # Use a plain list so the payload is JSON-serializable.
-        return np.nonzero(self.atom_mask)[0].tolist()
+        return np.nonzero(self._atom_mask)[0].tolist()
 
     @property
     def visible_structure_indices(self):
@@ -2639,9 +2639,9 @@ class MolSysView(
         self._sync_whole_summary_runtime()
 
     def _update_visibility_in_frontend(self):
-        if self.atom_mask is None:
+        if self._atom_mask is None:
             return
-        new_mask = self.atom_mask
+        new_mask = self._atom_mask
         last_mask = self._last_visibility_mask
 
         # No-op if nothing changed: avoids version churn and redundant traffic.
@@ -2656,7 +2656,7 @@ class MolSysView(
 
         self._visibility_version += 1
         version = self._visibility_version
-        visible = self.visible_atom_indices
+        visible = self._visible_atom_indices
         full_msg = {
             "op": "update_visibility",
             "options": {"visible_atom_indices": visible, "version": version},
@@ -2695,12 +2695,12 @@ class MolSysView(
         Used to answer a frontend `request_visibility_resync` (version mismatch),
         making the delta protocol self-healing without leaving the viewer stale.
         """
-        if self.atom_mask is None:
+        if self._atom_mask is None:
             return
         self._send_runtime_only({
             "op": "update_visibility",
             "options": {
-                "visible_atom_indices": self.visible_atom_indices,
+                "visible_atom_indices": self._visible_atom_indices,
                 "version": self._visibility_version,
             },
         })
