@@ -167,12 +167,10 @@ toolkit's repository — installing the toolkit installs its add-on. There is no
 | `molsysviewer_pharmacophoremt` | PharmacophoresMT | Structure-based pharmacophore glyph overlays | skeleton |
 
 **Maturity is what each add-on declares about itself**, so the column reports rather than
-grades. The shared vocabulary — `experimental`, `development`, `beta`, `stable` — is
-defined in
-[`devguide/pending_proposals/addon_maturity_and_ownership.md`](devguide/pending_proposals/addon_maturity_and_ownership.md);
+grades. The shared vocabulary is two words — `experimental` and `stable` — defined in
+[`devguide/archive/addon_maturity_and_ownership.md`](devguide/archive/addon_maturity_and_ownership.md);
 the values above predate it, and each toolkit adopts it when it re-declares. Until then,
-read `skeleton` as `experimental`, `alpha` as `development`, and `undeclared` as exactly
-that.
+read both `skeleton` and `alpha` as `experimental`, and `undeclared` as exactly that.
 
 All four integrations exist and work. **None of them is production-ready today**, and only
 MolSysMT's is tested against the host and discovered on install.

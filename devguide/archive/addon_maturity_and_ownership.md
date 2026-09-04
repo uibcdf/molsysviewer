@@ -1,9 +1,9 @@
 ---
 summary: Add-ons declare four different things about their own maturity, in an untyped dict.
 issue: uibcdf/molsysviewer#37
-status: partial
+status: closed
 opened: 2026-08-12
-closed:
+closed: 2026-09-04
 verification: measured
 area: [addons, docs]
 guard:
@@ -112,3 +112,61 @@ Neither is MolSysViewer's to fix.
 - [`../archive/scene_object_owner_field.md`](../archive/scene_object_owner_field.md) — the
   related question of whether a scene object records which add-on drew it. **Resolved**;
   read it for how ownership was decided there before deciding maturity here.
+
+
+## Amended and closed — 2026-09-04 — two levels, not four
+
+**Decided: the vocabulary is `experimental` and `stable`. Nothing between them.**
+
+This replaces the four-rung ladder above. That ladder is left in place rather than deleted
+because the reasoning it records is still the reasoning that produced the amendment.
+
+### What the reduction costs, stated because it is real
+
+The four levels were not generic. `development` was separated from `beta` by three
+checkable facts, chosen because they are what the add-ons actually differ in. Measured
+again today, one of them still separates them cleanly:
+
+| add-on | entry point in its own `pyproject.toml` |
+| --- | :-: |
+| `molsysviewer_molsysmt` | **yes** |
+| `molsysviewer_topomt` | no |
+| `molsysviewer_elastnetmt` | no |
+| `molsysviewer_pharmacophoremt` | no |
+
+With two levels, all four are `experimental`, and the vocabulary stops carrying the fact
+that one of them is discovered on install and tested against the host while the others are
+neither. That is a real loss of resolution.
+
+### Why it is the right trade anyway
+
+A level nobody can place themselves in confidently is worse than no level. `development`
+and `beta` are exactly the two that require judgement about somebody else's roadmap, and
+the evidence that four toolkits produced `skeleton`, `alpha`, `skeleton` and nothing at all
+for one question is evidence that finer distinctions do not survive contact with four
+separate owners. Two levels ask a question each owner can answer about their own work:
+**is this a commitment, or is it being shaped?**
+
+### The information the ladder carried does not disappear
+
+It stops being a rung and becomes a fact declared beside `status`, which is where
+`rendering_ready` already lived:
+
+- `rendering_ready` — it draws what it claims;
+- an entry point in the toolkit's `pyproject.toml` — discovered on install, and observable
+  by the host without anyone declaring it;
+- tests against the host — countable in the toolkit's own repository.
+
+All three are checkable by looking, which a self-declared rung never was.
+
+### The levels
+
+| Level | Means |
+| --- | --- |
+| `experimental` | It exists and is being shaped. Expect the API to change without notice. Nobody should build on it. |
+| `stable` | Its public surface is a commitment. Breaking it requires a deprecation cycle. |
+
+`skeleton` and `alpha` both read as `experimental`. As before, that reading is not a
+re-declaration: until a toolkit re-declares, the README reports what it says about itself
+today, including "undeclared". Nothing here is retroactive and nothing is enforced — the
+host reads `meta["status"]` when present and requires nothing.

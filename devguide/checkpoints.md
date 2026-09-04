@@ -264,7 +264,7 @@ cheapest and most valuable of them — binding a state document to the structure
 written from — was answered by re-resolving onto a different structure rather than by
 refusing it.
 
-- [`pending_proposals/addon_maturity_and_ownership.md`](pending_proposals/addon_maturity_and_ownership.md)
+- [`archive/addon_maturity_and_ownership.md`](archive/addon_maturity_and_ownership.md)
   — the maturity vocabulary is defined; each toolkit adopts it by re-declaring
   `meta["status"]`. Until then the README reports what each add-on says today.
 
