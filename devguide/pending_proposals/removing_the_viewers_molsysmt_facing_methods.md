@@ -416,3 +416,62 @@ over `view.player`; `view.get_camera_snapshot`, `view.set_camera_snapshot`,
 this one.** It removes spellings without removing capability, which is the cheapest kind of
 API reduction there is. This proposal, by contrast, is about who *owns* the operation, and
 stays what it was: do Option C, then settle where the name lives.
+
+
+## Option C, prototyped — 2026-09-04 — there is no `**kwargs` problem, there is a stale-copies problem
+
+The open worry was that ArgDigest digests *everything* bound, with no way to digest the
+named parameters and leave the `**kwargs` alone, so Option C looked like it needed a new
+ArgDigest feature. It does not. The machinery already exists, and prototyping it found the
+real obstacle, which is somewhere else entirely.
+
+### The prototype
+
+```python
+@digest(strictness="ignore")          # a missing digester passes through silently
+def get(self, element="system", ..., **kwargs):
+    return msm.get(self._molsys, element=element, ..., **kwargs)   # no skip_digestion
+```
+
+`strictness` already accepts `ignore`/`silent`/`none`, so no ArgDigest change is needed:
+once our attribute copies are deleted, their absence is silent for these forwarders while
+every other call site keeps the `warn` default.
+
+Measured over MolSysMT's 118 attributes: **105 accepted, 13 refused — identical to today.**
+The one `No digester` warning that appeared is `n_nucleotides`, and `msm.get` emits it on
+its own, so delegation surfaces a pre-existing gap of theirs rather than creating one.
+
+### The obstacle, and it is §4 again
+
+The full suite under the prototype: **1781 passed, one failure** —
+`test_a_region_gets_the_same_renames_as_the_view`, with MolSysMT refusing `group_index` with
+value `[True]`.
+
+Instrumenting their digester shows it receives `[True]` already. Ours made it:
+
+| caller | our `digest_group_index(True)` |
+| --- | --- |
+| `molsysviewer.viewer.get` | `True` |
+| `molsysviewer.regions.get` | **`[True]`** |
+| `molsysviewer.whole.get` | **`[True]`** |
+
+This is §4's allow-list gap in its quiet form. There, a caller the list omits makes the
+digester *raise*; here it makes it silently **wrap a boolean in a list**. Today that is
+invisible, because `skip_digestion=True` means nobody looks at the value again. The moment
+MolSysMT digests, it sees `[True]` and refuses.
+
+### What this settles
+
+**Flipping the flag alone breaks. Deleting our copies alone leaves warnings. The change is
+both, together** — and then `strictness="ignore"` covers the second half with no new
+machinery.
+
+The failing test is therefore not an argument against Option C. It is the strongest argument
+*for* it: it is the first thing to notice that our copies silently transform values into
+shapes MolSysMT rejects, and it could only notice because the prototype stopped hiding the
+result from the library that owns the answer.
+
+**One boundary the prototype also drew.** Our directory holds 462 digesters against
+MolSysMT's 391, and **234 are names they do not have** — `alpha`, `ambient`, `at_time_ms`,
+`addon`, `tag`, and the rest of the viewer's own vocabulary. Those are ours and stay. Only
+the MolSysMT attribute names are the duplicates worth deleting.
