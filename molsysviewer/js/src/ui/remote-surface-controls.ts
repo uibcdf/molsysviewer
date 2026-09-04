@@ -14,6 +14,7 @@ const REMOTE_HELP: HelpOverlaySections = {
         ["Shift + Click", "Add to selection"],
         ["Shift + Alt + Click", "Range selection (same chain)"],
         ["Double click", "Focus on element"],
+        ["Right click", "Context menu"],
     ],
     keyboard: [
         ["N / W", "Open / close Studio"],

@@ -1293,7 +1293,13 @@ class MolSysView(
             if result.envelope.action == "request_popup_scene_snapshot":
                 self._answer_popup_scene_snapshot(result.envelope)
                 return
-            self._handle_frontend_event(result.message)
+            message = result.message
+            if (
+                result.envelope.action == "interaction_context_menu"
+                and isinstance(message, Mapping)
+            ):
+                message = {**message, "_source_endpoint_id": result.envelope.endpoint_id}
+            self._handle_frontend_event(message)
         elif result.status == "duplicate":
             self._transmit_widget_message(self._runtime_router.duplicate_ack(result.envelope))
         else:
@@ -1509,9 +1515,16 @@ class MolSysView(
             for cb in list(self._click_callbacks):
                 cb(self._last_click_event)
         elif event == "interaction_context_menu":
-            self._last_context_event = self._enrich_interaction_payload(dict(content))
+            source_endpoint_id = content.get("_source_endpoint_id")
+            payload = dict(content)
+            payload.pop("_source_endpoint_id", None)
+            self._last_context_event = self._enrich_interaction_payload(payload)
             for cb in list(self._context_callbacks):
                 cb(self._last_context_event)
+            self._project_remote_context_target(
+                self._last_context_event,
+                source_endpoint_id=source_endpoint_id,
+            )
         elif event == "selection_query_preview_request":
             self._preview_selection_query_action(content)
         elif event == "webgl_context_lost":
@@ -2913,6 +2926,65 @@ class MolSysView(
         except Exception:
             self._pending_remote_image_downloads.pop(request_id, None)
             raise
+
+    def _project_remote_context_target(
+        self,
+        content: Mapping[str, Any],
+        *,
+        source_endpoint_id: Any,
+    ) -> None:
+        """Return worker picking metadata to the UI-only human endpoint."""
+        router = getattr(self.widget, "router", None)
+        if router is None or not isinstance(source_endpoint_id, str):
+            return
+        source = router.endpoint(source_endpoint_id)
+        if source is None or source.role != "render-worker":
+            return
+        request_id = content.get("request_id")
+        if not isinstance(request_id, str) or not request_id:
+            return
+        client_endpoint = next(
+            (
+                endpoint.endpoint_id
+                for endpoint in router.endpoints
+                if endpoint.role in {"browser-client", "qt-client"}
+                and "workbench" in endpoint.capabilities
+            ),
+            None,
+        )
+        if client_endpoint is None:
+            return
+
+        kind = content.get("kind")
+        if kind not in {"empty", "structure", "shape", "measurement", "annotation"}:
+            return
+        target: dict[str, Any] = {
+            "event": "interaction_context_menu",
+            "kind": kind,
+        }
+        atom_indices = content.get("atom_indices")
+        if kind != "empty":
+            target["atom_indices"] = [
+                int(item)
+                for item in atom_indices if isinstance(item, int) and not isinstance(item, bool)
+            ] if isinstance(atom_indices, (list, tuple)) else []
+        for key in (
+            "tag", "text", "shape_name", "measurement_name", "group_name", "chain_name"
+        ):
+            value = content.get(key)
+            if isinstance(value, str):
+                target[key] = value
+
+        self._send_widget_message(
+            router.wrap_outbound(
+                {
+                    "op": "set_context_target",
+                    "request_id": request_id,
+                    "target": target,
+                },
+                target_endpoint_id=client_endpoint,
+            )
+        )
 
     def _consume_remote_upload(self, path: str, filename: str) -> Mapping[str, Any]:
         label = filename.rsplit("/", 1)[-1].rsplit("\\", 1)[-1]

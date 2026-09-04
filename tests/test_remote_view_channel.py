@@ -114,6 +114,55 @@ def test_remote_command_crosses_real_view_seam_once_and_duplicate_is_acknowledge
         view.close()
 
 
+def test_worker_context_pick_is_sanitized_and_projected_only_to_the_human_client():
+    channel, control, _data = make_channel()
+    view = MolSysView(transport=channel)
+    try:
+        client = register_browser(channel)
+        worker = register_worker(channel)
+        event = {
+            "protocolVersion": 1,
+            "viewerId": channel.router.viewer_id,
+            "sessionId": channel.router.session_id,
+            "endpointId": worker,
+            "targetEndpointId": channel.router.python_endpoint,
+            "messageId": "worker-context-1",
+            "direction": "event",
+            "action": "interaction_context_menu",
+            "payload": {
+                "event": "interaction_context_menu",
+                "kind": "structure",
+                "atom_indices": [4, 5],
+                "group_name": "ALA 2",
+                "page_x": 900,
+                "entity_ref": {"not": "serializable authority"},
+                "request_id": "context-1",
+            },
+            "actorId": worker,
+            "actorKind": "system",
+        }
+
+        result = channel.receive_control(event)
+
+        assert result.status == "accepted"
+        projection = next(item for item in control if item.get("action") == "set_context_target")
+        assert projection["targetEndpointId"] == client
+        assert projection["payload"] == {
+            "op": "set_context_target",
+            "request_id": "context-1",
+            "target": {
+                "event": "interaction_context_menu",
+                "kind": "structure",
+                "atom_indices": [4, 5],
+                "group_name": "ALA 2",
+            },
+        }
+        assert view.get_last_context_event()["page_x"] == 900
+        assert "_source_endpoint_id" not in view.get_last_context_event()
+    finally:
+        view.close()
+
+
 def test_remote_channel_separates_control_envelopes_from_raw_binary_data():
     channel, control, data = make_channel(render_on="client")
     view = MolSysView(transport=channel)

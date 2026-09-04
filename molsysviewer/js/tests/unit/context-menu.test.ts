@@ -107,6 +107,31 @@ function findNodeByTag(node: FakeElement, tag: string): FakeElement | null {
     return null;
 }
 
+test("ViewerContextMenu hides actions unsupported by a projected surface", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const menu = new ViewerContextMenu(
+            host,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            { allowedActions: new Set(["focus_target"]) },
+        );
+        menu.open(
+            { event: "interaction_context_menu", kind: "structure", atom_indices: [0] },
+            10,
+            20,
+        );
+
+        assert.strictEqual(findNodeByText(host, "Focus Target")?.style.display, "block");
+        assert.strictEqual(findNodeByText(host, "Distance")?.style.display, "none");
+    } finally {
+        restore();
+    }
+});
+
 test("ViewerContextMenu renders active selection section and selection actions", () => {
     const restore = installFakeDom();
     try {

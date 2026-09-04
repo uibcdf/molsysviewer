@@ -1405,6 +1405,13 @@ export class MolSysViewerController {
                     this.lastContextLoci = null;
                 }
 
+                const remoteRequestId = (event as MouseEvent & {
+                    molsysviewerRemoteRequestId?: unknown;
+                }).molsysviewerRemoteRequestId;
+                if (typeof remoteRequestId === "string") {
+                    (payload as ContextInteractionPayload & { request_id?: string }).request_id = remoteRequestId;
+                }
+
                 this.lastContextPayload = payload;
                 this.groupPanel.updateContextTarget(payload);
                 this.syncWorkbenchContextFromPayload(payload);

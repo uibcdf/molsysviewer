@@ -133,6 +133,21 @@ test("wheel and key packets retain bounded payload semantics", () => {
     assert.strictEqual(canvas.events[1].init.ctrlKey, true);
 });
 
+test("context-menu input becomes a correlated native canvas event", () => {
+    const canvas = target();
+    const adapter = new RemoteInputAdapter(canvas.value, {}, factory);
+    const result = adapter.handle(packet(1, {
+        kind: "context-menu",
+        payload: { x: 0.5, y: 0.25, requestId: "context-1", modifiers: { alt: true } },
+    }));
+
+    assert.deepStrictEqual(result, { status: "accepted", sequence: 1, eventType: "contextmenu" });
+    assert.strictEqual(canvas.events[0].init.clientX, 500);
+    assert.strictEqual(canvas.events[0].init.clientY, 150);
+    assert.strictEqual(canvas.events[0].init.button, 2);
+    assert.strictEqual((canvas.events[0] as any).molsysviewerRemoteRequestId, "context-1");
+});
+
 test("valid input is rate-limited with a deterministic injected clock", () => {
     const canvas = target();
     let now = 100;

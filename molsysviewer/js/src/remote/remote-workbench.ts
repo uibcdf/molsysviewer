@@ -7,6 +7,13 @@ import {
 import { ProjectedTrajectoryControls } from "../ui/projected-trajectory-controls";
 import { RemoteFileControls, type RemoteUploadResult } from "../ui/remote-file-controls";
 import { RemoteSurfaceControls } from "../ui/remote-surface-controls";
+import {
+    ViewerContextMenu,
+    type AddonContextActionSummary,
+    type AddonContextItemSummary,
+    type ContextMenuAction,
+    type ContextMenuTarget,
+} from "../ui/context-menu";
 
 export type RemoteWorkbenchAction = {
     action: string;
@@ -31,6 +38,7 @@ export class RemoteWorkbench {
     readonly trajectory: ProjectedTrajectoryControls;
     readonly files: RemoteFileControls;
     readonly controls: RemoteSurfaceControls;
+    readonly contextMenu: ViewerContextMenu;
     private savedSelections: SavedSelectionSummary[] = [];
     private wholeSummary: any = null;
     private regions: any[] = [];
@@ -38,6 +46,10 @@ export class RemoteWorkbench {
     private annotations: any[] = [];
     private measurements: any[] = [];
     private shapes: any[] = [];
+    private addonContextActions: AddonContextActionSummary[] = [];
+    private addonContextItems: AddonContextItemSummary[] = [];
+    private activeSelection: ActiveSelectionPayload = activeSelection([]);
+    private readonly pendingContextAnchors = new Map<string, { pageX: number; pageY: number }>();
     private measurementSettings: any = {
         endpointPolicyDefault: "centroid",
         representativeAtoms: { protein: "CA", nucleic: "P", lipid: "P", other: "" },
@@ -77,6 +89,28 @@ export class RemoteWorkbench {
             resetView: () => this.emitAction("reset_view"),
             togglePanel: () => this.panel.setExpanded(!this.panel.isExpanded()),
         });
+        this.contextMenu = new ViewerContextMenu(
+            host,
+            message => this.handleContextAction(message),
+            (action) => {
+                if (action === "open_navigate") {
+                    this.panel.setExpanded(!this.panel.isExpanded());
+                }
+            },
+            undefined,
+            undefined,
+            { allowedActions: REMOTE_CONTEXT_ACTIONS },
+        );
+    }
+
+    requestContextMenu(pageX: number, pageY: number, requestId: string): void {
+        this.contextMenu.close();
+        this.pendingContextAnchors.set(requestId, { pageX, pageY });
+        while (this.pendingContextAnchors.size > 8) {
+            const oldest = this.pendingContextAnchors.keys().next().value;
+            if (typeof oldest !== "string") break;
+            this.pendingContextAnchors.delete(oldest);
+        }
     }
 
     apply(message: ViewerMessage | Record<string, unknown>): void {
@@ -180,13 +214,42 @@ export class RemoteWorkbench {
                 );
                 return;
             case "set_active_selection":
-                this.selectionAtomCount = stringsToNumbers(msg.atom_indices).length;
-                this.panel.updateSelection(activeSelection(stringsToNumbers(msg.atom_indices)));
+                this.activeSelection = activeSelection(stringsToNumbers(msg.atom_indices));
+                this.selectionAtomCount = this.activeSelection.count_atoms;
+                this.panel.updateSelection(this.activeSelection);
                 return;
             case "clear_active_selection":
+                this.activeSelection = activeSelection([]);
                 this.selectionAtomCount = 0;
-                this.panel.updateSelection(activeSelection([]));
+                this.panel.updateSelection(this.activeSelection);
                 return;
+            case "set_addon_runtime_summary":
+                this.addonContextActions = addonContextActions(msg);
+                return;
+            case "set_addon_context_items":
+                this.addonContextItems = addonContextItems(msg.items);
+                return;
+            case "set_context_target": {
+                const requestId = typeof msg.request_id === "string" ? msg.request_id : "";
+                const anchor = this.pendingContextAnchors.get(requestId);
+                if (!anchor) return;
+                this.pendingContextAnchors.delete(requestId);
+                const target = contextTarget(msg.target);
+                if (!target) return;
+                this.contextMenu.open(
+                    target,
+                    anchor.pageX,
+                    anchor.pageY,
+                    this.activeSelection,
+                    null,
+                    this.savedSelections,
+                    this.regions,
+                    this.addonContextActions,
+                    this.addonContextItems,
+                    { isNavigateExpanded: this.panel.isExpanded() },
+                );
+                return;
+            }
             case "set_history_state":
                 this.panel.updateSelectionHistoryState({ canUndo: !!msg.can_undo, canRedo: !!msg.can_redo });
                 return;
@@ -254,6 +317,7 @@ export class RemoteWorkbench {
     }
 
     dispose(): void {
+        this.contextMenu.dispose();
         this.controls.dispose();
         this.files.dispose();
         this.trajectory.dispose();
@@ -284,6 +348,14 @@ export class RemoteWorkbench {
         this.emit({ action: "interaction_context_action", details: { action, ...details } });
     }
 
+    private handleContextAction(message: Record<string, unknown>): void {
+        const action = message.action;
+        if (action === "open_navigate") return;
+        if (typeof action !== "string" || !REMOTE_CONTEXT_ACTIONS.has(action as ContextMenuAction)) return;
+        const { event: _event, action: _action, ...details } = message;
+        this.emitAction(action, details);
+    }
+
     private refreshMeasurements(): void {
         this.panel.setMeasurements(this.measurements, this.measurementSettings);
     }
@@ -303,6 +375,41 @@ export class RemoteWorkbench {
             ...this.shapes.map((item: any) => layerObject("shape", item)),
         ]);
     }
+}
+
+const REMOTE_CONTEXT_ACTIONS: ReadonlySet<ContextMenuAction> = new Set([
+    "focus_target", "focus_region", "toggle_region_visibility", "delete_region", "rename_region",
+    "hide_measurement", "delete_annotation", "delete_shape", "delete_measurement",
+    "focus_selection", "activate_selection", "save_selection", "remove_selection", "clear_selection",
+    "expand_selection", "create_region_from_selection", "create_section_from_selection",
+    "add_label_from_selection", "addon_context_action", "reset_view", "toggle_background",
+    "toggle_spin", "toggle_swing", "open_navigate",
+]);
+
+function contextTarget(value: unknown): ContextMenuTarget | null {
+    const item = record(value);
+    if (!["empty", "structure", "shape", "measurement", "annotation"].includes(String(item.kind))) return null;
+    if (item.event !== "interaction_context_menu") return null;
+    return item as ContextMenuTarget;
+}
+
+function addonContextActions(message: any): AddonContextActionSummary[] {
+    const specs = Array.isArray(message?.context_action_specs) ? message.context_action_specs : [];
+    return specs
+        .filter((item: any) => typeof item?.addon === "string" && typeof item?.id === "string" && typeof item?.title === "string")
+        .map((item: any) => ({
+            addon: item.addon,
+            id: item.id,
+            title: item.title,
+            target_kinds: strings(item.target_kinds),
+            group: typeof item.group === "string" ? item.group : undefined,
+        }));
+}
+
+function addonContextItems(value: unknown): AddonContextItemSummary[] {
+    return (Array.isArray(value) ? value : [])
+        .filter((item: any) => typeof item?.addon === "string" && typeof item?.id === "string" && typeof item?.title === "string")
+        .map((item: any) => ({ ...item, target_kinds: strings(item.target_kinds) }));
 }
 
 function strings(value: unknown): string[] {

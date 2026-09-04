@@ -39,7 +39,10 @@ def _point_quantity(content: Mapping[str, Any]):
 
 
 def toggle_background(view: Any, content: Mapping[str, Any]) -> None:
-    view.scene.set_background(content.get("mode", "dark"))
+    if "mode" not in content:
+        view._send({"op": "toggle_background"})
+        return
+    view.scene.set_background(content["mode"])
 
 
 def reset_view(view: Any, content: Mapping[str, Any]) -> None:
@@ -48,11 +51,17 @@ def reset_view(view: Any, content: Mapping[str, Any]) -> None:
 
 
 def toggle_spin(view: Any, content: Mapping[str, Any]) -> None:
-    view.scene.spin(enabled=bool(content.get("enabled", True)))
+    if "enabled" not in content:
+        view._send({"op": "toggle_spin"})
+        return
+    view.scene.spin(enabled=bool(content["enabled"]))
 
 
 def toggle_swing(view: Any, content: Mapping[str, Any]) -> None:
-    view.scene.swing(enabled=bool(content.get("enabled", True)))
+    if "enabled" not in content:
+        view._send({"op": "toggle_swing"})
+        return
+    view.scene.swing(enabled=bool(content["enabled"]))
 
 
 def set_camera_mode(view: Any, content: Mapping[str, Any]) -> None:

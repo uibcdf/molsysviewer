@@ -209,7 +209,7 @@ def _validate_input_payload(kind: str, payload: Mapping[str, Any]) -> PacketVali
         for key, value in modifiers.items()
     ):
         return _rejected("malformed-payload", "modifiers must contain only boolean modifier keys")
-    if kind in {"pointer", "wheel"}:
+    if kind in {"pointer", "wheel", "context-menu"}:
         for coordinate in ("x", "y"):
             item = payload.get(coordinate)
             if not _number(item) or not 0 <= item <= 1:
@@ -234,7 +234,7 @@ def _validate_input_payload(kind: str, payload: Mapping[str, Any]) -> PacketVali
                 return _rejected("malformed-payload", f"{delta} must be finite")
         if payload.get("deltaMode") not in {0, 1, 2}:
             return _rejected("malformed-payload", "deltaMode must be 0, 1 or 2")
-    else:
+    elif kind == "key":
         if payload.get("phase") not in KEY_PHASES:
             return _rejected("malformed-payload", "key phase is invalid")
         code = payload.get("code")
@@ -242,6 +242,10 @@ def _validate_input_payload(kind: str, payload: Mapping[str, Any]) -> PacketVali
             return _rejected("malformed-payload", "key code is invalid")
         if not isinstance(payload.get("repeat"), bool):
             return _rejected("malformed-payload", "key repeat must be boolean")
+    else:
+        request_id = payload.get("requestId")
+        if not _non_empty(request_id) or len(request_id) > 128:
+            return _rejected("malformed-payload", "context-menu requestId is invalid")
     return None
 
 

@@ -93,10 +93,13 @@ both cases.
 The server-rendered surface provides local `Reset`, `Full`, `Help`, and `Panel`
 controls around the video viewport. Reset is sent through the authoritative
 session; fullscreen, help, and panel visibility are local presentation actions.
-The complete target-aware right-click menu is not yet projected from the render
-worker, so do not expect exact UI parity with client rendering in the 1.0
-preview. Background, spin, swing, and other scene controls remain available in
-Studio.
+Right click also opens a sharp local menu for the molecular target identified by
+Mol* on the render worker. Focus, selection, region, scene-object, add-on, reset,
+background, spin, and swing actions use the same authoritative session as
+Studio. Interactive distance, angle, and dihedral tool startup and viewer-mode
+switching are not yet offered by this projected menu. Those controls remain
+available when rendering on the client; server rendering does not claim exact
+pixel or feature identity yet.
 
 ## Understand the network path
 

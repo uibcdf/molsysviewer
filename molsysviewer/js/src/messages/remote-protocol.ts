@@ -172,7 +172,7 @@ function validateInputPayload(
             return rejected("malformed-payload", "modifiers must contain only boolean modifier keys");
         }
     }
-    if (kind === "pointer" || kind === "wheel") {
+    if (kind === "pointer" || kind === "wheel" || kind === "context-menu") {
         for (const coordinate of ["x", "y"]) {
             const item = payload[coordinate];
             if (!finiteNumber(item) || item < 0 || item > 1) {
@@ -205,7 +205,7 @@ function validateInputPayload(
         if (![0, 1, 2].includes(payload.deltaMode as number)) {
             return rejected("malformed-payload", "deltaMode must be 0, 1 or 2");
         }
-    } else {
+    } else if (kind === "key") {
         if (!KEY_PHASES.has(String(payload.phase))) {
             return rejected("malformed-payload", "key phase is invalid");
         }
@@ -214,6 +214,10 @@ function validateInputPayload(
         }
         if (typeof payload.repeat !== "boolean") {
             return rejected("malformed-payload", "key repeat must be boolean");
+        }
+    } else {
+        if (!nonEmpty(payload.requestId) || payload.requestId.length > 128) {
+            return rejected("malformed-payload", "context-menu requestId is invalid");
         }
     }
     return null;

@@ -131,6 +131,33 @@ def remove_selection(view: Any, content: Mapping[str, Any]) -> None:
     view.active_selection.clear(skip_digestion=True)
 
 
+def focus_target(view: Any, content: Mapping[str, Any]) -> None:
+    context = content.get("context")
+    context = context if isinstance(context, Mapping) else {}
+    atom_indices = context.get("atom_indices")
+    if isinstance(atom_indices, (list, tuple)) and atom_indices:
+        view.camera.zoom(selection=list(atom_indices), skip_digestion=True)
+        return
+    tag = context.get("tag")
+    if isinstance(tag, str) and tag.strip():
+        view.camera.focus_on_object(tag.strip(), skip_digestion=True)
+        return
+    raise ValueError("focus_target requires atom indices or a tagged scene object.")
+
+
+def focus_selection(view: Any, content: Mapping[str, Any]) -> None:
+    del content
+    atom_indices = list(view.active_selection.atom_indices)
+    if not atom_indices:
+        raise ValueError("focus_selection requires a non-empty active selection.")
+    view.camera.zoom(selection=atom_indices, skip_digestion=True)
+
+
+def clear_selection(view: Any, content: Mapping[str, Any]) -> None:
+    del content
+    view.active_selection.clear(skip_digestion=True)
+
+
 HANDLERS = {
     "create_region_from_selection": create_region_from_selection,
     "activate_selection": activate_selection,
@@ -145,4 +172,7 @@ HANDLERS = {
     "preview_selection_query": preview_selection_query,
     "expand_selection": expand_selection,
     "remove_selection": remove_selection,
+    "focus_target": focus_target,
+    "focus_selection": focus_selection,
+    "clear_selection": clear_selection,
 }

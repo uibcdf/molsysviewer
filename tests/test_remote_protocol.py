@@ -105,9 +105,13 @@ def test_signaling_rejects_stale_identity_and_malformed_candidate():
             "key",
             {"phase": "down", "code": "KeyR", "repeat": False, "modifiers": {"shift": True}},
         ),
+        (
+            "context-menu",
+            {"x": 0.5, "y": 0.25, "requestId": "context-7", "modifiers": {}},
+        ),
     ],
 )
-def test_input_vocabulary_accepts_pointer_wheel_and_key(kind, payload):
+def test_input_vocabulary_accepts_pointer_wheel_key_and_context_menu(kind, payload):
     result = validate_input_packet(input_packet(kind, payload))
     assert result.status == "accepted"
     assert result.packet.sequence == 7

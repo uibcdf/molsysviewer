@@ -101,7 +101,7 @@ export class RemoteInputAdapter {
         const event = this.buildEvent(kind, payload);
         this.lastSequence = sequence;
         this.acceptedInRateWindow += 1;
-        if (kind === "pointer" && payload.phase === "down") this.target.focus();
+        if ((kind === "pointer" && payload.phase === "down") || kind === "context-menu") this.target.focus();
         const usesGlobalTarget = kind === "key"
             || (kind === "pointer" && payload.phase !== "down");
         (usesGlobalTarget ? this.globalTarget : this.target).dispatchEvent(event);
@@ -132,6 +132,19 @@ export class RemoteInputAdapter {
                 deltaY: payload.deltaY,
                 deltaMode: payload.deltaMode,
             });
+        }
+
+        if (kind === "context-menu") {
+            const event = this.eventFactory.mouse("contextmenu", {
+                ...positioned,
+                button: 2,
+                buttons: 0,
+            });
+            Object.defineProperty(event, "molsysviewerRemoteRequestId", {
+                value: payload.requestId,
+                enumerable: false,
+            });
+            return event;
         }
 
         // Mol* InputObserver listens for mousedown on its canvas, mousemove/up

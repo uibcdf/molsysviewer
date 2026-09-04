@@ -803,12 +803,11 @@ transport while Mol*/WebGL execute on nauta.
 
 Both server-rendered placements passed the functional interaction smoke after
 TURN/TCP was supplied, but they exposed an intentional implementation gap that
-must not be mistaken for visual parity: their UI-only projected workbench does
-not yet reproduce every control owned by the integrated viewer. Reset, Help
-and the complete context-menu experience were visibly absent. For 1.0, define
-and implement the minimum required server-rendered control parity explicitly;
-do not claim that the present video client is indistinguishable from the full
-standalone. Quality adaptation and complete UI parity remain separate work.
+must not be mistaken for visual parity: their UI-only projected workbench did
+not initially reproduce every control owned by the integrated viewer. The 1.0
+work therefore defines and implements minimum server-rendered control parity
+explicitly; it does not claim that the video client is pixel-identical to the
+full standalone. Quality adaptation and complete UI parity remain separate work.
 
 The 1.0 parity inventory is deliberately capability-based rather than
 pixel-based:
@@ -819,7 +818,7 @@ pixel-based:
 | Fullscreen | Required and client-local | It changes only the local browser/Qt presentation and needs no server protocol. |
 | Accurate Help and `H` | Required and client-local | Remote users must be shown only controls that actually exist in that placement. |
 | Open/close Studio and `N`/`W` | Required and client-local | The projected workbench is already the server-rendered editing surface. |
-| Target-aware context menu | Required before claiming interaction parity | Its actions are canonical, but the DOM menu cannot be captured in canvas video; target projection and a local menu are needed. |
+| Target-aware context menu | Required; implemented for the canonical remote-safe action set | Mol* picks on the worker, Python projects a sanitized correlated target only to the human endpoint, and the client renders the shared menu locally. Interactive measurement-tool startup remains a separate parity item. |
 | Background, spin and swing toolbar state | Required only through the existing Studio controls for 1.0 | Duplicating toggles in the canvas toolbar without authoritative projected state would create misleading controls. |
 | Popup/second window | Post-1.0 | The current service intentionally owns one human endpoint; adding a second endpoint changes lifecycle and collaboration policy. |
 | Identical layout and styling | Post-1.0 | Functional parity is required; pixel identity across native, browser and video-backed surfaces is not. |
@@ -827,8 +826,20 @@ pixel-based:
 
 The first parity tranche adds shared remote `Reset`, `Full`, `Help` and `Panel`
 chrome. Reset remains a command through the Python authority; fullscreen, help
-and panel visibility stay client-local. The remote help variant omits the
-context-menu shortcut until target-aware projection is implemented.
+and panel visibility stay client-local.
+
+The second parity tranche adds target-aware right click without duplicating
+picking. The local client sends a normalized, correlated context-menu input;
+the real worker canvas and Mol* resolve the target; Python removes worker-only
+coordinates and object references and projects the target only to the attached
+human endpoint. The browser or Qt WebEngine then opens the shared
+`ViewerContextMenu` at the original local pointer position, so its text and
+controls remain sharp even when the molecular viewport is compressed video.
+The menu exposes only actions that cross the existing authoritative command
+gateway correctly. Distance/angle/dihedral tool startup, viewer-mode changes,
+canvas hiding and a second workbench surface remain hidden until their remote
+semantics are implemented; an unavailable action must not be presented as if
+it worked.
 
 - Declare server dependency rather than relying on a transitive package.
 - Add token, origin, malformed-message, rate/size and isolation guards.

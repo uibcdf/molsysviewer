@@ -262,6 +262,18 @@ export async function bootRemoteBrowserClient(
             modifiers: modifiers(event),
         });
     }, { passive: false });
+    inputSurface.addEventListener("contextmenu", event => {
+        event.preventDefault();
+        const point = videoPoint(event);
+        if (!point) return;
+        const requestId = `${options.endpointId}:context:${inputSequence + 1}`;
+        workbench.requestContextMenu(event.clientX, event.clientY, requestId);
+        sendInput("context-menu", {
+            ...point,
+            requestId,
+            modifiers: modifiers(event),
+        });
+    });
     for (const type of ["keydown", "keyup"] as const) {
         inputSurface.addEventListener(type, event => {
             sendInput("key", {

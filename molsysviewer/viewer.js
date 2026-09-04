@@ -147506,12 +147506,13 @@ function selectionSummary(selection) {
   return `Stored as ${selection.count_atoms} atom${selection.count_atoms === 1 ? "" : "s"}`;
 }
 var ViewerContextMenu = class {
-  constructor(host, notify, onAction, onClose, getCameraDirection) {
+  constructor(host, notify, onAction, onClose, getCameraDirection, options = {}) {
     this.host = host;
     this.notify = notify;
     this.onAction = onAction;
     this.onClose = onClose;
     this.getCameraDirection = getCameraDirection;
+    this.options = options;
     this.currentTarget = null;
     this.currentSelection = null;
     this.currentLastMeasurement = null;
@@ -147621,7 +147622,7 @@ var ViewerContextMenu = class {
       const activeMode = this.currentSceneState?.currentViewerMode || "classic";
       this.scrollEl.appendChild(this.makeActionButton("Reset View", "reset_view"));
       this.scrollEl.appendChild(this.makeActionButton(
-        isDark ? "Toggle Background (Dark)" : "Toggle Background (Light)",
+        isDark === void 0 ? "Toggle Background" : isDark ? "Toggle Background (Dark)" : "Toggle Background (Light)",
         "toggle_background"
       ));
       this.scrollEl.appendChild(this.makeActionButton(
@@ -147652,28 +147653,30 @@ var ViewerContextMenu = class {
         isWorkOpen ? "Close Workbench Panel" : "Open Workbench Panel",
         "open_workbench"
       ));
-      const divModes = document.createElement("div");
-      Object.assign(divModes.style, {
-        marginTop: "6px",
-        paddingTop: "6px",
-        borderTop: "1px solid rgba(255,255,255,0.10)"
-      });
-      this.scrollEl.appendChild(divModes);
-      const modeHeader = document.createElement("div");
-      modeHeader.textContent = "Viewer Mode";
-      Object.assign(modeHeader.style, {
-        padding: "2px 8px 4px 8px",
-        opacity: "0.5",
-        fontSize: "11px",
-        textTransform: "uppercase",
-        letterSpacing: "0.05em",
-        fontWeight: "600"
-      });
-      this.scrollEl.appendChild(modeHeader);
-      const modes = ["classic", "integrated", "cinema"];
-      for (const mode of modes) {
-        const label2 = mode + (activeMode === mode ? " (Active \u2713)" : "");
-        this.scrollEl.appendChild(this.makeActionButton(label2, "set_viewer_mode", { text: mode }));
+      if (this.isActionAllowed("set_viewer_mode")) {
+        const divModes = document.createElement("div");
+        Object.assign(divModes.style, {
+          marginTop: "6px",
+          paddingTop: "6px",
+          borderTop: "1px solid rgba(255,255,255,0.10)"
+        });
+        this.scrollEl.appendChild(divModes);
+        const modeHeader = document.createElement("div");
+        modeHeader.textContent = "Viewer Mode";
+        Object.assign(modeHeader.style, {
+          padding: "2px 8px 4px 8px",
+          opacity: "0.5",
+          fontSize: "11px",
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
+          fontWeight: "600"
+        });
+        this.scrollEl.appendChild(modeHeader);
+        const modes = ["classic", "integrated", "cinema"];
+        for (const mode of modes) {
+          const label2 = mode + (activeMode === mode ? " (Active \u2713)" : "");
+          this.scrollEl.appendChild(this.makeActionButton(label2, "set_viewer_mode", { text: mode }));
+        }
       }
     }
     if (this.currentSelection && this.currentSelection.source_kind !== "empty") {
@@ -147740,7 +147743,7 @@ var ViewerContextMenu = class {
       }
       this.scrollEl.appendChild(section);
     }
-    const matchingAddonActions = this.currentAddonActions.filter((item2) => item2.target_kinds.includes(target.kind));
+    const matchingAddonActions = this.isActionAllowed("addon_context_action") ? this.currentAddonActions.filter((item2) => item2.target_kinds.includes(target.kind)) : [];
     if (matchingAddonActions.length > 0) {
       const section = document.createElement("div");
       Object.assign(section.style, {
@@ -147761,7 +147764,7 @@ var ViewerContextMenu = class {
       }
       this.scrollEl.appendChild(section);
     }
-    const matchingItems = this.currentAddonItems.filter(
+    const matchingItems = (this.isActionAllowed("addon_context_action") ? this.currentAddonItems : []).filter(
       (it) => !it.target_kinds || it.target_kinds.length === 0 || it.target_kinds.includes(target.kind)
     );
     if (matchingItems.length > 0) {
@@ -147860,7 +147863,7 @@ var ViewerContextMenu = class {
     button2.type = "button";
     button2.textContent = label2;
     Object.assign(button2.style, {
-      display: "block",
+      display: this.isActionAllowed(action) ? "block" : "none",
       width: "100%",
       padding: "8px 10px",
       margin: "0",
@@ -147906,6 +147909,9 @@ var ViewerContextMenu = class {
       this.close();
     });
     return button2;
+  }
+  isActionAllowed(action) {
+    return this.options.allowedActions?.has(action) !== false;
   }
   appendSelectionExpanders(section) {
     const expandTitle = document.createElement("div");
@@ -161838,6 +161844,10 @@ var MolSysViewerController = class _MolSysViewerController {
           };
           this.lastContextLoci = null;
         }
+        const remoteRequestId = event.molsysviewerRemoteRequestId;
+        if (typeof remoteRequestId === "string") {
+          payload.request_id = remoteRequestId;
+        }
         this.lastContextPayload = payload;
         this.groupPanel.updateContextTarget(payload);
         this.syncWorkbenchContextFromPayload(payload);
@@ -167863,7 +167873,8 @@ var remote_protocol_default = {
   input_kinds: [
     "pointer",
     "wheel",
-    "key"
+    "key",
+    "context-menu"
   ],
   pointer_phases: [
     "move",
@@ -168004,7 +168015,7 @@ function validateInputPayload(kind, payload) {
       return rejected("malformed-payload", "modifiers must contain only boolean modifier keys");
     }
   }
-  if (kind === "pointer" || kind === "wheel") {
+  if (kind === "pointer" || kind === "wheel" || kind === "context-menu") {
     for (const coordinate of ["x", "y"]) {
       const item2 = payload[coordinate];
       if (!finiteNumber(item2) || item2 < 0 || item2 > 1) {
@@ -168037,7 +168048,7 @@ function validateInputPayload(kind, payload) {
     if (![0, 1, 2].includes(payload.deltaMode)) {
       return rejected("malformed-payload", "deltaMode must be 0, 1 or 2");
     }
-  } else {
+  } else if (kind === "key") {
     if (!KEY_PHASES.has(String(payload.phase))) {
       return rejected("malformed-payload", "key phase is invalid");
     }
@@ -168046,6 +168057,10 @@ function validateInputPayload(kind, payload) {
     }
     if (typeof payload.repeat !== "boolean") {
       return rejected("malformed-payload", "key repeat must be boolean");
+    }
+  } else {
+    if (!nonEmpty2(payload.requestId) || payload.requestId.length > 128) {
+      return rejected("malformed-payload", "context-menu requestId is invalid");
     }
   }
   return null;
@@ -168119,7 +168134,7 @@ var RemoteInputAdapter = class {
     const event = this.buildEvent(kind, payload);
     this.lastSequence = sequence;
     this.acceptedInRateWindow += 1;
-    if (kind === "pointer" && payload.phase === "down") this.target.focus();
+    if (kind === "pointer" && payload.phase === "down" || kind === "context-menu") this.target.focus();
     const usesGlobalTarget = kind === "key" || kind === "pointer" && payload.phase !== "down";
     (usesGlobalTarget ? this.globalTarget : this.target).dispatchEvent(event);
     return { status: "accepted", sequence, eventType: event.type };
@@ -168147,6 +168162,18 @@ var RemoteInputAdapter = class {
         deltaY: payload.deltaY,
         deltaMode: payload.deltaMode
       });
+    }
+    if (kind === "context-menu") {
+      const event = this.eventFactory.mouse("contextmenu", {
+        ...positioned,
+        button: 2,
+        buttons: 0
+      });
+      Object.defineProperty(event, "molsysviewerRemoteRequestId", {
+        value: payload.requestId,
+        enumerable: false
+      });
+      return event;
     }
     const phaseToType = {
       move: "mousemove",
@@ -168856,7 +168883,8 @@ var REMOTE_HELP = {
     ["Left click", "Select element"],
     ["Shift + Click", "Add to selection"],
     ["Shift + Alt + Click", "Range selection (same chain)"],
-    ["Double click", "Focus on element"]
+    ["Double click", "Focus on element"],
+    ["Right click", "Context menu"]
   ],
   keyboard: [
     ["N / W", "Open / close Studio"],
@@ -168960,6 +168988,10 @@ var RemoteWorkbench = class {
     this.annotations = [];
     this.measurements = [];
     this.shapes = [];
+    this.addonContextActions = [];
+    this.addonContextItems = [];
+    this.activeSelection = activeSelection([]);
+    this.pendingContextAnchors = /* @__PURE__ */ new Map();
     this.measurementSettings = {
       endpointPolicyDefault: "centroid",
       representativeAtoms: { protein: "CA", nucleic: "P", lipid: "P", other: "" },
@@ -168990,6 +169022,27 @@ var RemoteWorkbench = class {
       resetView: () => this.emitAction("reset_view"),
       togglePanel: () => this.panel.setExpanded(!this.panel.isExpanded())
     });
+    this.contextMenu = new ViewerContextMenu(
+      host,
+      (message) => this.handleContextAction(message),
+      (action) => {
+        if (action === "open_navigate") {
+          this.panel.setExpanded(!this.panel.isExpanded());
+        }
+      },
+      void 0,
+      void 0,
+      { allowedActions: REMOTE_CONTEXT_ACTIONS }
+    );
+  }
+  requestContextMenu(pageX, pageY, requestId) {
+    this.contextMenu.close();
+    this.pendingContextAnchors.set(requestId, { pageX, pageY });
+    while (this.pendingContextAnchors.size > 8) {
+      const oldest = this.pendingContextAnchors.keys().next().value;
+      if (typeof oldest !== "string") break;
+      this.pendingContextAnchors.delete(oldest);
+    }
   }
   apply(message) {
     const msg = message;
@@ -169078,13 +169131,42 @@ var RemoteWorkbench = class {
         );
         return;
       case "set_active_selection":
-        this.selectionAtomCount = stringsToNumbers(msg.atom_indices).length;
-        this.panel.updateSelection(activeSelection(stringsToNumbers(msg.atom_indices)));
+        this.activeSelection = activeSelection(stringsToNumbers(msg.atom_indices));
+        this.selectionAtomCount = this.activeSelection.count_atoms;
+        this.panel.updateSelection(this.activeSelection);
         return;
       case "clear_active_selection":
+        this.activeSelection = activeSelection([]);
         this.selectionAtomCount = 0;
-        this.panel.updateSelection(activeSelection([]));
+        this.panel.updateSelection(this.activeSelection);
         return;
+      case "set_addon_runtime_summary":
+        this.addonContextActions = addonContextActions(msg);
+        return;
+      case "set_addon_context_items":
+        this.addonContextItems = addonContextItems(msg.items);
+        return;
+      case "set_context_target": {
+        const requestId = typeof msg.request_id === "string" ? msg.request_id : "";
+        const anchor = this.pendingContextAnchors.get(requestId);
+        if (!anchor) return;
+        this.pendingContextAnchors.delete(requestId);
+        const target = contextTarget(msg.target);
+        if (!target) return;
+        this.contextMenu.open(
+          target,
+          anchor.pageX,
+          anchor.pageY,
+          this.activeSelection,
+          null,
+          this.savedSelections,
+          this.regions,
+          this.addonContextActions,
+          this.addonContextItems,
+          { isNavigateExpanded: this.panel.isExpanded() }
+        );
+        return;
+      }
       case "set_history_state":
         this.panel.updateSelectionHistoryState({ canUndo: !!msg.can_undo, canRedo: !!msg.can_redo });
         return;
@@ -169151,6 +169233,7 @@ var RemoteWorkbench = class {
     }
   }
   dispose() {
+    this.contextMenu.dispose();
     this.controls.dispose();
     this.files.dispose();
     this.trajectory.dispose();
@@ -169177,6 +169260,13 @@ var RemoteWorkbench = class {
   emitAction(action, details) {
     this.emit({ action: "interaction_context_action", details: { action, ...details } });
   }
+  handleContextAction(message) {
+    const action = message.action;
+    if (action === "open_navigate") return;
+    if (typeof action !== "string" || !REMOTE_CONTEXT_ACTIONS.has(action)) return;
+    const { event: _event, action: _action, ...details } = message;
+    this.emitAction(action, details);
+  }
   refreshMeasurements() {
     this.panel.setMeasurements(this.measurements, this.measurementSettings);
   }
@@ -169195,6 +169285,51 @@ var RemoteWorkbench = class {
     ]);
   }
 };
+var REMOTE_CONTEXT_ACTIONS = /* @__PURE__ */ new Set([
+  "focus_target",
+  "focus_region",
+  "toggle_region_visibility",
+  "delete_region",
+  "rename_region",
+  "hide_measurement",
+  "delete_annotation",
+  "delete_shape",
+  "delete_measurement",
+  "focus_selection",
+  "activate_selection",
+  "save_selection",
+  "remove_selection",
+  "clear_selection",
+  "expand_selection",
+  "create_region_from_selection",
+  "create_section_from_selection",
+  "add_label_from_selection",
+  "addon_context_action",
+  "reset_view",
+  "toggle_background",
+  "toggle_spin",
+  "toggle_swing",
+  "open_navigate"
+]);
+function contextTarget(value) {
+  const item2 = record2(value);
+  if (!["empty", "structure", "shape", "measurement", "annotation"].includes(String(item2.kind))) return null;
+  if (item2.event !== "interaction_context_menu") return null;
+  return item2;
+}
+function addonContextActions(message) {
+  const specs = Array.isArray(message?.context_action_specs) ? message.context_action_specs : [];
+  return specs.filter((item2) => typeof item2?.addon === "string" && typeof item2?.id === "string" && typeof item2?.title === "string").map((item2) => ({
+    addon: item2.addon,
+    id: item2.id,
+    title: item2.title,
+    target_kinds: strings(item2.target_kinds),
+    group: typeof item2.group === "string" ? item2.group : void 0
+  }));
+}
+function addonContextItems(value) {
+  return (Array.isArray(value) ? value : []).filter((item2) => typeof item2?.addon === "string" && typeof item2?.id === "string" && typeof item2?.title === "string").map((item2) => ({ ...item2, target_kinds: strings(item2.target_kinds) }));
+}
 function strings(value) {
   return Array.isArray(value) ? value.filter((item2) => typeof item2 === "string") : [];
 }
@@ -169513,6 +169648,18 @@ async function bootRemoteBrowserClient(options) {
       modifiers: modifiers2(event)
     });
   }, { passive: false });
+  inputSurface.addEventListener("contextmenu", (event) => {
+    event.preventDefault();
+    const point = videoPoint(event);
+    if (!point) return;
+    const requestId = `${options.endpointId}:context:${inputSequence + 1}`;
+    workbench.requestContextMenu(event.clientX, event.clientY, requestId);
+    sendInput("context-menu", {
+      ...point,
+      requestId,
+      modifiers: modifiers2(event)
+    });
+  });
   for (const type3 of ["keydown", "keyup"]) {
     inputSurface.addEventListener(type3, (event) => {
       sendInput("key", {

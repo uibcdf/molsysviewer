@@ -17,7 +17,22 @@ const identity = {
 
 test("remote protocol vocabulary is loaded from the packaged manifest", () => {
     assert.deepStrictEqual([...SIGNALING_KINDS], ["offer", "answer", "ice-candidate", "ice-complete"]);
-    assert.deepStrictEqual([...INPUT_KINDS], ["pointer", "wheel", "key"]);
+    assert.deepStrictEqual([...INPUT_KINDS], ["pointer", "wheel", "key", "context-menu"]);
+});
+
+test("context-menu input requires normalized coordinates and a bounded correlation id", () => {
+    const packet = {
+        ...identity,
+        sequence: 8,
+        timestampMs: 1235,
+        kind: "context-menu",
+        viewport: { width: 800, height: 600, devicePixelRatio: 1 },
+        payload: { x: 0.4, y: 0.6, requestId: "context-8", modifiers: {} },
+    };
+    assert.strictEqual(validateInputPacket(packet).status, "accepted");
+    assert.strictEqual(validateInputPacket({
+        ...packet, payload: { ...packet.payload, requestId: "" },
+    }).status, "rejected");
 });
 
 test("signaling validates identity and ICE payload", () => {

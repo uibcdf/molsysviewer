@@ -9,7 +9,8 @@
   "input_kinds": [
     "pointer",
     "wheel",
-    "key"
+    "key",
+    "context-menu"
   ],
   "pointer_phases": [
     "move",

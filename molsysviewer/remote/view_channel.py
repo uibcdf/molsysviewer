@@ -123,8 +123,18 @@ class RemoteViewChannel:
                 for callback in tuple(self._runtime_request_callbacks):
                     callback(result.envelope)
             else:
+                message = result.message
+                if (
+                    result.envelope is not None
+                    and result.envelope.action == "interaction_context_menu"
+                    and isinstance(message, Mapping)
+                ):
+                    message = {
+                        **message,
+                        "_source_endpoint_id": result.envelope.endpoint_id,
+                    }
                 for callback in tuple(self._msg_callbacks):
-                    callback(self, result.message, [])
+                    callback(self, message, [])
         elif result.status == "duplicate":
             if result.envelope is None:  # pragma: no cover - router invariant
                 raise RuntimeError("duplicate route result has no envelope")

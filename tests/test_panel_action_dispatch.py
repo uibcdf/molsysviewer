@@ -48,6 +48,28 @@ def test_remote_reset_view_routes_through_the_python_authority():
     assert sent[-1] == {"op": "reset_view", "options": {}}
 
 
+def test_remote_context_focus_and_clear_use_authoritative_selection_state():
+    view = demo["pentalanine"]
+    sent = []
+    view.widget.send = lambda message: sent.append(message)  # type: ignore[method-assign]
+    view._ready = True  # noqa: SLF001
+
+    dispatch_panel_action(view, {
+        "action": "focus_target",
+        "context": {"kind": "structure", "atom_indices": [0, 1]},
+    })
+    assert sent[-1]["op"] == "zoom"
+    assert sent[-1]["atom_indices"] == [0, 1]
+
+    view.active_selection.set([2, 3], skip_digestion=True)
+    dispatch_panel_action(view, {"action": "focus_selection"})
+    assert sent[-1]["op"] == "zoom"
+    assert sent[-1]["atom_indices"] == [2, 3]
+
+    dispatch_panel_action(view, {"action": "clear_selection"})
+    assert view.active_selection.atom_indices == []
+
+
 def test_trajectory_context_actions_mutate_python_authority_and_project_summary():
     view = demo["pentalanine"]
     sent = []
