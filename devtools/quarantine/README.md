@@ -1,5 +1,10 @@
 # Quarantine — argument digesters with no reachable caller
 
+> **Tracked as `uibcdf/molsysviewer#78`.** These 219 files are not decided on: the issue
+> holds the open question of whether they are deleted, and the recommendation is to wait
+> for the manual smoke test in `devguide/smoke_test.md`, which exercises paths the
+> automated suite does not and has not been run since the second batch moved.
+
 These files are **not deleted yet, and not importable**. `devtools/` is outside the
 distributed package (`pyproject.toml` ships `molsysviewer*` only), so nothing here is
 loaded, shipped, or resolvable by ArgDigest. They sit here so the removal can be undone

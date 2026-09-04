@@ -18,6 +18,24 @@ The purpose is to check:
 - whether the UX matches the current contract,
 - and whether reproducibility survives the exploratory path.
 
+## One extra thing to watch for, this time round
+
+`uibcdf/molsysviewer#78` holds 219 quarantined digesters, and the recommendation there is to
+delete them **once this smoke test passes** — because it drives paths the automated suite
+does not, and a digester reachable only from a human-driven flow would show up nowhere else.
+
+So while running the flows below, watch the notebook's warnings for:
+
+```
+DigestNotDigestedWarning: No digester for <name>
+```
+
+`STRICTNESS = "warn"`, so a needed-but-quarantined digester does **not** raise: it warns
+once per call and passes the value through unvalidated. One of those naming a quarantined
+argument is the single piece of evidence that would keep a file out of the bin.
+
+Seeing none is what closes #78. Report the name if you see one; do not restore it by hand.
+
 ## Why Now
 
 The project now has enough interaction surface that waiting longer increases the
