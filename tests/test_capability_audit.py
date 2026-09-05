@@ -347,18 +347,47 @@ def test_human_observation_carries_its_date(capability):
     assert re.match(r"^\d{4}-\d{2}-\d{2}", capability.human_observed), capability.human_observed
 
 
-def test_the_document_names_what_nothing_has_watched_draw():
+def test_the_document_names_what_nothing_has_watched_draw(audit):
     """The finding is the point of the column, so it must survive regeneration.
 
-    Four capabilities have no browser observation, and two of them are `stable`. That is
-    defensible — neither draws anything — but it is a claim the document should make out
-    loud rather than leave as a zero somebody has to notice.
+    Derived rather than listed. It used to name four capabilities outright, which made it
+    a record of one afternoon: when `trajectory-plot` and `movie-playback` earned
+    `browser-observed` on 2026-09-05 the test failed for having been right before. What
+    must hold is that *whatever* currently lacks the label is named in the document, not
+    that a particular set of four still lacks it.
     """
     text = DOCUMENT.read_text(encoding="utf-8")
+    unobserved = [
+        row["capability"] for row in audit["rows"]
+        if "browser-observed" not in row["evidence"]
+    ]
+    assert unobserved, "every capability is browser-observed; this section should be gone"
 
     assert "## Nothing has watched these draw" in text
-    for name in ("Trajectory plot", "Movie", "save_state / load_state", "Units"):
-        assert name in text.split("## Nothing has watched these draw", 1)[1].split("##", 1)[0]
+    section = text.split("## Nothing has watched these draw", 1)[1].split("##", 1)[0]
+    for name in unobserved:
+        assert name in section, f"{name} has no browser observation and the document does not say so"
+
+
+def test_the_undrawable_reasons_reach_the_reader():
+    """A reason written where nobody reads it is not a reason given.
+
+    `stable_without_drawing` existed and was filled for both rows, and the generator
+    never rendered it: it lived in `devtools/capability_audit.py`, which a reader of the
+    audit does not open. The claim therefore still looked inherited in the only place it
+    is published, which is what uibcdf/molsysviewer#65 asked to fix.
+    """
+    text = DOCUMENT.read_text(encoding="utf-8")
+    undrawable = [c for c in CAPABILITIES if c.stable_without_drawing]
+    assert undrawable, "nothing declares stable_without_drawing; this guard is vacuous"
+
+    assert "## Declared `stable` without drawing anything" in text
+    section = text.split("## Declared `stable` without drawing anything", 1)[1].split("\n## ", 1)[0]
+    for capability in undrawable:
+        assert capability.name in section, f"{capability.name} states its reason only in the source"
+        # The reason itself, not just the name: a bare list would read as another gap.
+        opening = capability.stable_without_drawing.split(".")[0]
+        assert opening in section, f"{capability.name} is named without its reason"
 
 
 def test_the_two_axes_are_not_confused_with_each_other():

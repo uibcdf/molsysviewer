@@ -111,3 +111,8 @@ Completed work, kept for the reasoning:
   wrong turns: the warning classes were rejected correctly in the first pass and the real
   cause was the *import* that looking one up triggers, and three clean plain runs almost
   produced a false report against our own pytest plugin.
+- [`evidence_a_stable_capability_has_not_earned.md`](evidence_a_stable_capability_has_not_earned.md)
+  — four capabilities declared an evidence level nothing had observed. Read for the
+  criterion that was unmet without being visible: the reason two of them deserved `stable`
+  was written in the generator's source, where a reader of the generated audit never meets
+  it.

@@ -40,7 +40,14 @@ def test_e2e_runner_inventory_matches_every_scientific_suite():
     # Mol* groups by the label's value, so a 60-copy assembly collapsed into the
     # asymmetric unit's five chains: every atom arrived and only one copy could
     # be traced as cartoon (uibcdf/molsysviewer#64).
-    assert len(expected) == 31
+    # 32 since 2026-09-05: `trajectory-plot`, the first browser observation of a
+    # capability the audit had derived `contract-tested` for and nothing else. It
+    # asserts the card, one polyline per series with a point per frame, and the
+    # labels in the document (uibcdf/molsysviewer#65).
+    # 33 since 2026-09-05: `movie-playback`, the same for playback. It counts
+    # *distinct* camera positions, because a runtime that jumped straight to the
+    # last keyframe would still end in the right place and still report done.
+    assert len(expected) == 33
     assert declared == expected
 
 

@@ -38,6 +38,8 @@ const SUITES = [
     "scene-object-identity",
     "scene-object-panel-roundtrip",
     "bioassembly-chain-identity",
+    "trajectory-plot",
+    "movie-playback",
 ] as const;
 
 function runSuite(name: string, endpoint: string): Promise<void> {

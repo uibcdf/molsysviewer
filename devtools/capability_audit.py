@@ -201,8 +201,10 @@ CAPABILITIES: tuple[Capability, ...] = (
         provenance=PYTHON,
         docs="docs/content/user/overlays/trajectory_plot.md",
         unit=("test_trajectory_plot.py", "test_trajectory_plot_series.py"),
+        e2e=("trajectory-plot",),
         status="experimental",
-        note="No E2E suite opens it in a browser.",
+        note="Observed drawing since 2026-09-05: the card, one polyline per series with "
+             "a point per frame, and the labels the caller asked for.",
     ),
     Capability(
         name="Movie",
@@ -211,8 +213,12 @@ CAPABILITIES: tuple[Capability, ...] = (
         provenance=PYTHON,
         docs="docs/content/user/movie/export.md",
         unit=("test_movie.py",),
+        e2e=("movie-playback",),
         status="experimental",
-        note="Export depends on an external encoder and is not exercised in CI.",
+        note="Playback observed drawing since 2026-09-05: the camera passes through "
+             "intermediate positions, lands on the last keyframe, and stops short when "
+             "interrupted. Export stays out -- it depends on an external encoder and is "
+             "not exercised in CI.",
     ),
     Capability(
         name="Camera",
@@ -490,6 +496,25 @@ def _markdown(audit: dict[str, Any]) -> str:
             "",
             _experimental_sentence(audit, unobserved),
         ]
+
+    # A capability that draws nothing can never earn `browser-observed`, and saying so
+    # here is the point of `uibcdf/molsysviewer#65`: the reason was written in
+    # `devtools/capability_audit.py` where a reader of this document never meets it,
+    # which left the claim looking inherited rather than chosen.
+    undrawable = [c for c in CAPABILITIES if c.stable_without_drawing]
+    if undrawable:
+        lines += [
+            "",
+            "## Declared `stable` without drawing anything",
+            "",
+            "These do not render. `browser-observed` is not a label they are missing, it is",
+            "one they can never earn, and the ladder reading of these labels is what makes",
+            "that look like a gap. Each says why the level is deserved anyway, so the claim",
+            "is made on purpose rather than inherited:",
+            "",
+        ]
+        for capability in undrawable:
+            lines.append(f"- **{capability.name}** — {capability.stable_without_drawing}")
 
     lines += [
         "",
