@@ -18,10 +18,10 @@ behaviour, delegates it, or merely hosts it.
 | Whole | `view.whole.` | 15 | 11 | MolSysViewer (Python authority) | [page](../docs/content/user/scene_management/whole.md) | contract-tested, browser-observed | stable | 0.5.0 |
 | Regions | `view.regions.`, `view.regions[…].` | 44 | 42 | MolSysViewer (Python authority) | [page](../docs/content/user/scene_management/regions.md) | contract-tested, browser-observed | stable | 0.1.0 |
 | Layers | `view.layers.` | 12 | 12 | MolSysViewer (Python authority) | [page](../docs/content/user/scene_management/layers.md) | contract-tested, browser-observed | stable | 0.1.0 |
-| Selections and active selection | `view.selections.`, `view.active_selection.` | 21 | 21 | MolSysMT (scientific authority) | [page](../docs/content/user/scene_management/selections.md) | contract-tested, browser-observed | stable | 0.9.0 |
+| Selections and active selection | `view.selections.`, `view.active_selection.` | 21 | 21 | MolSysMT (scientific authority) | [page](../docs/content/user/scene_management/selections.md) | contract-tested, browser-observed | stable | 0.8.0 |
 | Representations, styles and presets | `view.styles.`, `view.whole.set_representation` | 35 | 35 | Mol* (rendering authority) | [page](../docs/content/user/representations/types.md) | contract-tested, browser-observed | stable | 0.18.0 |
-| Annotations | `view.annotations.` | 22 | 21 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/labels.md) | contract-tested, browser-observed | stable | 0.9.0 |
-| Measurements | `view.measurements.` | 20 | 20 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/measurements.md) | contract-tested, browser-observed | stable | 0.9.0 |
+| Annotations | `view.annotations.` | 22 | 21 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/labels.md) | contract-tested, browser-observed | stable | 0.8.0 |
+| Measurements | `view.measurements.` | 20 | 20 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/measurements.md) | contract-tested, browser-observed | stable | 0.8.0 |
 | Shapes | `view.shapes.` | 50 | 36 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/shapes/index.md) | contract-tested, browser-observed | stable | 0.1.0 |
 | Trajectories and frames | `view.player.` | 11 | 11 | MolSysViewer (Python authority) | [page](../docs/content/user/movie/playback.md) | contract-tested, browser-observed, benchmarked | stable | 0.18.0 |
 | Trajectory plot | `view.trajectory_plot.` | 4 | 4 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/trajectory_plot.md) | contract-tested, browser-observed | experimental | 0.19.0 |
