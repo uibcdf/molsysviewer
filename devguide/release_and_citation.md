@@ -62,7 +62,14 @@ python devtools/validate_citation.py --expected-version X.Y.Z
 ```
 
 The preparation command updates release-specific fields in `CITATION.cff` and
-the derived documentation and BibTeX surfaces. Review its diff. It does not
+the derived documentation and BibTeX surfaces. Review its diff.
+
+**It updates files, not tests.** `tests/test_citation_release_tools.py` used to pin the
+expected version as a literal, which passed for a year and then stopped the release gate
+for 0.22.0 — the first release since it was written. It reads the version from
+`CITATION.cff` now, so preparing a release no longer leaves a test behind. Anything else
+added here that hard-codes the current version will spring the same trap, and only during
+a release. It does not
 create a tag, GitHub Release, Zenodo record, Conda package, or npm package.
 The documented `X.Y.Z-rc.N` prerelease form is accepted as well.
 
