@@ -81,7 +81,11 @@ globalThis.__molsysviewerRemoteClient = await boot({
 
 
 class RemoteSessionService:
-    """Compose one Python authority and one browser/Qt web attachment."""
+    """Compose one Python authority and one browser/Qt web attachment.
+
+    Experimental in MolSysViewer 1.0. Its API and transport contract may change
+    in later releases.
+    """
 
     def __init__(
         self,

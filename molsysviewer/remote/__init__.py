@@ -1,4 +1,4 @@
-"""Internal contracts for remotely hosted MolSysViewer sessions."""
+"""Experimental contracts for remotely hosted MolSysViewer sessions."""
 
 from .internal_worker_host import InternalRenderWorkerHost
 from .protocol import (

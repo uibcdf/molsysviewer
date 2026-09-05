@@ -807,6 +807,12 @@ def test_qt_standalone_main_supports_no_exec(tmp_path, monkeypatch, capsys):
     _ = code
 
 
+def test_qt_cli_help_marks_remote_connect_experimental():
+    help_text = standalone_qt._build_arg_parser().format_help()
+
+    assert "experimental in MolSysViewer 1.0" in help_text
+
+
 def test_create_remote_qt_window_reuses_authenticated_session_page(monkeypatch):
     class FakeSignal:
         def __init__(self):

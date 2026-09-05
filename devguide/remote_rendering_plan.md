@@ -1,8 +1,8 @@
 # Remote rendering and session-host plan
 
-**Status:** accepted pre-1.0 direction; evaluation complete; RRS0 and RRS1
-completed; RRS2 server-rendered browser workflow validated end to end, including
-upload, export and reconnect.
+**Status:** accepted pre-1.0 direction and explicitly experimental for the 1.0
+release; evaluation complete; RRS0–RRS3 completed; RRS2 server-rendered browser
+workflow validated end to end, including upload, export and reconnect.
 
 **Decision date:** 2026-09-01.
 
@@ -10,6 +10,11 @@ upload, export and reconnect.
 node while a browser or the native Qt shell provides the interactive client.
 This is rendering placement, not remote multi-user collaboration and not a
 second scene/state model.
+
+The complete remote surface ships as experimental in 1.0: its Python API, CLI,
+wire protocol and deployment configuration may evolve after release. The
+authority, placement, credential and filesystem boundaries in this document
+remain invariants despite that stability label.
 
 This plan extends [`standalone_host_plan.md`](standalone_host_plan.md), preserves
 [`runtime_message_router.md`](runtime_message_router.md), and preserves the data
@@ -708,6 +713,14 @@ not worked around with desktop streaming.
 
 ### RRS4 — hardening, packaging and deployment
 
+RRS4 is a publication-readiness pass for an experimental feature, not a demand
+to stabilize the complete remote subsystem before 1.0. Its release-blocking
+scope is limited to a reproducible installation, the four basic interactive
+modes, honest failure diagnostics, bounded single-session resource use and the
+security checks needed for the documented loopback/SSH workflow. Protocol/API
+freeze, production service operation, universal network reachability, adaptive
+quality and complete feature parity are post-1.0 work.
+
 **Lifecycle recovery implemented 2026-09-02.** `RemoteSessionService` owns a
 single worker monitor because it is the component that can coordinate process,
 internal endpoint, client state and WebRTC renegotiation. An unexpected process
@@ -836,6 +849,11 @@ accepts page fullscreen requests and projects them onto the native window;
 focused guards cover both the browser-side control and the Qt enter/leave
 bridge.
 
+**Follow-up visible Qt acceptance completed 2026-09-05.** On aleph, the shared
+compact icon chrome rendered correctly over server video, Reset and Help
+worked, the projected target-aware context menu opened, and the native
+fullscreen bridge entered and exited fullscreen correctly.
+
 The second parity tranche adds target-aware right click without duplicating
 picking. The local client sends a normalized, correlated context-menu input;
 the real worker canvas and Mol* resolve the target; Python removes worker-only
@@ -868,8 +886,10 @@ browser/Qt matrix from aleph is complete. Final closure still requires
 repetition from a clean supported installed environment; broader proxy/TURN
 administration remains outside the direct single-session server boundary.
 
-**Exit:** all four combinations pass, packaging is reproducible, and the
-documented spika-to-aleph workflow repeats from a clean supported environment.
+**Experimental 1.0 exit:** all four combinations pass their basic smoke,
+packaging is reproducible, the documented spika-to-aleph workflow repeats from
+a clean supported environment, and known limitations are visible. This exit
+does not confer stable-API or stable-protocol status.
 
 ## 14. Acceptance matrix
 
@@ -906,6 +926,10 @@ requirement.
 
 ## 15. Explicitly post-1.0
 
+- stabilization and compatibility policy for the Python API, CLI and wire
+  protocol;
+- complete browser/Qt and client/server feature or pixel parity;
+- production deployment support and long-term service compatibility;
 - remote collaboration and multi-user mutation authority;
 - managed TURN and arbitrary NAT/firewall reachability;
 - automatic TLS certificate provisioning;
@@ -921,9 +945,10 @@ requirement.
 - offline continuation after authoritative server loss;
 - MolSys-AI agent and chat product itself.
 
-The deferrals retain 1.0 extension points: ICE configuration, capabilities,
-explicit placement, actor provenance and cancellation identity are part of 1.0
-so later work extends rather than replaces it.
+The experimental implementation exercises extension seams for ICE
+configuration, capabilities, explicit placement, actor provenance and
+cancellation identity. Those are current design commitments, not a promise
+that their 1.0 spelling or wire representation is frozen.
 
 ## 16. Rejection criteria
 
@@ -943,11 +968,13 @@ The implementation is wrong if it:
 
 ## 17. Immediate next step
 
-RRS2 is complete. Complete RRS3 with visible xcb acceptance on aleph; do not
-create a separate Qt protocol or regress local standalone behavior. Worker
-restart and video-stall recovery are now implemented as portable lifecycle
-logic. Continue RRS4 with connection-state projection, security/isolation, the
-reproducible loopback/SSH deployment workflow and the guarded foreground
-`molsysviewer-server` contract from section 9. Do not expand that command into
-a service manager, and do not introduce a desktop-streaming wrapper, a hidden
-Mol* runtime in the server-rendered client or a second scene authority.
+RRS0–RRS3 and visible xcb acceptance on aleph are complete. Continue RRS4 with
+clean installed-environment repetition and release-facing experimental
+documentation; do not create a separate Qt protocol or regress local standalone
+behavior. Worker restart and video-stall recovery are already portable, and
+connection-state projection and the loopback security baseline are guarded.
+Finish only the reproducible loopback/SSH installation check and the bounded
+foreground `molsysviewer-server` contract from section 9. Do not expand that
+command into a service manager, and do not introduce a desktop-streaming
+wrapper, a hidden Mol* runtime in the server-rendered client or a second scene
+authority.

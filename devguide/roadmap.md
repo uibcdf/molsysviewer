@@ -46,10 +46,12 @@ These are the release gates:
 8. Close the decided `@digest` policy over the supported public callable
    surface, with argument digesters and catalogued diagnostics rather than
    decoration-only coverage.
-9. Deliver the accepted single-user remote-session slice: explicit
+9. Deliver a responsibly publishable **experimental** single-user
+   remote-session slice: explicit
    `render_on="client" | "server"`, browser and Qt clients, managed real-GPU
    render worker, VP8 WebRTC transport, authenticated session routing and the
-   documented spika-to-aleph acceptance path. See
+   documented spika-to-aleph acceptance path, shipped explicitly as an
+   experimental 1.0 feature. See
    [`remote_rendering_plan.md`](remote_rendering_plan.md). RRS0 and RRS1 are
    complete. RRS2 is complete: the server-rendered browser workflow covers the managed
    worker, array-native loading, authenticated VP8 video/input, controller-free
@@ -58,14 +60,17 @@ These are the release gates:
    and has portable WebGL/array-native, reconnect, direct canvas camera/picking,
    authoritative Whole/selection/trajectory actions, local-PNG/canonical-HTML
    export and authenticated replacement-upload E2E evidence. RRS3 now has the
-   shared Qt `--connect` shell, native menus/shortcuts, upload activation and
-   save-dialog-managed downloads; visible aleph acceptance, followed by RRS4
-   hardening, remains. RRS4 lifecycle work now includes one bounded automatic
-   render-worker recovery with canonical scene retransmission and WebRTC
-   renegotiation, plus a static-scene-safe video-stall watchdog. Shared visible
-   connection states and the loopback token/origin/rate/size/session-isolation
-   baseline are now guarded; clean deployment and visible aleph acceptance
-   remain. The 1.0 deployment
+   shared Qt `--connect` shell, native menus/shortcuts, upload activation,
+   save-dialog-managed downloads, fullscreen bridging and visible aleph
+   acceptance. Only the RRS4 items needed for a safe, installable and
+   diagnosable experimental release remain; remote API/protocol stabilization,
+   production deployment and complete parity do not block 1.0. Lifecycle work
+   already includes one bounded automatic render-worker recovery with canonical
+   scene retransmission and WebRTC renegotiation, plus a static-scene-safe video
+   watchdog. Shared visible connection states and the loopback
+   token/origin/rate/size/session-isolation baseline are now guarded; clean
+   installed-environment repetition remains.
+   The 1.0 deployment
    surface includes a public `molsysviewer-server` command limited to one
    foreground session. Background services, durable/multi-session management,
    institutional identity, managed TURN, scheduler integration, GPU pools and

@@ -70,6 +70,12 @@ def test_public_server_cli_parses_its_bounded_configuration(monkeypatch):
     assert stream is not None
 
 
+def test_public_server_cli_help_marks_remote_sessions_experimental():
+    help_text = server_cli._build_parser().format_help()  # noqa: SLF001
+
+    assert "EXPERIMENTAL in MolSysViewer 1.0" in help_text
+
+
 def test_public_server_cli_builds_authenticated_turn_config_without_cli_secret(
     monkeypatch,
 ):

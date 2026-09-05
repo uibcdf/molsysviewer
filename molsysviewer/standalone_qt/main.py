@@ -26,7 +26,10 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--connect",
         metavar="SESSION_URL",
-        help="Open an authenticated remote-session URL in the native Qt shell.",
+        help=(
+            "Open an authenticated remote-session URL in the native Qt shell "
+            "(experimental in MolSysViewer 1.0)."
+        ),
     )
     parser.add_argument("--output", default=None, help="Output HTML file. Defaults to a temporary file.")
     parser.add_argument("--title", default="MolSysViewer Qt Prototype", help="Window title.")

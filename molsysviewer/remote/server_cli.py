@@ -1,4 +1,4 @@
-"""Public foreground launcher for one MolSysViewer remote session."""
+"""Experimental foreground launcher for one MolSysViewer remote session."""
 
 from __future__ import annotations
 
@@ -38,7 +38,8 @@ def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="molsysviewer-server",
         description=(
-            "Run one authenticated MolSysViewer remote session in the foreground. "
+            "EXPERIMENTAL in MolSysViewer 1.0. Run one authenticated remote "
+            "session in the foreground. "
             "The 1.0 server binds to loopback; connect directly on the host or through SSH forwarding."
         ),
     )

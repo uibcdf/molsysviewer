@@ -433,6 +433,7 @@ def create_remote_qt_window(
 ) -> dict[str, Any]:
     """Create the native Qt shell for one authenticated remote session.
 
+    Experimental in MolSysViewer 1.0; the remote API may change later.
     The page is the same session client used by a normal browser. Qt therefore
     contributes window management and WebEngine presentation without owning a
     second remote protocol or a second :class:`MolSysView`.
@@ -485,7 +486,7 @@ def launch_remote_qt(
     height: int = 960,
     exec_app: bool = True,
 ) -> dict[str, Any]:
-    """Show the native client for a remotely hosted MolSysViewer session."""
+    """Show the experimental native client for a remote MolSysViewer session."""
     runtime = create_remote_qt_window(
         session_url,
         title=title,

@@ -1,6 +1,12 @@
 (User_Remote_Sessions)=
 # Remote sessions
 
+**Experimental in MolSysViewer 1.0.** Remote sessions are available for
+evaluation and real single-user workflows, but their Python API, command-line
+options, transport protocol and deployment configuration may change in a later
+release. Do not yet build unattended or long-lived production services against
+this interface.
+
 Use a remote session when the Python process or molecular rendering should run
 on a workstation, server, or cluster node while you interact from another
 computer. You do not need to stream a complete remote desktop.
@@ -174,7 +180,7 @@ session URL, Qt argument vector, SSH-forward parameters, placement, and bounded
 renderer diagnostics. This record contains the authenticated URL and must be
 handled as secret output.
 
-## Current 1.0 boundary
+## Experimental 1.0 boundary
 
 One invocation owns one foreground session. The command is not yet a daemon,
 multi-session manager, collaboration server, cluster scheduler, certificate
@@ -185,6 +191,13 @@ Future managed deployments may add persistent sessions, user identity, TLS,
 managed TURN, scheduler integration, GPU pools, quotas, auditing, and MolSys-AI
 as an authenticated actor. Those services will build on the same session API;
 they will not change the meaning of client and server rendering.
+
+The architectural invariants remain deliberate even while this feature is
+experimental: Python is the single mutation authority, placement is explicit,
+the session URL is a credential, and a client path is never interpreted as a
+server filesystem path. Experimental status permits the surrounding API and
+deployment surface to evolve; it does not relax those security and ownership
+rules.
 
 ## Interpret exit status
 
