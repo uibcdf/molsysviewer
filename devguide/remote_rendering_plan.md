@@ -54,7 +54,7 @@ The existing local standalone remains valid. Its compatibility default is
 ## 2. Why this belongs in 1.0
 
 Remote execution is already a real development and scientific workflow:
-MolSysViewer may run on spika while the user works from nauta. Requiring a
+MolSysViewer may run on spika while the user works from aleph. Requiring a
 remote GNOME desktop moves an entire desktop to reach one application and does
 not establish reusable server architecture.
 
@@ -121,7 +121,7 @@ permanent performance promises.
   message and the server received a sequenced pointer event from Qt.
 - Qt `offscreen` decoded frames but could not present native graphics buffers
   (`Buffer Handle is null`). This artificial-platform limitation does not
-  invalidate the windowed client. A visible xcb test on nauta remains an
+  invalidate the windowed client. A visible xcb test on aleph remains an
   implementation acceptance item.
 - This Qt build advertised VP8, VP9 and AV1 but not H.264. VP8 is the mandatory
   1.0 interoperability codec.
@@ -132,8 +132,10 @@ permanent performance promises.
   creation 2.04 s.
 - One worker used approximately 210–275 MB maximum RSS; a representative run
   was about 213 MB.
-- Spika (`192.168.0.101`) and nauta (`192.168.0.103`) share a private network.
-  The first deployment can use direct ICE host candidates without TURN.
+- Spika (`192.168.0.101`) is reached from aleph through ixtlilton. HTTP and
+  WebSocket traffic can use SSH forwarding, but the machines do not share a
+  directly reachable ICE network; server rendering needs the tested TURN/TCP
+  relay path or equivalent routed connectivity.
 - `aiohttp` is present in the evaluated environment and can provide HTTP and
   WebSocket service. FastAPI, Uvicorn and aiortc are unnecessary. WebRTC stays
   browser-owned; Python handles authority, signaling and lifecycle.
@@ -286,7 +288,7 @@ molsysviewer-qt --connect SESSION_URL
 ```
 
 Native menu actions become authenticated session commands. A file selected on
-nauta uploads explicitly; a server-side file opens through the server CLI or a
+aleph uploads explicitly; a server-side file opens through the server CLI or a
 separately authorized server-path operation. A bare path never ambiguously
 selects a filesystem.
 
@@ -363,7 +365,7 @@ not promise:
 
 One invocation owns one session and its lifetime. Stopping that process ends
 the authoritative session. A path passed on spika names a spika filesystem
-object; a file chosen in nauta is an authenticated upload. The CLI must never
+object; a file chosen in aleph is an authenticated upload. The CLI must never
 blur those two permissions. The supported initial network remains loopback
 plus SSH forwarding, direct LAN/VPN, or an explicitly administered proxy/ICE
 deployment.
@@ -658,29 +660,29 @@ Qt's `downloadRequested` flow asks for a destination with a native save dialog,
 sets directory and filename explicitly, accepts the request and retains it until
 completion. Focused tests cover actions, shortcuts, selectors, acceptance and
 completion; the browser E2E drives those exact export selectors. A visible xcb
-run on nauta remains before RRS3 is complete.
+run on aleph remains before RRS3 is complete.
 
 - Add Qt connect flow and remote channel.
 - Reuse the remote web surface in `QWebEngineView`.
 - Route native menus, upload, save/export and shortcuts through the session.
 - Preserve current local standalone behavior.
 
-**Exit:** visible xcb on nauta receives spika video and completes native
+**Exit:** visible xcb on aleph receives spika video and completes native
 workflows without a remote desktop.
 
-#### Current spika → ixtlilton → nauta acceptance command
+#### Current spika → ixtlilton → aleph acceptance command
 
 The supported 1.0 service remains loopback-only. Its public
 `molsysviewer-server` command is a thin foreground launcher for one session;
 it does not imply a daemon, scheduler or multi-user service lifecycle. Start
-one fixed-port session on spika; for the poor-GPU nauta case:
+one fixed-port session on spika; for the poor-GPU aleph case:
 
 ```bash
 molsysviewer-server pentalanine --demo \
   --render-on server --port 8765
 ```
 
-From a separate terminal on nauta, forward the same port through ixtlilton:
+From a separate terminal on aleph, forward the same port through ixtlilton:
 
 ```bash
 ssh -J USER@ixtlilton -N \
@@ -688,18 +690,19 @@ ssh -J USER@ixtlilton -N \
 ```
 
 Then pass the exact quoted `Session URL` printed on spika to
-`molsysviewer-qt --connect` on nauta. Keeping the same port preserves HTTP
+`molsysviewer-qt --connect` on aleph. Keeping the same port preserves HTTP
 Origin, CSP, cookie scope and the WebSocket URL. Change only `--render-on
-client` to exercise nauta's WebGL/GPU instead.
+client` to exercise aleph's WebGL/GPU instead.
 
 The command wraps the programmatic `RemoteSessionService` and `MolSysView`
 sequence used throughout the proof. It remains a one-session foreground
 server, not a daemon or multi-session control plane.
 
 The SSH forward carries HTTP and WebSocket traffic. Server-rendered media is a
-separate WebRTC path: it succeeds when nauta can reach an ICE candidate exposed
-by spika (as expected on the shared LAN), but arbitrary routed/NAT deployments
-require the post-1.0 managed TURN work. A successful page/session connection
+separate WebRTC path: direct host candidates are not reachable across the
+aleph → ixtlilton → spika topology, so the validated server-rendering path uses
+TURN/TCP over its own SSH-forwarded port. Arbitrary deployments likewise need
+an administratively supplied TURN service. A successful page/session connection
 followed by failed ICE is therefore reported as a media-connectivity failure,
 not worked around with desktop streaming.
 
@@ -767,13 +770,13 @@ WebSocket messages to 1 MiB. The application's larger 64 MiB allowance exists
 only so the multipart molecular upload handler can enforce its streaming file
 limit; it is not inherited accidentally by credentials or control traffic.
 
-**First remote visual smoke completed 2026-09-04.** A browser on nauta reached
+**First remote visual smoke completed 2026-09-04.** A browser on aleph reached
 the Python authority and NVIDIA GTX 1080 render worker on spika through
 ixtlilton, without a remote desktop. HTTP/WebSocket control worked immediately,
 including projected trajectory controls. Direct WebRTC did not: both Chromium
 peers exposed only UDP host candidates hidden behind unrelated mDNS names, so
 ICE remained `new` despite a stable SDP exchange. An authenticated coturn relay
-bound to spika loopback and forwarded to nauta over SSH as TURN/TCP established
+bound to spika loopback and forwarded to aleph over SSH as TURN/TCP established
 the media and data-channel path. The client displayed pentalanine, accepted
 camera input and advanced playback. The native Qt client then passed the same
 functional smoke: rotate, scroll zoom, atom picking with residue highlight,
@@ -793,13 +796,13 @@ functional smoke matrix; do not encode spika-specific timing or topology into
 defaults.
 
 **Four-mode visual matrix completed 2026-09-05.** With Python authoritative on
-spika and the clients on nauta through the same SSH jump, both client-rendered
+spika and the clients on aleph through the same SSH jump, both client-rendered
 placements (browser and native Qt shell) displayed pentalanine sharply and
 fluidly. Camera rotation, zoom, picking, trajectory playback and seeking all
 worked. They also retained the full local viewer surface, including the Mol*
 context menu and the Reset and Help controls. Client rendering required no
 TURN media path because scene data and commands use the authenticated session
-transport while Mol*/WebGL execute on nauta.
+transport while Mol*/WebGL execute on aleph.
 
 Both server-rendered placements passed the functional interaction smoke after
 TURN/TCP was supplied, but they exposed an intentional implementation gap that
@@ -856,12 +859,12 @@ reduced trajectory.
 - Add diagnostics and release-facing failures.
 
 The loopback gateway items above are implemented and guarded, and the visible
-browser/Qt matrix from nauta is complete. Final closure still requires
+browser/Qt matrix from aleph is complete. Final closure still requires
 repetition from a clean supported installed environment; broader proxy/TURN
 administration remains outside the direct single-session server boundary.
 
 **Exit:** all four combinations pass, packaging is reproducible, and the
-documented spika-to-nauta workflow repeats from a clean supported environment.
+documented spika-to-aleph workflow repeats from a clean supported environment.
 
 ## 14. Acceptance matrix
 
@@ -935,7 +938,7 @@ The implementation is wrong if it:
 
 ## 17. Immediate next step
 
-RRS2 is complete. Complete RRS3 with visible xcb acceptance on nauta; do not
+RRS2 is complete. Complete RRS3 with visible xcb acceptance on aleph; do not
 create a separate Qt protocol or regress local standalone behavior. Worker
 restart and video-stall recovery are now implemented as portable lifecycle
 logic. Continue RRS4 with connection-state projection, security/isolation, the
