@@ -43,6 +43,7 @@ REQUIRED_CAPABILITIES = {
     # rather than a wider first one.
     "save_session / load_session",
     "HTML export and replay", "Popup",
+    "Remote sessions",
     "Standalone (Qt host)", "Add-ons", "MolSysMT integration", "Units",
 }
 

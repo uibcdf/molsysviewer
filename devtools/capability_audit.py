@@ -290,6 +290,29 @@ CAPABILITIES: tuple[Capability, ...] = (
         benchmark="performance/qt_payload_copies_and_endpoint_isolation_2026_08.md",
     ),
     Capability(
+        name="Remote sessions",
+        api=("molsysviewer.remote.",),
+        anchor="molsysviewer/remote/__init__.py",
+        provenance=PYTHON,
+        docs="docs/content/user/remote/index.md",
+        unit=("test_remote_session_service.py", "test_remote_view_channel.py",
+              "test_remote_session_router.py", "test_remote_render_worker.py",
+              "test_remote_protocol.py", "test_remote_cli.py"),
+        status="experimental",
+        note="The count is four because the walk inventories instances rather than "
+             "classes, and the eleven classes in `__all__` are constructed by the host "
+             "rather than held by a user. The surface a user actually types is the "
+             "`molsysviewer-server` console script declared in `pyproject.toml`, and its "
+             "page is the row's documentation. The zero in `Digested` is measured, not "
+             "missing: none of the four takes a digested argument. This is the first "
+             "time the inventory baseline has left zero on that count, tracked in "
+             "uibcdf/molsysviewer#83, and it is Phase 10's open public-callable "
+             "digestion item rather than a defect in this row. "
+             "Experimental is the page's own word: the "
+             "Python API, command-line options, transport protocol and deployment "
+             "configuration may change.",
+    ),
+    Capability(
         name="Standalone (Qt host)",
         api=("molsysviewer.launch_standalone_qt0", "molsysviewer.create_standalone_qt0_window"),
         anchor="molsysviewer/standalone_qt/__init__.py",

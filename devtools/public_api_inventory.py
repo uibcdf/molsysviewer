@@ -352,8 +352,17 @@ def build_inventory() -> dict[str, Any]:
     view.regions.add(selection="atom_index==[0,1]", tag="_inventory_probe")
     view.selections.add("_inventory_probe", atom_indices=[0, 1])
 
+    # `molsysviewer.remote` is a root rather than something the walk finds, because
+    # importing the package does not import it: it is a submodule a user reaches
+    # deliberately, or through the `molsysviewer-server` console script. Without this the
+    # whole remote-session surface is invisible to the inventory, and therefore to the
+    # capability audit that reads it -- which is how a feature can ship in a release the
+    # project's own inventory does not know exists.
+    import molsysviewer.remote as molsysviewer_remote
+
     roots = {
         "molsysviewer": molsysviewer,
+        "molsysviewer.remote": molsysviewer_remote,
         "view": view,
         "view.regions[…]": view.regions["_inventory_probe"],
         "view.selections[…]": view.selections["_inventory_probe"],
