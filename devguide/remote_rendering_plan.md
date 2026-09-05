@@ -854,6 +854,17 @@ compact icon chrome rendered correctly over server video, Reset and Help
 worked, the projected target-aware context menu opened, and the native
 fullscreen bridge entered and exited fullscreen correctly.
 
+**Wheel-installed server acceptance completed 2026-09-05.** Commit `ae78e2ee`
+was built as `molsysviewer-0.20.1+142.gae78e2ee-py3-none-any.whl`, installed
+with `--no-deps` into a temporary site outside the source tree and imported
+from that site. The installed package contained `viewer.js`; its server and Qt
+entrypoints both exposed the experimental label. The installed server then
+launched pentalanine and the NVIDIA GTX 1080 worker, while the Qt client on
+aleph confirmed rotation, trajectory playback and seeking beyond frame 100,
+the target-aware context menu, and all four compact controls. This is
+installed-artifact evidence for MolSysViewer itself, not a claim that a fresh
+conda environment resolved every ecosystem dependency.
+
 The second parity tranche adds target-aware right click without duplicating
 picking. The local client sends a normalized, correlated context-menu input;
 the real worker canvas and Mol* resolve the target; Python removes worker-only
@@ -881,15 +892,17 @@ reduced trajectory.
 - Synchronize the UIBCDF Qt package family.
 - Add diagnostics and release-facing failures.
 
-The loopback gateway items above are implemented and guarded, and the visible
-browser/Qt matrix from aleph is complete. Final closure still requires
-repetition from a clean supported installed environment; broader proxy/TURN
-administration remains outside the direct single-session server boundary.
+The loopback gateway items above are implemented and guarded, the visible
+browser/Qt matrix from aleph is complete, and the server-rendered path has been
+repeated from an installed wheel outside the checkout. Fresh-channel dependency
+resolution remains part of the repository-wide packaging gate, not remote API
+stabilization. Broader proxy/TURN administration remains outside the direct
+single-session server boundary.
 
-**Experimental 1.0 exit:** all four combinations pass their basic smoke,
-packaging is reproducible, the documented spika-to-aleph workflow repeats from
-a clean supported environment, and known limitations are visible. This exit
-does not confer stable-API or stable-protocol status.
+**Experimental 1.0 exit (met 2026-09-05):** all four combinations pass their
+basic smoke, the wheel contains and runs the remote server/runtime outside the
+checkout, the documented spika-to-aleph workflow works, and known limitations
+are visible. This exit does not confer stable-API or stable-protocol status.
 
 ## 14. Acceptance matrix
 
@@ -968,13 +981,8 @@ The implementation is wrong if it:
 
 ## 17. Immediate next step
 
-RRS0–RRS3 and visible xcb acceptance on aleph are complete. Continue RRS4 with
-clean installed-environment repetition and release-facing experimental
-documentation; do not create a separate Qt protocol or regress local standalone
-behavior. Worker restart and video-stall recovery are already portable, and
-connection-state projection and the loopback security baseline are guarded.
-Finish only the reproducible loopback/SSH installation check and the bounded
-foreground `molsysviewer-server` contract from section 9. Do not expand that
-command into a service manager, and do not introduce a desktop-streaming
-wrapper, a hidden Mol* runtime in the server-rendered client or a second scene
-authority.
+The experimental remote-session slice has met its 1.0 exit. Do not continue
+polishing it on the 1.0 critical path: return to the repository-wide dogfooding,
+dependency-channel and release checks. Further remote compatibility, quality,
+deployment and parity work belongs to section 15 after 1.0. Any intervening bug
+fix must preserve the single authority and shared browser/Qt architecture.
