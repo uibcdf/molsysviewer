@@ -215,6 +215,7 @@ class PopupSnapshotMixin:
                 "can_undo": self.history.can_undo(),
                 "can_redo": self.history.can_redo(),
             },
+            self._trajectory_summary_message(),
             self._build_addon_runtime_summary_message(),
         ]
         # Add-on context items: the only panel projection the projector could not

@@ -17,13 +17,13 @@ from pathlib import Path
 
 import pytest
 
-
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "devtools"))
 
 from capability_audit import (  # noqa: E402
     CAPABILITIES,
     DOCUMENT,
+    _first_release_containing,
     _markdown,
     build_audit,
 )
@@ -260,6 +260,26 @@ def test_the_generated_document_is_current(audit):
 
 def test_the_generated_document_is_not_edited_by_hand():
     assert "do not edit by hand" in DOCUMENT.read_text(encoding="utf-8")
+
+
+def test_first_release_considers_every_retained_history(monkeypatch):
+    """A rewritten lineage must not erase the releases preserved by the old one."""
+    from types import SimpleNamespace
+
+    def run(command, **kwargs):
+        if command[:3] == ["git", "log", "--all"]:
+            return SimpleNamespace(stdout="current-add\nhistorical-add\n")
+        if command == ["git", "tag", "--contains", "current-add"]:
+            return SimpleNamespace(stdout="0.20.0\n")
+        if command == ["git", "tag", "--contains", "historical-add"]:
+            return SimpleNamespace(stdout="0.5.0\n0.20.0\n")
+        if command == ["git", "tag", "--sort=creatordate"]:
+            return SimpleNamespace(stdout="0.5.0\n0.20.0\n")
+        raise AssertionError(command)
+
+    monkeypatch.setattr("capability_audit.subprocess.run", run)
+
+    assert _first_release_containing("molsysviewer/whole.py") == "0.5.0"
 
 
 @pytest.mark.parametrize("capability", CAPABILITIES, ids=lambda c: c.name)

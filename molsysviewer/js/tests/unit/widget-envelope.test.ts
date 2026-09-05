@@ -44,6 +44,20 @@ test("wrapOutbound stamps a command envelope with the seam identity", () => {
     assert.strictEqual(env.payload, domain);
 });
 
+test("wrapOutbound can stamp an authenticated remote human identity", () => {
+    const remote = new WidgetEnvelopeAdapter(VIEWER, SESSION, {
+        endpointId: "browser-client:session-a",
+        actorId: "human:session-a",
+        actorKind: "human",
+    });
+    const result = remote.wrapOutbound({ event: "interaction_hover" });
+    assert.strictEqual(result.kind, "send");
+    const envelope = (result as any).message;
+    assert.strictEqual(envelope.endpointId, "browser-client:session-a");
+    assert.strictEqual(envelope.actorId, "human:session-a");
+    assert.strictEqual(envelope.actorKind, "human");
+});
+
 test("wrapOutbound classifies an ephemeral event as an event", () => {
     const res = adapter().wrapOutbound({ event: "interaction_hover" });
     assert.strictEqual(res.kind, "send");
@@ -204,4 +218,3 @@ test("an exported page reports only what genuinely needs a session", () => {
     assert.equal(needsRunningSession({}), false);
     assert.equal(needsRunningSession(null), false);
 });
-

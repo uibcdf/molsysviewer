@@ -19,6 +19,8 @@ const rawManifest = manifest as {
     qt_test_actions: string[];
     popup_actions: Record<string, string[]>;
     frontend_authoritative?: string[];
+    render_placements: string[];
+    endpoint_role_capabilities: Record<string, string[]>;
 };
 
 if (rawManifest.protocol_version !== RUNTIME_ACTIONS_PROTOCOL_VERSION) {
@@ -68,6 +70,35 @@ export const FRONTEND_AUTHORITATIVE: ReadonlySet<string> =
 
 export const RAW_ACTIONS: ReadonlySet<string> = new Set(rawManifest.raw);
 export const DATA_PLANE_ACTIONS: ReadonlySet<string> = new Set(rawManifest.data_plane);
+
+export const RENDER_PLACEMENTS: ReadonlySet<string> = new Set(rawManifest.render_placements);
+if (
+    RENDER_PLACEMENTS.size !== 2
+    || !RENDER_PLACEMENTS.has("client")
+    || !RENDER_PLACEMENTS.has("server")
+) {
+    throw new Error("runtime_actions.json render_placements must be exactly client and server");
+}
+
+export const ENDPOINT_ROLE_CAPABILITIES: ReadonlyMap<string, ReadonlySet<string>> = new Map(
+    Object.entries(rawManifest.endpoint_role_capabilities).map(([role, capabilities]) => {
+        if (role.trim().length === 0 || capabilities.some(item => item.trim().length === 0)) {
+            throw new Error(`runtime_actions.json role ${role} has an invalid capability`);
+        }
+        if (new Set(capabilities).size !== capabilities.length) {
+            throw new Error(`runtime_actions.json role ${role} repeats a capability`);
+        }
+        return [role, new Set(capabilities)] as const;
+    }),
+);
+
+export const ENDPOINT_CAPABILITIES: ReadonlySet<string> = new Set(
+    [...ENDPOINT_ROLE_CAPABILITIES.values()].flatMap(capabilities => [...capabilities]),
+);
+
+export function endpointRoleAllowsCapability(role: string, capability: string): boolean {
+    return ENDPOINT_ROLE_CAPABILITIES.get(role)?.has(capability) ?? false;
+}
 
 // Groups must be pairwise disjoint, matching the Python loader's guarantee.
 (() => {

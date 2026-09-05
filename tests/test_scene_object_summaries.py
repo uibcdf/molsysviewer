@@ -310,7 +310,10 @@ def test_frame_change_refreshes_measurements_without_republishing_static_domains
         "is_playing": False,
     })
 
-    assert [message["op"] for message in sent] == ["set_measurement_summaries"]
+    assert [message["op"] for message in sent] == [
+        "set_trajectory_summary",
+        "set_measurement_summaries",
+    ]
 
 
 def test_measurement_summary_reports_the_current_frame_value_in_presentation_units():

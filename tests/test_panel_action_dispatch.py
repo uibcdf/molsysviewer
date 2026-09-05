@@ -37,6 +37,107 @@ def test_every_declared_context_only_action_has_a_handler():
     assert CONTEXT_ONLY_ACTIONS <= set(HANDLERS)
 
 
+def test_remote_reset_view_routes_through_the_python_authority():
+    view = demo["pentalanine"]
+    sent = []
+    view.widget.send = lambda message: sent.append(message)  # type: ignore[method-assign]
+    view._ready = True  # noqa: SLF001
+
+    dispatch_panel_action(view, {"action": "reset_view"})
+
+    assert sent[-1] == {"op": "reset_view", "options": {}}
+
+
+def test_remote_context_focus_and_clear_use_authoritative_selection_state():
+    view = demo["pentalanine"]
+    sent = []
+    view.widget.send = lambda message: sent.append(message)  # type: ignore[method-assign]
+    view._ready = True  # noqa: SLF001
+
+    dispatch_panel_action(view, {
+        "action": "focus_target",
+        "context": {"kind": "structure", "atom_indices": [0, 1]},
+    })
+    assert sent[-1]["op"] == "zoom"
+    assert sent[-1]["atom_indices"] == [0, 1]
+
+    view.active_selection.set([2, 3], skip_digestion=True)
+    dispatch_panel_action(view, {"action": "focus_selection"})
+    assert sent[-1]["op"] == "zoom"
+    assert sent[-1]["atom_indices"] == [2, 3]
+
+    dispatch_panel_action(view, {"action": "clear_selection"})
+    assert view.active_selection.atom_indices == []
+
+
+def test_trajectory_context_actions_mutate_python_authority_and_project_summary():
+    view = demo["pentalanine"]
+    sent = []
+    view.widget.send = lambda message: sent.append(message)  # type: ignore[method-assign]
+    view._ready = True  # noqa: SLF001
+
+    dispatch_panel_action(view, {"action": "set_trajectory_frame", "index": 4})
+    assert view.player.index == 4
+    assert sent[-2:] == [
+        {"op": "set_trajectory_frame", "index": 4},
+        {
+            "op": "set_trajectory_summary",
+            "frame": 4,
+            "frame_count": view.player.n_structures,
+            "is_playing": False,
+            "fps": 30,
+            "step": 1,
+            "mode": "loop",
+            "direction": "forward",
+        },
+    ]
+
+    dispatch_panel_action(view, {"action": "step_trajectory", "by": -2})
+    assert view.player.index == 2
+    dispatch_panel_action(view, {
+        "action": "set_trajectory_playback",
+        "playback_action": "play",
+        "fps": 12,
+        "step": 2,
+        "mode": "once",
+        "direction": "backward",
+    })
+    assert view.player.is_playing is True
+    assert sent[-1] == {
+        "op": "set_trajectory_summary",
+        "frame": 2,
+        "frame_count": view.player.n_structures,
+        "is_playing": True,
+        "fps": 12,
+        "step": 2,
+        "mode": "once",
+        "direction": "backward",
+    }
+
+    dispatch_panel_action(view, {
+        "action": "set_trajectory_playback",
+        "playback_action": "stop",
+    })
+    assert view.player.is_playing is False
+    assert sent[-1]["op"] == "set_trajectory_summary"
+    assert sent[-1]["is_playing"] is False
+
+
+@pytest.mark.parametrize(
+    "content",
+    [
+        {"action": "set_trajectory_frame", "index": -1},
+        {"action": "set_trajectory_frame", "index": 10**9},
+        {"action": "step_trajectory", "by": 0},
+        {"action": "set_trajectory_playback", "playback_action": "play", "fps": 0},
+        {"action": "set_trajectory_playback", "playback_action": "rewind"},
+    ],
+)
+def test_trajectory_context_actions_reject_invalid_remote_intent(content):
+    with pytest.raises(ValueError):
+        dispatch_panel_action(demo["pentalanine"], content)
+
+
 def test_unknown_panel_action_reports_a_backend_error_instead_of_failing_silently():
     view = demo["dialanine"]
     sent = []

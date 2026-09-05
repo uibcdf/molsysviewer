@@ -11,7 +11,9 @@ def _get_helper(name: str) -> Any:
     m = sys.modules.get("molsysviewer.standalone_qt")
     if m is not None and hasattr(m, name):
         return getattr(m, name)
-    return globals()[name]
+    from . import application
+
+    return getattr(application, name)
 
 
 def _build_arg_parser() -> argparse.ArgumentParser:
@@ -22,6 +24,14 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help="Path to a molecular system or a demo key when using --demo. If omitted, launch an empty host.",
     )
     parser.add_argument("--demo", action="store_true", help="Interpret source as a MolSysViewer demo key.")
+    parser.add_argument(
+        "--connect",
+        metavar="SESSION_URL",
+        help=(
+            "Open an authenticated remote-session URL in the native Qt shell "
+            "(experimental in MolSysViewer 1.0)."
+        ),
+    )
     parser.add_argument("--output", default=None, help="Output HTML file. Defaults to a temporary file.")
     parser.add_argument("--title", default="MolSysViewer Qt Prototype", help="Window title.")
     parser.add_argument("--selection", default="all", help="Selection passed to new_view(...).")
@@ -48,6 +58,18 @@ def _build_arg_parser() -> argparse.ArgumentParser:
 def main(argv: Sequence[str] | None = None) -> int:
     parser = _build_arg_parser()
     args = parser.parse_args(argv)
+    if args.connect is not None:
+        if args.source is not None or args.demo or args.output is not None:
+            parser.error("--connect cannot be combined with source, --demo or --output")
+        runtime = _get_helper("launch_remote_qt")(
+            args.connect,
+            title=args.title,
+            width=args.width,
+            height=args.height,
+            exec_app=not args.no_exec,
+        )
+        print(runtime["session_url"])
+        return 0
     source: Any
     if args.source is None:
         source = None

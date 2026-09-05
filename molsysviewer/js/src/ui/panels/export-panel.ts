@@ -154,6 +154,7 @@ export class ExportPanel extends BasePanel {
         const downloadButton = makeButton("Download PNG Image", () => {
             this.ctx.onAction("download_image");
         });
+        downloadButton.setAttribute("data-molsysviewer-export-image", "true");
         downloadButton.style.padding = "6px 10px";
         downloadButton.style.fontSize = "11px";
         downloadButton.style.fontWeight = "600";
@@ -177,6 +178,7 @@ export class ExportPanel extends BasePanel {
         const htmlButton = makeButton("Download Standalone HTML View", () => {
             this.ctx.onAction("export_html");
         });
+        htmlButton.setAttribute("data-molsysviewer-export-html", "true");
         htmlButton.style.padding = "5px 10px";
         htmlButton.style.fontSize = "11px";
 

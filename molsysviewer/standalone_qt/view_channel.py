@@ -37,6 +37,8 @@ class _Layout:
 
 
 class QtViewChannel:
+    supports_array_native_buffers = False
+
     def __init__(self, bridge) -> None:
         self._bridge = bridge
         self._msg_callbacks: list[Callable[..., Any]] = []

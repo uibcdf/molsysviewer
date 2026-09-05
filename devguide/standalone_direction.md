@@ -15,6 +15,11 @@ The more operational host-level decision is now tracked separately in:
 
 - `devguide/standalone_host_plan.md`
 
+Remote session hosting and explicit client/server rendering placement are
+tracked in:
+
+- [`remote_rendering_plan.md`](remote_rendering_plan.md)
+
 It also now carries an explicit sequencing decision:
 
 - **standalone should be the last major implementation step before `1.0.0`**

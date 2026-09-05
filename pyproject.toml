@@ -10,6 +10,7 @@ authors = [{name = "UIBCDF"}]
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+  "aiohttp>=3.10",
   "anywidget>=0.9.15",
   "argdigest>=0.12.1",
   "depdigest",
@@ -68,6 +69,7 @@ standalone = []
 [project.scripts]
 molsysviewer = "molsysviewer.standalone:main"
 molsysviewer-qt = "molsysviewer.standalone_qt:main"
+molsysviewer-server = "molsysviewer.remote.server_cli:main"
 
 [tool.setuptools]
 include-package-data = false
@@ -78,7 +80,7 @@ include = ["molsysviewer", "molsysviewer.*"]
 exclude = ["molsysviewer.js", "molsysviewer.js.*"]
 
 [tool.setuptools.package-data]
-"molsysviewer" = ["runtime_actions.json", "viewer.js"]
+"molsysviewer" = ["remote_protocol.json", "runtime_actions.json", "viewer.js", "VARELA_ROUND_OFL.txt"]
 
 [tool.ruff]
 line-length = 120

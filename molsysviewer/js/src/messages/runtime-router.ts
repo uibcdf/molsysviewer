@@ -1,3 +1,5 @@
+import { ENDPOINT_ROLE_CAPABILITIES } from "./runtime-actions";
+
 export const RUNTIME_PROTOCOL_VERSION = 1 as const;
 
 export type RuntimeDirection =
@@ -14,7 +16,13 @@ export type RuntimeEndpointRole =
     | "qt-host"
     | "canvas"
     | "panel-popup"
-    | "canvas-popup";
+    | "canvas-popup"
+    | "browser-client"
+    | "qt-client"
+    | "render-worker"
+    | "agent";
+
+export type RuntimeActorKind = "human" | "agent" | "system";
 
 export interface RuntimeEnvelope<T = unknown> {
     protocolVersion: typeof RUNTIME_PROTOCOL_VERSION;
@@ -25,6 +33,11 @@ export interface RuntimeEnvelope<T = unknown> {
     messageId: string;
     correlationId?: string;
     generation?: number;
+    actorId?: string;
+    actorKind?: RuntimeActorKind;
+    causationId?: string;
+    operationId?: string;
+    deadlineUnixMs?: number;
     direction: RuntimeDirection;
     action: string;
     payload: T;
@@ -72,14 +85,11 @@ const DIRECTIONS = new Set<RuntimeDirection>([
     "error",
 ]);
 
-const ROLES = new Set<RuntimeEndpointRole>([
-    "python",
-    "widget-host",
-    "qt-host",
-    "canvas",
-    "panel-popup",
-    "canvas-popup",
-]);
+const ROLES = new Set<RuntimeEndpointRole>(
+    [...ENDPOINT_ROLE_CAPABILITIES.keys()] as RuntimeEndpointRole[],
+);
+
+const ACTOR_KINDS = new Set<RuntimeActorKind>(["human", "agent", "system"]);
 
 const PROJECTION_RECIPIENT_ROLES = new Set<RuntimeEndpointRole>([
     "widget-host",
@@ -87,6 +97,9 @@ const PROJECTION_RECIPIENT_ROLES = new Set<RuntimeEndpointRole>([
     "canvas",
     "panel-popup",
     "canvas-popup",
+    "browser-client",
+    "qt-client",
+    "render-worker",
 ]);
 
 function isNonEmptyString(value: unknown): value is string {
@@ -119,6 +132,27 @@ function validateEnvelopeShape(value: unknown): RuntimeEnvelope | null {
         return null;
     }
     if (candidate.correlationId !== undefined && !isNonEmptyString(candidate.correlationId)) {
+        return null;
+    }
+    if ((candidate.actorId === undefined) !== (candidate.actorKind === undefined)) {
+        return null;
+    }
+    if (candidate.actorId !== undefined && !isNonEmptyString(candidate.actorId)) {
+        return null;
+    }
+    if (candidate.actorKind !== undefined && !ACTOR_KINDS.has(candidate.actorKind)) {
+        return null;
+    }
+    if (candidate.causationId !== undefined && !isNonEmptyString(candidate.causationId)) {
+        return null;
+    }
+    if (candidate.operationId !== undefined && !isNonEmptyString(candidate.operationId)) {
+        return null;
+    }
+    if (
+        candidate.deadlineUnixMs !== undefined
+        && (!Number.isInteger(candidate.deadlineUnixMs) || candidate.deadlineUnixMs < 0)
+    ) {
         return null;
     }
     if (

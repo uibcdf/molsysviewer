@@ -11,7 +11,9 @@ import { PluginCommands } from "molstar/lib/mol-plugin/commands";
 import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
 import { ButtonsType } from "molstar/lib/mol-util/input/input-observer";
+import { Vec2 } from "molstar/lib/mol-math/linear-algebra";
 
+import { VARELA_ROUND_WOFF2_DATA_URL } from "../assets/varela-round/font-data";
 import { ViewerMessage, KnownViewerMessage } from "../messages/viewer-messages";
 import { LoadedStructure } from "../plugin/structure";
 import { LoaderHandlers } from "./handlers/loader-handlers";
@@ -1362,11 +1364,21 @@ export class MolSysViewerController {
                 event.preventDefault();
                 event.stopPropagation();
 
-                const hoverEv = this.plugin.behaviors.interaction.hover.value;
+                const canvas = this.plugin.canvas3dContext?.canvas;
+                const canvas3d = this.plugin.canvas3d;
+                let current = this.plugin.behaviors.interaction.hover.value?.current;
+                if (canvas && canvas3d) {
+                    const rect = canvas.getBoundingClientRect();
+                    const pick = canvas3d.identify(Vec2.create(
+                        event.clientX - rect.left,
+                        event.clientY - rect.top,
+                    ));
+                    current = canvas3d.getLoci(pick?.id);
+                }
                 let payload: ContextInteractionPayload;
 
-                if (hoverEv && hoverEv.current && hoverEv.current.loci) {
-                    const tooltipTag = (hoverEv.current.repr as any)?.props?.tooltip?.trim();
+                if (current?.loci && !Loci.isEmpty(current.loci)) {
+                    const tooltipTag = (current.repr as any)?.props?.tooltip?.trim();
                     if (tooltipTag && this.annotations.hasTag(tooltipTag)) {
                         const spec = this.annotations.getSpec(tooltipTag);
                         payload = {
@@ -1390,10 +1402,10 @@ export class MolSysViewerController {
                             page_y: event.clientY,
                         };
                     } else {
-                        payload = normalizeContextPayloadFromLoci(hoverEv.current.loci, event.clientX, event.clientY);
+                        payload = normalizeContextPayloadFromLoci(current.loci, event.clientX, event.clientY);
                         payload = this.normalizeManagedContextPayload(payload);
                     }
-                    this.lastContextLoci = hoverEv.current.loci;
+                    this.lastContextLoci = current.loci;
                 } else {
                     payload = {
                         event: "interaction_context_menu",
@@ -1402,6 +1414,13 @@ export class MolSysViewerController {
                         page_y: event.clientY,
                     };
                     this.lastContextLoci = null;
+                }
+
+                const remoteRequestId = (event as MouseEvent & {
+                    molsysviewerRemoteRequestId?: unknown;
+                }).molsysviewerRemoteRequestId;
+                if (typeof remoteRequestId === "string") {
+                    (payload as ContextInteractionPayload & { request_id?: string }).request_id = remoteRequestId;
                 }
 
                 this.lastContextPayload = payload;
@@ -3807,14 +3826,18 @@ export class MolSysViewerController {
     private showWelcomeCard(): void {
         if (this.welcomeCard) return;
 
-        // Load Varela Round font dynamically from Google Fonts
-        let fontLink = document.getElementById("molsysviewer-font-varela") as HTMLLinkElement | null;
-        if (!fontLink) {
-            fontLink = document.createElement("link");
-            fontLink.id = "molsysviewer-font-varela";
-            fontLink.rel = "stylesheet";
-            fontLink.href = "https://fonts.googleapis.com/css2?family=Varela+Round&display=swap";
-            document.head.appendChild(fontLink);
+        let fontStyle = document.getElementById("molsysviewer-font-varela") as HTMLStyleElement | null;
+        if (!fontStyle) {
+            fontStyle = document.createElement("style");
+            fontStyle.id = "molsysviewer-font-varela";
+            fontStyle.textContent = `@font-face {
+                font-family: "Varela Round";
+                src: url("${VARELA_ROUND_WOFF2_DATA_URL}") format("woff2");
+                font-style: normal;
+                font-weight: 400;
+                font-display: swap;
+            }`;
+            document.head.appendChild(fontStyle);
         }
 
         const card = document.createElement("div");
@@ -3879,7 +3902,7 @@ export class MolSysViewerController {
             webkitTextFillColor: "transparent",
             letterSpacing: "-0.02em",
             textAlign: "center",
-            fontFamily: "'Varela Round', system-ui, sans-serif",
+            fontFamily: "'Varela Round', system-ui, -apple-system, sans-serif",
         });
         titleEl.textContent = "MolSysViewer";
         card.appendChild(titleEl);
@@ -3917,7 +3940,7 @@ export class MolSysViewerController {
             alignItems: "center",
             marginBottom: "6px",
             fontSize: "9px",
-            fontFamily: "system-ui, -apple-system, sans-serif",
+            fontFamily: "'Varela Round', system-ui, -apple-system, sans-serif",
             userSelect: "none",
         });
 
@@ -3982,7 +4005,7 @@ export class MolSysViewerController {
             textAlign: "center",
             marginTop: "4px",
             boxShadow: "0 4px 12px rgba(206, 80, 39, 0.25)",
-            fontFamily: "'Varela Round', system-ui, sans-serif",
+            fontFamily: "system-ui, -apple-system, sans-serif",
         });
         btn.textContent = "Load Trial Structure (1CRN)";
 

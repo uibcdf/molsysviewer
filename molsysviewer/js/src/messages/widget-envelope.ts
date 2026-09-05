@@ -64,9 +64,14 @@ export class WidgetEnvelopeAdapter {
     constructor(
         private readonly viewerId: string,
         private readonly sessionId: string,
+        private readonly identity?: {
+            endpointId: string;
+            actorId?: string;
+            actorKind?: "human" | "agent" | "system";
+        },
     ) {
         this.pythonEndpoint = `python:${viewerId}`;
-        this.widgetHostEndpoint = `widget-host:${sessionId}`;
+        this.widgetHostEndpoint = identity?.endpointId || `widget-host:${sessionId}`;
     }
 
     /** browser -> Python. `send` carries the wire message (raw for raw/data-plane
@@ -98,6 +103,8 @@ export class WidgetEnvelopeAdapter {
             direction: category,
             action,
             payload: message,
+            ...(this.identity?.actorId ? { actorId: this.identity.actorId } : {}),
+            ...(this.identity?.actorKind ? { actorKind: this.identity.actorKind } : {}),
         };
         return { kind: "send", message: envelope as unknown as Record<string, unknown> };
     }

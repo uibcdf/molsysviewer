@@ -6088,17 +6088,17 @@ RecordPrototype.inspect = RecordPrototype.toSource = function() {
   return this.toString();
 };
 function makeRecord(likeRecord, values2, ownerID) {
-  var record2 = Object.create(Object.getPrototypeOf(likeRecord));
-  record2._values = values2;
-  record2.__ownerID = ownerID;
-  return record2;
+  var record3 = Object.create(Object.getPrototypeOf(likeRecord));
+  record3._values = values2;
+  record3.__ownerID = ownerID;
+  return record3;
 }
-function recordName(record2) {
-  return record2.constructor.displayName || record2.constructor.name || "Record";
+function recordName(record3) {
+  return record3.constructor.displayName || record3.constructor.name || "Record";
 }
-function recordSeq(record2) {
-  return keyedSeqFromValue(record2._keys.map(function(k) {
-    return [k, record2.get(k)];
+function recordSeq(record3) {
+  return keyedSeqFromValue(record3._keys.map(function(k) {
+    return [k, record3.get(k)];
   }));
 }
 function setProp(prototype, name) {
@@ -6148,7 +6148,7 @@ function __awaiter(thisArg, _arguments, P2, generator3) {
         reject(e);
       }
     }
-    function rejected(value) {
+    function rejected2(value) {
       try {
         step(generator3["throw"](value));
       } catch (e) {
@@ -6156,7 +6156,7 @@ function __awaiter(thisArg, _arguments, P2, generator3) {
       }
     }
     function step(result2) {
-      result2.done ? resolve(result2.value) : adopt(result2.value).then(fulfilled, rejected);
+      result2.done ? resolve(result2.value) : adopt(result2.value).then(fulfilled, rejected2);
     }
     step((generator3 = generator3.apply(thisArg, _arguments || [])).next());
   });
@@ -12139,7 +12139,7 @@ var InputObserver;
     let dragging = DraggingState.Stopped;
     let disposed = false;
     let buttons = ButtonsType.create(ButtonsType.Flag.None);
-    let button = ButtonsType.Flag.None;
+    let button2 = ButtonsType.Flag.None;
     let isInside = false;
     let hasMoved = false;
     let resizeObserver;
@@ -12147,7 +12147,7 @@ var InputObserver;
       resizeObserver = new window.ResizeObserver(onResize);
     }
     const events = createEvents();
-    const { drag, interactionEnd, wheel, pinch, gesture, click: click2, move, leave, enter, resize, modifiers, key: key2, keyUp, keyDown, lock, trackedPointers } = events;
+    const { drag, interactionEnd, wheel, pinch, gesture, click: click2, move, leave, enter, resize, modifiers: modifiers3, key: key2, keyUp, keyDown, lock, trackedPointers } = events;
     attach();
     function attach() {
       element.addEventListener("contextmenu", onContextMenu, false);
@@ -12255,7 +12255,7 @@ var InputObserver;
         modifierKeys.meta = true;
       }
       if (changed && isInside)
-        modifiers.next(getModifierKeys());
+        modifiers3.next(getModifierKeys());
       if (getKeyOnElement(event) && isInside) {
         keyDown.next({
           key: event.key,
@@ -12285,7 +12285,7 @@ var InputObserver;
         modifierKeys.meta = false;
       }
       if (changed && isInside)
-        modifiers.next(getModifierKeys());
+        modifiers3.next(getModifierKeys());
       if (AllowedNonPrintableKeys.includes(event.key))
         handleKeyPress(event);
       if (getKeyOnElement(event) && isInside) {
@@ -12322,12 +12322,12 @@ var InputObserver;
     function handleTrackedPointer(trackedPointer, isSecondary) {
       const { x, y, dx, dy, ray, buttons: buttons2, axes } = trackedPointer;
       const [pageX, pageY] = [x, y];
-      const modifiers2 = ModifiersKeys.create();
+      const modifiers4 = ModifiersKeys.create();
       const useDelta = true;
       const state = isSecondary ? trackedPointerState.secondary : trackedPointerState.primary;
       const { prev } = state;
       if (buttons2 === ButtonsType.Flag.Secondary) {
-        move.next({ x, y, pageX, pageY, buttons: ButtonsType.Flag.None, button: ButtonsType.Flag.None, modifiers: modifiers2, inside: true, onElement: true, ray });
+        move.next({ x, y, pageX, pageY, buttons: ButtonsType.Flag.None, button: ButtonsType.Flag.None, modifiers: modifiers4, inside: true, onElement: true, ray });
       } else if ((prev === null || prev === void 0 ? void 0 : prev.buttons) === ButtonsType.Flag.Secondary) {
         leave.next(void 0);
       }
@@ -12336,18 +12336,18 @@ var InputObserver;
       if (prevPressed && !pressed) {
         Vec2.set(state.end, x, y);
         if (Vec2.distance(state.end, state.down) < 20) {
-          click2.next({ x, y, pageX, pageY, buttons: ButtonsType.Flag.Trigger, button: ButtonsType.Flag.Trigger, modifiers: modifiers2, ray });
+          click2.next({ x, y, pageX, pageY, buttons: ButtonsType.Flag.Trigger, button: ButtonsType.Flag.Trigger, modifiers: modifiers4, ray });
         }
         interactionEnd.next(void 0);
       }
       if (pressed) {
         const isStart = !prevPressed;
-        drag.next({ x, y, dx, dy, pageX, pageY, buttons: ButtonsType.Flag.Trigger, button: ButtonsType.Flag.Trigger, modifiers: modifiers2, isStart, useDelta });
+        drag.next({ x, y, dx, dy, pageX, pageY, buttons: ButtonsType.Flag.Trigger, button: ButtonsType.Flag.Trigger, modifiers: modifiers4, isStart, useDelta });
         if (isStart) {
           Vec2.set(state.down, x, y);
         }
       }
-      const keyValue = { x: 0, y: 0, pageX: 0, pageY: 0, modifiers: modifiers2, preventDefault: () => {
+      const keyValue = { x: 0, y: 0, pageX: 0, pageY: 0, modifiers: modifiers4, preventDefault: () => {
       } };
       if (buttonUp(ButtonsType.Flag.Forth, buttons2, prev === null || prev === void 0 ? void 0 : prev.buttons)) {
         const forth = isSecondary ? "GamepadX" : "GamepadA";
@@ -12382,7 +12382,7 @@ var InputObserver;
       state.axes = axes || [];
       state.prev = trackedPointer;
     }
-    function handleTrackedPointerGesture(primary, left, button2) {
+    function handleTrackedPointerGesture(primary, left, button3) {
       const d5 = Vec3.distance(primary.ray.origin, left.ray.origin);
       if (trackedPointerState.distance > 0) {
         const f = d5 / trackedPointerState.distance;
@@ -12391,8 +12391,8 @@ var InputObserver;
           rotation: 0,
           deltaScale: 0,
           deltaRotation: 0,
-          buttons: button2,
-          button: button2,
+          buttons: button3,
+          button: button3,
           modifiers: getModifierKeys()
         });
       }
@@ -12436,7 +12436,7 @@ var InputObserver;
         const a8 = Vec2.fromObj(screenTouches[0]);
         const b8 = Vec2.fromObj(screenTouches[1]);
         const d5 = Vec2.distance(a8, b8);
-        const button3 = ButtonsType.Flag.Trigger;
+        const button4 = ButtonsType.Flag.Trigger;
         if (screenTouchDistance > 0) {
           const f = d5 / screenTouchDistance;
           gesture.next({
@@ -12444,8 +12444,8 @@ var InputObserver;
             rotation: 0,
             deltaScale: 0,
             deltaRotation: 0,
-            buttons: button3,
-            button: button3,
+            buttons: button4,
+            button: button4,
             modifiers: getModifierKeys()
           });
         }
@@ -12462,10 +12462,10 @@ var InputObserver;
           if (Vec2.distance(a8, b8) < 10) {
             const [x2, y2] = a8;
             const [pageX2, pageY2] = [x2, y2];
-            const modifiers3 = ModifiersKeys.create();
-            const button3 = ButtonsType.Flag.Trigger;
+            const modifiers5 = ModifiersKeys.create();
+            const button4 = ButtonsType.Flag.Trigger;
             const { ray } = screenTouchStart;
-            click2.next({ x: x2, y: y2, pageX: pageX2, pageY: pageY2, buttons: button3, button: button3, modifiers: modifiers3, ray });
+            click2.next({ x: x2, y: y2, pageX: pageX2, pageY: pageY2, buttons: button4, button: button4, modifiers: modifiers5, ray });
           }
           interactionEnd.next(void 0);
         }
@@ -12476,8 +12476,8 @@ var InputObserver;
       const p6 = Vec2.fromObj(t5);
       const [x, y] = p6;
       const [pageX, pageY] = [x, y];
-      const modifiers2 = ModifiersKeys.create();
-      const button2 = ButtonsType.Flag.Trigger;
+      const modifiers4 = ModifiersKeys.create();
+      const button3 = ButtonsType.Flag.Trigger;
       const useDelta = true;
       const isStart = screenTouchPrev === void 0;
       const dx = screenTouchPrev ? x - screenTouchPrev.x : 0;
@@ -12485,7 +12485,7 @@ var InputObserver;
       screenTouchPrev = t5;
       if (isStart)
         screenTouchStart = t5;
-      drag.next({ x, y, dx, dy, pageX, pageY, buttons: button2, button: button2, modifiers: modifiers2, isStart, useDelta });
+      drag.next({ x, y, dx, dy, pageX, pageY, buttons: button3, button: button3, modifiers: modifiers4, isStart, useDelta });
     }
     function getCenterTouch(ev) {
       const t0 = ev.touches[0];
@@ -12521,7 +12521,7 @@ var InputObserver;
       lastSingleTouch = void 0;
       singleTouchDistance = -1;
       if (ev.touches.length === 1) {
-        buttons = button = ButtonsType.Flag.Primary;
+        buttons = button2 = ButtonsType.Flag.Primary;
         singleTouchDistance = 0;
         Vec2.set(singleTouchPosition, ev.touches[0].pageX, ev.touches[0].pageY);
         lastSingleTouch = ev.touches[0];
@@ -12530,7 +12530,7 @@ var InputObserver;
         firstTouchStartSet = true;
       } else if (ev.touches.length === 2) {
         buttons = ButtonsType.Flag.Secondary | ButtonsType.Flag.Auxilary;
-        button = ButtonsType.Flag.Secondary;
+        button2 = ButtonsType.Flag.Secondary;
         updateModifierKeys(ev);
         lastTouchFraction = 1;
         initialTouchDistance = getTouchDistance(ev);
@@ -12550,11 +12550,11 @@ var InputObserver;
           centerPageX,
           centerPageY,
           buttons,
-          button,
+          button: button2,
           modifiers: getModifierKeys()
         });
       } else if (ev.touches.length === 3) {
-        buttons = button = ButtonsType.Flag.Forth;
+        buttons = button2 = ButtonsType.Flag.Forth;
         onPointerDown(getCenterTouch(ev));
       }
     }
@@ -12567,13 +12567,13 @@ var InputObserver;
         eventOffset(singleTouchTmp, t5);
         const { pageX, pageY } = getPagePosition(t5);
         const [x, y] = singleTouchTmp;
-        click2.next({ x, y, pageX, pageY, buttons, button, modifiers: getModifierKeys() });
+        click2.next({ x, y, pageX, pageY, buttons, button: button2, modifiers: getModifierKeys() });
       }
       lastSingleTouch = void 0;
       firstTouchStartSet = false;
     }
     function onTouchMove(ev) {
-      button = ButtonsType.Flag.None;
+      button2 = ButtonsType.Flag.None;
       if (noPinchZoom) {
         ev.preventDefault();
         ev.stopPropagation();
@@ -12590,7 +12590,7 @@ var InputObserver;
         onPointerMove(ev.touches[0]);
       } else if (ev.touches.length === 2) {
         buttons = ButtonsType.Flag.Secondary | ButtonsType.Flag.Auxilary;
-        button = ButtonsType.Flag.Secondary;
+        button2 = ButtonsType.Flag.Secondary;
         updateModifierKeys(ev);
         const { pageX: centerPageX, pageY: centerPageY } = getPagePosition(getCenterTouch(ev));
         const distance = getTouchDistance(ev);
@@ -12609,7 +12609,7 @@ var InputObserver;
           centerPageX,
           centerPageY,
           buttons,
-          button,
+          button: button2,
           modifiers: getModifierKeys()
         });
       } else if (ev.touches.length === 3) {
@@ -12620,7 +12620,7 @@ var InputObserver;
     function onMouseDown(ev) {
       updateModifierKeys(ev);
       buttons = getButtons(ev);
-      button = getButton(ev);
+      button2 = getButton(ev);
       if (noMiddleClickScroll && buttons === ButtonsType.Flag.Auxilary) {
         ev.preventDefault;
       }
@@ -12629,13 +12629,13 @@ var InputObserver;
     function onMouseMove(ev) {
       updateModifierKeys(ev);
       buttons = getButtons(ev);
-      button = ButtonsType.Flag.None;
+      button2 = ButtonsType.Flag.None;
       onPointerMove(ev);
     }
     function onMouseUp(ev) {
       updateModifierKeys(ev);
       buttons = getButtons(ev);
-      button = getButton(ev);
+      button2 = getButton(ev);
       onPointerUp(ev);
       endDrag();
     }
@@ -12659,7 +12659,7 @@ var InputObserver;
       if (!hasMoved && Vec2.distance(pointerEnd, pointerDown) < 4) {
         const { pageX, pageY } = getPagePosition(ev);
         const [x, y] = pointerEnd;
-        click2.next({ x, y, pageX, pageY, buttons, button, modifiers: getModifierKeys() });
+        click2.next({ x, y, pageX, pageY, buttons, button: button2, modifiers: getModifierKeys() });
       }
       hasMoved = false;
     }
@@ -12680,7 +12680,7 @@ var InputObserver;
       position.y = y;
       position.pageX = pageX;
       position.pageY = pageY;
-      move.next({ x, y, pageX, pageY, movementX, movementY, buttons, button, modifiers: getModifierKeys(), inside, onElement: ev.target === element });
+      move.next({ x, y, pageX, pageY, movementX, movementY, buttons, button: button2, modifiers: getModifierKeys(), inside, onElement: ev.target === element });
       if (dragging === DraggingState.Stopped)
         return;
       if (noTextSelect) {
@@ -12696,7 +12696,7 @@ var InputObserver;
         hasMoved = true;
       }
       const [dx, dy] = pointerDelta;
-      drag.next({ x, y, dx, dy, pageX, pageY, buttons, button, modifiers: getModifierKeys(), isStart });
+      drag.next({ x, y, dx, dy, pageX, pageY, buttons, button: button2, modifiers: getModifierKeys(), isStart });
       Vec2.copy(pointerStart, pointerEnd);
       dragging = DraggingState.Moving;
     }
@@ -12710,9 +12710,9 @@ var InputObserver;
         ev.preventDefault();
       }
       const normalized2 = normalizeWheel(ev);
-      buttons = button = ButtonsType.Flag.Auxilary;
+      buttons = button2 = ButtonsType.Flag.Auxilary;
       if (normalized2.dx || normalized2.dy || normalized2.dz) {
-        wheel.next({ x, y, pageX, pageY, ...normalized2, buttons, button, modifiers: getModifierKeys() });
+        wheel.next({ x, y, pageX, pageY, ...normalized2, buttons, button: button2, modifiers: getModifierKeys() });
       }
     }
     function tryPreventGesture(ev) {
@@ -12728,7 +12728,7 @@ var InputObserver;
       tryPreventGesture(ev);
       prevGestureScale = ev.scale;
       prevGestureRotation = ev.rotation;
-      gesture.next({ scale: ev.scale, rotation: ev.rotation, deltaRotation: 0, deltaScale: 0, isStart: true, buttons, button, modifiers: getModifierKeys() });
+      gesture.next({ scale: ev.scale, rotation: ev.rotation, deltaRotation: 0, deltaScale: 0, isStart: true, buttons, button: button2, modifiers: getModifierKeys() });
     }
     function gestureDelta(ev, isEnd) {
       gesture.next({
@@ -12738,7 +12738,7 @@ var InputObserver;
         deltaScale: prevGestureScale - ev.scale,
         isEnd,
         buttons,
-        button,
+        button: button2,
         modifiers: getModifierKeys()
       });
       prevGestureRotation = ev.rotation;
@@ -24937,12 +24937,12 @@ function Binding(triggers, action = "", description = "") {
     return binding.triggers.length === 0 || binding.triggers.every((t5) => t5.buttons === void 0 && t5.modifiers === void 0 && !t5.code);
   }
   Binding2.isEmpty = isEmpty3;
-  function match(binding, buttons, modifiers) {
-    return binding.triggers.some((t5) => Trigger5.match(t5, buttons, modifiers));
+  function match(binding, buttons, modifiers3) {
+    return binding.triggers.some((t5) => Trigger5.match(t5, buttons, modifiers3));
   }
   Binding2.match = match;
-  function matchKey(binding, code, modifiers, key2) {
-    return binding.triggers.some((t5) => Trigger5.matchKey(t5, code, modifiers, key2));
+  function matchKey(binding, code, modifiers3, key2) {
+    return binding.triggers.some((t5) => Trigger5.matchKey(t5, code, modifiers3, key2));
   }
   Binding2.matchKey = matchKey;
   function formatTriggers(binding) {
@@ -24954,28 +24954,28 @@ function Binding(triggers, action = "", description = "") {
     return interpolate(help, { triggers: "<i>" + formatTriggers(binding) + "</i>" });
   }
   Binding2.format = format;
-  function Trigger5(buttons, modifiers) {
-    return Trigger5.create(buttons, modifiers);
+  function Trigger5(buttons, modifiers3) {
+    return Trigger5.create(buttons, modifiers3);
   }
   Binding2.Trigger = Trigger5;
-  function TriggerKey(code, modifiers) {
-    return Trigger5.create(void 0, modifiers, code);
+  function TriggerKey(code, modifiers3) {
+    return Trigger5.create(void 0, modifiers3, code);
   }
   Binding2.TriggerKey = TriggerKey;
   (function(Trigger6) {
-    function create4(buttons, modifiers, code) {
-      return { buttons, modifiers, code };
+    function create4(buttons, modifiers3, code) {
+      return { buttons, modifiers: modifiers3, code };
     }
     Trigger6.create = create4;
     Trigger6.Empty = {};
-    function match2(trigger, buttons, modifiers) {
+    function match2(trigger, buttons, modifiers3) {
       const { buttons: b8, modifiers: m } = trigger;
-      return b8 !== void 0 && (b8 === buttons || ButtonsType.has(b8, buttons)) && (!m || ModifiersKeys.areEqual(m, modifiers));
+      return b8 !== void 0 && (b8 === buttons || ButtonsType.has(b8, buttons)) && (!m || ModifiersKeys.areEqual(m, modifiers3));
     }
     Trigger6.match = match2;
-    function matchKey2(trigger, code, modifiers, key2) {
+    function matchKey2(trigger, code, modifiers3, key2) {
       const { modifiers: m, code: c8 } = trigger;
-      return c8 !== void 0 && (c8 === code || c8.length === 1 && code.length === 4 && code.startsWith("Key") && !!key2 && key2.length === 1 && key2.toUpperCase() === c8.toUpperCase()) && (!m || ModifiersKeys.areEqual(m, modifiers));
+      return c8 !== void 0 && (c8 === code || c8.length === 1 && code.length === 4 && code.startsWith("Key") && !!key2 && key2.length === 1 && key2.toUpperCase() === c8.toUpperCase()) && (!m || ModifiersKeys.areEqual(m, modifiers3));
     }
     Trigger6.matchKey = matchKey2;
     function format2(trigger) {
@@ -25013,16 +25013,16 @@ function formatButtons(buttons, code) {
   }
   return s.join(" + ");
 }
-function formatModifiers(modifiers, verbose) {
+function formatModifiers(modifiers3, verbose) {
   const s = [];
-  if (modifiers) {
-    if (modifiers.alt)
+  if (modifiers3) {
+    if (modifiers3.alt)
       s.push("alt key");
-    if (modifiers.control)
+    if (modifiers3.control)
       s.push("control key");
-    if (modifiers.meta)
+    if (modifiers3.meta)
       s.push("meta/command key");
-    if (modifiers.shift)
+    if (modifiers3.shift)
       s.push("shift key");
     if (verbose && s.length === 0)
       s.push("no key");
@@ -25478,7 +25478,7 @@ var TrackballControls;
       Vec3.sub(_eye, camera.position, camera.target);
       Vec3.copy(lastPosition, camera.position);
     }
-    function onDrag({ x, y, dx, dy, pageX, pageY, buttons, modifiers, isStart, useDelta }) {
+    function onDrag({ x, y, dx, dy, pageX, pageY, buttons, modifiers: modifiers3, isStart, useDelta }) {
       const isOutside = !useDelta && outsideViewport(x, y);
       if (isStart && isOutside)
         return;
@@ -25486,12 +25486,12 @@ var TrackballControls;
         return;
       _isInteracting = true;
       resetRock();
-      const dragRotate = Binding.match(b8.dragRotate, buttons, modifiers);
-      const dragRotateZ = Binding.match(b8.dragRotateZ, buttons, modifiers);
-      const dragPan = Binding.match(b8.dragPan, buttons, modifiers);
-      const dragZoom = Binding.match(b8.dragZoom, buttons, modifiers);
-      const dragFocus = Binding.match(b8.dragFocus, buttons, modifiers);
-      const dragFocusZoom = Binding.match(b8.dragFocusZoom, buttons, modifiers);
+      const dragRotate = Binding.match(b8.dragRotate, buttons, modifiers3);
+      const dragRotateZ = Binding.match(b8.dragRotateZ, buttons, modifiers3);
+      const dragPan = Binding.match(b8.dragPan, buttons, modifiers3);
+      const dragZoom = Binding.match(b8.dragZoom, buttons, modifiers3);
+      const dragFocus = Binding.match(b8.dragFocus, buttons, modifiers3);
+      const dragFocusZoom = Binding.match(b8.dragFocusZoom, buttons, modifiers3);
       if (useDelta && dragRotate) {
         Vec2.copy(_rotPrev, getMouseOnCircle(pageX - dx, pageY - dy));
       }
@@ -25540,7 +25540,7 @@ var TrackballControls;
     function onInteractionEnd() {
       _isInteracting = false;
     }
-    function onWheel({ x, y, spinX, spinY, dz, buttons, modifiers }) {
+    function onWheel({ x, y, spinX, spinY, dz, buttons, modifiers: modifiers3 }) {
       if (outsideViewport(x, y))
         return;
       let delta2 = absMax(spinX * 0.075, spinY * 0.075, dz * 1e-4);
@@ -25548,18 +25548,18 @@ var TrackballControls;
         delta2 = -p6.maxWheelDelta;
       else if (delta2 > p6.maxWheelDelta)
         delta2 = p6.maxWheelDelta;
-      if (Binding.match(b8.scrollZoom, buttons, modifiers)) {
+      if (Binding.match(b8.scrollZoom, buttons, modifiers3)) {
         _zoomEnd[1] += delta2;
       }
-      if (Binding.match(b8.scrollFocus, buttons, modifiers)) {
+      if (Binding.match(b8.scrollFocus, buttons, modifiers3)) {
         _focusEnd[1] += delta2;
       }
     }
-    function onPinch({ isStart, startX, startY, centerPageX, centerPageY, fractionDelta, buttons, modifiers }) {
+    function onPinch({ isStart, startX, startY, centerPageX, centerPageY, fractionDelta, buttons, modifiers: modifiers3 }) {
       if (outsideViewport(startX, startY))
         return;
-      const pan = Binding.match(b8.dragPan, buttons, modifiers);
-      const zoom = Binding.match(b8.scrollZoom, buttons, modifiers);
+      const pan = Binding.match(b8.dragPan, buttons, modifiers3);
+      const zoom = Binding.match(b8.scrollZoom, buttons, modifiers3);
       _isInteracting = pan || zoom;
       if (pan) {
         getMouseOnScreen(centerPageX, centerPageY);
@@ -25582,58 +25582,58 @@ var TrackballControls;
       Vec2.copy(_rotPrev, getMouseOnCircle(cx, cy));
       Vec2.copy(_rotCurr, getMouseOnCircle(movementX + cx, movementY + cy));
     }
-    function onKeyDown({ modifiers, code, key: key2, x, y }) {
+    function onKeyDown({ modifiers: modifiers3, code, key: key2, x, y }) {
       if (outsideViewport(x, y))
         return;
-      if (Binding.matchKey(b8.keyMoveForward, code, modifiers, key2)) {
+      if (Binding.matchKey(b8.keyMoveForward, code, modifiers3, key2)) {
         keyState.moveForward = 1;
-      } else if (Binding.matchKey(b8.keyMoveBack, code, modifiers, key2)) {
+      } else if (Binding.matchKey(b8.keyMoveBack, code, modifiers3, key2)) {
         keyState.moveBack = 1;
-      } else if (Binding.matchKey(b8.keyMoveLeft, code, modifiers, key2)) {
+      } else if (Binding.matchKey(b8.keyMoveLeft, code, modifiers3, key2)) {
         keyState.moveLeft = 1;
-      } else if (Binding.matchKey(b8.keyMoveRight, code, modifiers, key2)) {
+      } else if (Binding.matchKey(b8.keyMoveRight, code, modifiers3, key2)) {
         keyState.moveRight = 1;
-      } else if (Binding.matchKey(b8.keyMoveUp, code, modifiers, key2)) {
+      } else if (Binding.matchKey(b8.keyMoveUp, code, modifiers3, key2)) {
         keyState.moveUp = 1;
-      } else if (Binding.matchKey(b8.keyMoveDown, code, modifiers, key2)) {
+      } else if (Binding.matchKey(b8.keyMoveDown, code, modifiers3, key2)) {
         keyState.moveDown = 1;
-      } else if (Binding.matchKey(b8.keyRollLeft, code, modifiers, key2)) {
+      } else if (Binding.matchKey(b8.keyRollLeft, code, modifiers3, key2)) {
         keyState.rollLeft = 1;
-      } else if (Binding.matchKey(b8.keyRollRight, code, modifiers, key2)) {
+      } else if (Binding.matchKey(b8.keyRollRight, code, modifiers3, key2)) {
         keyState.rollRight = 1;
-      } else if (Binding.matchKey(b8.keyPitchUp, code, modifiers, key2)) {
+      } else if (Binding.matchKey(b8.keyPitchUp, code, modifiers3, key2)) {
         keyState.pitchUp = 1;
-      } else if (Binding.matchKey(b8.keyPitchDown, code, modifiers, key2)) {
+      } else if (Binding.matchKey(b8.keyPitchDown, code, modifiers3, key2)) {
         keyState.pitchDown = 1;
-      } else if (Binding.matchKey(b8.keyYawLeft, code, modifiers, key2)) {
+      } else if (Binding.matchKey(b8.keyYawLeft, code, modifiers3, key2)) {
         keyState.yawLeft = 1;
-      } else if (Binding.matchKey(b8.keyYawRight, code, modifiers, key2)) {
+      } else if (Binding.matchKey(b8.keyYawRight, code, modifiers3, key2)) {
         keyState.yawRight = 1;
       }
-      if (Binding.matchKey(b8.boostMove, code, modifiers, key2)) {
+      if (Binding.matchKey(b8.boostMove, code, modifiers3, key2)) {
         keyState.boostMove = 1;
       }
-      if (Binding.matchKey(b8.enablePointerLock, code, modifiers, key2)) {
+      if (Binding.matchKey(b8.enablePointerLock, code, modifiers3, key2)) {
         input.requestPointerLock(viewport);
       }
     }
-    function onKeyUp({ modifiers, code, key: key2, x, y }) {
+    function onKeyUp({ modifiers: modifiers3, code, key: key2, x, y }) {
       var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
       if (outsideViewport(x, y))
         return;
       let isModifierCode = false;
       if (code.startsWith("Alt")) {
         isModifierCode = true;
-        modifiers.alt = true;
+        modifiers3.alt = true;
       } else if (code.startsWith("Shift")) {
         isModifierCode = true;
-        modifiers.shift = true;
+        modifiers3.shift = true;
       } else if (code.startsWith("Control")) {
         isModifierCode = true;
-        modifiers.control = true;
+        modifiers3.control = true;
       } else if (code.startsWith("Meta")) {
         isModifierCode = true;
-        modifiers.meta = true;
+        modifiers3.meta = true;
       }
       const codes = [];
       if (isModifierCode) {
@@ -25665,33 +25665,33 @@ var TrackballControls;
         codes.push(code);
       }
       for (const code2 of codes) {
-        if (Binding.matchKey(b8.keyMoveForward, code2, modifiers, key2)) {
+        if (Binding.matchKey(b8.keyMoveForward, code2, modifiers3, key2)) {
           keyState.moveForward = 0;
-        } else if (Binding.matchKey(b8.keyMoveBack, code2, modifiers, key2)) {
+        } else if (Binding.matchKey(b8.keyMoveBack, code2, modifiers3, key2)) {
           keyState.moveBack = 0;
-        } else if (Binding.matchKey(b8.keyMoveLeft, code2, modifiers, key2)) {
+        } else if (Binding.matchKey(b8.keyMoveLeft, code2, modifiers3, key2)) {
           keyState.moveLeft = 0;
-        } else if (Binding.matchKey(b8.keyMoveRight, code2, modifiers, key2)) {
+        } else if (Binding.matchKey(b8.keyMoveRight, code2, modifiers3, key2)) {
           keyState.moveRight = 0;
-        } else if (Binding.matchKey(b8.keyMoveUp, code2, modifiers, key2)) {
+        } else if (Binding.matchKey(b8.keyMoveUp, code2, modifiers3, key2)) {
           keyState.moveUp = 0;
-        } else if (Binding.matchKey(b8.keyMoveDown, code2, modifiers, key2)) {
+        } else if (Binding.matchKey(b8.keyMoveDown, code2, modifiers3, key2)) {
           keyState.moveDown = 0;
-        } else if (Binding.matchKey(b8.keyRollLeft, code2, modifiers, key2)) {
+        } else if (Binding.matchKey(b8.keyRollLeft, code2, modifiers3, key2)) {
           keyState.rollLeft = 0;
-        } else if (Binding.matchKey(b8.keyRollRight, code2, modifiers, key2)) {
+        } else if (Binding.matchKey(b8.keyRollRight, code2, modifiers3, key2)) {
           keyState.rollRight = 0;
-        } else if (Binding.matchKey(b8.keyPitchUp, code2, modifiers, key2)) {
+        } else if (Binding.matchKey(b8.keyPitchUp, code2, modifiers3, key2)) {
           keyState.pitchUp = 0;
-        } else if (Binding.matchKey(b8.keyPitchDown, code2, modifiers, key2)) {
+        } else if (Binding.matchKey(b8.keyPitchDown, code2, modifiers3, key2)) {
           keyState.pitchDown = 0;
-        } else if (Binding.matchKey(b8.keyYawLeft, code2, modifiers, key2)) {
+        } else if (Binding.matchKey(b8.keyYawLeft, code2, modifiers3, key2)) {
           keyState.yawLeft = 0;
-        } else if (Binding.matchKey(b8.keyYawRight, code2, modifiers, key2)) {
+        } else if (Binding.matchKey(b8.keyYawRight, code2, modifiers3, key2)) {
           keyState.yawRight = 0;
         }
       }
-      if (Binding.matchKey(b8.boostMove, code, modifiers, key2)) {
+      if (Binding.matchKey(b8.boostMove, code, modifiers3, key2)) {
         keyState.boostMove = 0;
       }
     }
@@ -40392,10 +40392,10 @@ var DefaultSaccharideCompIdMap = (function() {
   const map4 = /* @__PURE__ */ new Map();
   for (let i = 0, il = Monosaccharides.length; i < il; ++i) {
     const saccharide = Monosaccharides[i];
-    const common2 = CommonSaccharideNames[saccharide.abbr];
-    if (common2) {
-      for (let j = 0, jl = common2.length; j < jl; ++j) {
-        map4.set(common2[j], saccharide);
+    const common3 = CommonSaccharideNames[saccharide.abbr];
+    if (common3) {
+      for (let j = 0, jl = common3.length; j < jl; ++j) {
+        map4.set(common3[j], saccharide);
       }
     }
     const charmm = CharmmSaccharideNames[saccharide.abbr];
@@ -40415,10 +40415,10 @@ var GlycamSaccharideCompIdMap = (function() {
   const map4 = /* @__PURE__ */ new Map();
   for (let i = 0, il = Monosaccharides.length; i < il; ++i) {
     const saccharide = Monosaccharides[i];
-    const common2 = CommonSaccharideNames[saccharide.abbr];
-    if (common2) {
-      for (let j = 0, jl = common2.length; j < jl; ++j) {
-        map4.set(common2[j], saccharide);
+    const common3 = CommonSaccharideNames[saccharide.abbr];
+    if (common3) {
+      for (let j = 0, jl = common3.length; j < jl; ++j) {
+        map4.set(common3[j], saccharide);
       }
     }
     const charmm = CharmmSaccharideNames[saccharide.abbr];
@@ -42322,8 +42322,8 @@ var Arguments;
   }
   Arguments2.Dictionary = Dictionary;
   function List4(type3, params) {
-    const { nonEmpty: nonEmpty2 = false } = params || {};
-    return { kind: "list", type: type3, nonEmpty: nonEmpty2, "@type": 0 };
+    const { nonEmpty: nonEmpty3 = false } = params || {};
+    return { kind: "list", type: type3, nonEmpty: nonEmpty3, "@type": 0 };
   }
   Arguments2.List = List4;
 })(Arguments || (Arguments = {}));
@@ -43593,15 +43593,15 @@ function stringArray(data, encoding) {
   const offsets = decode({ encoding: encoding.offsetEncoding, data: encoding.offsets });
   const indices2 = decode({ encoding: encoding.dataEncoding, data });
   const str11 = encoding.stringData;
-  const strings = new Array(offsets.length);
-  strings[0] = "";
+  const strings2 = new Array(offsets.length);
+  strings2[0] = "";
   for (let i = 1, _i = offsets.length; i < _i; i++) {
-    strings[i] = str11.substring(offsets[i - 1], offsets[i]);
+    strings2[i] = str11.substring(offsets[i - 1], offsets[i]);
   }
   let offset3 = 0;
   const result2 = new Array(indices2.length);
   for (let i = 0, _i = indices2.length; i < _i; i++) {
-    result2[offset3++] = strings[indices2[i] + 1];
+    result2[offset3++] = strings2[indices2[i] + 1];
   }
   return result2;
 }
@@ -44172,7 +44172,7 @@ var ArrayEncoding;
   ArrayEncoding2.integerPacking = integerPacking2;
   function stringArray2(data) {
     const map4 = /* @__PURE__ */ Object.create(null);
-    const strings = [];
+    const strings2 = [];
     const output = new Int32Array(data.length);
     const offsets = ChunkedArray.create(Int32Array, 1, Math.min(1024, data.length < 32 ? data.length + 1 : Math.round(data.length / 8) + 1));
     ChunkedArray.add(offsets, 0);
@@ -44186,8 +44186,8 @@ var ArrayEncoding;
       let index = map4[s];
       if (index === void 0) {
         accLength += s.length;
-        index = strings.length;
-        strings[index] = s;
+        index = strings2.length;
+        strings2[index] = s;
         map4[s] = index;
         ChunkedArray.add(offsets, accLength);
       }
@@ -44199,7 +44199,7 @@ var ArrayEncoding;
     const dataEncoding = classifyIntArray(output);
     const encodedData = dataEncoding.encode(output);
     return {
-      encodings: [{ kind: "StringArray", dataEncoding: encodedData.encoding, stringData: strings.join(""), offsetEncoding: encodedOddsets.encoding, offsets: encodedOddsets.data }],
+      encodings: [{ kind: "StringArray", dataEncoding: encodedData.encoding, stringData: strings2.join(""), offsetEncoding: encodedOddsets.encoding, offsets: encodedOddsets.data }],
       data: encodedData.data
     };
   }
@@ -78053,8 +78053,8 @@ function trajectoryFromGRO(gro) {
 }
 
 // node_modules/molstar/lib/mol-model-formats/structure/pdb/assembly.js
-function parseCryst1(id, record2) {
-  const get11 = (s, l) => (record2.substr(s, l) || "").trim();
+function parseCryst1(id, record3) {
+  const get11 = (s, l) => (record3.substr(s, l) || "").trim();
   const cell = {
     entry_id: CifField.ofString(id),
     length_a: CifField.ofString(get11(6, 9)),
@@ -98465,36 +98465,36 @@ var Canvas3dInteractionHelper = class {
       this.events.hover.next({ current: this.prevLoci, buttons: this.buttons, button: this.button, modifiers: this.modifiers });
     }
   }
-  move(x, y, buttons, button, modifiers, ray) {
+  move(x, y, buttons, button2, modifiers3, ray) {
     this.inside = true;
     this.buttons = buttons;
-    this.button = button;
-    this.modifiers = modifiers;
+    this.button = button2;
+    this.modifiers = modifiers3;
     this.ray = ray;
     this.endX = x;
     this.endY = y;
   }
-  click(x, y, buttons, button, modifiers, ray) {
+  click(x, y, buttons, button2, modifiers3, ray) {
     this.endX = x;
     this.endY = y;
     this.buttons = buttons;
-    this.button = button;
-    this.modifiers = modifiers;
+    this.button = button2;
+    this.modifiers = modifiers3;
     this.ray = ray;
     this.handleClick();
   }
-  drag(x, y, buttons, button, modifiers) {
+  drag(x, y, buttons, button2, modifiers3) {
     this.endX = x;
     this.endY = y;
     this.buttons = buttons;
-    this.button = button;
-    this.modifiers = modifiers;
+    this.button = button2;
+    this.modifiers = modifiers3;
     this.handleDrag();
   }
-  modify(modifiers) {
-    if (ModifiersKeys.areEqual(modifiers, this.modifiers))
+  modify(modifiers3) {
+    if (ModifiersKeys.areEqual(modifiers3, this.modifiers))
       return;
-    this.modifiers = modifiers;
+    this.modifiers = modifiers3;
     this.events.hover.next({ current: this.prevLoci, buttons: this.buttons, button: this.button, modifiers: this.modifiers, page: Vec2.create(this.endX, this.endY), position: this.position });
   }
   outsideViewport(x, y, ray) {
@@ -98556,32 +98556,32 @@ var Canvas3dInteractionHelper = class {
     this.button = ButtonsType.create(0);
     this.modifiers = ModifiersKeys.None;
     this.props = { ...ParamDefinition.getDefaultValues(Canvas3dInteractionHelperParams), ...props };
-    input.drag.subscribe(({ x, y, buttons, button, modifiers }) => {
+    input.drag.subscribe(({ x, y, buttons, button: button2, modifiers: modifiers3 }) => {
       this.isInteracting = true;
-      this.drag(x, y, buttons, button, modifiers);
+      this.drag(x, y, buttons, button2, modifiers3);
     });
-    input.move.subscribe(({ x, y, inside, buttons, button, modifiers, onElement, ray }) => {
+    input.move.subscribe(({ x, y, inside, buttons, button: button2, modifiers: modifiers3, onElement, ray }) => {
       if (!inside || this.isInteracting)
         return;
       if (!onElement) {
         this.leave();
         return;
       }
-      this.move(x, y, buttons, button, modifiers, ray);
+      this.move(x, y, buttons, button2, modifiers3, ray);
     });
     input.leave.subscribe(() => {
       this.leave();
     });
-    input.click.subscribe(({ x, y, buttons, button, modifiers, ray }) => {
+    input.click.subscribe(({ x, y, buttons, button: button2, modifiers: modifiers3, ray }) => {
       if (this.outsideViewport(x, y, ray))
         return;
-      this.click(x, y, buttons, button, modifiers, ray);
+      this.click(x, y, buttons, button2, modifiers3, ray);
     });
     input.interactionEnd.subscribe(() => {
       this.isInteracting = false;
     });
-    input.modifiers.subscribe((modifiers) => {
-      this.modify(modifiers);
+    input.modifiers.subscribe((modifiers3) => {
+      this.modify(modifiers3);
     });
   }
 };
@@ -108173,18 +108173,18 @@ var XRManager = class {
     });
     this.checkSupported();
     (_a = navigator.xr) === null || _a === void 0 ? void 0 : _a.addEventListener("devicechange", this.checkSupported);
-    this.keyUpSub = input.keyUp.subscribe(({ code, modifiers, key: key2 }) => {
+    this.keyUpSub = input.keyUp.subscribe(({ code, modifiers: modifiers3, key: key2 }) => {
       const b8 = this.attribs.bindings;
-      if (Binding.matchKey(b8.exit, code, modifiers, key2)) {
+      if (Binding.matchKey(b8.exit, code, modifiers3, key2)) {
         this.end();
       }
-      if (Binding.matchKey(b8.togglePassthrough, code, modifiers, key2)) {
+      if (Binding.matchKey(b8.togglePassthrough, code, modifiers3, key2)) {
         this.togglePassthrough.next();
       }
     });
-    this.gestureSub = input.gesture.subscribe(({ scale, button, modifiers }) => {
+    this.gestureSub = input.gesture.subscribe(({ scale, button: button2, modifiers: modifiers3 }) => {
       const b8 = this.attribs.bindings;
-      if (Binding.match(b8.gestureScale, button, modifiers)) {
+      if (Binding.match(b8.gestureScale, button2, modifiers3)) {
         this.setScaleFactor(scale);
       }
     });
@@ -108755,7 +108755,7 @@ var Canvas3D;
       return changed;
     }
     let fenceSync = null;
-    function render(force, xrFrame) {
+    function render2(force, xrFrame) {
       if (webgl.isContextLost)
         return false;
       if (webgl.xr.session && !xrFrame)
@@ -108845,7 +108845,7 @@ var Canvas3D;
         forceNextRender = true;
         return;
       }
-      if (render(!!(options === null || options === void 0 ? void 0 : options.force), options === null || options === void 0 ? void 0 : options.xrFrame) && notifyDidDraw) {
+      if (render2(!!(options === null || options === void 0 ? void 0 : options.force), options === null || options === void 0 ? void 0 : options.xrFrame) && notifyDidDraw) {
         didDraw.next(now() - startTime);
       }
     }
@@ -116642,7 +116642,7 @@ var HighlightLoci = PluginBehavior.create({
       return this.params.preferAtoms && Bond.isLoci(loci) && loci.bonds.length === 2 ? Bond.toFirstStructureElementLoci(loci) : loci;
     }
     register() {
-      this.subscribeObservable(this.ctx.behaviors.interaction.hover, ({ current: current2, buttons, modifiers }) => {
+      this.subscribeObservable(this.ctx.behaviors.interaction.hover, ({ current: current2, buttons, modifiers: modifiers3 }) => {
         if (!this.ctx.canvas3d || this.ctx.isBusy)
           return;
         const loci = this.getLoci(current2.loci);
@@ -116651,11 +116651,11 @@ var HighlightLoci = PluginBehavior.create({
           return;
         }
         let matched = false;
-        if (Binding.match(this.params.bindings.hoverHighlightOnly, buttons, modifiers)) {
+        if (Binding.match(this.params.bindings.hoverHighlightOnly, buttons, modifiers3)) {
           this.ctx.managers.interactivity.lociHighlights.highlightOnly({ loci });
           matched = true;
         }
-        if (Binding.match(this.params.bindings.hoverHighlightOnlyExtend, buttons, modifiers)) {
+        if (Binding.match(this.params.bindings.hoverHighlightOnlyExtend, buttons, modifiers3)) {
           this.ctx.managers.interactivity.lociHighlights.highlightOnlyExtend({ loci });
           matched = true;
         }
@@ -116724,14 +116724,14 @@ var SelectLoci = PluginBehavior.create({
         const l = y.triggers.length === 0 ? 0 : arrayMax(y.triggers.map((t5) => M2.size(t5.modifiers)));
         return l - k;
       });
-      this.subscribeObservable(this.ctx.behaviors.interaction.click, ({ current: current2, button, modifiers }) => {
+      this.subscribeObservable(this.ctx.behaviors.interaction.click, ({ current: current2, button: button2, modifiers: modifiers3 }) => {
         if (!this.ctx.canvas3d || this.ctx.isBusy || !this.ctx.selectionMode)
           return;
         const loci = this.getLoci(current2.loci);
         if (this.params.ignore.includes(loci.kind))
           return;
         for (const [binding, action, condition] of actions) {
-          if (Binding.match(this.params.bindings[binding], button, modifiers) && (!condition || condition(loci))) {
+          if (Binding.match(this.params.bindings[binding], button2, modifiers3) && (!condition || condition(loci))) {
             action({ repr: current2.repr, loci });
             break;
           }
@@ -116833,15 +116833,15 @@ var FocusLoci = PluginBehavior.create({
   category: "interaction",
   ctor: class extends PluginBehavior.Handler {
     register() {
-      this.subscribeObservable(this.ctx.behaviors.interaction.click, ({ current: current2, button, modifiers }) => {
+      this.subscribeObservable(this.ctx.behaviors.interaction.click, ({ current: current2, button: button2, modifiers: modifiers3 }) => {
         var _a, _b, _c, _d, _e, _f, _g;
         const { clickFocus, clickFocusAdd, clickFocusExtend, clickFocusSelectMode, clickFocusAddSelectMode, clickFocusExtendSelectMode } = this.params.bindings;
         const binding = this.ctx.selectionMode ? clickFocusSelectMode : clickFocus;
-        const matched = Binding.match(binding, button, modifiers);
+        const matched = Binding.match(binding, button2, modifiers3);
         const bindingAdd = this.ctx.selectionMode ? clickFocusAddSelectMode : clickFocusAdd;
-        const matchedAdd = Binding.match(bindingAdd, button, modifiers);
+        const matchedAdd = Binding.match(bindingAdd, button2, modifiers3);
         const bindingExtend = this.ctx.selectionMode ? clickFocusExtendSelectMode : clickFocusExtend;
-        const matchedExtend = Binding.match(bindingExtend, button, modifiers);
+        const matchedExtend = Binding.match(bindingExtend, button2, modifiers3);
         if (!matched && !matchedAdd && !matchedExtend)
           return;
         const snapshotKey = (_d = (_c = (_b = (_a = current2.repr) === null || _a === void 0 ? void 0 : _a.props) === null || _b === void 0 ? void 0 : _b.snapshotKey) === null || _c === void 0 ? void 0 : _c.trim()) !== null && _d !== void 0 ? _d : "";
@@ -116933,13 +116933,13 @@ var FocusLoci2 = PluginBehavior.create({
   category: "interaction",
   ctor: class extends PluginBehavior.Handler {
     register() {
-      this.subscribeObservable(this.ctx.behaviors.interaction.click, ({ current: current2, button, modifiers }) => {
+      this.subscribeObservable(this.ctx.behaviors.interaction.click, ({ current: current2, button: button2, modifiers: modifiers3 }) => {
         var _a, _b, _c, _d, _e, _f, _g, _h;
         if (!this.ctx.canvas3d)
           return;
         const binding = this.ctx.selectionMode ? this.params.bindings.clickCenterFocusSelectMode : this.params.bindings.clickCenterFocus;
         const resetBinding = this.ctx.selectionMode ? (_a = this.params.bindings.clickResetCameraOnEmptySelectMode) !== null && _a !== void 0 ? _a : DefaultClickResetCameraOnEmptySelectMode : (_b = this.params.bindings.clickResetCameraOnEmpty) !== null && _b !== void 0 ? _b : DefaultClickResetCameraOnEmpty;
-        if (Loci2.isEmpty(current2.loci) && Binding.match(resetBinding, button, modifiers)) {
+        if (Loci2.isEmpty(current2.loci) && Binding.match(resetBinding, button2, modifiers3)) {
           PluginCommands.Camera.Reset(this.ctx, {});
           return;
         }
@@ -116948,7 +116948,7 @@ var FocusLoci2 = PluginBehavior.create({
         if (snapshotKey || typeof markdownCommands === "object" && Object.keys(markdownCommands).length > 0) {
           return;
         }
-        if (Binding.match(binding, button, modifiers)) {
+        if (Binding.match(binding, button2, modifiers3)) {
           const loci = Loci2.normalize(current2.loci, this.ctx.managers.interactivity.props.granularity);
           this.ctx.managers.camera.focusLoci(loci, this.params);
         }
@@ -117028,14 +117028,14 @@ var CameraControls = PluginBehavior.create({
   category: "interaction",
   ctor: class extends PluginBehavior.Handler {
     register() {
-      this.subscribeObservable(this.ctx.behaviors.interaction.key, ({ code, key: key2, modifiers }) => {
+      this.subscribeObservable(this.ctx.behaviors.interaction.key, ({ code, key: key2, modifiers: modifiers3 }) => {
         var _a;
         if (!this.ctx.canvas3d)
           return;
         const b8 = { ...DefaultCameraControlsBindings, ...this.params.bindings };
         const tp = this.ctx.canvas3d.props.trackball;
         const ip = this.ctx.canvas3d.props.illumination;
-        if (Binding.matchKey(b8.keySpinAnimation, code, modifiers, key2)) {
+        if (Binding.matchKey(b8.keySpinAnimation, code, modifiers3, key2)) {
           const name = tp.animate.name !== "spin" ? "spin" : "off";
           if (name === "off") {
             PluginCommands.Canvas3D.SetSettings(this.ctx, {
@@ -117057,7 +117057,7 @@ var CameraControls = PluginBehavior.create({
             });
           }
         }
-        if (Binding.matchKey(b8.keyRockAnimation, code, modifiers, key2)) {
+        if (Binding.matchKey(b8.keyRockAnimation, code, modifiers3, key2)) {
           const name = tp.animate.name !== "rock" ? "rock" : "off";
           if (name === "off") {
             PluginCommands.Canvas3D.SetSettings(this.ctx, {
@@ -117079,7 +117079,7 @@ var CameraControls = PluginBehavior.create({
             });
           }
         }
-        if (Binding.matchKey(b8.keyToggleFlyMode, code, modifiers, key2)) {
+        if (Binding.matchKey(b8.keyToggleFlyMode, code, modifiers3, key2)) {
           const flyMode = !tp.flyMode;
           PluginCommands.Canvas3D.SetSettings(this.ctx, {
             settings: {
@@ -117093,10 +117093,10 @@ var CameraControls = PluginBehavior.create({
             this.ctx.canvas3dContext.canvas.style.cursor = flyMode ? "crosshair" : "unset";
           }
         }
-        if (Binding.matchKey(b8.keyResetView, code, modifiers, key2)) {
+        if (Binding.matchKey(b8.keyResetView, code, modifiers3, key2)) {
           PluginCommands.Camera.Reset(this.ctx, {});
         }
-        if (Binding.matchKey(b8.keyGlobalIllumination, code, modifiers, key2)) {
+        if (Binding.matchKey(b8.keyGlobalIllumination, code, modifiers3, key2)) {
           PluginCommands.Canvas3D.SetSettings(this.ctx, {
             settings: {
               illumination: {
@@ -117144,24 +117144,24 @@ var SnapshotControls = PluginBehavior.create({
   category: "interaction",
   ctor: class extends PluginBehavior.Handler {
     register() {
-      this.subscribeObservable(this.ctx.behaviors.interaction.keyReleased, ({ code, modifiers, key: key2 }) => {
+      this.subscribeObservable(this.ctx.behaviors.interaction.keyReleased, ({ code, modifiers: modifiers3, key: key2 }) => {
         if (!this.ctx.canvas3d || this.ctx.isBusy)
           return;
         const b8 = this.params.bindings;
         const { snapshot } = this.ctx.managers;
-        if (Binding.matchKey(b8.next, code, modifiers, key2)) {
+        if (Binding.matchKey(b8.next, code, modifiers3, key2)) {
           snapshot.applyNext(1);
         }
-        if (Binding.matchKey(b8.previous, code, modifiers, key2)) {
+        if (Binding.matchKey(b8.previous, code, modifiers3, key2)) {
           snapshot.applyNext(-1);
         }
-        if (Binding.matchKey(b8.first, code, modifiers, key2)) {
+        if (Binding.matchKey(b8.first, code, modifiers3, key2)) {
           const e = snapshot.state.entries.get(0);
           const s = snapshot.setCurrent(e.snapshot.id);
           if (s)
             return this.ctx.state.setSnapshot(s);
         }
-        if (Binding.matchKey(b8.last, code, modifiers, key2)) {
+        if (Binding.matchKey(b8.last, code, modifiers3, key2)) {
           const e = snapshot.state.entries.get(snapshot.state.entries.size - 1);
           const s = snapshot.setCurrent(e.snapshot.id);
           if (s)
@@ -130561,7 +130561,7 @@ function calcGaussianDensityTexture2d(webgl, position, box4, radius, powerOfTwo,
   if (!texture)
     texture = colorBufferHalfFloat && textureHalfFloat ? resources.texture("image-float16", "rgba", "fp16", "linear") : colorBufferFloat && textureFloat ? resources.texture("image-float32", "rgba", "float", "linear") : resources.texture("image-uint8", "rgba", "ubyte", "linear");
   texture.define(width, height);
-  function render(fbTex, clear2) {
+  function render2(fbTex, clear2) {
     state.currentRenderItemId = -1;
     fbTex.attachFramebuffer(framebuffer, 0);
     if (clear2) {
@@ -130591,12 +130591,12 @@ function calcGaussianDensityTexture2d(webgl, position, box4, radius, powerOfTwo,
     gl.flush();
   }
   setupDensityRendering(webgl, renderable);
-  render(texture, true);
+  render2(texture, true);
   if (blendMinMax) {
     setupMinDistanceRendering(webgl, renderable);
-    render(minDistTex, true);
+    render2(minDistTex, true);
     setupGroupIdRendering(webgl, renderable);
-    render(texture, false);
+    render2(texture, false);
   }
   return { texture, scale, bbox: expandedBox, gridDim: dim, gridTexDim, gridDataDim: dim, gridTexScale, radiusFactor, resolution, maxRadius };
 }
@@ -130619,7 +130619,7 @@ function calcGaussianDensityTexture3d(webgl, position, box4, radius, props, text
   if (!texture)
     texture = colorBufferHalfFloat && textureHalfFloat ? resources.texture("volume-float16", "rgba", "fp16", "linear") : colorBufferFloat && textureFloat ? resources.texture("volume-float32", "rgba", "float", "linear") : resources.texture("volume-uint8", "rgba", "ubyte", "linear");
   texture.define(dx, dy, dz);
-  function render(fbTex, clear2) {
+  function render2(fbTex, clear2) {
     state.currentRenderItemId = -1;
     for (let i = 0; i < dz; ++i) {
       ValueCell.update(uCurrentSlice, i);
@@ -130631,11 +130631,11 @@ function calcGaussianDensityTexture3d(webgl, position, box4, radius, props, text
     gl.flush();
   }
   setupDensityRendering(webgl, renderable);
-  render(texture, true);
+  render2(texture, true);
   setupMinDistanceRendering(webgl, renderable);
-  render(minDistTex, true);
+  render2(minDistTex, true);
   setupGroupIdRendering(webgl, renderable);
-  render(texture, false);
+  render2(texture, false);
   return { texture, scale, bbox: expandedBox, gridDim: dim, gridTexDim: dim, gridDataDim: dim, gridTexScale, radiusFactor, resolution, maxRadius };
 }
 function prepareGaussianDensityData(position, box4, radius, props) {
@@ -140058,6 +140058,9 @@ var DefaultPluginSpec = () => ({
   ]
 });
 
+// src/assets/varela-round/font-data.ts
+var VARELA_ROUND_WOFF2_DATA_URL = "data:font/woff2;base64,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";
+
 // src/plugin/structure.ts
 async function recyclePreviousNode(plugin, previous) {
   if (!previous) return;
@@ -140083,14 +140086,14 @@ var InsertMolSysTrajectory = PluginStateTransform.BuiltIn({
 });
 async function loadStructureFromString(plugin, data, format = "pdb", label2, options) {
   await recyclePreviousNode(plugin, options?.previous);
-  const raw = await plugin.builders.data.rawData({
+  const raw2 = await plugin.builders.data.rawData({
     data,
     label: label2 ?? "Structure from string"
   });
-  const trajectory = await plugin.builders.structure.parseTrajectory(raw, format);
+  const trajectory = await plugin.builders.structure.parseTrajectory(raw2, format);
   const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectory, "default");
   return {
-    data: raw.ref,
+    data: raw2.ref,
     trajectory: trajectory.ref,
     structure: preset?.structure?.ref
   };
@@ -147083,8 +147086,8 @@ function normalizePlaybackMode(mode) {
 }
 function nextPlaybackStep(current2, delta2, frameCount, mode) {
   if (frameCount < 1) return { index: 0, delta: delta2, stop: true };
-  const raw = current2 + delta2;
-  if (raw >= 0 && raw < frameCount) return { index: raw, delta: delta2, stop: false };
+  const raw2 = current2 + delta2;
+  if (raw2 >= 0 && raw2 < frameCount) return { index: raw2, delta: delta2, stop: false };
   if (mode === "once") {
     return { index: delta2 > 0 ? frameCount - 1 : 0, delta: delta2, stop: true };
   }
@@ -147093,7 +147096,7 @@ function nextPlaybackStep(current2, delta2, frameCount, mode) {
     const index = Math.min(frameCount - 1, Math.max(0, current2 + bounced));
     return { index, delta: bounced, stop: false };
   }
-  const wrapped = (raw % frameCount + frameCount) % frameCount;
+  const wrapped = (raw2 % frameCount + frameCount) % frameCount;
   return { index: wrapped, delta: delta2, stop: false };
 }
 var TrajectoryHandlers = class {
@@ -147503,12 +147506,13 @@ function selectionSummary(selection) {
   return `Stored as ${selection.count_atoms} atom${selection.count_atoms === 1 ? "" : "s"}`;
 }
 var ViewerContextMenu = class {
-  constructor(host, notify, onAction, onClose, getCameraDirection) {
+  constructor(host, notify, onAction, onClose, getCameraDirection, options = {}) {
     this.host = host;
     this.notify = notify;
     this.onAction = onAction;
     this.onClose = onClose;
     this.getCameraDirection = getCameraDirection;
+    this.options = options;
     this.currentTarget = null;
     this.currentSelection = null;
     this.currentLastMeasurement = null;
@@ -147563,9 +147567,9 @@ var ViewerContextMenu = class {
       document.head.appendChild(style);
     }
   }
-  open(target, pageX, pageY, activeSelection, lastMeasurement, savedSelections, regions, addonActions, addonItems, sceneState) {
+  open(target, pageX, pageY, activeSelection2, lastMeasurement, savedSelections, regions, addonActions, addonItems, sceneState) {
     this.currentTarget = target;
-    this.currentSelection = activeSelection ?? null;
+    this.currentSelection = activeSelection2 ?? null;
     this.currentLastMeasurement = lastMeasurement ?? null;
     this.currentSavedSelections = Array.isArray(savedSelections) ? [...savedSelections] : [];
     this.currentRegions = Array.isArray(regions) ? [...regions] : [];
@@ -147618,7 +147622,7 @@ var ViewerContextMenu = class {
       const activeMode = this.currentSceneState?.currentViewerMode || "classic";
       this.scrollEl.appendChild(this.makeActionButton("Reset View", "reset_view"));
       this.scrollEl.appendChild(this.makeActionButton(
-        isDark ? "Toggle Background (Dark)" : "Toggle Background (Light)",
+        isDark === void 0 ? "Toggle Background" : isDark ? "Toggle Background (Dark)" : "Toggle Background (Light)",
         "toggle_background"
       ));
       this.scrollEl.appendChild(this.makeActionButton(
@@ -147649,28 +147653,30 @@ var ViewerContextMenu = class {
         isWorkOpen ? "Close Workbench Panel" : "Open Workbench Panel",
         "open_workbench"
       ));
-      const divModes = document.createElement("div");
-      Object.assign(divModes.style, {
-        marginTop: "6px",
-        paddingTop: "6px",
-        borderTop: "1px solid rgba(255,255,255,0.10)"
-      });
-      this.scrollEl.appendChild(divModes);
-      const modeHeader = document.createElement("div");
-      modeHeader.textContent = "Viewer Mode";
-      Object.assign(modeHeader.style, {
-        padding: "2px 8px 4px 8px",
-        opacity: "0.5",
-        fontSize: "11px",
-        textTransform: "uppercase",
-        letterSpacing: "0.05em",
-        fontWeight: "600"
-      });
-      this.scrollEl.appendChild(modeHeader);
-      const modes = ["classic", "integrated", "cinema"];
-      for (const mode of modes) {
-        const label2 = mode + (activeMode === mode ? " (Active \u2713)" : "");
-        this.scrollEl.appendChild(this.makeActionButton(label2, "set_viewer_mode", { text: mode }));
+      if (this.isActionAllowed("set_viewer_mode")) {
+        const divModes = document.createElement("div");
+        Object.assign(divModes.style, {
+          marginTop: "6px",
+          paddingTop: "6px",
+          borderTop: "1px solid rgba(255,255,255,0.10)"
+        });
+        this.scrollEl.appendChild(divModes);
+        const modeHeader = document.createElement("div");
+        modeHeader.textContent = "Viewer Mode";
+        Object.assign(modeHeader.style, {
+          padding: "2px 8px 4px 8px",
+          opacity: "0.5",
+          fontSize: "11px",
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
+          fontWeight: "600"
+        });
+        this.scrollEl.appendChild(modeHeader);
+        const modes = ["classic", "integrated", "cinema"];
+        for (const mode of modes) {
+          const label2 = mode + (activeMode === mode ? " (Active \u2713)" : "");
+          this.scrollEl.appendChild(this.makeActionButton(label2, "set_viewer_mode", { text: mode }));
+        }
       }
     }
     if (this.currentSelection && this.currentSelection.source_kind !== "empty") {
@@ -147737,7 +147743,7 @@ var ViewerContextMenu = class {
       }
       this.scrollEl.appendChild(section);
     }
-    const matchingAddonActions = this.currentAddonActions.filter((item2) => item2.target_kinds.includes(target.kind));
+    const matchingAddonActions = this.isActionAllowed("addon_context_action") ? this.currentAddonActions.filter((item2) => item2.target_kinds.includes(target.kind)) : [];
     if (matchingAddonActions.length > 0) {
       const section = document.createElement("div");
       Object.assign(section.style, {
@@ -147758,7 +147764,7 @@ var ViewerContextMenu = class {
       }
       this.scrollEl.appendChild(section);
     }
-    const matchingItems = this.currentAddonItems.filter(
+    const matchingItems = (this.isActionAllowed("addon_context_action") ? this.currentAddonItems : []).filter(
       (it) => !it.target_kinds || it.target_kinds.length === 0 || it.target_kinds.includes(target.kind)
     );
     if (matchingItems.length > 0) {
@@ -147853,11 +147859,11 @@ var ViewerContextMenu = class {
     this.root.remove();
   }
   makeActionButton(label2, action, detailsOverride) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.textContent = label2;
-    Object.assign(button.style, {
-      display: "block",
+    const button2 = document.createElement("button");
+    button2.type = "button";
+    button2.textContent = label2;
+    Object.assign(button2.style, {
+      display: this.isActionAllowed(action) ? "block" : "none",
       width: "100%",
       padding: "8px 10px",
       margin: "0",
@@ -147868,13 +147874,13 @@ var ViewerContextMenu = class {
       textAlign: "left",
       cursor: "pointer"
     });
-    button.addEventListener("pointerenter", () => {
-      button.style.background = "rgba(255,255,255,0.10)";
+    button2.addEventListener("pointerenter", () => {
+      button2.style.background = "rgba(255,255,255,0.10)";
     });
-    button.addEventListener("pointerleave", () => {
-      button.style.background = "transparent";
+    button2.addEventListener("pointerleave", () => {
+      button2.style.background = "transparent";
     });
-    button.addEventListener("click", () => {
+    button2.addEventListener("click", () => {
       if (!this.currentTarget) return;
       if (action === "add_label_from_selection") {
         this.renderLabelComposer();
@@ -147902,7 +147908,10 @@ var ViewerContextMenu = class {
       });
       this.close();
     });
-    return button;
+    return button2;
+  }
+  isActionAllowed(action) {
+    return this.options.allowedActions?.has(action) !== false;
   }
   appendSelectionExpanders(section) {
     const expandTitle = document.createElement("div");
@@ -147944,11 +147953,11 @@ var ViewerContextMenu = class {
   }
   makeSavedSelectionButton(selection) {
     const label2 = `${selection.tag} \xB7 ${selection.atom_count} atom${selection.atom_count === 1 ? "" : "s"}`;
-    const button = document.createElement("button");
-    button.type = "button";
-    button.textContent = label2;
-    button.setAttribute("data-molsysviewer-saved-selection", selection.tag);
-    Object.assign(button.style, {
+    const button2 = document.createElement("button");
+    button2.type = "button";
+    button2.textContent = label2;
+    button2.setAttribute("data-molsysviewer-saved-selection", selection.tag);
+    Object.assign(button2.style, {
       display: "block",
       width: "100%",
       padding: "8px 10px",
@@ -147960,13 +147969,13 @@ var ViewerContextMenu = class {
       textAlign: "left",
       cursor: "pointer"
     });
-    button.addEventListener("pointerenter", () => {
-      button.style.background = "rgba(255,255,255,0.10)";
+    button2.addEventListener("pointerenter", () => {
+      button2.style.background = "rgba(255,255,255,0.10)";
     });
-    button.addEventListener("pointerleave", () => {
-      button.style.background = "transparent";
+    button2.addEventListener("pointerleave", () => {
+      button2.style.background = "transparent";
     });
-    button.addEventListener("click", () => {
+    button2.addEventListener("click", () => {
       if (!this.currentTarget) return;
       const details = { tag: selection.tag };
       this.onAction?.("activate_selection", this.currentTarget, details);
@@ -147978,7 +147987,7 @@ var ViewerContextMenu = class {
       });
       this.close();
     });
-    return button;
+    return button2;
   }
   makeRegionButton(region) {
     const row2 = document.createElement("div");
@@ -148201,11 +148210,11 @@ var ViewerContextMenu = class {
     return this.currentAddonItems.some((item2) => item2.addon === addon && item2.id === id && item2.enabled !== false && (!item2.target_kinds || item2.target_kinds.length === 0 || item2.target_kinds.includes(target.kind)));
   }
   makeAddonActionButton(addonAction) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.textContent = `${addonAction.title} \xB7 ${addonAction.addon}`;
-    button.setAttribute("data-molsysviewer-addon-action", `${addonAction.addon}:${addonAction.id}`);
-    Object.assign(button.style, {
+    const button2 = document.createElement("button");
+    button2.type = "button";
+    button2.textContent = `${addonAction.title} \xB7 ${addonAction.addon}`;
+    button2.setAttribute("data-molsysviewer-addon-action", `${addonAction.addon}:${addonAction.id}`);
+    Object.assign(button2.style, {
       display: "block",
       width: "100%",
       padding: "8px 10px",
@@ -148217,13 +148226,13 @@ var ViewerContextMenu = class {
       textAlign: "left",
       cursor: "pointer"
     });
-    button.addEventListener("pointerenter", () => {
-      button.style.background = "rgba(255,255,255,0.10)";
+    button2.addEventListener("pointerenter", () => {
+      button2.style.background = "rgba(255,255,255,0.10)";
     });
-    button.addEventListener("pointerleave", () => {
-      button.style.background = "transparent";
+    button2.addEventListener("pointerleave", () => {
+      button2.style.background = "transparent";
     });
-    button.addEventListener("click", () => {
+    button2.addEventListener("click", () => {
       if (!this.currentTarget) return;
       const details = { tag: addonAction.id };
       this.onAction?.("addon_context_action", this.currentTarget, details);
@@ -148237,15 +148246,15 @@ var ViewerContextMenu = class {
       });
       this.close();
     });
-    return button;
+    return button2;
   }
   makeAddonItemButton(item2) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.textContent = item2.title;
-    button.setAttribute("data-molsysviewer-addon-item", `${item2.addon}:${item2.id}`);
+    const button2 = document.createElement("button");
+    button2.type = "button";
+    button2.textContent = item2.title;
+    button2.setAttribute("data-molsysviewer-addon-item", `${item2.addon}:${item2.id}`);
     const disabled = item2.enabled === false;
-    Object.assign(button.style, {
+    Object.assign(button2.style, {
       display: "block",
       width: "100%",
       padding: "8px 10px",
@@ -148259,13 +148268,13 @@ var ViewerContextMenu = class {
       opacity: disabled ? "0.45" : "1"
     });
     if (!disabled) {
-      button.addEventListener("pointerenter", () => {
-        button.style.background = "rgba(255,255,255,0.10)";
+      button2.addEventListener("pointerenter", () => {
+        button2.style.background = "rgba(255,255,255,0.10)";
       });
-      button.addEventListener("pointerleave", () => {
-        button.style.background = "transparent";
+      button2.addEventListener("pointerleave", () => {
+        button2.style.background = "transparent";
       });
-      button.addEventListener("click", () => {
+      button2.addEventListener("click", () => {
         if (!this.currentTarget) return;
         this.notify?.({
           event: "interaction_context_action",
@@ -148279,7 +148288,7 @@ var ViewerContextMenu = class {
         this.close();
       });
     }
-    return button;
+    return button2;
   }
   renderRenameRegionComposer(oldTag) {
     if (!this.currentTarget) return;
@@ -149977,8 +149986,8 @@ var ActiveSelectionController = class {
     this.setItems(pickedItems, shift2 ? "add" : "replace");
     this.anchorItem = current2;
   }
-  handleItemClick(item2, modifiers) {
-    const { shift: shift2, alt } = modifiers;
+  handleItemClick(item2, modifiers3) {
+    const { shift: shift2, alt } = modifiers3;
     if (shift2 && alt && this.anchorItem && this.anchorItem.source_kind === "element" && item2.source_kind === "element") {
       if (this.anchorItem.chain_name === item2.chain_name) {
         const rangeItems = this.getRangeItems(this.anchorItem, item2);
@@ -150899,6 +150908,7 @@ var ExportPanel = class extends BasePanel {
     const downloadButton = makeButton("Download PNG Image", () => {
       this.ctx.onAction("download_image");
     });
+    downloadButton.setAttribute("data-molsysviewer-export-image", "true");
     downloadButton.style.padding = "6px 10px";
     downloadButton.style.fontSize = "11px";
     downloadButton.style.fontWeight = "600";
@@ -150917,6 +150927,7 @@ var ExportPanel = class extends BasePanel {
     const htmlButton = makeButton("Download Standalone HTML View", () => {
       this.ctx.onAction("export_html");
     });
+    htmlButton.setAttribute("data-molsysviewer-export-html", "true");
     htmlButton.style.padding = "5px 10px";
     htmlButton.style.fontSize = "11px";
     htmlRow.appendChild(htmlLabel);
@@ -151235,11 +151246,11 @@ var LayersPanel = class extends BasePanel {
     });
     remove3.title = `Delete layer and ${layer.members.length} member${layer.members.length === 1 ? "" : "s"}`;
     remove3.setAttribute("data-molsysviewer-layer-delete-contents", layer.tag);
-    for (const button of [eye, editBtn, remove3]) {
-      button.style.flex = "0 1 auto";
-      button.style.padding = "3px 6px";
-      button.style.fontSize = "10px";
-      btnRow.appendChild(button);
+    for (const button2 of [eye, editBtn, remove3]) {
+      button2.style.flex = "0 1 auto";
+      button2.style.padding = "3px 6px";
+      button2.style.fontSize = "10px";
+      btnRow.appendChild(button2);
     }
     row2.appendChild(btnRow);
     if (this.expanded.has(layer.tag)) this.renderDetails(row2, layer);
@@ -154001,7 +154012,7 @@ var GroupStrip = class {
     }
     let changed = false;
     for (const [key2, records] of this.annotationRecords.entries()) {
-      const next = records.filter((record2) => record2.tag !== tag);
+      const next = records.filter((record3) => record3.tag !== tag);
       if (next.length === records.length) continue;
       changed = true;
       if (next.length === 0) {
@@ -154015,10 +154026,10 @@ var GroupStrip = class {
   retagAnnotationOverlays(oldTag, newTag) {
     let changed = false;
     for (const [key2, records] of this.annotationRecords.entries()) {
-      const next = records.map((record2) => {
-        if (record2.tag !== oldTag) return record2;
+      const next = records.map((record3) => {
+        if (record3.tag !== oldTag) return record3;
         changed = true;
-        return { ...record2, tag: newTag };
+        return { ...record3, tag: newTag };
       });
       this.annotationRecords.set(key2, next);
     }
@@ -154202,11 +154213,11 @@ var GroupStrip = class {
         }
         for (const item2 of items) {
           const key2 = selectionKey(item2);
-          const button = document.createElement("button");
-          button.type = "button";
-          button.setAttribute("data-molsysviewer-group-item", "true");
-          button.setAttribute("data-chain-name", item2.chain_name ?? "");
-          button.setAttribute("data-group-name", item2.group_name ?? "");
+          const button2 = document.createElement("button");
+          button2.type = "button";
+          button2.setAttribute("data-molsysviewer-group-item", "true");
+          button2.setAttribute("data-chain-name", item2.chain_name ?? "");
+          button2.setAttribute("data-group-name", item2.group_name ?? "");
           const selected = this.selectedElementKeys.has(key2);
           const contextSelected = this.currentContextTarget?.kind === "structure" && Array.isArray(this.currentContextTarget.atom_indices) && this.findSelectionKeyFromAtomIndices(this.currentContextTarget.atom_indices) === key2;
           const firstAtomIndex = item2.atom_indices[0];
@@ -154221,7 +154232,7 @@ var GroupStrip = class {
               colorHex = PhysicochemicalColorsHex[residueClass];
             }
           }
-          Object.assign(button.style, {
+          Object.assign(button2.style, {
             padding: "4px 8px",
             borderRadius: "999px",
             border: selected ? colorHex ? `1px solid ${colorHex}` : "1px solid rgba(255,255,255,0.38)" : contextSelected ? "1px solid rgba(251, 191, 36, 0.48)" : colorHex ? `1px solid ${colorHex}50` : "1px solid rgba(255,255,255,0.12)",
@@ -154235,10 +154246,10 @@ var GroupStrip = class {
             textAlign: "left",
             fontSize: "11px"
           });
-          if (selected) button.setAttribute("data-group-item-selected", "true");
+          if (selected) button2.setAttribute("data-group-item-selected", "true");
           const text = document.createElement("span");
           text.textContent = item2.group_name ?? `${item2.group_indices[0] ?? "?"}`;
-          button.appendChild(text);
+          button2.appendChild(text);
           const annotationRecords = this.annotationRecords.get(key2) ?? [];
           if (annotationRecords.length > 0) {
             const badge = document.createElement("span");
@@ -154256,8 +154267,8 @@ var GroupStrip = class {
               fontWeight: "700",
               boxShadow: annotationContextSelected ? "inset 0 0 0 1px rgba(251, 191, 36, 0.28)" : "none"
             });
-            button.appendChild(badge);
-            button.title = annotationRecords.map((record2) => record2.text).join("\n");
+            button2.appendChild(badge);
+            button2.title = annotationRecords.map((record3) => record3.text).join("\n");
             badge.addEventListener("click", (event) => {
               event.preventDefault();
               event.stopPropagation();
@@ -154290,29 +154301,29 @@ var GroupStrip = class {
               );
             });
           }
-          button.addEventListener("click", (event) => {
+          button2.addEventListener("click", (event) => {
             event.preventDefault();
             event.stopPropagation();
             const mouseEvent = event;
             this.onInteraction(item2, { shift: mouseEvent.shiftKey, alt: mouseEvent.altKey });
           });
-          button.addEventListener("dblclick", (event) => {
+          button2.addEventListener("dblclick", (event) => {
             event.preventDefault();
             event.stopPropagation();
             this.onFocus(item2);
           });
-          button.addEventListener("mouseenter", () => {
+          button2.addEventListener("mouseenter", () => {
             this.onHover(item2);
           });
-          button.addEventListener("mouseleave", () => {
+          button2.addEventListener("mouseleave", () => {
             this.onHover(null);
           });
-          button.addEventListener("contextmenu", (event) => {
+          button2.addEventListener("contextmenu", (event) => {
             event.preventDefault();
             event.stopPropagation();
             this.onContext(item2, event.pageX, event.pageY);
           });
-          compBox.appendChild(button);
+          compBox.appendChild(button2);
         }
         molBox.appendChild(compBox);
       }
@@ -155224,14 +155235,14 @@ var MeasuresPanel = class extends BasePanel {
       ["Show all", "show_all_measurements"],
       ["Hide all", "hide_all_measurements"]
     ]) {
-      const button = makeButton(label2, () => {
+      const button2 = makeButton(label2, () => {
         this.ctx.onAction(action);
       });
-      button.style.padding = "3px 6px";
-      button.style.fontSize = "10px";
-      button.style.whiteSpace = "nowrap";
-      button.setAttribute("data-molsysviewer-measurement-global", action);
-      actions.appendChild(button);
+      button2.style.padding = "3px 6px";
+      button2.style.fontSize = "10px";
+      button2.style.whiteSpace = "nowrap";
+      button2.setAttribute("data-molsysviewer-measurement-global", action);
+      actions.appendChild(button2);
     }
     row2.appendChild(actions);
     summaryCard.appendChild(row2);
@@ -155687,11 +155698,11 @@ var MeasuresPanel = class extends BasePanel {
     eye.setAttribute("data-molsysviewer-measurement-visibility", item2.tag);
     const focus = makeButton("Focus", () => this.ctx.onAction("focus_measurement", { tag: item2.tag }));
     focus.setAttribute("data-molsysviewer-measurement-focus", item2.tag);
-    for (const button of [eye, focus]) {
-      button.style.flex = "0 0 auto";
-      button.style.padding = "3px 6px";
-      button.style.fontSize = "10px";
-      head.appendChild(button);
+    for (const button2 of [eye, focus]) {
+      button2.style.flex = "0 0 auto";
+      button2.style.padding = "3px 6px";
+      button2.style.fontSize = "10px";
+      head.appendChild(button2);
     }
     const edit = makeButton("Edit", () => {
       this.editTag = this.editTag === item2.tag ? null : item2.tag;
@@ -156700,11 +156711,11 @@ var AnnotationsPanel = class extends BasePanel {
     const remove3 = makeButton("\u{1F5D1}", () => this.ctx.onAction("delete_annotation", { tag: item2.tag }));
     remove3.title = "Delete annotation";
     remove3.setAttribute("data-molsysviewer-annotation-delete", item2.tag);
-    for (const button of [focus, eye, editBtn, remove3]) {
-      button.style.flex = "0 1 auto";
-      button.style.padding = "3px 6px";
-      button.style.fontSize = "10px";
-      btnRow.appendChild(button);
+    for (const button2 of [focus, eye, editBtn, remove3]) {
+      button2.style.flex = "0 1 auto";
+      button2.style.padding = "3px 6px";
+      button2.style.fontSize = "10px";
+      btnRow.appendChild(button2);
     }
     row2.appendChild(btnRow);
     const identity3 = document.createElement("div");
@@ -156935,14 +156946,14 @@ var AnnotationsPanel = class extends BasePanel {
       ["Show all", "show_all_annotations"],
       ["Hide all", "hide_all_annotations"]
     ]) {
-      const button = makeButton(label2, () => {
+      const button2 = makeButton(label2, () => {
         this.ctx.onAction(action);
       });
-      button.style.padding = "3px 6px";
-      button.style.fontSize = "10px";
-      button.style.whiteSpace = "nowrap";
-      button.setAttribute("data-molsysviewer-annotation-global", action);
-      actions.appendChild(button);
+      button2.style.padding = "3px 6px";
+      button2.style.fontSize = "10px";
+      button2.style.whiteSpace = "nowrap";
+      button2.setAttribute("data-molsysviewer-annotation-global", action);
+      actions.appendChild(button2);
     }
     row2.appendChild(actions);
     card8.appendChild(row2);
@@ -157272,14 +157283,14 @@ var ShapesPanel = class extends BasePanel {
       ["Show all", "show_all_shapes"],
       ["Hide all", "hide_all_shapes"]
     ]) {
-      const button = makeButton(label2, () => {
+      const button2 = makeButton(label2, () => {
         this.ctx.onAction(action);
       });
-      button.style.padding = "3px 6px";
-      button.style.fontSize = "10px";
-      button.style.whiteSpace = "nowrap";
-      button.setAttribute("data-molsysviewer-shape-global-action", action);
-      actions.appendChild(button);
+      button2.style.padding = "3px 6px";
+      button2.style.fontSize = "10px";
+      button2.style.whiteSpace = "nowrap";
+      button2.setAttribute("data-molsysviewer-shape-global-action", action);
+      actions.appendChild(button2);
     }
     row2.appendChild(actions);
     globalCard.appendChild(row2);
@@ -157620,11 +157631,11 @@ var ShapesPanel = class extends BasePanel {
     const remove3 = makeButton("\u{1F5D1}", () => this.ctx.onAction("delete_shape", { tag: item2.tag }));
     remove3.title = "Delete shape";
     remove3.setAttribute("data-molsysviewer-shape-delete", item2.tag);
-    for (const button of [focus, eye, more, remove3]) {
-      button.style.flex = "0 0 auto";
-      button.style.padding = "3px 6px";
-      button.style.fontSize = "10px";
-      btnRow.appendChild(button);
+    for (const button2 of [focus, eye, more, remove3]) {
+      button2.style.flex = "0 0 auto";
+      button2.style.padding = "3px 6px";
+      button2.style.fontSize = "10px";
+      btnRow.appendChild(button2);
     }
     row2.appendChild(btnRow);
     const layer = document.createElement("div");
@@ -158083,10 +158094,10 @@ var PanelShell = class {
       if (item2.active) {
         node.setAttribute("data-molsysviewer-panel-stack-current", item2.id);
       } else {
-        const button = node;
-        button.type = "button";
-        button.setAttribute("data-molsysviewer-panel-stack-option", item2.id);
-        button.addEventListener("click", (event) => {
+        const button2 = node;
+        button2.type = "button";
+        button2.setAttribute("data-molsysviewer-panel-stack-option", item2.id);
+        button2.addEventListener("click", (event) => {
           event.preventDefault();
           event.stopPropagation();
           this.onSelectPanel?.(item2.id);
@@ -158147,10 +158158,10 @@ var PanelShell = class {
       this.workspaceMenuElement.appendChild(section);
     };
     const appendOption = (item2, fullSpan = false) => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.setAttribute("data-molsysviewer-panel-workspace-option", item2.id);
-      Object.assign(button.style, {
+      const button2 = document.createElement("button");
+      button2.type = "button";
+      button2.setAttribute("data-molsysviewer-panel-workspace-option", item2.id);
+      Object.assign(button2.style, {
         display: "flex",
         flexDirection: "column",
         alignItems: "flex-start",
@@ -158169,11 +158180,11 @@ var PanelShell = class {
         cursor: "pointer",
         textAlign: "left"
       });
-      if (fullSpan && mosaic) button.style.gridColumn = "1 / -1";
+      if (fullSpan && mosaic) button2.style.gridColumn = "1 / -1";
       const title = document.createElement("span");
       title.setAttribute("data-molsysviewer-panel-workspace-option-title", item2.id);
       title.textContent = item2.title;
-      button.appendChild(title);
+      button2.appendChild(title);
       if (item2.subtitle) {
         const subtitle = document.createElement("span");
         subtitle.setAttribute("data-molsysviewer-panel-workspace-option-subtitle", item2.id);
@@ -158183,7 +158194,7 @@ var PanelShell = class {
           lineHeight: "1.25",
           color: item2.id === current2.id ? "rgba(244,244,245,0.78)" : "rgba(244,244,245,0.62)"
         });
-        button.appendChild(subtitle);
+        button2.appendChild(subtitle);
       }
       if (item2.id === current2.id) {
         const marker = document.createElement("span");
@@ -158194,7 +158205,7 @@ var PanelShell = class {
           lineHeight: "1.1",
           color: "rgba(244,244,245,0.74)"
         });
-        button.appendChild(marker);
+        button2.appendChild(marker);
       } else if (item2.id === "core") {
         const marker = document.createElement("span");
         marker.setAttribute("data-molsysviewer-panel-workspace-option-marker", item2.id);
@@ -158204,16 +158215,16 @@ var PanelShell = class {
           lineHeight: "1.1",
           color: "rgba(244,244,245,0.54)"
         });
-        button.appendChild(marker);
+        button2.appendChild(marker);
       }
-      button.addEventListener("click", (event) => {
+      button2.addEventListener("click", (event) => {
         event.preventDefault();
         event.stopPropagation();
         this.workspaceMenuOpen = false;
         this.applyWorkspaceMenuState();
         this.onSelectWorkspace?.(item2.id);
       });
-      this.workspaceMenuElement.appendChild(button);
+      this.workspaceMenuElement.appendChild(button2);
     };
     if (mosaic) {
       const coreItems = items.filter((item2) => item2.id === "core");
@@ -158980,10 +158991,10 @@ var FloatingPanelShell = class {
       if (item2.active) {
         node.setAttribute("data-molsysviewer-panel-stack-current", item2.id);
       } else {
-        const button = node;
-        button.type = "button";
-        button.setAttribute("data-molsysviewer-panel-stack-option", item2.id);
-        button.addEventListener("click", (event) => {
+        const button2 = node;
+        button2.type = "button";
+        button2.setAttribute("data-molsysviewer-panel-stack-option", item2.id);
+        button2.addEventListener("click", (event) => {
           event.preventDefault();
           event.stopPropagation();
           this.onSelectPanel?.(item2.id);
@@ -159044,10 +159055,10 @@ var FloatingPanelShell = class {
       this.workspaceMenuElement.appendChild(section);
     };
     const appendOption = (item2, fullSpan = false) => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.setAttribute("data-molsysviewer-panel-workspace-option", item2.id);
-      Object.assign(button.style, {
+      const button2 = document.createElement("button");
+      button2.type = "button";
+      button2.setAttribute("data-molsysviewer-panel-workspace-option", item2.id);
+      Object.assign(button2.style, {
         display: "flex",
         flexDirection: "column",
         alignItems: "flex-start",
@@ -159066,11 +159077,11 @@ var FloatingPanelShell = class {
         cursor: "pointer",
         textAlign: "left"
       });
-      if (fullSpan && mosaic) button.style.gridColumn = "1 / -1";
+      if (fullSpan && mosaic) button2.style.gridColumn = "1 / -1";
       const title = document.createElement("span");
       title.setAttribute("data-molsysviewer-panel-workspace-option-title", item2.id);
       title.textContent = item2.title;
-      button.appendChild(title);
+      button2.appendChild(title);
       if (item2.subtitle) {
         const subtitle = document.createElement("span");
         subtitle.setAttribute("data-molsysviewer-panel-workspace-option-subtitle", item2.id);
@@ -159080,7 +159091,7 @@ var FloatingPanelShell = class {
           lineHeight: "1.25",
           color: item2.id === current2.id ? "rgba(244,244,245,0.78)" : "rgba(244,244,245,0.62)"
         });
-        button.appendChild(subtitle);
+        button2.appendChild(subtitle);
       }
       if (item2.id === current2.id) {
         const marker = document.createElement("span");
@@ -159091,7 +159102,7 @@ var FloatingPanelShell = class {
           lineHeight: "1.1",
           color: "rgba(244,244,245,0.74)"
         });
-        button.appendChild(marker);
+        button2.appendChild(marker);
       } else if (item2.id === "core") {
         const marker = document.createElement("span");
         marker.setAttribute("data-molsysviewer-panel-workspace-option-marker", item2.id);
@@ -159101,16 +159112,16 @@ var FloatingPanelShell = class {
           lineHeight: "1.1",
           color: "rgba(244,244,245,0.54)"
         });
-        button.appendChild(marker);
+        button2.appendChild(marker);
       }
-      button.addEventListener("click", (event) => {
+      button2.addEventListener("click", (event) => {
         event.preventDefault();
         event.stopPropagation();
         this.workspaceMenuOpen = false;
         this.applyWorkspaceMenuState();
         this.onSelectWorkspace?.(item2.id);
       });
-      this.workspaceMenuElement.appendChild(button);
+      this.workspaceMenuElement.appendChild(button2);
     };
     if (mosaic) {
       const coreItems = items.filter((item2) => item2.id === "core");
@@ -159468,8 +159479,8 @@ var GroupPanel = class {
     return section;
   }
   addTab(key2, title, initialBadge) {
-    const button = document.createElement("button");
-    button.setAttribute("data-molsysviewer-group-panel-tab", key2);
+    const button2 = document.createElement("button");
+    button2.setAttribute("data-molsysviewer-group-panel-tab", key2);
     const tooltips = {
       system: "Molecular hierarchy, chain sequence, and residue-level selections.",
       whole: "Global representation styling, visual presets, and overall system view.",
@@ -159484,9 +159495,9 @@ var GroupPanel = class {
     };
     const tooltip = tooltips[key2];
     if (tooltip) {
-      button.title = tooltip;
+      button2.title = tooltip;
     }
-    Object.assign(button.style, {
+    Object.assign(button2.style, {
       display: "flex",
       flexDirection: "column",
       alignItems: "flex-start",
@@ -159501,44 +159512,44 @@ var GroupPanel = class {
       cursor: "pointer",
       transition: "all 0.15s ease-in-out"
     });
-    button.draggable = true;
-    button.addEventListener("dragstart", (e) => {
+    button2.draggable = true;
+    button2.addEventListener("dragstart", (e) => {
       if (e.dataTransfer) {
         e.dataTransfer.setData("text/plain", key2);
         e.dataTransfer.effectAllowed = "move";
       }
-      button.style.opacity = "0.4";
+      button2.style.opacity = "0.4";
     });
-    button.addEventListener("dragend", () => {
-      button.style.opacity = "1";
+    button2.addEventListener("dragend", () => {
+      button2.style.opacity = "1";
       for (const tab of this.tabs.values()) {
         tab.button.style.borderTop = "0";
         tab.button.style.borderBottom = "0";
       }
     });
-    button.addEventListener("dragover", (e) => {
+    button2.addEventListener("dragover", (e) => {
       e.preventDefault();
       if (e.dataTransfer) {
         e.dataTransfer.dropEffect = "move";
       }
-      const rect = button.getBoundingClientRect();
+      const rect = button2.getBoundingClientRect();
       const midpoint = rect.top + rect.height / 2;
       if (e.clientY < midpoint) {
-        button.style.borderTop = "2px solid #6366f1";
-        button.style.borderBottom = "0";
+        button2.style.borderTop = "2px solid #6366f1";
+        button2.style.borderBottom = "0";
       } else {
-        button.style.borderBottom = "2px solid #6366f1";
-        button.style.borderTop = "0";
+        button2.style.borderBottom = "2px solid #6366f1";
+        button2.style.borderTop = "0";
       }
     });
-    button.addEventListener("dragleave", () => {
-      button.style.borderTop = "0";
-      button.style.borderBottom = "0";
+    button2.addEventListener("dragleave", () => {
+      button2.style.borderTop = "0";
+      button2.style.borderBottom = "0";
     });
-    button.addEventListener("drop", (e) => {
+    button2.addEventListener("drop", (e) => {
       e.preventDefault();
-      button.style.borderTop = "0";
-      button.style.borderBottom = "0";
+      button2.style.borderTop = "0";
+      button2.style.borderBottom = "0";
       const draggedKey = e.dataTransfer ? e.dataTransfer.getData("text/plain") : "";
       if (!draggedKey || draggedKey === key2) return;
       const order = this.getTabOrder();
@@ -159546,7 +159557,7 @@ var GroupPanel = class {
       let targetIdx = order.indexOf(key2);
       if (draggedIdx === -1 || targetIdx === -1) return;
       order.splice(draggedIdx, 1);
-      const rect = button.getBoundingClientRect();
+      const rect = button2.getBoundingClientRect();
       const midpoint = rect.top + rect.height / 2;
       if (e.clientY >= midpoint) {
         targetIdx = order.indexOf(key2);
@@ -159558,19 +159569,19 @@ var GroupPanel = class {
       writeTabOrderStorage(order);
       this.reorderTabsDOM(order);
     });
-    button.addEventListener("mouseenter", () => {
+    button2.addEventListener("mouseenter", () => {
       if (this.activeTab !== key2) {
-        button.style.background = "rgba(255,255,255,0.04)";
-        button.style.color = "rgba(244,244,245,0.9)";
+        button2.style.background = "rgba(255,255,255,0.04)";
+        button2.style.color = "rgba(244,244,245,0.9)";
       }
     });
-    button.addEventListener("mouseleave", () => {
+    button2.addEventListener("mouseleave", () => {
       if (this.activeTab !== key2) {
-        button.style.background = "transparent";
-        button.style.color = "rgba(244,244,245,0.68)";
+        button2.style.background = "transparent";
+        button2.style.color = "rgba(244,244,245,0.68)";
       }
     });
-    button.addEventListener("click", (e) => {
+    button2.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
       this.switchTab(key2);
@@ -159587,16 +159598,16 @@ var GroupPanel = class {
       color: "rgba(244,244,245,0.48)"
     });
     badge.textContent = initialBadge;
-    button.appendChild(titleDiv);
-    button.appendChild(badge);
-    this.tabsContainer.appendChild(button);
-    this.tabs.set(key2, { button, badge });
+    button2.appendChild(titleDiv);
+    button2.appendChild(badge);
+    this.tabsContainer.appendChild(button2);
+    this.tabs.set(key2, { button: button2, badge });
   }
   switchTab(key2) {
     this.activeTab = key2;
-    for (const [tabKey, { button, badge }] of this.tabs.entries()) {
+    for (const [tabKey, { button: button2, badge }] of this.tabs.entries()) {
       if (tabKey === key2) {
-        Object.assign(button.style, {
+        Object.assign(button2.style, {
           background: "rgba(255,255,255,0.08)",
           color: "#f4f4f5",
           borderLeft: "3px solid #6366f1",
@@ -159604,7 +159615,7 @@ var GroupPanel = class {
         });
         badge.style.color = "rgba(244,244,245,0.8)";
       } else {
-        Object.assign(button.style, {
+        Object.assign(button2.style, {
           background: "transparent",
           color: "rgba(244,244,245,0.68)",
           borderLeft: "0",
@@ -161573,8 +161584,8 @@ var MolSysViewerController = class _MolSysViewerController {
     this.activeSelection = new ActiveSelectionController(emitInteractionEvent);
     this.groupPanel = new GroupPanel(host, (items, op4) => {
       this.activeSelection.setItems(items, op4);
-    }, (item2, modifiers) => {
-      this.activeSelection.handleItemClick(item2, modifiers);
+    }, (item2, modifiers3) => {
+      this.activeSelection.handleItemClick(item2, modifiers3);
     }, (item2) => {
       const loci = this.groupPanel.focusItem(item2);
       if (loci) this.plugin.managers.camera.focusLoci(loci);
@@ -161793,10 +161804,20 @@ var MolSysViewerController = class _MolSysViewerController {
       const handleCanvasContextMenu = (event) => {
         event.preventDefault();
         event.stopPropagation();
-        const hoverEv = this.plugin.behaviors.interaction.hover.value;
+        const canvas = this.plugin.canvas3dContext?.canvas;
+        const canvas3d = this.plugin.canvas3d;
+        let current2 = this.plugin.behaviors.interaction.hover.value?.current;
+        if (canvas && canvas3d) {
+          const rect = canvas.getBoundingClientRect();
+          const pick2 = canvas3d.identify(Vec2.create(
+            event.clientX - rect.left,
+            event.clientY - rect.top
+          ));
+          current2 = canvas3d.getLoci(pick2?.id);
+        }
         let payload;
-        if (hoverEv && hoverEv.current && hoverEv.current.loci) {
-          const tooltipTag = hoverEv.current.repr?.props?.tooltip?.trim();
+        if (current2?.loci && !Loci2.isEmpty(current2.loci)) {
+          const tooltipTag = current2.repr?.props?.tooltip?.trim();
           if (tooltipTag && this.annotations.hasTag(tooltipTag)) {
             const spec = this.annotations.getSpec(tooltipTag);
             payload = {
@@ -161820,10 +161841,10 @@ var MolSysViewerController = class _MolSysViewerController {
               page_y: event.clientY
             };
           } else {
-            payload = normalizeContextPayloadFromLoci(hoverEv.current.loci, event.clientX, event.clientY);
+            payload = normalizeContextPayloadFromLoci(current2.loci, event.clientX, event.clientY);
             payload = this.normalizeManagedContextPayload(payload);
           }
-          this.lastContextLoci = hoverEv.current.loci;
+          this.lastContextLoci = current2.loci;
         } else {
           payload = {
             event: "interaction_context_menu",
@@ -161832,6 +161853,10 @@ var MolSysViewerController = class _MolSysViewerController {
             page_y: event.clientY
           };
           this.lastContextLoci = null;
+        }
+        const remoteRequestId = event.molsysviewerRemoteRequestId;
+        if (typeof remoteRequestId === "string") {
+          payload.request_id = remoteRequestId;
         }
         this.lastContextPayload = payload;
         this.groupPanel.updateContextTarget(payload);
@@ -164344,13 +164369,18 @@ var MolSysViewerController = class _MolSysViewerController {
   }
   showWelcomeCard() {
     if (this.welcomeCard) return;
-    let fontLink = document.getElementById("molsysviewer-font-varela");
-    if (!fontLink) {
-      fontLink = document.createElement("link");
-      fontLink.id = "molsysviewer-font-varela";
-      fontLink.rel = "stylesheet";
-      fontLink.href = "https://fonts.googleapis.com/css2?family=Varela+Round&display=swap";
-      document.head.appendChild(fontLink);
+    let fontStyle = document.getElementById("molsysviewer-font-varela");
+    if (!fontStyle) {
+      fontStyle = document.createElement("style");
+      fontStyle.id = "molsysviewer-font-varela";
+      fontStyle.textContent = `@font-face {
+                font-family: "Varela Round";
+                src: url("${VARELA_ROUND_WOFF2_DATA_URL}") format("woff2");
+                font-style: normal;
+                font-weight: 400;
+                font-display: swap;
+            }`;
+      document.head.appendChild(fontStyle);
     }
     const card8 = document.createElement("div");
     card8.setAttribute("data-molsysviewer-welcome-card", "true");
@@ -164410,7 +164440,7 @@ var MolSysViewerController = class _MolSysViewerController {
       webkitTextFillColor: "transparent",
       letterSpacing: "-0.02em",
       textAlign: "center",
-      fontFamily: "'Varela Round', system-ui, sans-serif"
+      fontFamily: "'Varela Round', system-ui, -apple-system, sans-serif"
     });
     titleEl.textContent = "MolSysViewer";
     card8.appendChild(titleEl);
@@ -164447,7 +164477,7 @@ var MolSysViewerController = class _MolSysViewerController {
       alignItems: "center",
       marginBottom: "6px",
       fontSize: "9px",
-      fontFamily: "system-ui, -apple-system, sans-serif",
+      fontFamily: "'Varela Round', system-ui, -apple-system, sans-serif",
       userSelect: "none"
     });
     const guideTitle = document.createElement("span");
@@ -164505,7 +164535,7 @@ var MolSysViewerController = class _MolSysViewerController {
       textAlign: "center",
       marginTop: "4px",
       boxShadow: "0 4px 12px rgba(206, 80, 39, 0.25)",
-      fontFamily: "'Varela Round', system-ui, sans-serif"
+      fontFamily: "system-ui, -apple-system, sans-serif"
     });
     btn.textContent = "Load Trial Structure (1CRN)";
     btn.onmouseover = () => {
@@ -164834,6 +164864,269 @@ function decodePopupEvent(event, expectedSource, expectedChannel, expectedEndpoi
   return message;
 }
 
+// ../runtime_actions.json
+var runtime_actions_default = {
+  protocol_version: 1,
+  comment: "Shared Python<->TypeScript runtime contract. Python and TypeScript load THIS file so action categories, rendering placements, endpoint roles and endpoint capabilities cannot drift. `actions` are browser->Python; category is the RuntimeEnvelope direction the action must carry, and the envelope action must equal the payload `event`. `outbound_requests` are Python->browser requests and must never be accepted as browser-originated. `popup_actions` are the host<->popup wire actions and allowed directions. `endpoint_role_capabilities` declares the maximum capabilities each authenticated role may register; a live endpoint may use a subset subject to its rendering-placement invariants. `qt_transport` are delivery-level events handled by the Qt bridge. `raw` is bootstrap traffic and `data_plane` is array-native binary traffic, neither enveloped. Domain projection ops are Python-authored and intentionally not enumerated. `frontend_authoritative` names compatibility paths where the frontend currently performs work before reporting it.",
+  render_placements: [
+    "client",
+    "server"
+  ],
+  endpoint_role_capabilities: {
+    python: [
+      "authority"
+    ],
+    "widget-host": [
+      "command-origin",
+      "input-send",
+      "render",
+      "structure-receive",
+      "workbench"
+    ],
+    "qt-host": [
+      "command-origin",
+      "input-send",
+      "native-host",
+      "render",
+      "structure-receive",
+      "workbench"
+    ],
+    canvas: [
+      "render",
+      "structure-receive"
+    ],
+    "panel-popup": [
+      "command-origin",
+      "input-send",
+      "workbench"
+    ],
+    "canvas-popup": [
+      "command-origin",
+      "input-send",
+      "render",
+      "structure-receive",
+      "workbench"
+    ],
+    "browser-client": [
+      "command-origin",
+      "input-send",
+      "render",
+      "structure-receive",
+      "video-receive",
+      "workbench"
+    ],
+    "qt-client": [
+      "command-origin",
+      "input-send",
+      "native-host",
+      "render",
+      "structure-receive",
+      "video-receive",
+      "workbench"
+    ],
+    "render-worker": [
+      "input-receive",
+      "render",
+      "structure-receive",
+      "video-send"
+    ],
+    agent: [
+      "command-origin"
+    ]
+  },
+  actions: {
+    interaction_active_selection_changed: "command",
+    interaction_context_action: "command",
+    interaction_measurement_created: "command",
+    addon_panel_action: "command",
+    section_moved: "command",
+    scene_history_undo: "command",
+    scene_history_redo: "command",
+    scene_history_coalescing_begin: "command",
+    scene_history_coalescing_end: "command",
+    interaction_hover: "event",
+    interaction_click: "event",
+    interaction_context_menu: "event",
+    interaction_tool_state: "event",
+    camera_snapshot: "event",
+    widget_resize: "event",
+    trajectory_frame_changed: "event",
+    shape_render_status: "event",
+    js_log: "event",
+    movie_frame: "event",
+    webgl_context_lost: "event",
+    webgl_context_restored: "event",
+    panel_mode_state: "event",
+    panel_navigate: "event",
+    panel_unmount: "event",
+    addon_panel_state_changed: "event",
+    movie_playback_done: "event",
+    request_dynamic_region_evaluation: "request",
+    request_visibility_resync: "request",
+    selection_query_preview_request: "request",
+    request_popup_scene_snapshot: "request",
+    popup_endpoint_closed: "event",
+    region_ack: "ack",
+    layer_ack: "ack",
+    registry_cleared: "ack",
+    region_deleted: "ack",
+    region_renamed: "ack",
+    layer_deleted: "ack",
+    trajectory_frame_rendered: "ack",
+    image_export: "ack",
+    movie_export_done: "ack",
+    viewer_init_failed: "error",
+    camera_stranded_inside_scene: "error",
+    runtime_contract_rejected: "error"
+  },
+  outbound_requests: [
+    "request_camera_snapshot",
+    "request_image_export"
+  ],
+  popup_actions: {
+    "molsysviewer-initial-sync": [
+      "projection"
+    ],
+    "molsysviewer-sync-ui": [
+      "projection"
+    ],
+    "molsysviewer-sync-autohide": [
+      "projection"
+    ],
+    "molsysviewer-structure-data": [
+      "projection"
+    ],
+    "molsysviewer-sync-camera": [
+      "event"
+    ],
+    "molsysviewer-pop-ready": [
+      "event"
+    ],
+    "molsysviewer-panel-ready": [
+      "event"
+    ],
+    "molsysviewer-log-from-popout": [
+      "event"
+    ],
+    "molsysviewer-structure-data-ack": [
+      "event"
+    ],
+    "molsysviewer-popup-interaction": [
+      "command"
+    ],
+    "molsysviewer-sync-op": [
+      "projection",
+      "command"
+    ],
+    "molsysviewer-sync-hierarchy": [
+      "projection"
+    ],
+    "molsysviewer-runtime-contract-rejected": [
+      "event"
+    ]
+  },
+  qt_transport: [
+    "message_ack",
+    "message_error",
+    "structure_ready",
+    "render_ready",
+    "frontend_error"
+  ],
+  qt_test_actions: [
+    "qt_payload_probe"
+  ],
+  raw: [
+    "request_widget_runtime_source",
+    "widget_runtime_source",
+    "request_popup_source",
+    "popup_source",
+    "ready"
+  ],
+  data_plane: [
+    "structure_data_begin",
+    "structure_data_chunk",
+    "structure_data_cancel",
+    "load_molsys_array_payload",
+    "structure_data_begin_ack",
+    "structure_data_chunk_ack",
+    "structure_data_complete",
+    "structure_data_error"
+  ],
+  frontend_authoritative: [
+    "interaction_measurement_created",
+    "section_moved",
+    "interaction_active_selection_changed"
+  ]
+};
+
+// src/messages/runtime-actions.ts
+var RUNTIME_ACTIONS_PROTOCOL_VERSION = 1;
+var rawManifest = runtime_actions_default;
+if (rawManifest.protocol_version !== RUNTIME_ACTIONS_PROTOCOL_VERSION) {
+  throw new Error(
+    `runtime_actions.json protocol_version must be ${RUNTIME_ACTIONS_PROTOCOL_VERSION}`
+  );
+}
+var VALID = /* @__PURE__ */ new Set(["command", "event", "request", "ack", "error"]);
+var ACTION_CATEGORIES = new Map(
+  Object.entries(rawManifest.actions).map(([name, category]) => {
+    if (!VALID.has(category)) {
+      throw new Error(`runtime_actions.json action ${name} has invalid category ${category}`);
+    }
+    return [name, category];
+  })
+);
+var OUTBOUND_REQUESTS = new Set(rawManifest.outbound_requests);
+var POPUP_ACTIONS = new Map(
+  Object.entries(rawManifest.popup_actions ?? {}).map(
+    ([action, directions]) => [action, new Set(directions)]
+  )
+);
+function popupActionAllows(action, direction) {
+  return POPUP_ACTIONS.get(action)?.has(direction) ?? false;
+}
+var FRONTEND_AUTHORITATIVE = new Set(rawManifest.frontend_authoritative ?? []);
+var RAW_ACTIONS = new Set(rawManifest.raw);
+var DATA_PLANE_ACTIONS = new Set(rawManifest.data_plane);
+var RENDER_PLACEMENTS = new Set(rawManifest.render_placements);
+if (RENDER_PLACEMENTS.size !== 2 || !RENDER_PLACEMENTS.has("client") || !RENDER_PLACEMENTS.has("server")) {
+  throw new Error("runtime_actions.json render_placements must be exactly client and server");
+}
+var ENDPOINT_ROLE_CAPABILITIES = new Map(
+  Object.entries(rawManifest.endpoint_role_capabilities).map(([role, capabilities]) => {
+    if (role.trim().length === 0 || capabilities.some((item2) => item2.trim().length === 0)) {
+      throw new Error(`runtime_actions.json role ${role} has an invalid capability`);
+    }
+    if (new Set(capabilities).size !== capabilities.length) {
+      throw new Error(`runtime_actions.json role ${role} repeats a capability`);
+    }
+    return [role, new Set(capabilities)];
+  })
+);
+var ENDPOINT_CAPABILITIES = new Set(
+  [...ENDPOINT_ROLE_CAPABILITIES.values()].flatMap((capabilities) => [...capabilities])
+);
+(() => {
+  const groups = [
+    new Set(ACTION_CATEGORIES.keys()),
+    OUTBOUND_REQUESTS,
+    RAW_ACTIONS,
+    DATA_PLANE_ACTIONS
+  ];
+  const seen = /* @__PURE__ */ new Set();
+  for (const group of groups) {
+    for (const name of group) {
+      if (seen.has(name)) {
+        throw new Error(`runtime_actions.json action appears in two groups: ${name}`);
+      }
+      seen.add(name);
+    }
+  }
+})();
+function categoryOf(action) {
+  return ACTION_CATEGORIES.get(action);
+}
+
 // src/messages/runtime-router.ts
 var RUNTIME_PROTOCOL_VERSION = 1;
 var DIRECTIONS = /* @__PURE__ */ new Set([
@@ -164844,20 +165137,19 @@ var DIRECTIONS = /* @__PURE__ */ new Set([
   "ack",
   "error"
 ]);
-var ROLES = /* @__PURE__ */ new Set([
-  "python",
-  "widget-host",
-  "qt-host",
-  "canvas",
-  "panel-popup",
-  "canvas-popup"
-]);
+var ROLES = /* @__PURE__ */ new Set(
+  [...ENDPOINT_ROLE_CAPABILITIES.keys()]
+);
+var ACTOR_KINDS = /* @__PURE__ */ new Set(["human", "agent", "system"]);
 var PROJECTION_RECIPIENT_ROLES = /* @__PURE__ */ new Set([
   "widget-host",
   "qt-host",
   "canvas",
   "panel-popup",
-  "canvas-popup"
+  "canvas-popup",
+  "browser-client",
+  "qt-client",
+  "render-worker"
 ]);
 function isNonEmptyString(value) {
   return typeof value === "string" && value.trim().length > 0;
@@ -164878,6 +165170,24 @@ function validateEnvelopeShape(value) {
     return null;
   }
   if (candidate.correlationId !== void 0 && !isNonEmptyString(candidate.correlationId)) {
+    return null;
+  }
+  if (candidate.actorId === void 0 !== (candidate.actorKind === void 0)) {
+    return null;
+  }
+  if (candidate.actorId !== void 0 && !isNonEmptyString(candidate.actorId)) {
+    return null;
+  }
+  if (candidate.actorKind !== void 0 && !ACTOR_KINDS.has(candidate.actorKind)) {
+    return null;
+  }
+  if (candidate.causationId !== void 0 && !isNonEmptyString(candidate.causationId)) {
+    return null;
+  }
+  if (candidate.operationId !== void 0 && !isNonEmptyString(candidate.operationId)) {
+    return null;
+  }
+  if (candidate.deadlineUnixMs !== void 0 && (!Number.isInteger(candidate.deadlineUnixMs) || candidate.deadlineUnixMs < 0)) {
     return null;
   }
   if (candidate.generation !== void 0 && (!Number.isInteger(candidate.generation) || candidate.generation < 0)) {
@@ -165237,185 +165547,6 @@ var ArrayNativeStreamReceiver = class {
     });
   }
 };
-
-// ../runtime_actions.json
-var runtime_actions_default = {
-  protocol_version: 1,
-  comment: "Shared Python<->TypeScript action contract for the AnyWidget runtime seam (R1). Python (viewer/runtime_router.py) and TypeScript (js/src/messages/runtime-actions.ts) both load THIS file so every action is classified identically. `actions` are browser->Python; category is the RuntimeEnvelope direction the action must carry, and the envelope action must equal the payload `event`. `outbound_requests` are Python->browser requests and must never be accepted as browser-originated. `popup_actions` are the host<->popup wire actions, mapped to the directions each may legitimately carry; `molsysviewer-sync-op` is deliberately bidirectional (a projection from the host, a command from the popup), which is exactly why the direction must be declared in the envelope rather than inferred from the sender. `qt_transport` are delivery-level events the Qt bridge answers itself and never forwards to the view; `qt_test_actions` are explicit test-only events forwarded by Qt without weakening the product-action boundary. The AnyWidget comm has no equivalent transport probe. `raw` is the pre-runtime/source bootstrap (both directions), never enveloped in R1. `data_plane` travels on the array-native binary seam (both directions), not the control-plane envelope. Domain projection ops (Python->browser) are authored and trusted by the Python authority and are wrapped with direction 'projection'; they are intentionally not enumerated. NOTE: interaction_measurement_created and section_moved are still compatibility paths where the frontend acts before Python confirms; R1 protects and deduplicates them but does not yet fully normalize 'Python first, projection after' (a later slice). `frontend_authoritative` is the subset of `actions` the browser performs itself and merely reports to Python \u2014 measurements, an active-selection pick, a section drag. They are the compatibility paths noted above, and naming them has a second use: a page with no authority behind it (a static export) can tell the difference between a control that silently cannot work there and one that already did the work before telling anybody.",
-  actions: {
-    interaction_active_selection_changed: "command",
-    interaction_context_action: "command",
-    interaction_measurement_created: "command",
-    addon_panel_action: "command",
-    section_moved: "command",
-    scene_history_undo: "command",
-    scene_history_redo: "command",
-    scene_history_coalescing_begin: "command",
-    scene_history_coalescing_end: "command",
-    interaction_hover: "event",
-    interaction_click: "event",
-    interaction_context_menu: "event",
-    interaction_tool_state: "event",
-    camera_snapshot: "event",
-    widget_resize: "event",
-    trajectory_frame_changed: "event",
-    shape_render_status: "event",
-    js_log: "event",
-    movie_frame: "event",
-    webgl_context_lost: "event",
-    webgl_context_restored: "event",
-    panel_mode_state: "event",
-    panel_navigate: "event",
-    panel_unmount: "event",
-    addon_panel_state_changed: "event",
-    movie_playback_done: "event",
-    request_dynamic_region_evaluation: "request",
-    request_visibility_resync: "request",
-    selection_query_preview_request: "request",
-    request_popup_scene_snapshot: "request",
-    popup_endpoint_closed: "event",
-    region_ack: "ack",
-    layer_ack: "ack",
-    registry_cleared: "ack",
-    region_deleted: "ack",
-    region_renamed: "ack",
-    layer_deleted: "ack",
-    trajectory_frame_rendered: "ack",
-    image_export: "ack",
-    movie_export_done: "ack",
-    viewer_init_failed: "error",
-    camera_stranded_inside_scene: "error",
-    runtime_contract_rejected: "error"
-  },
-  outbound_requests: [
-    "request_camera_snapshot",
-    "request_image_export"
-  ],
-  popup_actions: {
-    "molsysviewer-initial-sync": [
-      "projection"
-    ],
-    "molsysviewer-sync-ui": [
-      "projection"
-    ],
-    "molsysviewer-sync-autohide": [
-      "projection"
-    ],
-    "molsysviewer-structure-data": [
-      "projection"
-    ],
-    "molsysviewer-sync-camera": [
-      "event"
-    ],
-    "molsysviewer-pop-ready": [
-      "event"
-    ],
-    "molsysviewer-panel-ready": [
-      "event"
-    ],
-    "molsysviewer-log-from-popout": [
-      "event"
-    ],
-    "molsysviewer-structure-data-ack": [
-      "event"
-    ],
-    "molsysviewer-popup-interaction": [
-      "command"
-    ],
-    "molsysviewer-sync-op": [
-      "projection",
-      "command"
-    ],
-    "molsysviewer-sync-hierarchy": [
-      "projection"
-    ],
-    "molsysviewer-runtime-contract-rejected": [
-      "event"
-    ]
-  },
-  qt_transport: [
-    "message_ack",
-    "message_error",
-    "structure_ready",
-    "render_ready",
-    "frontend_error"
-  ],
-  qt_test_actions: [
-    "qt_payload_probe"
-  ],
-  raw: [
-    "request_widget_runtime_source",
-    "widget_runtime_source",
-    "request_popup_source",
-    "popup_source",
-    "ready"
-  ],
-  data_plane: [
-    "structure_data_begin",
-    "structure_data_chunk",
-    "structure_data_cancel",
-    "load_molsys_array_payload",
-    "structure_data_begin_ack",
-    "structure_data_chunk_ack",
-    "structure_data_complete",
-    "structure_data_error"
-  ],
-  frontend_authoritative: [
-    "interaction_measurement_created",
-    "section_moved",
-    "interaction_active_selection_changed"
-  ]
-};
-
-// src/messages/runtime-actions.ts
-var RUNTIME_ACTIONS_PROTOCOL_VERSION = 1;
-var rawManifest = runtime_actions_default;
-if (rawManifest.protocol_version !== RUNTIME_ACTIONS_PROTOCOL_VERSION) {
-  throw new Error(
-    `runtime_actions.json protocol_version must be ${RUNTIME_ACTIONS_PROTOCOL_VERSION}`
-  );
-}
-var VALID = /* @__PURE__ */ new Set(["command", "event", "request", "ack", "error"]);
-var ACTION_CATEGORIES = new Map(
-  Object.entries(rawManifest.actions).map(([name, category]) => {
-    if (!VALID.has(category)) {
-      throw new Error(`runtime_actions.json action ${name} has invalid category ${category}`);
-    }
-    return [name, category];
-  })
-);
-var OUTBOUND_REQUESTS = new Set(rawManifest.outbound_requests);
-var POPUP_ACTIONS = new Map(
-  Object.entries(rawManifest.popup_actions ?? {}).map(
-    ([action, directions]) => [action, new Set(directions)]
-  )
-);
-function popupActionAllows(action, direction) {
-  return POPUP_ACTIONS.get(action)?.has(direction) ?? false;
-}
-var FRONTEND_AUTHORITATIVE = new Set(rawManifest.frontend_authoritative ?? []);
-var RAW_ACTIONS = new Set(rawManifest.raw);
-var DATA_PLANE_ACTIONS = new Set(rawManifest.data_plane);
-(() => {
-  const groups = [
-    new Set(ACTION_CATEGORIES.keys()),
-    OUTBOUND_REQUESTS,
-    RAW_ACTIONS,
-    DATA_PLANE_ACTIONS
-  ];
-  const seen = /* @__PURE__ */ new Set();
-  for (const group of groups) {
-    for (const name of group) {
-      if (seen.has(name)) {
-        throw new Error(`runtime_actions.json action appears in two groups: ${name}`);
-      }
-      seen.add(name);
-    }
-  }
-})();
-function categoryOf(action) {
-  return ACTION_CATEGORIES.get(action);
-}
 
 // src/popup/popup-logic.ts
 var bootPopup = async (loadedModule) => {
@@ -166340,6 +166471,25 @@ var PopupHostManager = class {
 };
 
 // src/ui/help-overlay.ts
+var DEFAULT_SECTIONS = {
+  mouse: [
+    ["Left drag", "Rotate"],
+    ["Right drag", "Pan"],
+    ["Scroll", "Zoom"],
+    ["Left click", "Select element"],
+    ["Shift + Click", "Add to selection"],
+    ["Shift + Alt + Click", "Range selection (same chain)"],
+    ["Double click", "Focus on element"],
+    ["Right click", "Context menu"]
+  ],
+  keyboard: [
+    ["N", "Open / close Studio"],
+    ["W", "Open / close Workbench"],
+    ["V", "Toggle canvas visibility"],
+    ["H", "Toggle this help"],
+    ["Esc", "Close panel / cancel"]
+  ]
+};
 function injectHelpStyles() {
   const styleId = "molsysviewer-help-styles";
   if (document.getElementById(styleId)) return;
@@ -166465,7 +166615,7 @@ function makeSection(heading, rows) {
   return section;
 }
 var HelpOverlay = class {
-  constructor(host) {
+  constructor(host, sections = DEFAULT_SECTIONS) {
     this.host = host;
     this.visible = false;
     injectHelpStyles();
@@ -166497,23 +166647,8 @@ var HelpOverlay = class {
     card8.appendChild(header2);
     const grid = document.createElement("div");
     grid.className = "molsysviewer-help-grid";
-    grid.appendChild(makeSection("Mouse", [
-      ["Left drag", "Rotate"],
-      ["Right drag", "Pan"],
-      ["Scroll", "Zoom"],
-      ["Left click", "Select element"],
-      ["Shift + Click", "Add to selection"],
-      ["Shift + Alt + Click", "Range selection (same chain)"],
-      ["Double click", "Focus on element"],
-      ["Right click", "Context menu"]
-    ]));
-    grid.appendChild(makeSection("Keyboard", [
-      ["N", "Open / close Studio"],
-      ["W", "Open / close Workbench"],
-      ["V", "Toggle canvas visibility"],
-      ["H", "Toggle this help"],
-      ["Esc", "Close panel / cancel"]
-    ]));
+    grid.appendChild(makeSection("Mouse", sections.mouse));
+    grid.appendChild(makeSection("Keyboard", sections.keyboard));
     card8.appendChild(grid);
     this.root.addEventListener("pointerdown", (ev) => {
       if (ev.target === this.root) this.hide();
@@ -166554,6 +166689,54 @@ var HelpOverlay = class {
     this.root.remove();
   }
 };
+
+// src/ui/viewport-icon-button.ts
+var VIEWPORT_ICON_PANEL = `<rect x="2" y="2" width="12" height="12" rx="1.5"/><line x1="5.5" y1="2.5" x2="5.5" y2="13.5"/>`;
+var VIEWPORT_ICON_FULLSCREEN = `<polyline points="2,5 2,2 5,2"/><polyline points="11,2 14,2 14,5"/><polyline points="14,11 14,14 11,14"/><polyline points="5,14 2,14 2,11"/>`;
+var VIEWPORT_ICON_EXIT_FULLSCREEN = `<polyline points="5,2 5,5 2,5"/><polyline points="11,2 11,5 14,5"/><polyline points="14,11 11,11 11,14"/><polyline points="2,11 5,11 5,14"/>`;
+var VIEWPORT_ICON_POPUP = `<line x1="5.5" y1="10.5" x2="11.5" y2="4.5"/><polyline points="8,4 12,4 12,8"/><polyline points="5.5,7 3,7 3,13 9,13 9,10.5"/>`;
+var VIEWPORT_ICON_HELP = `<circle cx="8" cy="8" r="6"/><path d="M6.2,6.5a1.9,1.9,0,0,1,3.8,0c0,1.9-1.9,1.9-1.9,3" stroke-linecap="round" stroke-linejoin="round"/><line x1="8" y1="12.8" x2="8" y2="12.8" stroke-width="2" stroke-linecap="round"/>`;
+var VIEWPORT_ICON_RESET = `<path d="M3.1,5.5A5.5,5.5,0,1,1,2.8,10"/><polyline points="2,2 2,6 6,6"/>`;
+function setViewportIcon(button2, svgInner) {
+  button2.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;">${svgInner}</svg>`;
+}
+function makeViewportIconButton(svgInner, title, onClick) {
+  const button2 = document.createElement("button");
+  button2.type = "button";
+  button2.title = title;
+  setViewportIcon(button2, svgInner);
+  Object.assign(button2.style, {
+    width: "28px",
+    height: "28px",
+    minWidth: "28px",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "0",
+    border: "1px solid rgba(255, 255, 255, 0.15)",
+    borderRadius: "6px",
+    background: "rgba(18, 18, 22, 0.75)",
+    color: "rgba(255, 255, 255, 0.75)",
+    cursor: "default",
+    userSelect: "none",
+    pointerEvents: "auto",
+    boxSizing: "border-box",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
+    transition: "all 120ms ease"
+  });
+  button2.addEventListener("mouseenter", () => {
+    button2.style.background = "rgba(18, 18, 22, 0.95)";
+    button2.style.borderColor = "rgba(255, 255, 255, 0.35)";
+    button2.style.color = "rgba(255, 255, 255, 0.98)";
+  });
+  button2.addEventListener("mouseleave", () => {
+    button2.style.background = "rgba(18, 18, 22, 0.75)";
+    button2.style.borderColor = "rgba(255, 255, 255, 0.15)";
+    button2.style.color = "rgba(255, 255, 255, 0.75)";
+  });
+  button2.addEventListener("click", onClick);
+  return button2;
+}
 
 // src/ui/controls.ts
 var makeButton2 = (label2, onClick) => {
@@ -166950,6 +167133,7 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
   }
   const panelModeStyle = model.get("panel_mode_style") || "drawer";
   const traj = document.createElement("div");
+  traj.setAttribute("data-molsysviewer-trajectory-controls", "true");
   traj.style.display = "flex";
   traj.style.alignItems = "center";
   traj.style.gap = "6px";
@@ -166995,6 +167179,7 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
       });
     }
   });
+  btnPlayPause.setAttribute("data-molsysviewer-trajectory-playback", "play");
   if (isMinimal) {
     btnPrev = makeMinimalTrajButton(`<rect x="3" y="3" width="2" height="10" fill="currentColor"/><polygon points="12,3 6,8 12,13" fill="currentColor"/>`, "Previous Step", () => {
       c8.stepTrajectory(-currentStep);
@@ -167019,7 +167204,10 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
       sendSync({ op: "step_trajectory", by: currentStep });
     });
   }
+  btnPrev?.setAttribute("data-molsysviewer-trajectory-step", "previous");
+  btnNext?.setAttribute("data-molsysviewer-trajectory-step", "next");
   const slider = document.createElement("input");
+  slider.setAttribute("data-molsysviewer-trajectory-frame", "true");
   slider.type = "range";
   slider.min = "0";
   slider.max = "0";
@@ -167051,6 +167239,7 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
   };
   updateSliderBg();
   const label2 = document.createElement("span");
+  label2.setAttribute("data-molsysviewer-trajectory-label", "true");
   if (isMinimal) {
     label2.style.color = "rgba(255, 255, 255, 0.85)";
     label2.style.fontSize = "11px";
@@ -167097,6 +167286,7 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
       currentStep = n;
       const state = c8.trajectory.getTrajectoryState();
       if (state.isPlaying) {
+        btnPlayPause.setAttribute("data-molsysviewer-trajectory-playback", "stop");
         c8.playTrajectory({ fps: currentFps, step: currentStep });
       }
     }, "Step size", isMinimal);
@@ -167167,52 +167357,15 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
   }
   let fullscreenBtn = null;
   if (controlsMode === "minimal" && overlay) {
-    const ICON_PANEL = `<rect x="2" y="2" width="12" height="12" rx="1.5"/><line x1="5.5" y1="2.5" x2="5.5" y2="13.5"/>`;
-    const ICON_FULLSCREEN = `<polyline points="2,5 2,2 5,2"/><polyline points="11,2 14,2 14,5"/><polyline points="14,11 14,14 11,14"/><polyline points="5,14 2,14 2,11"/>`;
-    const ICON_POPUP = `<line x1="5.5" y1="10.5" x2="11.5" y2="4.5"/><polyline points="8,4 12,4 12,8"/><polyline points="5.5,7 3,7 3,13 9,13 9,10.5"/>`;
     const mkIcon = (svgInner, title, handler) => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.title = title;
-      btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${svgInner}</svg>`;
-      Object.assign(btn.style, {
-        width: "28px",
-        height: "28px",
-        minWidth: "28px",
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "0",
-        border: "1px solid rgba(255, 255, 255, 0.15)",
-        borderRadius: "6px",
-        background: "rgba(18, 18, 22, 0.75)",
-        color: "rgba(255, 255, 255, 0.75)",
-        cursor: "default",
-        userSelect: "none",
-        pointerEvents: "auto",
-        boxSizing: "border-box",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
-        transition: "all 120ms ease"
-      });
-      btn.addEventListener("mouseenter", () => {
-        btn.style.background = "rgba(18, 18, 22, 0.95)";
-        btn.style.borderColor = "rgba(255, 255, 255, 0.35)";
-        btn.style.color = "rgba(255, 255, 255, 0.98)";
-      });
-      btn.addEventListener("mouseleave", () => {
-        btn.style.background = "rgba(18, 18, 22, 0.75)";
-        btn.style.borderColor = "rgba(255, 255, 255, 0.15)";
-        btn.style.color = "rgba(255, 255, 255, 0.75)";
-      });
-      btn.addEventListener("click", handler);
+      const btn = makeViewportIconButton(svgInner, title, handler);
       overlay.appendChild(btn);
       return btn;
     };
-    mkIcon(ICON_PANEL, "Panel mode (N / W)", () => c8.togglePanelMode());
-    fullscreenBtn = mkIcon(ICON_FULLSCREEN, "Fullscreen", () => c8.toggleFullscreen());
-    if (onPopClick) mkIcon(ICON_POPUP, "Open popup", onPopClick);
-    const ICON_HELP = `<circle cx="8" cy="8" r="6"/><path d="M6.2,6.5a1.9,1.9,0,0,1,3.8,0c0,1.9-1.9,1.9-1.9,3" stroke-linecap="round" stroke-linejoin="round"/><line x1="8" y1="12.8" x2="8" y2="12.8" stroke-width="2" stroke-linecap="round"/>`;
-    mkIcon(ICON_HELP, "Help (H)", () => helpOverlay.toggle());
+    mkIcon(VIEWPORT_ICON_PANEL, "Panel mode (N / W)", () => c8.togglePanelMode());
+    fullscreenBtn = mkIcon(VIEWPORT_ICON_FULLSCREEN, "Fullscreen", () => c8.toggleFullscreen());
+    if (onPopClick) mkIcon(VIEWPORT_ICON_POPUP, "Open popup", onPopClick);
+    mkIcon(VIEWPORT_ICON_HELP, "Help (H)", () => helpOverlay.toggle());
   } else if (overlay) {
     const mk = (label3, handler) => {
       const b8 = makeButton2(label3, handler);
@@ -167273,6 +167426,7 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
         }
         btnPlayPause.title = "Pause Trajectory";
       } else {
+        btnPlayPause.setAttribute("data-molsysviewer-trajectory-playback", "play");
         if (isMinimal) {
           btnPlayPause.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;"><polygon points="5,3 13,8 5,13" fill="currentColor"/></svg>`;
         } else {
@@ -167345,14 +167499,13 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
       hotspot.style.height = "55px";
     }
   };
-  const ICON_EXIT_FULLSCREEN = `<polyline points="5,2 5,5 2,5"/><polyline points="11,2 11,5 14,5"/><polyline points="14,11 11,11 11,14"/><polyline points="2,11 5,11 5,14"/>`;
   const updateFullscreenButtonState = () => {
     const isFullscreen = !!document.fullscreenElement;
     if (fullscreenBtn) {
       if (controlsMode === "minimal") {
         const svg = fullscreenBtn.querySelector("svg");
         if (svg) {
-          const path = isFullscreen ? ICON_EXIT_FULLSCREEN : `<polyline points="2,5 2,2 5,2"/><polyline points="11,2 14,2 14,5"/><polyline points="14,11 14,14 11,14"/><polyline points="5,14 2,14 2,11"/>`;
+          const path = isFullscreen ? VIEWPORT_ICON_EXIT_FULLSCREEN : VIEWPORT_ICON_FULLSCREEN;
           svg.innerHTML = path;
         }
         fullscreenBtn.title = isFullscreen ? "Exit Fullscreen" : "Fullscreen";
@@ -167648,12 +167801,13 @@ function looksLikeEnvelope(value) {
   return typeof v4.protocolVersion === "number" && typeof v4.direction === "string" && typeof v4.action === "string" && "payload" in v4;
 }
 var WidgetEnvelopeAdapter = class {
-  constructor(viewerId, sessionId) {
+  constructor(viewerId, sessionId, identity3) {
     this.viewerId = viewerId;
     this.sessionId = sessionId;
+    this.identity = identity3;
     this.sequence = 0;
     this.pythonEndpoint = `python:${viewerId}`;
-    this.widgetHostEndpoint = `widget-host:${sessionId}`;
+    this.widgetHostEndpoint = identity3?.endpointId || `widget-host:${sessionId}`;
   }
   /** browser -> Python. `send` carries the wire message (raw for raw/data-plane
    * actions, an envelope otherwise); `rejected` must NOT reach `model.send`. */
@@ -167681,7 +167835,9 @@ var WidgetEnvelopeAdapter = class {
       messageId: `wh-${this.sessionId}-${++this.sequence}`,
       direction: category,
       action,
-      payload: message
+      payload: message,
+      ...this.identity?.actorId ? { actorId: this.identity.actorId } : {},
+      ...this.identity?.actorKind ? { actorKind: this.identity.actorKind } : {}
     };
     return { kind: "send", message: envelope };
   }
@@ -167725,6 +167881,2338 @@ var WidgetEnvelopeAdapter = class {
   }
 };
 
+// ../remote_protocol.json
+var remote_protocol_default = {
+  protocol_version: 1,
+  signaling_kinds: [
+    "offer",
+    "answer",
+    "ice-candidate",
+    "ice-complete"
+  ],
+  input_kinds: [
+    "pointer",
+    "wheel",
+    "key",
+    "context-menu"
+  ],
+  pointer_phases: [
+    "move",
+    "down",
+    "up",
+    "cancel"
+  ],
+  pointer_types: [
+    "mouse",
+    "pen",
+    "touch"
+  ],
+  key_phases: [
+    "down",
+    "up"
+  ],
+  max_key_code_length: 64,
+  max_viewport_dimension: 32768,
+  max_device_pixel_ratio: 16
+};
+
+// src/messages/remote-protocol.ts
+var REMOTE_PROTOCOL_VERSION = 1;
+var raw = remote_protocol_default;
+if (raw.protocol_version !== REMOTE_PROTOCOL_VERSION) {
+  throw new Error(`remote_protocol.json protocol_version must be ${REMOTE_PROTOCOL_VERSION}`);
+}
+var SIGNALING_KINDS = new Set(raw.signaling_kinds);
+var INPUT_KINDS = new Set(raw.input_kinds);
+var POINTER_PHASES = new Set(raw.pointer_phases);
+var POINTER_TYPES = new Set(raw.pointer_types);
+var KEY_PHASES = new Set(raw.key_phases);
+function accepted(packet) {
+  return { status: "accepted", packet };
+}
+function rejected(reason, detail) {
+  return { status: "rejected", reason, detail };
+}
+function nonEmpty2(value) {
+  return typeof value === "string" && value.trim().length > 0;
+}
+function finiteNumber(value) {
+  return typeof value === "number" && Number.isFinite(value);
+}
+function common2(value, expected) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return rejected("malformed-packet", "Packet must be an object");
+  }
+  const packet = value;
+  if (!Number.isInteger(packet.protocolVersion)) {
+    return rejected("malformed-packet", "protocolVersion must be an integer");
+  }
+  if (packet.protocolVersion !== REMOTE_PROTOCOL_VERSION) {
+    return rejected("protocol-mismatch", `Unsupported protocol ${packet.protocolVersion}`);
+  }
+  for (const key2 of ["viewerId", "sessionId", "endpointId", "kind"]) {
+    if (!nonEmpty2(packet[key2])) {
+      return rejected("malformed-packet", `${key2} must be a non-empty string`);
+    }
+  }
+  for (const key2 of ["viewerId", "sessionId", "endpointId"]) {
+    if (expected[key2] !== void 0 && packet[key2] !== expected[key2]) {
+      return rejected(
+        "identity-mismatch",
+        `${key2} belongs to ${String(packet[key2])}, expected ${expected[key2]}`
+      );
+    }
+  }
+  if (!packet.payload || typeof packet.payload !== "object" || Array.isArray(packet.payload)) {
+    return rejected("malformed-payload", "payload must be an object");
+  }
+  return packet;
+}
+function isRejection(value) {
+  return value.status === "rejected";
+}
+function validateSignalingPacket(value, expected = {}) {
+  const checked = common2(value, expected);
+  if (isRejection(checked)) return checked;
+  if (!nonEmpty2(checked.messageId)) {
+    return rejected("malformed-packet", "messageId must be a non-empty string");
+  }
+  const kind = checked.kind;
+  const payload = checked.payload;
+  if (!SIGNALING_KINDS.has(kind)) return rejected("unknown-kind", `Unknown signaling kind ${kind}`);
+  if ((kind === "offer" || kind === "answer") && !nonEmpty2(payload.sdp)) {
+    return rejected("malformed-payload", `${kind} requires non-empty sdp`);
+  }
+  if (kind === "ice-candidate") {
+    if (!nonEmpty2(payload.candidate)) {
+      return rejected("malformed-payload", "ice-candidate requires candidate");
+    }
+    if (payload.sdpMid !== null && payload.sdpMid !== void 0 && !nonEmpty2(payload.sdpMid)) {
+      return rejected("malformed-payload", "sdpMid must be null or non-empty");
+    }
+    if (payload.sdpMLineIndex !== null && payload.sdpMLineIndex !== void 0 && (!Number.isInteger(payload.sdpMLineIndex) || payload.sdpMLineIndex < 0)) {
+      return rejected("malformed-payload", "sdpMLineIndex must be null or non-negative");
+    }
+  }
+  return accepted(checked);
+}
+function validateInputPacket(value, expected = {}) {
+  const checked = common2(value, expected);
+  if (isRejection(checked)) return checked;
+  if (!Number.isSafeInteger(checked.sequence) || checked.sequence < 0) {
+    return rejected("malformed-packet", "sequence must be a non-negative safe integer");
+  }
+  if (!finiteNumber(checked.timestampMs) || checked.timestampMs < 0) {
+    return rejected("malformed-packet", "timestampMs must be finite and non-negative");
+  }
+  if (!checked.viewport || typeof checked.viewport !== "object" || Array.isArray(checked.viewport)) {
+    return rejected("malformed-packet", "viewport must be an object");
+  }
+  const viewport = checked.viewport;
+  for (const dimension of ["width", "height"]) {
+    const item2 = viewport[dimension];
+    if (!finiteNumber(item2) || item2 <= 0 || item2 > raw.max_viewport_dimension) {
+      return rejected("malformed-packet", `viewport.${dimension} is out of bounds`);
+    }
+  }
+  const dpr = viewport.devicePixelRatio;
+  if (!finiteNumber(dpr) || dpr <= 0 || dpr > raw.max_device_pixel_ratio) {
+    return rejected("malformed-packet", "viewport.devicePixelRatio is out of bounds");
+  }
+  const kind = checked.kind;
+  const payload = checked.payload;
+  if (!INPUT_KINDS.has(kind)) return rejected("unknown-kind", `Unknown input kind ${kind}`);
+  const failure = validateInputPayload(kind, payload);
+  return failure ?? accepted(checked);
+}
+function validateInputPayload(kind, payload) {
+  const modifiers3 = payload.modifiers ?? {};
+  if (!modifiers3 || typeof modifiers3 !== "object" || Array.isArray(modifiers3)) {
+    return rejected("malformed-payload", "modifiers must be an object");
+  }
+  for (const [key2, value] of Object.entries(modifiers3)) {
+    if (!["alt", "ctrl", "meta", "shift"].includes(key2) || typeof value !== "boolean") {
+      return rejected("malformed-payload", "modifiers must contain only boolean modifier keys");
+    }
+  }
+  if (kind === "pointer" || kind === "wheel" || kind === "context-menu") {
+    for (const coordinate of ["x", "y"]) {
+      const item2 = payload[coordinate];
+      if (!finiteNumber(item2) || item2 < 0 || item2 > 1) {
+        return rejected("malformed-payload", `${coordinate} must be normalized to [0, 1]`);
+      }
+    }
+  }
+  if (kind === "pointer") {
+    if (!POINTER_PHASES.has(String(payload.phase))) {
+      return rejected("malformed-payload", "pointer phase is invalid");
+    }
+    if (!POINTER_TYPES.has(String(payload.pointerType))) {
+      return rejected("malformed-payload", "pointerType is invalid");
+    }
+    if (!Number.isInteger(payload.pointerId) || payload.pointerId < 0) {
+      return rejected("malformed-payload", "pointerId must be non-negative");
+    }
+    if (!Number.isInteger(payload.button) || payload.button < -1 || payload.button > 5) {
+      return rejected("malformed-payload", "button is out of bounds");
+    }
+    if (!Number.isInteger(payload.buttons) || payload.buttons < 0) {
+      return rejected("malformed-payload", "buttons must be non-negative");
+    }
+  } else if (kind === "wheel") {
+    for (const delta2 of ["deltaX", "deltaY"]) {
+      if (!finiteNumber(payload[delta2])) {
+        return rejected("malformed-payload", `${delta2} must be finite`);
+      }
+    }
+    if (![0, 1, 2].includes(payload.deltaMode)) {
+      return rejected("malformed-payload", "deltaMode must be 0, 1 or 2");
+    }
+  } else if (kind === "key") {
+    if (!KEY_PHASES.has(String(payload.phase))) {
+      return rejected("malformed-payload", "key phase is invalid");
+    }
+    if (!nonEmpty2(payload.code) || payload.code.length > raw.max_key_code_length) {
+      return rejected("malformed-payload", "key code is invalid");
+    }
+    if (typeof payload.repeat !== "boolean") {
+      return rejected("malformed-payload", "key repeat must be boolean");
+    }
+  } else {
+    if (!nonEmpty2(payload.requestId) || payload.requestId.length > 128) {
+      return rejected("malformed-payload", "context-menu requestId is invalid");
+    }
+  }
+  return null;
+}
+
+// src/messages/remote-input-adapter.ts
+var browserEventFactory = {
+  mouse: (type3, init) => new MouseEvent(type3, init),
+  wheel: (type3, init) => new WheelEvent(type3, init),
+  key: (type3, init) => new KeyboardEvent(type3, init)
+};
+function rejection(result2) {
+  if (result2.status !== "rejected") {
+    throw new Error("accepted remote packet cannot be converted to a rejection");
+  }
+  return result2;
+}
+function modifiers(payload) {
+  const value = payload.modifiers ?? {};
+  return {
+    altKey: value.alt === true,
+    ctrlKey: value.ctrl === true,
+    metaKey: value.meta === true,
+    shiftKey: value.shift === true
+  };
+}
+var RemoteInputAdapter = class {
+  constructor(target, expectedIdentity, eventFactory = browserEventFactory, globalTarget = target.ownerDocument?.defaultView ?? target, ratePolicy = { maxEvents: 240, intervalMs: 1e3 }) {
+    this.target = target;
+    this.expectedIdentity = expectedIdentity;
+    this.eventFactory = eventFactory;
+    this.globalTarget = globalTarget;
+    this.ratePolicy = ratePolicy;
+    this.lastSequence = -1;
+    this.acceptedInRateWindow = 0;
+    if (!Number.isInteger(ratePolicy.maxEvents) || ratePolicy.maxEvents < 1 || !Number.isFinite(ratePolicy.intervalMs) || ratePolicy.intervalMs <= 0) {
+      throw new Error("remote input rate policy must be positive and bounded");
+    }
+    this.rateNow = ratePolicy.now ?? (() => performance.now());
+    this.rateWindowStartedAt = this.rateNow();
+  }
+  get acceptedSequence() {
+    return this.lastSequence;
+  }
+  handle(value) {
+    const validation = validateInputPacket(value, this.expectedIdentity);
+    if (validation.status === "rejected") return rejection(validation);
+    const packet = validation.packet;
+    const sequence = packet.sequence;
+    if (sequence <= this.lastSequence) {
+      return {
+        status: "rejected",
+        reason: "stale-sequence",
+        detail: `Input sequence ${sequence} does not follow ${this.lastSequence}`
+      };
+    }
+    const now2 = this.rateNow();
+    if (now2 - this.rateWindowStartedAt >= this.ratePolicy.intervalMs) {
+      this.rateWindowStartedAt = now2;
+      this.acceptedInRateWindow = 0;
+    }
+    if (this.acceptedInRateWindow >= this.ratePolicy.maxEvents) {
+      return {
+        status: "rejected",
+        reason: "rate-limit",
+        detail: `Input exceeds ${this.ratePolicy.maxEvents} events per ${this.ratePolicy.intervalMs} ms`
+      };
+    }
+    const kind = packet.kind;
+    const payload = packet.payload;
+    const event = this.buildEvent(kind, payload);
+    this.lastSequence = sequence;
+    this.acceptedInRateWindow += 1;
+    if (kind === "pointer" && payload.phase === "down" || kind === "context-menu") this.target.focus();
+    const usesGlobalTarget = kind === "key" || kind === "pointer" && payload.phase !== "down";
+    (usesGlobalTarget ? this.globalTarget : this.target).dispatchEvent(event);
+    return { status: "accepted", sequence, eventType: event.type };
+  }
+  buildEvent(kind, payload) {
+    const common3 = { bubbles: true, cancelable: true, ...modifiers(payload) };
+    if (kind === "key") {
+      const type3 = payload.phase === "down" ? "keydown" : "keyup";
+      return this.eventFactory.key(type3, {
+        ...common3,
+        code: payload.code,
+        repeat: payload.repeat
+      });
+    }
+    const rect = this.target.getBoundingClientRect();
+    const positioned = {
+      ...common3,
+      clientX: rect.left + rect.width * payload.x,
+      clientY: rect.top + rect.height * payload.y
+    };
+    if (kind === "wheel") {
+      return this.eventFactory.wheel("wheel", {
+        ...positioned,
+        deltaX: payload.deltaX,
+        deltaY: payload.deltaY,
+        deltaMode: payload.deltaMode
+      });
+    }
+    if (kind === "context-menu") {
+      const event = this.eventFactory.mouse("contextmenu", {
+        ...positioned,
+        button: 2,
+        buttons: 0
+      });
+      Object.defineProperty(event, "molsysviewerRemoteRequestId", {
+        value: payload.requestId,
+        enumerable: false
+      });
+      return event;
+    }
+    const phaseToType = {
+      move: "mousemove",
+      down: "mousedown",
+      up: "mouseup",
+      cancel: "mouseup"
+    };
+    return this.eventFactory.mouse(phaseToType[payload.phase], {
+      ...positioned,
+      button: payload.button,
+      buttons: payload.buttons
+    });
+  }
+};
+
+// src/remote/render-worker-peer.ts
+var RenderWorkerPeer = class {
+  constructor(canvas, options, sendSignal, inputAdapter, onFirstInput, requestDraw) {
+    this.canvas = canvas;
+    this.options = options;
+    this.sendSignal = sendSignal;
+    this.inputAdapter = inputAdapter;
+    this.onFirstInput = onFirstInput;
+    this.requestDraw = requestDraw;
+    this.connection = null;
+    this.stream = null;
+    this.inputChannel = null;
+    this.client = null;
+    this.signalSequence = 0;
+    this.pendingCandidates = [];
+    this.observedInput = false;
+    this.frameKeepalive = 0;
+  }
+  get clientIdentity() {
+    return this.client;
+  }
+  get peerConnection() {
+    return this.connection;
+  }
+  async diagnostics() {
+    const stats = [];
+    if (this.connection) {
+      const report = await this.connection.getStats();
+      report.forEach((item2) => {
+        if (["outbound-rtp", "media-source", "codec", "candidate-pair"].includes(item2.type)) {
+          stats.push(Object.fromEntries(Object.entries(item2)));
+        }
+      });
+    }
+    return {
+      connectionState: this.connection?.connectionState ?? null,
+      iceConnectionState: this.connection?.iceConnectionState ?? null,
+      iceGatheringState: this.connection?.iceGatheringState ?? null,
+      signalingState: this.connection?.signalingState ?? null,
+      localCandidateCount: candidateCount(this.connection?.localDescription?.sdp),
+      remoteCandidateCount: candidateCount(this.connection?.remoteDescription?.sdp),
+      canvas: { width: this.canvas.width, height: this.canvas.height },
+      tracks: (this.stream?.getVideoTracks() ?? []).map((track) => ({
+        id: track.id,
+        readyState: track.readyState,
+        enabled: track.enabled,
+        muted: track.muted,
+        settings: track.getSettings()
+      })),
+      stats
+    };
+  }
+  async start(client) {
+    this.close();
+    this.client = client;
+    const connection = new RTCPeerConnection({ iceServers: this.options.iceServers ?? [] });
+    this.connection = connection;
+    connection.addEventListener("icecandidate", (event) => {
+      this.emitSignal(
+        event.candidate ? "ice-candidate" : "ice-complete",
+        event.candidate ? { ...event.candidate.toJSON() } : {}
+      );
+    });
+    connection.addEventListener("connectionstatechange", () => {
+      if (["failed", "closed"].includes(connection.connectionState)) {
+        this.inputChannel?.close();
+      }
+    });
+    const frameRate = this.options.frameRate ?? 30;
+    const stream = this.canvas.captureStream(frameRate);
+    this.stream = stream;
+    this.frameKeepalive = window.setInterval(() => this.requestCapturedFrame(), 2e3);
+    for (const track of stream.getVideoTracks()) {
+      track.contentHint = "detail";
+      const sender = connection.addTrack(track, stream);
+      const parameters = sender.getParameters();
+      parameters.degradationPreference = "maintain-resolution";
+      parameters.encodings = parameters.encodings?.length ? parameters.encodings : [{}];
+      parameters.encodings[0].maxBitrate = this.options.maxBitrate ?? 8e6;
+      parameters.encodings[0].maxFramerate = frameRate;
+      parameters.encodings[0].scaleResolutionDownBy = 1;
+      await sender.setParameters(parameters);
+    }
+    const input = connection.createDataChannel("input", { ordered: true });
+    this.inputChannel = input;
+    input.addEventListener("message", (event) => {
+      try {
+        const result2 = this.inputAdapter.handle(JSON.parse(String(event.data)));
+        if (result2.status === "rejected") {
+          throw new Error(`${result2.reason}: ${result2.detail}`);
+        }
+        if (!this.observedInput) {
+          this.observedInput = true;
+          this.onFirstInput?.(result2.sequence);
+        }
+      } catch (error2) {
+        console.error("[MolSysViewer render worker] rejected input channel packet", error2);
+        input.close();
+      }
+    });
+    const offer = await connection.createOffer();
+    await connection.setLocalDescription(offer);
+    this.requestCapturedFrame();
+    this.emitSignal("offer", { sdp: offer.sdp ?? "" });
+  }
+  async handleSignal(value) {
+    const client = this.client;
+    const connection = this.connection;
+    if (!client || !connection) throw new Error("render-worker peer has not started");
+    const validation = validateSignalingPacket(value, {
+      viewerId: this.options.viewerId,
+      sessionId: this.options.sessionId,
+      endpointId: client.endpointId
+    });
+    if (validation.status === "rejected") {
+      throw new Error(`${validation.reason}: ${validation.detail}`);
+    }
+    const packet = validation.packet;
+    const kind = packet.kind;
+    const payload = packet.payload;
+    if (kind === "answer") {
+      await connection.setRemoteDescription({ type: "answer", sdp: payload.sdp });
+      for (const candidate of this.pendingCandidates.splice(0)) {
+        await connection.addIceCandidate(candidate);
+      }
+      this.requestCapturedFrame();
+      window.setTimeout(() => this.requestCapturedFrame(), 100);
+      window.setTimeout(() => this.requestCapturedFrame(), 500);
+      return;
+    }
+    if (kind === "ice-candidate") {
+      const candidate = payload;
+      if (connection.remoteDescription) await connection.addIceCandidate(candidate);
+      else this.pendingCandidates.push(candidate);
+    }
+  }
+  close() {
+    window.clearInterval(this.frameKeepalive);
+    this.frameKeepalive = 0;
+    this.inputChannel?.close();
+    this.inputChannel = null;
+    this.connection?.close();
+    this.connection = null;
+    for (const track of this.stream?.getTracks() ?? []) track.stop();
+    this.stream = null;
+    this.client = null;
+    this.pendingCandidates = [];
+    this.observedInput = false;
+  }
+  emitSignal(kind, payload) {
+    this.sendSignal({
+      protocolVersion: 1,
+      viewerId: this.options.viewerId,
+      sessionId: this.options.sessionId,
+      endpointId: this.options.workerEndpointId,
+      messageId: `${this.options.workerEndpointId}:signal:${++this.signalSequence}`,
+      kind,
+      payload
+    });
+  }
+  requestCapturedFrame() {
+    if (!this.stream) return;
+    this.requestDraw?.();
+    for (const track of this.stream.getVideoTracks()) {
+      if (track.readyState === "live") {
+        track.requestFrame?.();
+      }
+    }
+  }
+};
+function candidateCount(sdp) {
+  return sdp?.match(/^a=candidate:/gm)?.length ?? 0;
+}
+
+// src/remote/render-worker-entrypoint.ts
+var INBOUND_DIRECTIONS2 = /* @__PURE__ */ new Set(["projection", "request", "ack", "error"]);
+function actionOf(message) {
+  if (typeof message.event === "string" && message.event) return message.event;
+  if (typeof message.op === "string" && message.op) return message.op;
+  return null;
+}
+function assertInboundEnvelope(value, options) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new Error("render-worker control envelope is malformed");
+  }
+  const envelope = value;
+  if (envelope.protocolVersion !== 1 || envelope.viewerId !== options.viewerId || envelope.sessionId !== options.sessionId || envelope.endpointId !== `python:${options.viewerId}` || envelope.targetEndpointId !== void 0 && envelope.targetEndpointId !== options.endpointId || !INBOUND_DIRECTIONS2.has(envelope.direction) || !envelope.payload || typeof envelope.payload !== "object" || Array.isArray(envelope.payload) || actionOf(envelope.payload) !== envelope.action) {
+    throw new Error("render-worker control envelope identity or payload is invalid");
+  }
+  return envelope;
+}
+async function bootRenderWorker(options) {
+  const { el } = options;
+  el.replaceChildren();
+  const target = document.createElement("div");
+  target.tabIndex = 0;
+  Object.assign(target.style, {
+    width: options.width ? `${options.width}px` : "100%",
+    height: options.height ? `${options.height}px` : "100%",
+    position: "relative",
+    overflow: "hidden",
+    touchAction: "none"
+  });
+  el.appendChild(target);
+  const socket = new WebSocket(options.websocketUrl, ["molsysviewer-internal-v1"]);
+  socket.binaryType = "arraybuffer";
+  let outboundSequence = 0;
+  let registered = false;
+  let closed = false;
+  let dataHeader = null;
+  let dataBuffers = [];
+  let messageQueue = Promise.resolve();
+  const pendingDomainMessages = [];
+  let resolveRegistration;
+  let rejectRegistration;
+  const registrationPromise = new Promise((resolve, reject) => {
+    resolveRegistration = resolve;
+    rejectRegistration = reject;
+  });
+  void registrationPromise.catch(() => void 0);
+  const sendJson = (value) => {
+    if (socket.readyState !== WebSocket.OPEN) throw new Error("render-worker socket is not open");
+    socket.send(JSON.stringify(value));
+  };
+  const sendDomainNow = (message) => {
+    const action = actionOf(message);
+    if (!action) throw new Error("render-worker outbound message has no action");
+    if (RAW_ACTIONS.has(action) || DATA_PLANE_ACTIONS.has(action)) {
+      sendJson({ kind: "raw", message });
+      return;
+    }
+    const direction = categoryOf(action);
+    if (!direction) throw new Error(`render-worker emitted unknown action ${action}`);
+    const humanOrigin = direction === "command" || direction === "request";
+    if (humanOrigin && !clientIdentity) return;
+    const sourceEndpointId = humanOrigin ? clientIdentity.endpointId : options.endpointId;
+    const sourceActorId = humanOrigin ? clientIdentity.actorId : options.endpointId;
+    const envelope = {
+      protocolVersion: 1,
+      viewerId: options.viewerId,
+      sessionId: options.sessionId,
+      endpointId: sourceEndpointId,
+      targetEndpointId: `python:${options.viewerId}`,
+      messageId: `${sourceEndpointId}:${++outboundSequence}`,
+      direction,
+      action,
+      payload: message,
+      actorId: sourceActorId,
+      actorKind: humanOrigin ? "human" : "system"
+    };
+    sendJson({ kind: "control", envelope });
+  };
+  const sendDomain = (message) => {
+    if (!registered) {
+      pendingDomainMessages.push(message);
+      return;
+    }
+    sendDomainNow(message);
+  };
+  const controllerPromise = MolSysViewerController.create(
+    target,
+    (message) => sendDomain(message),
+    void 0,
+    { hasAuthority: true, hasInitialStructures: false }
+  );
+  const arrayReceiver = new ArrayNativeStreamReceiver(
+    (event) => sendDomain(event),
+    async (begin, payload) => {
+      const controller2 = await controllerPromise;
+      await controller2.loadArrayNativeMolSysPayload(payload, begin.label);
+    }
+  );
+  let inputAdapter = null;
+  let peer = null;
+  let clientIdentity = null;
+  const handleData = async (header2, buffers) => {
+    await arrayReceiver.handle(header2.message, buffers);
+  };
+  const handleJson = async (value) => {
+    if (value?.kind === "registered") {
+      await controllerPromise;
+      const canvas = target.querySelector("canvas");
+      if (!canvas) throw new Error("render-worker controller did not create a canvas");
+      registered = true;
+      for (const pending of pendingDomainMessages.splice(0)) sendDomainNow(pending);
+      sendDomainNow({
+        event: "ready",
+        capabilities: {
+          binary_structure_data: [1],
+          max_buffer_bytes: 16 * 1024 * 1024,
+          transferable_array_buffer: true,
+          render_worker: true
+        }
+      });
+      resolveRegistration();
+      return;
+    }
+    if (!registered) throw new Error("render-worker received traffic before registration");
+    if (value?.kind === "peer-start") {
+      if (typeof value.clientEndpointId !== "string" || !value.clientEndpointId || typeof value.actorId !== "string" || !value.actorId) {
+        throw new Error("render-worker peer identity is malformed");
+      }
+      const peerIceServers = Array.isArray(value.iceServers) ? value.iceServers : options.iceServers;
+      const canvas = target.querySelector("canvas");
+      if (!canvas) throw new Error("render-worker peer started before canvas creation");
+      peer?.close();
+      clientIdentity = {
+        endpointId: value.clientEndpointId,
+        actorId: value.actorId
+      };
+      inputAdapter = new RemoteInputAdapter(canvas, {
+        viewerId: options.viewerId,
+        sessionId: options.sessionId,
+        endpointId: clientIdentity.endpointId
+      });
+      const controller2 = await controllerPromise;
+      peer = new RenderWorkerPeer(
+        canvas,
+        {
+          viewerId: options.viewerId,
+          sessionId: options.sessionId,
+          workerEndpointId: options.endpointId,
+          frameRate: options.frameRate,
+          maxBitrate: options.maxBitrate,
+          iceServers: peerIceServers
+        },
+        (packet) => sendJson({ kind: "signal", packet }),
+        inputAdapter,
+        (sequence) => sendJson({ kind: "peer-state", state: "input-received", sequence }),
+        () => controller2.plugin.canvas3d?.requestDraw()
+      );
+      await peer.start(clientIdentity);
+      controller2.plugin.canvas3d?.requestDraw();
+      window.setTimeout(() => controller2.plugin.canvas3d?.requestDraw(), 100);
+      return;
+    }
+    if (value?.kind === "peer-stop") {
+      peer?.close();
+      peer = null;
+      inputAdapter = null;
+      clientIdentity = null;
+      return;
+    }
+    if (value?.kind === "signal") {
+      if (!peer) throw new Error("render-worker received signaling before peer start");
+      await peer.handleSignal(value.packet);
+      return;
+    }
+    if (value?.kind === "control") {
+      const envelope = assertInboundEnvelope(value.envelope, options);
+      if (envelope.action === "request_image_export") {
+        const request = envelope.payload;
+        const controller2 = await controllerPromise;
+        const result2 = await controller2.getImageDataUri({
+          width: typeof request.width === "number" ? request.width : void 0,
+          height: typeof request.height === "number" ? request.height : void 0,
+          scale: typeof request.scale === "number" ? request.scale : void 0,
+          transparent: request.transparent === true,
+          preset: typeof request.preset === "string" ? request.preset : void 0,
+          cameraSnapshot: request.camera_snapshot && typeof request.camera_snapshot === "object" ? request.camera_snapshot : void 0
+        });
+        sendDomain({
+          event: "image_export",
+          request_id: request.request_id,
+          ...typeof result2 === "string" ? { data_uri: result2, success: true } : result2,
+          format: "png"
+        });
+        return;
+      }
+      await (await controllerPromise).handleMessage(envelope.payload);
+      return;
+    }
+    if (value?.kind === "data") {
+      if (dataHeader !== null) throw new Error("nested render-worker data header");
+      if (!Number.isInteger(value.bufferCount) || value.bufferCount < 0 || !Array.isArray(value.byteLengths) || value.byteLengths.length !== value.bufferCount || value.byteLengths.some((length) => !Number.isInteger(length) || Number(length) < 0)) {
+        throw new Error("render-worker data header is malformed");
+      }
+      dataHeader = value;
+      dataBuffers = [];
+      if (dataHeader.bufferCount === 0) {
+        const complete = dataHeader;
+        dataHeader = null;
+        await handleData(complete, []);
+      }
+      return;
+    }
+    if (value?.kind === "input") {
+      if (!clientIdentity || !inputAdapter) {
+        throw new Error("render-worker input arrived before client binding");
+      }
+      const result2 = inputAdapter.handle(value.packet);
+      if (result2.status === "rejected") throw new Error(`${result2.reason}: ${result2.detail}`);
+      return;
+    }
+    throw new Error("render-worker received an unknown wire message");
+  };
+  socket.addEventListener("message", (event) => {
+    messageQueue = messageQueue.then(async () => {
+      if (typeof event.data === "string") {
+        await handleJson(JSON.parse(event.data));
+        return;
+      }
+      if (dataHeader === null || !(event.data instanceof ArrayBuffer)) {
+        throw new Error("unexpected render-worker binary frame");
+      }
+      const index = dataBuffers.length;
+      if (event.data.byteLength !== dataHeader.byteLengths[index]) {
+        throw new Error("render-worker binary frame length mismatch");
+      }
+      dataBuffers.push(new DataView(event.data));
+      if (dataBuffers.length === dataHeader.bufferCount) {
+        const complete = dataHeader;
+        const buffers = dataBuffers;
+        dataHeader = null;
+        dataBuffers = [];
+        await handleData(complete, buffers);
+      }
+    }).catch((error2) => {
+      console.error("[MolSysViewer render worker] wire failure", error2);
+      rejectRegistration(error2 instanceof Error ? error2 : new Error(String(error2)));
+      socket.close(1011, "worker wire failure");
+    });
+  });
+  await new Promise((resolve, reject) => {
+    const timer2 = window.setTimeout(() => reject(new Error("render-worker WebSocket timed out")), 1e4);
+    socket.addEventListener("open", () => {
+      window.clearTimeout(timer2);
+      sendJson({
+        kind: "register",
+        protocolVersion: 1,
+        viewerId: options.viewerId,
+        sessionId: options.sessionId,
+        endpointId: options.endpointId,
+        role: "render-worker",
+        actorId: options.endpointId,
+        actorKind: "system",
+        capabilities: ["input-receive", "render", "structure-receive", "video-send"]
+      });
+      resolve();
+    }, { once: true });
+    socket.addEventListener("error", () => {
+      window.clearTimeout(timer2);
+      const error2 = new Error("render-worker WebSocket failed");
+      rejectRegistration(error2);
+      reject(error2);
+    }, { once: true });
+    socket.addEventListener("close", () => {
+      rejectRegistration(new Error("render-worker WebSocket closed during registration"));
+    }, { once: true });
+  });
+  const controller = await controllerPromise;
+  let registrationTimer = 0;
+  try {
+    await Promise.race([
+      registrationPromise,
+      new Promise((_resolve, reject) => {
+        registrationTimer = window.setTimeout(
+          () => reject(new Error("render-worker registration timed out")),
+          1e4
+        );
+      })
+    ]);
+  } finally {
+    window.clearTimeout(registrationTimer);
+  }
+  el.setAttribute("data-molsysviewer-render-worker", "booted");
+  return {
+    controller,
+    socket,
+    peerDiagnostics: () => peer?.diagnostics() ?? Promise.resolve({ peer: null }),
+    close() {
+      if (closed) return;
+      closed = true;
+      arrayReceiver.dispose();
+      peer?.close();
+      controller.dispose();
+      socket.close(1e3, "worker closed");
+    }
+  };
+}
+
+// src/ui/projected-trajectory-controls.ts
+var button = (label2, title) => {
+  const element = document.createElement("button");
+  element.type = "button";
+  element.textContent = label2;
+  element.title = title;
+  Object.assign(element.style, {
+    width: "30px",
+    height: "28px",
+    padding: "0",
+    borderRadius: "6px",
+    border: "1px solid rgba(255,255,255,.18)",
+    background: "rgba(18,18,22,.9)",
+    color: "#f5f7fa",
+    font: "13px/1 system-ui,sans-serif",
+    cursor: "default"
+  });
+  return element;
+};
+var ProjectedTrajectoryControls = class {
+  constructor(host, emit) {
+    this.emit = emit;
+    this.previous = button("\u2212", "Previous frame");
+    this.playPause = button("\u25B6", "Play trajectory");
+    this.next = button("+", "Next frame");
+    this.slider = document.createElement("input");
+    this.label = document.createElement("span");
+    this.state = {
+      frame: 0,
+      frameCount: 0,
+      isPlaying: false,
+      fps: 30,
+      step: 1,
+      mode: "loop",
+      direction: "forward"
+    };
+    this.root = document.createElement("div");
+    this.root.setAttribute("data-molsysviewer-trajectory-controls", "true");
+    Object.assign(this.root.style, {
+      position: "absolute",
+      left: "50%",
+      bottom: "14px",
+      transform: "translateX(-50%)",
+      zIndex: "3",
+      display: "none",
+      alignItems: "center",
+      gap: "6px",
+      padding: "6px",
+      borderRadius: "8px",
+      border: "1px solid rgba(255,255,255,.12)",
+      background: "rgba(8,11,16,.78)",
+      boxShadow: "0 4px 16px rgba(0,0,0,.3)",
+      pointerEvents: "auto"
+    });
+    this.previous.setAttribute("data-molsysviewer-trajectory-step", "previous");
+    this.playPause.setAttribute("data-molsysviewer-trajectory-playback", "play");
+    this.next.setAttribute("data-molsysviewer-trajectory-step", "next");
+    this.slider.type = "range";
+    this.slider.min = "0";
+    this.slider.max = "0";
+    this.slider.value = "0";
+    this.slider.setAttribute("data-molsysviewer-trajectory-frame", "true");
+    Object.assign(this.slider.style, { width: "180px", accentColor: "#e6edf3" });
+    this.label.setAttribute("data-molsysviewer-trajectory-label", "true");
+    Object.assign(this.label.style, {
+      minWidth: "62px",
+      color: "#f5f7fa",
+      font: "11px/1.2 system-ui,sans-serif",
+      textAlign: "center"
+    });
+    this.previous.addEventListener("click", () => this.emit({ action: "step_trajectory", by: -this.state.step }));
+    this.next.addEventListener("click", () => this.emit({ action: "step_trajectory", by: this.state.step }));
+    this.playPause.addEventListener("click", () => {
+      if (this.state.isPlaying) {
+        this.emit({ action: "set_trajectory_playback", playback_action: "stop" });
+      } else {
+        this.emit({
+          action: "set_trajectory_playback",
+          playback_action: "play",
+          fps: this.state.fps,
+          step: this.state.step,
+          mode: this.state.mode,
+          direction: this.state.direction
+        });
+      }
+    });
+    this.slider.addEventListener("input", () => this.renderLabel(Number(this.slider.value)));
+    this.slider.addEventListener("change", () => {
+      const index = Number(this.slider.value);
+      if (Number.isInteger(index)) this.emit({ action: "set_trajectory_frame", index });
+    });
+    this.root.append(this.previous, this.playPause, this.next, this.slider, this.label);
+    host.appendChild(this.root);
+    this.render();
+  }
+  apply(value) {
+    const frameCount = nonNegativeInteger(value.frame_count, this.state.frameCount);
+    const maximum = Math.max(0, frameCount - 1);
+    this.state = {
+      frame: Math.min(nonNegativeInteger(value.frame, this.state.frame), maximum),
+      frameCount,
+      isPlaying: value.is_playing === true,
+      fps: positiveInteger2(value.fps, this.state.fps),
+      step: positiveInteger2(value.step, this.state.step),
+      mode: value.mode === "once" || value.mode === "ping-pong" ? value.mode : "loop",
+      direction: value.direction === "backward" ? "backward" : "forward"
+    };
+    this.render();
+  }
+  dispose() {
+    this.root.remove();
+  }
+  get currentFrame() {
+    return this.state.frame;
+  }
+  render() {
+    const enabled = this.state.frameCount > 1;
+    this.root.style.display = enabled ? "flex" : "none";
+    this.slider.max = String(Math.max(0, this.state.frameCount - 1));
+    this.slider.value = String(this.state.frame);
+    for (const control of [this.previous, this.playPause, this.next, this.slider]) control.disabled = !enabled;
+    this.playPause.textContent = this.state.isPlaying ? "\u23F8" : "\u25B6";
+    this.playPause.title = this.state.isPlaying ? "Pause trajectory" : "Play trajectory";
+    this.playPause.setAttribute("data-molsysviewer-trajectory-playback", this.state.isPlaying ? "stop" : "play");
+    this.renderLabel(this.state.frame);
+  }
+  renderLabel(frame) {
+    this.label.textContent = this.state.frameCount > 0 ? `${Math.min(frame, this.state.frameCount - 1) + 1} / ${this.state.frameCount}` : "0 / 0";
+  }
+};
+var nonNegativeInteger = (value, fallback) => typeof value === "number" && Number.isInteger(value) && value >= 0 ? value : fallback;
+var positiveInteger2 = (value, fallback) => typeof value === "number" && Number.isInteger(value) && value > 0 ? value : fallback;
+
+// src/ui/remote-file-controls.ts
+var RemoteFileControls = class {
+  constructor(host, upload) {
+    this.upload = upload;
+    this.root = document.createElement("div");
+    this.root.setAttribute("data-molsysviewer-remote-files", "true");
+    Object.assign(this.root.style, {
+      position: "absolute",
+      top: "14px",
+      left: "14px",
+      zIndex: "3",
+      display: "flex",
+      alignItems: "center",
+      gap: "8px",
+      padding: "6px",
+      borderRadius: "8px",
+      border: "1px solid rgba(255,255,255,.12)",
+      background: "rgba(8,11,16,.78)",
+      color: "#f5f7fa",
+      pointerEvents: "auto",
+      font: "11px/1.2 system-ui,sans-serif"
+    });
+    this.input = document.createElement("input");
+    this.input.type = "file";
+    this.input.accept = ".pdb,.ent,.cif,.mmcif,.gro,.mol2,.sdf,.h5msm";
+    this.input.setAttribute("data-molsysviewer-upload-input", "true");
+    this.input.style.display = "none";
+    this.button = document.createElement("button");
+    this.button.type = "button";
+    this.button.textContent = "Open molecular file\u2026";
+    this.button.setAttribute("data-molsysviewer-upload-button", "true");
+    Object.assign(this.button.style, {
+      padding: "5px 8px",
+      borderRadius: "6px",
+      border: "1px solid rgba(255,255,255,.18)",
+      background: "rgba(18,18,22,.9)",
+      color: "#f5f7fa",
+      cursor: "default"
+    });
+    this.status = document.createElement("span");
+    this.status.setAttribute("data-molsysviewer-upload-status", "idle");
+    this.status.textContent = "";
+    this.button.addEventListener("click", () => this.input.click());
+    this.input.addEventListener("change", () => {
+      const file = this.input.files?.[0];
+      if (file) void this.submit(file);
+    });
+    this.root.append(this.input, this.button, this.status);
+    host.appendChild(this.root);
+  }
+  dispose() {
+    this.root.remove();
+  }
+  async submit(file) {
+    this.button.disabled = true;
+    this.status.setAttribute("data-molsysviewer-upload-status", "uploading");
+    this.status.textContent = `Uploading ${file.name}\u2026`;
+    try {
+      const result2 = await this.upload(file);
+      this.status.setAttribute("data-molsysviewer-upload-status", "loaded");
+      this.status.textContent = `${result2.filename}: ${result2.nAtoms} atoms \xB7 ${result2.nStructures} frame${result2.nStructures === 1 ? "" : "s"}`;
+    } catch (error2) {
+      this.status.setAttribute("data-molsysviewer-upload-status", "failed");
+      this.status.textContent = error2 instanceof Error ? error2.message : String(error2);
+    } finally {
+      this.button.disabled = false;
+      this.input.value = "";
+    }
+  }
+};
+
+// src/ui/remote-surface-controls.ts
+var REMOTE_HELP = {
+  mouse: [
+    ["Left drag", "Rotate"],
+    ["Right drag", "Pan"],
+    ["Scroll", "Zoom"],
+    ["Left click", "Select element"],
+    ["Shift + Click", "Add to selection"],
+    ["Shift + Alt + Click", "Range selection (same chain)"],
+    ["Double click", "Focus on element"],
+    ["Right click", "Context menu"]
+  ],
+  keyboard: [
+    ["N / W", "Open / close Studio"],
+    ["H", "Toggle this help"],
+    ["Esc", "Close panel / help"]
+  ]
+};
+var RemoteSurfaceControls = class {
+  constructor(host, options) {
+    this.host = host;
+    this.options = options;
+    this.onKeyDown = (event) => {
+      if (event.target?.closest?.("input, textarea, [contenteditable]")) return;
+      if (!this.host.contains(event.target)) return;
+      const key2 = event.key.toLowerCase();
+      if (key2 === "h" && !this.help.isVisible()) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.help.show();
+      } else if (key2 === "n" || key2 === "w") {
+        event.preventDefault();
+        event.stopPropagation();
+        this.options.togglePanel();
+      }
+    };
+    this.updateFullscreenLabel = () => {
+      setViewportIcon(
+        this.fullscreenButton,
+        document.fullscreenElement ? VIEWPORT_ICON_EXIT_FULLSCREEN : VIEWPORT_ICON_FULLSCREEN
+      );
+      this.fullscreenButton.title = document.fullscreenElement ? "Exit fullscreen" : "Fullscreen";
+    };
+    this.root = document.createElement("div");
+    this.root.setAttribute("data-molsysviewer-remote-controls", "true");
+    Object.assign(this.root.style, {
+      position: "absolute",
+      top: "12px",
+      right: "12px",
+      zIndex: "4",
+      display: "flex",
+      gap: "4px",
+      pointerEvents: "auto"
+    });
+    this.addButton("reset", VIEWPORT_ICON_RESET, "Reset remote camera", () => this.options.resetView());
+    this.addButton("panel", VIEWPORT_ICON_PANEL, "Open or close Studio (N / W)", () => {
+      this.options.togglePanel();
+    });
+    this.fullscreenButton = this.addButton("full", VIEWPORT_ICON_FULLSCREEN, "Fullscreen", () => {
+      void this.toggleFullscreen();
+    });
+    this.help = new HelpOverlay(host, REMOTE_HELP);
+    this.addButton("help", VIEWPORT_ICON_HELP, "Help (H)", () => this.help.toggle());
+    host.appendChild(this.root);
+    window.addEventListener("keydown", this.onKeyDown, true);
+    document.addEventListener("fullscreenchange", this.updateFullscreenLabel);
+  }
+  dispose() {
+    window.removeEventListener("keydown", this.onKeyDown, true);
+    document.removeEventListener("fullscreenchange", this.updateFullscreenLabel);
+    this.help.dispose();
+    this.root.remove();
+  }
+  addButton(name, icon, title, callback) {
+    const button2 = makeViewportIconButton(icon, title, callback);
+    button2.setAttribute("data-molsysviewer-remote-control", name);
+    this.root.appendChild(button2);
+    return button2;
+  }
+  async toggleFullscreen() {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else await this.host.requestFullscreen();
+    } catch (error2) {
+      console.error("[MolSysViewer remote client] fullscreen failed", error2);
+    }
+  }
+};
+
+// src/remote/remote-workbench.ts
+var RemoteWorkbench = class {
+  constructor(host, emit, download2 = () => void 0, upload = async () => {
+    throw new Error("This host does not provide molecular file upload");
+  }) {
+    this.emit = emit;
+    this.download = download2;
+    this.savedSelections = [];
+    this.wholeSummary = null;
+    this.regions = [];
+    this.layers = [];
+    this.annotations = [];
+    this.measurements = [];
+    this.shapes = [];
+    this.addonContextActions = [];
+    this.addonContextItems = [];
+    this.activeSelection = activeSelection([]);
+    this.pendingContextAnchors = /* @__PURE__ */ new Map();
+    this.measurementSettings = {
+      endpointPolicyDefault: "centroid",
+      representativeAtoms: { protein: "CA", nucleic: "P", lipid: "P", other: "" },
+      structureIndex: 0,
+      systemLoaded: false
+    };
+    this.selectionAtomCount = 0;
+    this.panel = new GroupPanel(
+      host,
+      () => void 0,
+      () => void 0,
+      () => void 0,
+      () => void 0,
+      () => void 0,
+      () => void 0,
+      (tag) => this.emitAction("activate_selection", { tag }),
+      (tag) => this.emitAction("focus_region", { tag }),
+      (action, details) => this.emitPanelAction(action, details),
+      { floating: true }
+    );
+    this.panel.setRuntimeVisible(true);
+    this.trajectory = new ProjectedTrajectoryControls(host, (intent) => {
+      const { action, ...details } = intent;
+      this.emitAction(action, details);
+    });
+    this.files = new RemoteFileControls(host, upload);
+    this.controls = new RemoteSurfaceControls(host, {
+      resetView: () => this.emitAction("reset_view"),
+      togglePanel: () => this.panel.setExpanded(!this.panel.isExpanded())
+    });
+    this.contextMenu = new ViewerContextMenu(
+      host,
+      (message) => this.handleContextAction(message),
+      (action) => {
+        if (action === "open_navigate") {
+          this.panel.setExpanded(!this.panel.isExpanded());
+        }
+      },
+      void 0,
+      void 0,
+      { allowedActions: REMOTE_CONTEXT_ACTIONS }
+    );
+  }
+  requestContextMenu(pageX, pageY, requestId) {
+    this.contextMenu.close();
+    this.pendingContextAnchors.set(requestId, { pageX, pageY });
+    while (this.pendingContextAnchors.size > 8) {
+      const oldest = this.pendingContextAnchors.keys().next().value;
+      if (typeof oldest !== "string") break;
+      this.pendingContextAnchors.delete(oldest);
+    }
+  }
+  apply(message) {
+    const msg = message;
+    switch (msg?.op) {
+      case "set_region_summaries":
+        this.regions = (Array.isArray(msg.regions) ? msg.regions : []).filter((item2) => typeof item2?.tag === "string").map((item2) => ({
+          ...item2,
+          atom_count: typeof item2.atom_count === "number" ? item2.atom_count : Array.isArray(item2.atom_indices) ? item2.atom_indices.length : 0,
+          hidden: !!item2.hidden,
+          layer: typeof item2.layer === "string" ? item2.layer : null,
+          mode: item2.mode === "dynamic" ? "dynamic" : "static"
+        })).sort((a8, b8) => a8.tag.localeCompare(b8.tag));
+        this.panel.setRegions(this.regions);
+        this.panel.setRegionStyleOptions({
+          representations: strings(msg.representations),
+          presets: strings(msg.presets)
+        });
+        this.refreshLayers();
+        return;
+      case "set_whole_summary":
+        this.wholeSummary = {
+          ...msg,
+          params: record2(msg.params),
+          visible: msg.visible !== false,
+          available_attributes: strings(msg.available_attributes),
+          color_schemes: strings(msg.color_schemes),
+          inheriting_region_count: numberOr(msg.inheriting_region_count, 0),
+          none_state_region_count: numberOr(msg.none_state_region_count, 0),
+          covering_layer_count: numberOr(msg.covering_layer_count, 0)
+        };
+        this.panel.setWholeSummary(this.wholeSummary);
+        return;
+      case "show_whole":
+      case "hide_whole":
+        if (this.wholeSummary !== null) {
+          this.wholeSummary = { ...this.wholeSummary, visible: msg.op === "show_whole" };
+          this.panel.setWholeSummary(this.wholeSummary);
+        }
+        return;
+      case "set_layer_summaries":
+        this.layers = (Array.isArray(msg.layers) ? msg.layers : []).filter((item2) => typeof item2?.tag === "string" && ["auto", "user"].includes(item2.provenance)).map((item2) => ({ ...item2, hidden: !!item2.hidden }));
+        this.refreshLayers();
+        return;
+      case "set_annotation_summaries":
+        this.annotations = (Array.isArray(msg.annotations) ? msg.annotations : []).filter((item2) => typeof item2?.tag === "string").map(mapAnnotation);
+        this.refreshObjects();
+        return;
+      case "set_measurement_summaries":
+        this.measurements = (Array.isArray(msg.measurements) ? msg.measurements : []).filter((item2) => typeof item2?.tag === "string").map(mapMeasurement);
+        this.measurementSettings = {
+          ...this.measurementSettings,
+          structureIndex: numberOr(msg.structure_index, this.measurementSettings.structureIndex),
+          systemLoaded: msg.system_loaded !== false
+        };
+        this.refreshMeasurements();
+        this.refreshObjects();
+        return;
+      case "set_measurement_settings": {
+        const source = record2(msg.options ?? msg);
+        const atoms2 = record2(source.representative_atoms);
+        this.measurementSettings = {
+          ...this.measurementSettings,
+          endpointPolicyDefault: typeof source.endpoint_policy_default === "string" ? source.endpoint_policy_default : this.measurementSettings.endpointPolicyDefault,
+          representativeAtoms: {
+            protein: typeof atoms2.protein === "string" ? atoms2.protein : "CA",
+            nucleic: typeof atoms2.nucleic === "string" ? atoms2.nucleic : "P",
+            lipid: typeof atoms2.lipid === "string" ? atoms2.lipid : "P",
+            other: typeof atoms2.other === "string" ? atoms2.other : ""
+          }
+        };
+        this.refreshMeasurements();
+        return;
+      }
+      case "set_shape_summaries":
+        this.shapes = (Array.isArray(msg.shapes) ? msg.shapes : []).filter((item2) => typeof item2?.tag === "string").map(mapShape);
+        this.panel.setShapes(this.shapes);
+        this.refreshObjects();
+        return;
+      case "set_section_summaries":
+        this.panel.setSections(
+          (Array.isArray(msg.sections) ? msg.sections : []).filter((item2) => typeof item2?.tag === "string"),
+          {
+            activeSelectionCount: numberOr(msg.active_selection_count, 0),
+            systemLoaded: !!msg.system_loaded
+          }
+        );
+        return;
+      case "set_active_selection":
+        this.activeSelection = activeSelection(stringsToNumbers(msg.atom_indices));
+        this.selectionAtomCount = this.activeSelection.count_atoms;
+        this.panel.updateSelection(this.activeSelection);
+        return;
+      case "clear_active_selection":
+        this.activeSelection = activeSelection([]);
+        this.selectionAtomCount = 0;
+        this.panel.updateSelection(this.activeSelection);
+        return;
+      case "set_addon_runtime_summary":
+        this.addonContextActions = addonContextActions(msg);
+        return;
+      case "set_addon_context_items":
+        this.addonContextItems = addonContextItems(msg.items);
+        return;
+      case "set_context_target": {
+        const requestId = typeof msg.request_id === "string" ? msg.request_id : "";
+        const anchor = this.pendingContextAnchors.get(requestId);
+        if (!anchor) return;
+        this.pendingContextAnchors.delete(requestId);
+        const target = contextTarget(msg.target);
+        if (!target) return;
+        this.contextMenu.open(
+          target,
+          anchor.pageX,
+          anchor.pageY,
+          this.activeSelection,
+          null,
+          this.savedSelections,
+          this.regions,
+          this.addonContextActions,
+          this.addonContextItems,
+          { isNavigateExpanded: this.panel.isExpanded() }
+        );
+        return;
+      }
+      case "set_history_state":
+        this.panel.updateSelectionHistoryState({ canUndo: !!msg.can_undo, canRedo: !!msg.can_redo });
+        return;
+      case "set_trajectory_summary":
+        this.trajectory.apply(msg);
+        return;
+      case "remote_download_ready":
+        if (typeof msg.url === "string" && typeof msg.filename === "string") {
+          this.download({
+            url: msg.url,
+            filename: msg.filename,
+            mediaType: typeof msg.media_type === "string" ? msg.media_type : "application/octet-stream"
+          });
+        }
+        return;
+      case "remote_download_failed":
+        console.error("[MolSysViewer remote download]", String(msg.message ?? "Download failed"));
+        return;
+      case "save_selection": {
+        if (typeof msg.tag !== "string") return;
+        const atomIndices = stringsToNumbers(msg.atom_indices);
+        this.savedSelections = this.savedSelections.filter((item2) => item2.tag !== msg.tag);
+        this.savedSelections.push({
+          tag: msg.tag,
+          atom_count: atomIndices.length,
+          atom_indices: atomIndices,
+          element_level: typeof msg.element_level === "string" ? msg.element_level : void 0
+        });
+        this.savedSelections.sort((a8, b8) => a8.tag.localeCompare(b8.tag));
+        this.panel.setSavedSelections(this.savedSelections);
+        return;
+      }
+      case "set_selection_tag":
+        if (typeof msg.tag === "string" && typeof msg.new_tag === "string") {
+          this.savedSelections = this.savedSelections.map((item2) => item2.tag === msg.tag ? { ...item2, tag: msg.new_tag } : item2);
+          this.panel.setSavedSelections(this.savedSelections);
+        }
+        return;
+      case "delete_selection":
+        this.savedSelections = this.savedSelections.filter((item2) => item2.tag !== msg.tag);
+        this.panel.setSavedSelections(this.savedSelections);
+        return;
+      case "clear_selections":
+        this.savedSelections = [];
+        this.panel.setSavedSelections([]);
+        return;
+      case "whole_details":
+        this.panel.updateWholeDetails(msg);
+        return;
+      case "region_details":
+        this.panel.updateRegionDetails(msg);
+        return;
+      case "measurement_series":
+        this.panel.updateMeasurementSeries({
+          tag: String(msg.tag ?? ""),
+          requestId: typeof msg.request_id === "number" ? msg.request_id : null,
+          unit: typeof msg.unit === "string" ? msg.unit : "",
+          nFrames: numberOr(msg.n_frames, 0),
+          sparkline: stringsToNumbers(msg.sparkline),
+          sparklineIndices: stringsToNumbers(msg.sparkline_indices),
+          seriesIndex: typeof msg.series_index === "number" ? msg.series_index : null
+        });
+        return;
+    }
+  }
+  dispose() {
+    this.contextMenu.dispose();
+    this.controls.dispose();
+    this.files.dispose();
+    this.trajectory.dispose();
+    this.panel.dispose();
+  }
+  get activeSelectionAtomCount() {
+    return this.selectionAtomCount;
+  }
+  emitPanelAction(action, details) {
+    const direct = {
+      undo_active_selection: "scene_history_undo",
+      redo_active_selection: "scene_history_redo",
+      begin_scene_history_coalescing: "scene_history_coalescing_begin",
+      end_scene_history_coalescing: "scene_history_coalescing_end",
+      selection_query_preview_request: "selection_query_preview_request"
+    };
+    const runtimeAction = direct[action];
+    if (runtimeAction) {
+      this.emit({ action: runtimeAction, details });
+      return;
+    }
+    this.emitAction(action, details);
+  }
+  emitAction(action, details) {
+    this.emit({ action: "interaction_context_action", details: { action, ...details } });
+  }
+  handleContextAction(message) {
+    const action = message.action;
+    if (action === "open_navigate") return;
+    if (typeof action !== "string" || !REMOTE_CONTEXT_ACTIONS.has(action)) return;
+    const { event: _event, action: _action, ...details } = message;
+    this.emitAction(action, details);
+  }
+  refreshMeasurements() {
+    this.panel.setMeasurements(this.measurements, this.measurementSettings);
+  }
+  refreshLayers() {
+    this.panel.setLayers(this.layers);
+    this.panel.setRegions(this.regions);
+  }
+  refreshObjects() {
+    this.panel.setAnnotations(this.annotations, { systemLoaded: true, activeSelectionCount: 0 });
+    this.refreshMeasurements();
+    this.panel.setShapes(this.shapes);
+    this.panel.setLayerObjects([
+      ...this.annotations.map((item2) => layerObject("annotation", item2)),
+      ...this.measurements.map((item2) => layerObject("measurement", item2)),
+      ...this.shapes.map((item2) => layerObject("shape", item2))
+    ]);
+  }
+};
+var REMOTE_CONTEXT_ACTIONS = /* @__PURE__ */ new Set([
+  "focus_target",
+  "focus_region",
+  "toggle_region_visibility",
+  "delete_region",
+  "rename_region",
+  "hide_measurement",
+  "delete_annotation",
+  "delete_shape",
+  "delete_measurement",
+  "focus_selection",
+  "activate_selection",
+  "save_selection",
+  "remove_selection",
+  "clear_selection",
+  "expand_selection",
+  "create_region_from_selection",
+  "create_section_from_selection",
+  "add_label_from_selection",
+  "addon_context_action",
+  "reset_view",
+  "toggle_background",
+  "toggle_spin",
+  "toggle_swing",
+  "open_navigate"
+]);
+function contextTarget(value) {
+  const item2 = record2(value);
+  if (!["empty", "structure", "shape", "measurement", "annotation"].includes(String(item2.kind))) return null;
+  if (item2.event !== "interaction_context_menu") return null;
+  return item2;
+}
+function addonContextActions(message) {
+  const specs = Array.isArray(message?.context_action_specs) ? message.context_action_specs : [];
+  return specs.filter((item2) => typeof item2?.addon === "string" && typeof item2?.id === "string" && typeof item2?.title === "string").map((item2) => ({
+    addon: item2.addon,
+    id: item2.id,
+    title: item2.title,
+    target_kinds: strings(item2.target_kinds),
+    group: typeof item2.group === "string" ? item2.group : void 0
+  }));
+}
+function addonContextItems(value) {
+  return (Array.isArray(value) ? value : []).filter((item2) => typeof item2?.addon === "string" && typeof item2?.id === "string" && typeof item2?.title === "string").map((item2) => ({ ...item2, target_kinds: strings(item2.target_kinds) }));
+}
+function strings(value) {
+  return Array.isArray(value) ? value.filter((item2) => typeof item2 === "string") : [];
+}
+function stringsToNumbers(value) {
+  return Array.isArray(value) ? value.filter((item2) => typeof item2 === "number" && Number.isFinite(item2)) : [];
+}
+function record2(value) {
+  return value && typeof value === "object" && !Array.isArray(value) ? value : {};
+}
+function numberOr(value, fallback) {
+  return typeof value === "number" && Number.isFinite(value) ? value : fallback;
+}
+function activeSelection(atomIndices) {
+  return {
+    event: "interaction_active_selection_changed",
+    source_kind: atomIndices.length ? "element" : "empty",
+    target_level: atomIndices.length ? "mixed" : "none",
+    element_level: atomIndices.length ? "group" : "none",
+    items: [],
+    atom_indices: atomIndices,
+    group_indices: [],
+    component_indices: [],
+    chain_indices: [],
+    molecule_indices: [],
+    entity_indices: [],
+    count_atoms: atomIndices.length,
+    count_groups: 0,
+    count_shapes: 0,
+    count_annotations: 0
+  };
+}
+function mapAnnotation(item2) {
+  return {
+    ...item2,
+    layerTag: typeof item2.layer_tag === "string" ? item2.layer_tag : void 0,
+    nAtoms: numberOr(item2.n_atoms, 0),
+    atomIndices: stringsToNumbers(item2.atom_indices),
+    hidden: !!item2.hidden,
+    style: record2(item2.style),
+    anchor: record2(item2.anchor),
+    broken: !!item2.broken,
+    brokenReason: typeof item2.broken_reason === "string" ? item2.broken_reason : void 0
+  };
+}
+function mapMeasurement(item2) {
+  return {
+    ...item2,
+    layerTag: typeof item2.layer_tag === "string" ? item2.layer_tag : void 0,
+    picks: numberOr(item2.n_picks, 0),
+    atomIndices: stringsToNumbers(item2.atom_indices),
+    endpointLabels: strings(item2.endpoint_labels),
+    endpointPolicy: typeof item2.endpoint_policy === "string" ? item2.endpoint_policy : "centroid",
+    value: typeof item2.value === "number" ? item2.value : null,
+    unit: typeof item2.unit === "string" ? item2.unit : "",
+    hidden: !!item2.hidden,
+    broken: !!item2.broken,
+    brokenReason: typeof item2.broken_reason === "string" ? item2.broken_reason : void 0
+  };
+}
+function mapShape(item2) {
+  return {
+    ...item2,
+    layerTag: typeof item2.layer_tag === "string" ? item2.layer_tag : void 0,
+    title: typeof item2.title === "string" ? item2.title : item2.tag,
+    atomIndices: stringsToNumbers(item2.atom_indices),
+    hidden: !!item2.hidden,
+    broken: !!item2.broken,
+    brokenReason: typeof item2.broken_reason === "string" ? item2.broken_reason : void 0
+  };
+}
+function layerObject(kind, item2) {
+  return {
+    kind,
+    tag: item2.tag,
+    owner: item2.owner,
+    title: item2.title ?? item2.text ?? item2.tag,
+    layerTag: item2.layerTag,
+    hidden: !!item2.hidden
+  };
+}
+
+// src/remote/browser-client-entrypoint.ts
+function modifiers2(event) {
+  return {
+    alt: event.altKey,
+    ctrl: event.ctrlKey,
+    meta: event.metaKey,
+    shift: event.shiftKey
+  };
+}
+async function bootRemoteBrowserClient(options) {
+  const { el } = options;
+  el.replaceChildren();
+  Object.assign(el.style, { position: "relative", overflow: "hidden", background: "#080b10" });
+  const video = document.createElement("video");
+  video.autoplay = true;
+  video.playsInline = true;
+  video.muted = true;
+  Object.assign(video.style, {
+    position: "absolute",
+    inset: "0",
+    width: "100%",
+    height: "100%",
+    objectFit: "contain"
+  });
+  const inputSurface = document.createElement("div");
+  inputSurface.tabIndex = 0;
+  inputSurface.setAttribute("aria-label", "Remote molecular viewport");
+  Object.assign(inputSurface.style, {
+    position: "absolute",
+    inset: "0",
+    outline: "none",
+    touchAction: "none",
+    cursor: "default"
+  });
+  const status = document.createElement("div");
+  status.setAttribute("data-molsysviewer-remote-status", "connecting");
+  Object.assign(status.style, {
+    position: "absolute",
+    left: "12px",
+    bottom: "12px",
+    zIndex: "2",
+    padding: "6px 9px",
+    borderRadius: "6px",
+    background: "rgba(15,18,24,.82)",
+    color: "#f5f7fa",
+    font: "12px/1.3 system-ui,sans-serif",
+    pointerEvents: "none"
+  });
+  status.textContent = "Connecting to MolSysViewer\u2026";
+  el.append(video, inputSurface, status);
+  let socket = null;
+  let connection = null;
+  let inputChannel = null;
+  let closed = false;
+  let serverClosing = false;
+  let terminalFailure = false;
+  let signalSequence = 0;
+  let controlSequence = 0;
+  let inputSequence = 0;
+  let registered = false;
+  let pendingCandidates = [];
+  let pendingMove = null;
+  let moveFrame = 0;
+  let reconnectTimer = 0;
+  let disconnectTimer = 0;
+  let mediaRouteTimer = 0;
+  let reconnectAttempt = 0;
+  const maxReconnectAttempts = 3;
+  const setStatus = (state, text) => {
+    status.setAttribute("data-molsysviewer-remote-status", state);
+    status.textContent = text;
+    status.style.display = state === "ready" ? "none" : "block";
+  };
+  const sendJson = (value) => {
+    if (!socket || socket.readyState !== WebSocket.OPEN) throw new Error("remote client socket is not open");
+    socket.send(JSON.stringify(value));
+  };
+  const sendControl = (action, payload, direction) => {
+    const messageId = `${options.endpointId}:control:${++controlSequence}`;
+    sendJson({
+      kind: "control",
+      envelope: {
+        protocolVersion: 1,
+        viewerId: options.viewerId,
+        sessionId: options.sessionId,
+        endpointId: options.endpointId,
+        targetEndpointId: `python:${options.viewerId}`,
+        messageId,
+        operationId: messageId,
+        direction,
+        action,
+        payload: { event: action, ...payload },
+        actorId: options.actorId,
+        actorKind: "human"
+      }
+    });
+  };
+  const emitWorkbench = (intent) => {
+    sendControl(
+      intent.action,
+      intent.details ?? {},
+      intent.action === "selection_query_preview_request" ? "request" : "command"
+    );
+  };
+  const downloadArtifact = (artifact) => {
+    const url = new URL(artifact.url, window.location.href);
+    if (url.origin !== window.location.origin) {
+      throw new Error("remote download URL escaped the authenticated session origin");
+    }
+    const link = document.createElement("a");
+    link.href = url.href;
+    link.download = artifact.filename;
+    link.style.display = "none";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  };
+  const uploadFile = async (file) => {
+    const form = new FormData();
+    form.append("file", file, file.name);
+    const response = await fetch(new URL("./upload", window.location.href), {
+      method: "POST",
+      credentials: "same-origin",
+      cache: "no-store",
+      body: form
+    });
+    let value;
+    try {
+      value = await response.json();
+    } catch {
+      throw new Error(`Molecular upload failed with HTTP ${response.status}`);
+    }
+    if (!response.ok || value?.uploaded !== true) {
+      throw new Error(String(value?.message ?? `Molecular upload failed with HTTP ${response.status}`));
+    }
+    return {
+      filename: String(value.filename ?? file.name),
+      nAtoms: Number(value.n_atoms ?? 0),
+      nStructures: Number(value.n_structures ?? 0)
+    };
+  };
+  const workbench = new RemoteWorkbench(el, emitWorkbench, downloadArtifact, uploadFile);
+  const emitSignal = (kind, payload) => {
+    sendJson({
+      kind: "signal",
+      packet: {
+        protocolVersion: 1,
+        viewerId: options.viewerId,
+        sessionId: options.sessionId,
+        endpointId: options.endpointId,
+        messageId: `${options.endpointId}:signal:${++signalSequence}`,
+        kind,
+        payload
+      }
+    });
+  };
+  const videoPoint = (event) => {
+    const rect = inputSurface.getBoundingClientRect();
+    const sourceWidth = video.videoWidth || rect.width;
+    const sourceHeight = video.videoHeight || rect.height;
+    const scale = Math.min(rect.width / sourceWidth, rect.height / sourceHeight);
+    const width = sourceWidth * scale;
+    const height = sourceHeight * scale;
+    const left = rect.left + (rect.width - width) / 2;
+    const top = rect.top + (rect.height - height) / 2;
+    if (event.clientX < left || event.clientX > left + width || event.clientY < top || event.clientY > top + height) {
+      return null;
+    }
+    return { x: (event.clientX - left) / width, y: (event.clientY - top) / height };
+  };
+  const sendInput = (kind, payload) => {
+    const rect = inputSurface.getBoundingClientRect();
+    const packet = {
+      protocolVersion: 1,
+      viewerId: options.viewerId,
+      sessionId: options.sessionId,
+      endpointId: options.endpointId,
+      sequence: ++inputSequence,
+      timestampMs: performance.now(),
+      kind,
+      viewport: {
+        width: Math.max(1, rect.width),
+        height: Math.max(1, rect.height),
+        devicePixelRatio: window.devicePixelRatio || 1
+      },
+      payload
+    };
+    const encoded = JSON.stringify(packet);
+    if (inputChannel?.readyState === "open") inputChannel.send(encoded);
+    else sendJson({ kind: "input", packet });
+  };
+  const sendPointer = (event) => {
+    const point = videoPoint(event);
+    if (!point) return;
+    sendInput("pointer", {
+      phase: event.type === "pointerdown" ? "down" : event.type === "pointerup" ? "up" : event.type === "pointercancel" ? "cancel" : "move",
+      pointerType: ["mouse", "pen", "touch"].includes(event.pointerType) ? event.pointerType : "mouse",
+      pointerId: event.pointerId,
+      ...point,
+      button: event.button,
+      buttons: event.buttons,
+      modifiers: modifiers2(event)
+    });
+  };
+  const onPointer = (event) => {
+    if (event.type === "pointerdown") {
+      inputSurface.focus();
+      inputSurface.setPointerCapture(event.pointerId);
+    }
+    if (event.type === "pointermove") {
+      pendingMove = event;
+      if (!moveFrame) {
+        moveFrame = requestAnimationFrame(() => {
+          moveFrame = 0;
+          if (pendingMove) sendPointer(pendingMove);
+          pendingMove = null;
+        });
+      }
+      return;
+    }
+    sendPointer(event);
+  };
+  for (const type3 of ["pointerdown", "pointermove", "pointerup", "pointercancel"]) {
+    inputSurface.addEventListener(type3, onPointer);
+  }
+  inputSurface.addEventListener("wheel", (event) => {
+    event.preventDefault();
+    const point = videoPoint(event);
+    if (!point) return;
+    sendInput("wheel", {
+      ...point,
+      deltaX: event.deltaX,
+      deltaY: event.deltaY,
+      deltaMode: event.deltaMode,
+      modifiers: modifiers2(event)
+    });
+  }, { passive: false });
+  inputSurface.addEventListener("contextmenu", (event) => {
+    event.preventDefault();
+    const point = videoPoint(event);
+    if (!point) return;
+    const requestId = `${options.endpointId}:context:${inputSequence + 1}`;
+    workbench.requestContextMenu(event.clientX, event.clientY, requestId);
+    sendInput("context-menu", {
+      ...point,
+      requestId,
+      modifiers: modifiers2(event)
+    });
+  });
+  for (const type3 of ["keydown", "keyup"]) {
+    inputSurface.addEventListener(type3, (event) => {
+      sendInput("key", {
+        phase: type3 === "keydown" ? "down" : "up",
+        code: event.code,
+        repeat: event.repeat,
+        modifiers: modifiers2(event)
+      });
+    });
+  }
+  const handleSignal = async (value) => {
+    const validation = validateSignalingPacket(value, {
+      viewerId: options.viewerId,
+      sessionId: options.sessionId,
+      endpointId: options.workerEndpointId
+    });
+    if (validation.status === "rejected") {
+      throw new Error(`${validation.reason}: ${validation.detail}`);
+    }
+    const packet = validation.packet;
+    const kind = packet.kind;
+    const payload = packet.payload;
+    if (kind === "offer") {
+      connection?.close();
+      const peer = new RTCPeerConnection({ iceServers: options.iceServers ?? [] });
+      connection = peer;
+      pendingCandidates = [];
+      peer.addEventListener("icecandidate", (event) => {
+        emitSignal(
+          event.candidate ? "ice-candidate" : "ice-complete",
+          event.candidate ? { ...event.candidate.toJSON() } : {}
+        );
+      });
+      peer.addEventListener("track", (event) => {
+        video.srcObject = event.streams[0] ?? new MediaStream([event.track]);
+        void video.play();
+      });
+      peer.addEventListener("datachannel", (event) => {
+        if (event.channel.label !== "input") {
+          event.channel.close();
+          return;
+        }
+        inputChannel = event.channel;
+        inputChannel.addEventListener("open", () => {
+          sendJson({ kind: "peer-state", state: "input-open" });
+        });
+      });
+      peer.addEventListener("connectionstatechange", () => {
+        if (connection !== peer) return;
+        if (peer.connectionState === "connected") {
+          window.clearTimeout(disconnectTimer);
+          window.clearTimeout(mediaRouteTimer);
+          reconnectAttempt = 0;
+          setStatus("ready", "Connected");
+          sendJson({ kind: "peer-state", state: "connected" });
+        } else if (peer.connectionState === "failed") {
+          setStatus("degraded", "Video connection failed; reconnecting\u2026");
+          socket?.close(4001, "video connection failed");
+        } else if (peer.connectionState === "disconnected") {
+          setStatus("degraded", "Video connection interrupted\u2026");
+          window.clearTimeout(disconnectTimer);
+          disconnectTimer = window.setTimeout(() => {
+            if (connection === peer && peer.connectionState === "disconnected") {
+              socket?.close(4002, "video connection stalled");
+            }
+          }, 2e3);
+        } else if (peer.connectionState === "closed") {
+          if (!closed && !terminalFailure) setStatus("disconnected", "Remote session disconnected");
+        } else setStatus("negotiating", `Video: ${peer.connectionState}`);
+      });
+      peer.addEventListener("iceconnectionstatechange", () => {
+        if (connection !== peer) return;
+        if (["checking", "connected", "completed"].includes(peer.iceConnectionState)) {
+          setStatus("negotiating", `Remote video route: ${peer.iceConnectionState}`);
+        }
+      });
+      setStatus("negotiating", "Negotiating remote video\u2026");
+      await peer.setRemoteDescription({ type: "offer", sdp: payload.sdp });
+      for (const candidate of pendingCandidates.splice(0)) await peer.addIceCandidate(candidate);
+      const answer = await peer.createAnswer();
+      await peer.setLocalDescription(answer);
+      emitSignal("answer", { sdp: answer.sdp ?? "" });
+      window.clearTimeout(mediaRouteTimer);
+      mediaRouteTimer = window.setTimeout(() => {
+        if (connection === peer && !["connected", "completed"].includes(peer.iceConnectionState)) {
+          terminalFailure = true;
+          setStatus(
+            "failed",
+            "No WebRTC media route. Configure TURN or use client rendering."
+          );
+          stopPeer();
+        }
+      }, 15e3);
+      return;
+    }
+    if (kind === "ice-candidate") {
+      const candidate = payload;
+      if (connection?.remoteDescription) await connection.addIceCandidate(candidate);
+      else pendingCandidates.push(candidate);
+    }
+  };
+  const stopPeer = () => {
+    window.clearTimeout(disconnectTimer);
+    window.clearTimeout(mediaRouteTimer);
+    inputChannel?.close();
+    inputChannel = null;
+    const previous = connection;
+    connection = null;
+    previous?.close();
+    for (const track of video.srcObject?.getTracks() ?? []) track.stop();
+    video.srcObject = null;
+  };
+  const scheduleReconnect = () => {
+    if (closed || terminalFailure || reconnectTimer) return;
+    reconnectAttempt += 1;
+    if (reconnectAttempt > maxReconnectAttempts) {
+      setStatus("disconnected", "Remote session disconnected");
+      return;
+    }
+    const delay = 250 * 2 ** (reconnectAttempt - 1);
+    setStatus("reconnecting", `Reconnecting (${reconnectAttempt}/${maxReconnectAttempts})\u2026`);
+    reconnectTimer = window.setTimeout(() => {
+      reconnectTimer = 0;
+      void connectSocket(false).catch(() => void 0);
+    }, delay);
+  };
+  const handleSocketMessage = (candidate, event) => {
+    void (async () => {
+      const value = JSON.parse(String(event.data));
+      if (value?.kind === "registered") {
+        registered = true;
+        setStatus("negotiating", "Starting remote video\u2026");
+        sendControl(
+          "request_popup_scene_snapshot",
+          { mode: "panel", popup_endpoint_id: options.endpointId },
+          "request"
+        );
+        return;
+      }
+      if (!registered) throw new Error("remote client received traffic before registration");
+      if (value?.kind === "session-closing") {
+        serverClosing = true;
+        setStatus("disconnected", "Remote session disconnected");
+        candidate.close(1e3, "server closed session");
+        return;
+      }
+      if (value?.kind === "session-state") {
+        if (value.state === "recovering") {
+          stopPeer();
+          setStatus("recovering", "Recovering remote renderer\u2026");
+          return;
+        }
+        if (value.state === "recovered") {
+          setStatus("negotiating", "Restarting remote video\u2026");
+          return;
+        }
+        if (value.state === "failed") {
+          terminalFailure = true;
+          stopPeer();
+          setStatus("failed", String(value.detail ?? "Remote renderer failed"));
+          return;
+        }
+        throw new Error("remote client received an unknown session state");
+      }
+      if (value?.kind === "signal") {
+        await handleSignal(value.packet);
+        return;
+      }
+      if (value?.kind === "control") {
+        const envelope = value.envelope;
+        if (!envelope || typeof envelope !== "object" || envelope.protocolVersion !== 1 || envelope.viewerId !== options.viewerId || envelope.sessionId !== options.sessionId || envelope.endpointId !== `python:${options.viewerId}` || envelope.targetEndpointId !== void 0 && envelope.targetEndpointId !== options.endpointId || !envelope.payload || typeof envelope.payload !== "object" || (envelope.payload.event ?? envelope.payload.op) !== envelope.action) {
+          throw new Error("remote client received an invalid control envelope");
+        }
+        if (envelope.action === "popup_scene_snapshot") {
+          const messages = envelope.payload.messages;
+          if (!Array.isArray(messages)) throw new Error("panel snapshot messages are malformed");
+          for (const message of messages) workbench.apply(message);
+        } else {
+          workbench.apply(envelope.payload);
+        }
+        return;
+      }
+      throw new Error("remote client received an unknown wire message");
+    })().catch((error2) => {
+      if (socket !== candidate) return;
+      console.error("[MolSysViewer remote client] wire failure", error2);
+      terminalFailure = true;
+      setStatus("failed", "Remote session protocol failed");
+      candidate.close(1011, "client wire failure");
+    });
+  };
+  const connectSocket = (initial) => new Promise((resolve, reject) => {
+    registered = false;
+    stopPeer();
+    const candidate = new WebSocket(options.websocketUrl, ["molsysviewer-session-v1"]);
+    socket = candidate;
+    const timer2 = window.setTimeout(() => {
+      candidate.close();
+      reject(new Error("remote client WebSocket timed out"));
+    }, 1e4);
+    candidate.addEventListener("message", (event) => handleSocketMessage(candidate, event));
+    candidate.addEventListener("open", () => {
+      window.clearTimeout(timer2);
+      if (socket !== candidate) return;
+      candidate.send(JSON.stringify({
+        kind: "register",
+        protocolVersion: 1,
+        viewerId: options.viewerId,
+        sessionId: options.sessionId,
+        endpointId: options.endpointId,
+        role: "browser-client",
+        actorId: options.actorId,
+        actorKind: "human",
+        capabilities: ["command-origin", "input-send", "video-receive", "workbench"]
+      }));
+      resolve();
+    }, { once: true });
+    candidate.addEventListener("error", () => {
+      window.clearTimeout(timer2);
+      if (socket === candidate && !closed && !terminalFailure) {
+        setStatus("degraded", "Remote session connection interrupted\u2026");
+      }
+      reject(new Error("remote client WebSocket failed"));
+    }, { once: true });
+    candidate.addEventListener("close", (event) => {
+      window.clearTimeout(timer2);
+      if (socket !== candidate) return;
+      registered = false;
+      stopPeer();
+      if (!closed && !serverClosing && !terminalFailure) {
+        scheduleReconnect();
+      }
+    });
+  });
+  await connectSocket(true);
+  return {
+    video,
+    workbench,
+    get socket() {
+      if (!socket) throw new Error("remote client socket is unavailable");
+      return socket;
+    },
+    peerConnection: () => connection,
+    close() {
+      if (closed) return;
+      closed = true;
+      window.clearTimeout(reconnectTimer);
+      window.clearTimeout(disconnectTimer);
+      if (moveFrame) cancelAnimationFrame(moveFrame);
+      workbench.dispose();
+      stopPeer();
+      socket?.close(1e3, "client closed");
+    }
+  };
+}
+
+// src/remote/client-rendering-entrypoint.ts
+function isEnvelope(message) {
+  return message.protocolVersion === 1 && typeof message.viewerId === "string" && typeof message.sessionId === "string" && typeof message.endpointId === "string" && typeof message.messageId === "string" && typeof message.direction === "string" && typeof message.action === "string" && !!message.payload;
+}
+async function bootRemoteRenderedClient(options) {
+  const { el } = options;
+  Object.assign(el.style, { position: "relative", overflow: "hidden", background: "#080b10" });
+  const status = document.createElement("div");
+  status.setAttribute("data-molsysviewer-remote-status", "connecting");
+  Object.assign(status.style, {
+    position: "absolute",
+    left: "12px",
+    bottom: "12px",
+    zIndex: "4",
+    padding: "6px 9px",
+    borderRadius: "6px",
+    background: "rgba(15,18,24,.82)",
+    color: "#f5f7fa",
+    font: "12px/1.3 system-ui,sans-serif",
+    pointerEvents: "none"
+  });
+  status.textContent = "Connecting to MolSysViewer\u2026";
+  el.append(status);
+  let socket = null;
+  let socketRegistered = false;
+  let closed = false;
+  let serverClosing = false;
+  let terminalFailure = false;
+  let reconnectTimer = 0;
+  let reconnectAttempt = 0;
+  const maxReconnectAttempts = 3;
+  const setStatus = (state, text) => {
+    status.setAttribute("data-molsysviewer-remote-status", state);
+    status.textContent = text;
+    status.style.display = state === "ready" ? "none" : "block";
+  };
+  const listeners = /* @__PURE__ */ new Map();
+  const values2 = {
+    runtime_viewer_id: options.viewerId,
+    runtime_session_id: options.sessionId,
+    runtime_endpoint_id: options.endpointId,
+    runtime_actor_id: options.actorId,
+    runtime_actor_kind: "human",
+    initial_messages: [],
+    debug_js: false,
+    enable_popout: false,
+    panel_mode_style: "drawer",
+    controls_mode: "classic",
+    viewer_mode: "integrated",
+    autohide_controls: true
+  };
+  const model = {
+    get: (name) => values2[name],
+    on(name, callback) {
+      const bucket = listeners.get(name) ?? /* @__PURE__ */ new Set();
+      bucket.add(callback);
+      listeners.set(name, bucket);
+    },
+    off(name, callback) {
+      listeners.get(name)?.delete(callback);
+    },
+    send(message) {
+      const envelope = isEnvelope(message);
+      if (!socket || socket.readyState !== WebSocket.OPEN || !socketRegistered) {
+        if (!envelope || closed || serverClosing || message.direction === "event" || message.direction === "ack") return;
+        throw new Error("remote rendered client socket is not open");
+      }
+      socket.send(JSON.stringify(
+        envelope ? { kind: "control", envelope: message } : { kind: "raw", message }
+      ));
+    }
+  };
+  let disposeRender;
+  let fileControls;
+  let hasRendered = false;
+  let resolveRegistration;
+  let rejectRegistration;
+  const registration = new Promise((resolve, reject) => {
+    resolveRegistration = resolve;
+    rejectRegistration = reject;
+  });
+  void registration.catch(() => void 0);
+  const emitCustom = (message, buffers = []) => {
+    for (const callback of listeners.get("msg:custom") ?? []) callback(message, buffers);
+  };
+  const downloadArtifact = (payload) => {
+    if (typeof payload.url !== "string" || typeof payload.filename !== "string") return;
+    const url = new URL(payload.url, window.location.href);
+    if (url.origin !== window.location.origin) {
+      throw new Error("remote download URL escaped the authenticated session origin");
+    }
+    const link = document.createElement("a");
+    link.href = url.href;
+    link.download = payload.filename;
+    link.style.display = "none";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  };
+  const uploadFile = async (file) => {
+    const form = new FormData();
+    form.append("file", file, file.name);
+    const response = await fetch(new URL("./upload", window.location.href), {
+      method: "POST",
+      credentials: "same-origin",
+      cache: "no-store",
+      body: form
+    });
+    let value;
+    try {
+      value = await response.json();
+    } catch {
+      throw new Error(`Molecular upload failed with HTTP ${response.status}`);
+    }
+    if (!response.ok || value?.uploaded !== true) {
+      throw new Error(String(value?.message ?? `Molecular upload failed with HTTP ${response.status}`));
+    }
+    return {
+      filename: String(value.filename ?? file.name),
+      nAtoms: Number(value.n_atoms ?? 0),
+      nStructures: Number(value.n_structures ?? 0)
+    };
+  };
+  const announceReady = () => model.send({
+    event: "ready",
+    capabilities: {
+      binary_structure_data: [1],
+      max_buffer_bytes: 16 * 1024 * 1024,
+      transferable_array_buffer: false
+    }
+  });
+  const handleJson = (candidate, value, state) => {
+    if (value?.kind === "registered") {
+      state.registered = true;
+      if (candidate === socket) socketRegistered = true;
+      reconnectAttempt = 0;
+      if (!hasRendered) {
+        hasRendered = true;
+        disposeRender = render({ model, el: options.el });
+        fileControls = new RemoteFileControls(options.el, uploadFile);
+      } else {
+        announceReady();
+      }
+      setStatus("ready", "Connected");
+      resolveRegistration();
+      return;
+    }
+    if (!state.registered) throw new Error("remote rendered client received traffic before registration");
+    if (value?.kind === "session-closing") {
+      serverClosing = true;
+      setStatus("disconnected", "Remote session disconnected");
+      candidate.close(1e3, "server closed session");
+      return;
+    }
+    if (value?.kind === "control") {
+      if (value.envelope?.action === "remote_download_ready") {
+        downloadArtifact(value.envelope.payload ?? {});
+        return;
+      }
+      if (value.envelope?.action === "remote_download_failed") {
+        console.error(
+          "[MolSysViewer remote download]",
+          String(value.envelope?.payload?.message ?? "Download failed")
+        );
+        return;
+      }
+      emitCustom(value.envelope);
+      return;
+    }
+    if (value?.kind === "data") {
+      if (state.header !== null || !Number.isInteger(value.bufferCount) || value.bufferCount < 0 || !Array.isArray(value.byteLengths) || value.byteLengths.length !== value.bufferCount || value.byteLengths.some((length) => !Number.isInteger(length) || Number(length) < 0)) {
+        throw new Error("remote rendered client data header is malformed");
+      }
+      state.header = value;
+      state.buffers = [];
+      if (state.header.bufferCount === 0) {
+        emitCustom(state.header.message);
+        state.header = null;
+      }
+      return;
+    }
+    throw new Error("remote rendered client received an unknown wire message");
+  };
+  const scheduleReconnect = () => {
+    if (closed || serverClosing || terminalFailure || reconnectTimer) return;
+    reconnectAttempt += 1;
+    if (reconnectAttempt > maxReconnectAttempts) {
+      setStatus("disconnected", "Remote session disconnected");
+      return;
+    }
+    setStatus("reconnecting", `Reconnecting (${reconnectAttempt}/${maxReconnectAttempts})\u2026`);
+    reconnectTimer = window.setTimeout(() => {
+      reconnectTimer = 0;
+      connectSocket();
+    }, 250 * 2 ** (reconnectAttempt - 1));
+  };
+  const connectSocket = () => {
+    const candidate = new WebSocket(options.websocketUrl, ["molsysviewer-session-v1"]);
+    candidate.binaryType = "arraybuffer";
+    socket = candidate;
+    socketRegistered = false;
+    const state = { registered: false, header: null, buffers: [] };
+    let queue = Promise.resolve();
+    const timer2 = window.setTimeout(() => candidate.close(), 1e4);
+    candidate.addEventListener("message", (event) => {
+      queue = queue.then(() => {
+        if (typeof event.data === "string") {
+          handleJson(candidate, JSON.parse(event.data), state);
+          return;
+        }
+        if (state.header === null || !(event.data instanceof ArrayBuffer)) {
+          throw new Error("unexpected remote rendered client binary frame");
+        }
+        const index = state.buffers.length;
+        if (event.data.byteLength !== state.header.byteLengths[index]) {
+          throw new Error("remote rendered client binary frame length mismatch");
+        }
+        state.buffers.push(new DataView(event.data));
+        if (state.buffers.length === state.header.bufferCount) {
+          const complete = state.header;
+          const buffers = state.buffers;
+          state.header = null;
+          state.buffers = [];
+          emitCustom(complete.message, buffers);
+        }
+      }).catch((error2) => {
+        rejectRegistration(error2 instanceof Error ? error2 : new Error(String(error2)));
+        console.error("[MolSysViewer remote rendered client] wire failure", error2);
+        terminalFailure = true;
+        setStatus("failed", "Remote session protocol failed");
+        candidate.close(1011, "client wire failure");
+      });
+    });
+    candidate.addEventListener("open", () => {
+      window.clearTimeout(timer2);
+      setStatus("connecting", "Authenticating remote session\u2026");
+      candidate.send(JSON.stringify({
+        kind: "register",
+        protocolVersion: 1,
+        viewerId: options.viewerId,
+        sessionId: options.sessionId,
+        endpointId: options.endpointId,
+        role: "browser-client",
+        actorId: options.actorId,
+        actorKind: "human",
+        capabilities: ["command-origin", "input-send", "render", "structure-receive", "workbench"]
+      }));
+    }, { once: true });
+    candidate.addEventListener("error", () => {
+      if (!hasRendered) {
+        setStatus("failed", "Remote session connection failed");
+        rejectRegistration(new Error("remote rendered client WebSocket failed"));
+      } else if (!closed && !serverClosing && !terminalFailure) {
+        setStatus("degraded", "Remote session connection interrupted\u2026");
+      }
+    }, { once: true });
+    candidate.addEventListener("close", () => {
+      window.clearTimeout(timer2);
+      if (socket !== candidate) return;
+      state.registered = false;
+      socketRegistered = false;
+      if (!hasRendered) rejectRegistration(new Error("remote rendered client socket closed"));
+      scheduleReconnect();
+    });
+  };
+  connectSocket();
+  await registration;
+  return {
+    get socket() {
+      if (!socket) throw new Error("remote rendered client socket is unavailable");
+      return socket;
+    },
+    get registered() {
+      return socketRegistered;
+    },
+    close() {
+      if (closed) return;
+      closed = true;
+      socketRegistered = false;
+      window.clearTimeout(reconnectTimer);
+      fileControls?.dispose();
+      disposeRender?.();
+      socket?.close(1e3, "client closed");
+      status.remove();
+    }
+  };
+}
+
 // src/index.ts
 function buildMeasurementOpFromInteractionEvent(event) {
   if (!event || event.event !== "interaction_measurement_created") return null;
@@ -167743,6 +170231,24 @@ function buildMeasurementOpFromInteractionEvent(event) {
       endpoint_atom_indices: event.endpoint_atom_indices
     }
   };
+}
+function trajectorySyncToAuthority(msg) {
+  if (msg.op === "set_trajectory_frame") {
+    return { event: "interaction_context_action", action: msg.op, index: msg.index };
+  }
+  if (msg.op === "step_trajectory") {
+    return { event: "interaction_context_action", action: msg.op, by: msg.by };
+  }
+  if (msg.op === "set_trajectory_playback") {
+    return {
+      event: "interaction_context_action",
+      action: msg.op,
+      playback_action: msg.action,
+      ...msg.fps === void 0 ? {} : { fps: msg.fps },
+      ...msg.step === void 0 ? {} : { step: msg.step }
+    };
+  }
+  return null;
 }
 var parseInitialTrajectoryInfo = (msgs) => {
   let frameCount = void 0;
@@ -167827,7 +170333,7 @@ function makeMissingAuthorityReporter(el) {
   };
 }
 function reportSceneRuntimeMismatch(el, sceneVersion) {
-  const runtimeVersion = true ? "0.22.0" : "";
+  const runtimeVersion = true ? "0.20.1+142.gae78e2ee" : "";
   if (typeof sceneVersion !== "string" || !sceneVersion || !runtimeVersion) return;
   const release = (version) => version.split("+")[0].split(".dev")[0];
   if (release(sceneVersion) === release(runtimeVersion)) return;
@@ -168215,637 +170721,653 @@ function setupWidgetResizer(host, target, onResize) {
   });
   host.appendChild(handle);
 }
-var index_default = {
-  render({ model, el }) {
-    const debug = !!model.get("debug_js");
-    const envelopeAdapter = new WidgetEnvelopeAdapter(
-      String(model.get("runtime_viewer_id") || ""),
-      String(model.get("runtime_session_id") || "")
-    );
-    const reportContractRejection = (seam, reason, detail) => {
-      console.error(`[MolSysViewer] runtime contract rejected ${seam} (${reason}): ${detail}`);
-      const diagnostic = envelopeAdapter.wrapOutbound({
-        event: "runtime_contract_rejected",
-        seam,
-        reason,
-        detail
-      });
-      if (diagnostic.kind === "send") model.send(diagnostic.message);
-    };
-    let sendLog;
-    const sendToPython = (message) => {
-      const result2 = envelopeAdapter.wrapOutbound(message);
-      if (result2.kind === "send") {
-        model.send(result2.message);
-        return result2.message.messageId ?? null;
-      }
-      reportContractRejection("widget-outbound", result2.reason, result2.detail);
-      return null;
-    };
-    sendLog = createLogger(model, debug, sendToPython);
-    const pendingSceneSnapshots = /* @__PURE__ */ new Map();
-    const cancelSceneSnapshotsFor = (mode) => {
-      for (const [messageId, entry] of [...pendingSceneSnapshots]) {
-        if (entry.mode !== mode) continue;
-        pendingSceneSnapshots.delete(messageId);
-        entry.settle(null);
-      }
-    };
-    const requestPopupSceneSnapshot = (mode, popupEndpointId) => new Promise((resolve) => {
-      const messageId = sendToPython({
-        event: "request_popup_scene_snapshot",
-        mode,
-        popup_endpoint_id: popupEndpointId
-      });
-      if (!messageId) {
-        resolve(null);
-        return;
-      }
-      let done = false;
-      const settle = (messages) => {
-        if (done) return;
-        done = true;
-        pendingSceneSnapshots.delete(messageId);
-        resolve(messages);
-      };
-      pendingSceneSnapshots.set(messageId, { mode, settle });
-      window.setTimeout(() => settle(null), 5e3);
+function render({ model, el }) {
+  const debug = !!model.get("debug_js");
+  const envelopeAdapter = new WidgetEnvelopeAdapter(
+    String(model.get("runtime_viewer_id") || ""),
+    String(model.get("runtime_session_id") || ""),
+    model.get("runtime_endpoint_id") ? {
+      endpointId: String(model.get("runtime_endpoint_id")),
+      actorId: String(model.get("runtime_actor_id") || ""),
+      actorKind: model.get("runtime_actor_kind") || void 0
+    } : void 0
+  );
+  const reportContractRejection = (seam, reason, detail) => {
+    console.error(`[MolSysViewer] runtime contract rejected ${seam} (${reason}): ${detail}`);
+    const diagnostic = envelopeAdapter.wrapOutbound({
+      event: "runtime_contract_rejected",
+      seam,
+      reason,
+      detail
     });
-    const initialMessages = model.get("initial_messages");
-    const trajInfo = parseInitialTrajectoryInfo(initialMessages);
-    let messageQueue = Promise.resolve();
-    const target = document.createElement("div");
-    target.tabIndex = 0;
-    target.classList.add("molsysviewer-host");
-    Object.assign(target.style, {
-      width: "100%",
-      height: "100%",
-      minHeight: "300px",
-      position: "relative",
-      touchAction: "none",
-      cursor: "default",
-      overflow: "hidden",
-      outline: "none"
-      // Default cursor, focus outline hidden
+    if (diagnostic.kind === "send") model.send(diagnostic.message);
+  };
+  let sendLog;
+  const sendToPython = (message) => {
+    const result2 = envelopeAdapter.wrapOutbound(message);
+    if (result2.kind === "send") {
+      model.send(result2.message);
+      return result2.message.messageId ?? null;
+    }
+    reportContractRejection("widget-outbound", result2.reason, result2.detail);
+    return null;
+  };
+  sendLog = createLogger(model, debug, sendToPython);
+  const pendingSceneSnapshots = /* @__PURE__ */ new Map();
+  const cancelSceneSnapshotsFor = (mode) => {
+    for (const [messageId, entry] of [...pendingSceneSnapshots]) {
+      if (entry.mode !== mode) continue;
+      pendingSceneSnapshots.delete(messageId);
+      entry.settle(null);
+    }
+  };
+  const requestPopupSceneSnapshot = (mode, popupEndpointId) => new Promise((resolve) => {
+    const messageId = sendToPython({
+      event: "request_popup_scene_snapshot",
+      mode,
+      popup_endpoint_id: popupEndpointId
     });
-    const releaseNotebookContextMenuSuppression = suppressCanvasContextMenu(el, target);
-    let isUserInteracting = false;
-    let wheelTimeout = null;
-    const onPointerDown = () => {
-      isUserInteracting = true;
+    if (!messageId) {
+      resolve(null);
+      return;
+    }
+    let done = false;
+    const settle = (messages) => {
+      if (done) return;
+      done = true;
+      pendingSceneSnapshots.delete(messageId);
+      resolve(messages);
     };
-    const onPointerUpOrCancel = () => {
+    pendingSceneSnapshots.set(messageId, { mode, settle });
+    window.setTimeout(() => settle(null), 5e3);
+  });
+  const initialMessages = model.get("initial_messages");
+  const trajInfo = parseInitialTrajectoryInfo(initialMessages);
+  let messageQueue = Promise.resolve();
+  const target = document.createElement("div");
+  target.tabIndex = 0;
+  target.classList.add("molsysviewer-host");
+  Object.assign(target.style, {
+    width: "100%",
+    height: "100%",
+    minHeight: "300px",
+    position: "relative",
+    touchAction: "none",
+    cursor: "default",
+    overflow: "hidden",
+    outline: "none"
+    // Default cursor, focus outline hidden
+  });
+  const releaseNotebookContextMenuSuppression = suppressCanvasContextMenu(el, target);
+  let isUserInteracting = false;
+  let wheelTimeout = null;
+  const onPointerDown = () => {
+    isUserInteracting = true;
+  };
+  const onPointerUpOrCancel = () => {
+    isUserInteracting = false;
+  };
+  const onWheel = () => {
+    isUserInteracting = true;
+    if (wheelTimeout) clearTimeout(wheelTimeout);
+    wheelTimeout = setTimeout(() => {
       isUserInteracting = false;
-    };
-    const onWheel = () => {
-      isUserInteracting = true;
-      if (wheelTimeout) clearTimeout(wheelTimeout);
-      wheelTimeout = setTimeout(() => {
-        isUserInteracting = false;
-      }, 200);
-    };
-    target.addEventListener("pointerdown", onPointerDown);
-    window.addEventListener("pointerup", onPointerUpOrCancel);
-    window.addEventListener("pointercancel", onPointerUpOrCancel);
-    target.addEventListener("wheel", onWheel, { passive: true });
-    target.tabIndex = 0;
-    target.addEventListener("keydown", (e) => {
-      if (e.key === "v" || e.key === "V") {
-        const active = document.activeElement;
-        if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.hasAttribute("contenteditable"))) {
-          return;
-        }
-        e.preventDefault();
-        e.stopPropagation();
-        controllerPromise.then((c8) => {
-          const isHidden = c8.canvasHost.style.display === "none";
-          c8.setCanvasVisibility(isHidden);
-        });
+    }, 200);
+  };
+  target.addEventListener("pointerdown", onPointerDown);
+  window.addEventListener("pointerup", onPointerUpOrCancel);
+  window.addEventListener("pointercancel", onPointerUpOrCancel);
+  target.addEventListener("wheel", onWheel, { passive: true });
+  target.tabIndex = 0;
+  target.addEventListener("keydown", (e) => {
+    if (e.key === "v" || e.key === "V") {
+      const active = document.activeElement;
+      if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.hasAttribute("contenteditable"))) {
+        return;
       }
-    });
-    el.appendChild(target);
-    setupWidgetResizer(el, target, (w, h) => {
-      el.style.height = `${h}px`;
-      target.style.height = `${h}px`;
-      sendToPython({ event: "widget_resize", height: h, width: w });
+      e.preventDefault();
+      e.stopPropagation();
       controllerPromise.then((c8) => {
-        c8.plugin.canvas3d?.requestResize();
+        const isHidden = c8.canvasHost.style.display === "none";
+        c8.setCanvasVisibility(isHidden);
       });
-    });
-    const legacyPopupJsSource = model.get("popup_js_source");
-    const esmSource = model.get("_esm");
-    const esmLooksLikeFullRuntime = typeof esmSource === "string" && esmSource.includes("bootPopup") && esmSource.includes("MolSysViewerController");
-    const cachedWidgetRuntime = globalThis.__molsysviewer_anywidget_runtime__;
-    let popupJsSourceCache = typeof legacyPopupJsSource === "string" && legacyPopupJsSource ? legacyPopupJsSource : typeof cachedWidgetRuntime?.source === "string" && cachedWidgetRuntime.source ? cachedWidgetRuntime.source : esmLooksLikeFullRuntime ? esmSource : "";
-    let pendingPopupSource = null;
-    let resolvePendingPopupSource = null;
-    let rejectPendingPopupSource = null;
-    let popupSourceTimer = null;
-    const requestPopupSource = () => {
-      if (popupJsSourceCache) return Promise.resolve(popupJsSourceCache);
-      if (pendingPopupSource) return pendingPopupSource;
-      pendingPopupSource = new Promise((resolve, reject) => {
-        resolvePendingPopupSource = resolve;
-        rejectPendingPopupSource = reject;
-        popupSourceTimer = setTimeout(() => {
-          reject(new Error("Timed out waiting for MolSysViewer popup source"));
-          pendingPopupSource = null;
-          resolvePendingPopupSource = null;
-          rejectPendingPopupSource = null;
-          popupSourceTimer = null;
-        }, 1e4);
-        sendToPython({ event: "request_popup_source" });
-      });
-      return pendingPopupSource;
-    };
-    const popupMgr = new PopupHostManager({
-      source: popupJsSourceCache || void 0,
-      sourceProvider: requestPopupSource,
-      viewerId: model.get("runtime_viewer_id"),
-      sessionId: model.get("runtime_session_id"),
-      onEndpointClosed: (mode, endpointId) => {
-        cancelSceneSnapshotsFor(mode);
-        sendToPython({
-          event: "popup_endpoint_closed",
-          mode,
-          popup_endpoint_id: endpointId
-        });
-      },
-      onContractRejection: (rejection) => reportContractRejection(
-        rejection.seam,
-        rejection.reason,
-        rejection.detail
-      )
-    });
-    const enablePopout = !!model.get("enable_popout");
-    const panelModeStyle = model.get("panel_mode_style") || "drawer";
-    const controllerPromise = MolSysViewerController.create(target, (msg) => {
-      sendToPython(msg);
-      if (msg?.event === "interaction_measurement_created") {
-        const op4 = buildMeasurementOpFromInteractionEvent(msg);
-        if (op4) {
-          popupMgr.send("molsysviewer-sync-op", op4);
-        }
-      }
-      if (msg?.event === "section_moved") {
-        const syncOp = { op: "sync_section_position", tag: msg.tag, point: msg.point, normal: msg.normal };
-        popupMgr.send("molsysviewer-sync-op", syncOp);
-      }
-    }, void 0, {
-      panelModeStyle,
-      model,
-      hasInitialStructures: trajInfo.hasStructures,
-      onPanelPopClick: enablePopout ? () => {
-        controllerPromise.then((c8) => {
-          c8.saveHostPanelState();
-          if (c8.canvasHost.style.display === "none") {
-            c8.setCanvasVisibility(true);
-          }
-          if (c8.sharedShell) {
-            c8.sharedShell.setVisible(false);
-          }
-          popupMgr.open("panel");
-        });
-      } : void 0
-    });
-    const arrayNativeStream = new ArrayNativeStreamReceiver(
-      (event) => sendToPython(event),
-      async (begin, payload) => {
-        const controller = await controllerPromise;
-        await controller.loadArrayNativeMolSysPayload(payload, begin.label);
-      }
-    );
+    }
+  });
+  el.appendChild(target);
+  setupWidgetResizer(el, target, (w, h) => {
+    el.style.height = `${h}px`;
+    target.style.height = `${h}px`;
+    sendToPython({ event: "widget_resize", height: h, width: w });
     controllerPromise.then((c8) => {
-      const removeOutputLimits = () => {
-        let parent = target.parentElement;
-        while (parent) {
-          if (parent.classList.contains("jp-OutputArea-child") || parent.classList.contains("jp-OutputArea-output") || parent.classList.contains("jp-OutputArea") || parent.classList.contains("output_subarea") || parent.classList.contains("vscode-notebook-cell-output-container") || parent.classList.contains("cell-output-ipywidget")) {
-            parent.style.maxHeight = "none";
-          }
-          if (parent.parentElement) {
-            parent = parent.parentElement;
-          } else {
-            const root = parent.getRootNode();
-            parent = root instanceof ShadowRoot ? root.host : null;
-          }
-        }
-      };
-      removeOutputLimits();
-      setTimeout(removeOutputLimits, 100);
-      setTimeout(removeOutputLimits, 500);
-      c8.onTogglePanelModeOverride = () => {
-        if (popupMgr.panelWin && !popupMgr.panelWin.closed) {
-          popupMgr.close("panel");
-          return true;
-        }
-        return false;
-      };
-      if (trajInfo.frameCount !== void 0) {
-        c8.trajectory.setExpectedFrameCount(trajInfo.frameCount);
-      }
-      let overlay = void 0;
-      const updateControls = () => {
-        if (overlay) {
-          overlay.remove();
-        }
-        overlay = buildControls(
-          c8,
-          model,
-          (msg) => popupMgr.send("molsysviewer-sync-op", msg),
-          target,
-          enablePopout ? () => popupMgr.open("canvas") : void 0,
-          {
-            initialHasTrajectory: trajInfo.multipleStructures || (trajInfo.frameCount ?? 0) > 1,
-            initialFrameCount: trajInfo.frameCount
-          }
-        );
-        if (overlay) {
-          target.appendChild(overlay);
-        }
-      };
-      updateControls();
-      popupMgr.setController(c8);
-      model.on("change:controls_mode", () => {
-        updateControls();
-        popupMgr.send("molsysviewer-sync-ui", { controlsMode: model.get("controls_mode") });
-      });
-      model.on("change:viewer_mode", () => {
-        popupMgr.send("molsysviewer-sync-ui", { viewerMode: model.get("viewer_mode") });
-      });
-      model.on("change:panel_mode_style", () => {
-        popupMgr.send("molsysviewer-sync-ui", { panelModeStyle: model.get("panel_mode_style") });
-      });
-      if (c8.sharedShell) {
-        c8.sharedShell.onLayoutChange = (state) => {
-          popupMgr.send("molsysviewer-sync-ui", state);
-          c8.triggerLayoutChange(state);
-        };
-      }
-      if (c8.plugin.canvas3d) {
-        let hostCameraSyncTimer = null;
-        let cameraSnapshotTimer = null;
-        const c3d = c8.plugin.canvas3d;
-        const syncCamera = () => {
-          if (!popupMgr.isReady || !isUserInteracting) return;
-          if (hostCameraSyncTimer) clearTimeout(hostCameraSyncTimer);
-          hostCameraSyncTimer = setTimeout(() => {
-            popupMgr.send("molsysviewer-sync-camera", c8.getCameraSnapshot());
-            hostCameraSyncTimer = null;
-          }, 20);
-        };
-        const scheduleCameraSnapshot = () => {
-          if (cameraSnapshotTimer) clearTimeout(cameraSnapshotTimer);
-          cameraSnapshotTimer = setTimeout(() => {
-            const snapshot = c8.getCameraSnapshot();
-            if (snapshot) {
-              sendToPython({ event: "camera_snapshot", snapshot });
-            }
-            cameraSnapshotTimer = null;
-          }, 300);
-        };
-        const onCameraFrame = () => {
-          syncCamera();
-          scheduleCameraSnapshot();
-        };
-        if (c3d.didDraw) {
-          c3d.didDraw.subscribe(onCameraFrame);
-          console.log("[MolSysViewer] Host: Sync via didDraw (interactive camera movements).");
-        } else if (c3d.camera.stateChanged) {
-          c3d.camera.stateChanged.subscribe(onCameraFrame);
-          console.log("[MolSysViewer] Host: Sync via camera.stateChanged (fallback).");
-        } else {
-          console.warn("[MolSysViewer] Host: No suitable camera event found for sync.");
-        }
-      } else {
-        console.warn("[MolSysViewer] Host: plugin.canvas3d is undefined. Camera sync disabled.");
-      }
+      c8.plugin.canvas3d?.requestResize();
     });
-    const messageHandler = async (ev) => {
-      if (!document.body.contains(el)) {
-        window.removeEventListener("message", messageHandler);
-        return;
-      }
-      const popupMessage = popupMgr.receive(ev);
-      if (!popupMessage) return;
-      const { type: type3 } = popupMessage;
-      const data = popupMessage.data;
-      const controller = await controllerPromise;
-      try {
-        switch (type3) {
-          case "molsysviewer-pop-ready": {
-            popupMgr.isReady = true;
-            popupMgr.beginBootstrap("canvas");
-            const canvasSnapshot = await requestPopupSceneSnapshot(
-              "canvas",
-              popupMgr.popupEndpointId("canvas")
-            );
-            if (!canvasSnapshot) {
-              sendLog("error", "[MolSysViewer] canvas popup bootstrap: Python did not answer the scene snapshot request");
-            }
-            try {
-              popupMgr.sendTo("canvas", "molsysviewer-initial-sync", {
-                messages: canvasSnapshot ?? [],
-                cameraSnapshot: controller.getCameraSnapshot(),
-                isSpinActive: controller.isSpinActive,
-                isSwingActive: controller.isSwingActive,
-                isDarkMode: controller.isDarkMode,
-                autohide: !!model.get("autohide_controls"),
-                viewerMode: controller.getViewerMode(),
-                controlsMode: controller.getControlsMode(),
-                panelModeStyle: controller.getPanelModeStyle(),
-                isAmbient: controller.sharedShell?.isAmbient,
-                isSplit: controller.sharedShell?.isSplit
-              });
-            } finally {
-              popupMgr.completeBootstrap("canvas");
-            }
-            break;
-          }
-          case "molsysviewer-panel-ready": {
-            popupMgr.isPanelReady = true;
-            popupMgr.beginBootstrap("panel");
-            const panelSnapshot = await requestPopupSceneSnapshot(
-              "panel",
-              popupMgr.popupEndpointId("panel")
-            );
-            if (!panelSnapshot) {
-              sendLog("error", "[MolSysViewer] panel popup bootstrap: Python did not answer the scene snapshot request");
-            }
-            lastRelayedHierarchy = controller.getHierarchyItems();
-            try {
-              popupMgr.sendTo("panel", "molsysviewer-initial-sync", {
-                messages: panelSnapshot ?? [],
-                hierarchyItems: lastRelayedHierarchy,
-                cameraSnapshot: controller.getCameraSnapshot(),
-                isSpinActive: controller.isSpinActive,
-                isSwingActive: controller.isSwingActive,
-                isDarkMode: controller.isDarkMode,
-                autohide: !!model.get("autohide_controls"),
-                viewerMode: controller.getViewerMode(),
-                controlsMode: controller.getControlsMode(),
-                panelModeStyle: controller.getPanelModeStyle(),
-                isAmbient: controller.sharedShell?.isAmbient,
-                isSplit: controller.sharedShell?.isSplit
-              });
-            } finally {
-              popupMgr.completeBootstrap("panel");
-            }
-            break;
-          }
-          case "molsysviewer-sync-op":
-            if (data) await controller.handleMessage(data);
-            if (data) popupMgr.send("molsysviewer-sync-op", data);
-            break;
-          case "molsysviewer-structure-data-ack":
-            if (data) {
-              const sourceMode = popupMessage.channel.mode;
-              if (data.event === "structure_data_json_complete") {
-                popupMgr.completeBootstrap(sourceMode);
-                break;
-              }
-              const endpointId = popupMgr.popupEndpointId(sourceMode);
-              if (endpointId) {
-                sendToPython(bindStreamEventToEndpoint(data, endpointId));
-              }
-              if (data.event === "structure_data_complete") {
-                popupMgr.completeBootstrap(sourceMode);
-              }
-            }
-            break;
-          case "molsysviewer-sync-camera":
-            if (data && !isUserInteracting) {
-              controller.setCameraSnapshot(data, 0);
-            }
-            break;
-          case "molsysviewer-popup-interaction":
-            if (data) sendToPython(data);
-            if (data) {
-              const op4 = buildMeasurementOpFromInteractionEvent(data);
-              if (op4) enqueueMessage(op4, { syncToPopup: false });
-            }
-            if (data?.event === "section_moved") {
-              const syncOp = { op: "sync_section_position", tag: data.tag, point: data.point, normal: data.normal };
-              enqueueMessage(syncOp, { syncToPopup: false });
-            }
-            break;
-          case "molsysviewer-log-from-popout":
-            if (debug) sendLog("info", "[Popout Log]:", data?.msg);
-            break;
-          case "molsysviewer-runtime-contract-rejected":
-            sendToPython({
-              event: "runtime_contract_rejected",
-              seam: data?.seam ?? "popup",
-              reason: data?.reason ?? "unknown",
-              detail: data?.detail ?? "unknown"
-            });
-            break;
-        }
-      } catch (e) {
-        console.error("[MolSysViewer Host] Error handling popout message:", e);
-      }
-    };
-    window.addEventListener("message", messageHandler);
-    let lastRelayedHierarchy = null;
-    const enqueueMessage = (msg, opts) => {
-      messageQueue = messageQueue.then(async () => {
-        if (!msg || typeof msg !== "object") return;
-        if (debug) sendLog("info", "[MolSysViewer] msg from Python:", msg);
-        const controller = await controllerPromise;
-        await controller.handleMessage(msg);
-        if (opts?.syncToPopup) popupMgr.send("molsysviewer-sync-op", msg);
-        if (popupMgr.isPanelOpen) {
-          const items = controller.getHierarchyItems();
-          if (items !== lastRelayedHierarchy) {
-            lastRelayedHierarchy = items;
-            popupMgr.sendTo("panel", "molsysviewer-sync-hierarchy", { items });
-          }
-        }
-      }).catch((error2) => {
-        console.error("[MolSysViewer] Error handling message:", msg, error2);
-        sendLog("error", "[MolSysViewer] Error handling message:", msg, error2);
-      });
-    };
-    (async () => {
-      try {
-        const initialMessages2 = model.get("initial_messages");
-        if (Array.isArray(initialMessages2) && initialMessages2.length) {
-          for (const msg of initialMessages2) {
-            if (msg) {
-              enqueueMessage(msg, { syncToPopup: false });
-            }
-          }
-          await messageQueue;
-        }
-        const binaryStructureData = [1];
-        sendToPython({
-          event: "ready",
-          capabilities: {
-            binary_structure_data: binaryStructureData,
-            max_buffer_bytes: 16 * 1024 * 1024,
-            transferable_array_buffer: false
-          }
-        });
-      } catch (err) {
-        console.error("[MolSysViewer] Init error:", err);
-        sendLog("error", "[MolSysViewer] Init error:", err);
-      }
-    })();
-    console.log("[MolSysViewer] widget render init");
-    sendLog("info", "[MolSysViewer] widget render init");
-    const onCustomMsg = (msg, buffers) => {
-      const inbound = envelopeAdapter.unwrapInbound(msg);
-      if (inbound.kind === "rejected") {
-        reportContractRejection("widget-inbound", inbound.reason, inbound.detail);
-        return;
-      }
-      if (inbound.kind === "message") {
-        const event = inbound.message.event;
-        if (event === "command_duplicate_ack") return;
-        if (event === "popup_scene_snapshot") {
-          const correlationId = inbound.envelope.correlationId;
-          const entry = correlationId ? pendingSceneSnapshots.get(correlationId) : void 0;
-          if (entry) {
-            entry.settle(inbound.message.messages ?? []);
-          }
-          return;
-        }
-        msg = inbound.message;
-      }
-      const relayTarget = msg?.target_endpoint_id;
-      if (typeof relayTarget === "string" && relayTarget) {
-        const mode = relayTarget === popupMgr.popupEndpointId("canvas") ? "canvas" : relayTarget === popupMgr.popupEndpointId("panel") ? "panel" : null;
-        if (!mode) {
-          sendLog("error", `[MolSysViewer] relay target is not an open endpoint: ${relayTarget}`);
-          return;
-        }
-        if (msg.op === "structure_data_begin") popupMgr.beginBootstrap(mode);
-        popupMgr.sendTo(mode, "molsysviewer-structure-data", {
-          message: msg,
-          buffers: buffers ?? []
-        });
-        return;
-      }
-      if (msg && (msg.op === "structure_data_begin" || msg.op === "structure_data_chunk" || msg.op === "structure_data_cancel")) {
-        messageQueue = messageQueue.then(() => arrayNativeStream.handle(msg, buffers ?? [])).catch((error2) => {
-          console.error("[MolSysViewer] Error handling array-native stream:", error2);
-          sendLog("error", "[MolSysViewer] Error handling array-native stream:", error2);
-        });
-        return;
-      }
-      if (msg && msg.op === "load_molsys_array_payload") {
-        messageQueue = messageQueue.then(async () => {
-          const controller = await controllerPromise;
-          await controller.handleArrayNativeMolSysMessage(msg, buffers ?? []);
-        }).catch((error2) => {
-          console.error("[MolSysViewer] Error handling array-native payload:", error2);
-          sendLog("error", "[MolSysViewer] Error handling array-native payload:", error2);
-        });
-        return;
-      }
-      if (msg && msg.op === "popup_source") {
-        const source = typeof msg.source === "string" ? msg.source : "";
-        if (popupSourceTimer) {
-          window.clearTimeout(popupSourceTimer);
-          popupSourceTimer = null;
-        }
+  });
+  const legacyPopupJsSource = model.get("popup_js_source");
+  const esmSource = model.get("_esm");
+  const esmLooksLikeFullRuntime = typeof esmSource === "string" && esmSource.includes("bootPopup") && esmSource.includes("MolSysViewerController");
+  const cachedWidgetRuntime = globalThis.__molsysviewer_anywidget_runtime__;
+  let popupJsSourceCache = typeof legacyPopupJsSource === "string" && legacyPopupJsSource ? legacyPopupJsSource : typeof cachedWidgetRuntime?.source === "string" && cachedWidgetRuntime.source ? cachedWidgetRuntime.source : esmLooksLikeFullRuntime ? esmSource : "";
+  let pendingPopupSource = null;
+  let resolvePendingPopupSource = null;
+  let rejectPendingPopupSource = null;
+  let popupSourceTimer = null;
+  const requestPopupSource = () => {
+    if (popupJsSourceCache) return Promise.resolve(popupJsSourceCache);
+    if (pendingPopupSource) return pendingPopupSource;
+    pendingPopupSource = new Promise((resolve, reject) => {
+      resolvePendingPopupSource = resolve;
+      rejectPendingPopupSource = reject;
+      popupSourceTimer = setTimeout(() => {
+        reject(new Error("Timed out waiting for MolSysViewer popup source"));
         pendingPopupSource = null;
-        if (source) {
-          popupJsSourceCache = source;
-          resolvePendingPopupSource?.(source);
-        } else {
-          rejectPendingPopupSource?.(new Error("MolSysViewer popup source response was empty"));
-        }
         resolvePendingPopupSource = null;
         rejectPendingPopupSource = null;
-        return;
+        popupSourceTimer = null;
+      }, 1e4);
+      sendToPython({ event: "request_popup_source" });
+    });
+    return pendingPopupSource;
+  };
+  const popupMgr = new PopupHostManager({
+    source: popupJsSourceCache || void 0,
+    sourceProvider: requestPopupSource,
+    viewerId: model.get("runtime_viewer_id"),
+    sessionId: model.get("runtime_session_id"),
+    onEndpointClosed: (mode, endpointId) => {
+      cancelSceneSnapshotsFor(mode);
+      sendToPython({
+        event: "popup_endpoint_closed",
+        mode,
+        popup_endpoint_id: endpointId
+      });
+    },
+    onContractRejection: (rejection2) => reportContractRejection(
+      rejection2.seam,
+      rejection2.reason,
+      rejection2.detail
+    )
+  });
+  const enablePopout = !!model.get("enable_popout");
+  const panelModeStyle = model.get("panel_mode_style") || "drawer";
+  const controllerPromise = MolSysViewerController.create(target, (msg) => {
+    sendToPython(msg);
+    if (msg?.event === "interaction_measurement_created") {
+      const op4 = buildMeasurementOpFromInteractionEvent(msg);
+      if (op4) {
+        popupMgr.send("molsysviewer-sync-op", op4);
       }
-      if (msg && msg.op === "request_camera_snapshot") {
-        controllerPromise.then((c8) => {
+    }
+    if (msg?.event === "section_moved") {
+      const syncOp = { op: "sync_section_position", tag: msg.tag, point: msg.point, normal: msg.normal };
+      popupMgr.send("molsysviewer-sync-op", syncOp);
+    }
+  }, void 0, {
+    panelModeStyle,
+    model,
+    hasInitialStructures: trajInfo.hasStructures,
+    onPanelPopClick: enablePopout ? () => {
+      controllerPromise.then((c8) => {
+        c8.saveHostPanelState();
+        if (c8.canvasHost.style.display === "none") {
+          c8.setCanvasVisibility(true);
+        }
+        if (c8.sharedShell) {
+          c8.sharedShell.setVisible(false);
+        }
+        popupMgr.open("panel");
+      });
+    } : void 0
+  });
+  const arrayNativeStream = new ArrayNativeStreamReceiver(
+    (event) => sendToPython(event),
+    async (begin, payload) => {
+      const controller = await controllerPromise;
+      await controller.loadArrayNativeMolSysPayload(payload, begin.label);
+    }
+  );
+  controllerPromise.then((c8) => {
+    const removeOutputLimits = () => {
+      let parent = target.parentElement;
+      while (parent) {
+        if (parent.classList.contains("jp-OutputArea-child") || parent.classList.contains("jp-OutputArea-output") || parent.classList.contains("jp-OutputArea") || parent.classList.contains("output_subarea") || parent.classList.contains("vscode-notebook-cell-output-container") || parent.classList.contains("cell-output-ipywidget")) {
+          parent.style.maxHeight = "none";
+        }
+        if (parent.parentElement) {
+          parent = parent.parentElement;
+        } else {
+          const root = parent.getRootNode();
+          parent = root instanceof ShadowRoot ? root.host : null;
+        }
+      }
+    };
+    removeOutputLimits();
+    setTimeout(removeOutputLimits, 100);
+    setTimeout(removeOutputLimits, 500);
+    c8.onTogglePanelModeOverride = () => {
+      if (popupMgr.panelWin && !popupMgr.panelWin.closed) {
+        popupMgr.close("panel");
+        return true;
+      }
+      return false;
+    };
+    if (trajInfo.frameCount !== void 0) {
+      c8.trajectory.setExpectedFrameCount(trajInfo.frameCount);
+    }
+    let overlay = void 0;
+    const updateControls = () => {
+      if (overlay) {
+        overlay.remove();
+      }
+      overlay = buildControls(
+        c8,
+        model,
+        (msg) => {
+          popupMgr.send("molsysviewer-sync-op", msg);
+          const authorityAction = trajectorySyncToAuthority(msg);
+          if (authorityAction) sendToPython(authorityAction);
+        },
+        target,
+        enablePopout ? () => popupMgr.open("canvas") : void 0,
+        {
+          initialHasTrajectory: trajInfo.multipleStructures || (trajInfo.frameCount ?? 0) > 1,
+          initialFrameCount: trajInfo.frameCount
+        }
+      );
+      if (overlay) {
+        target.appendChild(overlay);
+      }
+    };
+    updateControls();
+    popupMgr.setController(c8);
+    model.on("change:controls_mode", () => {
+      updateControls();
+      popupMgr.send("molsysviewer-sync-ui", { controlsMode: model.get("controls_mode") });
+    });
+    model.on("change:viewer_mode", () => {
+      popupMgr.send("molsysviewer-sync-ui", { viewerMode: model.get("viewer_mode") });
+    });
+    model.on("change:panel_mode_style", () => {
+      popupMgr.send("molsysviewer-sync-ui", { panelModeStyle: model.get("panel_mode_style") });
+    });
+    if (c8.sharedShell) {
+      c8.sharedShell.onLayoutChange = (state) => {
+        popupMgr.send("molsysviewer-sync-ui", state);
+        c8.triggerLayoutChange(state);
+      };
+    }
+    if (c8.plugin.canvas3d) {
+      let hostCameraSyncTimer = null;
+      let cameraSnapshotTimer = null;
+      const c3d = c8.plugin.canvas3d;
+      const syncCamera = () => {
+        if (!popupMgr.isReady || !isUserInteracting) return;
+        if (hostCameraSyncTimer) clearTimeout(hostCameraSyncTimer);
+        hostCameraSyncTimer = setTimeout(() => {
+          popupMgr.send("molsysviewer-sync-camera", c8.getCameraSnapshot());
+          hostCameraSyncTimer = null;
+        }, 20);
+      };
+      const scheduleCameraSnapshot = () => {
+        if (cameraSnapshotTimer) clearTimeout(cameraSnapshotTimer);
+        cameraSnapshotTimer = setTimeout(() => {
           const snapshot = c8.getCameraSnapshot();
           if (snapshot) {
             sendToPython({ event: "camera_snapshot", snapshot });
           }
-        });
-        return;
+          cameraSnapshotTimer = null;
+        }, 300);
+      };
+      const onCameraFrame = () => {
+        syncCamera();
+        scheduleCameraSnapshot();
+      };
+      if (c3d.didDraw) {
+        c3d.didDraw.subscribe(onCameraFrame);
+        console.log("[MolSysViewer] Host: Sync via didDraw (interactive camera movements).");
+      } else if (c3d.camera.stateChanged) {
+        c3d.camera.stateChanged.subscribe(onCameraFrame);
+        console.log("[MolSysViewer] Host: Sync via camera.stateChanged (fallback).");
+      } else {
+        console.warn("[MolSysViewer] Host: No suitable camera event found for sync.");
       }
-      if (msg && msg.op === "request_image_export") {
-        controllerPromise.then(async (c8) => {
-          const imageExportResult = await c8.getImageDataUri({
-            width: typeof msg.width === "number" ? msg.width : void 0,
-            height: typeof msg.height === "number" ? msg.height : void 0,
-            scale: typeof msg.scale === "number" ? msg.scale : void 0,
-            transparent: !!msg.transparent,
-            preset: typeof msg.preset === "string" ? msg.preset : void 0,
-            cameraSnapshot: msg.camera_snapshot && typeof msg.camera_snapshot === "object" ? msg.camera_snapshot : void 0
-          });
-          if (typeof imageExportResult === "string" && imageExportResult) {
-            sendToPython({
-              event: "image_export",
-              data_uri: imageExportResult,
-              scale: typeof msg.scale === "number" ? msg.scale : 1,
-              transparent: !!msg.transparent,
-              preset: typeof msg.preset === "string" ? msg.preset : "current",
-              width: typeof msg.width === "number" ? msg.width : void 0,
-              height: typeof msg.height === "number" ? msg.height : void 0,
-              format: "png"
-            });
-          } else if (imageExportResult && typeof imageExportResult === "object" && imageExportResult.success === false) {
-            sendToPython({
-              event: "image_export",
-              ...imageExportResult,
-              scale: typeof msg.scale === "number" ? msg.scale : 1,
-              transparent: !!msg.transparent,
-              preset: typeof msg.preset === "string" ? msg.preset : "current",
-              width: typeof msg.width === "number" ? msg.width : void 0,
-              height: typeof msg.height === "number" ? msg.height : void 0,
-              format: "png"
-            });
-          }
-        });
-        return;
-      }
-      enqueueMessage(msg, { syncToPopup: true });
-    };
-    model.on("msg:custom", onCustomMsg);
-    model.on("change:autohide_controls", () => {
-      popupMgr.send("molsysviewer-sync-autohide", { enabled: !!model.get("autohide_controls") });
-    });
-    return () => {
-      console.log("[MolSysViewer] Disposing widget...");
+    } else {
+      console.warn("[MolSysViewer] Host: plugin.canvas3d is undefined. Camera sync disabled.");
+    }
+  });
+  const messageHandler = async (ev) => {
+    if (!document.body.contains(el)) {
       window.removeEventListener("message", messageHandler);
-      window.removeEventListener("pointerup", onPointerUpOrCancel);
-      window.removeEventListener("pointercancel", onPointerUpOrCancel);
-      target.removeEventListener("pointerdown", onPointerDown);
-      target.removeEventListener("wheel", onWheel);
-      releaseNotebookContextMenuSuppression();
-      model.off("msg:custom", onCustomMsg);
+      return;
+    }
+    const popupMessage = popupMgr.receive(ev);
+    if (!popupMessage) return;
+    const { type: type3 } = popupMessage;
+    const data = popupMessage.data;
+    const controller = await controllerPromise;
+    try {
+      switch (type3) {
+        case "molsysviewer-pop-ready": {
+          popupMgr.isReady = true;
+          popupMgr.beginBootstrap("canvas");
+          const canvasSnapshot = await requestPopupSceneSnapshot(
+            "canvas",
+            popupMgr.popupEndpointId("canvas")
+          );
+          if (!canvasSnapshot) {
+            sendLog("error", "[MolSysViewer] canvas popup bootstrap: Python did not answer the scene snapshot request");
+          }
+          try {
+            popupMgr.sendTo("canvas", "molsysviewer-initial-sync", {
+              messages: canvasSnapshot ?? [],
+              cameraSnapshot: controller.getCameraSnapshot(),
+              isSpinActive: controller.isSpinActive,
+              isSwingActive: controller.isSwingActive,
+              isDarkMode: controller.isDarkMode,
+              autohide: !!model.get("autohide_controls"),
+              viewerMode: controller.getViewerMode(),
+              controlsMode: controller.getControlsMode(),
+              panelModeStyle: controller.getPanelModeStyle(),
+              isAmbient: controller.sharedShell?.isAmbient,
+              isSplit: controller.sharedShell?.isSplit
+            });
+          } finally {
+            popupMgr.completeBootstrap("canvas");
+          }
+          break;
+        }
+        case "molsysviewer-panel-ready": {
+          popupMgr.isPanelReady = true;
+          popupMgr.beginBootstrap("panel");
+          const panelSnapshot = await requestPopupSceneSnapshot(
+            "panel",
+            popupMgr.popupEndpointId("panel")
+          );
+          if (!panelSnapshot) {
+            sendLog("error", "[MolSysViewer] panel popup bootstrap: Python did not answer the scene snapshot request");
+          }
+          lastRelayedHierarchy = controller.getHierarchyItems();
+          try {
+            popupMgr.sendTo("panel", "molsysviewer-initial-sync", {
+              messages: panelSnapshot ?? [],
+              hierarchyItems: lastRelayedHierarchy,
+              cameraSnapshot: controller.getCameraSnapshot(),
+              isSpinActive: controller.isSpinActive,
+              isSwingActive: controller.isSwingActive,
+              isDarkMode: controller.isDarkMode,
+              autohide: !!model.get("autohide_controls"),
+              viewerMode: controller.getViewerMode(),
+              controlsMode: controller.getControlsMode(),
+              panelModeStyle: controller.getPanelModeStyle(),
+              isAmbient: controller.sharedShell?.isAmbient,
+              isSplit: controller.sharedShell?.isSplit
+            });
+          } finally {
+            popupMgr.completeBootstrap("panel");
+          }
+          break;
+        }
+        case "molsysviewer-sync-op":
+          if (data) await controller.handleMessage(data);
+          if (data) popupMgr.send("molsysviewer-sync-op", data);
+          break;
+        case "molsysviewer-structure-data-ack":
+          if (data) {
+            const sourceMode = popupMessage.channel.mode;
+            if (data.event === "structure_data_json_complete") {
+              popupMgr.completeBootstrap(sourceMode);
+              break;
+            }
+            const endpointId = popupMgr.popupEndpointId(sourceMode);
+            if (endpointId) {
+              sendToPython(bindStreamEventToEndpoint(data, endpointId));
+            }
+            if (data.event === "structure_data_complete") {
+              popupMgr.completeBootstrap(sourceMode);
+            }
+          }
+          break;
+        case "molsysviewer-sync-camera":
+          if (data && !isUserInteracting) {
+            controller.setCameraSnapshot(data, 0);
+          }
+          break;
+        case "molsysviewer-popup-interaction":
+          if (data) sendToPython(data);
+          if (data) {
+            const op4 = buildMeasurementOpFromInteractionEvent(data);
+            if (op4) enqueueMessage(op4, { syncToPopup: false });
+          }
+          if (data?.event === "section_moved") {
+            const syncOp = { op: "sync_section_position", tag: data.tag, point: data.point, normal: data.normal };
+            enqueueMessage(syncOp, { syncToPopup: false });
+          }
+          break;
+        case "molsysviewer-log-from-popout":
+          if (debug) sendLog("info", "[Popout Log]:", data?.msg);
+          break;
+        case "molsysviewer-runtime-contract-rejected":
+          sendToPython({
+            event: "runtime_contract_rejected",
+            seam: data?.seam ?? "popup",
+            reason: data?.reason ?? "unknown",
+            detail: data?.detail ?? "unknown"
+          });
+          break;
+      }
+    } catch (e) {
+      console.error("[MolSysViewer Host] Error handling popout message:", e);
+    }
+  };
+  window.addEventListener("message", messageHandler);
+  let lastRelayedHierarchy = null;
+  const enqueueMessage = (msg, opts) => {
+    messageQueue = messageQueue.then(async () => {
+      if (!msg || typeof msg !== "object") return;
+      if (debug) sendLog("info", "[MolSysViewer] msg from Python:", msg);
+      const controller = await controllerPromise;
+      await controller.handleMessage(msg);
+      if (opts?.syncToPopup) popupMgr.send("molsysviewer-sync-op", msg);
+      if (popupMgr.isPanelOpen) {
+        const items = controller.getHierarchyItems();
+        if (items !== lastRelayedHierarchy) {
+          lastRelayedHierarchy = items;
+          popupMgr.sendTo("panel", "molsysviewer-sync-hierarchy", { items });
+        }
+      }
+    }).catch((error2) => {
+      console.error("[MolSysViewer] Error handling message:", msg, error2);
+      sendLog("error", "[MolSysViewer] Error handling message:", msg, error2);
+    });
+  };
+  (async () => {
+    try {
+      const initialMessages2 = model.get("initial_messages");
+      if (Array.isArray(initialMessages2) && initialMessages2.length) {
+        for (const msg of initialMessages2) {
+          if (msg) {
+            enqueueMessage(msg, { syncToPopup: false });
+          }
+        }
+        await messageQueue;
+      }
+      const binaryStructureData = [1];
+      sendToPython({
+        event: "ready",
+        capabilities: {
+          binary_structure_data: binaryStructureData,
+          max_buffer_bytes: 16 * 1024 * 1024,
+          transferable_array_buffer: false
+        }
+      });
+    } catch (err) {
+      console.error("[MolSysViewer] Init error:", err);
+      sendLog("error", "[MolSysViewer] Init error:", err);
+    }
+  })();
+  console.log("[MolSysViewer] widget render init");
+  sendLog("info", "[MolSysViewer] widget render init");
+  const onCustomMsg = (msg, buffers) => {
+    const inbound = envelopeAdapter.unwrapInbound(msg);
+    if (inbound.kind === "rejected") {
+      reportContractRejection("widget-inbound", inbound.reason, inbound.detail);
+      return;
+    }
+    if (inbound.kind === "message") {
+      const event = inbound.message.event;
+      if (event === "command_duplicate_ack") return;
+      if (event === "popup_scene_snapshot") {
+        const correlationId = inbound.envelope.correlationId;
+        const entry = correlationId ? pendingSceneSnapshots.get(correlationId) : void 0;
+        if (entry) {
+          entry.settle(inbound.message.messages ?? []);
+        }
+        return;
+      }
+      msg = inbound.message;
+    }
+    const relayTarget = msg?.target_endpoint_id;
+    if (typeof relayTarget === "string" && relayTarget) {
+      const mode = relayTarget === popupMgr.popupEndpointId("canvas") ? "canvas" : relayTarget === popupMgr.popupEndpointId("panel") ? "panel" : null;
+      if (!mode) {
+        sendLog("error", `[MolSysViewer] relay target is not an open endpoint: ${relayTarget}`);
+        return;
+      }
+      if (msg.op === "structure_data_begin") popupMgr.beginBootstrap(mode);
+      popupMgr.sendTo(mode, "molsysviewer-structure-data", {
+        message: msg,
+        buffers: buffers ?? []
+      });
+      return;
+    }
+    if (msg && (msg.op === "structure_data_begin" || msg.op === "structure_data_chunk" || msg.op === "structure_data_cancel")) {
+      messageQueue = messageQueue.then(() => arrayNativeStream.handle(msg, buffers ?? [])).catch((error2) => {
+        console.error("[MolSysViewer] Error handling array-native stream:", error2);
+        sendLog("error", "[MolSysViewer] Error handling array-native stream:", error2);
+      });
+      return;
+    }
+    if (msg && msg.op === "load_molsys_array_payload") {
+      messageQueue = messageQueue.then(async () => {
+        const controller = await controllerPromise;
+        await controller.handleArrayNativeMolSysMessage(msg, buffers ?? []);
+      }).catch((error2) => {
+        console.error("[MolSysViewer] Error handling array-native payload:", error2);
+        sendLog("error", "[MolSysViewer] Error handling array-native payload:", error2);
+      });
+      return;
+    }
+    if (msg && msg.op === "popup_source") {
+      const source = typeof msg.source === "string" ? msg.source : "";
       if (popupSourceTimer) {
         window.clearTimeout(popupSourceTimer);
         popupSourceTimer = null;
       }
-      rejectPendingPopupSource?.(new Error("MolSysViewer widget disposed while waiting for popup source"));
       pendingPopupSource = null;
+      if (source) {
+        popupJsSourceCache = source;
+        resolvePendingPopupSource?.(source);
+      } else {
+        rejectPendingPopupSource?.(new Error("MolSysViewer popup source response was empty"));
+      }
       resolvePendingPopupSource = null;
       rejectPendingPopupSource = null;
+      return;
+    }
+    if (msg && msg.op === "request_camera_snapshot") {
       controllerPromise.then((c8) => {
-        try {
-          c8.dispose();
-          console.log("[MolSysViewer] Mol* controller disposed.");
-        } catch (e) {
-          console.error("[MolSysViewer] Error disposing plugin:", e);
+        const snapshot = c8.getCameraSnapshot();
+        if (snapshot) {
+          sendToPython({ event: "camera_snapshot", snapshot });
         }
       });
-      popupMgr.dispose();
-      arrayNativeStream.dispose();
-    };
-  }
-};
+      return;
+    }
+    if (msg && msg.op === "request_image_export") {
+      controllerPromise.then(async (c8) => {
+        const imageExportResult = await c8.getImageDataUri({
+          width: typeof msg.width === "number" ? msg.width : void 0,
+          height: typeof msg.height === "number" ? msg.height : void 0,
+          scale: typeof msg.scale === "number" ? msg.scale : void 0,
+          transparent: !!msg.transparent,
+          preset: typeof msg.preset === "string" ? msg.preset : void 0,
+          cameraSnapshot: msg.camera_snapshot && typeof msg.camera_snapshot === "object" ? msg.camera_snapshot : void 0
+        });
+        if (typeof imageExportResult === "string" && imageExportResult) {
+          sendToPython({
+            event: "image_export",
+            data_uri: imageExportResult,
+            scale: typeof msg.scale === "number" ? msg.scale : 1,
+            transparent: !!msg.transparent,
+            preset: typeof msg.preset === "string" ? msg.preset : "current",
+            width: typeof msg.width === "number" ? msg.width : void 0,
+            height: typeof msg.height === "number" ? msg.height : void 0,
+            format: "png"
+          });
+        } else if (imageExportResult && typeof imageExportResult === "object" && imageExportResult.success === false) {
+          sendToPython({
+            event: "image_export",
+            ...imageExportResult,
+            scale: typeof msg.scale === "number" ? msg.scale : 1,
+            transparent: !!msg.transparent,
+            preset: typeof msg.preset === "string" ? msg.preset : "current",
+            width: typeof msg.width === "number" ? msg.width : void 0,
+            height: typeof msg.height === "number" ? msg.height : void 0,
+            format: "png"
+          });
+        }
+      });
+      return;
+    }
+    enqueueMessage(msg, { syncToPopup: true });
+  };
+  model.on("msg:custom", onCustomMsg);
+  model.on("change:autohide_controls", () => {
+    popupMgr.send("molsysviewer-sync-autohide", { enabled: !!model.get("autohide_controls") });
+  });
+  return () => {
+    console.log("[MolSysViewer] Disposing widget...");
+    window.removeEventListener("message", messageHandler);
+    window.removeEventListener("pointerup", onPointerUpOrCancel);
+    window.removeEventListener("pointercancel", onPointerUpOrCancel);
+    target.removeEventListener("pointerdown", onPointerDown);
+    target.removeEventListener("wheel", onWheel);
+    releaseNotebookContextMenuSuppression();
+    model.off("msg:custom", onCustomMsg);
+    if (popupSourceTimer) {
+      window.clearTimeout(popupSourceTimer);
+      popupSourceTimer = null;
+    }
+    rejectPendingPopupSource?.(new Error("MolSysViewer widget disposed while waiting for popup source"));
+    pendingPopupSource = null;
+    resolvePendingPopupSource = null;
+    rejectPendingPopupSource = null;
+    controllerPromise.then((c8) => {
+      try {
+        c8.dispose();
+        console.log("[MolSysViewer] Mol* controller disposed.");
+      } catch (e) {
+        console.error("[MolSysViewer] Error disposing plugin:", e);
+      }
+    });
+    popupMgr.dispose();
+    arrayNativeStream.dispose();
+  };
+}
+var index_default = { render };
 export {
   MolSysViewerController,
+  ProjectedTrajectoryControls,
+  RemoteFileControls,
+  RemoteInputAdapter,
+  RemoteWorkbench,
   bootDocsView,
   bootPopup,
+  bootRemoteBrowserClient,
+  bootRemoteRenderedClient,
+  bootRenderWorker,
   index_default as default,
-  needsRunningSession
+  needsRunningSession,
+  render
 };
 /*! Bundled license information:
 

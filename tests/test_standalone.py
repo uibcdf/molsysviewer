@@ -806,6 +806,323 @@ def test_qt_standalone_main_supports_no_exec(tmp_path, monkeypatch, capsys):
     _ = code
 
 
+def test_qt_cli_help_marks_remote_connect_experimental():
+    help_text = standalone_qt._build_arg_parser().format_help()
+
+    assert "experimental in MolSysViewer 1.0" in help_text
+
+
+def test_create_remote_qt_window_reuses_authenticated_session_page(monkeypatch):
+    class FakeSignal:
+        def __init__(self):
+            self._callbacks = []
+
+        def connect(self, callback):
+            self._callbacks.append(callback)
+
+        def emit(self, *args):
+            for callback in self._callbacks:
+                callback(*args)
+
+    class FakeAction:
+        def __init__(self, text, _parent=None):
+            self.text = text
+            self.shortcut = None
+            self.triggered = FakeSignal()
+
+        def setShortcut(self, shortcut):
+            self.shortcut = shortcut
+
+    class FakeMenu:
+        def __init__(self, title):
+            self.title = title
+            self.actions = []
+
+        def addAction(self, action):
+            self.actions.append(action)
+
+    class FakeMenuBar:
+        def __init__(self):
+            self.menus = []
+
+        def addMenu(self, title):
+            menu = FakeMenu(title)
+            self.menus.append(menu)
+            return menu
+
+    class FakeStatusBar:
+        def __init__(self):
+            self.messages = []
+
+        def showMessage(self, message):
+            self.messages.append(message)
+
+        def clearMessage(self):
+            self.messages.append("")
+
+    class FakeWindow:
+        def __init__(self):
+            self.title = None
+            self.size = None
+            self.central = None
+            self.status = FakeStatusBar()
+            self.menu_bar = FakeMenuBar()
+            self.closed = False
+            self.fullscreen = False
+            self.maximized = False
+
+        def setWindowTitle(self, title):
+            self.title = title
+
+        def resize(self, width, height):
+            self.size = (width, height)
+
+        def setCentralWidget(self, widget):
+            self.central = widget
+
+        def statusBar(self):
+            return self.status
+
+        def menuBar(self):
+            return self.menu_bar
+
+        def close(self):
+            self.closed = True
+
+        def isMaximized(self):
+            return self.maximized
+
+        def showFullScreen(self):
+            self.fullscreen = True
+
+        def showNormal(self):
+            self.fullscreen = False
+            self.maximized = False
+
+        def showMaximized(self):
+            self.fullscreen = False
+            self.maximized = True
+
+    class FakeProfile:
+        def __init__(self):
+            self.downloadRequested = FakeSignal()
+
+    class FakePage:
+        def __init__(self):
+            self.scripts = []
+            self._profile = FakeProfile()
+            self._settings = FakeSettings()
+            self.fullScreenRequested = FakeSignal()
+
+        def runJavaScript(self, script, callback=None):
+            self.scripts.append(script)
+            if callback is not None:
+                callback(self.result)
+
+        def profile(self):
+            return self._profile
+
+        def settings(self):
+            return self._settings
+
+        result = None
+
+    class FakeSettings:
+        class WebAttribute:
+            FullScreenSupportEnabled = "fullscreen-support"
+
+        def __init__(self):
+            self.attributes = {}
+
+        def setAttribute(self, attribute, enabled):
+            self.attributes[attribute] = enabled
+
+    class FakeWebView:
+        def __init__(self, parent):
+            self.parent = parent
+            self.url = None
+            self._page = FakePage()
+            self.reloaded = False
+            self.loadStarted = FakeSignal()
+            self.loadFinished = FakeSignal()
+
+        def setUrl(self, url):
+            self.url = url
+            self.loadStarted.emit()
+            self.loadFinished.emit(True)
+
+        def page(self):
+            return self._page
+
+        def reload(self):
+            self.reloaded = True
+
+    class FakeFileDialog:
+        selected = "/tmp/remote-view.png"
+
+        @classmethod
+        def getSaveFileName(cls, *_args):
+            return cls.selected, ""
+
+    class FakeTimer:
+        def __init__(self, parent):
+            self.parent = parent
+            self.interval = None
+            self.timeout = FakeSignal()
+            self.running = False
+
+        def setInterval(self, interval):
+            self.interval = interval
+
+        def start(self):
+            self.running = True
+
+        def stop(self):
+            self.running = False
+
+    fake_app = object()
+    monkeypatch.setattr(
+        standalone_qt,
+        "_import_qt",
+        lambda: {
+            "QApplication": object,
+            "QMainWindow": FakeWindow,
+            "QWebEngineView": FakeWebView,
+            "QUrl": lambda value: value,
+            "QAction": FakeAction,
+            "QFileDialog": FakeFileDialog,
+            "QTimer": FakeTimer,
+        },
+    )
+    monkeypatch.setattr(
+        standalone_qt, "_get_or_create_application", lambda _class, _argv: fake_app
+    )
+
+    url = "http://127.0.0.1:8765/session/client#token=secret"
+    runtime = standalone_qt.create_remote_qt_window(url, width=1200, height=800)
+
+    assert runtime["app"] is fake_app
+    assert runtime["session_url"] == url
+    assert runtime["webview"].url == url
+    assert runtime["window"].central is runtime["webview"]
+    assert runtime["window"].size == (1200, 800)
+    assert runtime["webview"]._page._settings.attributes == {
+        "fullscreen-support": True
+    }
+
+    class FakeFullScreenRequest:
+        def __init__(self, enabling):
+            self.enabling = enabling
+            self.accepted = False
+
+        def toggleOn(self):
+            return self.enabling
+
+        def accept(self):
+            self.accepted = True
+
+    enter_fullscreen = FakeFullScreenRequest(True)
+    runtime["webview"]._page.fullScreenRequested.emit(enter_fullscreen)
+    assert enter_fullscreen.accepted is True
+    assert runtime["window"].fullscreen is True
+    leave_fullscreen = FakeFullScreenRequest(False)
+    runtime["webview"]._page.fullScreenRequested.emit(leave_fullscreen)
+    assert leave_fullscreen.accepted is True
+    assert runtime["window"].fullscreen is False
+    assert runtime["window"].status.messages == [
+        "Connecting to remote MolSysViewer session…",
+        "Remote session loaded; negotiating connection…",
+    ]
+    timer = runtime["window"]._molsysviewer_remote_status_timer
+    assert timer.interval == 500
+    assert timer.running is True
+    runtime["webview"]._page.result = json.dumps(
+        {"state": "negotiating", "text": "Starting remote video…"}
+    )
+    timer.timeout.emit()
+    assert runtime["window"].status.messages[-1] == "Starting remote video…"
+    runtime["webview"]._page.result = json.dumps(
+        {"state": "ready", "text": "Connected"}
+    )
+    timer.timeout.emit()
+    assert runtime["window"].status.messages[-1] == ""
+    runtime["webview"].loadStarted.emit()
+    runtime["webview"].loadFinished.emit(False)
+    assert timer.running is False
+    assert runtime["window"].status.messages[-1] == (
+        "Could not load the remote MolSysViewer session."
+    )
+    assert [menu.title for menu in runtime["window"].menu_bar.menus] == [
+        "File", "View", "Export"
+    ]
+    file_menu, view_menu, export_menu = runtime["window"].menu_bar.menus
+    assert file_menu.actions[0].shortcut == "Ctrl+O"
+    file_menu.actions[0].triggered._callbacks[0]()
+    assert "data-molsysviewer-upload-button" in runtime["webview"]._page.scripts[-1]
+    view_menu.actions[0].triggered._callbacks[0]()
+    assert runtime["webview"].reloaded is True
+    export_menu.actions[0].triggered._callbacks[0]()
+    assert "data-molsysviewer-export-image" in runtime["webview"]._page.scripts[-1]
+
+    class FakeDownload:
+        def __init__(self):
+            self.isFinishedChanged = FakeSignal()
+            self.directory = None
+            self.filename = None
+            self.accepted = False
+
+        def suggestedFileName(self):
+            return "molsysviewer.png"
+
+        def setDownloadDirectory(self, value):
+            self.directory = value
+
+        def setDownloadFileName(self, value):
+            self.filename = value
+
+        def accept(self):
+            self.accepted = True
+
+        def cancel(self):
+            raise AssertionError("download should not be cancelled")
+
+        def isFinished(self):
+            return True
+
+    download = FakeDownload()
+    runtime["webview"]._page._profile.downloadRequested._callbacks[0](download)
+    assert download.directory == "/tmp"
+    assert download.filename == "remote-view.png"
+    assert download.accepted is True
+    download.isFinishedChanged._callbacks[0]()
+    assert runtime["window"].status.messages[-1] == "Downloaded: remote-view.png"
+
+
+@pytest.mark.parametrize("url", ["", "127.0.0.1/session/client", "file:///tmp/client"])
+def test_create_remote_qt_window_rejects_non_http_session_urls(url):
+    with pytest.raises(ValueError, match=r"HTTP\(S\)"):
+        standalone_qt.create_remote_qt_window(url)
+
+
+def test_qt_main_connects_remote_session_without_building_local_host(monkeypatch, capsys):
+    calls = []
+    monkeypatch.setattr(
+        standalone_qt,
+        "launch_remote_qt",
+        lambda url, **kwargs: calls.append((url, kwargs)) or {"session_url": url},
+    )
+
+    url = "https://viewer.example/session/client#token=secret"
+    assert qt_main(["--connect", url, "--no-exec"]) == 0
+    assert calls == [(url, {
+        "title": "MolSysViewer Qt Prototype",
+        "width": 1440,
+        "height": 960,
+        "exec_app": False,
+    })]
+    assert capsys.readouterr().out.strip() == url
+
+
 class _FakeUrlScheme:
     registered: dict[bytes, "_FakeUrlScheme"] = {}
 

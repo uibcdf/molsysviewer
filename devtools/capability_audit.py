@@ -30,7 +30,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-
 ROOT = Path(__file__).resolve().parents[1]
 DOCUMENT = ROOT / "devguide" / "capability_audit.md"
 
@@ -359,19 +358,31 @@ def _first_release_containing(path: str) -> str:
     """The first tag that contains the commit which added `path`.
 
     Read from git because a hand-written 'available since' is the column most likely to be
-    wrong and least likely to be noticed.
+    wrong and least likely to be noticed. Search every retained history: this repository
+    has paths whose pre-0.20 and current lineages contain distinct add commits, while the
+    release tags that preserve the older lineage remain authoritative for ``Since``.
     """
     adding = subprocess.run(
-        ["git", "log", "--diff-filter=A", "--format=%H", "--", path],
+        ["git", "log", "--all", "--diff-filter=A", "--format=%H", "--", path],
         cwd=ROOT, capture_output=True, text=True, check=False,
     ).stdout.split()
     if not adding:
         return "unknown"
-    tags = subprocess.run(
-        ["git", "tag", "--contains", adding[-1], "--sort=creatordate"],
+
+    containing = set()
+    for commit in adding:
+        containing.update(subprocess.run(
+            ["git", "tag", "--contains", commit],
+            cwd=ROOT, capture_output=True, text=True, check=False,
+        ).stdout.split())
+    if not containing:
+        return "unreleased"
+
+    tags_by_date = subprocess.run(
+        ["git", "tag", "--sort=creatordate"],
         cwd=ROOT, capture_output=True, text=True, check=False,
     ).stdout.split()
-    return tags[0] if tags else "unreleased"
+    return next((tag for tag in tags_by_date if tag in containing), "unreleased")
 
 
 def _api_evidence(capability: Capability, inventory: dict[str, Any]) -> tuple[int, int]:

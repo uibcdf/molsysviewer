@@ -16,6 +16,9 @@ authority.
 | Canonical canvas, panel, embedded and static projection algorithms | `PopupSnapshotMixin` | popup request, ready and `ExportMixin` | pure result per request; no retained snapshot copy |
 | Static-export entrypoint | `ExportMixin` delegates to `PopupSnapshotMixin._build_static_export_snapshot` | HTML/export consumers | one projection build |
 | Widget envelope identity and command deduplication | `WidgetRuntimeRouter` | AnyWidget connector and `MolSysView` inbound seam | widget session |
+| Remote endpoint registration, placement capabilities and accepted-command deduplication | one `SessionRuntimeRouter` | authenticated remote connectors and Python authority | immutable remote viewer session |
+| Remote control/data-plane separation and connector callbacks | one `RemoteViewChannel` | `MolSysView` transport seam and future session service | remote connector close |
+| Chromium child process, ephemeral profile, diagnostic channel and bounded restart allowance | one `ManagedRenderWorker` | future session service / worker health projection | render-worker attachment |
 | Browser stream assembly and latest accepted generation | one `ArrayNativeStreamReceiver` per rendering endpoint | viewer controller / popup runtime | endpoint runtime |
 | Authenticated popup endpoint identity and targeted browser delivery | popup host/router | popup windows | authenticated endpoint close |
 | Qt ordered message queue, in-flight entry and payload references | `QtMessageBridge` | `QtViewChannel` | Qt bridge generation / window close |
@@ -33,6 +36,13 @@ authority.
   entrypoint only; the canonical constructor lives in `popup_snapshot.py`.
 - Qt deliberately does not share the AnyWidget transfer manager. Its ordered
   queue and payload-reference scheme satisfy S8 at a different connector seam.
+- A remote connector does not turn `MolSysView` into a network server.
+  `SessionRuntimeRouter` owns remote identities, placement and deduplication;
+  `RemoteViewChannel` adapts only accepted domain messages at the existing
+  transport seam and keeps binary/data-plane traffic outside envelopes.
+- `ManagedRenderWorker` is the sole owner of its child process and temporary
+  browser profile. DevTools is bound to loopback and is only a private health
+  channel; it never becomes a client protocol or another scene authority.
 
 ## Structural guards
 

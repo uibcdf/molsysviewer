@@ -39,15 +39,29 @@ def _point_quantity(content: Mapping[str, Any]):
 
 
 def toggle_background(view: Any, content: Mapping[str, Any]) -> None:
-    view.scene.set_background(content.get("mode", "dark"))
+    if "mode" not in content:
+        view._send({"op": "toggle_background"})
+        return
+    view.scene.set_background(content["mode"])
+
+
+def reset_view(view: Any, content: Mapping[str, Any]) -> None:
+    del content
+    view.camera.reset(skip_digestion=True)
 
 
 def toggle_spin(view: Any, content: Mapping[str, Any]) -> None:
-    view.scene.spin(enabled=bool(content.get("enabled", True)))
+    if "enabled" not in content:
+        view._send({"op": "toggle_spin"})
+        return
+    view.scene.spin(enabled=bool(content["enabled"]))
 
 
 def toggle_swing(view: Any, content: Mapping[str, Any]) -> None:
-    view.scene.swing(enabled=bool(content.get("enabled", True)))
+    if "enabled" not in content:
+        view._send({"op": "toggle_swing"})
+        return
+    view.scene.swing(enabled=bool(content["enabled"]))
 
 
 def set_camera_mode(view: Any, content: Mapping[str, Any]) -> None:
@@ -140,10 +154,19 @@ def set_figure_spec(view: Any, content: Mapping[str, Any]) -> None:
 
 def export_html(view: Any, content: Mapping[str, Any]) -> None:
     del content
-    view.export.html("molsysviewer_export.html")
+    if callable(getattr(view.widget, "publish_download", None)):
+        view._request_remote_html_download()
+    else:
+        view.export.html("molsysviewer_export.html")
+
+
+def download_image(view: Any, content: Mapping[str, Any]) -> None:
+    del content
+    view._request_remote_image_download()
 
 
 HANDLERS = {
+    "reset_view": reset_view,
     "toggle_background": toggle_background,
     "toggle_spin": toggle_spin,
     "toggle_swing": toggle_swing,
@@ -156,5 +179,6 @@ HANDLERS = {
     "set_section_invert": set_section_invert,
     "remove_section": remove_section,
     "set_figure_spec": set_figure_spec,
+    "download_image": download_image,
     "export_html": export_html,
 }

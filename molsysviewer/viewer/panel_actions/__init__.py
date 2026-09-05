@@ -7,6 +7,7 @@ from .addons import HANDLERS as ADDON_HANDLERS
 from .regions import HANDLERS as REGION_HANDLERS
 from .scene_objects import HANDLERS as SCENE_OBJECT_HANDLERS
 from .selections import HANDLERS as SELECTION_HANDLERS
+from .trajectory import HANDLERS as TRAJECTORY_HANDLERS
 from .viewport import HANDLERS as VIEWPORT_HANDLERS
 from .whole import HANDLERS as WHOLE_HANDLERS
 
@@ -22,6 +23,7 @@ def _build_handlers() -> dict[str, PanelActionHandler]:
         SCENE_OBJECT_HANDLERS,
         WHOLE_HANDLERS,
         VIEWPORT_HANDLERS,
+        TRAJECTORY_HANDLERS,
     ):
         duplicates = handlers.keys() & domain.keys()
         if duplicates:
@@ -35,8 +37,6 @@ HANDLERS = _build_handlers()
 # These names belong to the closed TypeScript PanelAction vocabulary but are
 # intentionally consumed by the browser before the Python dispatch seam.
 FRONTEND_LOCAL_PANEL_ACTIONS = frozenset({
-    "download_image",
-    "reset_view",
     "undo_active_selection",
     "redo_active_selection",
     "begin_scene_history_coalescing",
@@ -53,8 +53,14 @@ CONTEXT_ONLY_ACTIONS = frozenset({
     "addon_register_module",
     "addon_rescan",
     "hide_measurement",
+    "focus_target",
+    "focus_selection",
+    "clear_selection",
     "preview_selection_query",
     "remove_selection",
+    "set_trajectory_frame",
+    "set_trajectory_playback",
+    "step_trajectory",
 })
 
 

@@ -18,6 +18,7 @@ import molsysviewer as molsysviewer_package
 
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED_RUNTIME_DEPENDENCIES = {
+    "aiohttp",
     "anywidget",
     "argdigest",
     "depdigest",
@@ -29,10 +30,13 @@ REQUIRED_RUNTIME_DEPENDENCIES = {
     "traitlets",
 }
 REQUIRED_RUNTIME_RESOURCES = {
+    "molsysviewer/VARELA_ROUND_OFL.txt",
+    "molsysviewer/remote_protocol.json",
     "molsysviewer/runtime_actions.json",
     "molsysviewer/viewer.js",
 }
 REQUIRED_RUNTIME_VERSION_FLOORS = {
+    "aiohttp": "3.10",
     "argdigest": "0.12.1",
     "molsysmt": "0.22.0",
 }
@@ -76,7 +80,12 @@ def test_distribution_manifests_name_runtime_dependencies_and_resources():
     assert REQUIRED_RUNTIME_DEPENDENCIES <= wheel_dependencies
 
     package_data = set(pyproject["tool"]["setuptools"]["package-data"]["molsysviewer"])
-    assert {"runtime_actions.json", "viewer.js"} <= package_data
+    assert {
+        "remote_protocol.json",
+        "runtime_actions.json",
+        "viewer.js",
+        "VARELA_ROUND_OFL.txt",
+    } <= package_data
 
     recipe = (ROOT / "devtools" / "conda-build" / "meta.yaml").read_text(encoding="utf-8")
     assert REQUIRED_RUNTIME_DEPENDENCIES <= _conda_run_dependencies(recipe)

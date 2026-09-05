@@ -101,6 +101,11 @@ export type AddonContextItemSummary = {
     payload?: any;
 };
 
+export type ContextMenuOptions = {
+    /** Hide actions that the hosting surface cannot execute truthfully. */
+    allowedActions?: ReadonlySet<ContextMenuAction>;
+};
+
 function targetTitle(target: ContextMenuTarget): string {
     if (target.kind === "empty") return "Canvas";
     if (target.kind === "shape") return target.shape_name?.trim() || target.tag?.trim() || "Shape";
@@ -162,6 +167,7 @@ export class ViewerContextMenu {
         private readonly onAction?: (action: ContextMenuAction, target: ContextMenuTarget, details?: ContextActionDetails) => void,
         private readonly onClose?: () => void,
         private readonly getCameraDirection?: () => [number, number, number],
+        private readonly options: ContextMenuOptions = {},
     ) {
         this.root = document.createElement("div");
         this.root.setAttribute("data-molsysviewer-context-menu", "true");
@@ -288,7 +294,9 @@ export class ViewerContextMenu {
 
             this.scrollEl.appendChild(this.makeActionButton("Reset View", "reset_view"));
             this.scrollEl.appendChild(this.makeActionButton(
-                isDark ? "Toggle Background (Dark)" : "Toggle Background (Light)",
+                isDark === undefined
+                    ? "Toggle Background"
+                    : isDark ? "Toggle Background (Dark)" : "Toggle Background (Light)",
                 "toggle_background"
             ));
             this.scrollEl.appendChild(this.makeActionButton(
@@ -324,31 +332,32 @@ export class ViewerContextMenu {
                 "open_workbench"
             ));
 
-            // Divider for Viewer Modes
-            const divModes = document.createElement("div");
-            Object.assign(divModes.style, {
-                marginTop: "6px",
-                paddingTop: "6px",
-                borderTop: "1px solid rgba(255,255,255,0.10)",
-            });
-            this.scrollEl.appendChild(divModes);
+            if (this.isActionAllowed("set_viewer_mode")) {
+                const divModes = document.createElement("div");
+                Object.assign(divModes.style, {
+                    marginTop: "6px",
+                    paddingTop: "6px",
+                    borderTop: "1px solid rgba(255,255,255,0.10)",
+                });
+                this.scrollEl.appendChild(divModes);
 
-            const modeHeader = document.createElement("div");
-            modeHeader.textContent = "Viewer Mode";
-            Object.assign(modeHeader.style, {
-                padding: "2px 8px 4px 8px",
-                opacity: "0.5",
-                fontSize: "11px",
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
-                fontWeight: "600",
-            });
-            this.scrollEl.appendChild(modeHeader);
+                const modeHeader = document.createElement("div");
+                modeHeader.textContent = "Viewer Mode";
+                Object.assign(modeHeader.style, {
+                    padding: "2px 8px 4px 8px",
+                    opacity: "0.5",
+                    fontSize: "11px",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    fontWeight: "600",
+                });
+                this.scrollEl.appendChild(modeHeader);
 
-            const modes = ["classic", "integrated", "cinema"];
-            for (const mode of modes) {
-                const label = mode + (activeMode === mode ? " (Active ✓)" : "");
-                this.scrollEl.appendChild(this.makeActionButton(label, "set_viewer_mode", { text: mode }));
+                const modes = ["classic", "integrated", "cinema"];
+                for (const mode of modes) {
+                    const label = mode + (activeMode === mode ? " (Active ✓)" : "");
+                    this.scrollEl.appendChild(this.makeActionButton(label, "set_viewer_mode", { text: mode }));
+                }
             }
         }
 
@@ -426,7 +435,9 @@ export class ViewerContextMenu {
             this.scrollEl.appendChild(section);
         }
 
-        const matchingAddonActions = this.currentAddonActions.filter((item) => item.target_kinds.includes(target.kind));
+        const matchingAddonActions = this.isActionAllowed("addon_context_action")
+            ? this.currentAddonActions.filter((item) => item.target_kinds.includes(target.kind))
+            : [];
         if (matchingAddonActions.length > 0) {
             const section = document.createElement("div");
             Object.assign(section.style, {
@@ -453,7 +464,7 @@ export class ViewerContextMenu {
         // Dynamic, selection-driven add-on items: one section per add-on, with a
         // sub-heading per `group` (e.g. "Selección actual"). Shown regardless of
         // target.kind unless the item declares target_kinds.
-        const matchingItems = this.currentAddonItems.filter(
+        const matchingItems = (this.isActionAllowed("addon_context_action") ? this.currentAddonItems : []).filter(
             (it) => !it.target_kinds || it.target_kinds.length === 0 || it.target_kinds.includes(target.kind),
         );
         if (matchingItems.length > 0) {
@@ -558,7 +569,7 @@ export class ViewerContextMenu {
         button.type = "button";
         button.textContent = label;
         Object.assign(button.style, {
-            display: "block",
+            display: this.isActionAllowed(action) ? "block" : "none",
             width: "100%",
             padding: "8px 10px",
             margin: "0",
@@ -604,6 +615,10 @@ export class ViewerContextMenu {
             this.close();
         });
         return button;
+    }
+
+    private isActionAllowed(action: ContextMenuAction): boolean {
+        return this.options.allowedActions?.has(action) !== false;
     }
 
     private appendSelectionExpanders(section: HTMLDivElement): void {

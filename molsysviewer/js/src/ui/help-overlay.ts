@@ -1,5 +1,30 @@
 type HelpRow = [string, string];
 
+export interface HelpOverlaySections {
+    mouse: HelpRow[];
+    keyboard: HelpRow[];
+}
+
+const DEFAULT_SECTIONS: HelpOverlaySections = {
+    mouse: [
+        ["Left drag", "Rotate"],
+        ["Right drag", "Pan"],
+        ["Scroll", "Zoom"],
+        ["Left click", "Select element"],
+        ["Shift + Click", "Add to selection"],
+        ["Shift + Alt + Click", "Range selection (same chain)"],
+        ["Double click", "Focus on element"],
+        ["Right click", "Context menu"],
+    ],
+    keyboard: [
+        ["N", "Open / close Studio"],
+        ["W", "Open / close Workbench"],
+        ["V", "Toggle canvas visibility"],
+        ["H", "Toggle this help"],
+        ["Esc", "Close panel / cancel"],
+    ],
+};
+
 function injectHelpStyles(): void {
     const styleId = "molsysviewer-help-styles";
     if (document.getElementById(styleId)) return;
@@ -138,7 +163,10 @@ export class HelpOverlay {
     private visible = false;
     private releaseKeyHandler?: () => void;
 
-    constructor(private readonly host: HTMLElement) {
+    constructor(
+        private readonly host: HTMLElement,
+        sections: HelpOverlaySections = DEFAULT_SECTIONS,
+    ) {
         injectHelpStyles();
 
         this.root = document.createElement("div");
@@ -178,24 +206,8 @@ export class HelpOverlay {
         const grid = document.createElement("div");
         grid.className = "molsysviewer-help-grid";
 
-        grid.appendChild(makeSection("Mouse", [
-            ["Left drag", "Rotate"],
-            ["Right drag", "Pan"],
-            ["Scroll", "Zoom"],
-            ["Left click", "Select element"],
-            ["Shift + Click", "Add to selection"],
-            ["Shift + Alt + Click", "Range selection (same chain)"],
-            ["Double click", "Focus on element"],
-            ["Right click", "Context menu"],
-        ]));
-
-        grid.appendChild(makeSection("Keyboard", [
-            ["N", "Open / close Studio"],
-            ["W", "Open / close Workbench"],
-            ["V", "Toggle canvas visibility"],
-            ["H", "Toggle this help"],
-            ["Esc", "Close panel / cancel"],
-        ]));
+        grid.appendChild(makeSection("Mouse", sections.mouse));
+        grid.appendChild(makeSection("Keyboard", sections.keyboard));
 
         card.appendChild(grid);
 

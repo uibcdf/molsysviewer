@@ -34,6 +34,7 @@ requirements:
     # failure `test_the_published_python_matrix_is_the_one_we_actually_test` was written
     # about. Raise the ceiling when the test matrix gains the version, not before.
     - python >=3.11,<3.14
+    - aiohttp >=3.10
     - anywidget >=0.9.15
     - argdigest >=0.12.1
     - depdigest

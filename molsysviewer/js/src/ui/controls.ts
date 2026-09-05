@@ -1,6 +1,14 @@
 import { MolSysViewerController } from "../managers/viewer-controller";
 import { ViewerMessage } from "../messages/viewer-messages";
 import { HelpOverlay } from "./help-overlay";
+import {
+    makeViewportIconButton,
+    VIEWPORT_ICON_EXIT_FULLSCREEN,
+    VIEWPORT_ICON_FULLSCREEN,
+    VIEWPORT_ICON_HELP,
+    VIEWPORT_ICON_PANEL,
+    VIEWPORT_ICON_POPUP,
+} from "./viewport-icon-button";
 
 
 
@@ -432,6 +440,7 @@ export const buildControls = (
 
 
     const traj = document.createElement("div");
+    traj.setAttribute("data-molsysviewer-trajectory-controls", "true");
     traj.style.display = "flex";
     traj.style.alignItems = "center";
     traj.style.gap = "6px";
@@ -482,6 +491,7 @@ export const buildControls = (
                 });
             }
           });
+    btnPlayPause.setAttribute("data-molsysviewer-trajectory-playback", "play");
     if (isMinimal) {
         btnPrev = makeMinimalTrajButton(`<rect x="3" y="3" width="2" height="10" fill="currentColor"/><polygon points="12,3 6,8 12,13" fill="currentColor"/>`, "Previous Step", () => {
             c.stepTrajectory(-currentStep);
@@ -507,8 +517,11 @@ export const buildControls = (
             sendSync({ op: "step_trajectory", by: currentStep });
         });
     }
+    btnPrev?.setAttribute("data-molsysviewer-trajectory-step", "previous");
+    btnNext?.setAttribute("data-molsysviewer-trajectory-step", "next");
 
     const slider = document.createElement("input");
+    slider.setAttribute("data-molsysviewer-trajectory-frame", "true");
     slider.type = "range";
     slider.min = "0";
     slider.max = "0";
@@ -542,6 +555,7 @@ export const buildControls = (
     updateSliderBg();
 
     const label = document.createElement("span");
+    label.setAttribute("data-molsysviewer-trajectory-label", "true");
     if (isMinimal) {
         label.style.color = "rgba(255, 255, 255, 0.85)";
         label.style.fontSize = "11px";
@@ -593,6 +607,7 @@ export const buildControls = (
             currentStep = n;
             const state = c.trajectory.getTrajectoryState();
             if (state.isPlaying) {
+                btnPlayPause.setAttribute("data-molsysviewer-trajectory-playback", "stop");
                 c.playTrajectory({ fps: currentFps, step: currentStep });
             }
         }, "Step size", isMinimal);
@@ -673,54 +688,16 @@ export const buildControls = (
     let fullscreenBtn: HTMLButtonElement | null = null;
 
     if (controlsMode === "minimal" && overlay) {
-        const ICON_PANEL = `<rect x="2" y="2" width="12" height="12" rx="1.5"/><line x1="5.5" y1="2.5" x2="5.5" y2="13.5"/>`;
-        const ICON_FULLSCREEN = `<polyline points="2,5 2,2 5,2"/><polyline points="11,2 14,2 14,5"/><polyline points="14,11 14,14 11,14"/><polyline points="5,14 2,14 2,11"/>`;
-        const ICON_POPUP = `<line x1="5.5" y1="10.5" x2="11.5" y2="4.5"/><polyline points="8,4 12,4 12,8"/><polyline points="5.5,7 3,7 3,13 9,13 9,10.5"/>`;
-
         const mkIcon = (svgInner: string, title: string, handler: () => void) => {
-            const btn = document.createElement("button");
-            btn.type = "button";
-            btn.title = title;
-            btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${svgInner}</svg>`;
-            Object.assign(btn.style, {
-                width: "28px",
-                height: "28px",
-                minWidth: "28px",
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                padding: "0",
-                border: "1px solid rgba(255, 255, 255, 0.15)",
-                borderRadius: "6px",
-                background: "rgba(18, 18, 22, 0.75)",
-                color: "rgba(255, 255, 255, 0.75)",
-                cursor: "default",
-                userSelect: "none",
-                pointerEvents: "auto",
-                boxSizing: "border-box",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
-                transition: "all 120ms ease",
-            });
-            btn.addEventListener("mouseenter", () => {
-                btn.style.background = "rgba(18, 18, 22, 0.95)";
-                btn.style.borderColor = "rgba(255, 255, 255, 0.35)";
-                btn.style.color = "rgba(255, 255, 255, 0.98)";
-            });
-            btn.addEventListener("mouseleave", () => {
-                btn.style.background = "rgba(18, 18, 22, 0.75)";
-                btn.style.borderColor = "rgba(255, 255, 255, 0.15)";
-                btn.style.color = "rgba(255, 255, 255, 0.75)";
-            });
-            btn.addEventListener("click", handler);
+            const btn = makeViewportIconButton(svgInner, title, handler);
             overlay!.appendChild(btn);
             return btn;
         };
 
-        mkIcon(ICON_PANEL, "Panel mode (N / W)", () => c.togglePanelMode());
-        fullscreenBtn = mkIcon(ICON_FULLSCREEN, "Fullscreen", () => c.toggleFullscreen());
-        if (onPopClick) mkIcon(ICON_POPUP, "Open popup", onPopClick);
-        const ICON_HELP = `<circle cx="8" cy="8" r="6"/><path d="M6.2,6.5a1.9,1.9,0,0,1,3.8,0c0,1.9-1.9,1.9-1.9,3" stroke-linecap="round" stroke-linejoin="round"/><line x1="8" y1="12.8" x2="8" y2="12.8" stroke-width="2" stroke-linecap="round"/>`;
-        mkIcon(ICON_HELP, "Help (H)", () => helpOverlay.toggle());
+        mkIcon(VIEWPORT_ICON_PANEL, "Panel mode (N / W)", () => c.togglePanelMode());
+        fullscreenBtn = mkIcon(VIEWPORT_ICON_FULLSCREEN, "Fullscreen", () => c.toggleFullscreen());
+        if (onPopClick) mkIcon(VIEWPORT_ICON_POPUP, "Open popup", onPopClick);
+        mkIcon(VIEWPORT_ICON_HELP, "Help (H)", () => helpOverlay.toggle());
     } else if (overlay) {
         const mk = (label: string, handler: () => void) => {
             const b = makeButton(label, handler);
@@ -785,6 +762,7 @@ export const buildControls = (
                 }
                 btnPlayPause.title = "Pause Trajectory";
             } else {
+                btnPlayPause.setAttribute("data-molsysviewer-trajectory-playback", "play");
                 if (isMinimal) {
                     btnPlayPause.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;"><polygon points="5,3 13,8 5,13" fill="currentColor"/></svg>`;
                 } else {
@@ -872,15 +850,13 @@ export const buildControls = (
         }
     };
 
-    const ICON_EXIT_FULLSCREEN = `<polyline points="5,2 5,5 2,5"/><polyline points="11,2 11,5 14,5"/><polyline points="14,11 11,11 11,14"/><polyline points="2,11 5,11 5,14"/>`;
-
     const updateFullscreenButtonState = () => {
         const isFullscreen = !!document.fullscreenElement;
         if (fullscreenBtn) {
             if (controlsMode === "minimal") {
                 const svg = fullscreenBtn.querySelector("svg");
                 if (svg) {
-                    const path = isFullscreen ? ICON_EXIT_FULLSCREEN : `<polyline points="2,5 2,2 5,2"/><polyline points="11,2 14,2 14,5"/><polyline points="14,11 14,14 11,14"/><polyline points="5,14 2,14 2,11"/>`;
+                    const path = isFullscreen ? VIEWPORT_ICON_EXIT_FULLSCREEN : VIEWPORT_ICON_FULLSCREEN;
                     svg.innerHTML = path;
                 }
                 fullscreenBtn.title = isFullscreen ? "Exit Fullscreen" : "Fullscreen";
