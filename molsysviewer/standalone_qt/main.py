@@ -5,14 +5,15 @@ import sys
 from typing import Any, Sequence
 
 from ..demo import demo
-from .application import launch_remote_qt, launch_standalone_qt0
 
 
 def _get_helper(name: str) -> Any:
     m = sys.modules.get("molsysviewer.standalone_qt")
     if m is not None and hasattr(m, name):
         return getattr(m, name)
-    return globals()[name]
+    from . import application
+
+    return getattr(application, name)
 
 
 def _build_arg_parser() -> argparse.ArgumentParser:

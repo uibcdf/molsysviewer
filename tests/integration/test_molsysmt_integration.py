@@ -20,7 +20,11 @@ def test_load_string_uses_molsysmt():
     view.load(PDB_TEXT)
     assert view._molsys is not None
     expected_atoms = msm.get(view._molsys, element="atom", n_atoms=True)
-    assert any(msg.get("op") == "load_molsys_payload" for msg in view._test_message_log)
+    payloads = [msg for msg in view._test_message_log if msg.get("op") == "load_molsys_payload"]
+    assert payloads
+    # The count was computed and never checked until 2026-09-04, so the test asserted that
+    # a payload was sent and nothing about what was in it.
+    assert len(payloads[-1]["payload"]["atoms"]["atom_name"]) == expected_atoms
 
 
 def test_load_molsys_payload_or_direct_json_fallback():
@@ -34,3 +38,6 @@ def test_load_molsys_payload_or_direct_json_fallback():
     expected_atoms = msm.get(view._molsys, element="atom", n_atoms=True)
     ops = {msg.get("op") for msg in view._test_message_log}
     assert ops & {"load_molsys_payload", "load_structure_from_string"}
+    sent = [msg for msg in view._test_message_log if msg.get("op") == "load_molsys_payload"]
+    if sent:  # the fallback path sends a string instead, and carries no atom table
+        assert len(sent[-1]["payload"]["atoms"]["atom_name"]) == expected_atoms

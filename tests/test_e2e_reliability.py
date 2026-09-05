@@ -2,7 +2,6 @@ import json
 import re
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 JS_ROOT = ROOT / "molsysviewer" / "js"
 E2E_ROOT = JS_ROOT / "tests" / "e2e"
@@ -44,7 +43,14 @@ def test_e2e_runner_inventory_matches_every_scientific_suite():
     # 32-34 since 2026-09-04: the two remote rendering placements and the
     # normalized-input adapter. They share the normal runner/browser; only the
     # managed server-render worker owns its separate hardware-render process.
-    assert len(expected) == 34
+    # 35-36 since 2026-09-05: `trajectory-plot`, the first browser observation of a
+    # capability the audit had derived `contract-tested` for and nothing else. It
+    # asserts the card, one polyline per series with a point per frame, and the
+    # labels in the document (uibcdf/molsysviewer#65).
+    # `movie-playback` does the same for playback. It counts
+    # *distinct* camera positions, because a runtime that jumped straight to the
+    # last keyframe would still end in the right place and still report done.
+    assert len(expected) == 36
     assert declared == expected
     build_command = package["scripts"]["build:e2e:all"]
     compiled = set(re.findall(r"tests/e2e/([^ ]+)\.e2e\.ts", build_command))

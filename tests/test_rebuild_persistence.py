@@ -1,6 +1,5 @@
 from __future__ import annotations
 import pytest
-import numpy as np
 
 pytest.importorskip("molsysmt")
 import molsysmt as msm

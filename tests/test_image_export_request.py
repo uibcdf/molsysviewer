@@ -118,7 +118,6 @@ def test_export_image_forwards_preset(monkeypatch, tmp_path: Path):
 
 def test_export_figure_uses_figure_defaults(monkeypatch, tmp_path: Path):
     view = MolSysView(debug_js=True)
-    fake_png = "data:image/png;base64,iVBORw0KGgo="
     calls = []
 
     def fake_export_image(output_filename, **kwargs):

@@ -1,12 +1,12 @@
 ---
 summary: Four capabilities declare an evidence level nothing has observed, and the release gate cannot tell.
 issue: uibcdf/molsysviewer#65
-status: open
+status: resolved
 opened: 2026-09-01
-closed:
+closed: 2026-09-05
 verification: measured
 area: [tests, process]
-guard:
+guard: tests/test_capability_audit.py::test_a_stable_capability_has_earned_the_label, tests/test_capability_audit.py::test_the_undrawable_reasons_reach_the_reader
 normative:
 blocked_by: []
 supersedes: []
@@ -148,3 +148,45 @@ question about what `save_state` promises. Answering that question may change a 
 
 Measured 2026-09-01 on the shared MolSysSuite development host, Linux, Python 3.13.14,
 MolSysViewer at `d082b245`-era `main` (`0.20.1+66`), 30 E2E suites present.
+
+## Resolution
+
+**Closed 2026-09-05.** All four criteria, and one of them was not what it looked like.
+
+**1. The two E2E exist and assert what appeared.** `trajectory-plot.e2e.ts` checks the card
+by tag, one `<polyline>` per series with a point per frame, the labels in the document, and
+that hiding it removes the card rather than leaving a stale one. `movie-playback.e2e.ts`
+checks that the camera passes through *intermediate* positions, lands exactly on the last
+keyframe, and stops short when interrupted. Both mutation-verified: ignoring
+`set_trajectory_plot` times out waiting for the card; jumping straight to the last keyframe
+reports "saw 2" positions; ignoring `stop_movie` leaves the camera on the final keyframe.
+
+Two things only a browser could have told us, both found while writing them:
+
+- **Mol\* re-frames the scene after a load, asynchronously, and overwrites whatever the
+  movie has set.** The first version read that auto-focus position and concluded playback
+  moved nothing. The suite now waits for the camera to settle before touching it.
+- **`applyState` dispatches the camera write with `void`,** so one already-in-flight frame
+  lands after `stop_movie` cancels the rAF — about 3% of the distance still to travel. The
+  assertion is proportional rather than exact, and says why.
+
+A near miss worth recording: the first draft asserted the camera "left the start" and "was
+not yet at the end", both of which a *stationary* camera satisfies. Counting distinct
+positions is what separates playing from arriving.
+
+**2. This was the criterion that was actually unmet, and not visibly.** `stable_without_drawing`
+already existed and was filled for both rows — and the generator **never rendered it**. The
+reason lived in `devtools/capability_audit.py`, which a reader of the audit does not open,
+so the claim still looked inherited in the only place it is published. The document now has
+a *Declared `stable` without drawing anything* section, guarded by
+`test_the_undrawable_reasons_reach_the_reader`, which fails if the generator stops emitting
+the reasons.
+
+**3 and 4.** `test_a_stable_capability_has_earned_the_label` holds the rule, and the release
+gate's first step is the full Python suite, so the gate fails on it. Mutation-verified:
+removing a row's `stable_without_drawing` takes the suite from 189 passed to 3 failed.
+
+**A test that failed for having been right.** `test_the_document_names_what_nothing_has_watched_draw`
+listed the four unobserved capabilities by name, so earning `browser-observed` broke it. It
+derives the list from the audit now: what must hold is that whatever currently lacks the
+label is named, not that a particular four still lack it.

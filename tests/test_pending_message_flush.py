@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 
-from molsysviewer import MolSysView
 from molsysviewer import pyunitwizard as puw
 from molsysviewer.demo import demo
 

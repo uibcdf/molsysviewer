@@ -30,7 +30,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-
 ROOT = Path(__file__).resolve().parents[1]
 DOCUMENT = ROOT / "devguide" / "capability_audit.md"
 
@@ -136,7 +135,7 @@ CAPABILITIES: tuple[Capability, ...] = (
     ),
     Capability(
         name="Selections and active selection",
-        api=("view.selections.", "view.active_selection.", "view.select"),
+        api=("view.selections.", "view.active_selection."),
         anchor="molsysviewer/selections.py",
         provenance=MOLSYSMT,
         docs="docs/content/user/scene_management/selections.md",
@@ -201,8 +200,10 @@ CAPABILITIES: tuple[Capability, ...] = (
         provenance=PYTHON,
         docs="docs/content/user/overlays/trajectory_plot.md",
         unit=("test_trajectory_plot.py", "test_trajectory_plot_series.py"),
+        e2e=("trajectory-plot",),
         status="experimental",
-        note="No E2E suite opens it in a browser.",
+        note="Observed drawing since 2026-09-05: the card, one polyline per series with "
+             "a point per frame, and the labels the caller asked for.",
     ),
     Capability(
         name="Movie",
@@ -211,8 +212,12 @@ CAPABILITIES: tuple[Capability, ...] = (
         provenance=PYTHON,
         docs="docs/content/user/movie/export.md",
         unit=("test_movie.py",),
+        e2e=("movie-playback",),
         status="experimental",
-        note="Export depends on an external encoder and is not exercised in CI.",
+        note="Playback observed drawing since 2026-09-05: the camera passes through "
+             "intermediate positions, lands on the last keyframe, and stops short when "
+             "interrupted. Export stays out -- it depends on an external encoder and is "
+             "not exercised in CI.",
     ),
     Capability(
         name="Camera",
@@ -316,7 +321,12 @@ CAPABILITIES: tuple[Capability, ...] = (
     ),
     Capability(
         name="MolSysMT integration",
-        api=("view.get", "view.convert", "view.extract", "view.whole.get",
+        # `view.get`, `view.select` and `view.convert` were here until 2026-09-04 and had
+        # not existed since the 0.22 API simplification removed them. `view.convert`
+        # matched nothing; `view.get` was worse -- prefix matching absorbed ten unrelated
+        # `view.get_*` event accessors into a row whose provenance is MolSysMT's
+        # (uibcdf/molsysviewer#79).
+        api=("view.extract", "view.whole.get",
              "view.whole.convert", "view.regions[…].get", "view.regions[…].convert"),
         anchor="molsysviewer/viewer/molsysmt_interface.py",
         provenance=MOLSYSMT,
@@ -348,19 +358,31 @@ def _first_release_containing(path: str) -> str:
     """The first tag that contains the commit which added `path`.
 
     Read from git because a hand-written 'available since' is the column most likely to be
-    wrong and least likely to be noticed.
+    wrong and least likely to be noticed. Search every retained history: this repository
+    has paths whose pre-0.20 and current lineages contain distinct add commits, while the
+    release tags that preserve the older lineage remain authoritative for ``Since``.
     """
     adding = subprocess.run(
-        ["git", "log", "--diff-filter=A", "--format=%H", "--", path],
+        ["git", "log", "--all", "--diff-filter=A", "--format=%H", "--", path],
         cwd=ROOT, capture_output=True, text=True, check=False,
     ).stdout.split()
     if not adding:
         return "unknown"
-    tags = subprocess.run(
-        ["git", "tag", "--contains", adding[-1], "--sort=creatordate"],
+
+    containing = set()
+    for commit in adding:
+        containing.update(subprocess.run(
+            ["git", "tag", "--contains", commit],
+            cwd=ROOT, capture_output=True, text=True, check=False,
+        ).stdout.split())
+    if not containing:
+        return "unreleased"
+
+    tags_by_date = subprocess.run(
+        ["git", "tag", "--sort=creatordate"],
         cwd=ROOT, capture_output=True, text=True, check=False,
     ).stdout.split()
-    return tags[0] if tags else "unreleased"
+    return next((tag for tag in tags_by_date if tag in containing), "unreleased")
 
 
 def _api_evidence(capability: Capability, inventory: dict[str, Any]) -> tuple[int, int]:
@@ -485,6 +507,25 @@ def _markdown(audit: dict[str, Any]) -> str:
             "",
             _experimental_sentence(audit, unobserved),
         ]
+
+    # A capability that draws nothing can never earn `browser-observed`, and saying so
+    # here is the point of `uibcdf/molsysviewer#65`: the reason was written in
+    # `devtools/capability_audit.py` where a reader of this document never meets it,
+    # which left the claim looking inherited rather than chosen.
+    undrawable = [c for c in CAPABILITIES if c.stable_without_drawing]
+    if undrawable:
+        lines += [
+            "",
+            "## Declared `stable` without drawing anything",
+            "",
+            "These do not render. `browser-observed` is not a label they are missing, it is",
+            "one they can never earn, and the ladder reading of these labels is what makes",
+            "that look like a gap. Each says why the level is deserved anyway, so the claim",
+            "is made on purpose rather than inherited:",
+            "",
+        ]
+        for capability in undrawable:
+            lines.append(f"- **{capability.name}** — {capability.stable_without_drawing}")
 
     lines += [
         "",

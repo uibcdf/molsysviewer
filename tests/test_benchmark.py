@@ -1,4 +1,3 @@
-import pytest
 import molsysviewer as msv
 from molsysviewer.tools import benchmark as benchmark_module
 

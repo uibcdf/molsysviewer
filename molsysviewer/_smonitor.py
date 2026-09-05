@@ -30,4 +30,8 @@ PROFILES = {
     },
 }
 
-from molsysviewer._private.smonitor.catalog import CODES, SIGNALS
+# SMonitor reads this module by attribute: `CODES` and `SIGNALS` are its contract, not
+# local variables, so ruff reports them as unused imports. Removing this line renders every
+# catalog message as an empty string -- the diagnostics keep their class and lose their
+# text, which is the kind of failure a test only catches if it asserts on the message.
+from molsysviewer._private.smonitor.catalog import CODES, SIGNALS  # noqa: F401,E402

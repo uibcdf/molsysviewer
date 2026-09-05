@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 
 import inspect
-from typing import Any, Mapping
+from typing import Any
 
 from smonitor import signal
 from .._private.argdigest import digest

@@ -501,7 +501,9 @@ class MovieManager:
             Absolute path to the written file.
         """
         try:
-            import imageio  # type: ignore[import]
+            # `imageio.v2` on purpose: the bare module's `imread` warns that v3 will change
+            # its behaviour, and this code wants the v2 semantics it was written against.
+            import imageio.v2 as imageio  # type: ignore[import]
         except ImportError as exc:
             raise ImportError(
                 "imageio is required for movie export. "
@@ -520,7 +522,7 @@ class MovieManager:
                 path.parent.mkdir(parents=True, exist_ok=True)
                 import numpy as np
                 dummy_img = np.zeros((10, 10, 3), dtype=np.uint8)
-                imageio.mimwrite(str(path), [dummy_img], fps=fps)
+                imageio.mimwrite(str(path), [dummy_img], **_frame_rate_kwargs(path, fps))
                 return path
 
         total_frames = int(self.duration_ms / 1000.0 * fps) + 1
@@ -571,7 +573,7 @@ class MovieManager:
         view._movie_export_done = False  # type: ignore[attr-defined]
 
         imgs = [_decode_frame(f["data_uri"]) for f in frames_data]
-        imageio.mimwrite(str(path), imgs, fps=fps)
+        imageio.mimwrite(str(path), imgs, **_frame_rate_kwargs(path, fps))
         return path
 
     # ── Internal ──────────────────────────────────────────────────────────
@@ -585,9 +587,22 @@ class MovieManager:
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
+
+def _frame_rate_kwargs(path: Path, fps: int) -> dict:
+    """The frame-rate argument each writer actually accepts.
+
+    Pillow, which writes the GIFs, dropped `fps` for `duration` in milliseconds per frame
+    and warns on every call that still passes it. The video writers kept `fps`. Choosing by
+    suffix is what keeps both quiet and correct; passing `fps` to both is what produced a
+    deprecation warning on every GIF export.
+    """
+    if path.suffix.lower() == ".gif":
+        return {"duration": 1000.0 / float(fps)}
+    return {"fps": fps}
+
 def _decode_frame(data_uri: str):
     """Decode a ``data:image/png;base64,...`` string to a numpy array via imageio."""
-    import imageio  # type: ignore[import]
+    import imageio.v2 as imageio  # type: ignore[import]
     _, encoded = data_uri.split(",", 1)
     return imageio.imread(io.BytesIO(base64.b64decode(encoded)))
 

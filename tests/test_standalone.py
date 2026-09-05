@@ -3,7 +3,6 @@ import logging
 import os
 import pytest
 import sys
-from pathlib import Path
 from types import ModuleType
 
 pytest.importorskip("anywidget")

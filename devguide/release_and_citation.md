@@ -62,12 +62,31 @@ python devtools/validate_citation.py --expected-version X.Y.Z
 ```
 
 The preparation command updates release-specific fields in `CITATION.cff` and
-the derived documentation and BibTeX surfaces. Review its diff. It does not
+the derived documentation and BibTeX surfaces. Review its diff.
+
+**It updates files, not tests.** `tests/test_citation_release_tools.py` used to pin the
+expected version as a literal, which passed for a year and then stopped the release gate
+for 0.22.0 — the first release since it was written. It reads the version from
+`CITATION.cff` now, so preparing a release no longer leaves a test behind. Anything else
+added here that hard-codes the current version will spring the same trap, and only during
+a release. It does not
 create a tag, GitHub Release, Zenodo record, Conda package, or npm package.
 The documented `X.Y.Z-rc.N` prerelease form is accepted as well.
 
 Run the complete release gate described in the developer release guide. A
 candidate commit must not use `[skip ci]`.
+
+## A tag without a Release is a legitimate state
+
+`0.22.0` is tagged and has no GitHub Release, on purpose. Publishing the Release starts
+Conda publication and Zenodo ingestion, and Conda is the gate deferred to 1.0 — the
+UIBCDF dependency channels are not frozen, so the artefacts would be built against
+versions nobody has closed, and Zenodo would mint a DOI that does not come back.
+
+The tag marks the code; the Release distributes it. They are separable, and separating
+them is the honest move when the gate reports `BLOCKED` rather than `FAIL`. Tracked in
+`uibcdf/molsysviewer#82`, so a tag with no Release is never a mystery someone has to
+reconstruct.
 
 ## Publishing and verifying
 

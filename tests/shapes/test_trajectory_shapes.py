@@ -5,7 +5,6 @@ accept per-structure coordinate arrays and include structures_coords in the sent
 Also tests add_hbonds with per-structure atom-index pairs.
 """
 
-import numpy as np
 import pytest
 import pyunitwizard as puw
 

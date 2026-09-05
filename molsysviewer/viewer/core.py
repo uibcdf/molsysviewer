@@ -4,7 +4,6 @@ import base64
 import json
 import re
 import time
-import inspect
 import warnings
 import weakref
 import uuid
@@ -18,15 +17,12 @@ from smonitor import signal
 from smonitor.integrations import context_extra, emit_from_catalog
 from depdigest import dep_digest
 
-from .._pyunitwizard import puw
 from .._private.argdigest import digest
 from .._private.argdigest.argument.viewer_mode import digest_viewer_mode
 from .._private.smonitor import CATALOG, PACKAGE_ROOT, META
 from .._private.smonitor.warnings import StructureStreamFallbackWarning, warn
 from .._private.smonitor_emit import emit_suppressed_exception
-from .._private.variables import is_all
 from ..widget import MolSysViewerWidget
-from ..loaders import load_from_molsysmt as _load_from_molsysmt
 from ..loaders.array_native_molsys import (
     ARRAY_NATIVE_PROTOCOL_VERSION,
     serialize_array_native_molsys,
@@ -47,7 +43,6 @@ from ..annotations import AnnotationsManager
 from ..active_selection import ActiveSelection, _combine
 from ..addons import AddonPanelWidget, ViewAddonsManager, addons as global_addons
 from ..exports import ExportManager
-from ..figures import FigureSpec
 from ..interaction_targets import InteractionTarget
 from ..measurements import MeasurementsManager
 from ..player import PlayerManager
@@ -82,7 +77,6 @@ from .state import StateMixin
 from .popup_snapshot import PopupSnapshotMixin
 from .interaction import InteractionMixin
 
-from .utils import quantity_value_in_unit as _quantity_value_in_unit
 
 class MolSysView(
     SceneRegistryMixin,
@@ -2371,7 +2365,6 @@ class MolSysView(
         if self._molsys is None:
             raise ValueError("No molecular system loaded. Load a system before mutating the view.")
 
-        n_atoms = int(self._molsys.get_n_atoms())
         # A rebuild supersedes any in-flight generation before replacing its
         # lazy fallback. This makes it impossible for an old timeout to
         # serialize the newly edited MolSys under the old generation.

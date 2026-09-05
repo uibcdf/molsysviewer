@@ -22,8 +22,12 @@ from __future__ import annotations
 import json
 import os
 import re
+from functools import lru_cache, partial
+from http.server import SimpleHTTPRequestHandler
 import shutil
+from socketserver import TCPServer, ThreadingMixIn
 import subprocess
+import threading
 from collections import Counter
 import tempfile
 from pathlib import Path
@@ -134,6 +138,71 @@ def test_the_scene_travels_with_the_page(tmp_path):
 # --- the colour the page ends up on -------------------------------------------
 
 
+@lru_cache(maxsize=1)
+def _command_line_chrome_can_load_http() -> str | None:
+    """Probe the one thing these three tests need and this machine may not have.
+
+    They read the host document's `data-theme` from inside the iframe, which is a
+    same-origin access. `file://` gives every file an opaque origin, so the server is
+    not scaffolding that could be dropped -- without it the tests would still pass and
+    would be measuring nothing.
+
+    On this machine, `google-chrome --headless` never completes a navigation to
+    `http://127.0.0.1`. The server records **no request at all**, so nothing is served
+    slowly; the request is never issued. It reproduces with a sixty-byte page, on
+    Chrome 149 and on Playwright's Chromium 143 alike, with and without
+    `--virtual-time-budget`, and `--timeout` makes it give up and dump an empty
+    document rather than fetch one. `file://` is unaffected and Playwright driving the
+    same browser over CDP loads the same URL in 0.2 s (uibcdf/molsysviewer#77).
+
+    A canary rather than an xfail: if this returns `None` the browser can do what the
+    tests need, and a failure below is then a real one.
+    """
+    with tempfile.TemporaryDirectory() as directory:
+        root = Path(directory)
+        (root / "index.html").write_text("<!doctype html><p id=probe>ok</p>", encoding="utf-8")
+
+        handler = partial(SimpleHTTPRequestHandler, directory=str(root))
+
+        class _Threaded(ThreadingMixIn, TCPServer):
+            allow_reuse_address = True
+            daemon_threads = True
+
+        server = _Threaded(("127.0.0.1", 0), handler)
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        try:
+            # `ignore_cleanup_errors` because the probe kills Chrome mid-shutdown when
+            # it hangs, and a half-written profile is not something to raise about.
+            with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as profile:
+                try:
+                    completed = subprocess.run(
+                        [
+                            CHROME, "--headless=new", "--no-sandbox",
+                            f"--user-data-dir={profile}", "--virtual-time-budget=5000",
+                            "--dump-dom", f"http://127.0.0.1:{server.server_address[1]}/index.html",
+                        ],
+                        capture_output=True, text=True, timeout=40,
+                    )
+                except subprocess.TimeoutExpired:
+                    return "it never finishes a navigation to http://127.0.0.1"
+                if "probe" not in completed.stdout:
+                    return "it returns an empty document for http://127.0.0.1"
+        finally:
+            server.shutdown()
+            server.server_close()
+    return None
+
+
+needs_http_capable_chrome = pytest.mark.skipif(
+    _command_line_chrome_can_load_http() is not None,
+    reason=(
+        "command-line headless Chrome cannot load http:// on this machine "
+        f"({_command_line_chrome_can_load_http()}); these three read the host document "
+        "across an iframe, which needs a real origin. See uibcdf/molsysviewer#77."
+    ),
+)
+
+
 def _canvas_colour(html_path: Path, host_background: str, host_html: str | None = None) -> tuple:
     """Open the view inside a host page of a given colour, and sample the result.
 
@@ -203,6 +272,7 @@ def _self_contained(tmp_path: Path) -> Path:
     return output
 
 
+@needs_http_capable_chrome
 def test_an_embedded_view_takes_the_colour_of_the_page_around_it(tmp_path):
     """The site's own theme switch is invisible to every media query.
 
@@ -217,6 +287,7 @@ def test_an_embedded_view_takes_the_colour_of_the_page_around_it(tmp_path):
     )
 
 
+@needs_http_capable_chrome
 def test_the_same_view_is_light_on_a_light_page(tmp_path):
     """Same file, same reader, different page: the answer comes from the host."""
     view = _self_contained(tmp_path)
@@ -224,6 +295,7 @@ def test_the_same_view_is_light_on_a_light_page(tmp_path):
     assert _canvas_colour(view, "#ffffff") == (255, 255, 255)
 
 
+@needs_http_capable_chrome
 def test_the_view_matches_the_container_it_was_dropped_into(tmp_path):
     """Not the page's background: the surface immediately behind the frame.
 

@@ -17,16 +17,17 @@ from pathlib import Path
 
 import pytest
 
-
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "devtools"))
 
 from capability_audit import (  # noqa: E402
     CAPABILITIES,
     DOCUMENT,
+    _first_release_containing,
     _markdown,
     build_audit,
 )
+from public_api_inventory import build_inventory  # noqa: E402
 
 E2E_ROOT = ROOT / "molsysviewer" / "js" / "tests" / "e2e"
 
@@ -64,6 +65,16 @@ def audit():
     return build_audit()
 
 
+@pytest.fixture(scope="module")
+def inventory_paths():
+    """Module-scoped because `build_inventory` costs ~3.9 s and ~557 MiB per call.
+
+    The parametrised guard below runs once per capability; calling it inside the test
+    would pay that twenty times over, in each of twelve xdist workers at once.
+    """
+    return {item["path"] for item in build_inventory()["callables"]}
+
+
 def test_every_required_capability_has_a_row():
     assert {capability.name for capability in CAPABILITIES} == REQUIRED_CAPABILITIES
 
@@ -96,6 +107,40 @@ def test_every_row_names_a_public_api_that_exists(capability, audit):
     assert row["public_callables"] > 0, (
         f"{capability.name} declares {capability.api} and no public callable matches"
     )
+
+
+@pytest.mark.parametrize("capability", CAPABILITIES, ids=lambda c: c.name)
+def test_every_declared_api_entry_resolves_on_its_own(capability, inventory_paths):
+    """The row-level check above is not enough, and uibcdf/molsysviewer#79 is the proof.
+
+    It asks whether a *row* matches anything, so a dead entry sitting beside live siblings
+    is invisible. `view.convert` sat in the MolSysMT row for the whole of 0.22 matching
+    nothing at all, and the row stayed green on the strength of `view.extract`.
+
+    `view.get` was worse. It had been removed too, but `_api_evidence` matches by prefix,
+    so it absorbed ten unrelated methods that merely start with those characters --
+    `view.get_camera_snapshot`, `view.get_last_click_event` and eight more frontend event
+    accessors -- into a row whose provenance is declared "MolSysMT (scientific authority)".
+    The row did not just survive; it reported 17 public callables where it has 7. A guard
+    asking "does this prefix match anything" passes for `view.get`, which is precisely the
+    entry that was lying.
+
+    The distinction is punctuation, and the table is already written with it: an entry
+    ending in `.` is a namespace and needs at least one member; an entry that does not name
+    one callable and must resolve exactly. Nothing extra has to be declared.
+    """
+    for entry in capability.api:
+        if entry.endswith("."):
+            assert any(path.startswith(entry) for path in inventory_paths), (
+                f"{capability.name} declares the namespace {entry!r} and it has no public "
+                f"members; the row describes a surface the inventory cannot see"
+            )
+        else:
+            assert entry in inventory_paths, (
+                f"{capability.name} declares {entry!r}, which does not exist. If a longer "
+                f"unrelated name shares its prefix the row will still look healthy and its "
+                f"public count will be inflated -- see uibcdf/molsysviewer#79"
+            )
 
 
 @pytest.mark.parametrize("capability", CAPABILITIES, ids=lambda c: c.name)
@@ -217,6 +262,26 @@ def test_the_generated_document_is_not_edited_by_hand():
     assert "do not edit by hand" in DOCUMENT.read_text(encoding="utf-8")
 
 
+def test_first_release_considers_every_retained_history(monkeypatch):
+    """A rewritten lineage must not erase the releases preserved by the old one."""
+    from types import SimpleNamespace
+
+    def run(command, **kwargs):
+        if command[:3] == ["git", "log", "--all"]:
+            return SimpleNamespace(stdout="current-add\nhistorical-add\n")
+        if command == ["git", "tag", "--contains", "current-add"]:
+            return SimpleNamespace(stdout="0.20.0\n")
+        if command == ["git", "tag", "--contains", "historical-add"]:
+            return SimpleNamespace(stdout="0.5.0\n0.20.0\n")
+        if command == ["git", "tag", "--sort=creatordate"]:
+            return SimpleNamespace(stdout="0.5.0\n0.20.0\n")
+        raise AssertionError(command)
+
+    monkeypatch.setattr("capability_audit.subprocess.run", run)
+
+    assert _first_release_containing("molsysviewer/whole.py") == "0.5.0"
+
+
 @pytest.mark.parametrize("capability", CAPABILITIES, ids=lambda c: c.name)
 def test_status_is_a_word_the_document_defines(capability):
     assert capability.status in {"stable", "experimental", "roadmap"}
@@ -302,18 +367,47 @@ def test_human_observation_carries_its_date(capability):
     assert re.match(r"^\d{4}-\d{2}-\d{2}", capability.human_observed), capability.human_observed
 
 
-def test_the_document_names_what_nothing_has_watched_draw():
+def test_the_document_names_what_nothing_has_watched_draw(audit):
     """The finding is the point of the column, so it must survive regeneration.
 
-    Four capabilities have no browser observation, and two of them are `stable`. That is
-    defensible — neither draws anything — but it is a claim the document should make out
-    loud rather than leave as a zero somebody has to notice.
+    Derived rather than listed. It used to name four capabilities outright, which made it
+    a record of one afternoon: when `trajectory-plot` and `movie-playback` earned
+    `browser-observed` on 2026-09-05 the test failed for having been right before. What
+    must hold is that *whatever* currently lacks the label is named in the document, not
+    that a particular set of four still lacks it.
     """
     text = DOCUMENT.read_text(encoding="utf-8")
+    unobserved = [
+        row["capability"] for row in audit["rows"]
+        if "browser-observed" not in row["evidence"]
+    ]
+    assert unobserved, "every capability is browser-observed; this section should be gone"
 
     assert "## Nothing has watched these draw" in text
-    for name in ("Trajectory plot", "Movie", "save_state / load_state", "Units"):
-        assert name in text.split("## Nothing has watched these draw", 1)[1].split("##", 1)[0]
+    section = text.split("## Nothing has watched these draw", 1)[1].split("##", 1)[0]
+    for name in unobserved:
+        assert name in section, f"{name} has no browser observation and the document does not say so"
+
+
+def test_the_undrawable_reasons_reach_the_reader():
+    """A reason written where nobody reads it is not a reason given.
+
+    `stable_without_drawing` existed and was filled for both rows, and the generator
+    never rendered it: it lived in `devtools/capability_audit.py`, which a reader of the
+    audit does not open. The claim therefore still looked inherited in the only place it
+    is published, which is what uibcdf/molsysviewer#65 asked to fix.
+    """
+    text = DOCUMENT.read_text(encoding="utf-8")
+    undrawable = [c for c in CAPABILITIES if c.stable_without_drawing]
+    assert undrawable, "nothing declares stable_without_drawing; this guard is vacuous"
+
+    assert "## Declared `stable` without drawing anything" in text
+    section = text.split("## Declared `stable` without drawing anything", 1)[1].split("\n## ", 1)[0]
+    for capability in undrawable:
+        assert capability.name in section, f"{capability.name} states its reason only in the source"
+        # The reason itself, not just the name: a bare list would read as another gap.
+        opening = capability.stable_without_drawing.split(".")[0]
+        assert opening in section, f"{capability.name} is named without its reason"
 
 
 def test_the_two_axes_are_not_confused_with_each_other():

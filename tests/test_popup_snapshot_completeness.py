@@ -95,7 +95,11 @@ def _summary_ops_the_view_can_push(view) -> set[str]:
         if not (name.startswith("_sync_") and name.endswith("_runtime")):
             continue
         captured: list[dict] = []
-        view.widget.send = lambda msg, *a, **k: captured.append(msg)  # type: ignore[assignment]
+        # `captured` is rebound every iteration, so the lambda binds it as a default
+        # rather than closing over the loop variable.
+        view.widget.send = (
+            lambda msg, *a, _c=captured, **k: _c.append(msg)
+        )  # type: ignore[assignment]
         try:
             getattr(view, name)()
         finally:

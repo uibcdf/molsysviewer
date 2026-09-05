@@ -125,9 +125,7 @@ BUILTIN_FOCUS_STYLES: dict[str, Style] = {
 # dependency-free module so that argument digesters can import them without
 # pulling in this module's viewer imports (which would be circular).
 from ._private.color_schemes import (  # noqa: E402
-    MOLSYSMT_COLOR_SCHEME_ALIASES,
     STRUCTURAL_COLOR_SCHEMES,
-    resolve_structural_color_scheme,
 )
 
 

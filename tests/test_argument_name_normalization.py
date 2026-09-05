@@ -17,8 +17,6 @@ it stood before the migration.
 
 from __future__ import annotations
 
-import pathlib
-import re
 
 import pytest
 from argdigest import ArgumentConsistencyError, describe_normalization

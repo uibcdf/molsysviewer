@@ -33,7 +33,7 @@ list. Deferred entries also carry the `post-1.0` milestone on the issue board.
 
 - [`classic_script_runtime_for_offline_bundles.md`](classic_script_runtime_for_offline_bundles.md) — [#39](https://github.com/uibcdf/molsysviewer/issues/39) — Build the runtime as a classic script so many shared views open from a disk with no server. *(measured)*
 - [`duplicated_infrastructure_across_the_ecosystem.md`](duplicated_infrastructure_across_the_ecosystem.md) — [#70](https://github.com/uibcdf/molsysviewer/issues/70) — Duplicated infrastructure across the MolSysSuite repositories keeps costing the same defect twice. *(measured)*
-- [`evidence_a_stable_capability_has_not_earned.md`](evidence_a_stable_capability_has_not_earned.md) — [#65](https://github.com/uibcdf/molsysviewer/issues/65) — Four capabilities declare an evidence level nothing has observed, and the release gate cannot tell. *(measured)*
+- [`exported_page_colour_tests_belong_in_the_e2e_suite.md`](exported_page_colour_tests_belong_in_the_e2e_suite.md) — [#81](https://github.com/uibcdf/molsysviewer/issues/81) — The three exported-page colour tests need an http origin, which command-line Chrome cannot give them here; Playwright can. *(measured)*
 - [`molsysmt_docs_pipeline_analysis.md`](molsysmt_docs_pipeline_analysis.md) — [#41](https://github.com/uibcdf/molsysviewer/issues/41) — MolSysMT's documentation pipeline read at the scale it is about to reach. *(measured)*
 - [`quarantined_digesters_await_a_decision.md`](quarantined_digesters_await_a_decision.md) — [#78](https://github.com/uibcdf/molsysviewer/issues/78) — 219 quarantined digesters are outside the package and undecided; deleting them is the open question. *(measured)*
 

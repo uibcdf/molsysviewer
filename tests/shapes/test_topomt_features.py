@@ -1,5 +1,3 @@
-import pytest
-from typing import Any
 from molsysviewer.shapes import ShapesManager
 
 

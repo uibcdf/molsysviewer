@@ -101,3 +101,18 @@ Completed work, kept for the reasoning:
   — a public camera method that raised with its own default. Read for how one argument name
   came to carry three readings of its unit, and why the tempting fix would have hidden the
   factor of ten instead of removing it.
+- [`capability_audit_advertises_removed_methods.md`](capability_audit_advertises_removed_methods.md)
+  — the generated capability audit named three public methods that the 0.22 simplification
+  had removed. Read for why a guard asking "does this prefix match anything" passes for the
+  worst of the three: `view.get` was absorbing ten unrelated `view.get_*` event accessors
+  into a row attributed to MolSysMT, inflating it from 7 public callables to 17.
+- [`xdist_controller_aborts_under_twelve_workers.md`](xdist_controller_aborts_under_twelve_workers.md)
+  — half of all `-n 12` runs died with `KeyError: <WorkerController gwN>`. Read for the two
+  wrong turns: the warning classes were rejected correctly in the first pass and the real
+  cause was the *import* that looking one up triggers, and three clean plain runs almost
+  produced a false report against our own pytest plugin.
+- [`evidence_a_stable_capability_has_not_earned.md`](evidence_a_stable_capability_has_not_earned.md)
+  — four capabilities declared an evidence level nothing had observed. Read for the
+  criterion that was unmet without being visible: the reason two of them deserved `stable`
+  was written in the generator's source, where a reader of the generated audit never meets
+  it.

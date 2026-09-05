@@ -11,12 +11,29 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "devtools"))
 
 from prepare_release import prepare_release  # noqa: E402
-from validate_citation import CONCEPT_DOI, validate_repository  # noqa: E402
+from validate_citation import _cff_scalar, CONCEPT_DOI, validate_repository  # noqa: E402
 from verify_zenodo_release import validate_record  # noqa: E402
 
 
 def test_repository_citation_surfaces_agree():
-    assert validate_repository(ROOT, expected_version="0.20.1") == []
+    """Every surface must agree with CITATION.cff, which is the metadata authority.
+
+    The expected version is read rather than written down. It used to be the literal
+    "0.20.1", which passed for a year and then failed the first time it mattered: the
+    release gate for 0.22.0 stopped on it, because `prepare_release.py` updates four
+    surfaces and cannot update a test. A pin that must be bumped by hand at each release,
+    with nothing saying so, is a trap that only springs during a release.
+
+    Nothing is lost by deriving it. The contract this file exists for is that the BibTeX
+    entry, the citation page, the docs badge and Zenodo all say what CITATION.cff says;
+    a literal adds no check to that, only a second place to remember.
+    `test_expected_version_mismatch_is_rejected` still proves the validator rejects a
+    version that does not match.
+    """
+    declared = _cff_scalar((ROOT / "CITATION.cff").read_text(encoding="utf-8"), "version")
+    assert declared, "CITATION.cff declares no version"
+
+    assert validate_repository(ROOT, expected_version=declared) == []
 
 
 def test_expected_version_mismatch_is_rejected():

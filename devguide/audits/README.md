@@ -10,6 +10,11 @@ regression guards. Findings marked closed must not be treated as open work.
 - [`pre_1_0_phases_5_6_8_9_10_audit_2026_08.md`](pre_1_0_phases_5_6_8_9_10_audit_2026_08.md)
   — the independent audit that closed Phases 5, 6, 8, 9 and the Phase 10 persistence
   slice on 2026-08-09, with one mutation per mechanism. It closes nothing of Phase 7.
+- [`unused_imports_2026_09.md`](unused_imports_2026_09.md)
+  — 264 `F401` reports, 60 of them real. Records why the other 204 stand, and how deleting
+  one import from the `_smonitor.py` config module left every diagnostic in the package
+  firing with the right class and an empty message. Guarded by
+  `tests/test_catalog_templates_render.py`.
 
 Two documents here are inventories rather than audits, and they are the evidence record
 of the 2026-08 pre-1.0 round. Their execution order is superseded by
