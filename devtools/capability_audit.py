@@ -298,16 +298,19 @@ CAPABILITIES: tuple[Capability, ...] = (
         unit=("test_remote_session_service.py", "test_remote_view_channel.py",
               "test_remote_session_router.py", "test_remote_render_worker.py",
               "test_remote_protocol.py", "test_remote_cli.py"),
+        e2e=("remote-client-rendering", "remote-session"),
         status="experimental",
         note="The count is four because the walk inventories instances rather than "
              "classes, and the eleven classes in `__all__` are constructed by the host "
              "rather than held by a user. The surface a user actually types is the "
              "`molsysviewer-server` console script declared in `pyproject.toml`, and its "
              "page is the row's documentation. Client-side rendering is exercised by "
-             "`remote-client-rendering.e2e.ts`; **server-side rendering has never been "
-             "certified anywhere** -- its suite needs a GPU host and fails on every "
-             "machine we have (uibcdf/molsysviewer#84), so the 0.23.0 tag was made with "
-             "an explicit `E2E_ALLOW_SKIP=1`. The zero in `Digested` is measured, not "
+             "`remote-client-rendering.e2e.ts`. Server-side rendering was first "
+             "certified on spika on 2026-09-05 by `remote-session.e2e.ts`, using WebGL2 "
+             "with `ANGLE (NVIDIA Corporation, NVIDIA GeForce GTX 1080/PCIe/SSE2, "
+             "OpenGL ES 3.2)` (uibcdf/molsysviewer#84). This is evidence for that host, "
+             "not a claim that every deployment has a working GPU path. The zero in "
+             "`Digested` is measured, not "
              "missing: none of the four takes a digested argument. This is the first "
              "time the inventory baseline has left zero on that count, tracked in "
              "uibcdf/molsysviewer#83, and it is Phase 10's open public-callable "

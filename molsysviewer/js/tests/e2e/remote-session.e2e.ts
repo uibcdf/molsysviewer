@@ -97,6 +97,7 @@ async function run(): Promise<void> {
             throw error;
         }
         assertHardwareRenderer(session);
+        console.log(`[E2E remote-session] renderer=${session.renderer}`);
 
         browser = await chromium.launch();
         const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
