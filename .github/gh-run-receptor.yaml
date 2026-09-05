@@ -12,3 +12,5 @@ workflows:
   - match:
       path: .github/workflows/build_and_upload_conda_packages.yaml
     profile: conda
+    settings:
+      package_kind: noarch
