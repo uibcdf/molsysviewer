@@ -76,6 +76,18 @@ The documented `X.Y.Z-rc.N` prerelease form is accepted as well.
 Run the complete release gate described in the developer release guide. A
 candidate commit must not use `[skip ci]`.
 
+## A tag without a Release is a legitimate state
+
+`0.22.0` is tagged and has no GitHub Release, on purpose. Publishing the Release starts
+Conda publication and Zenodo ingestion, and Conda is the gate deferred to 1.0 — the
+UIBCDF dependency channels are not frozen, so the artefacts would be built against
+versions nobody has closed, and Zenodo would mint a DOI that does not come back.
+
+The tag marks the code; the Release distributes it. They are separable, and separating
+them is the honest move when the gate reports `BLOCKED` rather than `FAIL`. Tracked in
+`uibcdf/molsysviewer#82`, so a tag with no Release is never a mystery someone has to
+reconstruct.
+
 ## Publishing and verifying
 
 After the exact candidate passes its gates:
