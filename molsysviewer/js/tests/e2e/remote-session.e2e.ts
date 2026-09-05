@@ -5,7 +5,7 @@ import { createInterface } from "node:readline";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { chromium } from "./e2e-browser";
+import { chromium, failOrExplicitlySkip } from "./e2e-browser";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -62,12 +62,40 @@ async function run(): Promise<void> {
     const bridge = spawn(
         process.env.PYTHON || "python",
         [resolve(__dirname, "remote-session-bridge.py")],
-        { stdio: ["pipe", "pipe", "inherit"] },
+        { stdio: ["pipe", "pipe", "pipe"] },
     );
+    // The bridge's stderr is captured rather than inherited so its failure can be read
+    // and classified, and it is echoed so nothing is swallowed.
+    let bridgeStderr = "";
+    bridge.stderr.setEncoding("utf8");
+    bridge.stderr.on("data", chunk => {
+        bridgeStderr += chunk;
+        process.stderr.write(chunk);
+    });
     const lines = createInterface({ input: bridge.stdout });
     let browser: Awaited<ReturnType<typeof chromium.launch>> | null = null;
     try {
-        const session = await waitForPrefixedJson(lines, "MSV_REMOTE_SESSION=");
+        let session: Record<string, any>;
+        try {
+            session = await waitForPrefixedJson(lines, "MSV_REMOTE_SESSION=");
+        } catch (error) {
+            // This suite certifies server-side rendering on a GPU host: `assertHardwareRenderer`
+            // rejects swiftshader and llvmpipe by name. A host whose command-line browser
+            // cannot commit an http navigation cannot run it at all -- the worker page stays
+            // at about:blank, so no canvas appears and the worker reports it never loaded
+            // (uibcdf/molsysviewer#77).
+            //
+            // Routed through `failOrExplicitlySkip` rather than skipped quietly: this file
+            // still fails by default, and opting out stays an explicit, visible act.
+            if (bridgeStderr.includes("the render worker page never loaded")) {
+                failOrExplicitlySkip(
+                    "the render worker page never loaded, so server-side rendering cannot be " +
+                        "certified on this host (uibcdf/molsysviewer#77)",
+                    error,
+                );
+            }
+            throw error;
+        }
         assertHardwareRenderer(session);
 
         browser = await chromium.launch();

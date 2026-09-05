@@ -200,6 +200,12 @@ async function run() {
             pngStream!.once("error", rejectHeader);
         });
         assert.deepEqual([...pngHeader], [137, 80, 78, 71, 13, 10, 26, 10]);
+        // Reading one chunk leaves the artifact attached to the browser, and closing the
+        // browser then rejects that pending read as an unhandled `TargetClosedError` --
+        // after every assertion has passed and the suite has printed that it did. Node
+        // turns the rejection into a non-zero exit, so the runner reported a failure for
+        // a suite that succeeded.
+        pngStream!.destroy();
 
         const htmlDownloadPromise = page.waitForEvent("download", { timeout: 30_000 });
         await page.locator('[data-molsysviewer-export-html="true"]').click();
@@ -212,6 +218,7 @@ async function run() {
             htmlStream!.once("error", rejectPrefix);
         });
         assert.match(htmlPrefix.toLowerCase(), /<!doctype html>/);
+        htmlStream!.destroy();
 
         const preUploadState = await requestBridge(
             bridge,

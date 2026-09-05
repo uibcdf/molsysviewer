@@ -164,7 +164,10 @@ class ManagedRenderWorker:
             port, browser_path = await self._wait_for_devtools(profile_path)
             diagnostics = await self._diagnose(port, browser_path)
             if not diagnostics.webgl2:
-                raise RuntimeError("render worker did not provide WebGL2")
+                raise RuntimeError(
+                    "render worker did not provide WebGL2: its page loaded but no canvas "
+                    "yielded a webgl2 context"
+                )
             if not diagnostics.webrtc or not diagnostics.capture_stream:
                 raise RuntimeError("render worker lacks WebRTC canvas streaming capabilities")
             if self.config.gpu_policy == "require-hardware" and diagnostics.software_rendering:
@@ -295,6 +298,20 @@ class ManagedRenderWorker:
         value = result["value"]
         if not isinstance(value, Mapping):
             raise RuntimeError("worker page returned malformed diagnostics")
+        # A page that never committed its navigation reports `about:blank` here while the
+        # DevTools target still advertises the URL it was asked for, so `/json/list` looks
+        # correct and the document is empty. Distinguishing the two matters: "no WebGL2"
+        # sends the reader to drivers and GPUs, and the cause is that nothing was loaded.
+        document_url = str(value.get("documentUrl") or "")
+        if document_url == "about:blank" and self._worker_url != "about:blank":
+            raise RuntimeError(
+                f"the render worker page never loaded: the browser was asked for "
+                f"{self._worker_url} and its document is still about:blank. The DevTools "
+                f"target advertises the requested URL either way, so this is not a missing "
+                f"page target. A browser that cannot complete a command-line navigation to "
+                f"http on this host produces exactly this "
+                f"(see uibcdf/molsysviewer#77)."
+            )
         renderer = str(value.get("renderer") or gpu.get("gpu", {}).get("auxAttributes", {}).get("glRenderer") or "")
         if not renderer:
             raise RuntimeError("worker did not report its WebGL renderer")
@@ -378,6 +395,8 @@ _DIAGNOSTIC_EXPRESSION = """
   }
   const extension = gl ? gl.getExtension('WEBGL_debug_renderer_info') : null;
   return {
+    documentUrl: String(location.href),
+    canvasCount: document.querySelectorAll('canvas').length,
     webgl2: !!gl,
     renderer: gl ? String(gl.getParameter(extension ? extension.UNMASKED_RENDERER_WEBGL : gl.RENDERER)) : '',
     webrtc: typeof RTCPeerConnection === 'function',

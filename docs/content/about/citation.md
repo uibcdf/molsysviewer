@@ -24,7 +24,7 @@ Concept DOI (all versions):
 [10.5281/zenodo.18072956](https://doi.org/10.5281/zenodo.18072956).
 
 Diego Prada-Gracia & Liliana M. Moreno-Vargas. (2026). MolSysViewer
-(Version 0.22.0). Zenodo. https://doi.org/10.5281/zenodo.18072956
+(Version 0.23.0). Zenodo. https://doi.org/10.5281/zenodo.18072956
 
 {download}`BibTeX <../../_static/bibtex/software.bib>`
 
