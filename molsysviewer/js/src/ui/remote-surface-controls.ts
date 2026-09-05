@@ -1,4 +1,13 @@
 import { HelpOverlay, type HelpOverlaySections } from "./help-overlay";
+import {
+    makeViewportIconButton,
+    setViewportIcon,
+    VIEWPORT_ICON_EXIT_FULLSCREEN,
+    VIEWPORT_ICON_FULLSCREEN,
+    VIEWPORT_ICON_HELP,
+    VIEWPORT_ICON_PANEL,
+    VIEWPORT_ICON_RESET,
+} from "./viewport-icon-button";
 
 export interface RemoteSurfaceControlsOptions {
     resetView: () => void;
@@ -45,15 +54,15 @@ export class RemoteSurfaceControls {
             pointerEvents: "auto",
         });
 
-        this.addButton("Reset", "Reset remote camera", () => this.options.resetView());
-        this.fullscreenButton = this.addButton("Full", "Fullscreen", () => {
+        this.addButton("reset", VIEWPORT_ICON_RESET, "Reset remote camera", () => this.options.resetView());
+        this.addButton("panel", VIEWPORT_ICON_PANEL, "Open or close Studio (N / W)", () => {
+            this.options.togglePanel();
+        });
+        this.fullscreenButton = this.addButton("full", VIEWPORT_ICON_FULLSCREEN, "Fullscreen", () => {
             void this.toggleFullscreen();
         });
         this.help = new HelpOverlay(host, REMOTE_HELP);
-        this.addButton("Help", "Help (H)", () => this.help.toggle());
-        this.addButton("Panel", "Open or close Studio (N / W)", () => {
-            this.options.togglePanel();
-        });
+        this.addButton("help", VIEWPORT_ICON_HELP, "Help (H)", () => this.help.toggle());
         host.appendChild(this.root);
         window.addEventListener("keydown", this.onKeyDown, true);
         document.addEventListener("fullscreenchange", this.updateFullscreenLabel);
@@ -66,23 +75,9 @@ export class RemoteSurfaceControls {
         this.root.remove();
     }
 
-    private addButton(label: string, title: string, callback: () => void): HTMLButtonElement {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.textContent = label;
-        button.title = title;
-        button.setAttribute("data-molsysviewer-remote-control", label.toLowerCase());
-        Object.assign(button.style, {
-            height: "22px",
-            padding: "2px 6px",
-            border: "1px solid rgba(255,255,255,.5)",
-            borderRadius: "4px",
-            background: "rgba(0,0,0,.5)",
-            color: "#fff",
-            font: "11px/16px system-ui,sans-serif",
-            cursor: "default",
-        });
-        button.addEventListener("click", callback);
+    private addButton(name: string, icon: string, title: string, callback: () => void): HTMLButtonElement {
+        const button = makeViewportIconButton(icon, title, callback);
+        button.setAttribute("data-molsysviewer-remote-control", name);
         this.root.appendChild(button);
         return button;
     }
@@ -103,7 +98,10 @@ export class RemoteSurfaceControls {
     };
 
     private readonly updateFullscreenLabel = (): void => {
-        this.fullscreenButton.textContent = document.fullscreenElement ? "Exit" : "Full";
+        setViewportIcon(
+            this.fullscreenButton,
+            document.fullscreenElement ? VIEWPORT_ICON_EXIT_FULLSCREEN : VIEWPORT_ICON_FULLSCREEN,
+        );
         this.fullscreenButton.title = document.fullscreenElement ? "Exit fullscreen" : "Fullscreen";
     };
 

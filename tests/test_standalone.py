@@ -863,6 +863,8 @@ def test_create_remote_qt_window_reuses_authenticated_session_page(monkeypatch):
             self.status = FakeStatusBar()
             self.menu_bar = FakeMenuBar()
             self.closed = False
+            self.fullscreen = False
+            self.maximized = False
 
         def setWindowTitle(self, title):
             self.title = title
@@ -882,6 +884,20 @@ def test_create_remote_qt_window_reuses_authenticated_session_page(monkeypatch):
         def close(self):
             self.closed = True
 
+        def isMaximized(self):
+            return self.maximized
+
+        def showFullScreen(self):
+            self.fullscreen = True
+
+        def showNormal(self):
+            self.fullscreen = False
+            self.maximized = False
+
+        def showMaximized(self):
+            self.fullscreen = False
+            self.maximized = True
+
     class FakeProfile:
         def __init__(self):
             self.downloadRequested = FakeSignal()
@@ -890,6 +906,8 @@ def test_create_remote_qt_window_reuses_authenticated_session_page(monkeypatch):
         def __init__(self):
             self.scripts = []
             self._profile = FakeProfile()
+            self._settings = FakeSettings()
+            self.fullScreenRequested = FakeSignal()
 
         def runJavaScript(self, script, callback=None):
             self.scripts.append(script)
@@ -899,7 +917,20 @@ def test_create_remote_qt_window_reuses_authenticated_session_page(monkeypatch):
         def profile(self):
             return self._profile
 
+        def settings(self):
+            return self._settings
+
         result = None
+
+    class FakeSettings:
+        class WebAttribute:
+            FullScreenSupportEnabled = "fullscreen-support"
+
+        def __init__(self):
+            self.attributes = {}
+
+        def setAttribute(self, attribute, enabled):
+            self.attributes[attribute] = enabled
 
     class FakeWebView:
         def __init__(self, parent):
@@ -970,6 +1001,29 @@ def test_create_remote_qt_window_reuses_authenticated_session_page(monkeypatch):
     assert runtime["webview"].url == url
     assert runtime["window"].central is runtime["webview"]
     assert runtime["window"].size == (1200, 800)
+    assert runtime["webview"]._page._settings.attributes == {
+        "fullscreen-support": True
+    }
+
+    class FakeFullScreenRequest:
+        def __init__(self, enabling):
+            self.enabling = enabling
+            self.accepted = False
+
+        def toggleOn(self):
+            return self.enabling
+
+        def accept(self):
+            self.accepted = True
+
+    enter_fullscreen = FakeFullScreenRequest(True)
+    runtime["webview"]._page.fullScreenRequested.emit(enter_fullscreen)
+    assert enter_fullscreen.accepted is True
+    assert runtime["window"].fullscreen is True
+    leave_fullscreen = FakeFullScreenRequest(False)
+    runtime["webview"]._page.fullScreenRequested.emit(leave_fullscreen)
+    assert leave_fullscreen.accepted is True
+    assert runtime["window"].fullscreen is False
     assert runtime["window"].status.messages == [
         "Connecting to remote MolSysViewer session…",
         "Remote session loaded; negotiating connection…",

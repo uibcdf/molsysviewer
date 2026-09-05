@@ -166690,6 +166690,54 @@ var HelpOverlay = class {
   }
 };
 
+// src/ui/viewport-icon-button.ts
+var VIEWPORT_ICON_PANEL = `<rect x="2" y="2" width="12" height="12" rx="1.5"/><line x1="5.5" y1="2.5" x2="5.5" y2="13.5"/>`;
+var VIEWPORT_ICON_FULLSCREEN = `<polyline points="2,5 2,2 5,2"/><polyline points="11,2 14,2 14,5"/><polyline points="14,11 14,14 11,14"/><polyline points="5,14 2,14 2,11"/>`;
+var VIEWPORT_ICON_EXIT_FULLSCREEN = `<polyline points="5,2 5,5 2,5"/><polyline points="11,2 11,5 14,5"/><polyline points="14,11 11,11 11,14"/><polyline points="2,11 5,11 5,14"/>`;
+var VIEWPORT_ICON_POPUP = `<line x1="5.5" y1="10.5" x2="11.5" y2="4.5"/><polyline points="8,4 12,4 12,8"/><polyline points="5.5,7 3,7 3,13 9,13 9,10.5"/>`;
+var VIEWPORT_ICON_HELP = `<circle cx="8" cy="8" r="6"/><path d="M6.2,6.5a1.9,1.9,0,0,1,3.8,0c0,1.9-1.9,1.9-1.9,3" stroke-linecap="round" stroke-linejoin="round"/><line x1="8" y1="12.8" x2="8" y2="12.8" stroke-width="2" stroke-linecap="round"/>`;
+var VIEWPORT_ICON_RESET = `<path d="M3.1,5.5A5.5,5.5,0,1,1,2.8,10"/><polyline points="2,2 2,6 6,6"/>`;
+function setViewportIcon(button2, svgInner) {
+  button2.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;">${svgInner}</svg>`;
+}
+function makeViewportIconButton(svgInner, title, onClick) {
+  const button2 = document.createElement("button");
+  button2.type = "button";
+  button2.title = title;
+  setViewportIcon(button2, svgInner);
+  Object.assign(button2.style, {
+    width: "28px",
+    height: "28px",
+    minWidth: "28px",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "0",
+    border: "1px solid rgba(255, 255, 255, 0.15)",
+    borderRadius: "6px",
+    background: "rgba(18, 18, 22, 0.75)",
+    color: "rgba(255, 255, 255, 0.75)",
+    cursor: "default",
+    userSelect: "none",
+    pointerEvents: "auto",
+    boxSizing: "border-box",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
+    transition: "all 120ms ease"
+  });
+  button2.addEventListener("mouseenter", () => {
+    button2.style.background = "rgba(18, 18, 22, 0.95)";
+    button2.style.borderColor = "rgba(255, 255, 255, 0.35)";
+    button2.style.color = "rgba(255, 255, 255, 0.98)";
+  });
+  button2.addEventListener("mouseleave", () => {
+    button2.style.background = "rgba(18, 18, 22, 0.75)";
+    button2.style.borderColor = "rgba(255, 255, 255, 0.15)";
+    button2.style.color = "rgba(255, 255, 255, 0.75)";
+  });
+  button2.addEventListener("click", onClick);
+  return button2;
+}
+
 // src/ui/controls.ts
 var makeButton2 = (label2, onClick) => {
   const btn = document.createElement("button");
@@ -167309,52 +167357,15 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
   }
   let fullscreenBtn = null;
   if (controlsMode === "minimal" && overlay) {
-    const ICON_PANEL = `<rect x="2" y="2" width="12" height="12" rx="1.5"/><line x1="5.5" y1="2.5" x2="5.5" y2="13.5"/>`;
-    const ICON_FULLSCREEN = `<polyline points="2,5 2,2 5,2"/><polyline points="11,2 14,2 14,5"/><polyline points="14,11 14,14 11,14"/><polyline points="5,14 2,14 2,11"/>`;
-    const ICON_POPUP = `<line x1="5.5" y1="10.5" x2="11.5" y2="4.5"/><polyline points="8,4 12,4 12,8"/><polyline points="5.5,7 3,7 3,13 9,13 9,10.5"/>`;
     const mkIcon = (svgInner, title, handler) => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.title = title;
-      btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${svgInner}</svg>`;
-      Object.assign(btn.style, {
-        width: "28px",
-        height: "28px",
-        minWidth: "28px",
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "0",
-        border: "1px solid rgba(255, 255, 255, 0.15)",
-        borderRadius: "6px",
-        background: "rgba(18, 18, 22, 0.75)",
-        color: "rgba(255, 255, 255, 0.75)",
-        cursor: "default",
-        userSelect: "none",
-        pointerEvents: "auto",
-        boxSizing: "border-box",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
-        transition: "all 120ms ease"
-      });
-      btn.addEventListener("mouseenter", () => {
-        btn.style.background = "rgba(18, 18, 22, 0.95)";
-        btn.style.borderColor = "rgba(255, 255, 255, 0.35)";
-        btn.style.color = "rgba(255, 255, 255, 0.98)";
-      });
-      btn.addEventListener("mouseleave", () => {
-        btn.style.background = "rgba(18, 18, 22, 0.75)";
-        btn.style.borderColor = "rgba(255, 255, 255, 0.15)";
-        btn.style.color = "rgba(255, 255, 255, 0.75)";
-      });
-      btn.addEventListener("click", handler);
+      const btn = makeViewportIconButton(svgInner, title, handler);
       overlay.appendChild(btn);
       return btn;
     };
-    mkIcon(ICON_PANEL, "Panel mode (N / W)", () => c8.togglePanelMode());
-    fullscreenBtn = mkIcon(ICON_FULLSCREEN, "Fullscreen", () => c8.toggleFullscreen());
-    if (onPopClick) mkIcon(ICON_POPUP, "Open popup", onPopClick);
-    const ICON_HELP = `<circle cx="8" cy="8" r="6"/><path d="M6.2,6.5a1.9,1.9,0,0,1,3.8,0c0,1.9-1.9,1.9-1.9,3" stroke-linecap="round" stroke-linejoin="round"/><line x1="8" y1="12.8" x2="8" y2="12.8" stroke-width="2" stroke-linecap="round"/>`;
-    mkIcon(ICON_HELP, "Help (H)", () => helpOverlay.toggle());
+    mkIcon(VIEWPORT_ICON_PANEL, "Panel mode (N / W)", () => c8.togglePanelMode());
+    fullscreenBtn = mkIcon(VIEWPORT_ICON_FULLSCREEN, "Fullscreen", () => c8.toggleFullscreen());
+    if (onPopClick) mkIcon(VIEWPORT_ICON_POPUP, "Open popup", onPopClick);
+    mkIcon(VIEWPORT_ICON_HELP, "Help (H)", () => helpOverlay.toggle());
   } else if (overlay) {
     const mk = (label3, handler) => {
       const b8 = makeButton2(label3, handler);
@@ -167488,14 +167499,13 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
       hotspot.style.height = "55px";
     }
   };
-  const ICON_EXIT_FULLSCREEN = `<polyline points="5,2 5,5 2,5"/><polyline points="11,2 11,5 14,5"/><polyline points="14,11 11,11 11,14"/><polyline points="2,11 5,11 5,14"/>`;
   const updateFullscreenButtonState = () => {
     const isFullscreen = !!document.fullscreenElement;
     if (fullscreenBtn) {
       if (controlsMode === "minimal") {
         const svg = fullscreenBtn.querySelector("svg");
         if (svg) {
-          const path = isFullscreen ? ICON_EXIT_FULLSCREEN : `<polyline points="2,5 2,2 5,2"/><polyline points="11,2 14,2 14,5"/><polyline points="14,11 14,14 11,14"/><polyline points="5,14 2,14 2,11"/>`;
+          const path = isFullscreen ? VIEWPORT_ICON_EXIT_FULLSCREEN : VIEWPORT_ICON_FULLSCREEN;
           svg.innerHTML = path;
         }
         fullscreenBtn.title = isFullscreen ? "Exit Fullscreen" : "Fullscreen";
@@ -168921,7 +168931,10 @@ var RemoteSurfaceControls = class {
       }
     };
     this.updateFullscreenLabel = () => {
-      this.fullscreenButton.textContent = document.fullscreenElement ? "Exit" : "Full";
+      setViewportIcon(
+        this.fullscreenButton,
+        document.fullscreenElement ? VIEWPORT_ICON_EXIT_FULLSCREEN : VIEWPORT_ICON_FULLSCREEN
+      );
       this.fullscreenButton.title = document.fullscreenElement ? "Exit fullscreen" : "Fullscreen";
     };
     this.root = document.createElement("div");
@@ -168935,15 +168948,15 @@ var RemoteSurfaceControls = class {
       gap: "4px",
       pointerEvents: "auto"
     });
-    this.addButton("Reset", "Reset remote camera", () => this.options.resetView());
-    this.fullscreenButton = this.addButton("Full", "Fullscreen", () => {
+    this.addButton("reset", VIEWPORT_ICON_RESET, "Reset remote camera", () => this.options.resetView());
+    this.addButton("panel", VIEWPORT_ICON_PANEL, "Open or close Studio (N / W)", () => {
+      this.options.togglePanel();
+    });
+    this.fullscreenButton = this.addButton("full", VIEWPORT_ICON_FULLSCREEN, "Fullscreen", () => {
       void this.toggleFullscreen();
     });
     this.help = new HelpOverlay(host, REMOTE_HELP);
-    this.addButton("Help", "Help (H)", () => this.help.toggle());
-    this.addButton("Panel", "Open or close Studio (N / W)", () => {
-      this.options.togglePanel();
-    });
+    this.addButton("help", VIEWPORT_ICON_HELP, "Help (H)", () => this.help.toggle());
     host.appendChild(this.root);
     window.addEventListener("keydown", this.onKeyDown, true);
     document.addEventListener("fullscreenchange", this.updateFullscreenLabel);
@@ -168954,23 +168967,9 @@ var RemoteSurfaceControls = class {
     this.help.dispose();
     this.root.remove();
   }
-  addButton(label2, title, callback) {
-    const button2 = document.createElement("button");
-    button2.type = "button";
-    button2.textContent = label2;
-    button2.title = title;
-    button2.setAttribute("data-molsysviewer-remote-control", label2.toLowerCase());
-    Object.assign(button2.style, {
-      height: "22px",
-      padding: "2px 6px",
-      border: "1px solid rgba(255,255,255,.5)",
-      borderRadius: "4px",
-      background: "rgba(0,0,0,.5)",
-      color: "#fff",
-      font: "11px/16px system-ui,sans-serif",
-      cursor: "default"
-    });
-    button2.addEventListener("click", callback);
+  addButton(name, icon, title, callback) {
+    const button2 = makeViewportIconButton(icon, title, callback);
+    button2.setAttribute("data-molsysviewer-remote-control", name);
     this.root.appendChild(button2);
     return button2;
   }

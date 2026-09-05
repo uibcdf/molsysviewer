@@ -829,7 +829,12 @@ pixel-based:
 
 The first parity tranche adds shared remote `Reset`, `Full`, `Help` and `Panel`
 chrome. Reset remains a command through the Python authority; fullscreen, help
-and panel visibility stay client-local.
+and panel visibility stay client-local. The video-backed surface now uses the
+same compact icon-button component as the normal minimal viewport instead of a
+second text-button design. Qt WebEngine explicitly enables fullscreen support,
+accepts page fullscreen requests and projects them onto the native window;
+focused guards cover both the browser-side control and the Qt enter/leave
+bridge.
 
 The second parity tranche adds target-aware right click without duplicating
 picking. The local client sends a normalized, correlated context-menu input;

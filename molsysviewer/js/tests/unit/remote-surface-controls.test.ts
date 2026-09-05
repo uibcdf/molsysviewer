@@ -88,7 +88,11 @@ test("RemoteSurfaceControls exposes truthful local chrome and semantic reset", a
         assert.equal(resets, 1);
         assert.equal(panelToggles, 1);
         assert.equal(fakeDocument.fullscreenElement, host);
-        assert.ok(find(host, "data-molsysviewer-remote-control", "help"));
+        const reset = find(host, "data-molsysviewer-remote-control", "reset");
+        const help = find(host, "data-molsysviewer-remote-control", "help");
+        assert.match(reset?.innerHTML ?? "", /<svg/);
+        assert.equal(reset?.style.width, "28px");
+        assert.match(help?.innerHTML ?? "", /<svg/);
         assert.equal(find(host, "data-molsysviewer-remote-control", "background"), undefined);
 
         controls.dispose();

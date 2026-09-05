@@ -195,6 +195,33 @@ def _install_remote_qt_status_bridge(*, window: Any, webview: Any, QTimer: Any) 
     return timer
 
 
+def _install_remote_qt_fullscreen(*, window: Any, webview: Any) -> None:
+    """Bridge the page Fullscreen API to the enclosing native Qt window."""
+    page = webview.page()
+    settings = page.settings()
+    settings.setAttribute(
+        type(settings).WebAttribute.FullScreenSupportEnabled,
+        True,
+    )
+    restore = {"maximized": False}
+
+    def handle_request(request: Any) -> None:
+        enabling = bool(request.toggleOn())
+        if enabling:
+            restore["maximized"] = bool(
+                window.isMaximized() if hasattr(window, "isMaximized") else False
+            )
+            window.showFullScreen()
+        elif restore["maximized"] and hasattr(window, "showMaximized"):
+            window.showMaximized()
+        else:
+            window.showNormal()
+        request.accept()
+
+    page.fullScreenRequested.connect(handle_request)
+    window._molsysviewer_remote_fullscreen_handler = handle_request
+
+
 def _get_helper(name: str) -> Any:
     m = sys.modules.get("molsysviewer.standalone_qt")
     if m is not None and hasattr(m, name):
@@ -434,6 +461,10 @@ def create_remote_qt_window(
         window=window,
         webview=webview,
         QTimer=qt["QTimer"],
+    )
+    _install_remote_qt_fullscreen(
+        window=window,
+        webview=webview,
     )
     webview.setUrl(qt["QUrl"](session_url))
     return {
