@@ -68,8 +68,11 @@ Current CI note:
   must not claim the native-platform matrix used by MolSysMT. The notebook and
   Sphinx/Pages workflows select the documentation profile by exact path
   (uibcdf/gh-run-receptor#8), preserving skipped notebook and combined
-  build/deploy evidence. These diagnostic rules do not alter workflow execution
-  or release gating.
+  build/deploy evidence. The npm publication and Zenodo verification workflows
+  select the release profile (uibcdf/gh-run-receptor#9), preserving observed
+  event/ref/SHA identity without claiming external delivery. Conda publication
+  remains on the Conda profile. These diagnostic rules do not alter workflow
+  execution or release gating.
 
 ---
 
