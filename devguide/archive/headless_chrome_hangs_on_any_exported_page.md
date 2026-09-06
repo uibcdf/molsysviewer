@@ -1,9 +1,9 @@
 ---
-summary: Headless Chrome hangs rendering any exported page on this machine, failing three screenshot tests.
+summary: Command-line headless Chrome never completes a navigation to http:// on this machine.
 issue: uibcdf/molsysviewer#77
-status: open
+status: withdrawn
 opened: 2026-09-04
-closed:
+closed: 2026-09-06
 severity: low
 verification: reproduced
 area: [testing, export, tooling]
@@ -13,7 +13,7 @@ blocked_by: []
 supersedes: []
 ---
 
-# Three screenshot tests time out, and it is not the code
+# Command-line headless Chrome will not navigate to http here, and it is not the code
 
 **Found:** 2026-09-04, during `uibcdf/molsysviewer#75` phase E2. Severity is low because
 nothing in the library is wrong; it is recorded because the three failures sit in a
@@ -151,6 +151,20 @@ than the defect, and its body still led with the disk-pressure lead refuted in t
 pass. Both are corrected there, with the old reasoning kept as a comment.
 
 What remains here is a record of the machine, not work owed.
+
+## Withdrawn, not resolved — 2026-09-06
+
+`withdrawn` rather than `resolved` because nothing was fixed. The browser on this machine
+still will not navigate to `http://` from the command line, and it never will because of
+anything written here: the defect is in a browser, or a distribution, or this host, and no
+change to MolSysViewer reaches it. `resolved` would also require a `guard` — the test that
+fails if the defect returns — and no such test can exist for a capability this project no
+longer uses.
+
+It leaves the queue because the queue is for defects that affect current MolSysViewer
+behaviour, and after uibcdf/molsysviewer#81 this one affects none. It is archived rather
+than deleted so that the next person who watches `chrome --headless` hang against a local
+server on this machine finds two passes of ruled-out hypotheses instead of starting over.
 
 **Not established:** why command-line navigation to http hangs when CDP-driven navigation
 to the same URL does not. Chrome's own `--v=1` log shows the component updater completing

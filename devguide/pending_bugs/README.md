@@ -23,10 +23,6 @@ list.
 
 - [`standalone_qt_live_demo_reload.md`](standalone_qt_live_demo_reload.md) — [#35](https://github.com/uibcdf/molsysviewer/issues/35) — In the standalone Qt host, replacing the loaded demo leaves the previous system on screen. *(high, reproduced)*
 
-### Open (1)
-
-- [`headless_chrome_hangs_on_any_exported_page.md`](headless_chrome_hangs_on_any_exported_page.md) — [#77](https://github.com/uibcdf/molsysviewer/issues/77) — Headless Chrome hangs rendering any exported page on this machine, failing three screenshot tests. *(low, reproduced)*
-
 ### Deferred until after 1.0 (1)
 
 - [`standalone_qt_movie_camera_snapshot.md`](post_1.0/standalone_qt_movie_camera_snapshot.md) — [#36](https://github.com/uibcdf/molsysviewer/issues/36) — Movie export in the Qt host fails because the camera snapshot is never mirrored back.
@@ -48,6 +44,14 @@ Two reports were resolved on 2026-08-04 by the export rework and moved to
 unpublished npm version, and the standalone export mutating live widget state.
 Both disappeared as consequences of collapsing the two export templates into one,
 not as separate patches.
+
+The headless-Chrome entry was **withdrawn** on 2026-09-06 and moved to
+[`../archive/`](../archive/README.md). Nothing was fixed: command-line Chrome on that
+machine still will not navigate to `http://`. It left this queue because the queue is for
+defects affecting current MolSysViewer behaviour, and after
+[#81](https://github.com/uibcdf/molsysviewer/issues/81) moved the three colour tests to
+the TypeScript E2E suite it affects none. `withdrawn` is the status that does not demand a
+`guard`, and no test of ours can watch a browser we do not control.
 
 The former color-digester finding is resolved: `value_range.py` and
 `replace.py` exist, their public surfaces are covered by

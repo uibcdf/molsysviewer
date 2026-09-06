@@ -1,12 +1,12 @@
 ---
 summary: The three exported-page colour tests need an http origin, which command-line Chrome cannot give them here; Playwright can.
 issue: uibcdf/molsysviewer#81
-status: open
+status: resolved
 opened: 2026-09-05
-closed:
+closed: 2026-09-06
 verification: measured
 area: [testing, export, tooling]
-guard:
+guard: molsysviewer/js/tests/e2e/exported-page-colour.e2e.ts
 normative:
 blocked_by: []
 supersedes: []

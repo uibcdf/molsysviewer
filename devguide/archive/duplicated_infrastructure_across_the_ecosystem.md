@@ -1,9 +1,9 @@
 ---
 summary: Duplicated infrastructure across the MolSysSuite repositories keeps costing the same defect twice.
 issue: uibcdf/molsysviewer#70
-status: open
+status: withdrawn
 opened: 2026-09-02
-closed:
+closed: 2026-09-06
 verification: measured
 area: [process, build, tooling]
 guard:

@@ -116,3 +116,10 @@ Completed work, kept for the reasoning:
   criterion that was unmet without being visible: the reason two of them deserved `stable`
   was written in the generator's source, where a reader of the generated audit never meets
   it.
+- [`headless_chrome_hangs_on_any_exported_page.md`](headless_chrome_hangs_on_any_exported_page.md)
+  — **withdrawn, not resolved**: the browser on that machine still will not navigate to
+  `http://` from the command line, and nothing here can reach it. Read for the two
+  refuted passes rather than the outcome. The first blamed disk pressure with sound
+  reasoning and never checked it against the 5.1 MB Chrome actually writes; the second
+  established what the defect is — the server records no request at all — without
+  establishing why CDP-driven navigation to the same URL takes 0.2 s.
