@@ -1,9 +1,9 @@
 ---
 summary: Consolidate quantity digesters on PyUnitWizard canonical paths.
 issue: uibcdf/molsysviewer#33
-status: partial
+status: resolved
 opened: 2026-08-13
-closed:
+closed: 2026-09-03
 verification: inspected
 area: [argdigest, performance, units]
 guard: tests/test_digestion_helpers.py::test_the_scalar_length_digesters_go_through_the_shared_boundary
@@ -16,8 +16,8 @@ supersedes: []
 
 **Reported:** 2026-08-13, while propagating PyUnitWizard's completed cheap-canonicity
 work through MolSysSuite consumers.
-**Status:** Open. The shared length helper is normative, but legacy digesters have not
-been audited against it.
+**Status:** Resolved for `[L]` in `a785b1bf`; the rest audited on 2026-09-06 and found
+to be either refuted, unreachable, or a different question. See the closing note.
 
 ## What
 
@@ -329,3 +329,29 @@ un-containing the parse fails the error-contract case.
 This closes the proposal. Every digester it can reach is on the shared helper; the two that
 are not are documented above as caller-gated by design, and a fifth reading is not going to
 change that.
+
+## Closed 2026-09-03, and audited to its edges on 2026-09-06
+
+**What was delivered.** `a785b1bf` consolidated `switch_distance`, `cutoff_distance` and
+`max_bond_length` onto `digest_length_quantity`, and synchronized `threshold` and
+`distance_threshold` with MolSysMT instead, because a caller allow-list deciding whether a
+value is accepted at all *is* semantic. Behaviour was pinned before and after over 180
+combinations; exactly 12 cells moved, all of them one crash. `tests/test_length_digesters.py`
+covers all seven `[L]` digesters, and the guard above pins the boundary.
+
+**What the wider scope came to.** This proposal also named box, time, energy and
+dimensionless vectors. Fourteen digesters still call `puw.` without the shared boundary,
+and none of them is a missed migration:
+
+- **six have no public callable declaring the name** — `angles`, `angle_threshold`,
+  `bond_length`, `distance_threshold`, `threshold`, `value`;
+- **four are the array and union family this document already refuted** — `coordinates`,
+  `vectors`, `values`, `point`;
+- **`width` carries three caller-decided meanings** (CSS, pixels, physical length) and its
+  `[L]` branch accepts bare numbers, so consolidating it would change behaviour rather
+  than share an implementation;
+- **`duration`, `duration_ms` and `force` are a different question**, filed separately.
+
+The assumption this document flagged as an assumption — *"some remaining legacy digesters
+are both compatible with the shared helper and frequent enough for the change to matter"* —
+did not hold. Resolved rather than left open on it.

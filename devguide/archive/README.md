@@ -123,3 +123,8 @@ Completed work, kept for the reasoning:
   reasoning and never checked it against the 5.1 MB Chrome actually writes; the second
   established what the defect is — the server records no request at all — without
   establishing why CDP-driven navigation to the same URL takes 0.2 s.
+- [`consolidate_quantity_digesters_on_pyunitwizard_canonical_paths.md`](consolidate_quantity_digesters_on_pyunitwizard_canonical_paths.md)
+  — the `[L]` consolidation, done in `a785b1bf`. Read for the audit at the end: the wider
+  scope it declared — box, time, energy, dimensionless vectors — came to nothing a
+  migration could fix, and the assumption it had flagged as an assumption did not hold.
+  What was live went to [#86](https://github.com/uibcdf/molsysviewer/issues/86).

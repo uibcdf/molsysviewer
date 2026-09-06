@@ -21,10 +21,6 @@ list. Deferred entries also carry the `post-1.0` milestone on the issue board.
 
 <!-- generated: devguide_index -->
 
-### Partially done (1)
-
-- [`consolidate_quantity_digesters_on_pyunitwizard_canonical_paths.md`](consolidate_quantity_digesters_on_pyunitwizard_canonical_paths.md) — [#33](https://github.com/uibcdf/molsysviewer/issues/33) — Consolidate quantity digesters on PyUnitWizard canonical paths. *(inspected)*
-
 ### Blocked (1)
 
 - [`molsysmt_known_source_form_and_large_string_detection.md`](molsysmt_known_source_form_and_large_string_detection.md) — [#42](https://github.com/uibcdf/molsysviewer/issues/42) — A large in-memory molecular string enters unbounded filename extension detection. *(measured)* — waiting on uibcdf/molsysmt#151
