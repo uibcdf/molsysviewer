@@ -17,6 +17,7 @@ const SUITES = [
     "widget-seam",
     "broken-anchors",
     "export-replay",
+    "exported-page-colour",
     "exported-page-framing",
     "global-reprs-across-loads",
     "group-panel-interaction",

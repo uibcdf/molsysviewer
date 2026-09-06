@@ -50,7 +50,14 @@ def test_e2e_runner_inventory_matches_every_scientific_suite():
     # `movie-playback` does the same for playback. It counts
     # *distinct* camera positions, because a runtime that jumped straight to the
     # last keyframe would still end in the right place and still report done.
-    assert len(expected) == 36
+    # 37 since 2026-09-06: `exported-page-colour`, three assertions that moved out
+    # of `test_exported_page_opens_from_disk.py`. They embed a real export in a
+    # host page and pin that it copies the surface behind its frame, which needs a
+    # same-origin parent and therefore a server. Command-line headless Chrome never
+    # completes a navigation to http://127.0.0.1 here, so they had been skipping
+    # permanently; Playwright loads the same URL in 0.2 s
+    # (uibcdf/molsysviewer#81, #77).
+    assert len(expected) == 37
     assert declared == expected
     build_command = package["scripts"]["build:e2e:all"]
     compiled = set(re.findall(r"tests/e2e/([^ ]+)\.e2e\.ts", build_command))

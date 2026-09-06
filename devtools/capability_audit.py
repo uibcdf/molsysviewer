@@ -276,7 +276,7 @@ CAPABILITIES: tuple[Capability, ...] = (
         docs="docs/content/user/export/index.md",
         unit=("test_write_html.py", "test_export_runtime_source.py",
               "test_exported_page_opens_from_disk.py", "test_static_export_snapshot.py"),
-        e2e=("export-replay", "exported-page-framing"),
+        e2e=("export-replay", "exported-page-framing", "exported-page-colour"),
     ),
     Capability(
         name="Popup",
