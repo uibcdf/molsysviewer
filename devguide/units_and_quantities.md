@@ -139,4 +139,4 @@ the pattern across the whole suite:
   clear error for non-scalar input), closing the `float(get_value(...))` idiom.
 
 The classification and migration of older quantity digesters is tracked in
-[`pending_proposals/consolidate_quantity_digesters_on_pyunitwizard_canonical_paths.md`](pending_proposals/consolidate_quantity_digesters_on_pyunitwizard_canonical_paths.md).
+[`pending_proposals/consolidate_quantity_digesters_on_pyunitwizard_canonical_paths.md`](archive/consolidate_quantity_digesters_on_pyunitwizard_canonical_paths.md).

@@ -228,7 +228,7 @@ Resume in this order:
    `save_session`/`load_session`, units. Three are `experimental` and say so; the other
    two are `stable`. See the *Nothing has watched these draw* section of
    [`capability_audit.md`](capability_audit.md), and
-   [`pending_proposals/evidence_a_stable_capability_has_not_earned.md`](pending_proposals/evidence_a_stable_capability_has_not_earned.md)
+   [`pending_proposals/evidence_a_stable_capability_has_not_earned.md`](archive/evidence_a_stable_capability_has_not_earned.md)
    (uibcdf/molsysviewer#65), which is the entry that asks for the decision rather than the
    suites.
 2. In parallel when the required workstation is available, close Phase 7's two

@@ -25,7 +25,7 @@ El diseño del contenido sigue tres principios fundamentales:
 
 ## 🗺️ 3. Estructura de las 27 Unidades
 
-El proyecto se compone de las siguientes unidades secuenciales ubicadas en el directorio [sandbox/Curso/](file:///home/diego/repos@uibcdf/molsysviewer/sandbox/Curso/):
+El proyecto se compone de las siguientes unidades secuenciales ubicadas en el directorio [sandbox/Curso/](../../sandbox/Curso/):
 
 1.  **El Widget Molecular y Layouts:** Inicializar el visualizador en Jupyter y personalizar layouts.
 2.  **Primera Carga y Metadatos:** Cargar estructuras en bruto e inspeccionar bloques de carga.

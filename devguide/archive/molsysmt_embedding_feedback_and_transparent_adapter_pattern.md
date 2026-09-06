@@ -91,7 +91,7 @@ The embedding pipeline consists of **6 decoupled components** working in sequenc
 
 ### **Component 1: Pre-Generation Script (`docs/generate_static_views/`)**
 Static views are generated ONCE by standalone Python scripts.  
-File: [`docs/generate_static_views/1BRS_molecule_index_zero.py`](file:///home/diego/repos@uibcdf/molsysmt/docs/generate_static_views/1BRS_molecule_index_zero.py)
+File: [`docs/generate_static_views/1BRS_molecule_index_zero.py`](https://github.com/uibcdf/molsysmt/blob/main/docs/generate_static_views/1BRS_molecule_index_zero.py)
 
 ```python
 from pathlib import Path
@@ -117,7 +117,7 @@ view.export.html(str(views_dir / "1BRS_molecule_index_zero.html"),
 
 ### **Component 2: Build-Time Runtime Asset Hook (`docs/conf.py`)**
 To prevent committing 6.4 MB JavaScript binaries into Git history, `viewer.js` is placed dynamically during Sphinx initialization.  
-File: [`docs/conf.py`](file:///home/diego/repos@uibcdf/molsysmt/docs/conf.py)
+File: [`docs/conf.py`](https://github.com/uibcdf/molsysmt/blob/main/docs/conf.py)
 
 ```python
 def _place_runtime(app):
@@ -167,7 +167,7 @@ The script sets `os.environ["MSM_VIEWS_FROM_HTML_FILES"] = "True"` during execut
 
 ### **Component 5: Dynamic Stack Frame Interception (`molsysmt/basic/viewer/molsysviewer.py`)**
 When `msm.view()` executes inside `execute_notebooks.py`, the viewer adapter intercepts the call transparently.  
-File: [`molsysmt/basic/viewer/molsysviewer.py`](file:///home/diego/repos@uibcdf/molsysmt/molsysmt/basic/viewer/molsysviewer.py)
+File: [`molsysmt/basic/viewer/molsysviewer.py`](https://github.com/uibcdf/molsysmt/blob/main/molsysmt/basic/viewer/molsysviewer.py)
 
 ```python
 from inspect import stack
@@ -231,8 +231,8 @@ Sphinx compiles `docs/index.ipynb` with `nb_execution_mode = "off"`. The resulti
 
 ## 5. Reference Verification Links in MolSysMT
 
-- **Adapter Implementation**: [`molsysmt/basic/viewer/molsysviewer.py`](file:///home/diego/repos@uibcdf/molsysmt/molsysmt/basic/viewer/molsysviewer.py)
-- **Sphinx Hook Configuration**: [`docs/conf.py`](file:///home/diego/repos@uibcdf/molsysmt/docs/conf.py)
-- **Reference Notebook**: [`docs/index.ipynb`](file:///home/diego/repos@uibcdf/molsysmt/docs/index.ipynb)
-- **Static Scene Script**: [`docs/generate_static_views/1BRS_molecule_index_zero.py`](file:///home/diego/repos@uibcdf/molsysmt/docs/generate_static_views/1BRS_molecule_index_zero.py)
-- **Normative Architectural Specification**: [`devguide/notebook_compilation_and_visualization.md`](file:///home/diego/repos@uibcdf/molsysmt/devguide/notebook_compilation_and_visualization.md)
+- **Adapter Implementation**: [`molsysmt/basic/viewer/molsysviewer.py`](https://github.com/uibcdf/molsysmt/blob/main/molsysmt/basic/viewer/molsysviewer.py)
+- **Sphinx Hook Configuration**: [`docs/conf.py`](https://github.com/uibcdf/molsysmt/blob/main/docs/conf.py)
+- **Reference Notebook**: [`docs/index.ipynb`](https://github.com/uibcdf/molsysmt/blob/main/docs/index.ipynb)
+- **Static Scene Script**: [`docs/generate_static_views/1BRS_molecule_index_zero.py`](https://github.com/uibcdf/molsysmt/blob/main/docs/generate_static_views/1BRS_molecule_index_zero.py)
+- **Normative Architectural Specification**: [`devguide/notebook_compilation_and_visualization.md`](https://github.com/uibcdf/molsysmt/blob/main/devguide/notebook_compilation_and_visualization.md)

@@ -42,7 +42,7 @@ audit.
 | 7 | Missing seam evidence | ⚠ | 90% | working tree from `ca3dd2e7` | Automated seam evidence complete; blocked on Qt real-window/GPU and human reload smoke observations |
 | 8 | Representative performance and memory gate | ✓ | 100% | `15d86a8a` | Matrix evidence and byte-budget guard independently audited; small worker remeasured coherently; closed 2026-08-09 |
 | 9 | Documentation and upstream closure | ✓ | 100% | `55839d23` | Closed-architecture phrase guard independently mutation-audited; closed 2026-08-09 |
-| 10 | Product and release gates | ◐ | 36% | `78b485f9`, `d048126d` plus the gate 9 slices | 4 of 11 gates closed: notebook CI, state-file persistence, hover policy and public-callable digestion — 448 digested, 0 undigested, 29 exempt with a stated reason, 0 missing digesters. Dependency/artifact, dogfooding and final gates remain |
+| 10 | Product and release gates | ◐ | 36% | `78b485f9`, `d048126d` plus the gate 9 slices | 4 of 11 gates closed: notebook CI, state-file persistence, hover policy and public-callable digestion — 474 public callables, 442 digested, 0 undigested, 34 exempt with a stated reason, 0 missing digesters. Dependency/artifact, dogfooding and final gates remain |
 
 Status vocabulary:
 
@@ -1217,9 +1217,16 @@ not repeated for this documentation slice.
    `.github/workflows/docs-notebooks.yaml` through
    `docs/execute_notebooks.py`.
 9. **Done.** Every public callable is digested or deliberately exempt, and every
-   argument name they introduce has a digester: **448 digested, 0 undigested, 29
-   exempt with a stated reason, 0 missing digesters**, pinned by
-   `tests/test_public_api_inventory.py`. The decorating surfaced more defects than
+   argument name they introduce has a digester: **474 public callables, 442
+   digested, 0 undigested, 34 exempt with a stated reason, 0 missing
+   digesters**, pinned by `tests/test_public_api_inventory.py`.
+
+   The counts moved on 2026-09-06 and the gate did not: `molsysviewer.remote`
+   became an explicit root of the inventory walk, which is how four public
+   callables that had been undigested since the module existed became visible
+   at all — `import molsysviewer` does not import it. They and their five
+   argument names were closed in `uibcdf/molsysviewer#83`. Nothing regressed;
+   the number became honest. The decorating surfaced more defects than
    it introduced — a dead digester branch that made `view.camera.set_mode` raise for
    both its valid values, `digest_point` refusing the plain list its callers
    document, and two aliases digesting nothing while warning on every call.

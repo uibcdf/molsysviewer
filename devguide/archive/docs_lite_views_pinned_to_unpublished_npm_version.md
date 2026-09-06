@@ -171,6 +171,6 @@ is inherited from the MolSysMT configuration and can go.
 
 The same embedding mechanism is what MolSysMT's `docs/README.md` declares and
 does not implement; see
-[`../pending_proposals/first_read_comprehension_gaps_2026_08.md`](../pending_proposals/first_read_comprehension_gaps_2026_08.md)
+[`../pending_proposals/first_read_comprehension_gaps_2026_08.md`](first_read_comprehension_gaps_2026_08.md)
 for the documentation-accuracy pattern. Fix this defect before porting the
 mechanism to another repository, or the port inherits it.

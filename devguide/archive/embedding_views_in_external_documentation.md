@@ -23,7 +23,7 @@ extension, deferred). Steps 1, 3 and 4 landed 2026-08-03; the export rework of
 documentation. Investigating why produced
 [`../archive/docs_lite_views_pinned_to_unpublished_npm_version.md`](../archive/docs_lite_views_pinned_to_unpublished_npm_version.md)
 and the documentation findings in
-[`first_read_comprehension_gaps_2026_08.md`](../pending_proposals/first_read_comprehension_gaps_2026_08.md).
+[`first_read_comprehension_gaps_2026_08.md`](first_read_comprehension_gaps_2026_08.md).
 This proposal is the design that closes both.
 
 **Audience:** a third party publishing MolSysViewer views on their own website.

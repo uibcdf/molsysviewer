@@ -15,7 +15,7 @@ supersedes: []
 # Three tests in the wrong test suite
 
 **Measured:** 2026-09-05, while resolving the symptom of
-[`../archive/headless_chrome_hangs_on_any_exported_page.md`](../pending_bugs/headless_chrome_hangs_on_any_exported_page.md).
+[`../archive/headless_chrome_hangs_on_any_exported_page.md`](headless_chrome_hangs_on_any_exported_page.md).
 
 ## What
 

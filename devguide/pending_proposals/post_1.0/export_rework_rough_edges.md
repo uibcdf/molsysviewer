@@ -143,7 +143,7 @@ The pattern in both: **the repository was consistent with itself and wrong about
 the product.** Tests asserted what the code does, documentation described what we
 meant, and neither of them opened the artifact a user would receive. This is the
 same finding as
-[`../first_read_comprehension_gaps_2026_08.md`](../first_read_comprehension_gaps_2026_08.md)
+[`../first_read_comprehension_gaps_2026_08.md`](../../archive/first_read_comprehension_gaps_2026_08.md)
 from the other side — that one was about a reader misunderstanding the
 repository, this one is about the repository misunderstanding its own output.
 

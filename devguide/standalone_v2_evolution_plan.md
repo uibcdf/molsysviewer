@@ -39,7 +39,7 @@ This document outlines the architectural plan for the second version (v2) of the
 ## 1. Context & The Challenge of Standalone v1
 
 ### Standalone v1 (Current State)
-The current v1 prototype ([standalone_qt](file:///home/diego/repos@uibcdf/molsysviewer/molsysviewer/standalone_qt)) uses a monolithic **PySide6 (Qt) + QtWebEngine** architecture. It bundles the Python runtime, the scientific libraries (`molsysmt`, `numba`, `numpy`), and a Chromium-based web view into a single process.
+The current v1 prototype ([standalone_qt](../molsysviewer/standalone_qt)) uses a monolithic **PySide6 (Qt) + QtWebEngine** architecture. It bundles the Python runtime, the scientific libraries (`molsysmt`, `numba`, `numpy`), and a Chromium-based web view into a single process.
 
 ### The Challenge for Non-Programmers
 While v1 is a great bridge for developers, it has significant limitations when targeted at non-programmers:
