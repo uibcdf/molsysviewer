@@ -63,6 +63,11 @@ one you came for.
 5. **Treat warnings as migration signals**
    - `STRICTNESS = "warn"` means the integration is still being hardened.
    - do not accept `DigestNotDigestedWarning` on stable public API as normal background noise.
+6. **Argument names are one namespace for the whole package**
+   - a digester is resolved by argument name alone (`decorator.py`: `plan.digesters.get(argname)`), so naming a public parameter selects a contract that may already exist. `arg_digest.map` does not change this: mapped pipelines run **after** the by-name loop, not instead of it.
+   - reusing a name is normal and often right. Rule 3 already says caller-aware semantics belong in the digester, and that is the tool when **the argument means the same thing with different admissible values per caller** — `atom_name` accepts a `bool` from `get` and a string from `molsysmt.form.*`, and one idea stays in one file.
+   - it is the wrong tool when the argument means **an unrelated thing**. Then a caller branch unifies nothing: it puts two domains in one file and makes the newcomer's correctness depend on edits to the other. Give it its own name instead, and its own contract.
+   - know which dispatchers end in a bare `raise`. `value.py` is MolSysMT's, 566 lines keyed on caller suffixes, and a caller it does not recognise raises on **every** call the moment the function is decorated — the cost is paid by whoever debugs the explosion, not by whoever chose the name. `molsysviewer.remote`'s packet validators hit exactly this and were renamed to `packet` (`uibcdf/molsysviewer#83`).
 
 ### Standardization
 

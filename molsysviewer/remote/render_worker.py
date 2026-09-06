@@ -16,6 +16,8 @@ from pathlib import Path
 from typing import Any, Literal, Mapping
 from urllib.parse import urlparse
 
+from molsysviewer._private.argdigest.digest import digest
+
 GpuPolicy = Literal["require-hardware", "allow-software"]
 WorkerState = Literal["new", "starting", "ready", "failed", "stopped"]
 _RESERVED_ARGUMENTS = frozenset(
@@ -82,7 +84,8 @@ class RenderWorkerDiagnostics:
     gpu_feature_status: Mapping[str, Any]
 
 
-def find_chromium_executable(explicit: str | None = None) -> str:
+@digest()
+def find_chromium_executable(explicit: str | Path | None = None) -> str:
     """Resolve a Chromium-family executable without shell invocation."""
     if explicit:
         candidate = Path(explicit).expanduser()
@@ -98,6 +101,7 @@ def find_chromium_executable(explicit: str | None = None) -> str:
     )
 
 
+@digest()
 def is_software_renderer(renderer: str) -> bool:
     normalized = renderer.casefold()
     return any(

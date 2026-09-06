@@ -1,23 +1,12 @@
 {
   "totals": {
     "public_callables": 474,
-    "digested": 438,
-    "undigested": 4,
+    "digested": 442,
+    "undigested": 0,
     "exempt": 34,
-    "declared_digesters": 361,
-    "missing_digesters": 5
+    "declared_digesters": 367,
+    "missing_digesters": 0
   },
-  "undigested": [
-    "molsysviewer.remote.find_chromium_executable",
-    "molsysviewer.remote.is_software_renderer",
-    "molsysviewer.remote.validate_input_packet",
-    "molsysviewer.remote.validate_signaling_packet"
-  ],
-  "missing_digesters": [
-    "expected_endpoint_id",
-    "expected_session_id",
-    "expected_viewer_id",
-    "explicit",
-    "renderer"
-  ]
+  "undigested": [],
+  "missing_digesters": []
 }

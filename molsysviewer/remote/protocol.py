@@ -8,6 +8,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping
 
+from molsysviewer._private.argdigest.digest import digest
+
 REMOTE_PROTOCOL_VERSION = 1
 _MANIFEST_PATH = Path(__file__).resolve().parent.parent / "remote_protocol.json"
 _MANIFEST = json.loads(_MANIFEST_PATH.read_text(encoding="utf-8"))
@@ -99,25 +101,26 @@ def _common_identity(
     return value, None
 
 
+@digest()
 def validate_signaling_packet(
-    value: Any,
+    packet: Any,
     *,
     expected_viewer_id: str | None = None,
     expected_session_id: str | None = None,
     expected_endpoint_id: str | None = None,
 ) -> PacketValidation:
-    value, failure = _common_identity(
-        value,
+    packet, failure = _common_identity(
+        packet,
         expected_viewer_id=expected_viewer_id,
         expected_session_id=expected_session_id,
         expected_endpoint_id=expected_endpoint_id,
     )
     if failure is not None:
         return failure
-    if not _non_empty(value.get("messageId")):
+    if not _non_empty(packet.get("messageId")):
         return _rejected("malformed-packet", "messageId must be a non-empty string")
-    kind = value["kind"]
-    payload = value["payload"]
+    kind = packet["kind"]
+    payload = packet["payload"]
     if kind not in SIGNALING_KINDS:
         return _rejected("unknown-kind", f"Unknown signaling kind {kind!r}")
     if kind in {"offer", "answer"}:
@@ -136,42 +139,43 @@ def validate_signaling_packet(
             return _rejected("malformed-payload", "sdpMLineIndex must be null or non-negative")
     return _accepted(
         RemotePacket(
-            viewer_id=value["viewerId"],
-            session_id=value["sessionId"],
-            endpoint_id=value["endpointId"],
-            message_id=value["messageId"],
+            viewer_id=packet["viewerId"],
+            session_id=packet["sessionId"],
+            endpoint_id=packet["endpointId"],
+            message_id=packet["messageId"],
             kind=kind,
             payload=payload,
         )
     )
 
 
+@digest()
 def validate_input_packet(
-    value: Any,
+    packet: Any,
     *,
     expected_viewer_id: str | None = None,
     expected_session_id: str | None = None,
     expected_endpoint_id: str | None = None,
 ) -> PacketValidation:
-    value, failure = _common_identity(
-        value,
+    packet, failure = _common_identity(
+        packet,
         expected_viewer_id=expected_viewer_id,
         expected_session_id=expected_session_id,
         expected_endpoint_id=expected_endpoint_id,
     )
     if failure is not None:
         return failure
-    sequence = value.get("sequence")
+    sequence = packet.get("sequence")
     if (
         not isinstance(sequence, int)
         or isinstance(sequence, bool)
         or not 0 <= sequence <= MAX_SAFE_SEQUENCE
     ):
         return _rejected("malformed-packet", "sequence must be a non-negative safe integer")
-    timestamp_ms = value.get("timestampMs")
+    timestamp_ms = packet.get("timestampMs")
     if not _number(timestamp_ms) or timestamp_ms < 0:
         return _rejected("malformed-packet", "timestampMs must be finite and non-negative")
-    viewport = value.get("viewport")
+    viewport = packet.get("viewport")
     if not isinstance(viewport, Mapping):
         return _rejected("malformed-packet", "viewport must be a mapping")
     for dimension in ("width", "height"):
@@ -182,8 +186,8 @@ def validate_input_packet(
     if not _number(dpr) or not 0 < dpr <= MAX_DEVICE_PIXEL_RATIO:
         return _rejected("malformed-packet", "viewport.devicePixelRatio is out of bounds")
 
-    kind = value["kind"]
-    payload = value["payload"]
+    kind = packet["kind"]
+    payload = packet["payload"]
     if kind not in INPUT_KINDS:
         return _rejected("unknown-kind", f"Unknown input kind {kind!r}")
     payload_failure = _validate_input_payload(kind, payload)
@@ -191,9 +195,9 @@ def validate_input_packet(
         return payload_failure
     return _accepted(
         RemotePacket(
-            viewer_id=value["viewerId"],
-            session_id=value["sessionId"],
-            endpoint_id=value["endpointId"],
+            viewer_id=packet["viewerId"],
+            session_id=packet["sessionId"],
+            endpoint_id=packet["endpointId"],
             sequence=sequence,
             timestamp_ms=float(timestamp_ms),
             kind=kind,

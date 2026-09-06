@@ -58,3 +58,25 @@ def check_structure_index(name, value, caller=None):
         raise ArgumentError(name, value=value, caller=caller,
                             message="structure indices start at zero")
     return value
+
+
+def check_expected_identity(name, value, caller=None):
+    """One side of a remote packet's identity, as the receiver expects to read it.
+
+    `None` leaves the axis unchecked, which is how a receiver that does not care about,
+    say, the endpoint asks for the other two to be enforced and not this one.
+
+    A string is compared for exact equality against what the packet claims, so it is
+    returned unstripped: stripping here would let `" a"` accept a packet claiming `"a"`,
+    an identity match nobody asked for. Blank is refused rather than passed through,
+    because a packet's own identifiers are required to be non-empty — an expectation of
+    `""` can never match anything, and reads as a configuration that resolved to nothing
+    rather than as a decision to check.
+    """
+    if value is None:
+        return None
+    if isinstance(value, str) and value.strip():
+        return value
+    raise ArgumentError(name, value=value, caller=caller,
+                        message="expected the identifier a packet must claim, or None to "
+                                "leave this identity unchecked")
