@@ -1,13 +1,13 @@
 ---
 summary: digest_duration lets pint's UndefinedUnitError out of twelve public callables.
 issue: uibcdf/molsysviewer#86
-status: open
+status: resolved
 opened: 2026-09-06
-closed:
+closed: 2026-09-06
 severity: low
 verification: reproduced
 area: [argdigest, units]
-guard:
+guard: tests/test_time_and_force_digesters.py
 normative:
 blocked_by: []
 supersedes: []
@@ -90,3 +90,73 @@ would change behaviour rather than share an implementation.
 
 Evidence in
 [`../archive/consolidate_quantity_digesters_on_pyunitwizard_canonical_paths.md`](../archive/consolidate_quantity_digesters_on_pyunitwizard_canonical_paths.md).
+
+## Resolved 2026-09-06
+
+### Two more leaks, found while fixing the one that was filed
+
+`"banana"` was not alone. `"250"` parsed as **250 radians** and died on
+`DimensionalityError` on its way to the frontend, and `True` was accepted by `duration` as
+**one millisecond** while `duration_ms` threw PyUnitWizard's `NotImplementedMethodError`.
+Three foreign exceptions and a boolean hole, from an issue filed about one.
+
+### What changed
+
+`digest_length_quantity` became the `[L]` case of `digest_quantity`, which takes the
+dimensionality. `duration` and `duration_ms` are `[T]` through it, and `force` is
+`[L][M][T]^-2[mol]^-1` through it. Nothing hand-rolls
+`is_quantity -> check -> standardize -> raise` any more, and every refusal is
+`ArgumentError` naming the argument and the caller, with the original exception kept as
+`__cause__`.
+
+| input | `duration` before | `duration` after | `duration_ms` before | `duration_ms` after |
+| --- | --- | --- | --- | --- |
+| `"250 ms"` | 2.5e+11 ps | unchanged | 2.5e+11 ps | unchanged |
+| `5` | `5`, bare | **`ArgumentError`** | 5e+09 ps | unchanged |
+| `True` | `True` → 1 ms | **`ArgumentError`** | `NotImplementedMethodError` | **`ArgumentError`** |
+| `"250"` | 250 **radian** | **`ArgumentError`** | 250 **radian** | **`ArgumentError`** |
+| `"banana"` | `UndefinedUnitError` | **`ArgumentError`** | `UndefinedUnitError` | **`ArgumentError`** |
+
+### The one deliberate behaviour change
+
+`duration=5` used to reach the frontend as 5 ms, by way of `quantity_value_in_unit`
+reading bare numbers as the unit asked for. It now raises. That is a **tightening of a
+public argument**, chosen rather than inherited: `duration=2` cannot be told from two
+seconds by anyone reading the call, which is the silent scale error the units policy
+exists to prevent, and the same policy already refuses a bare number for every length.
+
+The refusal is actionable — the message names both `"250 ms"` and `duration_ms=250` — and
+`duration_ms` still takes a bare number, because its name carries the unit. Nothing in the
+repository, the tests, or the documentation passed a bare `duration`; every call site
+already wrote the units. `docs/content/user/introduction/units.md` now says so where a
+reader meets it.
+
+So the two names disagree in exactly one place, and that is the answer to acceptance
+criterion 2: not that they agree everywhere, but that where they differ, one of them names
+its unit and the other does not.
+
+### The bare-number row that was already right
+
+The report warned that the `5` row looked alarming and was not a defect, because both
+paths arrived as 5 ms. That held: the change is not a bug fix, it is a policy being
+applied where it had been skipped.
+
+### Verification
+
+`tests/test_time_and_force_digesters.py`, 46 assertions. The type of every refusal is
+asserted **exactly** — `pytest.raises(ArgumentError)` alone would not pin this, because
+`ArgumentError` is a `ValueError` and so is pint's `UndefinedUnitError`, so a subclass
+check passes while the caller still meets pint.
+
+Six mutations, each caught:
+
+| mutation | test that falls |
+| --- | --- |
+| the boundary stops translating foreign exceptions | `test_one_boundary_serves_every_magnitude` |
+| `duration` passes strings through again | `test_the_two_names_agree_wherever_they_overlap` |
+| `duration` accepts bare numbers | `test_the_refusal_of_a_bare_number_points_at_the_name_that_accepts_one` |
+| `duration_ms` stops treating `bool` as an error | `test_a_duration_that_is_not_a_time_raises_this_packages_error` |
+| `force` loses the `show` carve-out | `test_force_is_a_boolean_where_show_asks_it` |
+| the movie timeline loses its plain milliseconds | `test_the_movie_timeline_refuses_what_it_cannot_serialise` |
+
+Full suite: 2052 passed, 13 skipped.

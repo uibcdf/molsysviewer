@@ -128,3 +128,8 @@ Completed work, kept for the reasoning:
   scope it declared — box, time, energy, dimensionless vectors — came to nothing a
   migration could fix, and the assumption it had flagged as an assumption did not hold.
   What was live went to [#86](https://github.com/uibcdf/molsysviewer/issues/86).
+- [`duration_lets_pint_errors_out_of_the_public_api.md`](duration_lets_pint_errors_out_of_the_public_api.md)
+  — pint's `UndefinedUnitError` reaching callers of twelve public methods. Read for what
+  filing one leak found: `"250"` was parsing as 250 **radians** and `True` as one
+  millisecond, and the fix was a shared boundary taking a dimensionality rather than a
+  patch on one digester.

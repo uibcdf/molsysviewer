@@ -84,3 +84,9 @@ view.zoom(
     min_radius="1 nm",
 )
 ```
+
+The units are not decoration: a bare number is refused, for durations as for distances.
+`duration=2` does not say whether it means two seconds or two milliseconds, and guessing
+is the silent scale error this policy exists to prevent. Where a number alone is
+unambiguous the argument's own name says so — `duration_ms=250` is accepted, because
+`_ms` is part of the contract.
