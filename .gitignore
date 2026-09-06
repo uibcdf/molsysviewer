@@ -88,6 +88,8 @@ molsysviewer/js/tests/perf/*.js
 # Sphinx documentation
 # ==========================================================
 docs/_build/
+# MyST-NB writes executed notebooks here on every local docs build.
+docs/jupyter_execute/
 
 # ==========================================================
 # MolSysViewer build artifacts

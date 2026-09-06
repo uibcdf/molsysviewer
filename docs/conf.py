@@ -158,6 +158,16 @@ html_theme = 'pydata_sphinx_theme'
 #
 # html_theme_options = {}
 html_theme_options = {
+    # The wordmark's paths carry no `fill`, so they render black, which disappears on a
+    # dark page -- the blues in the palette belong to the emblem. `image_dark` is the
+    # theme's own switch for it, and `custom.css` already carries the `.logo-light` /
+    # `.logo-dark` rules that hide the other one. Same criterion as MolSysMT's
+    # `logo_dark.svg`: only the lettering changes, to `#CED6DD`; the emblem keeps its
+    # own colours, which read on either background.
+    "logo": {
+        "image_light": "_static/logo.svg",
+        "image_dark": "_static/logo_dark.svg",
+    },
     "icon_links": [
         {
             "name": "GitHub",
