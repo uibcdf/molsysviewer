@@ -46,6 +46,9 @@ molsysviewer/js/lib/
 molsysviewer/js/dist/
 molsysviewer/js/.cache/
 
+# Playwright's own run state, written beside the E2E suites by any local run
+molsysviewer/js/test-results/
+
 # TS build artifacts
 molsysviewer/js/lib
 molsysviewer/js/*.js.map
