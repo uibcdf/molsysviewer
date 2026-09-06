@@ -138,6 +138,20 @@ three belong in the TypeScript E2E suite, where Playwright loads http on this ma
 exported pages, and where the Python bridge for generating one already exists. Tracked
 separately.
 
+## Third pass — 2026-09-06 — the bridge was crossed
+
+The three are in `molsysviewer/js/tests/e2e/exported-page-colour.e2e.ts` now
+(uibcdf/molsysviewer#81). The canary and its mark came out with them, and
+`tests/test_exported_page_opens_from_disk.py` keeps the seven that open the page from
+`file://`, which this defect does not touch. Nothing in the repository depends on
+command-line http navigation any more.
+
+The issue was rewritten the same day: its title described a symptom in our tests rather
+than the defect, and its body still led with the disk-pressure lead refuted in the second
+pass. Both are corrected there, with the old reasoning kept as a comment.
+
+What remains here is a record of the machine, not work owed.
+
 **Not established:** why command-line navigation to http hangs when CDP-driven navigation
 to the same URL does not. Chrome's own `--v=1` log shows the component updater completing
 and a QUIC handshake continuing, and no error. Whether this is a Chrome defect, a
