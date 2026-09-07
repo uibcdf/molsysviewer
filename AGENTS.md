@@ -2,6 +2,10 @@
 
 This document provides critical instructions for all AI assistants or automation tools contributing to this repository.
 
+Read `MOLSYSSUITE_GUIDE.md` before development. It is the synchronized, read-only
+suite-governance guide owned by `uibcdf/molsyssuite` and routes shared policies,
+cross-component feedback, and issue ownership.
+
 ## 🚫 Do *Not* Modify Generated Files
 
 The following files **must not be edited manually**:
