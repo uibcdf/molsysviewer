@@ -9,8 +9,7 @@ is the same instrument every length uses rather than a second hand-rolled
 from .._quantity import FORCE_DIMENSIONALITY, digest_quantity
 from ..helpers import normalize_viewer_caller
 
-_MESSAGE = (" A force requires explicit units (e.g. \"5 kilojoule/(mol*nanometer)\"); "
-            "bare numbers are not accepted.")
+_MESSAGE = ' A force requires explicit units (e.g. "5 kilojoule/(mol*nanometer)"); bare numbers are not accepted.'
 
 
 def digest_force(force, caller=None):
@@ -20,5 +19,4 @@ def digest_force(force, caller=None):
         if isinstance(force, bool):
             return force
 
-    return digest_quantity(force, "force", FORCE_DIMENSIONALITY, caller=caller,
-                           message=_MESSAGE)
+    return digest_quantity(force, "force", FORCE_DIMENSIONALITY, caller=caller, message=_MESSAGE)

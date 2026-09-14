@@ -6,7 +6,6 @@ import json
 import subprocess
 from pathlib import Path
 
-
 PACKAGES = ["shiboken6", "PySide6_Essentials", "PySide6_Addons"]
 
 
@@ -57,11 +56,7 @@ def main() -> None:
             "name": meta.get("Name", package),
             "version": meta.get("Version", ""),
             "location": meta.get("Location", ""),
-            "requires": [
-                item.strip()
-                for item in meta.get("Requires", "").split(",")
-                if item.strip()
-            ],
+            "requires": [item.strip() for item in meta.get("Requires", "").split(",") if item.strip()],
             "file_count": len(files),
         }
         base_name = package.lower()
@@ -79,9 +74,7 @@ def main() -> None:
             ],
         )
 
-    (output_dir / "summary.json").write_text(
-        json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8"
-    )
+    (output_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
 
 
 if __name__ == "__main__":

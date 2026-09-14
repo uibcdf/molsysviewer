@@ -1,25 +1,25 @@
 from __future__ import annotations
 
+import traceback
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from importlib import import_module
 from importlib.metadata import entry_points as metadata_entry_points
 from importlib.util import find_spec
-from packaging.specifiers import InvalidSpecifier, SpecifierSet
-from packaging.version import Version
-import traceback
 from types import ModuleType
-from collections.abc import Callable
 from typing import Any
 
 import anywidget
 import traitlets as T
+from packaging.specifiers import InvalidSpecifier, SpecifierSet
+from packaging.version import Version
 from smonitor import signal
 from smonitor.integrations import emit_from_catalog
 
 from ._private.argdigest import digest
-from .config.project_config import load_project_config
-from ._private.smonitor import CATALOG, PACKAGE_ROOT, META
+from ._private.smonitor import CATALOG, META, PACKAGE_ROOT
 from ._version import __version__ as MOLSYSVIEWER_VERSION
+from .config.project_config import load_project_config
 
 
 class AddonPanelWidget(anywidget.AnyWidget):
@@ -159,7 +159,9 @@ class AddonWorkspaceSpec:
         object.__setattr__(self, "id", _ensure_non_empty_text(self.id, "AddonWorkspaceSpec.id"))
         object.__setattr__(self, "title", _ensure_non_empty_text(self.title, "AddonWorkspaceSpec.title"))
         if self.entry_panel is not None:
-            object.__setattr__(self, "entry_panel", _ensure_non_empty_text(self.entry_panel, "AddonWorkspaceSpec.entry_panel"))
+            object.__setattr__(
+                self, "entry_panel", _ensure_non_empty_text(self.entry_panel, "AddonWorkspaceSpec.entry_panel")
+            )
         if self.description is not None:
             object.__setattr__(self, "description", self.description.strip())
         object.__setattr__(self, "meta", _normalize_meta(self.meta))
@@ -192,7 +194,9 @@ class AddonPanelSpec:
         if self.entry is not None:
             object.__setattr__(self, "entry", _ensure_non_empty_text(self.entry, "AddonPanelSpec.entry"))
         if self.widget_class is not None:
-            object.__setattr__(self, "widget_class", _ensure_non_empty_text(self.widget_class, "AddonPanelSpec.widget_class"))
+            object.__setattr__(
+                self, "widget_class", _ensure_non_empty_text(self.widget_class, "AddonPanelSpec.widget_class")
+            )
         if self.description is not None:
             object.__setattr__(self, "description", self.description.strip())
         object.__setattr__(self, "target", _ensure_non_empty_text(self.target, "AddonPanelSpec.target"))
@@ -227,7 +231,9 @@ class AddonContextActionSpec:
         object.__setattr__(self, "entry", _ensure_non_empty_text(self.entry, "AddonContextActionSpec.entry"))
         if self.group is not None:
             object.__setattr__(self, "group", self.group.strip())
-        object.__setattr__(self, "target_kinds", _normalize_tuple(self.target_kinds, "AddonContextActionSpec.target_kinds"))
+        object.__setattr__(
+            self, "target_kinds", _normalize_tuple(self.target_kinds, "AddonContextActionSpec.target_kinds")
+        )
         object.__setattr__(self, "meta", _normalize_meta(self.meta))
 
     def info(self) -> dict[str, Any]:
@@ -472,8 +478,7 @@ def _load_addon_spec_from_module(module: ModuleType) -> AddonSpec:
     if hasattr(module, "get_addon"):
         return _coerce_addon_spec(getattr(module, "get_addon"), f"{module_name}.get_addon")
     raise ValueError(
-        f"{module_name} does not expose a valid add-on contract. "
-        "Expected `addon`, `ADDON`, or `get_addon()`."
+        f"{module_name} does not expose a valid add-on contract. Expected `addon`, `ADDON`, or `get_addon()`."
     )
 
 
@@ -501,9 +506,7 @@ def _load_addon_lifecycle_from_module(module: ModuleType) -> AddonLifecycleSpec 
         return None
 
     if lifecycle is not None and not isinstance(lifecycle, AddonLifecycleSpec):
-        raise ValueError(
-            f"{getattr(module, '__name__', '<unknown module>')} lifecycle must be an AddonLifecycleSpec."
-        )
+        raise ValueError(f"{getattr(module, '__name__', '<unknown module>')} lifecycle must be an AddonLifecycleSpec.")
 
     if lifecycle is not None:
         return lifecycle
@@ -548,7 +551,9 @@ class AddonSpec:
     panels: tuple[AddonPanelSpec, ...] = field(default_factory=tuple)
     context_actions: tuple[AddonContextActionSpec, ...] = field(default_factory=tuple)
     addon_sections: tuple[AddonSectionSpec, ...] = field(default_factory=tuple)
-    workbench_sections_field: tuple[AddonSectionSpec, ...] = field(default_factory=tuple, repr=False, metadata={"alias": "workbench_sections"})
+    workbench_sections_field: tuple[AddonSectionSpec, ...] = field(
+        default_factory=tuple, repr=False, metadata={"alias": "workbench_sections"}
+    )
     shape_providers: tuple[AddonShapeProviderSpec, ...] = field(default_factory=tuple)
     style_helpers: tuple[AddonStyleHelperSpec, ...] = field(default_factory=tuple)
     export_helpers: tuple[AddonExportHelperSpec, ...] = field(default_factory=tuple)
@@ -611,7 +616,9 @@ class AddonSpec:
             try:
                 SpecifierSet(requirement)
             except InvalidSpecifier as exc:
-                raise ValueError(f"AddonSpec.requires_molsysviewer is not a valid version specifier: {requirement!r}.") from exc
+                raise ValueError(
+                    f"AddonSpec.requires_molsysviewer is not a valid version specifier: {requirement!r}."
+                ) from exc
             object.__setattr__(self, "requires_molsysviewer", requirement)
         if self.description is not None:
             object.__setattr__(self, "description", self.description.strip())
@@ -835,6 +842,7 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
             sources = [(str(module_name), str(module_name), None) for module_name in modules]
 
         import sys
+
         for source, module_name, entry_point in sources:
             if entry_point is None and module_name is not None:
                 if find_spec(module_name) is None:
@@ -842,7 +850,11 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
                 # Skip partially initialized modules during circular import
                 imported_mod = sys.modules.get(module_name)
                 if imported_mod is not None:
-                    if not hasattr(imported_mod, "addon") and not hasattr(imported_mod, "ADDON") and not hasattr(imported_mod, "get_addon"):
+                    if (
+                        not hasattr(imported_mod, "addon")
+                        and not hasattr(imported_mod, "ADDON")
+                        and not hasattr(imported_mod, "get_addon")
+                    ):
                         continue
             try:
                 if entry_point is not None and hasattr(entry_point, "load"):
@@ -916,12 +928,16 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
             record["project_default_disabled"] = name in self._project_disabled_defaults
             record["module"] = self._module_sources.get(name)
             lifecycle = self._lifecycles.get(name)
-            record["lifecycle"] = lifecycle.info() if lifecycle is not None else {
-                "has_on_enable": False,
-                "has_on_disable": False,
-                "has_on_context_action": False,
-                "has_on_active_selection_changed": False,
-            }
+            record["lifecycle"] = (
+                lifecycle.info()
+                if lifecycle is not None
+                else {
+                    "has_on_enable": False,
+                    "has_on_disable": False,
+                    "has_on_context_action": False,
+                    "has_on_active_selection_changed": False,
+                }
+            )
             records.append(record)
         return records
 
@@ -998,9 +1014,7 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         disabled_defaults = set(config.get("addons_disabled") or [])
         overlap = enabled_defaults.intersection(disabled_defaults)
         if overlap:
-            raise ValueError(
-                "Project add-on defaults must not overlap: " + ", ".join(sorted(overlap))
-            )
+            raise ValueError("Project add-on defaults must not overlap: " + ", ".join(sorted(overlap)))
         self._project_enabled_defaults = enabled_defaults
         self._project_disabled_defaults = disabled_defaults
         for name in list(self._registry.keys()):
@@ -1075,9 +1089,11 @@ class ViewAddonsManager(_AddonAggregationMixin):
                     states[name] = factory(self._view)
                 except Exception:
                     import types as _types
+
                     states[name] = _types.SimpleNamespace()
             else:
                 import types as _types
+
                 states[name] = _types.SimpleNamespace()
         return states[name]
 
@@ -1253,12 +1269,16 @@ class ViewAddonsManager(_AddonAggregationMixin):
             record["enabled"] = name in enabled
             record["module"] = self._host.module_for(name, skip_digestion=True)
             lifecycle = self._host.lifecycle_for(name, skip_digestion=True)
-            record["lifecycle"] = lifecycle.info() if lifecycle is not None else {
-                "has_on_enable": False,
-                "has_on_disable": False,
-                "has_on_context_action": False,
-                "has_on_active_selection_changed": False,
-            }
+            record["lifecycle"] = (
+                lifecycle.info()
+                if lifecycle is not None
+                else {
+                    "has_on_enable": False,
+                    "has_on_disable": False,
+                    "has_on_context_action": False,
+                    "has_on_active_selection_changed": False,
+                }
+            )
             records.append(record)
         return records
 
@@ -1350,9 +1370,7 @@ class ViewAddonsManager(_AddonAggregationMixin):
         return items
 
     @digest()
-    def resolve_panel_widget(
-        self, addon_name: str, panel_id: str
-    ) -> AddonPanelWidget | None:
+    def resolve_panel_widget(self, addon_name: str, panel_id: str) -> AddonPanelWidget | None:
         """Instantiate and return the AddonPanelWidget for a given panel, or None.
 
         Returns ``None`` when the add-on is not enabled, the panel does not
@@ -1365,24 +1383,18 @@ class ViewAddonsManager(_AddonAggregationMixin):
         addon = self._host.get(addon_name, skip_digestion=True)
         if addon is None:
             return None
-        panel_spec: AddonPanelSpec | None = next(
-            (p for p in addon.panels if p.id == panel_id), None
-        )
+        panel_spec: AddonPanelSpec | None = next((p for p in addon.panels if p.id == panel_id), None)
         if panel_spec is None or panel_spec.widget_class is None:
             return None
 
         dotted = panel_spec.widget_class
         module_path, _, class_name = dotted.rpartition(".")
         if not module_path:
-            raise ImportError(
-                f"AddonPanelSpec.widget_class {dotted!r} must be a fully-qualified dotted path."
-            )
+            raise ImportError(f"AddonPanelSpec.widget_class {dotted!r} must be a fully-qualified dotted path.")
         mod = import_module(module_path)
         cls = getattr(mod, class_name)
         if not (isinstance(cls, type) and issubclass(cls, AddonPanelWidget)):
-            raise TypeError(
-                f"{dotted!r} must be a subclass of AddonPanelWidget."
-            )
+            raise TypeError(f"{dotted!r} must be a subclass of AddonPanelWidget.")
         widget = cls(view=self._view)
         widget._addon_name = addon_name
         return widget

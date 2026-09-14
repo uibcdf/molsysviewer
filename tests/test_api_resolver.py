@@ -1,8 +1,7 @@
-from pathlib import Path
 import json
 import subprocess
 import sys
-
+from pathlib import Path
 
 SCRIPT = Path(__file__).parents[1] / "scripts" / "api_resolver.py"
 

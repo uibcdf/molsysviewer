@@ -37,7 +37,13 @@ def test_view_info_reports_the_scene_objects(populated):
     table = populated.info().data
 
     assert set(table["section"]) >= {
-        "whole", "styles", "regions", "layers", "annotations", "selections", "active_selection",
+        "whole",
+        "styles",
+        "regions",
+        "layers",
+        "annotations",
+        "selections",
+        "active_selection",
     }
     assert ((table["section"] == "whole") & (table["representation"] == "cartoon")).any()
     assert ((table["section"] == "regions") & (table["tag"] == "site") & (table["n atoms"] == 3)).any()
@@ -70,8 +76,9 @@ def test_view_info_refuses_the_molecular_arguments():
 def test_whole_info_is_msm_info_on_the_system():
     view = demo["1TCD"]
 
-    assert view.whole.info(element="molecule", output_type="dictionary") \
-        == msm.info(view._molsys, element="molecule", output_type="dictionary")  # noqa: SLF001
+    assert view.whole.info(element="molecule", output_type="dictionary") == msm.info(
+        view._molsys, element="molecule", output_type="dictionary"
+    )  # noqa: SLF001
 
 
 def test_region_info_is_msm_info_masked_to_the_regions_atoms():
@@ -80,13 +87,12 @@ def test_region_info_is_msm_info_masked_to_the_regions_atoms():
     regions = view.regions
     region = list(regions.values())[0] if hasattr(regions, "values") else regions[0]
 
-    assert region.info(element="atom", output_type="dictionary") \
-        == msm.info(
-            view._molsys,  # noqa: SLF001
-            element="atom",
-            selection=list(region.atom_indices),
-            output_type="dictionary",
-        )
+    assert region.info(element="atom", output_type="dictionary") == msm.info(
+        view._molsys,  # noqa: SLF001
+        element="atom",
+        selection=list(region.atom_indices),
+        output_type="dictionary",
+    )
 
 
 def test_a_region_reports_fewer_atoms_than_the_whole():
@@ -96,8 +102,9 @@ def test_a_region_reports_fewer_atoms_than_the_whole():
     regions = view.regions
     region = list(regions.values())[0] if hasattr(regions, "values") else regions[0]
 
-    assert len(region.info(element="atom", output_type="dictionary")) \
-        < len(view.whole.info(element="atom", output_type="dictionary"))
+    assert len(region.info(element="atom", output_type="dictionary")) < len(
+        view.whole.info(element="atom", output_type="dictionary")
+    )
 
 
 def test_the_molecular_info_does_not_report_the_scene():

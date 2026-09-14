@@ -55,10 +55,12 @@ def main() -> int:
     # Stage 1 — import cost, measured before anything else touches these modules.
     t0 = time.perf_counter()
     import molsysviewer  # noqa: F401
+
     import_viewer_ms = _ms(t0)
 
     t0 = time.perf_counter()
     import molsysmt as msm
+
     import_molsysmt_ms = _ms(t0)
 
     from molsysviewer.systems import systems

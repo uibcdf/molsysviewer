@@ -18,6 +18,9 @@ def digest_explicit(explicit, caller=None):
         return str(explicit)
     if isinstance(explicit, str) and explicit.strip():
         return explicit
-    raise ArgumentError("explicit", value=explicit, caller=caller,
-                        message="expected a path to a Chromium-family executable, or None "
-                                "to search the PATH")
+    raise ArgumentError(
+        "explicit",
+        value=explicit,
+        caller=caller,
+        message="expected a path to a Chromium-family executable, or None to search the PATH",
+    )

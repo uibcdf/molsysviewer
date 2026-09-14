@@ -38,9 +38,9 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any, Iterator, NamedTuple
 
-import molsysviewer
 from molsysviewer.demo import demo
 
+import molsysviewer
 
 ROOT = Path(__file__).resolve().parents[1]
 DIGESTER_DIRECTORY = ROOT / "molsysviewer" / "_private" / "argdigest" / "argument"
@@ -75,52 +75,30 @@ NOT_USER_ARGUMENTS = frozenset({"self", "cls", "skip_digestion"})
 #: Every entry needs a reason, and the reason has to survive being read by someone who
 #: suspects it is an excuse.
 DELIBERATELY_NOT_DIGESTED: dict[str, str] = {
-    "molsysviewer.build_standalone0_html":
-        "lazy import wrapper; the imported callable is the one with a signature",
-    "molsysviewer.launch_standalone0":
-        "lazy import wrapper; the imported callable is the one with a signature",
-    "molsysviewer.create_standalone_qt0_window":
-        "lazy import wrapper; the imported callable is the one with a signature",
-    "molsysviewer.launch_standalone_qt0":
-        "lazy import wrapper; the imported callable is the one with a signature",
-    "view.whole.get":
-        "named delegating forwarder to msm.get; the whole *is* the system",
-    "view.whole.info":
-        "named delegating forwarder to msm.info; the whole *is* the system",
-    "view.whole.select":
-        "named delegating forwarder to msm.select; the whole *is* the system",
-    "view.regions[…].info":
-        "named delegating forwarder to msm.info, masked to the region's atoms",
-    "view.regions[…].select":
-        "named delegating forwarder to msm.select, with the region's elements as mask",
-    "view.regions[…].get":
-        "named delegating forwarder to msm.get, scoped to the region's atoms",
-    "view.whole.convert":
-        "named delegating forwarder to msm.convert; the whole *is* the system",
-    "view.regions[…].convert":
-        "named delegating forwarder to msm.convert, scoped to the region's atoms",
-    "view.annotations.add":
-        "alias forwarding to add_annotation, which digests",
-    "view.history.coalescing":
-        "context manager, not a call with arguments to judge",
-    "view.history.suspended":
-        "context manager, not a call with arguments to judge",
-    "view.attributed_to":
-        "context manager, not a call with arguments to judge",
-
+    "molsysviewer.build_standalone0_html": "lazy import wrapper; the imported callable is the one with a signature",
+    "molsysviewer.launch_standalone0": "lazy import wrapper; the imported callable is the one with a signature",
+    "molsysviewer.create_standalone_qt0_window": "lazy import wrapper; the imported callable is the one with a signature",
+    "molsysviewer.launch_standalone_qt0": "lazy import wrapper; the imported callable is the one with a signature",
+    "view.whole.get": "named delegating forwarder to msm.get; the whole *is* the system",
+    "view.whole.info": "named delegating forwarder to msm.info; the whole *is* the system",
+    "view.whole.select": "named delegating forwarder to msm.select; the whole *is* the system",
+    "view.regions[…].info": "named delegating forwarder to msm.info, masked to the region's atoms",
+    "view.regions[…].select": "named delegating forwarder to msm.select, with the region's elements as mask",
+    "view.regions[…].get": "named delegating forwarder to msm.get, scoped to the region's atoms",
+    "view.whole.convert": "named delegating forwarder to msm.convert; the whole *is* the system",
+    "view.regions[…].convert": "named delegating forwarder to msm.convert, scoped to the region's atoms",
+    "view.annotations.add": "alias forwarding to add_annotation, which digests",
+    "view.history.coalescing": "context manager, not a call with arguments to judge",
+    "view.history.suspended": "context manager, not a call with arguments to judge",
+    "view.attributed_to": "context manager, not a call with arguments to judge",
     # The colour primitives the `color` digester is built on. Decorating them makes the
     # digester call the function it is digesting: `normalize_color` -> `digest_color` ->
     # `normalize_color`. Measured by doing it. A function a digester delegates to cannot
     # itself be digested by that digester, and there is no third place to put the rule.
-    "molsysviewer.normalize_color":
-        "the primitive `digest_color` delegates to; decorating it is a cycle",
-    "molsysviewer.normalize_colors":
-        "the primitive `digest_color` delegates to; decorating it is a cycle",
-    "molsysviewer.colors.normalize_color":
-        "the primitive `digest_color` delegates to; decorating it is a cycle",
-    "molsysviewer.colors.normalize_colors":
-        "the primitive `digest_color` delegates to; decorating it is a cycle",
-
+    "molsysviewer.normalize_color": "the primitive `digest_color` delegates to; decorating it is a cycle",
+    "molsysviewer.normalize_colors": "the primitive `digest_color` delegates to; decorating it is a cycle",
+    "molsysviewer.colors.normalize_color": "the primitive `digest_color` delegates to; decorating it is a cycle",
+    "molsysviewer.colors.normalize_colors": "the primitive `digest_color` delegates to; decorating it is a cycle",
     # The `shapes` forwarders, and the measurement most likely to be misread as debt.
     #
     # Each takes `*args, **kwargs` and hands them to a sub-manager method that has a
@@ -137,34 +115,20 @@ DELIBERATELY_NOT_DIGESTED: dict[str, str] = {
     # Two of them carried `@digest` already and had been emitting
     # `DigestNotDigestedWarning` on every real call. Nobody saw it because the only test
     # that reaches them passes `skip_digestion=True`.
-    "view.shapes.add_anisotropy_ellipsoids":
-        "pure forwarder to a digested sub-manager method; see the note above",
-    "view.shapes.add_channel_tube":
-        "pure forwarder to a digested sub-manager method; see the note above",
-    "view.shapes.add_displacement_vectors":
-        "pure forwarder to a digested sub-manager method; see the note above",
-    "view.shapes.add_interaction_sites":
-        "pure forwarder to a digested sub-manager method; see the note above",
-    "view.shapes.add_links":
-        "pure forwarder to a digested sub-manager method; see the note above",
-    "view.shapes.add_pharmacophore_features":
-        "pure forwarder to a digested sub-manager method; see the note above",
-    "view.shapes.add_pocket_blob":
-        "pure forwarder to a digested sub-manager method; see the note above",
-    "view.shapes.add_pocket_surface":
-        "pure forwarder to a digested sub-manager method; see the note above",
-    "view.shapes.add_rings":
-        "pure forwarder to a digested sub-manager method; see the note above",
-    "view.shapes.add_scalar_isosurface":
-        "pure forwarder to a digested sub-manager method; see the note above",
-    "view.shapes.add_set_alpha_spheres":
-        "pure forwarder to a digested sub-manager method; see the note above",
-    "view.shapes.add_tetrahedra":
-        "pure forwarder to a digested sub-manager method; see the note above",
-    "view.shapes.add_triangle_faces":
-        "pure forwarder to a digested sub-manager method; see the note above",
-    "view.shapes.interaction_sites.add_pharmacophore_features":
-        "pure forwarder to a digested sub-manager method; see the note above",
+    "view.shapes.add_anisotropy_ellipsoids": "pure forwarder to a digested sub-manager method; see the note above",
+    "view.shapes.add_channel_tube": "pure forwarder to a digested sub-manager method; see the note above",
+    "view.shapes.add_displacement_vectors": "pure forwarder to a digested sub-manager method; see the note above",
+    "view.shapes.add_interaction_sites": "pure forwarder to a digested sub-manager method; see the note above",
+    "view.shapes.add_links": "pure forwarder to a digested sub-manager method; see the note above",
+    "view.shapes.add_pharmacophore_features": "pure forwarder to a digested sub-manager method; see the note above",
+    "view.shapes.add_pocket_blob": "pure forwarder to a digested sub-manager method; see the note above",
+    "view.shapes.add_pocket_surface": "pure forwarder to a digested sub-manager method; see the note above",
+    "view.shapes.add_rings": "pure forwarder to a digested sub-manager method; see the note above",
+    "view.shapes.add_scalar_isosurface": "pure forwarder to a digested sub-manager method; see the note above",
+    "view.shapes.add_set_alpha_spheres": "pure forwarder to a digested sub-manager method; see the note above",
+    "view.shapes.add_tetrahedra": "pure forwarder to a digested sub-manager method; see the note above",
+    "view.shapes.add_triangle_faces": "pure forwarder to a digested sub-manager method; see the note above",
+    "view.shapes.interaction_sites.add_pharmacophore_features": "pure forwarder to a digested sub-manager method; see the note above",
 }
 
 #: How deep the attribute walk goes. The public surface is a handful of managers hanging
@@ -208,11 +172,7 @@ def declared_digesters() -> set[str]:
     while a digester is mid-edit.
     """
 
-    return {
-        path.stem
-        for path in DIGESTER_DIRECTORY.glob("*.py")
-        if not path.stem.startswith("_")
-    }
+    return {path.stem for path in DIGESTER_DIRECTORY.glob("*.py") if not path.stem.startswith("_")}
 
 
 def _is_digested(function: Any) -> bool:
@@ -371,8 +331,7 @@ def build_inventory() -> dict[str, Any]:
 
     digesters = declared_digesters()
     exempt = [item for item in callables if item.path in DELIBERATELY_NOT_DIGESTED]
-    undigested = [item for item in callables
-                  if not item.digested and item.path not in DELIBERATELY_NOT_DIGESTED]
+    undigested = [item for item in callables if not item.digested and item.path not in DELIBERATELY_NOT_DIGESTED]
 
     missing: dict[str, list[str]] = {}
     for item in undigested:
@@ -392,9 +351,7 @@ def build_inventory() -> dict[str, Any]:
         },
         "undigested": sorted(item.path for item in undigested),
         "exempt": sorted(item.path for item in exempt),
-        "missing_digesters": {
-            name: sorted(paths) for name, paths in sorted(missing.items())
-        },
+        "missing_digesters": {name: sorted(paths) for name, paths in sorted(missing.items())},
     }
 
 
@@ -424,8 +381,7 @@ def _report(inventory: dict[str, Any]) -> str:
         f"    undigested          {totals['undigested']:>5}",
         f"    exempt by design    {totals['exempt']:>5}",
         f"  declared digesters    {totals['declared_digesters']:>5}",
-        f"  MISSING digesters     {totals['missing_digesters']:>5}"
-        "   <- the size of the job",
+        f"  MISSING digesters     {totals['missing_digesters']:>5}   <- the size of the job",
         "",
     ]
 
@@ -453,9 +409,7 @@ def main() -> None:
     inventory = build_inventory()
 
     if arguments.write_baseline:
-        BASELINE_PATH.write_text(
-            json.dumps(baseline_of(inventory), indent=2) + "\n", encoding="utf-8"
-        )
+        BASELINE_PATH.write_text(json.dumps(baseline_of(inventory), indent=2) + "\n", encoding="utf-8")
         print(f"wrote {BASELINE_PATH.relative_to(ROOT)}")
         return
 

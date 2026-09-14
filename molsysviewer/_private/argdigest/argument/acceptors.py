@@ -1,12 +1,13 @@
-from molsysviewer._private.exceptions import ArgumentError
-from molsysviewer._private.variables import is_iterable
 import numpy as np
 
-def digest_acceptors(acceptors, syntax="MolSysMT", caller=None):
-    """
-    """
+from molsysviewer._private.exceptions import ArgumentError
+from molsysviewer._private.variables import is_iterable
 
-    if syntax=='MolSysMT':
+
+def digest_acceptors(acceptors, syntax="MolSysMT", caller=None):
+    """ """
+
+    if syntax == "MolSysMT":
         if isinstance(acceptors, str):
             return acceptors
         elif isinstance(acceptors, (int, np.int64, np.int32)):
@@ -24,13 +25,12 @@ def digest_acceptors(acceptors, syntax="MolSysMT", caller=None):
         if isinstance(acceptors, str):
             return acceptors
         elif isinstance(acceptors, (int, np.int64, np.int32)):
-            return np.array([acceptors], dtype='int64')
+            return np.array([acceptors], dtype="int64")
         elif isinstance(acceptors, (np.ndarray, list, tuple, range)):
-            return np.array(acceptors, dtype='int64')
+            return np.array(acceptors, dtype="int64")
         elif isinstance(acceptors, range):
             return list(acceptors)
         elif acceptors is None:
             return None
 
-    raise ArgumentError('acceptors', value=acceptors, caller=caller, message=None)
-
+    raise ArgumentError("acceptors", value=acceptors, caller=caller, message=None)

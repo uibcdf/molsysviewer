@@ -1,32 +1,31 @@
 from __future__ import annotations
 
+import json
 import sys
 import tempfile
-import json
 from pathlib import Path
 from typing import Any, Sequence
 from urllib.parse import urlsplit
 
 from ..standalone import build_standalone0_html
+from .menus import _install_menu_bar  # noqa: F401 - resolved by name, see above
+
 # `_get_helper` resolves these **by name** -- `getattr(module, name)` first, then
 # `globals()[name]`. Ruff cannot see a string lookup, so it reports every one of them
 # as unused: they are load-bearing, and deleting them breaks the Qt host at runtime
 # with a KeyError no test would attribute to the import.
 from .utils import (  # noqa: F401
-    _import_qt,
     _get_or_create_application,
-    _load_qt_shell_state,
-    _show_startup_status,
-    _qt_runtime_urls,
+    _import_qt,
     _install_qt_message_bridge,
     _load_molecular_system_into_qt_host,
+    _load_qt_shell_state,
+    _qt_runtime_urls,
+    _show_startup_status,
 )
-from .menus import _install_menu_bar  # noqa: F401 - resolved by name, see above
 
 
-def _run_remote_page_action(
-    webview: Any, selector: str, callback=None, *, reveal_selector: str | None = None
-) -> None:
+def _run_remote_page_action(webview: Any, selector: str, callback=None, *, reveal_selector: str | None = None) -> None:
     """Activate one stable control in the shared authenticated session page."""
     target = json.dumps(selector)
     reveal = json.dumps(reveal_selector) if reveal_selector else "null"
@@ -49,9 +48,7 @@ def _run_remote_page_action(
     webview.page().runJavaScript(script, callback)
 
 
-def _install_remote_qt_chrome(
-    *, window: Any, webview: Any, QAction: Any, QFileDialog: Any
-) -> None:
+def _install_remote_qt_chrome(*, window: Any, webview: Any, QAction: Any, QFileDialog: Any) -> None:
     """Install native menus and download handling around the shared web client."""
     menu_bar = window.menuBar()
     file_menu = menu_bar.addMenu("File")
@@ -66,15 +63,11 @@ def _install_remote_qt_chrome(
         menu.addAction(action)
         return action
 
-    def page_action(
-        selector: str, missing_message: str, *, reveal_selector: str | None = None
-    ):
+    def page_action(selector: str, missing_message: str, *, reveal_selector: str | None = None):
         return lambda *_: _run_remote_page_action(
             webview,
             selector,
-            lambda found: None
-            if found
-            else window.statusBar().showMessage(missing_message),
+            lambda found: None if found else window.statusBar().showMessage(missing_message),
             reveal_selector=reveal_selector,
         )
 
@@ -212,9 +205,7 @@ def _install_remote_qt_fullscreen(*, window: Any, webview: Any) -> None:
     def handle_request(request: Any) -> None:
         enabling = bool(request.toggleOn())
         if enabling:
-            restore["maximized"] = bool(
-                window.isMaximized() if hasattr(window, "isMaximized") else False
-            )
+            restore["maximized"] = bool(window.isMaximized() if hasattr(window, "isMaximized") else False)
             window.showFullScreen()
         elif restore["maximized"] and hasattr(window, "showMaximized"):
             window.showMaximized()
@@ -403,7 +394,9 @@ def launch_standalone_qt0(
     exec_app: bool = True,
 ) -> dict[str, Any]:
     m = sys.modules.get("molsysviewer.standalone_qt")
-    create_func = getattr(m, "create_standalone_qt0_window", create_standalone_qt0_window) if m else create_standalone_qt0_window
+    create_func = (
+        getattr(m, "create_standalone_qt0_window", create_standalone_qt0_window) if m else create_standalone_qt0_window
+    )
     runtime = create_func(
         molecular_system,
         output_filename=output_filename,

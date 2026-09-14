@@ -1,6 +1,5 @@
 from molsysviewer._private.exceptions import ArgumentError
-import numpy as np
-from molsysviewer._pyunitwizard import puw
+
 
 def digest_opacity(opacity, caller=None):
 
@@ -10,5 +9,4 @@ def digest_opacity(opacity, caller=None):
     if isinstance(opacity, (int, float)):
         return opacity
 
-    raise ArgumentError('opacity', value=opacity, caller=caller, message=None)
-
+    raise ArgumentError("opacity", value=opacity, caller=caller, message=None)

@@ -32,10 +32,11 @@ panel_mode_style: str | None = None
 # High-level viewer mode preset: "classic", "integrated", or "cinema".
 viewer_mode: str = "integrated"
 
-from .user_presets import user_presets, load_user_presets
-from .project_config import load_project_config
-from .._private.argdigest import digest
 from smonitor import signal
+
+from .._private.argdigest import digest
+from .project_config import load_project_config
+from .user_presets import load_user_presets, user_presets
 
 __all__ = [
     "show_controls",
@@ -52,31 +53,38 @@ __all__ = [
 
 # PyUnitWizard configuration for quantities with units.
 
+
 @signal(tags=["config", "pyunitwizard"])
 @digest()
-def set_default_quantities_form(form='pint', skip_digestion: bool = False):
+def set_default_quantities_form(form="pint", skip_digestion: bool = False):
 
     from molsysviewer._pyunitwizard import puw
+
     puw.configure.set_default_form(form)
 
+
 @signal(tags=["config", "pyunitwizard"])
 @digest()
-def set_default_quantities_parser(form='pint', skip_digestion: bool = False):
+def set_default_quantities_parser(form="pint", skip_digestion: bool = False):
 
     from molsysviewer._pyunitwizard import puw
+
     puw.configure.set_default_parser(form)
+
 
 @signal(tags=["config", "pyunitwizard"])
 @digest()
 def set_default_standard_units(standards: list[str] | None = None, skip_digestion: bool = False):
     if standards is None:
-        standards = ['nm', 'ps', 'K', 'mole', 'amu', 'e',
-            'kJ/mol', 'kJ/(mol*nm)', 'kJ/(mol*nm**2)', 'radians']
+        standards = ["nm", "ps", "K", "mole", "amu", "e", "kJ/mol", "kJ/(mol*nm)", "kJ/(mol*nm**2)", "radians"]
 
     from molsysviewer._pyunitwizard import puw
+
     puw.configure.set_standard_units(standards)
 
+
 # Scale budget for materialized structures.
+
 
 @signal(tags=["config", "performance"])
 @digest()
@@ -102,10 +110,12 @@ def get_structure_scale_budget() -> int:
     return int(scale_budget.DEFAULT_COORDINATE_BUDGET_BYTES)
 
 
-__all__.extend([
-    "set_structure_scale_budget",
-    "get_structure_scale_budget",
-    "set_default_quantities_form",
-    "set_default_quantities_parser",
-    "set_default_standard_units",
-])
+__all__.extend(
+    [
+        "set_structure_scale_budget",
+        "get_structure_scale_budget",
+        "set_default_quantities_form",
+        "set_default_quantities_parser",
+        "set_default_standard_units",
+    ]
+)

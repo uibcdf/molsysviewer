@@ -14,10 +14,8 @@ from pathlib import Path
 from typing import Any
 
 import molsysmt as msm
-
 from molsysviewer.loaders.json_molsys import serialize_json_molsys
 from molsysviewer.systems import systems
-
 
 CASES = {
     "dialanine-1": ("dialanine", 1),
@@ -85,16 +83,12 @@ def _case_payload(case_name: str) -> tuple[dict[str, Any], dict[str, Any]]:
         "label": case_name,
         "multiple_structures": frame_count > 1,
     }
-    payload_text, json_ms = _timed(
-        lambda: json.dumps(message, separators=(",", ":"), allow_nan=False)
-    )
+    payload_text, json_ms = _timed(lambda: json.dumps(message, separators=(",", ":"), allow_nan=False))
 
     atom_count = len(payload["atoms"]["atom_id"])
     actual_frames = len(payload["structures"])
     if actual_frames != frame_count:
-        raise AssertionError(
-            f"{case_name}: expected {frame_count} frames, serialized {actual_frames}"
-        )
+        raise AssertionError(f"{case_name}: expected {frame_count} frames, serialized {actual_frames}")
     if any(len(frame["coordinates"]) != atom_count for frame in payload["structures"]):
         raise AssertionError(f"{case_name}: a frame does not match the topology")
 
@@ -181,9 +175,7 @@ def _run_all() -> dict[str, Any]:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Measure direct portable-JSON trajectory preparation."
-    )
+    parser = argparse.ArgumentParser(description="Measure direct portable-JSON trajectory preparation.")
     subparsers = parser.add_subparsers(dest="command", required=True)
     subparsers.add_parser("run")
 

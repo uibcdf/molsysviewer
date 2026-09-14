@@ -22,11 +22,15 @@ def main() -> None:
             alpha_before_undo = view.regions["pocket"].repr_params.get("alpha")
         view._handle_frontend_event(event)  # noqa: SLF001
 
-    print(json.dumps({
-        "depth_before_undo": depth_before_undo,
-        "alpha_before_undo": alpha_before_undo,
-        "alpha_after_undo": view.regions["pocket"].repr_params.get("alpha"),
-    }))
+    print(
+        json.dumps(
+            {
+                "depth_before_undo": depth_before_undo,
+                "alpha_before_undo": alpha_before_undo,
+                "alpha_after_undo": view.regions["pocket"].repr_params.get("alpha"),
+            }
+        )
+    )
 
 
 if __name__ == "__main__":

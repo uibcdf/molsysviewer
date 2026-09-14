@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import json
 
-from molsysviewer import pyunitwizard as puw
 from molsysviewer.demo import demo
+
+from molsysviewer import pyunitwizard as puw
 
 
 def _op_counts(messages):
@@ -32,8 +33,7 @@ def test_ready_projects_current_state_without_trait_reserialization():
     expected = view._build_embedded_runtime_snapshot()  # noqa: SLF001
     # Test-only traffic capture may grow; reconnect output must not.
     view._test_message_log.extend(  # noqa: SLF001
-        {"op": "irrelevant_interaction", "index": index}
-        for index in range(10_000)
+        {"op": "irrelevant_interaction", "index": index} for index in range(10_000)
     )
 
     assert view.widget.initial_messages == initial_before

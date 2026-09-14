@@ -3,10 +3,12 @@ from ...exceptions import ArgumentError
 #: `register` is handed the add-on itself; every other caller names one that is already
 #: registered. The same split as `scheme`: digesting a definition against the registry of
 #: known names refuses every add-on at the moment it is registered.
-_ADDON_DEFINING_CALLERS = frozenset({
-    "molsysviewer.addons.register",
-    "molsysviewer.addons.GlobalAddonsRegistry.register",
-})
+_ADDON_DEFINING_CALLERS = frozenset(
+    {
+        "molsysviewer.addons.register",
+        "molsysviewer.addons.GlobalAddonsRegistry.register",
+    }
+)
 
 
 def digest_addon(addon, caller=None):

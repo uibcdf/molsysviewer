@@ -7,8 +7,9 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(REPO_ROOT))
 
-from molsysviewer import pyunitwizard as puw
 from molsysviewer.demo import demo
+
+from molsysviewer import pyunitwizard as puw
 
 
 def _new_view():
@@ -50,12 +51,14 @@ def lifecycle_payload(events: list[dict]) -> dict:
         sent.clear()
         shape = view.shapes.get("site", skip_digestion=True)
         info = None if shape is None else view.shapes.info("site", skip_digestion=True)
-        states.append({
-            "exists": shape is not None,
-            "visible": info["visible"] if info else None,
-            "color": info["color"] if info else None,
-            "undo_depth": len(view.history._undo),  # noqa: SLF001
-        })
+        states.append(
+            {
+                "exists": shape is not None,
+                "visible": info["visible"] if info else None,
+                "color": info["color"] if info else None,
+                "undo_depth": len(view.history._undo),  # noqa: SLF001
+            }
+        )
     return {"message_batches": message_batches, "states": states}
 
 

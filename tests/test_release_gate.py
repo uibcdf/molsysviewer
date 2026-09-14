@@ -17,8 +17,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-
-
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "devtools"))
 
@@ -28,7 +26,10 @@ from release_gate import STEPS, _check_version_consistency  # noqa: E402
 def test_the_gate_lists_its_steps_without_running_them():
     completed = subprocess.run(
         [sys.executable, str(ROOT / "devtools" / "release_gate.py"), "--list"],
-        capture_output=True, text=True, cwd=ROOT, timeout=120,
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
+        timeout=120,
     )
 
     assert completed.returncode == 0, completed.stderr
@@ -37,8 +38,7 @@ def test_the_gate_lists_its_steps_without_running_them():
 
 def test_every_step_can_either_run_or_say_why_not():
     """A step with no command and no reason is a hole the gate would pass through."""
-    holes = [step.name for step in STEPS if step.command is None
-             and step.blocked_by is None and step.name != "version"]
+    holes = [step.name for step in STEPS if step.command is None and step.blocked_by is None and step.name != "version"]
 
     assert holes == [], f"steps that neither run nor explain themselves: {holes}"
 
@@ -81,7 +81,10 @@ def test_the_gate_reports_blocked_steps_as_a_non_zero_exit():
     """
     completed = subprocess.run(
         [sys.executable, str(ROOT / "devtools" / "release_gate.py"), "--only", "conda"],
-        capture_output=True, text=True, cwd=ROOT, timeout=120,
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
+        timeout=120,
     )
 
     assert completed.returncode == 2, completed.stdout

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import pytest
-
 from molsysviewer._private.exceptions import ArgumentError
 from molsysviewer.demo import demo
 

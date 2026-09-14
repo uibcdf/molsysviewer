@@ -36,32 +36,36 @@ HANDLERS = _build_handlers()
 
 # These names belong to the closed TypeScript PanelAction vocabulary but are
 # intentionally consumed by the browser before the Python dispatch seam.
-FRONTEND_LOCAL_PANEL_ACTIONS = frozenset({
-    "undo_active_selection",
-    "redo_active_selection",
-    "begin_scene_history_coalescing",
-    "end_scene_history_coalescing",
-    "selection_query_preview_request",
-})
+FRONTEND_LOCAL_PANEL_ACTIONS = frozenset(
+    {
+        "undo_active_selection",
+        "redo_active_selection",
+        "begin_scene_history_coalescing",
+        "end_scene_history_coalescing",
+        "selection_query_preview_request",
+    }
+)
 
 # These enter through interaction_context_action from context menus or addon
 # infrastructure, but are not emitted by a Studio subpanel.
-CONTEXT_ONLY_ACTIONS = frozenset({
-    "addon_context_action",
-    "addon_disable",
-    "addon_enable",
-    "addon_register_module",
-    "addon_rescan",
-    "hide_measurement",
-    "focus_target",
-    "focus_selection",
-    "clear_selection",
-    "preview_selection_query",
-    "remove_selection",
-    "set_trajectory_frame",
-    "set_trajectory_playback",
-    "step_trajectory",
-})
+CONTEXT_ONLY_ACTIONS = frozenset(
+    {
+        "addon_context_action",
+        "addon_disable",
+        "addon_enable",
+        "addon_register_module",
+        "addon_rescan",
+        "hide_measurement",
+        "focus_target",
+        "focus_selection",
+        "clear_selection",
+        "preview_selection_query",
+        "remove_selection",
+        "set_trajectory_frame",
+        "set_trajectory_playback",
+        "step_trajectory",
+    }
+)
 
 
 def dispatch_panel_action(view: Any, content: Mapping[str, Any]) -> None:

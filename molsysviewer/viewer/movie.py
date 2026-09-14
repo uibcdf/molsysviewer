@@ -80,9 +80,7 @@ class MovieManager:
             ``"ease-in-out"``.
         """
         if easing not in _EASING_VALUES:
-            raise ValueError(
-                f"easing must be one of {sorted(_EASING_VALUES)!r}, got {easing!r}"
-            )
+            raise ValueError(f"easing must be one of {sorted(_EASING_VALUES)!r}, got {easing!r}")
         time_ms = float(time_ms)
         if self._keyframes and time_ms <= self._keyframes[-1]["time_ms"]:
             raise ValueError(
@@ -171,14 +169,10 @@ class MovieManager:
             Easing applied to each inter-keyframe segment.
         """
         if easing not in _EASING_VALUES:
-            raise ValueError(
-                f"easing must be one of {sorted(_EASING_VALUES)!r}, got {easing!r}"
-            )
+            raise ValueError(f"easing must be one of {sorted(_EASING_VALUES)!r}, got {easing!r}")
         snap = self._view.camera.get_snapshot(skip_digestion=True)
         if snap is None:
-            raise RuntimeError(
-                "No camera snapshot available. Load a system first."
-            )
+            raise RuntimeError("No camera snapshot available. Load a system first.")
         pos = list(snap["position"])
         target = list(snap["target"])
         up = list(snap["up"])
@@ -191,17 +185,13 @@ class MovieManager:
         radial = [pos[i] - center[i] for i in range(3)]
         radius = math.sqrt(sum(r * r for r in radial))
         if radius < 1e-9:
-            raise ValueError(
-                "Camera is at the orbit center; cannot determine orbit radius."
-            )
+            raise ValueError("Camera is at the orbit center; cannot determine orbit radius.")
         radial_unit = [r / radius for r in radial]
 
         right = _cross(radial_unit, up)
         right_len = math.sqrt(sum(r * r for r in right))
         if right_len < 1e-9:
-            raise ValueError(
-                "Camera up vector is parallel to the radial; cannot compute orbit plane."
-            )
+            raise ValueError("Camera up vector is parallel to the radial; cannot compute orbit plane.")
         right_unit = [r / right_len for r in right]
 
         if start_time_ms is None:
@@ -213,10 +203,7 @@ class MovieManager:
         for i in range(total_kf):
             t = i / (total_kf - 1) if total_kf > 1 else 0.0
             theta = 2.0 * math.pi * n_turns * t
-            new_radial = [
-                math.cos(theta) * radial_unit[j] + math.sin(theta) * right_unit[j]
-                for j in range(3)
-            ]
+            new_radial = [math.cos(theta) * radial_unit[j] + math.sin(theta) * right_unit[j] for j in range(3)]
             new_pos = [center[j] + radius * new_radial[j] for j in range(3)]
             kf_time = start_time_ms + duration_ms * t
             camera_kf = {"position": new_pos, "target": list(center), "up": list(up)}
@@ -270,18 +257,13 @@ class MovieManager:
         if to_index is None:
             n = self._view.player.n_structures
             if not n:
-                raise RuntimeError(
-                    "No molecular system loaded; cannot determine to_index. "
-                    "Pass to_index explicitly."
-                )
+                raise RuntimeError("No molecular system loaded; cannot determine to_index. Pass to_index explicitly.")
             to_index = n - 1
 
         from_index = int(from_index)
         to_index = int(to_index)
         if from_index > to_index:
-            raise ValueError(
-                f"from_index ({from_index}) must be ≤ to_index ({to_index})."
-            )
+            raise ValueError(f"from_index ({from_index}) must be ≤ to_index ({to_index}).")
 
         if start_time_ms is None:
             start_time_ms = self.duration_ms if self._keyframes else 0.0
@@ -352,12 +334,8 @@ class MovieManager:
             "n_keyframes": len(self._keyframes),
             "duration_ms": self.duration_ms,
             "has_camera": any("camera" in kf for kf in self._keyframes),
-            "has_structure_sweep": any(
-                "structure_index" in kf for kf in self._keyframes
-            ),
-            "has_visibility_transitions": any(
-                "layer_visibility" in kf for kf in self._keyframes
-            ),
+            "has_structure_sweep": any("structure_index" in kf for kf in self._keyframes),
+            "has_visibility_transitions": any("layer_visibility" in kf for kf in self._keyframes),
         }
 
     # ── Serialization ─────────────────────────────────────────────────────
@@ -385,10 +363,7 @@ class MovieManager:
         """
         version = data.get("molsysmovie_version")
         if version != _MOLSYSMOVIE_VERSION:
-            raise ValueError(
-                f"Unsupported molsysmovie_version={version!r}. "
-                f"Expected {_MOLSYSMOVIE_VERSION}."
-            )
+            raise ValueError(f"Unsupported molsysmovie_version={version!r}. Expected {_MOLSYSMOVIE_VERSION}.")
         keyframes = data.get("keyframes", [])
         for i, kf in enumerate(keyframes):
             if "time_ms" not in kf:
@@ -396,7 +371,7 @@ class MovieManager:
             if i > 0 and kf["time_ms"] <= keyframes[i - 1]["time_ms"]:
                 raise ValueError(
                     f"Keyframe {i} time_ms={kf['time_ms']} is not strictly "
-                    f"greater than keyframe {i-1} time_ms={keyframes[i-1]['time_ms']}."
+                    f"greater than keyframe {i - 1} time_ms={keyframes[i - 1]['time_ms']}."
                 )
         self._keyframes = [dict(kf) for kf in keyframes]
 
@@ -446,8 +421,7 @@ class MovieManager:
             raise ValueError("start_time_ms must be positive or zero.")
         if self._keyframes and start_time_ms > self.duration_ms:
             raise ValueError(
-                f"start_time_ms={start_time_ms} cannot be greater than movie "
-                f"duration={self.duration_ms} ms."
+                f"start_time_ms={start_time_ms} cannot be greater than movie duration={self.duration_ms} ms."
             )
 
         self._view._send_runtime_only(  # noqa: SLF001
@@ -506,8 +480,7 @@ class MovieManager:
             import imageio.v2 as imageio  # type: ignore[import]
         except ImportError as exc:
             raise ImportError(
-                "imageio is required for movie export. "
-                "Install with: pip install imageio[ffmpeg]"
+                "imageio is required for movie export. Install with: pip install imageio[ffmpeg]"
             ) from exc
 
         self._validate_ready()
@@ -516,11 +489,13 @@ class MovieManager:
 
         if not getattr(self._view, "_ready", False):
             import os
+
             if os.environ.get("MSM_VIEWS_FROM_HTML_FILES") == "True":
                 # No live frontend is connected (e.g. running headlessly via nbconvert or doc build).
                 # Write a placeholder black video/GIF to the requested path to avoid blocking.
                 path.parent.mkdir(parents=True, exist_ok=True)
                 import numpy as np
+
                 dummy_img = np.zeros((10, 10, 3), dtype=np.uint8)
                 imageio.mimwrite(str(path), [dummy_img], **_frame_rate_kwargs(path, fps))
                 return path
@@ -558,8 +533,7 @@ class MovieManager:
                 received = len(view._movie_export_frames or [])  # type: ignore[attr-defined]
                 view._movie_export_frames = None  # type: ignore[attr-defined]
                 raise TimeoutError(
-                    f"Movie export timed out after {timeout_s:.0f}s "
-                    f"(received {received} of {total_frames} frames)."
+                    f"Movie export timed out after {timeout_s:.0f}s (received {received} of {total_frames} frames)."
                 )
             if callable(process_events):
                 try:
@@ -580,9 +554,7 @@ class MovieManager:
 
     def _validate_ready(self) -> None:
         if len(self._keyframes) < 2:
-            raise ValueError(
-                f"Timeline needs at least 2 keyframes; has {len(self._keyframes)}."
-            )
+            raise ValueError(f"Timeline needs at least 2 keyframes; has {len(self._keyframes)}.")
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -600,9 +572,11 @@ def _frame_rate_kwargs(path: Path, fps: int) -> dict:
         return {"duration": 1000.0 / float(fps)}
     return {"fps": fps}
 
+
 def _decode_frame(data_uri: str):
     """Decode a ``data:image/png;base64,...`` string to a numpy array via imageio."""
     import imageio.v2 as imageio  # type: ignore[import]
+
     _, encoded = data_uri.split(",", 1)
     return imageio.imread(io.BytesIO(base64.b64decode(encoded)))
 
@@ -624,7 +598,4 @@ def _validate_camera_snapshot(snap: dict) -> None:
             )
         val = snap[key]
         if not (hasattr(val, "__len__") and len(val) == 3):
-            raise ValueError(
-                f"Camera snapshot key '{key}' must be a sequence of 3 numbers, "
-                f"got {val!r}."
-            )
+            raise ValueError(f"Camera snapshot key '{key}' must be a sequence of 3 numbers, got {val!r}.")

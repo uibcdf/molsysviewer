@@ -8,10 +8,12 @@ from molsysviewer._private.exceptions import ArgumentError
 #: Resolving legend entries as molecular items fails on the first one. The real fix is a
 #: name that does not collide, which is a public API change; this is the honest patch
 #: until that is decided.
-_LEGEND_ENTRY_CALLERS = frozenset({
-    "molsysviewer.scene.set_legend",
-    "molsysviewer.scene.SceneManager.set_legend",
-})
+_LEGEND_ENTRY_CALLERS = frozenset(
+    {
+        "molsysviewer.scene.set_legend",
+        "molsysviewer.scene.SceneManager.set_legend",
+    }
+)
 
 
 def digest_items(items, forms=None, caller=None):
@@ -35,7 +37,7 @@ def digest_items(items, forms=None, caller=None):
     for item in aux_items:
         try:
             in_forms.append(get_form(item))
-        except:
+        except:  # noqa: E722
             output = False
             break
 
@@ -44,8 +46,8 @@ def digest_items(items, forms=None, caller=None):
             if isinstance(forms, str):
                 forms = [forms]
             for in_form, form in zip(in_forms, forms):
-                if in_form!=form:
-                    raise ArgumentError('item', value=item, caller=caller, message=None)
+                if in_form != form:
+                    raise ArgumentError("item", value=item, caller=caller, message=None)
         return aux_items
 
-    raise ArgumentError('items', value=items, caller=caller, message=None)
+    raise ArgumentError("items", value=items, caller=caller, message=None)

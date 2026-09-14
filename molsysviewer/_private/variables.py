@@ -1,8 +1,9 @@
 import numpy as np
+
 from molsysviewer._pyunitwizard import puw
 
-def is_all(variable):
 
+def is_all(variable):
     """Checks if the value of a variable is equal to 'all', 'All', or 'ALL'.
 
     The method returns True if the value of a variable is equal to 'all', 'All', or 'ALL'.
@@ -33,9 +34,10 @@ def is_all(variable):
     """
 
     if isinstance(variable, str):
-        return variable in ['all', 'All', 'ALL']
+        return variable in ["all", "All", "ALL"]
 
     return False
+
 
 def is_iterable(variable):
 
@@ -44,12 +46,14 @@ def is_iterable(variable):
 
     return False
 
+
 def is_iterable_of_iterables(variable):
 
     if isinstance(variable, (list, tuple, set, np.ndarray)):
         return all([is_iterable(ii) for ii in variable])
 
     return False
+
 
 def is_iterable_of_iterables_of_iterables(variable):
 
@@ -58,20 +62,22 @@ def is_iterable_of_iterables_of_iterables(variable):
 
     return False
 
+
 def is_next(variable):
 
     if isinstance(variable, str):
-        return variable in ['next', 'Next', 'NEXT']
+        return variable in ["next", "Next", "NEXT"]
 
     return False
+
 
 def is_iterable_of_pairs(variable):
 
     output = False
 
     if isinstance(variable, np.ndarray):
-        if len(variable.shape)==2:
-            if variable.shape[1]==2:
+        if len(variable.shape) == 2:
+            if variable.shape[1] == 2:
                 output = True
     elif isinstance(variable, (list, tuple, set)):
         for ii in variable:
@@ -79,17 +85,18 @@ def is_iterable_of_pairs(variable):
             if isinstance(ii, (list, tuple, set)):
                 if len(ii) == 2:
                     output = True
-            if output == False:
+            if output == False:  # noqa: E712
                 break
 
     return output
+
 
 def is_iterable_of_integers(variable):
 
     output = False
 
     if isinstance(variable, np.ndarray):
-        if len(variable.shape)==1:
+        if len(variable.shape) == 1:
             if np.issubdtype(variable.dtype, np.integer):
                 output = True
     elif isinstance(variable, (list, tuple, set)):
@@ -97,6 +104,7 @@ def is_iterable_of_integers(variable):
             output = True
 
     return output
+
 
 def is_compatible_with_coordinates_value(variable):
 
@@ -108,11 +116,9 @@ def is_compatible_with_coordinates_value(variable):
         value = variable
 
     if isinstance(value, (list, tuple, set)):
-
         value = np.array(value)
 
     if isinstance(value, np.ndarray):
-
         shape = value.shape
 
         if len(shape) == 1:
@@ -132,17 +138,19 @@ def is_compatible_with_coordinates_value(variable):
 
     return output
 
+
 def is_compatible_with_coordinates_unit(variable):
 
     output = False
 
     if puw.is_quantity(variable):
         unit = puw.get_unit(variable)
-        if puw.check(unit, dimensionality={'[L]':1}):
+        if puw.check(unit, dimensionality={"[L]": 1}):
             output = True
 
     return output
-        
+
+
 def is_compatible_with_coordinates(variable):
 
     output = False
@@ -153,13 +161,13 @@ def is_compatible_with_coordinates(variable):
 
     return output
 
+
 def make_coordinates_like(variable, standardized=True):
 
     output = None
 
     if is_compatible_with_coordinates_unit(variable):
         if is_compatible_with_coordinates_value(variable):
-
             value, unit = puw.get_value_and_unit(variable)
 
             if not isinstance(value, np.ndarray):

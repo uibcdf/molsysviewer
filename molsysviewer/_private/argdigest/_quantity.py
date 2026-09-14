@@ -25,9 +25,11 @@ from ..exceptions import ArgumentError
 #: `[L][M][T]^-2[mol]^-1` — a force per mole, as MolSysMT and OpenMM report it.
 FORCE_DIMENSIONALITY = {"[L]": 1, "[M]": 1, "[T]": -2, "[mol]": -1}
 
-LENGTH_MESSAGE = (" A length requires explicit units (e.g. \"3.5 angstroms\" or "
-                  "puw.quantity(3.5, 'angstroms')); bare numbers are not accepted, "
-                  "to avoid silent nm/angstrom scale errors.")
+LENGTH_MESSAGE = (
+    ' A length requires explicit units (e.g. "3.5 angstroms" or '
+    "puw.quantity(3.5, 'angstroms')); bare numbers are not accepted, "
+    "to avoid silent nm/angstrom scale errors."
+)
 
 
 def digest_quantity(value, argument, dimensionality, caller=None, message=None):
@@ -40,11 +42,13 @@ def digest_quantity(value, argument, dimensionality, caller=None, message=None):
         return puw.ensure_quantity(value, dimensionality=dimensionality, caller=caller)
     except Exception as exc:
         raise ArgumentError(
-            argument, value=value, caller=caller, message=message,
+            argument,
+            value=value,
+            caller=caller,
+            message=message,
         ) from exc
 
 
 def digest_length_quantity(value, argument, caller=None):
     """Return ``value`` as a standardized ``[L]`` quantity, or raise ``ArgumentError``."""
-    return digest_quantity(value, argument, {"[L]": 1}, caller=caller,
-                           message=LENGTH_MESSAGE)
+    return digest_quantity(value, argument, {"[L]": 1}, caller=caller, message=LENGTH_MESSAGE)

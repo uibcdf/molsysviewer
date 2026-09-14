@@ -4,10 +4,10 @@ from typing import Iterable, Sequence
 
 from smonitor import signal
 
+from .. import pyunitwizard as puw
 from .._private.argdigest import digest
 from ..scene_history import records_scene_history
 from ._registry import register_shape_layer
-from .. import pyunitwizard as puw
 
 
 class PocketBlobs:

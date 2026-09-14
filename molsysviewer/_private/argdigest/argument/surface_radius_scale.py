@@ -8,4 +8,4 @@ def digest_surface_radius_scale(surface_radius_scale, caller=None):
         value = float(surface_radius_scale)
         if value > 0.0:
             return value
-    raise ArgumentError('surface_radius_scale', value=surface_radius_scale, caller=caller, message=None)
+    raise ArgumentError("surface_radius_scale", value=surface_radius_scale, caller=caller, message=None)

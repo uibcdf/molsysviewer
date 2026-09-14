@@ -28,7 +28,9 @@ def test_a_focus_overlay_survives_whether_or_not_the_user_named_it(tag):
     """The asymmetry this slice exists to remove."""
     source = _mute(demo["181L"])
     created = source.styles.focus(
-        representation="ball_and_stick", selection="group_index==87", tag=tag,
+        representation="ball_and_stick",
+        selection="group_index==87",
+        tag=tag,
     )
     document = source.export_state()
 

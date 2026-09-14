@@ -15,8 +15,9 @@ def digest_appended_n_atoms(appended_n_atoms, caller=None):
     if appended_n_atoms is None:
         return None
     if isinstance(appended_n_atoms, bool) or not isinstance(appended_n_atoms, int):
-        raise ArgumentError("appended_n_atoms", value=appended_n_atoms, caller=caller,
-                            message="expected a whole number of atoms")
+        raise ArgumentError(
+            "appended_n_atoms", value=appended_n_atoms, caller=caller, message="expected a whole number of atoms"
+        )
     if appended_n_atoms <= 0:
         raise ArgumentError(
             "appended_n_atoms",

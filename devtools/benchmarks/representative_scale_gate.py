@@ -28,11 +28,10 @@ from pathlib import Path
 
 import molsysmt as msm
 import numpy as np
+from molsysviewer.loaders.array_native_molsys import serialize_array_native_molsys
 
 from molsysviewer import MolSysView
 from molsysviewer import pyunitwizard as puw
-from molsysviewer.loaders.array_native_molsys import serialize_array_native_molsys
-
 
 MIB = 1024 * 1024
 
@@ -51,15 +50,9 @@ CASE_SPECS = {
     "small": ScaleCase("T4 lysozyme L99A", "181l.bcif.gz", 2, (2, 1, 1)),
     # HP35 is explicitly solvated. Integer supercells stay chemically and
     # spatially plausible while landing near the requested scale points.
-    "medium": ScaleCase(
-        "chicken villin HP35", "traj_chicken_villin_HP35_solvated.h5msm", 6, (3, 2, 1)
-    ),
-    "large": ScaleCase(
-        "chicken villin HP35", "traj_chicken_villin_HP35_solvated.h5msm", 24, (4, 3, 2)
-    ),
-    "xlarge": ScaleCase(
-        "chicken villin HP35", "traj_chicken_villin_HP35_solvated.h5msm", 72, (6, 4, 3)
-    ),
+    "medium": ScaleCase("chicken villin HP35", "traj_chicken_villin_HP35_solvated.h5msm", 6, (3, 2, 1)),
+    "large": ScaleCase("chicken villin HP35", "traj_chicken_villin_HP35_solvated.h5msm", 24, (4, 3, 2)),
+    "xlarge": ScaleCase("chicken villin HP35", "traj_chicken_villin_HP35_solvated.h5msm", 72, (6, 4, 3)),
 }
 
 
@@ -80,12 +73,8 @@ def _peak_rss_bytes() -> int:
 
 def _cell_vectors_nm(molsys) -> np.ndarray:
     if molsys.structures.box is not None:
-        return np.asarray(
-            puw.get_value(molsys.structures.box, to_unit="nm"), dtype=np.float64
-        )[0]
-    coordinates = np.asarray(
-        puw.get_value(molsys.structures.coordinates, to_unit="nm"), dtype=np.float64
-    )[0]
+        return np.asarray(puw.get_value(molsys.structures.box, to_unit="nm"), dtype=np.float64)[0]
+    coordinates = np.asarray(puw.get_value(molsys.structures.coordinates, to_unit="nm"), dtype=np.float64)[0]
     lengths = np.maximum(coordinates.max(axis=0) - coordinates.min(axis=0) + 1.0, 1.0)
     return np.diag(lengths)
 
@@ -127,9 +116,7 @@ def build_representative_molsys(case: str, n_structures: int):
             to_form="molsysmt.MolSys",
         )
 
-    structures = np.asarray(
-        puw.get_value(merged.structures.coordinates, to_unit="nm"), dtype=np.float64
-    ).copy()
+    structures = np.asarray(puw.get_value(merged.structures.coordinates, to_unit="nm"), dtype=np.float64).copy()
     if n_structures > 1:
         # A small deterministic rigid drift prevents a renderer from treating
         # every structure as byte-identical without distorting chemistry.
@@ -139,9 +126,7 @@ def build_representative_molsys(case: str, n_structures: int):
     supercell = cell.copy()
     for axis, repeats in enumerate(spec.grid):
         supercell[axis] *= repeats
-    merged.structures.box = puw.quantity(
-        np.repeat(supercell[None, :, :], n_structures, axis=0), "nm"
-    )
+    merged.structures.box = puw.quantity(np.repeat(supercell[None, :, :], n_structures, axis=0), "nm")
     merged.structures.structure_id = np.arange(n_structures, dtype=np.int64)
     # A sequence of structures need not be a trajectory. Do not invent time.
     merged.structures.time = None
@@ -205,15 +190,9 @@ def run_worker(case: str, n_structures: int) -> dict:
             "after_view_close_with_fixture_and_payload": rss_after_view_close / MIB,
             "after_payload_release_with_fixture": rss_after_payload_release / MIB,
             "after_fixture_release": rss_after_fixture_release / MIB,
-            "view_cycle_delta_with_fixture_and_payload": (
-                rss_after_view_close - rss_after_serialization
-            ) / MIB,
-            "post_payload_release_delta_from_fixture": (
-                rss_after_payload_release - rss_after_fixture
-            ) / MIB,
-            "post_fixture_release_delta_from_start": (
-                rss_after_fixture_release - rss_start
-            ) / MIB,
+            "view_cycle_delta_with_fixture_and_payload": (rss_after_view_close - rss_after_serialization) / MIB,
+            "post_payload_release_delta_from_fixture": (rss_after_payload_release - rss_after_fixture) / MIB,
+            "post_fixture_release_delta_from_start": (rss_after_fixture_release - rss_start) / MIB,
         },
     }
 
@@ -276,14 +255,8 @@ def _median_summary(samples: list[dict]) -> dict:
         "atoms": samples[0]["atoms"],
         "structures": samples[0]["structures"],
         "repeats": len(samples),
-        "timings_ms": {
-            key: summarize(("timings_ms", key))
-            for key in samples[0]["timings_ms"]
-        },
-        "rss_mib": {
-            key: summarize(("rss_mib", key))
-            for key in samples[0]["rss_mib"]
-        },
+        "timings_ms": {key: summarize(("timings_ms", key)) for key in samples[0]["timings_ms"]},
+        "rss_mib": {key: summarize(("rss_mib", key)) for key in samples[0]["rss_mib"]},
         "bytes": samples[0]["bytes"],
         "samples": samples,
     }
@@ -331,10 +304,12 @@ def main() -> int:
         return 0
 
     if args.emit_directory is not None:
-        print(json.dumps(
-            emit_array_native_fixture(args.case, args.structures, args.emit_directory),
-            sort_keys=True,
-        ))
+        print(
+            json.dumps(
+                emit_array_native_fixture(args.case, args.structures, args.emit_directory),
+                sort_keys=True,
+            )
+        )
         return 0
 
     samples = []
@@ -343,8 +318,10 @@ def main() -> int:
             [
                 sys.executable,
                 __file__,
-                "--case", args.case,
-                "--structures", str(args.structures),
+                "--case",
+                args.case,
+                "--structures",
+                str(args.structures),
                 "--worker",
             ],
             check=True,

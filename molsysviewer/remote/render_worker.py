@@ -61,15 +61,9 @@ class RenderWorkerConfig:
             not isinstance(item, str) or not item for item in self.extra_arguments
         ):
             raise ValueError("extra_arguments must contain non-empty strings")
-        overridden = sorted(
-            item
-            for item in self.extra_arguments
-            if item.split("=", 1)[0] in _RESERVED_ARGUMENTS
-        )
+        overridden = sorted(item for item in self.extra_arguments if item.split("=", 1)[0] in _RESERVED_ARGUMENTS)
         if overridden:
-            raise ValueError(
-                f"extra_arguments may not override managed security arguments: {overridden}"
-            )
+            raise ValueError(f"extra_arguments may not override managed security arguments: {overridden}")
 
 
 @dataclass(frozen=True)
@@ -96,18 +90,13 @@ def find_chromium_executable(explicit: str | Path | None = None) -> str:
         candidate = shutil.which(name)
         if candidate:
             return candidate
-    raise FileNotFoundError(
-        "No Chromium-family executable was found; configure RenderWorkerConfig.executable"
-    )
+    raise FileNotFoundError("No Chromium-family executable was found; configure RenderWorkerConfig.executable")
 
 
 @digest()
 def is_software_renderer(renderer: str) -> bool:
     normalized = renderer.casefold()
-    return any(
-        marker in normalized
-        for marker in ("swiftshader", "llvmpipe", "softpipe", "software rasterizer")
-    )
+    return any(marker in normalized for marker in ("swiftshader", "llvmpipe", "softpipe", "software rasterizer"))
 
 
 def _validate_worker_url(worker_url: str) -> None:
@@ -169,15 +158,12 @@ class ManagedRenderWorker:
             diagnostics = await self._diagnose(port, browser_path)
             if not diagnostics.webgl2:
                 raise RuntimeError(
-                    "render worker did not provide WebGL2: its page loaded but no canvas "
-                    "yielded a webgl2 context"
+                    "render worker did not provide WebGL2: its page loaded but no canvas yielded a webgl2 context"
                 )
             if not diagnostics.webrtc or not diagnostics.capture_stream:
                 raise RuntimeError("render worker lacks WebRTC canvas streaming capabilities")
             if self.config.gpu_policy == "require-hardware" and diagnostics.software_rendering:
-                raise RuntimeError(
-                    f"software renderer rejected by GPU policy: {diagnostics.renderer}"
-                )
+                raise RuntimeError(f"software renderer rejected by GPU policy: {diagnostics.renderer}")
             self.diagnostics = diagnostics
             self.state = "ready"
             return diagnostics

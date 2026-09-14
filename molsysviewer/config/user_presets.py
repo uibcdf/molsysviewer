@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from pathlib import Path
 import json
+from pathlib import Path
 from typing import Any, Dict
 
 from .._private.argdigest import digest
+
 try:
     import yaml  # type: ignore
 except Exception:  # pragma: no cover - optional dependency

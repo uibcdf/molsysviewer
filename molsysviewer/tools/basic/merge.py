@@ -70,9 +70,7 @@ def _remap_tagged_message(msg: dict[str, Any], atom_offset: int, tag_map: dict[s
     if "mouth_atom_indices" in options:
         mouths = options.get("mouth_atom_indices")
         if isinstance(mouths, list) and mouths and isinstance(mouths[0], list):
-            options["mouth_atom_indices"] = [
-                _remap_indices(mouth, atom_offset) for mouth in mouths
-            ]
+            options["mouth_atom_indices"] = [_remap_indices(mouth, atom_offset) for mouth in mouths]
         else:
             options["mouth_atom_indices"] = _remap_indices(mouths, atom_offset)
 

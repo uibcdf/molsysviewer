@@ -5,11 +5,11 @@ import weakref
 
 import pytest
 from ipywidgets.widgets.widget import _instances
+from molsysviewer.demo import demo
+from molsysviewer.standalone_qt.view_channel import QtViewChannel
 
 import conftest
 from molsysviewer import MolSysView
-from molsysviewer.demo import demo
-from molsysviewer.standalone_qt.view_channel import QtViewChannel
 
 
 def test_close_releases_a_loaded_view_and_its_registered_widgets():
@@ -59,10 +59,12 @@ def test_close_releases_embedded_and_popup_structure_transfers():
     def start(manager, target_endpoint_id):
         return manager.start(
             begin_message={"op": "structure_data_begin", "chunk_count": 1},
-            chunks=[(
-                {"op": "structure_data_chunk", "chunk_id": 0},
-                [memoryview(b"coordinates")],
-            )],
+            chunks=[
+                (
+                    {"op": "structure_data_chunk", "chunk_id": 0},
+                    [memoryview(b"coordinates")],
+                )
+            ],
             fallback_factory=lambda _generation: {"op": "load_molsys_payload"},
             payload=object(),
             target_endpoint_id=target_endpoint_id,

@@ -21,14 +21,13 @@ caller/None pairs from a refusal into a silent `None`, so it was not widened.
 from __future__ import annotations
 
 import pytest
-
-from molsysviewer._pyunitwizard import puw
 from molsysviewer._private.argdigest.argument.distance_threshold import digest_distance_threshold
 from molsysviewer._private.argdigest.argument.extra_radius import digest_extra_radius
 from molsysviewer._private.argdigest.argument.max_bond_length import digest_max_bond_length
 from molsysviewer._private.argdigest.argument.min_radius import digest_min_radius
 from molsysviewer._private.argdigest.argument.threshold import digest_threshold
 from molsysviewer._private.exceptions import ArgumentError
+from molsysviewer._pyunitwizard import puw
 
 #: Every digester here, with a caller each one accepts values for.
 DIGESTERS = [
@@ -68,9 +67,7 @@ def test_an_unparseable_string_raises_this_packages_error(digest, caller):
 
 
 @pytest.mark.parametrize("digest", CRASHED_WITHOUT_A_CALLER, ids=lambda f: f.__name__)
-@pytest.mark.parametrize(
-    "value", ["3.5 angstroms", 3.5, None, "hola"], ids=["quantity", "bare", "none", "junk"]
-)
+@pytest.mark.parametrize("value", ["3.5 angstroms", 3.5, None, "hola"], ids=["quantity", "bare", "none", "junk"])
 def test_no_caller_is_answered_rather_than_crashed(digest, value):
     """The regression. `caller.startswith(...)` on `None` raised AttributeError for every value.
 

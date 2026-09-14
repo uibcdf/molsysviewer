@@ -1,19 +1,21 @@
 from __future__ import annotations
 
-
 from typing import Any
-import numpy as np
-import molsysmt as msm
 
+import molsysmt as msm
+import numpy as np
 from smonitor import signal
-from .._pyunitwizard import puw
+
 from .._private.argdigest import digest
-from ..regions import Region
+from .._pyunitwizard import puw
 from ..figures import FigureSpec
+from ..regions import Region
 from ..whole import Whole
 from .signals import (
-    zoom_signal_extra as _zoom_signal_extra,
     camera_snapshot_extra as _camera_snapshot_extra,
+)
+from .signals import (
+    zoom_signal_extra as _zoom_signal_extra,
 )
 
 _NM_TO_ANGSTROM = puw.conversion_factor("nm", "angstroms")
@@ -48,30 +50,37 @@ class SceneMixin:
         a, b, c = box_a[0], box_a[1], box_a[2]
 
         # Build 8 vertices
-        O = np.array([0.0, 0.0, 0.0])
-        v000 = O
-        v100 = O + a
-        v010 = O + b
-        v001 = O + c
-        v110 = O + a + b
-        v101 = O + a + c
-        v011 = O + b + c
-        v111 = O + a + b + c
+        origin = np.array([0.0, 0.0, 0.0])
+        v000 = origin
+        v100 = origin + a
+        v010 = origin + b
+        v001 = origin + c
+        v110 = origin + a + b
+        v101 = origin + a + c
+        v011 = origin + b + c
+        v111 = origin + a + b + c
 
         # 12 box edges
         edges = [
             # along a
-            [v000.tolist(), v100.tolist()], [v010.tolist(), v110.tolist()],
-            [v001.tolist(), v101.tolist()], [v011.tolist(), v111.tolist()],
+            [v000.tolist(), v100.tolist()],
+            [v010.tolist(), v110.tolist()],
+            [v001.tolist(), v101.tolist()],
+            [v011.tolist(), v111.tolist()],
             # along b
-            [v000.tolist(), v010.tolist()], [v100.tolist(), v110.tolist()],
-            [v001.tolist(), v011.tolist()], [v101.tolist(), v111.tolist()],
+            [v000.tolist(), v010.tolist()],
+            [v100.tolist(), v110.tolist()],
+            [v001.tolist(), v011.tolist()],
+            [v101.tolist(), v111.tolist()],
             # along c
-            [v000.tolist(), v001.tolist()], [v100.tolist(), v101.tolist()],
-            [v010.tolist(), v011.tolist()], [v110.tolist(), v111.tolist()],
+            [v000.tolist(), v001.tolist()],
+            [v100.tolist(), v101.tolist()],
+            [v010.tolist(), v011.tolist()],
+            [v110.tolist(), v111.tolist()],
         ]
 
         from ..colors import normalize_color as _nc
+
         color_int = _nc(color)
 
         if self._box_visible:
@@ -115,10 +124,10 @@ class SceneMixin:
         structure_indices: str | Any = "all",
         syntax: str = "MolSysMT",
         *,
-        duration: Any = '250 ms',
+        duration: Any = "250 ms",
         duration_ms: Any | None = None,
-        extra_radius: Any = '4.0 angstroms',
-        min_radius: Any = '1.0 angstroms',
+        extra_radius: Any = "4.0 angstroms",
+        min_radius: Any = "1.0 angstroms",
         skip_digestion: bool = False,
     ) -> None:
         """Focus the camera on a selection. Delegate to ``view.camera.zoom()``."""
@@ -141,10 +150,10 @@ class SceneMixin:
         structure_indices: str | Any = "all",
         syntax: str = "MolSysMT",
         *,
-        duration: Any = '250 ms',
+        duration: Any = "250 ms",
         duration_ms: Any | None = None,
-        extra_radius: Any = '4.0 angstroms',
-        min_radius: Any = '1.0 angstroms',
+        extra_radius: Any = "4.0 angstroms",
+        min_radius: Any = "1.0 angstroms",
         skip_digestion: bool = False,
     ) -> None:
         """Focus the camera on a selection. Delegate to ``view.camera.focus_selection()``."""
@@ -165,10 +174,10 @@ class SceneMixin:
         self,
         region: str | Region,
         *,
-        duration: Any = '250 ms',
+        duration: Any = "250 ms",
         duration_ms: Any | None = None,
-        extra_radius: Any = '4.0 angstroms',
-        min_radius: Any = '1.0 angstroms',
+        extra_radius: Any = "4.0 angstroms",
+        min_radius: Any = "1.0 angstroms",
         skip_digestion: bool = False,
     ) -> None:
         """Focus the camera on a region. Delegate to ``view.camera.focus_region()``."""
@@ -196,9 +205,7 @@ class SceneMixin:
             self._shape_history.clear()
         if labels:
             self._annotation_history.clear()
-            annotation_tags = [
-                tag for (kind, tag) in self._scene_objects if kind == "annotation"
-            ]
+            annotation_tags = [tag for (kind, tag) in self._scene_objects if kind == "annotation"]
             for tag in annotation_tags:
                 self._scene_objects.pop(("annotation", tag), None)
                 self._layers.pop(tag, None)
@@ -357,6 +364,7 @@ class SceneMixin:
             return
 
         from .._pyunitwizard import puw
+
         if puw.is_quantity(coordinates):
             coords_nm = puw.get_value(coordinates, to_unit="nm")
         else:
@@ -374,12 +382,14 @@ class SceneMixin:
             coords_arr = coords_arr[0]
         coords_ang = (coords_arr * _NM_TO_ANGSTROM).tolist()
 
-        self._send({
-            "op": "partial_coordinates_update",
-            "coordinates": coords_ang,
-            "atom_indices": list(atom_indices),
-            "transaction_id": transaction_id,
-        })
+        self._send(
+            {
+                "op": "partial_coordinates_update",
+                "coordinates": coords_ang,
+                "atom_indices": list(atom_indices),
+                "transaction_id": transaction_id,
+            }
+        )
 
     @signal(tags=["viewer"])
     @digest()

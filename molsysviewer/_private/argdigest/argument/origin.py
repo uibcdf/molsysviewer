@@ -1,23 +1,16 @@
-from ...exceptions import ArgumentError
-import numpy as np
-from molsysviewer._pyunitwizard import puw
 from molsysviewer._private.input_arguments import can_be_selection
 from molsysviewer._private.variables import make_coordinates_like
 
-methods_where_bool = [
-]
+from ...exceptions import ArgumentError
 
-methods_where_none = [
-    'molsysmt.thirds.nglview.add_arrows.add_arrows'
-]
+methods_where_bool = []
 
-methods_where_xyz = [
-    'molsysmt.thirds.nglview.add_arrows.add_arrows'
-]
+methods_where_none = ["molsysmt.thirds.nglview.add_arrows.add_arrows"]
 
-methods_where_can_be_selection = [
-    'molsysmt.thirds.nglview.add_arrows.add_arrows'
-]
+methods_where_xyz = ["molsysmt.thirds.nglview.add_arrows.add_arrows"]
+
+methods_where_can_be_selection = ["molsysmt.thirds.nglview.add_arrows.add_arrows"]
+
 
 def digest_origin(origin, caller=None):
 
@@ -32,12 +25,11 @@ def digest_origin(origin, caller=None):
     if caller in methods_where_xyz:
         try:
             return make_coordinates_like(origin)
-        except:
+        except:  # noqa: E722
             pass
 
     if caller in methods_where_can_be_selection:
         if can_be_selection(origin):
             return origin
 
-    raise ArgumentError('origin', value=origin, caller=caller, message=None)
-
+    raise ArgumentError("origin", value=origin, caller=caller, message=None)

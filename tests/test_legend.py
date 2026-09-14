@@ -11,13 +11,17 @@ class DummyView:
 
 def test_set_legend_emits_items():
     from molsysviewer.scene import SceneManager
+
     view = DummyView()
     scene = SceneManager(view)
 
-    scene.set_legend([
-        {"label": "pocket", "color": 0x0072B2},
-        ("channel", 0xE69F00),  # tuple form
-    ], position="bottom-left")
+    scene.set_legend(
+        [
+            {"label": "pocket", "color": 0x0072B2},
+            ("channel", 0xE69F00),  # tuple form
+        ],
+        position="bottom-left",
+    )
 
     msg = view.messages[-1]
     assert msg["op"] == "set_legend"
@@ -31,6 +35,7 @@ def test_set_legend_emits_items():
 
 def test_set_legend_empty_hides():
     from molsysviewer.scene import SceneManager
+
     view = DummyView()
     SceneManager(view).set_legend(None)
     msg = view.messages[-1]

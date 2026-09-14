@@ -21,13 +21,11 @@ from molsysviewer._private.exceptions import ArgumentError
 def digest_series(series, caller=None):
     if isinstance(series, Mapping):
         if not series:
-            raise ArgumentError("series", value=series, caller=caller,
-                                message="a plot of no series draws nothing")
+            raise ArgumentError("series", value=series, caller=caller, message="a plot of no series draws nothing")
         return series
     if isinstance(series, Sequence) and not isinstance(series, (str, bytes)):
         if not series:
-            raise ArgumentError("series", value=series, caller=caller,
-                                message="a plot of no series draws nothing")
+            raise ArgumentError("series", value=series, caller=caller, message="a plot of no series draws nothing")
         return series
     if hasattr(series, "__len__") and hasattr(series, "__getitem__"):
         return series  # a numpy array or anything else that indexes like one

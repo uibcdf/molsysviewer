@@ -6,11 +6,11 @@ from molsysviewer.addons import (
     AddonExportHelperSpec,
     AddonLifecycleSpec,
     AddonPanelSpec,
+    AddonPanelWidget,
+    AddonSectionSpec,
     AddonShapeProviderSpec,
     AddonSpec,
-    AddonSectionSpec,
     AddonWorkspaceSpec,
-    AddonPanelWidget,
 )
 
 
@@ -19,7 +19,9 @@ class DummyAddonRuntime:
     enabled: bool = False
     workspace: str = "dummy"
     panels: list[str] = field(default_factory=lambda: ["main", "secondary"])
-    sections: list[str] = field(default_factory=lambda: ["interactive", "inputs", "status", "secondary_overview", "secondary_details"])
+    sections: list[str] = field(
+        default_factory=lambda: ["interactive", "inputs", "status", "secondary_overview", "secondary_details"]
+    )
     context_actions: list[str] = field(default_factory=lambda: ["focus-dummy", "inspect-dummy"])
     export_helpers: list[str] = field(default_factory=lambda: ["dummy-export"])
     last_context_action: dict[str, Any] | None = None
@@ -64,9 +66,9 @@ def ensure_runtime(view: Any) -> DummyAddonRuntime:
     return runtime
 
 
-
 class DummyMainPanelWidget(AddonPanelWidget):
     """Main panel widget with count state and cleanup logging."""
+
     _esm = """
     export function render({ model, el }) {
         el.innerHTML = `
@@ -214,6 +216,7 @@ class DummyMainPanelWidget(AddonPanelWidget):
 
 class DummySecondaryPanelWidget(AddonPanelWidget):
     """Secondary panel widget demonstrating custom shapes summary."""
+
     _esm = """
     export function render({ model, el }) {
         el.innerHTML = `

@@ -10,7 +10,6 @@ from time import perf_counter
 
 from molsysviewer.demo import demo
 
-
 MESSAGE_COUNT = 30
 
 
@@ -26,15 +25,19 @@ def main() -> None:
         view._send({"op": "benchmark_noop", "index": index})  # noqa: SLF001
     elapsed_ms = (perf_counter() - started) * 1000.0
 
-    print(json.dumps({
-        "messages": MESSAGE_COUNT,
-        "historyBefore": history_before,
-        "historyAfter": len(view._message_history),  # noqa: SLF001
-        "sentBeforeReady": len(sent),
-        "initialMessagesChanged": view.widget.initial_messages != initial_before,
-        "totalMs": round(elapsed_ms, 3),
-        "msPerMessage": round(elapsed_ms / MESSAGE_COUNT, 3),
-    }))
+    print(
+        json.dumps(
+            {
+                "messages": MESSAGE_COUNT,
+                "historyBefore": history_before,
+                "historyAfter": len(view._message_history),  # noqa: SLF001
+                "sentBeforeReady": len(sent),
+                "initialMessagesChanged": view.widget.initial_messages != initial_before,
+                "totalMs": round(elapsed_ms, 3),
+                "msPerMessage": round(elapsed_ms / MESSAGE_COUNT, 3),
+            }
+        )
+    )
 
 
 if __name__ == "__main__":

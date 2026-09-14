@@ -3,23 +3,24 @@
 These tests exercise the timeline construction, serialization, and
 convenience builders without requiring a live viewer or JS runtime.
 """
+
 from __future__ import annotations
 
 import json
 import math
+
 import pytest
-
-from molsysviewer.viewer.movie import MovieManager, _MOLSYSMOVIE_VERSION
-
+from molsysviewer.viewer.movie import _MOLSYSMOVIE_VERSION, MovieManager
 
 # ── DummyView ──────────────────────────────────────────────────────────────────
+
 
 class DummyCamera:
     def __init__(self, snapshot=None):
         self._snapshot = snapshot or {
             "position": [10.0, 0.0, 0.0],
-            "target":   [0.0,  0.0, 0.0],
-            "up":       [0.0,  1.0, 0.0],
+            "target": [0.0, 0.0, 0.0],
+            "up": [0.0, 1.0, 0.0],
         }
 
     def get_snapshot(self, *, skip_digestion=False, **_kwargs):
@@ -48,6 +49,7 @@ class DummyView:
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
 
+
 def make_movie(n_structures=10, camera_snapshot=None):
     view = DummyView(n_structures=n_structures, camera_snapshot=camera_snapshot)
     return MovieManager(view)
@@ -58,6 +60,7 @@ SNAP_B = {"position": [0.0, 10.0, 0.0], "target": [0.0, 0.0, 0.0], "up": [0.0, 0
 
 
 # ── add_keyframe ───────────────────────────────────────────────────────────────
+
 
 def test_add_keyframe_basic():
     m = make_movie()
@@ -131,6 +134,7 @@ def test_add_keyframe_no_fields_is_valid():
 
 # ── add_visibility_transition ──────────────────────────────────────────────────
 
+
 def test_visibility_transition_inserts_new_keyframe():
     m = make_movie()
     m.add_keyframe(0.0)
@@ -167,6 +171,7 @@ def test_visibility_transition_sorted_insertion():
 
 # ── clear / duration_ms ────────────────────────────────────────────────────────
 
+
 def test_clear_resets_timeline():
     m = make_movie()
     m.add_keyframe(0.0)
@@ -191,6 +196,7 @@ def test_duration_ms_reflects_last_keyframe():
 
 # ── info ───────────────────────────────────────────────────────────────────────
 
+
 def test_info_empty():
     m = make_movie()
     i = m.info()
@@ -204,8 +210,7 @@ def test_info_empty():
 def test_info_populated():
     m = make_movie()
     m.add_keyframe(0.0, camera=SNAP_A, structure_index=0)
-    m.add_keyframe(5000.0, camera=SNAP_B, structure_index=9,
-                   layer_visibility={"pocket": True})
+    m.add_keyframe(5000.0, camera=SNAP_B, structure_index=9, layer_visibility={"pocket": True})
     i = m.info()
     assert i["n_keyframes"] == 2
     assert i["duration_ms"] == 5000.0
@@ -215,6 +220,7 @@ def test_info_populated():
 
 
 # ── serialization ──────────────────────────────────────────────────────────────
+
 
 def test_to_dict_round_trip():
     m = make_movie()
@@ -239,22 +245,26 @@ def test_from_dict_wrong_version():
 def test_from_dict_missing_time_ms():
     m = make_movie()
     with pytest.raises(ValueError, match="missing 'time_ms'"):
-        m.from_dict({
-            "molsysmovie_version": _MOLSYSMOVIE_VERSION,
-            "keyframes": [{"easing": "linear"}],
-        })
+        m.from_dict(
+            {
+                "molsysmovie_version": _MOLSYSMOVIE_VERSION,
+                "keyframes": [{"easing": "linear"}],
+            }
+        )
 
 
 def test_from_dict_non_increasing_times():
     m = make_movie()
     with pytest.raises(ValueError, match="strictly greater"):
-        m.from_dict({
-            "molsysmovie_version": _MOLSYSMOVIE_VERSION,
-            "keyframes": [
-                {"time_ms": 0.0, "easing": "linear"},
-                {"time_ms": 0.0, "easing": "linear"},
-            ],
-        })
+        m.from_dict(
+            {
+                "molsysmovie_version": _MOLSYSMOVIE_VERSION,
+                "keyframes": [
+                    {"time_ms": 0.0, "easing": "linear"},
+                    {"time_ms": 0.0, "easing": "linear"},
+                ],
+            }
+        )
 
 
 def test_save_and_load(tmp_path):
@@ -275,14 +285,14 @@ def test_save_and_load(tmp_path):
 
 def test_to_dict_is_json_serializable():
     m = make_movie()
-    m.add_keyframe(0.0, camera=SNAP_A, structure_index=0,
-                   layer_visibility={"r": True})
+    m.add_keyframe(0.0, camera=SNAP_A, structure_index=0, layer_visibility={"r": True})
     m.add_keyframe(2000.0, camera=SNAP_B)
     # Should not raise
     json.dumps(m.to_dict())
 
 
 # ── add_camera_orbit ───────────────────────────────────────────────────────────
+
 
 def test_add_camera_orbit_produces_keyframes():
     m = make_movie()
@@ -297,14 +307,14 @@ def test_add_camera_orbit_first_last_positions_close():
     """A full orbit should return to (approximately) the starting position."""
     snap = {
         "position": [10.0, 0.0, 0.0],
-        "target":   [0.0,  0.0, 0.0],
-        "up":       [0.0,  1.0, 0.0],
+        "target": [0.0, 0.0, 0.0],
+        "up": [0.0, 1.0, 0.0],
     }
     m = make_movie(camera_snapshot=snap)
     m.add_camera_orbit(duration_ms=5000.0, n_turns=1, n_keyframes=36)
 
     first_pos = m.keyframes[0]["camera"]["position"]
-    last_pos  = m.keyframes[-1]["camera"]["position"]
+    last_pos = m.keyframes[-1]["camera"]["position"]
     dist = math.sqrt(sum((a - b) ** 2 for a, b in zip(first_pos, last_pos)))
     assert dist < 1e-6
 
@@ -312,16 +322,14 @@ def test_add_camera_orbit_first_last_positions_close():
 def test_add_camera_orbit_constant_radius():
     snap = {
         "position": [10.0, 0.0, 0.0],
-        "target":   [0.0,  0.0, 0.0],
-        "up":       [0.0,  1.0, 0.0],
+        "target": [0.0, 0.0, 0.0],
+        "up": [0.0, 1.0, 0.0],
     }
     m = make_movie(camera_snapshot=snap)
     m.add_camera_orbit(duration_ms=5000.0, n_turns=1, n_keyframes=12)
 
     radii = [
-        math.sqrt(sum((p - t) ** 2 for p, t in zip(
-            kf["camera"]["position"], kf["camera"]["target"]
-        )))
+        math.sqrt(sum((p - t) ** 2 for p, t in zip(kf["camera"]["position"], kf["camera"]["target"])))
         for kf in m.keyframes
     ]
     assert all(abs(r - radii[0]) < 1e-9 for r in radii)
@@ -346,6 +354,7 @@ def test_add_camera_orbit_invalid_easing():
 
 # ── add_structure_sweep ────────────────────────────────────────────────────────
 
+
 def test_add_structure_sweep_basic():
     m = make_movie(n_structures=10)
     m.add_structure_sweep(from_index=0, to_index=9, duration_ms=5000.0)
@@ -368,8 +377,10 @@ def test_add_structure_sweep_end_time_ms():
     m = make_movie()
     m.add_keyframe(0.0)
     m.add_structure_sweep(
-        from_index=0, to_index=4,
-        start_time_ms=1000.0, end_time_ms=6000.0,
+        from_index=0,
+        to_index=4,
+        start_time_ms=1000.0,
+        end_time_ms=6000.0,
     )
     last = m.keyframes[-1]
     assert last["time_ms"] == pytest.approx(6000.0)
@@ -392,8 +403,10 @@ def test_add_structure_sweep_both_duration_and_end_raises():
     m = make_movie()
     with pytest.raises(ValueError, match="not both"):
         m.add_structure_sweep(
-            from_index=0, to_index=4,
-            duration_ms=1000.0, end_time_ms=2000.0,
+            from_index=0,
+            to_index=4,
+            duration_ms=1000.0,
+            end_time_ms=2000.0,
         )
 
 
@@ -404,6 +417,7 @@ def test_add_structure_sweep_neither_duration_nor_end_raises():
 
 
 # ── play / stop ────────────────────────────────────────────────────────────────
+
 
 def test_play_sends_message():
     m = make_movie()
@@ -451,7 +465,6 @@ def test_play_start_time_ms():
         m.play(start_time_ms=3001.0)
 
 
-
 def test_play_requires_two_keyframes():
     m = make_movie()
     with pytest.raises(ValueError):
@@ -471,9 +484,11 @@ def test_stop_sends_message():
 
 # ── export ────────────────────────────────────────────────────────────────────
 
+
 def test_export_requires_imageio():
     """export() raises ImportError if imageio is absent (hard to mock; skip if present)."""
     import importlib
+
     if importlib.util.find_spec("imageio"):
         pytest.skip("imageio is installed; cannot test ImportError path")
     m = make_movie()
@@ -495,7 +510,9 @@ def test_export_requires_two_keyframes():
 
 def test_export_sends_correct_message(tmp_path):
     """export() sends play_movie with mode=export and correct total_frames."""
-    import threading, base64
+    import base64
+    import threading
+
     imageio = pytest.importorskip("imageio")
     import numpy as np
 
@@ -514,14 +531,14 @@ def test_export_sends_correct_message(tmp_path):
     def simulate_js():
         """Wait until the play_movie message is sent, then feed frames."""
         import time
+
         deadline = time.monotonic() + 5.0
         while not m._view.sent_messages:
             if time.monotonic() > deadline:
                 return
             time.sleep(0.01)
         m._view._movie_export_frames = [
-            {"data_uri": data_uri, "frame_index": i, "total_frames": total_frames}
-            for i in range(total_frames)
+            {"data_uri": data_uri, "frame_index": i, "total_frames": total_frames} for i in range(total_frames)
         ]
         m._view._movie_export_done = True
 
@@ -544,6 +561,7 @@ def test_export_sends_correct_message(tmp_path):
 def test_export_decode_frame_helper():
     """_decode_frame round-trips a tiny PNG correctly."""
     import base64
+
     imageio = pytest.importorskip("imageio")
     import numpy as np
     from molsysviewer.viewer.movie import _decode_frame
@@ -575,9 +593,8 @@ def test_writing_a_gif_emits_no_deprecation(tmp_path):
     """The behaviour the helper exists for, checked where a user meets it."""
     import warnings
 
-    import numpy as np
     import imageio.v2 as imageio
-
+    import numpy as np
     from molsysviewer.viewer.movie import _frame_rate_kwargs
 
     path = tmp_path / "probe.gif"

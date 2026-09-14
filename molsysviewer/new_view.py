@@ -1,14 +1,13 @@
-
 from __future__ import annotations
 
-from typing import Any, Sequence, Union, Literal
+from typing import Any, Literal, Sequence, Union
 
+from depdigest import dep_digest
 from smonitor import signal
 
-from .viewer import MolSysView
 from ._private.argdigest import digest
 from ._private.smonitor.warnings import EmptySelectionWarning, warn
-from depdigest import dep_digest
+from .viewer import MolSysView
 
 Selection = Union[str, Sequence[int]]
 StructureIndices = Union[str, Sequence[int]]
@@ -23,6 +22,7 @@ def _new_view_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dic
     if molecular_system is not None:
         try:
             import molsysmt as msm
+
             molecular_system_form = msm.get_form(molecular_system)
         except Exception:
             molecular_system_form = type(molecular_system).__name__
@@ -33,7 +33,8 @@ def _new_view_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dic
         "molecular_system_form": molecular_system_form,
     }
 
-@dep_digest('molsysmt')
+
+@dep_digest("molsysmt")
 @signal(tags=["load", "factory"], extra_factory=_new_view_signal_extra)
 @digest()
 def new_view(
@@ -91,16 +92,12 @@ def new_view(
             selection=selection,
             structure_indices=structure_indices,
             syntax=syntax,
-            skip_digestion=True
+            skip_digestion=True,
         )
         return view
 
     view.load(
-        molecular_system,
-        selection="all",
-        structure_indices=structure_indices,
-        syntax=syntax,
-        skip_digestion=True
+        molecular_system, selection="all", structure_indices=structure_indices, syntax=syntax, skip_digestion=True
     )
     selected_atoms = None
     select = getattr(view, "select", None)

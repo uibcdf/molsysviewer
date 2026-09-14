@@ -3,21 +3,18 @@ from __future__ import annotations
 import json
 import warnings
 
-import pyunitwizard as puw
 import molsysviewer._pyunitwizard  # noqa: F401 — configures puw
-
-from molsysviewer import AddonPanelSpec, AddonSpec, AddonWorkspaceSpec, FigureSpec, addons
-from molsysviewer import config
+import pyunitwizard as puw
 from molsysviewer.config.user_presets import load_user_presets
 from molsysviewer.demo import demo
 from molsysviewer.styles import Style
 
+from molsysviewer import AddonPanelSpec, AddonSpec, AddonWorkspaceSpec, FigureSpec, addons, config
+
 
 def _missing_digester_warnings(records) -> list[str]:
     return [
-        str(record.message)
-        for record in records
-        if record.message.__class__.__name__ == "DigestNotDigestedWarning"
+        str(record.message) for record in records if record.message.__class__.__name__ == "DigestNotDigestedWarning"
     ]
 
 
@@ -79,7 +76,9 @@ def test_core_public_api_does_not_emit_missing_digester_warnings(tmp_path):
         view.whole.set_representation(preset="polymer-cartoon")
         view.extract(selection=[0, 1], syntax="MolSysMT")
         view.styles.apply(style=Style(preset="polymer-cartoon", name="Polymers"))
-        view.styles.add("publication", Style(preset="polymer-cartoon"), description="Publication baseline", source="runtime")
+        view.styles.add(
+            "publication", Style(preset="polymer-cartoon"), description="Publication baseline", source="runtime"
+        )
         view.styles.load_project_config(str(project_config_path), apply_default=False)
         addons.load_project_config(str(project_config_path))
         addons.clear()
@@ -118,7 +117,9 @@ def test_core_public_api_does_not_emit_missing_digester_warnings(tmp_path):
         )
         view.export.figure(
             tmp_path / "audit-figure.png",
-            figure_spec=FigureSpec(width_px=900, height_px=600, scale=2.5, background="white", preset="publication-light"),
+            figure_spec=FigureSpec(
+                width_px=900, height_px=600, scale=2.5, background="white", preset="publication-light"
+            ),
             width_px=800,
             height_px=600,
             scale=2.0,
@@ -148,9 +149,7 @@ def test_color_operations_do_not_emit_missing_digester_warnings():
         # explicit range + inferred range, both replace flags, all four surfaces
         view.whole.set_color_by_attribute("b_factor", value_range=[0.0, 50.0], replace=True)
         view.whole.set_color_by_attribute("b_factor", value_range=None, replace=False)
-        view.whole.set_color_by_values(
-            [i / n_atoms for i in range(n_atoms)], value_range=[0.0, 1.0], replace=True
-        )
+        view.whole.set_color_by_values([i / n_atoms for i in range(n_atoms)], value_range=[0.0, 1.0], replace=True)
         region.set_color_by_attribute("b_factor", value_range=[0.0, 50.0], replace=True)
         region.set_color_by_attribute("b_factor", value_range=None, replace=False)
         region.set_color_by_values([0.1, 0.5, 0.9], value_range=[0.0, 1.0], replace=False)
@@ -184,10 +183,13 @@ def test_shape_helpers_do_not_emit_missing_digester_warnings():
             tag=["s1", "s2"],
         )
         view.shapes.add_links(
-            coordinate_pairs=puw.quantity([
-                [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0]],
-                [[1.0, 0.0, 0.0], [1.0, 1.0, 0.0]],
-            ], "nm"),
+            coordinate_pairs=puw.quantity(
+                [
+                    [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0]],
+                    [[1.0, 0.0, 0.0], [1.0, 1.0, 0.0]],
+                ],
+                "nm",
+            ),
             radii=puw.quantity([0.1, 0.2], "nm"),
             colors=[0xFF0000, 0x00FF00],
             color_mode="link",

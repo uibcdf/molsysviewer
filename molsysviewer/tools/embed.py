@@ -77,6 +77,5 @@ def embed_iframe(
     if not src.startswith((".", "/")):
         src = f"./{src}"
     return IframeMarkup(
-        f'<iframe src="{src}" width="{width}" height="{height}"\n'
-        f'        style="border:none;"></iframe>'
+        f'<iframe src="{src}" width="{width}" height="{height}"\n        style="border:none;"></iframe>'
     )

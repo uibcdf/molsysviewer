@@ -83,7 +83,9 @@ def compose_regions(view: Any, content: Mapping[str, Any]) -> None:
     raw_new_tag = content.get("new_tag")
     new_tag = raw_new_tag.strip() if isinstance(raw_new_tag, str) and raw_new_tag.strip() else None
     overwrite = bool(content.get("overwrite", False))
-    operation_tag = view._unique_region_tag(f"{new_tag}__compose") if overwrite and new_tag in view._regions else new_tag
+    operation_tag = (
+        view._unique_region_tag(f"{new_tag}__compose") if overwrite and new_tag in view._regions else new_tag
+    )
     operation = str(content.get("op") or "").strip().lower()
     if operation == "union":
         result = left.union(*operands, tag=operation_tag, skip_digestion=True)
@@ -223,20 +225,22 @@ def delete_layer_and_contents(view: Any, content: Mapping[str, Any]) -> None:
 def get_region_details(view: Any, content: Mapping[str, Any]) -> None:
     region = _region(view, content, "get_region_details")
     center = region.get_center(structure_indices=[view.current_structure_index], skip_digestion=True)
-    view._send_runtime_only({
-        "op": "region_details",
-        "request_id": content.get("request_id"),
-        "tag": region.tag,
-        "atom_count": len(region.atom_indices or ()),
-        "group_count": len(region._scoped_indices_for_element("group") or []),
-        "chain_count": len(region._scoped_indices_for_element("chain") or []),
-        "center_nm": puw.get_value(center, to_unit="nm").tolist(),
-        "structure_index": view.current_structure_index,
-        "provenance": dict(region.provenance),
-        "order": int(region.order),
-        "mode": region.mode,
-        "broken": bool(region.provenance.get("broken")),
-    })
+    view._send_runtime_only(
+        {
+            "op": "region_details",
+            "request_id": content.get("request_id"),
+            "tag": region.tag,
+            "atom_count": len(region.atom_indices or ()),
+            "group_count": len(region._scoped_indices_for_element("group") or []),
+            "chain_count": len(region._scoped_indices_for_element("chain") or []),
+            "center_nm": puw.get_value(center, to_unit="nm").tolist(),
+            "structure_index": view.current_structure_index,
+            "provenance": dict(region.provenance),
+            "order": int(region.order),
+            "mode": region.mode,
+            "broken": bool(region.provenance.get("broken")),
+        }
+    )
 
 
 def toggle_region_visibility(view: Any, content: Mapping[str, Any]) -> None:

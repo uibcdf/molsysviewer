@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-
 from typing import Any
 
 import molsysmt as msm
 from smonitor import signal
+
 from .._private.argdigest import digest
 from .._private.smonitor_emit import emit_suppressed_exception
 from .._private.variables import is_all
@@ -13,9 +13,7 @@ from .._private.variables import is_all
 def _ensure_structure_visibility_supported(structure_indices: Any) -> None:
     if is_all(structure_indices):
         return
-    raise NotImplementedError(
-        "Per-structure visibility is not supported yet; pass structure_indices=\"all\"."
-    )
+    raise NotImplementedError('Per-structure visibility is not supported yet; pass structure_indices="all".')
 
 
 class VisibilityMixin:
@@ -58,9 +56,15 @@ class VisibilityMixin:
 
     @signal(tags=["visibility"])
     @digest()
-    def focus_with_fade(self, selection: str | Any = "all", *, fade: float = 0.85,
-                        structure_indices: str | Any = "all", syntax: str = "MolSysMT",
-                        skip_digestion: bool = False):
+    def focus_with_fade(
+        self,
+        selection: str | Any = "all",
+        *,
+        fade: float = 0.85,
+        structure_indices: str | Any = "all",
+        syntax: str = "MolSysMT",
+        skip_digestion: bool = False,
+    ):
         """Soft spotlight: fade everything *outside* `selection` to `fade`
         transparency while keeping the selection fully opaque. Unlike ``isolate``
         it hides nothing — the context stays faintly visible. A generic
@@ -73,19 +77,20 @@ class VisibilityMixin:
             return
 
         if (isinstance(selection, str) and is_all(selection)) or fade <= 0:
-            self._send({"op": "set_focus_fade",
-                        "options": {"focus_atom_indices": None, "fade": 0.0}})
+            self._send({"op": "set_focus_fade", "options": {"focus_atom_indices": None, "fade": 0.0}})
             return
 
         if isinstance(selection, str):
-            atom_indices = msm.select(self._molsys, selection=selection,
-                                      syntax=syntax, skip_digestion=True)
+            atom_indices = msm.select(self._molsys, selection=selection, syntax=syntax, skip_digestion=True)
         else:
             atom_indices = list(selection)
 
-        self._send({"op": "set_focus_fade",
-                    "options": {"focus_atom_indices": [int(i) for i in atom_indices],
-                                "fade": float(fade)}})
+        self._send(
+            {
+                "op": "set_focus_fade",
+                "options": {"focus_atom_indices": [int(i) for i in atom_indices], "fade": float(fade)},
+            }
+        )
 
 
 VisibilityMixin.__module__ = "molsysviewer.viewer"

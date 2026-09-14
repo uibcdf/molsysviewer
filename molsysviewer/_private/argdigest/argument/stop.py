@@ -1,5 +1,7 @@
 import numpy as np
+
 from molsysviewer._private.exceptions import ArgumentError
+
 
 def digest_stop(stop, caller=None):
 
@@ -9,5 +11,4 @@ def digest_stop(stop, caller=None):
     if isinstance(stop, (int, np.int64, np.int32)):
         return stop
 
-    raise ArgumentError('stop', value=stop, caller=caller, message=None)
-
+    raise ArgumentError("stop", value=stop, caller=caller, message=None)

@@ -10,8 +10,9 @@ from molsysviewer._private.exceptions import ArgumentError
 
 def digest_n_keyframes(n_keyframes, caller=None):
     if isinstance(n_keyframes, bool) or not isinstance(n_keyframes, int):
-        raise ArgumentError("n_keyframes", value=n_keyframes, caller=caller,
-                            message="expected a whole number of keyframes")
+        raise ArgumentError(
+            "n_keyframes", value=n_keyframes, caller=caller, message="expected a whole number of keyframes"
+        )
     if n_keyframes < 2:
         raise ArgumentError(
             "n_keyframes",

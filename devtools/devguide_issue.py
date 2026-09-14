@@ -46,8 +46,7 @@ CLOSED_STATUSES = {"resolved", "withdrawn", "superseded"}
 def _gh(*arguments: str) -> str:
     result = subprocess.run(("gh",) + arguments, capture_output=True, text=True, cwd=ROOT)
     if result.returncode != 0:
-        raise SystemExit(f"gh {' '.join(arguments)} failed: "
-                         f"{(result.stderr or result.stdout).strip()}")
+        raise SystemExit(f"gh {' '.join(arguments)} failed: {(result.stderr or result.stdout).strip()}")
     return result.stdout
 
 
@@ -77,9 +76,20 @@ def _documents() -> list[tuple[Path, dict[str, str]]]:
 
 
 def _board() -> dict[int, dict]:
-    payload = json.loads(_gh("issue", "list", "--repo", "uibcdf/molsysviewer",
-                             "--state", "all", "--limit", "200",
-                             "--json", "number,state,labels,milestone"))
+    payload = json.loads(
+        _gh(
+            "issue",
+            "list",
+            "--repo",
+            "uibcdf/molsysviewer",
+            "--state",
+            "all",
+            "--limit",
+            "200",
+            "--json",
+            "number,state,labels,milestone",
+        )
+    )
     return {item["number"]: item for item in payload}
 
 
@@ -130,11 +140,11 @@ def sync(check: bool) -> int:
         print(f"  {line}")
 
     if check:
-        print(f"\n{len(drift)} disagreement(s) between the front matter and the board.",
-              file=sys.stderr)
-        print("Fix the document or the issue, then run "
-              "`python devtools/devguide_issue.py sync` for the derived labels.",
-              file=sys.stderr)
+        print(f"\n{len(drift)} disagreement(s) between the front matter and the board.", file=sys.stderr)
+        print(
+            "Fix the document or the issue, then run `python devtools/devguide_issue.py sync` for the derived labels.",
+            file=sys.stderr,
+        )
         return 1
 
     for number, add, remove in to_apply:
@@ -148,8 +158,7 @@ def sync(check: bool) -> int:
 
     remaining = [line for line in drift if "state label" not in line and "wants" not in line]
     if remaining:
-        print(f"\n{len(remaining)} disagreement(s) need a person, not a label.",
-              file=sys.stderr)
+        print(f"\n{len(remaining)} disagreement(s) need a person, not a label.", file=sys.stderr)
         return 1
     return 0
 
@@ -158,8 +167,9 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
     synchronise = subparsers.add_parser("sync", help="compare the board with the front matter")
-    synchronise.add_argument("--check", action="store_true",
-                             help="report drift and exit non-zero without changing anything")
+    synchronise.add_argument(
+        "--check", action="store_true", help="report drift and exit non-zero without changing anything"
+    )
     arguments = parser.parse_args()
 
     if arguments.command == "sync":

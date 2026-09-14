@@ -39,10 +39,7 @@ class Style:
             return
         if self.kind != "scene":
             raise ValueError("Style kind must be 'scene' or 'focus'.")
-        defined = sum(
-            value is not None
-            for value in (self.representation, self.preset, self.user_preset)
-        )
+        defined = sum(value is not None for value in (self.representation, self.preset, self.user_preset))
         if defined != 1:
             raise ValueError("Style requires exactly one of representation, preset, or user_preset.")
 
@@ -127,7 +124,6 @@ BUILTIN_FOCUS_STYLES: dict[str, Style] = {
 from ._private.color_schemes import (  # noqa: E402
     STRUCTURAL_COLOR_SCHEMES,
 )
-
 
 STRUCTURAL_SIZE_SCHEMES: dict[str, dict[str, Any]] = {
     "uniform": {
@@ -612,9 +608,7 @@ class StylesManager:
             resolved = Style(representation=representation, kind="focus", params=dict(params))
             resolved_tag = tag or self._next_focus_tag()
         else:
-            raise ValueError(
-                "styles.focus() requires a style object, a builtin tag string, or representation=."
-            )
+            raise ValueError("styles.focus() requires a style object, a builtin tag string, or representation=.")
 
         region = self._view.regions.add(
             selection=selection,
@@ -670,13 +664,16 @@ class StylesManager:
         records: list[dict[str, Any]] = []
         for ftag in self.builtin_focus_tags(skip_digestion=True):
             style = BUILTIN_FOCUS_STYLES[ftag]
-            records.append({
-                "tag": ftag,
-                "description": None,
-                "source": "builtin",
-                "style": style.info(),
-            })
+            records.append(
+                {
+                    "tag": ftag,
+                    "description": None,
+                    "source": "builtin",
+                    "style": style.info(),
+                }
+            )
         return records
+
 
 __all__ = [
     "Style",

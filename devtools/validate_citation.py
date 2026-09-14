@@ -31,9 +31,7 @@ FOREIGN_OR_VERSION_DOIS = (
 
 
 def _cff_scalar(text: str, key: str) -> str:
-    match = re.search(
-        rf"^{re.escape(key)}:\s*[\"']?([^\n\"']+)", text, re.MULTILINE
-    )
+    match = re.search(rf"^{re.escape(key)}:\s*[\"']?([^\n\"']+)", text, re.MULTILINE)
     return match.group(1).strip() if match else ""
 
 
@@ -59,9 +57,7 @@ def _zenodo_creators(payload: dict) -> set[tuple[str, str]]:
     }
 
 
-def validate_repository(
-    repo: Path = ROOT, expected_version: str | None = None
-) -> list[str]:
+def validate_repository(repo: Path = ROOT, expected_version: str | None = None) -> list[str]:
     """Return every citation-policy violation found below *repo*."""
 
     errors: list[str] = []
@@ -89,10 +85,7 @@ def validate_repository(
     if not VERSION_RE.fullmatch(version):
         errors.append("CITATION.cff version must use X.Y.Z or X.Y.Z-rc.N")
     if expected_version is not None and version != expected_version:
-        errors.append(
-            f"CITATION.cff version {version!r} does not match expected "
-            f"{expected_version!r}"
-        )
+        errors.append(f"CITATION.cff version {version!r} does not match expected {expected_version!r}")
     try:
         date.fromisoformat(released)
     except ValueError:
@@ -111,9 +104,7 @@ def validate_repository(
     if str(zenodo.get("license", "")).lower() != "mit":
         errors.append(".zenodo.json license must be the string 'mit'")
     if "version" in zenodo or "publication_date" in zenodo:
-        errors.append(
-            ".zenodo.json must leave version and publication_date to the GitHub Release"
-        )
+        errors.append(".zenodo.json must leave version and publication_date to the GitHub Release")
     if _cff_creators(cff_text) != _zenodo_creators(zenodo):
         errors.append("CITATION.cff and .zenodo.json creators/ORCIDs disagree")
 
@@ -144,13 +135,9 @@ def validate_repository(
             errors.append(f"{relative} software citation does not match {version}")
         if f"({released[:4]})" not in text:
             errors.append(f"{relative} software citation does not match release year")
-    if not re.search(
-        rf"^\s*version = \{{{re.escape(version)}\}},$", bibtex_text, re.MULTILINE
-    ):
+    if not re.search(rf"^\s*version = \{{{re.escape(version)}\}},$", bibtex_text, re.MULTILINE):
         errors.append("software.bib version does not match CITATION.cff")
-    if not re.search(
-        rf"^\s*year = \{{{re.escape(released[:4])}\}},$", bibtex_text, re.MULTILINE
-    ):
+    if not re.search(rf"^\s*year = \{{{re.escape(released[:4])}\}},$", bibtex_text, re.MULTILINE):
         errors.append("software.bib year does not match CITATION.cff")
 
     return errors

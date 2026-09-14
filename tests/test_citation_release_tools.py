@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "devtools"))
 
 from prepare_release import prepare_release  # noqa: E402
-from validate_citation import _cff_scalar, CONCEPT_DOI, validate_repository  # noqa: E402
+from validate_citation import CONCEPT_DOI, _cff_scalar, validate_repository  # noqa: E402
 from verify_zenodo_release import validate_record  # noqa: E402
 
 
@@ -90,20 +90,17 @@ def test_zenodo_record_requires_version_doi_archive_and_matching_tag():
         "files": [{"key": "uibcdf/molsysviewer-0.20.1.zip"}],
         "metadata": {
             "version": "0.20.1",
-            "custom": {
-                "code:codeRepository": "https://github.com/uibcdf/molsysviewer"
-            },
-            "related_identifiers": [
-                {
-                    "identifier": "https://github.com/uibcdf/molsysviewer"
-                }
-            ],
+            "custom": {"code:codeRepository": "https://github.com/uibcdf/molsysviewer"},
+            "related_identifiers": [{"identifier": "https://github.com/uibcdf/molsysviewer"}],
         },
     }
 
-    assert validate_record(
-        record,
-        "0.20.1",
-        CONCEPT_DOI,
-        "https://github.com/uibcdf/molsysviewer",
-    ) == []
+    assert (
+        validate_record(
+            record,
+            "0.20.1",
+            CONCEPT_DOI,
+            "https://github.com/uibcdf/molsysviewer",
+        )
+        == []
+    )

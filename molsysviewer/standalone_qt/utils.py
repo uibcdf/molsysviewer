@@ -3,13 +3,14 @@ from __future__ import annotations
 import json
 import logging
 import os
-from pathlib import Path
 import sys
 import time
+from pathlib import Path
 from typing import Any, Sequence
 from urllib.parse import parse_qs, urlparse
 
 from .._private.smonitor_emit import emit_suppressed_exception
+from ..demo import demo
 from ..runtime_contract import (
     ACTION_CATEGORIES,
     DATA_PLANE_ACTIONS,
@@ -17,9 +18,7 @@ from ..runtime_contract import (
     QT_TRANSPORT_ACTIONS,
     RAW_ACTIONS,
 )
-from ..demo import demo
 from ..standalone import _resolve_view, build_standalone0_html
-
 
 logger = logging.getLogger(__name__)
 
@@ -83,11 +82,18 @@ def _import_qt():
         from PySide6_uibcdf.QtCore import QBuffer, QByteArray, QTimer, QUrl
         from PySide6_uibcdf.QtGui import QAction, QCursor
         from PySide6_uibcdf.QtWebEngineCore import (
-            QWebEnginePage, QWebEngineUrlScheme, QWebEngineUrlSchemeHandler,
+            QWebEnginePage,
+            QWebEngineUrlScheme,
+            QWebEngineUrlSchemeHandler,
         )
         from PySide6_uibcdf.QtWebEngineWidgets import QWebEngineView
         from PySide6_uibcdf.QtWidgets import (
-            QApplication, QFileDialog, QInputDialog, QMainWindow, QMenu, QMessageBox,
+            QApplication,
+            QFileDialog,
+            QInputDialog,
+            QMainWindow,
+            QMenu,
+            QMessageBox,
         )
     except Exception as exc:  # pragma: no cover
         raise ImportError(QT_IMPORT_ERROR) from exc
@@ -584,9 +590,8 @@ class QtMessageBridge:
             # Scalar values cross the PySide/QWebEngine QVariant boundary
             # consistently. Keep accepting the legacy object result for compatible
             # hosts, but do not require object conversion from real Qt.
-            accepted = (
-                result == "molsysviewer-message-accepted"
-                or (isinstance(result, dict) and result.get("accepted") is True)
+            accepted = result == "molsysviewer-message-accepted" or (
+                isinstance(result, dict) and result.get("accepted") is True
             )
             if accepted:
                 return
@@ -616,15 +621,12 @@ class QtMessageBridge:
                 "reason": reason,
             }
             self.failed_deliveries.append(failure)
-            self._show_status(
-                f"Viewer message delivery failed after {attempts} attempts: {op} ({reason})"
-            )
+            self._show_status(f"Viewer message delivery failed after {attempts} attempts: {op} ({reason})")
             self._flush()
             return
         self.queue.insert(0, entry)
         self._show_status(
-            f"Viewer message delivery delayed (attempt {attempts}/{self.MAX_DELIVERY_ATTEMPTS}): "
-            f"{op} ({reason})"
+            f"Viewer message delivery delayed (attempt {attempts}/{self.MAX_DELIVERY_ATTEMPTS}): {op} ({reason})"
         )
         delay_ms = min(
             self.RETRY_MAX_DELAY_MS,
@@ -694,12 +696,7 @@ def _register_qt_url_schemes(QWebEngineUrlScheme) -> None:
         QT_EVENT_SCHEME: flag.SecureScheme | flag.CorsEnabled | flag.FetchApiAllowed | flag.LocalScheme,
         # Payload scheme: served by a QWebEngineUrlSchemeHandler and fetched by the
         # page, so it must allow CORS-enabled fetches.
-        QT_PAYLOAD_SCHEME: (
-            flag.SecureScheme
-            | flag.CorsEnabled
-            | flag.FetchApiAllowed
-            | flag.LocalScheme
-        ),
+        QT_PAYLOAD_SCHEME: (flag.SecureScheme | flag.CorsEnabled | flag.FetchApiAllowed | flag.LocalScheme),
     }
     for name, flags in specs.items():
         name_bytes = name.encode("ascii")
@@ -741,11 +738,7 @@ def _make_payload_scheme_handler(
             # compatibility payload, and raw structural arrays for the
             # array-native one. `fetch(...).arrayBuffer()` needs the binary
             # content type; nothing else about the channel changes.
-            content_type = (
-                b"application/octet-stream"
-                if payload_id in binary_payload_ids
-                else b"application/json"
-            )
+            content_type = b"application/octet-stream" if payload_id in binary_payload_ids else b"application/json"
             job.reply(QByteArray(content_type), buffer)
             served.append(payload_id)
 
@@ -861,11 +854,7 @@ def _send_viewer_message(webview, message: dict[str, Any]) -> None:
     if page is None or not hasattr(page, "runJavaScript"):
         return
     payload = json.dumps(message, separators=(",", ":"))
-    script = (
-        "if (window.__molsysviewerDocsHandleMessage) { "
-        f"window.__molsysviewerDocsHandleMessage({payload}); "
-        "}"
-    )
+    script = f"if (window.__molsysviewerDocsHandleMessage) {{ window.__molsysviewerDocsHandleMessage({payload}); }}"
     page.runJavaScript(script)
 
 
@@ -951,6 +940,7 @@ def _load_molecular_system_into_qt_host(
             view.reset_viewer(skip_digestion=True)
         else:
             from ..viewer.core import MolSysView
+
             # Demos and some sources arrive as a MolSysView; load its underlying
             # molecular system. Paths / PDB ids / molsysmt systems pass through.
             target = molecular_system._molsys if isinstance(molecular_system, MolSysView) else molecular_system  # noqa: SLF001

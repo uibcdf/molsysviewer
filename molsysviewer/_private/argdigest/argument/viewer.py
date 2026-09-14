@@ -1,7 +1,8 @@
 from molsysviewer._private.exceptions import ArgumentError
 
+
 def digest_viewer(viewer, caller=None):
-    """ Check if the given viewer is supported by MolSysMT.
+    """Check if the given viewer is supported by MolSysMT.
 
     Parameters
     ----------
@@ -22,5 +23,4 @@ def digest_viewer(viewer, caller=None):
         tmp_viewer = lowercase_viewers[viewer.lower()]
         return tmp_viewer
     except KeyError:
-        raise ArgumentError('viewer', value=viewer, caller=caller, message=None)
-
+        raise ArgumentError("viewer", value=viewer, caller=caller, message=None)

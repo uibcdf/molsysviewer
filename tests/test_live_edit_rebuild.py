@@ -5,12 +5,11 @@ import pytest
 pytest.importorskip("molsysmt")
 import molsysmt as msm
 from molsysmt.native import Structures
-
-from molsysviewer import MolSysView
-from molsysviewer.demo import demo
 from molsysviewer._pyunitwizard import puw
+from molsysviewer.demo import demo
 
 from _edit_helpers import apply_add, apply_append_structures, apply_remove, apply_set
+from molsysviewer import MolSysView
 
 
 def test_apply_system_edit_reconciles_external_molsysmt_edit():
@@ -28,7 +27,6 @@ def test_apply_system_edit_reconciles_external_molsysmt_edit():
         tag="links",
         skip_digestion=True,
     )
-
 
     old_n_atoms = int(msm.get(view.molsys, element="system", n_atoms=True, skip_digestion=True))
     removed = {0}
@@ -288,9 +286,9 @@ def test_apply_system_edit_replays_visual_region_as_bare_create_then_style():
     apply_set(view, element="group", selection=[0], group_name="ACE2")
 
     region_ops = [
-        msg for msg in view._test_message_log  # noqa: SLF001
-        if msg.get("tag") == "frag"
-        and msg.get("op") in {"create_region", "set_region_representation"}
+        msg
+        for msg in view._test_message_log  # noqa: SLF001
+        if msg.get("tag") == "frag" and msg.get("op") in {"create_region", "set_region_representation"}
     ]
     assert [msg["op"] for msg in region_ops] == ["create_region", "set_region_representation"]
 
@@ -494,9 +492,7 @@ def test_an_annotation_whose_anchor_is_deleted_survives_as_broken_not_as_nothing
     document_record = next(item for item in view.export_state()["annotations"] if item["tag"] == "a1")
     assert document_record["broken"] is True
     assert document_record["broken_reason"] == record["broken_reason"]
-    summary = next(
-        msg for msg in reversed(sent) if msg.get("op") == "set_annotation_summaries"
-    )["annotations"][0]
+    summary = next(msg for msg in reversed(sent) if msg.get("op") == "set_annotation_summaries")["annotations"][0]
     assert summary["broken"] is True
     assert summary["broken_reason"] == record["broken_reason"]
 
@@ -545,9 +541,7 @@ def test_a_destroyed_measurement_anchor_serializes_without_a_stale_value():
     assert document_record["broken"] is True
     assert "value" not in document_record["options"]
     assert "value_series" not in document_record["options"]
-    summary = next(
-        msg for msg in reversed(sent) if msg.get("op") == "set_measurement_summaries"
-    )["measurements"][0]
+    summary = next(msg for msg in reversed(sent) if msg.get("op") == "set_measurement_summaries")["measurements"][0]
     assert summary["broken"] is True
     assert summary["value"] is None
 
@@ -624,7 +618,6 @@ def test_canonical_export_after_live_edit_chain_reflects_current_state(monkeypat
     assert pocket_msg["options"]["atom_indices"] == [0, 1]
 
 
-
 def test_remove_rebuild_remaps_regions_shapes_and_visibility():
     view = demo["dialanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
@@ -655,7 +648,6 @@ def test_remove_rebuild_remaps_regions_shapes_and_visibility():
         tag="dropme",
         skip_digestion=True,
     )
-
 
     view.whole.hide(skip_digestion=True)
 
@@ -707,11 +699,7 @@ def test_remove_rebuild_remaps_and_replays_per_atom_colors():
 
     apply_remove(view, selection=[0])
 
-    expected_colors = {
-        old_index - 1: color
-        for old_index, color in original_colors.items()
-        if old_index != 0
-    }
+    expected_colors = {old_index - 1: color for old_index, color in original_colors.items() if old_index != 0}
     assert view._atom_color_map == expected_colors  # noqa: SLF001
 
     color_msg = next(msg for msg in view._test_message_log if msg.get("op") == "set_atom_colors")

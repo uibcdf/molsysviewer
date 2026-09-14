@@ -8,4 +8,4 @@ def digest_surface_smoothing(surface_smoothing, caller=None):
         value = float(surface_smoothing)
         if value > 0.0:
             return value
-    raise ArgumentError('surface_smoothing', value=surface_smoothing, caller=caller, message=None)
+    raise ArgumentError("surface_smoothing", value=surface_smoothing, caller=caller, message=None)

@@ -2,12 +2,13 @@ import ast
 from pathlib import Path
 
 from molsysviewer._private.exceptions import ArgumentError
-from molsysviewer import MolSysView
+from molsysviewer._private.smonitor import CATALOG, META, PACKAGE_ROOT
 from molsysviewer.demo import demo
 from molsysviewer.new_view import new_view
-from molsysviewer._private.smonitor import CATALOG, PACKAGE_ROOT, META
 from smonitor import get_manager
 from smonitor.integrations import emit_from_catalog
+
+from molsysviewer import MolSysView
 
 
 def test_smonitor_catalog_emit():
@@ -72,7 +73,9 @@ def test_public_wrappers_emit_signal_timeline_entries(tmp_path):
         view.workspace_runtime(pretty=True, skip_digestion=True)
         view.get_panel_mode_state(pretty=True)
         view.export.html(str(tmp_path / "smonitor.html"), include_popout=False, skip_digestion=True)
-        scripted_view.export.image(str(tmp_path / "smonitor.png"), transparent=True, preset="current", skip_digestion=True)
+        scripted_view.export.image(
+            str(tmp_path / "smonitor.png"), transparent=True, preset="current", skip_digestion=True
+        )
         scripted_view.export.figure_publication_set(
             str(tmp_path / "pub-set"),
             include_current=True,
@@ -173,7 +176,9 @@ def test_public_digest_entrypoints_have_signal_decorators():
                     if not isinstance(item, ast.FunctionDef):
                         continue
                     decorators = [ast.unparse(deco) for deco in item.decorator_list]
-                    if any("digest" in deco for deco in decorators) and not any("signal" in deco for deco in decorators):
+                    if any("digest" in deco for deco in decorators) and not any(
+                        "signal" in deco for deco in decorators
+                    ):
                         missing.append(f"{path}:{node.name}.{item.name}")
 
     assert missing == []
@@ -186,6 +191,7 @@ def test_public_digest_entrypoints_have_signal_decorators():
 # *dict*, so every lookup missed and `message_from_catalog` fell back to the
 # `default_message` its caller passes. Nothing looked broken because every caller passes
 # one, which is exactly why this needs a test rather than a reader.
+
 
 def test_every_catalog_entry_has_a_template_smonitor_can_resolve():
     """Keyed by code, valued by a per-profile dict, with a message for every profile.

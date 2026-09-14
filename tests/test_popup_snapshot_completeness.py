@@ -29,9 +29,7 @@ def _populated_view() -> MolSysView:
         tag="shp",
     )
     view.annotations.add_annotation("note", atom_indices=[0], tag="ann", skip_digestion=True)
-    view.measurements.add_distance(
-        selection_a=[0], selection_b=[1], tag="dist", skip_digestion=True
-    )
+    view.measurements.add_distance(selection_a=[0], selection_b=[1], tag="dist", skip_digestion=True)
     view.selections.add("sel", atom_indices=[0, 1])
     return view
 
@@ -97,9 +95,7 @@ def _summary_ops_the_view_can_push(view) -> set[str]:
         captured: list[dict] = []
         # `captured` is rebound every iteration, so the lambda binds it as a default
         # rather than closing over the loop variable.
-        view.widget.send = (
-            lambda msg, *a, _c=captured, **k: _c.append(msg)
-        )  # type: ignore[assignment]
+        view.widget.send = lambda msg, *a, _c=captured, **k: _c.append(msg)  # type: ignore[assignment]
         try:
             getattr(view, name)()
         finally:
@@ -126,9 +122,7 @@ def test_panel_snapshot_carries_authoritative_trajectory_state():
     view = _view()
     view.player.go_to_structure(3, skip_digestion=True)
     summary = next(
-        message
-        for message in view.build_popup_scene_snapshot("panel")
-        if message.get("op") == "set_trajectory_summary"
+        message for message in view.build_popup_scene_snapshot("panel") if message.get("op") == "set_trajectory_summary"
     )
 
     assert summary == {

@@ -1,6 +1,5 @@
 from molsysviewer._private.exceptions import ArgumentError
-import numpy as np
-from molsysviewer._pyunitwizard import puw
+
 
 def digest_cmap(cmap, caller=None):
 
@@ -20,4 +19,4 @@ def digest_cmap(cmap, caller=None):
     if isinstance(cmap, LinearSegmentedColormap):
         return cmap
 
-    raise ArgumentError('cmap', value=cmap, caller=caller, message=None)
+    raise ArgumentError("cmap", value=cmap, caller=caller, message=None)

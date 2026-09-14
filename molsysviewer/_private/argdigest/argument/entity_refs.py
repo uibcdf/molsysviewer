@@ -13,5 +13,7 @@ def digest_entity_refs(entity_refs, caller=None):
     try:
         json.dumps(refs)
     except TypeError as exc:
-        raise ArgumentError("entity_refs", value=entity_refs, caller=caller, message="entity_refs must be JSON-serializable") from exc
+        raise ArgumentError(
+            "entity_refs", value=entity_refs, caller=caller, message="entity_refs must be JSON-serializable"
+        ) from exc
     return refs

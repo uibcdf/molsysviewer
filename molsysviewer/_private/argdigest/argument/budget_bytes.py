@@ -8,8 +8,8 @@ def digest_budget_bytes(budget_bytes, caller=None):
     become a one-byte budget, so every load would warn.
     """
     if isinstance(budget_bytes, bool):
-        raise ArgumentError('budget_bytes', value=budget_bytes, caller=caller, message=None)
+        raise ArgumentError("budget_bytes", value=budget_bytes, caller=caller, message=None)
     if isinstance(budget_bytes, int) and budget_bytes >= 0:
         return budget_bytes
 
-    raise ArgumentError('budget_bytes', value=budget_bytes, caller=caller, message=None)
+    raise ArgumentError("budget_bytes", value=budget_bytes, caller=caller, message=None)

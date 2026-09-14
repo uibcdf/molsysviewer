@@ -118,11 +118,14 @@ CAPABILITIES: tuple[Capability, ...] = (
         anchor="molsysviewer/regions.py",
         provenance=PYTHON,
         docs="docs/content/user/scene_management/regions.md",
-        unit=("test_region_api_completeness.py", "test_region_recipes.py",
-              "test_dynamic_regions.py", "test_color_layers.py"),
+        unit=(
+            "test_region_api_completeness.py",
+            "test_region_recipes.py",
+            "test_dynamic_regions.py",
+            "test_color_layers.py",
+        ),
         e2e=("region-hide", "region-subpanel", "range-selection"),
-        note="A region survives serialisation as the recipe that produced it, not as an "
-             "index list.",
+        note="A region survives serialisation as the recipe that produced it, not as an index list.",
     ),
     Capability(
         name="Layers",
@@ -149,11 +152,10 @@ CAPABILITIES: tuple[Capability, ...] = (
         anchor="molsysviewer/viewer/representations.py",
         provenance=MOLSTAR,
         docs="docs/content/user/representations/types.md",
-        unit=("test_styles.py", "test_documented_representation_types.py",
-              "test_project_style_config.py"),
+        unit=("test_styles.py", "test_documented_representation_types.py", "test_project_style_config.py"),
         e2e=("scene-contracts",),
         note="Type names map 1:1 to Mol* built-ins. `label`, `orientation` and `plane` "
-             "are deliberately not types; see the types page.",
+        "are deliberately not types; see the types page.",
     ),
     Capability(
         name="Annotations",
@@ -179,8 +181,7 @@ CAPABILITIES: tuple[Capability, ...] = (
         anchor="molsysviewer/shapes/__init__.py",
         provenance=PYTHON,
         docs="docs/content/user/overlays/shapes/index.md",
-        unit=("test_shape_digesters.py", "test_geometry_payloads.py",
-              "test_shape_render_status.py"),
+        unit=("test_shape_digesters.py", "test_geometry_payloads.py", "test_shape_render_status.py"),
         e2e=("shapes-subpanel", "shape-trajectory"),
     ),
     Capability(
@@ -203,7 +204,7 @@ CAPABILITIES: tuple[Capability, ...] = (
         e2e=("trajectory-plot",),
         status="experimental",
         note="Observed drawing since 2026-09-05: the card, one polyline per series with "
-             "a point per frame, and the labels the caller asked for.",
+        "a point per frame, and the labels the caller asked for.",
     ),
     Capability(
         name="Movie",
@@ -215,14 +216,13 @@ CAPABILITIES: tuple[Capability, ...] = (
         e2e=("movie-playback",),
         status="experimental",
         note="Playback observed drawing since 2026-09-05: the camera passes through "
-             "intermediate positions, lands on the last keyframe, and stops short when "
-             "interrupted. Export stays out -- it depends on an external encoder and is "
-             "not exercised in CI.",
+        "intermediate positions, lands on the last keyframe, and stops short when "
+        "interrupted. Export stays out -- it depends on an external encoder and is "
+        "not exercised in CI.",
     ),
     Capability(
         name="Camera",
-        api=("view.camera.", "view.get_camera_snapshot", "view.set_camera_snapshot",
-             "view.zoom"),
+        api=("view.camera.", "view.get_camera_snapshot", "view.set_camera_snapshot", "view.zoom"),
         anchor="molsysviewer/viewer/camera.py",
         provenance=BROWSER,
         # Found by writing the pages the audit said were missing: this one never was.
@@ -232,26 +232,30 @@ CAPABILITIES: tuple[Capability, ...] = (
         unit=("test_camera_snapshot_request.py", "test_zoom.py"),
         e2e=("exported-page-framing",),
         note="The snapshot is the frontend's state mirrored back, and is None on a view "
-             "that never rendered. Contract S9 holds camera authority.",
+        "that never rendered. Contract S9 holds camera authority.",
     ),
     Capability(
         name="save_state / load_state",
-        api=("view.save_state", "view.load_state", "view.export_state",
-             "view.import_state"),
+        api=("view.save_state", "view.load_state", "view.export_state", "view.import_state"),
         anchor="molsysviewer/viewer/state.py",
         provenance=PYTHON,
         docs="docs/content/user/export/state.md",
-        unit=("test_state_serialization.py", "test_state_v2.py", "test_state_sections.py",
-              "test_state_structure_identity.py", "test_state_view_state.py",
-              "test_state_focus_overlays.py"),
+        unit=(
+            "test_state_serialization.py",
+            "test_state_v2.py",
+            "test_state_sections.py",
+            "test_state_structure_identity.py",
+            "test_state_view_state.py",
+            "test_state_focus_overlays.py",
+        ),
         stable_without_drawing="Nothing about it is rendered: it writes a JSON document and "
-                               "reads one back. Its contract is version 2 refusing version 1, "
-                               "and the re-resolution onto a different structure -- both "
-                               "checked by contract tests, neither visible on a screen.",
+        "reads one back. Its contract is version 2 refusing version 1, "
+        "and the re-resolution onto a different structure -- both "
+        "checked by contract tests, neither visible on a screen.",
         note="The scene and the vantage point it was saved from: no molecular system and no "
-             "history. Records the structure it was written from, and re-resolves onto a "
-             "different one rather than replaying indices that mean other atoms. Version 2 "
-             "refuses version 1 rather than migrating it.",
+        "history. Records the structure it was written from, and re-resolves onto a "
+        "different one rather than replaying indices that mean other atoms. Version 2 "
+        "refuses version 1 rather than migrating it.",
     ),
     Capability(
         name="save_session / load_session",
@@ -265,8 +269,8 @@ CAPABILITIES: tuple[Capability, ...] = (
         # question -- which is exactly the inheritance uibcdf/molsysviewer#65 is about.
         status="experimental",
         note="A `.msv` bundle carrying the molecular system alongside the state, so it "
-             "reopens with nothing loaded first. No size budget: a session is as large as "
-             "its trajectory.",
+        "reopens with nothing loaded first. No size budget: a session is as large as "
+        "its trajectory.",
     ),
     Capability(
         name="HTML export and replay",
@@ -274,8 +278,12 @@ CAPABILITIES: tuple[Capability, ...] = (
         anchor="molsysviewer/exports.py",
         provenance=PYTHON,
         docs="docs/content/user/export/index.md",
-        unit=("test_write_html.py", "test_export_runtime_source.py",
-              "test_exported_page_opens_from_disk.py", "test_static_export_snapshot.py"),
+        unit=(
+            "test_write_html.py",
+            "test_export_runtime_source.py",
+            "test_exported_page_opens_from_disk.py",
+            "test_static_export_snapshot.py",
+        ),
         e2e=("export-replay", "exported-page-framing", "exported-page-colour"),
     ),
     Capability(
@@ -284,8 +292,12 @@ CAPABILITIES: tuple[Capability, ...] = (
         anchor="molsysviewer/viewer/popup_snapshot.py",
         provenance=PYTHON,
         docs="docs/content/developer/standalone_surfaces.md",
-        unit=("test_popup_snapshot.py", "test_popup_snapshot_fidelity.py",
-              "test_popup_snapshot_completeness.py", "test_transport_ownership.py"),
+        unit=(
+            "test_popup_snapshot.py",
+            "test_popup_snapshot_fidelity.py",
+            "test_popup_snapshot_completeness.py",
+            "test_transport_ownership.py",
+        ),
         e2e=("popup-channel", "endpoint-lifecycle", "panel-popup-welcome"),
         benchmark="performance/qt_payload_copies_and_endpoint_isolation_2026_08.md",
     ),
@@ -295,29 +307,34 @@ CAPABILITIES: tuple[Capability, ...] = (
         anchor="molsysviewer/remote/__init__.py",
         provenance=PYTHON,
         docs="docs/content/user/remote/index.md",
-        unit=("test_remote_session_service.py", "test_remote_view_channel.py",
-              "test_remote_session_router.py", "test_remote_render_worker.py",
-              "test_remote_protocol.py", "test_remote_cli.py"),
+        unit=(
+            "test_remote_session_service.py",
+            "test_remote_view_channel.py",
+            "test_remote_session_router.py",
+            "test_remote_render_worker.py",
+            "test_remote_protocol.py",
+            "test_remote_cli.py",
+        ),
         e2e=("remote-client-rendering", "remote-session"),
         status="experimental",
         note="The count is four because the walk inventories instances rather than "
-             "classes, and the eleven classes in `__all__` are constructed by the host "
-             "rather than held by a user. The surface a user actually types is the "
-             "`molsysviewer-server` console script declared in `pyproject.toml`, and its "
-             "page is the row's documentation. Client-side rendering is exercised by "
-             "`remote-client-rendering.e2e.ts`. Server-side rendering was first "
-             "certified on spika on 2026-09-05 by `remote-session.e2e.ts`, using WebGL2 "
-             "with `ANGLE (NVIDIA Corporation, NVIDIA GeForce GTX 1080/PCIe/SSE2, "
-             "OpenGL ES 3.2)` (uibcdf/molsysviewer#84). This is evidence for that host, "
-             "not a claim that every deployment has a working GPU path. All four "
-             "callables are digested and their five argument names declared, which is "
-             "what closed uibcdf/molsysviewer#83 and returned the inventory baseline to "
-             "zero. The packet a validator judges is passed through untouched on "
-             "purpose: a digester that raised on a hostile packet would take away the "
-             "structured rejection the validator exists to produce. "
-             "Experimental is the page's own word: the "
-             "Python API, command-line options, transport protocol and deployment "
-             "configuration may change.",
+        "classes, and the eleven classes in `__all__` are constructed by the host "
+        "rather than held by a user. The surface a user actually types is the "
+        "`molsysviewer-server` console script declared in `pyproject.toml`, and its "
+        "page is the row's documentation. Client-side rendering is exercised by "
+        "`remote-client-rendering.e2e.ts`. Server-side rendering was first "
+        "certified on spika on 2026-09-05 by `remote-session.e2e.ts`, using WebGL2 "
+        "with `ANGLE (NVIDIA Corporation, NVIDIA GeForce GTX 1080/PCIe/SSE2, "
+        "OpenGL ES 3.2)` (uibcdf/molsysviewer#84). This is evidence for that host, "
+        "not a claim that every deployment has a working GPU path. All four "
+        "callables are digested and their five argument names declared, which is "
+        "what closed uibcdf/molsysviewer#83 and returned the inventory baseline to "
+        "zero. The packet a validator judges is passed through untouched on "
+        "purpose: a digester that raised on a hostile packet would take away the "
+        "structured rejection the validator exists to produce. "
+        "Experimental is the page's own word: the "
+        "Python API, command-line options, transport protocol and deployment "
+        "configuration may change.",
     ),
     Capability(
         name="Standalone (Qt host)",
@@ -330,13 +347,13 @@ CAPABILITIES: tuple[Capability, ...] = (
         status="experimental",
         benchmark="performance/qt_transport_baseline_2026_07.md",
         human_observed="2026-07-04 — rendering, transport, the persistent view, context "
-                       "menus and camera interaction. The session also found the live "
-                       "reload defect (#35), which is what a person watching is for.",
+        "menus and camera interaction. The session also found the live "
+        "reload defect (#35), which is what a person watching is for.",
         note="Transport is pinned by contract. Since 2026-09-02 the `qt-pipeline` CI job "
-             "asserts under Xvfb that the pipeline completes -- bridge ready, payload "
-             "served, structure loaded through software WebGL. That is not the render "
-             "being correct: nothing reads the framebuffer, and #64 is the standing proof "
-             "the two differ. A real GPU and a visible window remain unobserved.",
+        "asserts under Xvfb that the pipeline completes -- bridge ready, payload "
+        "served, structure loaded through software WebGL. That is not the render "
+        "being correct: nothing reads the framebuffer, and #64 is the standing proof "
+        "the two differ. A real GPU and a visible window remain unobserved.",
     ),
     Capability(
         name="Add-ons",
@@ -347,7 +364,7 @@ CAPABILITIES: tuple[Capability, ...] = (
         unit=("test_addons.py", "test_readme_addon_table.py"),
         e2e=("panel-popup-welcome",),
         note="MolSysViewer owns the host contract; each toolkit owns and ships its "
-             "integration. Maturity is declared per add-on.",
+        "integration. Maturity is declared per add-on.",
     ),
     Capability(
         name="MolSysMT integration",
@@ -356,18 +373,16 @@ CAPABILITIES: tuple[Capability, ...] = (
         # matched nothing; `view.get` was worse -- prefix matching absorbed ten unrelated
         # `view.get_*` event accessors into a row whose provenance is MolSysMT's
         # (uibcdf/molsysviewer#79).
-        api=("view.extract", "view.whole.get",
-             "view.whole.convert", "view.regions[…].get", "view.regions[…].convert"),
+        api=("view.extract", "view.whole.get", "view.whole.convert", "view.regions[…].get", "view.regions[…].convert"),
         anchor="molsysviewer/viewer/molsysmt_interface.py",
         provenance=MOLSYSMT,
         docs="docs/content/user/introduction/molsysmt.md",
-        unit=("test_argument_name_normalization.py", "test_support_integrations.py",
-              "test_tools_basic.py"),
+        unit=("test_argument_name_normalization.py", "test_support_integrations.py", "test_tools_basic.py"),
         e2e=("structure-data-relay",),
         note="Digestion is MolSysMT's; only the caller named in an error is ours. "
-             "`contains` and `is_composed_of` were removed -- `get` answers both "
-             "(`get(n_waters=True) > 0`, and the set of `molecule_type`) and `msm.*` "
-             "still has them. See uibcdf/molsysviewer#71.",
+        "`contains` and `is_composed_of` were removed -- `get` answers both "
+        "(`get(n_waters=True) > 0`, and the set of `molecule_type`) and `msm.*` "
+        "still has them. See uibcdf/molsysviewer#71.",
     ),
     Capability(
         name="Units",
@@ -377,8 +392,8 @@ CAPABILITIES: tuple[Capability, ...] = (
         docs="docs/content/user/introduction/units.md",
         unit=("test_public_output_units.py", "test_boundary_digesters.py"),
         stable_without_drawing="A policy about argument values, enforced before anything "
-                               "reaches the frontend. There is no pixel it could be watched "
-                               "producing.",
+        "reaches the frontend. There is no pixel it could be watched "
+        "producing.",
         note="Physical magnitudes are quantities, never bare numbers.",
     ),
 )
@@ -394,32 +409,43 @@ def _first_release_containing(path: str) -> str:
     """
     adding = subprocess.run(
         ["git", "log", "--all", "--diff-filter=A", "--format=%H", "--", path],
-        cwd=ROOT, capture_output=True, text=True, check=False,
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
     ).stdout.split()
     if not adding:
         return "unknown"
 
     containing = set()
     for commit in adding:
-        containing.update(subprocess.run(
-            ["git", "tag", "--contains", commit],
-            cwd=ROOT, capture_output=True, text=True, check=False,
-        ).stdout.split())
+        containing.update(
+            subprocess.run(
+                ["git", "tag", "--contains", commit],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                check=False,
+            ).stdout.split()
+        )
     if not containing:
         return "unreleased"
 
     tags_by_date = subprocess.run(
         ["git", "tag", "--sort=creatordate"],
-        cwd=ROOT, capture_output=True, text=True, check=False,
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
     ).stdout.split()
     return next((tag for tag in tags_by_date if tag in containing), "unreleased")
 
 
 def _api_evidence(capability: Capability, inventory: dict[str, Any]) -> tuple[int, int]:
     matching = [
-        item for item in inventory["callables"]
-        if any(item["path"] == prefix or item["path"].startswith(prefix)
-               for prefix in capability.api)
+        item
+        for item in inventory["callables"]
+        if any(item["path"] == prefix or item["path"].startswith(prefix) for prefix in capability.api)
     ]
     return len(matching), sum(1 for item in matching if item["digested"])
 
@@ -451,22 +477,24 @@ def build_audit() -> dict[str, Any]:
     rows = []
     for capability in CAPABILITIES:
         public, digested = _api_evidence(capability, inventory)
-        rows.append({
-            "capability": capability.name,
-            "api": list(capability.api),
-            "public_callables": public,
-            "digested": digested,
-            "provenance": capability.provenance,
-            "docs": capability.docs,
-            "unit_tests": list(capability.unit),
-            "e2e_suites": list(capability.e2e),
-            "status": capability.status,
-            "evidence": _evidence(capability),
-            "benchmark": capability.benchmark,
-            "human_observed": capability.human_observed,
-            "since": _first_release_containing(capability.anchor),
-            "note": capability.note,
-        })
+        rows.append(
+            {
+                "capability": capability.name,
+                "api": list(capability.api),
+                "public_callables": public,
+                "digested": digested,
+                "provenance": capability.provenance,
+                "docs": capability.docs,
+                "unit_tests": list(capability.unit),
+                "e2e_suites": list(capability.e2e),
+                "status": capability.status,
+                "evidence": _evidence(capability),
+                "benchmark": capability.benchmark,
+                "human_observed": capability.human_observed,
+                "since": _first_release_containing(capability.anchor),
+                "note": capability.note,
+            }
+        )
     return {"rows": rows}
 
 
@@ -520,8 +548,7 @@ def _markdown(audit: dict[str, Any]) -> str:
         for row in notes:
             lines.append(f"- **{row['capability']}** — {row['note']}")
 
-    unobserved = [row["capability"] for row in audit["rows"]
-                  if "browser-observed" not in row["evidence"]]
+    unobserved = [row["capability"] for row in audit["rows"] if "browser-observed" not in row["evidence"]]
     if unobserved:
         lines += [
             "",
@@ -635,8 +662,7 @@ def _relative(path: str) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--json", action="store_true")
-    parser.add_argument("--write", action="store_true",
-                        help="regenerate devguide/capability_audit.md")
+    parser.add_argument("--write", action="store_true", help="regenerate devguide/capability_audit.md")
     arguments = parser.parse_args()
 
     audit = build_audit()

@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from molsysviewer import MolSysView
-from molsysviewer.demo import demo
 import molsysviewer.viewer.regions as viewer_regions
+from molsysviewer.demo import demo
+
+from molsysviewer import MolSysView
 
 
 def _fresh_view():

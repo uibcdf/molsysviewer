@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import smonitor
 
-from molsysviewer import MolSysView, pyunitwizard as puw
+from molsysviewer import MolSysView
+from molsysviewer import pyunitwizard as puw
 
 
 def test_smonitor_signal_preserves_shape_fluent_api_when_enabled():

@@ -33,15 +33,14 @@ def digest_normal(normal, caller=None):
     try:
         vector = np.asarray(normal, dtype=float)
     except (TypeError, ValueError):
-        raise ArgumentError("normal", value=normal, caller=caller,
-                            message="expected a 3-vector or a 'toward:<tag>' reference") from None
+        raise ArgumentError(
+            "normal", value=normal, caller=caller, message="expected a 3-vector or a 'toward:<tag>' reference"
+        ) from None
 
     if vector.shape != (3,):
-        raise ArgumentError("normal", value=normal, caller=caller,
-                            message="a plane normal has three components")
+        raise ArgumentError("normal", value=normal, caller=caller, message="a plane normal has three components")
     if not np.isfinite(vector).all():
-        raise ArgumentError("normal", value=normal, caller=caller,
-                            message="a plane normal cannot contain nan or inf")
+        raise ArgumentError("normal", value=normal, caller=caller, message="a plane normal cannot contain nan or inf")
     if float(np.linalg.norm(vector)) == 0.0:
         raise ArgumentError(
             "normal",

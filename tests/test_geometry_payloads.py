@@ -3,18 +3,18 @@ from __future__ import annotations
 import pytest
 
 from molsysviewer import (
-    EntityRef,
-    IndexedTriangleGeometry,
     MESH_LOCAL,
     MOLECULAR_SYSTEM,
+    EntityRef,
+    IndexedTriangleGeometry,
     MolSysView,
     PointGeometry,
     SegmentGeometry,
     SphereGeometry,
     TetrahedraGeometry,
     entity_ref_payload,
+    shape_adapters,
 )
-from molsysviewer import shape_adapters
 
 
 def test_geometry_payloads_validate_units_and_aligned_refs():

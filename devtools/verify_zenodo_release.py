@@ -24,9 +24,7 @@ def _cff_scalar(path: Path, key: str) -> str:
     return match.group(1).strip()
 
 
-def validate_record(
-    record: dict, version: str, concept_doi: str, repository: str
-) -> list[str]:
+def validate_record(record: dict, version: str, concept_doi: str, repository: str) -> list[str]:
     """Return violations for a record expected to archive *version*."""
 
     errors: list[str] = []
@@ -44,19 +42,12 @@ def validate_record(
         errors.append("record has no distinct version DOI")
 
     expected_repository = repository.rstrip("/").lower()
-    related = {
-        str(item.get("identifier", "")).rstrip("/").lower()
-        for item in metadata.get("related_identifiers", [])
-    }
-    code_repository = str(
-        metadata.get("custom", {}).get("code:codeRepository", "")
-    ).rstrip("/").lower()
+    related = {str(item.get("identifier", "")).rstrip("/").lower() for item in metadata.get("related_identifiers", [])}
+    code_repository = str(metadata.get("custom", {}).get("code:codeRepository", "")).rstrip("/").lower()
     if expected_repository not in related and code_repository != expected_repository:
         errors.append(f"record does not identify repository {expected_repository}")
     archive_suffix = f"-{version}.zip".lower()
-    if files and not any(
-        str(item.get("key", "")).lower().endswith(archive_suffix) for item in files
-    ):
+    if files and not any(str(item.get("key", "")).lower().endswith(archive_suffix) for item in files):
         errors.append(f"record has no archive ending in {archive_suffix}")
     return errors
 
@@ -90,10 +81,7 @@ def main() -> int:
             for record in fetch_records(concept_record, args.version):
                 errors = validate_record(record, args.version, concept_doi, repository)
                 if not errors:
-                    print(
-                        "Zenodo release: PASS — "
-                        f"{args.version} -> {record['doi']} (concept {concept_doi})"
-                    )
+                    print(f"Zenodo release: PASS — {args.version} -> {record['doi']} (concept {concept_doi})")
                     return 0
                 last_error = "; ".join(errors)
         except Exception as exc:

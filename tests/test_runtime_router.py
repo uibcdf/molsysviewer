@@ -7,7 +7,6 @@ are called out per test: reverting the mechanism under test must turn it red.
 from __future__ import annotations
 
 import pytest
-
 from molsysviewer.viewer.runtime_router import (
     ACTION_CATEGORIES,
     DATA_PLANE_ACTIONS,
@@ -26,8 +25,9 @@ def make_router() -> WidgetRuntimeRouter:
     return WidgetRuntimeRouter(VIEWER, SESSION)
 
 
-def envelope(action, direction, *, payload=None, message_id="m1", viewer=VIEWER,
-             session=SESSION, endpoint=None, target=None):
+def envelope(
+    action, direction, *, payload=None, message_id="m1", viewer=VIEWER, session=SESSION, endpoint=None, target=None
+):
     return {
         "protocolVersion": RUNTIME_PROTOCOL_VERSION,
         "viewerId": viewer,
@@ -42,6 +42,7 @@ def envelope(action, direction, *, payload=None, message_id="m1", viewer=VIEWER,
 
 
 # -- manifest sanity ---------------------------------------------------------
+
 
 def test_manifest_categories_are_all_valid():
     assert ACTION_CATEGORIES  # non-empty
@@ -59,6 +60,7 @@ def test_manifest_categories_are_all_valid():
 
 
 # -- accepted path + payload identity ---------------------------------------
+
 
 def test_command_is_accepted_and_payload_is_the_exact_domain_message():
     router = make_router()
@@ -79,6 +81,7 @@ def test_event_is_accepted_without_deduplication():
 
 
 # -- deduplication (mutation target: drop _record_command) ------------------
+
 
 def test_duplicate_command_is_reported_and_not_reapplied():
     router = make_router()
@@ -108,6 +111,7 @@ def test_dedup_set_is_bounded_and_evicts_oldest():
 
 # -- identity guards (mutation targets: drop each check) --------------------
 
+
 def test_wrong_viewer_is_rejected():
     router = make_router()
     result = router.route_inbound(envelope("interaction_hover", "event", viewer="view-other"))
@@ -134,6 +138,7 @@ def test_unexpected_target_endpoint_is_rejected():
 
 # -- action / direction contract --------------------------------------------
 
+
 def test_direction_must_match_manifest_category():
     router = make_router()
     # interaction_context_action is a command; declaring it an event is rejected.
@@ -151,7 +156,8 @@ def test_envelope_action_must_match_payload_event():
     # A hover envelope must not be able to smuggle a context-action mutation.
     router = make_router()
     smuggle = envelope(
-        "interaction_hover", "event",
+        "interaction_hover",
+        "event",
         payload={"event": "interaction_context_action", "op": "add_region", "tag": "A"},
     )
     result = router.route_inbound(smuggle)
@@ -195,6 +201,7 @@ def test_non_mapping_payload_is_rejected():
 
 
 # -- outbound wrapping -------------------------------------------------------
+
 
 def test_wrap_outbound_projection_keeps_payload_and_stamps_identity():
     router = make_router()

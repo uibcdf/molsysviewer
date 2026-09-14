@@ -170,7 +170,9 @@ def validate_talks(data: Any, file: Path, errors: List[ValidationError]):
 
         status = t.get("status")
         if not is_str(status) or status not in TALK_STATUS:
-            errors.append(ValidationError(file, f"{ctx}: 'status' must be one of {sorted(TALK_STATUS)} (got {status!r})"))
+            errors.append(
+                ValidationError(file, f"{ctx}: 'status' must be one of {sorted(TALK_STATUS)} (got {status!r})")
+            )
 
         artifacts = t.get("artifacts")
         if artifacts is not None:
@@ -230,7 +232,9 @@ def validate_papers(data: Any, file: Path, errors: List[ValidationError]):
 
         status = p.get("status")
         if not is_str(status) or status not in PAPER_STATUS:
-            errors.append(ValidationError(file, f"{ctx}: 'status' must be one of {sorted(PAPER_STATUS)} (got {status!r})"))
+            errors.append(
+                ValidationError(file, f"{ctx}: 'status' must be one of {sorted(PAPER_STATUS)} (got {status!r})")
+            )
 
         validate_path_field(p.get("path"), file, errors, ctx)
 
@@ -291,11 +295,15 @@ def validate_tutorials(data: Any, file: Path, errors: List[ValidationError]):
 
         level = t.get("level")
         if not is_str(level) or level not in TUTORIAL_LEVEL:
-            errors.append(ValidationError(file, f"{ctx}: 'level' must be one of {sorted(TUTORIAL_LEVEL)} (got {level!r})"))
+            errors.append(
+                ValidationError(file, f"{ctx}: 'level' must be one of {sorted(TUTORIAL_LEVEL)} (got {level!r})")
+            )
 
         fmt = t.get("format")
         if not is_str(fmt) or fmt not in TUTORIAL_FORMAT:
-            errors.append(ValidationError(file, f"{ctx}: 'format' must be one of {sorted(TUTORIAL_FORMAT)} (got {fmt!r})"))
+            errors.append(
+                ValidationError(file, f"{ctx}: 'format' must be one of {sorted(TUTORIAL_FORMAT)} (got {fmt!r})")
+            )
 
         if "est_time_min" in t and not is_int(t["est_time_min"]):
             errors.append(ValidationError(file, f"{ctx}: 'est_time_min' must be an integer"))
@@ -304,7 +312,9 @@ def validate_tutorials(data: Any, file: Path, errors: List[ValidationError]):
 
         status = t.get("status")
         if not is_str(status) or status not in TUTORIAL_STATUS:
-            errors.append(ValidationError(file, f"{ctx}: 'status' must be one of {sorted(TUTORIAL_STATUS)} (got {status!r})"))
+            errors.append(
+                ValidationError(file, f"{ctx}: 'status' must be one of {sorted(TUTORIAL_STATUS)} (got {status!r})")
+            )
 
         validate_tags(t.get("tags"), file, errors, ctx)
 

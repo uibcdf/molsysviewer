@@ -6,8 +6,8 @@ from smonitor import signal
 
 from .. import pyunitwizard as puw
 from .._private.argdigest import digest
-from ..scene_history import records_scene_history
 from ..colors import colors as global_colors
+from ..scene_history import records_scene_history
 from ._registry import register_shape_layer
 
 
@@ -90,7 +90,7 @@ class AnisotropyEllipsoids:
             options["values"] = values
         if alpha is not None:
             options["alpha"] = alpha
-        
+
         tag = tag or self._view._next_shape_tag()  # noqa: SLF001
         layer = register_shape_layer(self._view, tag, layer_tag=layer_tag)
         options["tag"] = layer.tag

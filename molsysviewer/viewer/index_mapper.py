@@ -1,9 +1,11 @@
 # molsysviewer/viewer/index_mapper.py
 
 from __future__ import annotations
+
 from typing import Any
-import numpy as np
+
 import molsysmt as msm
+import numpy as np
 
 from .._private.smonitor.warnings import (
     IndexMapDegradedWarning,
@@ -11,6 +13,7 @@ from .._private.smonitor.warnings import (
     warn,
 )
 from .._private.smonitor_emit import emit_suppressed_exception
+
 
 class IndexMapper:
     """Helper class to map between original/global indices and local viewer-loaded indices."""
@@ -66,9 +69,7 @@ class IndexMapper:
                 self.original_atoms = list(range(n_atoms))
 
         self.atom_to_local = (
-            {orig: local for local, orig in enumerate(self.original_atoms)}
-            if self.original_atoms is not None
-            else {}
+            {orig: local for local, orig in enumerate(self.original_atoms)} if self.original_atoms is not None else {}
         )
 
         # 2. Structure/Frame Indices Mapping

@@ -12,14 +12,15 @@ does not (uibcdf/molsysviewer#86).
 
 from .._quantity import digest_quantity
 
-_MESSAGE = (" A duration requires explicit units (e.g. \"250 ms\" or "
-            "puw.quantity(250, 'ms')); a bare number is not accepted, because nothing "
-            "in it says whether 2 means two seconds or two milliseconds. Pass "
-            "duration_ms=250 if milliseconds are what you mean.")
+_MESSAGE = (
+    ' A duration requires explicit units (e.g. "250 ms" or '
+    "puw.quantity(250, 'ms')); a bare number is not accepted, because nothing "
+    "in it says whether 2 means two seconds or two milliseconds. Pass "
+    "duration_ms=250 if milliseconds are what you mean."
+)
 
 
 def digest_duration(duration, caller=None):
     if duration is None:
         return None
-    return digest_quantity(duration, "duration", {"[T]": 1}, caller=caller,
-                           message=_MESSAGE)
+    return digest_quantity(duration, "duration", {"[T]": 1}, caller=caller, message=_MESSAGE)

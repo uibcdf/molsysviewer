@@ -3,9 +3,9 @@ from __future__ import annotations
 import json
 import sys
 
-from molsysviewer import pyunitwizard as puw
 from molsysviewer.demo import demo
 
+from molsysviewer import pyunitwizard as puw
 
 actions = json.loads(sys.stdin.read())
 view = demo["dialanine"]
@@ -35,14 +35,16 @@ for action in actions:
     batches.append(list(sent))
     sent.clear()
     shape = view.shapes.get("marker", skip_digestion=True)
-    states.append({
-        "layer_exists": "analysis" in view.layers,
-        "region_exists": "pocket" in view.regions,
-        "region_layer": view.regions["pocket"].layer if "pocket" in view.regions else None,
-        "region_visible": view.regions["pocket"].visible if "pocket" in view.regions else None,
-        "shape_exists": shape is not None,
-        "shape_layer": shape.layer_tag if shape is not None else None,
-        "shape_visible": view.shapes.info("marker")["visible"] if shape is not None else None,
-    })
+    states.append(
+        {
+            "layer_exists": "analysis" in view.layers,
+            "region_exists": "pocket" in view.regions,
+            "region_layer": view.regions["pocket"].layer if "pocket" in view.regions else None,
+            "region_visible": view.regions["pocket"].visible if "pocket" in view.regions else None,
+            "shape_exists": shape is not None,
+            "shape_layer": shape.layer_tag if shape is not None else None,
+            "shape_visible": view.shapes.info("marker")["visible"] if shape is not None else None,
+        }
+    )
 
 print(json.dumps({"batches": batches, "states": states}))

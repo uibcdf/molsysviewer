@@ -1,7 +1,7 @@
 import pytest
+from molsysviewer.regions import Region
 
 from molsysviewer import MolSysView
-from molsysviewer.regions import Region
 
 
 def test_frontend_interaction_events_are_stored_on_view():
@@ -10,7 +10,13 @@ def test_frontend_interaction_events_are_stored_on_view():
 
     hover = {"event": "interaction_hover", "kind": "structure", "atom_indices": [1, 2, 3]}
     click = {"event": "interaction_click", "kind": "empty"}
-    context = {"event": "interaction_context_menu", "kind": "structure", "atom_indices": [4], "page_x": 10, "page_y": 20}
+    context = {
+        "event": "interaction_context_menu",
+        "kind": "structure",
+        "atom_indices": [4],
+        "page_x": 10,
+        "page_y": 20,
+    }
     action = {"event": "interaction_context_action", "action": "distance", "context": context}
     active_selection = {"event": "interaction_active_selection_changed", "source_kind": "element", "atom_indices": [4]}
     tool_state = {"event": "interaction_tool_state", "action": "distance", "status": "started", "picked_count": 1}
@@ -87,7 +93,13 @@ def test_shape_targets_and_shape_active_selection_are_exposed_in_python():
     view = MolSysView()
     view.hover_telemetry_enabled = True
 
-    hover = {"event": "interaction_hover", "kind": "shape", "atom_indices": [8, 9], "tag": "shape-1", "shape_name": "Sphere"}
+    hover = {
+        "event": "interaction_hover",
+        "kind": "shape",
+        "atom_indices": [8, 9],
+        "tag": "shape-1",
+        "shape_name": "Sphere",
+    }
     context = {
         "event": "interaction_context_menu",
         "kind": "shape",
@@ -102,18 +114,20 @@ def test_shape_targets_and_shape_active_selection_are_exposed_in_python():
         "source_kind": "shape",
         "target_level": "shape",
         "element_level": "none",
-        "items": [{
-            "source_kind": "shape",
-            "shape_kind": "sphere",
-            "shape_name": "Sphere",
-            "tag": "shape-1",
-            "atom_indices": [8, 9],
-            "group_indices": [],
-            "component_indices": [],
-            "chain_indices": [],
-            "molecule_indices": [],
-            "entity_indices": [],
-        }],
+        "items": [
+            {
+                "source_kind": "shape",
+                "shape_kind": "sphere",
+                "shape_name": "Sphere",
+                "tag": "shape-1",
+                "atom_indices": [8, 9],
+                "group_indices": [],
+                "component_indices": [],
+                "chain_indices": [],
+                "molecule_indices": [],
+                "entity_indices": [],
+            }
+        ],
         "atom_indices": [8, 9],
         "group_indices": [],
         "component_indices": [],
@@ -227,7 +241,13 @@ def test_on_click_callback_is_called_with_event_dict():
 
     view.on_click(received.append)
 
-    click = {"event": "interaction_click", "kind": "measurement", "atom_indices": [3, 7], "tag": "m1", "measurement_name": "distance"}
+    click = {
+        "event": "interaction_click",
+        "kind": "measurement",
+        "atom_indices": [3, 7],
+        "tag": "m1",
+        "measurement_name": "distance",
+    }
     view._handle_frontend_event(click)  # noqa: SLF001
 
     assert received == [click]
@@ -239,7 +259,14 @@ def test_on_context_callback_is_called_with_event_dict():
 
     view.on_context(received.append)
 
-    ctx = {"event": "interaction_context_menu", "kind": "annotation", "atom_indices": [5], "tag": "ann-2", "page_x": 10, "page_y": 20}
+    ctx = {
+        "event": "interaction_context_menu",
+        "kind": "annotation",
+        "atom_indices": [5],
+        "tag": "ann-2",
+        "page_x": 10,
+        "page_y": 20,
+    }
     view._handle_frontend_event(ctx)  # noqa: SLF001
 
     assert received == [ctx]
@@ -314,24 +341,25 @@ def test_region_tags_empty_when_no_regions_defined():
 
 def test_trajectory_frame_rendered_transaction_ack():
     view = MolSysView()
-    
+
     # Send trajectory_frame_rendered event
     event = {"event": "trajectory_frame_rendered", "transaction_id": "tx-999"}
     view._handle_frontend_event(event)  # noqa: SLF001
-    
+
     assert "tx-999" in view._rendered_transactions_acks  # noqa: SLF001
     assert view._last_rendered_transaction == "tx-999"  # noqa: SLF001
-    
+
     # wait_for_transaction returns True immediately if transaction was acknowledged
     success = view.wait_for_transaction("tx-999", timeout_s=0.1)
     assert success is True
-    
+
     # Transaction is cleared from the acks set once consumed
     assert "tx-999" not in view._rendered_transactions_acks  # noqa: SLF001
-    
+
     # wait_for_transaction returns False if transaction was not acknowledged within timeout
     fail = view.wait_for_transaction("tx-nonexistent", timeout_s=0.01)
     assert fail is False
+
 
 def test_webgl_context_lost_and_restored_toggle_queryable_state():
     view = MolSysView()
@@ -368,7 +396,7 @@ def test_set_region_representation_context_action():
         "action": "set_region_representation",
         "tag": "ligand",
         "representation": "licorice",
-        "params": {"color_scheme": "chain-id"}
+        "params": {"color_scheme": "chain-id"},
     }
     view._handle_frontend_event(event)  # noqa: SLF001
 

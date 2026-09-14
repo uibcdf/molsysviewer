@@ -1,8 +1,9 @@
 import json
 
-from molsysviewer import pyunitwizard as puw
 from molsysviewer.demo import demo
 from molsysviewer.viewer.panel_actions import dispatch_panel_action
+
+from molsysviewer import pyunitwizard as puw
 
 
 def test_clipping_plane_survives_save_reload_as_usable_live_object():
@@ -16,12 +17,14 @@ def test_clipping_plane_survives_save_reload_as_usable_live_object():
 
     document = source.export_state()
     json.dumps(document)
-    assert document["sections"] == [{
-        "tag": "cut",
-        "point": [0.1, 0.2, 0.3],
-        "normal": [1.0, 0.0, 0.0],
-        "invert": True,
-    }]
+    assert document["sections"] == [
+        {
+            "tag": "cut",
+            "point": [0.1, 0.2, 0.3],
+            "normal": [1.0, 0.0, 0.0],
+            "invert": True,
+        }
+    ]
 
     restored = demo["dialanine"]
     restored.import_state(document)
@@ -65,9 +68,7 @@ def test_section_creation_and_mutation_participate_in_scene_history():
     view = demo["dialanine"]
     view.history.clear()
 
-    section = view.scene.add_section(
-        point=[0.0, 0.0, 0.0], normal=[1, 0, 0], tag="cut"
-    )
+    section = view.scene.add_section(point=[0.0, 0.0, 0.0], normal=[1, 0, 0], tag="cut")
     section.set_invert(True)
 
     view.history.undo()
@@ -109,12 +110,22 @@ def test_repeated_section_geometry_updates_coalesce_into_one_undo_step():
     view.history.clear()
 
     view._handle_frontend_event({"event": "scene_history_coalescing_begin"})  # noqa: SLF001
-    view._handle_frontend_event({  # noqa: SLF001
-        "event": "section_moved", "tag": "cut", "point": [0.1, 0.0, 0.0], "normal": [0, 1, 0],
-    })
-    view._handle_frontend_event({  # noqa: SLF001
-        "event": "section_moved", "tag": "cut", "point": [0.2, 0.0, 0.0], "normal": [0, 0, 1],
-    })
+    view._handle_frontend_event(
+        {  # noqa: SLF001
+            "event": "section_moved",
+            "tag": "cut",
+            "point": [0.1, 0.0, 0.0],
+            "normal": [0, 1, 0],
+        }
+    )
+    view._handle_frontend_event(
+        {  # noqa: SLF001
+            "event": "section_moved",
+            "tag": "cut",
+            "point": [0.2, 0.0, 0.0],
+            "normal": [0, 0, 1],
+        }
+    )
     view._handle_frontend_event({"event": "scene_history_coalescing_end"})  # noqa: SLF001
 
     assert view.history.undo() is True

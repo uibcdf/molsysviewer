@@ -143,42 +143,26 @@ def _validate_args(parser: argparse.ArgumentParser, args: argparse.Namespace) ->
         if not minimum <= value <= maximum:
             parser.error(f"{option} must be between {minimum} and {maximum}")
     invalid_ice = [
-        uri
-        for uri in args.ice_server
-        if not isinstance(uri, str) or not uri.lower().startswith(_ICE_SCHEMES)
+        uri for uri in args.ice_server if not isinstance(uri, str) or not uri.lower().startswith(_ICE_SCHEMES)
     ]
     if invalid_ice:
-        parser.error(
-            "--ice-server values must use stun:, stuns:, turn: or turns: "
-            f"({invalid_ice[0]!r} is invalid)"
-        )
-    turn_uris = [
-        uri for uri in args.ice_server if uri.lower().startswith(("turn:", "turns:"))
-    ]
+        parser.error(f"--ice-server values must use stun:, stuns:, turn: or turns: ({invalid_ice[0]!r} is invalid)")
+    turn_uris = [uri for uri in args.ice_server if uri.lower().startswith(("turn:", "turns:"))]
     turn_credentials = (args.turn_username, args.turn_credential_env)
     if (turn_credentials[0] is None) != (turn_credentials[1] is None):
         parser.error("--turn-username and --turn-credential-env must be supplied together")
     if turn_uris and args.turn_username is None:
-        parser.error(
-            "turn: and turns: --ice-server values require "
-            "--turn-username and --turn-credential-env"
-        )
+        parser.error("turn: and turns: --ice-server values require --turn-username and --turn-credential-env")
     if args.turn_username is not None:
         if not turn_uris:
             parser.error("TURN credentials require at least one turn: or turns: --ice-server")
         credential = os.environ.get(args.turn_credential_env, "")
         if not credential:
-            parser.error(
-                f"TURN credential environment variable {args.turn_credential_env!r} is unset or empty"
-            )
+            parser.error(f"TURN credential environment variable {args.turn_credential_env!r} is unset or empty")
 
 
 def _ice_server_config(args: argparse.Namespace) -> tuple[dict[str, str], ...]:
-    credential = (
-        os.environ[args.turn_credential_env]
-        if args.turn_credential_env is not None
-        else None
-    )
+    credential = os.environ[args.turn_credential_env] if args.turn_credential_env is not None else None
     result: list[dict[str, str]] = []
     for uri in args.ice_server:
         item = {"urls": uri}
@@ -191,9 +175,7 @@ def _ice_server_config(args: argparse.Namespace) -> tuple[dict[str, str], ...]:
 def _worker_config(args: argparse.Namespace) -> RenderWorkerConfig:
     return RenderWorkerConfig(
         executable=args.chromium,
-        gpu_policy=(
-            "allow-software" if args.allow_software_rendering else "require-hardware"
-        ),
+        gpu_policy=("allow-software" if args.allow_software_rendering else "require-hardware"),
         width=args.video_width,
         height=args.video_height,
         frame_rate=args.video_fps,
@@ -251,8 +233,7 @@ def _emit_startup(record: Mapping[str, Any], *, json_output: bool, stream: TextI
     forwarding = record["ssh_forward"]
     print(f"Session URL: {session_url}", file=stream)
     print(
-        "Qt client: "
-        f"molsysviewer-qt --connect {shlex.quote(session_url)}",
+        f"Qt client: molsysviewer-qt --connect {shlex.quote(session_url)}",
         file=stream,
     )
     print(

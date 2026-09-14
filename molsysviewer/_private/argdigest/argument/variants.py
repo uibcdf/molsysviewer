@@ -9,7 +9,9 @@ def digest_variants(variants, caller=None):
     digested = {}
     for key, value in variants.items():
         if not isinstance(key, str) or not key.strip():
-            raise ArgumentError("variants", value=variants, caller=caller, message="Variant names must be non-empty strings.")
+            raise ArgumentError(
+                "variants", value=variants, caller=caller, message="Variant names must be non-empty strings."
+            )
         if isinstance(value, FigureSpec):
             digested[key.strip()] = value
             continue
@@ -19,5 +21,7 @@ def digest_variants(variants, caller=None):
             except Exception as exc:  # pragma: no cover - defensive normalization surface
                 raise ArgumentError("variants", value=variants, caller=caller, message=str(exc)) from exc
             continue
-        raise ArgumentError("variants", value=variants, caller=caller, message="Each variant must be a FigureSpec or dictionary.")
+        raise ArgumentError(
+            "variants", value=variants, caller=caller, message="Each variant must be a FigureSpec or dictionary."
+        )
     return digested

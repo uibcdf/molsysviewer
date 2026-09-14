@@ -44,6 +44,7 @@ IDENTITY_DIGESTERS = (
 
 # --- the identity trio -----------------------------------------------------
 
+
 @pytest.mark.parametrize("digest", IDENTITY_DIGESTERS)
 def test_none_leaves_that_identity_unchecked(digest):
     assert digest(None) is None
@@ -79,6 +80,7 @@ def test_an_identifier_that_is_not_a_string_is_refused(digest, value):
 
 # --- explicit --------------------------------------------------------------
 
+
 def test_no_executable_asked_for_means_search_the_path():
     assert digest_explicit(None) is None
 
@@ -106,6 +108,7 @@ def test_an_executable_that_is_not_a_path_is_refused(value):
 
 # --- renderer --------------------------------------------------------------
 
+
 @pytest.mark.parametrize(
     "renderer",
     [
@@ -127,6 +130,7 @@ def test_a_renderer_nobody_reported_is_refused(value):
 
 
 # --- packet ----------------------------------------------------------------
+
 
 @pytest.mark.parametrize(
     "value",
@@ -151,9 +155,7 @@ def test_the_packet_argument_is_not_named_value():
     """
     for validator in (validate_input_packet, validate_signaling_packet):
         first = next(iter(inspect.signature(validator).parameters))
-        assert first == "packet", (
-            f"{validator.__name__} takes its packet as {first!r}: see digest_value"
-        )
+        assert first == "packet", f"{validator.__name__} takes its packet as {first!r}: see digest_value"
 
 
 @pytest.mark.parametrize(
@@ -168,6 +170,7 @@ def test_a_hostile_packet_is_answered_rather_than_raised(validator, hostile):
 
 # --- the decorated callables still do their own work -----------------------
 
+
 def test_an_identity_mismatch_is_still_reported_after_digestion():
     packet = {
         "protocolVersion": 1,
@@ -179,9 +182,7 @@ def test_an_identity_mismatch_is_still_reported_after_digestion():
         "payload": {"sdp": "v=0"},
     }
     assert validate_signaling_packet(packet).status == "accepted"
-    assert validate_signaling_packet(packet, expected_viewer_id="viewer-b").reason == (
-        "identity-mismatch"
-    )
+    assert validate_signaling_packet(packet, expected_viewer_id="viewer-b").reason == ("identity-mismatch")
 
 
 def test_a_renderer_is_still_classified_after_digestion():

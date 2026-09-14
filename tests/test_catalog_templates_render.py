@@ -23,7 +23,6 @@ while asserting nothing.
 from string import Formatter
 
 import pytest
-
 from molsysviewer._private.smonitor.catalog import CATALOG, MESSAGES
 from molsysviewer._private.smonitor_emit import message_from_catalog
 
@@ -57,9 +56,7 @@ def test_template_renders_its_own_words(key):
         f"imports CODES and SIGNALS -- SMonitor reads them off that module by attribute."
     )
     for literal in _literals(template):
-        assert literal in rendered, (
-            f"catalog entry {key!r} lost authored text {literal!r} from its template"
-        )
+        assert literal in rendered, f"catalog entry {key!r} lost authored text {literal!r} from its template"
 
 
 @pytest.mark.parametrize("key", KEYS)

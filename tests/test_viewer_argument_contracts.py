@@ -12,7 +12,6 @@ of them do not raise downstream: they leave the scene plausible and wrong.
 from __future__ import annotations
 
 import pytest
-
 from molsysviewer._private.exceptions import ArgumentError
 from molsysviewer.demo import demo
 
@@ -80,7 +79,6 @@ def test_an_atom_index_map_holds_indices_on_both_sides(view):
 def test_an_append_that_added_no_atoms_is_refused(view):
     with pytest.raises(ArgumentError, match="appended_n_atoms"):
         view.apply_system_edit(view.molsys, load_blocks="append", appended_n_atoms=0)
-
 
 
 def test_every_refusal_names_the_call_that_caused_it(view):

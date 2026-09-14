@@ -12,8 +12,9 @@ from molsysviewer._private.exceptions import ArgumentError
 
 def digest_iterations(iterations, caller=None):
     if isinstance(iterations, bool) or not isinstance(iterations, int):
-        raise ArgumentError("iterations", value=iterations, caller=caller,
-                            message="expected a whole number of repetitions")
+        raise ArgumentError(
+            "iterations", value=iterations, caller=caller, message="expected a whole number of repetitions"
+        )
     if iterations < 1:
         raise ArgumentError(
             "iterations",

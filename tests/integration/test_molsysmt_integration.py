@@ -2,9 +2,9 @@ import pytest
 
 msm = pytest.importorskip("molsysmt")
 
-from molsysviewer import MolSysView
 from molsysviewer.loaders.json_molsys import serialize_json_molsys
 
+from molsysviewer import MolSysView
 
 PDB_TEXT = """\
 ATOM      1  N   MET A   1      11.104  13.207   8.551  1.00 20.00           N

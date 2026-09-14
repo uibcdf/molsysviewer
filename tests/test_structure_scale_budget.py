@@ -8,8 +8,6 @@ honest ceiling: numbers, a way forward, and never a silent death.
 import warnings
 
 import pytest
-
-import molsysviewer as msv
 from molsysviewer._private import scale_budget
 from molsysviewer._private.scale_budget import (
     StructureScaleWarning,
@@ -17,6 +15,8 @@ from molsysviewer._private.scale_budget import (
     coordinate_bytes,
     suggested_structure_stride,
 )
+
+import molsysviewer as msv
 
 MB = 1024 * 1024
 
@@ -86,9 +86,10 @@ def test_the_budget_is_publicly_configurable_and_can_be_silenced():
         msv.config.set_structure_scale_budget(0)
         with warnings.catch_warnings():
             warnings.simplefilter("error")
-            assert check_structure_scale(
-                100_000, 10_000, budget_bytes=scale_budget.DEFAULT_COORDINATE_BUDGET_BYTES
-            ) is None
+            assert (
+                check_structure_scale(100_000, 10_000, budget_bytes=scale_budget.DEFAULT_COORDINATE_BUDGET_BYTES)
+                is None
+            )
     finally:
         scale_budget.DEFAULT_COORDINATE_BUDGET_BYTES = original
 

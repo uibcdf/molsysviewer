@@ -14,12 +14,10 @@ from ...exceptions import ArgumentError
 # the same defect twice in two places for the same reason, duplicated infrastructure
 # drifting apart (uibcdf/molsysviewer#33).
 
-functions_with_boolean = (
-        )
+functions_with_boolean = ()
 
-functions_with_list_as_output = (
-    'add_harmonic_bond_force',
-        )
+functions_with_list_as_output = ("add_harmonic_bond_force",)
+
 
 def digest_bond_length(bond_length, caller=None):
 
@@ -29,7 +27,7 @@ def digest_bond_length(bond_length, caller=None):
     if caller is not None:
         if caller.endswith(functions_with_list_as_output):
             if puw.is_quantity(bond_length):
-                if puw.check(bond_length, dimensionality={'[L]':1}):
+                if puw.check(bond_length, dimensionality={"[L]": 1}):
                     value, unit = puw.get_value_and_unit(bond_length)
                     if is_iterable(value):
                         return [puw.quantity(ii, unit, standardized=True) for ii in value]
@@ -38,14 +36,14 @@ def digest_bond_length(bond_length, caller=None):
             elif is_iterable(bond_length):
                 output = []
                 for aux in bond_length:
-                    if puw.check(aux, dimensionality={'[L]':1}):
+                    if puw.check(aux, dimensionality={"[L]": 1}):
                         output.append(puw.standardize(aux))
                     else:
-                        raise ArgumentError('bond_length', value=aux, caller=caller, message=None)
+                        raise ArgumentError("bond_length", value=aux, caller=caller, message=None)
                 return output
 
     if puw.is_quantity(bond_length):
-        if puw.check(bond_length, dimensionality={'[L]':1}):
+        if puw.check(bond_length, dimensionality={"[L]": 1}):
             return puw.standardize(bond_length)
 
-    raise ArgumentError('bond_length', value=bond_length, caller=caller, message=None)
+    raise ArgumentError("bond_length", value=bond_length, caller=caller, message=None)

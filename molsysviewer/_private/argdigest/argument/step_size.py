@@ -10,4 +10,4 @@ def digest_step_size(step_size, caller=None):
             return v
     except (TypeError, ValueError):
         pass
-    raise ArgumentError('step_size', value=step_size, caller=caller, message=None)
+    raise ArgumentError("step_size", value=step_size, caller=caller, message=None)

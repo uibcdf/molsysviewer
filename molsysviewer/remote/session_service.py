@@ -20,12 +20,8 @@ from .render_worker import RenderWorkerConfig, RenderWorkerDiagnostics
 from .view_channel import RemoteViewChannel
 
 _SESSION_SUBPROTOCOL = "molsysviewer-session-v1"
-_SERVER_CLIENT_CAPABILITIES = frozenset(
-    {"command-origin", "input-send", "video-receive", "workbench"}
-)
-_LOCAL_CLIENT_CAPABILITIES = frozenset(
-    {"command-origin", "input-send", "render", "structure-receive", "workbench"}
-)
+_SERVER_CLIENT_CAPABILITIES = frozenset({"command-origin", "input-send", "video-receive", "workbench"})
+_LOCAL_CLIENT_CAPABILITIES = frozenset({"command-origin", "input-send", "render", "structure-receive", "workbench"})
 _VIEWER_JS = Path(__file__).resolve().parents[1] / "viewer.js"
 _MAX_UPLOAD_BYTES = 64 * 1024 * 1024
 _MAX_DOWNLOAD_BYTES = 32 * 1024 * 1024
@@ -105,18 +101,12 @@ class RemoteSessionService:
             raise TypeError("ice_servers must be a sequence of mappings")
         if render_on not in {"client", "server"}:
             raise ValueError("render_on must be 'client' or 'server'")
-        if (
-            not isinstance(listen_port, int)
-            or isinstance(listen_port, bool)
-            or not 0 <= listen_port <= 65535
-        ):
+        if not isinstance(listen_port, int) or isinstance(listen_port, bool) or not 0 <= listen_port <= 65535:
             raise ValueError("listen_port must be an integer between 0 and 65535")
         self.render_on = render_on
         self._ice_servers = tuple(dict(item) for item in ice_servers)
         self._client_render_queue: asyncio.Queue[tuple[str, Any]] = asyncio.Queue(256)
-        self._host = (
-            InternalRenderWorkerHost(worker_config) if render_on == "server" else None
-        )
+        self._host = InternalRenderWorkerHost(worker_config) if render_on == "server" else None
         self.channel = (
             self._host.channel
             if self._host is not None
@@ -151,9 +141,7 @@ class RemoteSessionService:
             self._host.worker_signal_sink = self._forward_worker_signal
             self._host.worker_peer_state_sink = self._handle_worker_peer_state
             self._host.client_control_sink = self._forward_client_control
-        self._client_control_queue: asyncio.Queue[
-            tuple[dict[str, Any], asyncio.Future[None]]
-        ] = asyncio.Queue(256)
+        self._client_control_queue: asyncio.Queue[tuple[dict[str, Any], asyncio.Future[None]]] = asyncio.Queue(256)
         self._pending_client_control: set[asyncio.Future[None]] = set()
         self._client_control_pump: asyncio.Task[None] | None = None
         self._worker_monitor_task: asyncio.Task[None] | None = None
@@ -285,9 +273,7 @@ class RemoteSessionService:
                 transport_failed = state == "ready" and not host.worker_connected.is_set()
                 if not process_failed and not transport_failed:
                     continue
-                reason = host.worker.failure or host.failure or (
-                    "render-worker transport disconnected"
-                )
+                reason = host.worker.failure or host.failure or ("render-worker transport disconnected")
                 try:
                     await self._recover_worker(reason)
                 except Exception:
@@ -339,10 +325,7 @@ class RemoteSessionService:
 
     def _auth_rate_limited(self) -> bool:
         now = asyncio.get_running_loop().time()
-        while (
-            self._auth_failures
-            and now - self._auth_failures[0] >= _AUTH_FAILURE_WINDOW_SECONDS
-        ):
+        while self._auth_failures and now - self._auth_failures[0] >= _AUTH_FAILURE_WINDOW_SECONDS:
             self._auth_failures.popleft()
         return len(self._auth_failures) >= _MAX_AUTH_FAILURES
 
@@ -363,10 +346,7 @@ class RemoteSessionService:
         if request.headers.get("Origin") != self.origin:
             raise web.HTTPForbidden()
         try:
-            if (
-                request.content_length is not None
-                and request.content_length > _MAX_AUTH_BODY_BYTES
-            ):
+            if request.content_length is not None and request.content_length > _MAX_AUTH_BODY_BYTES:
                 raise web.HTTPRequestEntityTooLarge(
                     max_size=_MAX_AUTH_BODY_BYTES,
                     actual_size=request.content_length,
@@ -387,9 +367,7 @@ class RemoteSessionService:
             self._record_auth_failure()
             raise web.HTTPBadRequest() from error
         supplied = value.get("token", "") if isinstance(value, Mapping) else ""
-        authenticated = isinstance(supplied, str) and hmac.compare_digest(
-            supplied, self._token
-        )
+        authenticated = isinstance(supplied, str) and hmac.compare_digest(supplied, self._token)
         if not authenticated:
             if self._auth_rate_limited():
                 raise web.HTTPTooManyRequests(headers={"Retry-After": "60"})
@@ -439,12 +417,13 @@ class RemoteSessionService:
             raise ValueError("download artifact exceeds the 32 MiB session limit")
         artifact_id = secrets.token_urlsafe(24)
         basename = Path(filename).name
-        safe_filename = "".join(
-            character
-            if character.isascii() and (character.isalnum() or character in {".", "_", "-"})
-            else "_"
-            for character in basename
-        ) or "molsysviewer-download"
+        safe_filename = (
+            "".join(
+                character if character.isascii() and (character.isalnum() or character in {".", "_", "-"}) else "_"
+                for character in basename
+            )
+            or "molsysviewer-download"
+        )
         self._downloads[artifact_id] = (safe_filename, str(media_type), data)
         while len(self._downloads) > _MAX_DOWNLOAD_ARTIFACTS:
             self._downloads.popitem(last=False)
@@ -475,9 +454,7 @@ class RemoteSessionService:
         original_filename = Path(field.filename).name
         suffix = Path(original_filename).suffix.lower()
         if suffix not in _UPLOAD_SUFFIXES:
-            raise web.HTTPUnsupportedMediaType(
-                text=f"unsupported molecular file suffix: {suffix or '<none>'}"
-            )
+            raise web.HTTPUnsupportedMediaType(text=f"unsupported molecular file suffix: {suffix or '<none>'}")
 
         temporary_path: Path | None = None
         try:
@@ -489,22 +466,16 @@ class RemoteSessionService:
                 while chunk := await field.read_chunk(size=256 * 1024):
                     size += len(chunk)
                     if size > _MAX_UPLOAD_BYTES:
-                        raise web.HTTPRequestEntityTooLarge(
-                            max_size=_MAX_UPLOAD_BYTES, actual_size=size
-                        )
+                        raise web.HTTPRequestEntityTooLarge(max_size=_MAX_UPLOAD_BYTES, actual_size=size)
                     temporary.write(chunk)
             if size == 0:
                 raise web.HTTPBadRequest(text="uploaded molecular file is empty")
             if await reader.next() is not None:
                 raise web.HTTPBadRequest(text="upload accepts exactly one file")
             try:
-                result = dict(
-                    self.channel.consume_upload(str(temporary_path), original_filename)
-                )
+                result = dict(self.channel.consume_upload(str(temporary_path), original_filename))
             except Exception as error:
-                response = web.json_response(
-                    {"uploaded": False, "message": str(error)}, status=422
-                )
+                response = web.json_response({"uploaded": False, "message": str(error)}, status=422)
             else:
                 response = web.json_response({"uploaded": True, **result})
             response.headers.update(self._security_headers())
@@ -514,10 +485,7 @@ class RemoteSessionService:
                 temporary_path.unlink(missing_ok=True)
 
     async def _accept_client(self, request: web.Request) -> web.StreamResponse:
-        requested_protocols = {
-            item.strip()
-            for item in request.headers.get("Sec-WebSocket-Protocol", "").split(",")
-        }
+        requested_protocols = {item.strip() for item in request.headers.get("Sec-WebSocket-Protocol", "").split(",")}
         if (
             not self._authorized(request)
             or request.headers.get("Origin") != self.origin
@@ -549,11 +517,7 @@ class RemoteSessionService:
             self.client_registered.set()
             await socket.send_json({"kind": "registered"})
             self._client_control_pump = asyncio.create_task(
-                (
-                    self._pump_client_control(socket)
-                    if self.render_on == "server"
-                    else self._pump_client_render(socket)
-                ),
+                (self._pump_client_control(socket) if self.render_on == "server" else self._pump_client_render(socket)),
                 name="molsysviewer-client-control",
             )
             if self._host is not None:
@@ -623,13 +587,9 @@ class RemoteSessionService:
         if any(value.get(key) != expected_value for key, expected_value in expected.items()):
             raise ValueError("client registration identity is invalid")
         expected_capabilities = (
-            _SERVER_CLIENT_CAPABILITIES
-            if self.render_on == "server"
-            else _LOCAL_CLIENT_CAPABILITIES
+            _SERVER_CLIENT_CAPABILITIES if self.render_on == "server" else _LOCAL_CLIENT_CAPABILITIES
         )
-        if frozenset(capabilities) != expected_capabilities or len(capabilities) != len(
-            expected_capabilities
-        ):
+        if frozenset(capabilities) != expected_capabilities or len(capabilities) != len(expected_capabilities):
             raise ValueError("client registration capabilities are invalid")
         return {**expected, "capabilities": tuple(capabilities)}
 
@@ -647,9 +607,7 @@ class RemoteSessionService:
                 expected_endpoint_id=self.client_endpoint_id,
             )
             if validation.status != "accepted":
-                raise ValueError(
-                    f"client signaling rejected: {validation.reason}: {validation.detail}"
-                )
+                raise ValueError(f"client signaling rejected: {validation.reason}: {validation.detail}")
             self._host.send_worker_wire({"kind": "signal", "packet": dict(value["packet"])})
             return
         if kind == "input":
@@ -660,13 +618,9 @@ class RemoteSessionService:
         if kind == "raw":
             if self._host is not None:
                 raise ValueError("server-rendered clients may not originate raw data messages")
-            result = self.channel.receive_data(
-                value.get("message"), source_endpoint_id=self.client_endpoint_id
-            )
+            result = self.channel.receive_data(value.get("message"), source_endpoint_id=self.client_endpoint_id)
             if result.status == "rejected":
-                raise ValueError(
-                    f"client data rejected: {result.reason}: {result.detail}"
-                )
+                raise ValueError(f"client data rejected: {result.reason}: {result.detail}")
             message = value.get("message")
             event = message.get("event") if isinstance(message, Mapping) else None
             if event == "ready":
@@ -678,9 +632,7 @@ class RemoteSessionService:
             pending_before = set(self._pending_client_control)
             result = self.channel.receive_control(value.get("envelope"))
             if result.status == "rejected":
-                raise ValueError(
-                    f"client control rejected: {result.reason}: {result.detail}"
-                )
+                raise ValueError(f"client control rejected: {result.reason}: {result.detail}")
             produced = self._pending_client_control - pending_before
             if produced:
                 await asyncio.gather(*produced)
@@ -704,9 +656,7 @@ class RemoteSessionService:
         if target is not None and target != self.client_endpoint_id:
             return
         try:
-            self._client_render_queue.put_nowait(
-                ("control", {"kind": "control", "envelope": dict(envelope)})
-            )
+            self._client_render_queue.put_nowait(("control", {"kind": "control", "envelope": dict(envelope)}))
         except asyncio.QueueFull as error:
             raise RuntimeError("browser render outbound queue is full") from error
 

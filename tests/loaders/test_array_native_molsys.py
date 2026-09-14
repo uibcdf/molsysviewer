@@ -1,9 +1,9 @@
 import numpy as np
 import pytest
-
-from molsysviewer import demo
 from molsysviewer._pyunitwizard import puw
 from molsysviewer.loaders.array_native_molsys import serialize_array_native_molsys
+
+from molsysviewer import demo
 
 
 @pytest.fixture
@@ -28,9 +28,7 @@ def test_array_native_payload_preserves_complete_structural_axes(dialanine_view)
     assert coordinates.dtype == np.dtype("<f4")
     assert coordinates.flags.c_contiguous
     # Same science, transposed axes: coordinates[s, axis, atom] == expected[s, atom, axis]
-    np.testing.assert_allclose(
-        coordinates, np.asarray(expected).transpose(0, 2, 1), rtol=1e-6, atol=1e-5
-    )
+    np.testing.assert_allclose(coordinates, np.asarray(expected).transpose(0, 2, 1), rtol=1e-6, atol=1e-5)
 
     descriptor = result.metadata["structural_arrays"][0]
     assert descriptor == {
@@ -55,9 +53,7 @@ def test_array_native_payload_does_not_invent_missing_box_or_time(dialanine_view
 
     result = serialize_array_native_molsys(molsys)
 
-    assert [item["kind"] for item in result.metadata["structural_arrays"]] == [
-        "coordinates"
-    ]
+    assert [item["kind"] for item in result.metadata["structural_arrays"]] == ["coordinates"]
     assert len(result.arrays) == 1
 
 
@@ -102,9 +98,7 @@ def test_array_native_payload_preserves_aligned_box_and_time(dialanine_view):
         puw.get_value(molsys.structures.time, to_unit="ps"),
     )
     assert len(result.buffers) == len(result.arrays)
-    assert [buffer.nbytes for buffer in result.buffers] == [
-        array.nbytes for array in result.arrays
-    ]
+    assert [buffer.nbytes for buffer in result.buffers] == [array.nbytes for array in result.arrays]
 
 
 def test_array_native_payload_rejects_nonfinite_coordinates(dialanine_view):

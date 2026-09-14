@@ -7,7 +7,6 @@ from depdigest import dep_digest
 from smonitor import signal
 
 from ..._private.argdigest import digest
-
 from ...new_view import new_view
 from .merge import _import_view_state
 

@@ -1,4 +1,4 @@
-from molsysviewer import AddonPanelSpec, AddonSpec, AddonSectionSpec, AddonWorkspaceSpec, MolSysView, addons
+from molsysviewer import AddonPanelSpec, AddonSectionSpec, AddonSpec, AddonWorkspaceSpec, MolSysView, addons
 
 
 def test_set_panel_mode_sends_message():
@@ -130,9 +130,7 @@ def test_workspace_catalog_and_panels_follow_effective_runtime():
                 name="topomt",
                 workspaces=(AddonWorkspaceSpec(id="topomt", title="TopoMT", entry_panel="topo"),),
                 panels=(AddonPanelSpec(id="topo", title="Topo", entry="topomt.panel.topo"),),
-                addon_sections=(
-                    AddonSectionSpec(id="summary", title="Summary", entry="topomt.section.summary"),
-                ),
+                addon_sections=(AddonSectionSpec(id="summary", title="Summary", entry="topomt.section.summary"),),
             )
         )
         view = MolSysView(debug_js=True)
@@ -323,9 +321,7 @@ def test_workspace_runtime_includes_current_sections():
                 name="topomt",
                 workspaces=(AddonWorkspaceSpec(id="topomt", title="TopoMT", entry_panel="topo"),),
                 panels=(AddonPanelSpec(id="topo", title="Topo", entry="topomt.panel.topo"),),
-                addon_sections=(
-                    AddonSectionSpec(id="summary", title="Summary", entry="topomt.section.summary"),
-                ),
+                addon_sections=(AddonSectionSpec(id="summary", title="Summary", entry="topomt.section.summary"),),
             )
         )
         view = MolSysView(debug_js=True)
@@ -385,9 +381,7 @@ def test_workspace_runtime_pretty_returns_json():
                 name="topomt",
                 workspaces=(AddonWorkspaceSpec(id="topomt", title="TopoMT", entry_panel="topo"),),
                 panels=(AddonPanelSpec(id="topo", title="Topo", entry="topomt.panel.topo"),),
-                addon_sections=(
-                    AddonSectionSpec(id="summary", title="Summary", entry="topomt.section.summary"),
-                ),
+                addon_sections=(AddonSectionSpec(id="summary", title="Summary", entry="topomt.section.summary"),),
             )
         )
         view = MolSysView(debug_js=True)

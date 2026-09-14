@@ -1,6 +1,8 @@
-from molsysviewer._private.functions import caller_name
 from smonitor.integrations import CatalogException
+
+from molsysviewer._private.functions import caller_name
 from molsysviewer._private.smonitor import CATALOG, META
+
 
 class ArgumentError(CatalogException, ValueError):
     """Exception raised when a method, or a class, was not properly called or instantiated."""

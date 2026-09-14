@@ -86,9 +86,7 @@ def test_worker_command_keeps_devtools_on_loopback_and_sandbox_enabled(tmp_path)
 def test_no_sandbox_is_only_an_explicit_visible_configuration(tmp_path):
     executable = tmp_path / "chrome"
     executable.touch()
-    worker = ManagedRenderWorker(
-        RenderWorkerConfig(executable=str(executable), no_sandbox=True)
-    )
+    worker = ManagedRenderWorker(RenderWorkerConfig(executable=str(executable), no_sandbox=True))
     command = worker._build_command(  # noqa: SLF001
         str(executable), tmp_path / "profile", "http://localhost:8000/worker"
     )
@@ -121,13 +119,9 @@ def test_real_worker_reports_hardware_webgl2_and_streaming_capabilities(tmp_path
     thread.start()
 
     async def probe():
-        worker = ManagedRenderWorker(
-            RenderWorkerConfig(startup_timeout=20, shutdown_timeout=5)
-        )
+        worker = ManagedRenderWorker(RenderWorkerConfig(startup_timeout=20, shutdown_timeout=5))
         try:
-            diagnostics = await worker.start(
-                f"http://127.0.0.1:{server.server_port}/worker.html"
-            )
+            diagnostics = await worker.start(f"http://127.0.0.1:{server.server_port}/worker.html")
             assert worker.state == "ready"
             assert worker.is_running
             assert diagnostics.webgl2

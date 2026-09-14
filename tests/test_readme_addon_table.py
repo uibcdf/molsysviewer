@@ -19,9 +19,7 @@ import re
 from pathlib import Path
 
 import pytest
-
 from molsysviewer.addons import KNOWN_ADDON_MODULES
-
 
 README = Path(__file__).resolve().parents[1] / "README.md"
 
@@ -29,16 +27,19 @@ README = Path(__file__).resolve().parents[1] / "README.md"
 #: `devguide/pending_proposals/addon_maturity_and_ownership.md`, the two pre-existing
 #: declarations it replaces, and the honest answer for an add-on that says nothing.
 PERMITTED_MATURITY = {
-    "experimental", "development", "beta", "stable",  # the vocabulary
-    "skeleton", "alpha",                              # what four add-ons said before it
-    "undeclared",                                     # TopoMT, which declares nothing
+    "experimental",
+    "development",
+    "beta",
+    "stable",  # the vocabulary
+    "skeleton",
+    "alpha",  # what four add-ons said before it
+    "undeclared",  # TopoMT, which declares nothing
 }
 
 
 def _table_rows() -> dict[str, str]:
     text = README.read_text(encoding="utf-8")
-    rows = re.findall(r"^\| `(molsysviewer_\w+)` \|[^|]*\|[^|]*\| ([^|]+) \|$",
-                      text, re.MULTILINE)
+    rows = re.findall(r"^\| `(molsysviewer_\w+)` \|[^|]*\|[^|]*\| ([^|]+) \|$", text, re.MULTILINE)
     return {module: maturity.strip() for module, maturity in rows}
 
 
@@ -53,8 +54,7 @@ def test_the_table_lists_exactly_the_known_addons():
 
 def test_the_maturity_column_uses_only_declared_words():
     """Guards against `stable` appearing because a paragraph needed it to."""
-    unknown = {module: level for module, level in _table_rows().items()
-               if level not in PERMITTED_MATURITY}
+    unknown = {module: level for module, level in _table_rows().items() if level not in PERMITTED_MATURITY}
 
     assert unknown == {}, f"maturity levels outside the vocabulary: {unknown}"
 
@@ -67,8 +67,10 @@ def test_the_readme_does_not_claim_any_addon_is_production_ready():
     """
     text = README.read_text(encoding="utf-8").lower()
 
-    assert "production-ready" not in text.split("### addon system")[1].split("###")[0] \
+    assert (
+        "production-ready" not in text.split("### addon system")[1].split("###")[0]
         or "none of them is production-ready" in text
+    )
 
 
 @pytest.mark.parametrize("module", sorted(KNOWN_ADDON_MODULES))
@@ -90,6 +92,5 @@ def test_the_reported_level_is_the_one_the_addon_declares(module):
     declared = (spec.meta or {}).get("status", "undeclared")
 
     assert _table_rows()[module] == declared, (
-        f"the README reports {_table_rows()[module]!r} for {module}, which declares "
-        f"{declared!r}"
+        f"the README reports {_table_rows()[module]!r} for {module}, which declares {declared!r}"
     )

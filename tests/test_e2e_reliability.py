@@ -87,13 +87,10 @@ def test_e2e_failures_cannot_leave_chromium_alive_until_timeout():
     alive, turning a useful assertion failure into a CI timeout.
     """
     offenders = [
-        path.name
-        for path in E2E_ROOT.glob("*.e2e.ts")
-        if re.search(r"process\.exitCode\s*=\s*1", path.read_text())
+        path.name for path in E2E_ROOT.glob("*.e2e.ts") if re.search(r"process\.exitCode\s*=\s*1", path.read_text())
     ]
     assert offenders == [], (
-        "E2E catch paths must close Chromium in finally and terminate with "
-        f"process.exit(1); unsafe suites: {offenders}"
+        f"E2E catch paths must close Chromium in finally and terminate with process.exit(1); unsafe suites: {offenders}"
     )
 
 

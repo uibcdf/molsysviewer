@@ -16,6 +16,7 @@ def digest_color_alpha_spheres(color_alpha_spheres, caller=None):
     a name, an RGB(A) triplet). ``None`` keeps the shape's own default.
     """
     from molsysviewer.colors import normalize_color  # deferred: see module note
+
     if color_alpha_spheres is None:
         return None
 

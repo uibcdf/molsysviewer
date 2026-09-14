@@ -4,30 +4,48 @@ import base64
 import json
 import re
 import time
+import uuid
 import warnings
 import weakref
-import uuid
 from collections import OrderedDict
 from contextlib import contextmanager
 from typing import Any, Dict, Mapping, Sequence
 
 import molsysmt as msm
 import numpy as np
+from depdigest import dep_digest
 from smonitor import signal
 from smonitor.integrations import context_extra, emit_from_catalog
-from depdigest import dep_digest
 
+from .. import config
 from .._private.argdigest import digest
 from .._private.argdigest.argument.viewer_mode import digest_viewer_mode
-from .._private.smonitor import CATALOG, PACKAGE_ROOT, META
+from .._private.smonitor import CATALOG, META, PACKAGE_ROOT
 from .._private.smonitor.warnings import StructureStreamFallbackWarning, warn
 from .._private.smonitor_emit import emit_suppressed_exception
-from ..widget import MolSysViewerWidget
+from ..active_selection import ActiveSelection, _combine
+from ..addons import AddonPanelWidget, ViewAddonsManager
+from ..addons import addons as global_addons
+from ..annotations import AnnotationsManager
+from ..colors import colors as global_colors
+from ..exports import ExportManager
+from ..interaction_targets import InteractionTarget
+from ..layers import Layer, LayersManager, SceneObject
 from ..loaders.array_native_molsys import (
     ARRAY_NATIVE_PROTOCOL_VERSION,
     serialize_array_native_molsys,
 )
 from ..loaders.json_molsys import build_json_molsys_message
+from ..measurements import MeasurementsManager
+from ..player import PlayerManager
+from ..regions import Region, RegionsManager
+from ..scene import SceneManager
+from ..scene_history import SceneHistory, records_scene_history
+from ..selections import Selection, SelectionsManager
+from ..shapes import ShapesManager
+from ..styles import StylesManager
+from ..tags import TagsManager
+from ..trajectory_plot import TrajectoryPlotManager
 from ..transport import (
     AckDisposition,
     EndpointTransferRegistry,
@@ -38,44 +56,26 @@ from ..transport import (
     TransferTermination,
     is_lazy_molecular_message,
 )
-from .runtime_router import WidgetRuntimeRouter, is_envelope
-from ..annotations import AnnotationsManager
-from ..active_selection import ActiveSelection, _combine
-from ..addons import AddonPanelWidget, ViewAddonsManager, addons as global_addons
-from ..exports import ExportManager
-from ..interaction_targets import InteractionTarget
-from ..measurements import MeasurementsManager
-from ..player import PlayerManager
-from ..trajectory_plot import TrajectoryPlotManager
-from ..scene import SceneManager
-from ..selections import SelectionsManager, Selection
-from ..styles import StylesManager
-from ..shapes import ShapesManager
-from ..regions import Region, RegionsManager
 from ..whole import Whole
-from ..layers import Layer, LayersManager, SceneObject
-from ..tags import TagsManager
-from ..colors import colors as global_colors
-from .. import config
-
-from .history import HistoryMixin
-from ..scene_history import SceneHistory, records_scene_history
+from ..widget import MolSysViewerWidget
 from .camera import CameraManager
-from .movie import MovieManager
 from .export import ExportMixin
-from .scene_registry import SceneRegistryMixin
+from .history import HistoryMixin
+from .interaction import InteractionMixin
+from .load import LoadMixin
+from .molsysmt_interface import MolSysMTInterfaceMixin
+from .movie import MovieManager
 from .panel_actions import dispatch_panel_action
+from .panel_mode import PanelModeMixin
+from .popup_snapshot import PopupSnapshotMixin
 
 # The new Mixins
 from .regions import RegionsMixin
-from .panel_mode import PanelModeMixin
-from .load import LoadMixin
-from .visibility import VisibilityMixin
+from .runtime_router import WidgetRuntimeRouter, is_envelope
 from .scene import SceneMixin
-from .molsysmt_interface import MolSysMTInterfaceMixin
+from .scene_registry import SceneRegistryMixin
 from .state import StateMixin
-from .popup_snapshot import PopupSnapshotMixin
-from .interaction import InteractionMixin
+from .visibility import VisibilityMixin
 
 
 class MolSysView(
@@ -97,6 +97,7 @@ class MolSysView(
     Provides structure loading, visibility control, shape management, and
     utilities to export static HTML views for documentation or sharing.
     """
+
     def _repr_mimebundle_(self, include=None, exclude=None):
         """IPython/Jupyter display hook (delegates to the underlying widget)."""
         return self.widget._repr_mimebundle_(include=include, exclude=exclude)
@@ -146,8 +147,8 @@ class MolSysView(
             close_layout()
 
     @signal(tags=["viewer", "init"])
-    @dep_digest('anywidget')
-    @dep_digest('molsysmt')
+    @dep_digest("anywidget")
+    @dep_digest("molsysmt")
     def __init__(
         self,
         *,
@@ -191,9 +192,7 @@ class MolSysView(
         if isinstance(self.widget, MolSysViewerWidget):
             self.widget.runtime_viewer_id = self._binary_viewer_id
             self.widget.runtime_session_id = self._binary_session_id
-            self._runtime_router = WidgetRuntimeRouter(
-                self._binary_viewer_id, self._binary_session_id
-            )
+            self._runtime_router = WidgetRuntimeRouter(self._binary_viewer_id, self._binary_session_id)
         bind_runtime_identity = getattr(self.widget, "bind_runtime_identity", None)
         if callable(bind_runtime_identity):
             bind_runtime_identity(self._binary_viewer_id, self._binary_session_id)
@@ -279,30 +278,22 @@ class MolSysView(
             "shape": TagsManager(
                 "shape",
                 "shape",
-                lambda: (
-                    tag for kind, tag in self._scene_objects if kind == "shape"
-                ),
+                lambda: (tag for kind, tag in self._scene_objects if kind == "shape"),
             ),
             "annotation": TagsManager(
                 "annotation",
                 "annotation",
-                lambda: (
-                    tag for kind, tag in self._scene_objects if kind == "annotation"
-                ),
+                lambda: (tag for kind, tag in self._scene_objects if kind == "annotation"),
             ),
             "measurement": TagsManager(
                 "measurement",
                 "measurement",
-                lambda: (
-                    tag for kind, tag in self._scene_objects if kind == "measurement"
-                ),
+                lambda: (tag for kind, tag in self._scene_objects if kind == "measurement"),
             ),
             "section": TagsManager(
                 "section",
                 "section",
-                lambda: (
-                    tag for kind, tag in self._scene_objects if kind == "section"
-                ),
+                lambda: (tag for kind, tag in self._scene_objects if kind == "section"),
             ),
             "layer": TagsManager("layer", "layer", lambda: self._layers.keys()),
             "selection": TagsManager("selection", "selection", lambda: self._selections.keys()),
@@ -403,7 +394,9 @@ class MolSysView(
     def _current_scene_owner(self) -> str | None:
         return self._scene_owner_stack[-1] if self._scene_owner_stack else None
 
-    def _apply_view_modes(self, viewer_mode: str | None = None, controls_mode: str | None = None, panel_mode_style: str | None = None) -> None:
+    def _apply_view_modes(
+        self, viewer_mode: str | None = None, controls_mode: str | None = None, panel_mode_style: str | None = None
+    ) -> None:
 
         # Resolve viewer_mode, controls_mode, and panel_mode_style presets.
         # viewer_mode is intentionally limited to three high-level presets. The
@@ -453,7 +446,11 @@ class MolSysView(
         else:
             p_style = cfg_panel_mode_style if cfg_panel_mode_style is not None else preset_panel
 
-        p_style_valid = p_style if p_style in ("drawer", "floating", "floating-unified", "integrated", "ambient", "split") else "drawer"
+        p_style_valid = (
+            p_style
+            if p_style in ("drawer", "floating", "floating-unified", "integrated", "ambient", "split")
+            else "drawer"
+        )
 
         # Set traits on widget
         self.widget.viewer_mode = v_mode
@@ -849,11 +846,7 @@ class MolSysView(
         ):
             return None
         max_buffer_bytes = self._frontend_capabilities.get("max_buffer_bytes")
-        if (
-            not isinstance(max_buffer_bytes, int)
-            or isinstance(max_buffer_bytes, bool)
-            or max_buffer_bytes <= 0
-        ):
+        if not isinstance(max_buffer_bytes, int) or isinstance(max_buffer_bytes, bool) or max_buffer_bytes <= 0:
             return None
         return max_buffer_bytes
 
@@ -922,24 +915,17 @@ class MolSysView(
             payload = serialize_array_native_molsys(self._molsys)
             metadata = payload.metadata
             n_structures = int(metadata["n_structures"])
-            bytes_per_structure = max(
-                int(array.nbytes // n_structures) for array in payload.arrays
-            )
+            bytes_per_structure = max(int(array.nbytes // n_structures) for array in payload.arrays)
             structures_per_chunk = max_buffer_bytes // bytes_per_structure
             if structures_per_chunk < 1:
                 return False
             chunks: list[tuple[dict[str, Any], list[memoryview]]] = []
-            for chunk_id, structure_start in enumerate(
-                range(0, n_structures, structures_per_chunk)
-            ):
+            for chunk_id, structure_start in enumerate(range(0, n_structures, structures_per_chunk)):
                 structure_count = min(
                     structures_per_chunk,
                     n_structures - structure_start,
                 )
-                arrays = tuple(
-                    array[structure_start:structure_start + structure_count]
-                    for array in payload.arrays
-                )
+                arrays = tuple(array[structure_start : structure_start + structure_count] for array in payload.arrays)
                 descriptors: list[dict[str, Any]] = []
                 for buffer_index, (array, complete_descriptor) in enumerate(
                     zip(arrays, metadata["structural_arrays"], strict=True)
@@ -960,10 +946,12 @@ class MolSysView(
                     "structure_count": structure_count,
                     "structural_arrays": descriptors,
                 }
-                chunks.append((
-                    chunk_message,
-                    [memoryview(array).cast("B") for array in arrays],
-                ))
+                chunks.append(
+                    (
+                        chunk_message,
+                        [memoryview(array).cast("B") for array in arrays],
+                    )
+                )
 
             begin = {
                 "op": "structure_data_begin",
@@ -995,9 +983,7 @@ class MolSysView(
             return True
         except Exception as exc:
             if transfer is not None and manager is not None:
-                manager.fallback(
-                    f"connector failed while starting structure transfer: {exc}"
-                )
+                manager.fallback(f"connector failed while starting structure transfer: {exc}")
             warn(
                 StructureStreamFallbackWarning(
                     f"Array-native AnyWidget delivery failed; using JSON fallback: {exc}",
@@ -1013,9 +999,7 @@ class MolSysView(
         thread: `widget.send` is not safe to call off the kernel thread for
         AnyWidget, so the deadline is evaluated when the kernel next does work.
         """
-        for _target_endpoint_id, manager in tuple(
-            self._iter_structure_transfer_managers()
-        ):
+        for _target_endpoint_id, manager in tuple(self._iter_structure_transfer_managers()):
             termination = manager.expire_if_due()
             if termination is not None:
                 self._deliver_binary_structure_fallback(termination)
@@ -1288,10 +1272,7 @@ class MolSysView(
                 self._answer_popup_scene_snapshot(result.envelope)
                 return
             message = result.message
-            if (
-                result.envelope.action == "interaction_context_menu"
-                and isinstance(message, Mapping)
-            ):
+            if result.envelope.action == "interaction_context_menu" and isinstance(message, Mapping):
                 message = {**message, "_source_endpoint_id": result.envelope.endpoint_id}
             self._handle_frontend_event(message)
         elif result.status == "duplicate":
@@ -1364,9 +1345,7 @@ class MolSysView(
                 },
             ),
             defer_for_endpoint=(
-                popup_endpoint_id
-                if isinstance(popup_endpoint_id, str) and popup_endpoint_id
-                else None
+                popup_endpoint_id if isinstance(popup_endpoint_id, str) and popup_endpoint_id else None
             ),
         )
 
@@ -1384,10 +1363,12 @@ class MolSysView(
                 target_endpoint_id=endpoint_id,
             ):
                 fallback = self._materialize_molecular_projection(message)
-                self._send_widget_message({
-                    **fallback,
-                    "target_endpoint_id": endpoint_id,
-                })
+                self._send_widget_message(
+                    {
+                        **fallback,
+                        "target_endpoint_id": endpoint_id,
+                    }
+                )
 
     def _handle_frontend_event(self, content: Mapping[str, Any]) -> None:
         event = content.get("event")
@@ -1401,15 +1382,11 @@ class MolSysView(
             return
         elif event == "ready":
             capabilities = content.get("capabilities")
-            self._frontend_capabilities = (
-                dict(capabilities) if isinstance(capabilities, Mapping) else {}
-            )
+            self._frontend_capabilities = dict(capabilities) if isinstance(capabilities, Mapping) else {}
             self._ready = True
             binary_delivered = False
             if self._current_molecular_projection is not None:
-                binary_delivered = self._try_send_array_native_molsys(
-                    self._current_molecular_projection
-                )
+                binary_delivered = self._try_send_array_native_molsys(self._current_molecular_projection)
             messages = self._build_embedded_runtime_snapshot(
                 include_molecular=not binary_delivered,
             )
@@ -1444,7 +1421,9 @@ class MolSysView(
             # `_send_runtime_only`, which drops messages while not ready) — the
             # frontend is listening because it just asked. Gating this on `_ready`
             # deadlocks: `_ready` only becomes True once this source has loaded.
-            self._transmit_widget_message({"op": "widget_runtime_source", "source": MolSysViewerWidget._viewer_js_source})
+            self._transmit_widget_message(
+                {"op": "widget_runtime_source", "source": MolSysViewerWidget._viewer_js_source}
+            )
         elif event == "request_popup_source":
             self._transmit_widget_message({"op": "popup_source", "source": MolSysViewerWidget._viewer_js_source})
         elif event == "region_ack":
@@ -1564,8 +1543,16 @@ class MolSysView(
             if isinstance(tag, str) and tag.strip():
                 section = self._scene_objects.get(("section", tag.strip()))
                 if section is not None:
-                    point = [float(v) for v in raw_point] if isinstance(raw_point, (list, tuple)) and len(raw_point) == 3 else None
-                    normal = [float(v) for v in raw_normal] if isinstance(raw_normal, (list, tuple)) and len(raw_normal) == 3 else None
+                    point = (
+                        [float(v) for v in raw_point]
+                        if isinstance(raw_point, (list, tuple)) and len(raw_point) == 3
+                        else None
+                    )
+                    normal = (
+                        [float(v) for v in raw_normal]
+                        if isinstance(raw_normal, (list, tuple)) and len(raw_normal) == 3
+                        else None
+                    )
                     section.set_geometry(point=point, normal=normal, skip_digestion=True)
         elif event == "interaction_active_selection_changed":
             enriched = dict(content)
@@ -1576,9 +1563,7 @@ class MolSysView(
             # the one scene history. Checkpoint only on a real change: a selection
             # that Python itself just set (e.g. during an undo/redo replay) echoes
             # back unchanged and must not add a spurious history entry.
-            _previous_selection = list(
-                (self._last_active_selection_event or {}).get("atom_indices") or []
-            )
+            _previous_selection = list((self._last_active_selection_event or {}).get("atom_indices") or [])
             _selection_changed = atom_indices != _previous_selection
             if _selection_changed:
                 self.history._begin_operation(("active_selection", "", "set"))  # noqa: SLF001
@@ -1694,10 +1679,12 @@ class MolSysView(
                 # does not. Reproject the accepted authoritative selection so
                 # every endpoint converges. Applying it again in an embedded or
                 # worker canvas is idempotent and emits no new interaction.
-                self._send_runtime_only({
-                    "op": "set_active_selection",
-                    "atom_indices": list(atom_indices),
-                })
+                self._send_runtime_only(
+                    {
+                        "op": "set_active_selection",
+                        "atom_indices": list(atom_indices),
+                    }
+                )
             if atom_indices:
                 self._set_active_selection_recipe(
                     [
@@ -1873,6 +1860,7 @@ class MolSysView(
     def wait_for_transaction(self, transaction_id: str | int, timeout_s: float = 1.0) -> bool:
         """Wait until the frontend acknowledges that the transaction has been rendered."""
         import time
+
         t_start = time.time()
         while transaction_id not in self._rendered_transactions_acks:
             time.sleep(0.001)
@@ -1986,7 +1974,9 @@ class MolSysView(
                 out.append([a, b])
         return out
 
-    def _remap_frame_atom_indices(self, frames: Any, atom_index_map: dict[int, int] | None) -> list[list[int] | None] | None:
+    def _remap_frame_atom_indices(
+        self, frames: Any, atom_index_map: dict[int, int] | None
+    ) -> list[list[int] | None] | None:
         if atom_index_map is None:
             return frames if isinstance(frames, list) else None
         if not isinstance(frames, list):
@@ -2005,7 +1995,9 @@ class MolSysView(
                 remapped_frames.append(None)
         return remapped_frames if any_live else None
 
-    def _remap_frame_atom_pairs(self, frames: Any, atom_index_map: dict[int, int] | None) -> list[list[list[int]] | None] | None:
+    def _remap_frame_atom_pairs(
+        self, frames: Any, atom_index_map: dict[int, int] | None
+    ) -> list[list[list[int]] | None] | None:
         if atom_index_map is None:
             return frames if isinstance(frames, list) else None
         if not isinstance(frames, list):
@@ -2064,9 +2056,7 @@ class MolSysView(
         if "mouth_atom_indices" in options:
             mouths = options.get("mouth_atom_indices")
             if isinstance(mouths, list) and mouths and isinstance(mouths[0], list):
-                options["mouth_atom_indices"] = [
-                    self._remap_indices(m, atom_index_map) for m in mouths
-                ]
+                options["mouth_atom_indices"] = [self._remap_indices(m, atom_index_map) for m in mouths]
             else:
                 options["mouth_atom_indices"] = self._remap_indices(mouths, atom_index_map)
 
@@ -2091,11 +2081,7 @@ class MolSysView(
         options["atom_indices"] = survivors
         broken = len(survivors) == 0
         remapped["broken"] = broken
-        remapped["broken_reason"] = (
-            self._broken_anchor_reason(missing, empty=not original)
-            if broken
-            else None
-        )
+        remapped["broken_reason"] = self._broken_anchor_reason(missing, empty=not original) if broken else None
         return remapped
 
     def _remap_measurement_message(self, msg: dict, atom_index_map: dict[int, int] | None) -> dict:
@@ -2115,24 +2101,18 @@ class MolSysView(
         original_picks = [[int(index) for index in pick] for pick in picks]
         if atom_index_map is None:
             n_atoms = int(self._molsys.get_n_atoms()) if self._molsys is not None else 0
-            remapped_picks = [
-                [index for index in pick if 0 <= index < n_atoms]
-                for pick in original_picks
-            ]
-            missing = sorted({
-                index
-                for original, survivors in zip(original_picks, remapped_picks)
-                for index in original
-                if index not in survivors
-            })
+            remapped_picks = [[index for index in pick if 0 <= index < n_atoms] for pick in original_picks]
+            missing = sorted(
+                {
+                    index
+                    for original, survivors in zip(original_picks, remapped_picks)
+                    for index in original
+                    if index not in survivors
+                }
+            )
         else:
             remapped_picks = [self._remap_indices(pick, atom_index_map) for pick in original_picks]
-            missing = sorted({
-                index
-                for pick in original_picks
-                for index in pick
-                if index not in atom_index_map
-            })
+            missing = sorted({index for pick in original_picks for index in pick if index not in atom_index_map})
         options["picks_atom_indices"] = remapped_picks
 
         options.pop("value", None)
@@ -2145,9 +2125,9 @@ class MolSysView(
             )
         else:
             policy = self.measurements._normalize_endpoint_policy(options.get("endpoint_policy"))  # noqa: SLF001
-            endpoint_kinds, endpoint_labels, endpoint_atom_indices = (
-                self.measurements._resolve_endpoint_metadata(remapped_picks, policy)  # noqa: SLF001
-            )
+            endpoint_kinds, endpoint_labels, endpoint_atom_indices = self.measurements._resolve_endpoint_metadata(
+                remapped_picks, policy
+            )  # noqa: SLF001
             options["endpoint_policy"] = policy
             options["endpoint_kinds"] = endpoint_kinds
             options["endpoint_labels"] = endpoint_labels
@@ -2204,11 +2184,7 @@ class MolSysView(
         if not any(self._atom_color_layers.values()) and not self._atom_color_map:
             return
         if atom_index_map is None:
-            remapped_layers = {
-                owner: dict(layer)
-                for owner, layer in self._atom_color_layers.items()
-                if layer
-            }
+            remapped_layers = {owner: dict(layer) for owner, layer in self._atom_color_layers.items() if layer}
         else:
             remapped_layers = {
                 owner: {
@@ -2219,9 +2195,7 @@ class MolSysView(
                 for owner, layer in self._atom_color_layers.items()
             }
         self._atom_color_layers = {
-            owner: layer
-            for owner, layer in remapped_layers.items()
-            if layer or owner == "whole"
+            owner: layer for owner, layer in remapped_layers.items() if layer or owner == "whole"
         }
         self._send_resolved_atom_colors(replay=True)
 
@@ -2258,11 +2232,7 @@ class MolSysView(
     def _resolved_atom_color_map(self) -> dict[int, int]:
         resolved: dict[int, int] = dict(self._atom_color_layers.get("whole", {}))
         ordered_regions = sorted(
-            (
-                region
-                for region in self._regions.values()
-                if getattr(region, "_active", False)
-            ),
+            (region for region in self._regions.values() if getattr(region, "_active", False)),
             key=lambda region: getattr(region, "order", 0),
         )
         for region in ordered_regions:
@@ -2285,16 +2255,8 @@ class MolSysView(
 
     def _send_atom_color_delta(self, previous: dict[int, int]) -> None:
         resolved = self._resolved_atom_color_map()
-        changed = [
-            atom_index
-            for atom_index, color in resolved.items()
-            if previous.get(atom_index) != color
-        ]
-        cleared = [
-            atom_index
-            for atom_index in previous
-            if atom_index not in resolved
-        ]
+        changed = [atom_index for atom_index, color in resolved.items() if previous.get(atom_index) != color]
+        cleared = [atom_index for atom_index in previous if atom_index not in resolved]
         self._atom_color_map = resolved
         if changed:
             self._send(
@@ -2551,9 +2513,7 @@ class MolSysView(
         if new_molsys is None:
             raise ValueError("apply_system_edit(...) requires a molecular system.")
         if load_blocks not in ("keep", "collapse", "append"):
-            raise ValueError(
-                f"apply_system_edit(load_blocks={load_blocks!r}) must be 'keep', 'collapse', or 'append'."
-            )
+            raise ValueError(f"apply_system_edit(load_blocks={load_blocks!r}) must be 'keep', 'collapse', or 'append'.")
 
         effective_label = self._last_label if label is None else label
         self._molsys = new_molsys
@@ -2779,11 +2739,7 @@ class MolSysView(
         # A directory: place this installation's runtime there and address it
         # relative to the page. Defaults beside the export, so a lone view is
         # self-sufficient.
-        assets_dir = (
-            Path(shared_runtime)
-            if shared_runtime is not None
-            else Path(output_filename).resolve().parent
-        )
+        assets_dir = Path(shared_runtime) if shared_runtime is not None else Path(output_filename).resolve().parent
         asset = place_runtime_asset(assets_dir)
         # No registry tail. A pinned CDN URL was appended here for a day, as a
         # last resort for a page opened straight from a disk, and removed on
@@ -2889,8 +2845,7 @@ class MolSysView(
             (
                 endpoint.endpoint_id
                 for endpoint in router.endpoints
-                if endpoint.role in {"browser-client", "qt-client"}
-                and "workbench" in endpoint.capabilities
+                if endpoint.role in {"browser-client", "qt-client"} and "workbench" in endpoint.capabilities
             ),
             None,
         )
@@ -2940,8 +2895,7 @@ class MolSysView(
             (
                 endpoint.endpoint_id
                 for endpoint in router.endpoints
-                if endpoint.role in {"browser-client", "qt-client"}
-                and "workbench" in endpoint.capabilities
+                if endpoint.role in {"browser-client", "qt-client"} and "workbench" in endpoint.capabilities
             ),
             None,
         )
@@ -2957,13 +2911,12 @@ class MolSysView(
         }
         atom_indices = content.get("atom_indices")
         if kind != "empty":
-            target["atom_indices"] = [
-                int(item)
-                for item in atom_indices if isinstance(item, int) and not isinstance(item, bool)
-            ] if isinstance(atom_indices, (list, tuple)) else []
-        for key in (
-            "tag", "text", "shape_name", "measurement_name", "group_name", "chain_name"
-        ):
+            target["atom_indices"] = (
+                [int(item) for item in atom_indices if isinstance(item, int) and not isinstance(item, bool)]
+                if isinstance(atom_indices, (list, tuple))
+                else []
+            )
+        for key in ("tag", "text", "shape_name", "measurement_name", "group_name", "chain_name"):
             value = content.get(key)
             if isinstance(value, str):
                 target[key] = value
@@ -3004,8 +2957,7 @@ class MolSysView(
             (
                 endpoint.endpoint_id
                 for endpoint in router.endpoints
-                if endpoint.role in {"browser-client", "qt-client"}
-                and "workbench" in endpoint.capabilities
+                if endpoint.role in {"browser-client", "qt-client"} and "workbench" in endpoint.capabilities
             ),
             None,
         )
@@ -3028,9 +2980,7 @@ class MolSysView(
             "media_type": "text/html",
             "url": url,
         }
-        self._send_widget_message(
-            router.wrap_outbound(projection, target_endpoint_id=client_endpoint)
-        )
+        self._send_widget_message(router.wrap_outbound(projection, target_endpoint_id=client_endpoint))
 
     def _complete_remote_image_download(self, content: Mapping[str, Any]) -> None:
         request_id = content.get("request_id")
@@ -3061,10 +3011,8 @@ class MolSysView(
                 }
             else:
                 try:
-                    image_bytes = base64.b64decode(data_uri[len(prefix):], validate=True)
-                    url = self.widget.publish_download(
-                        "molsysviewer.png", "image/png", image_bytes
-                    )
+                    image_bytes = base64.b64decode(data_uri[len(prefix) :], validate=True)
+                    url = self.widget.publish_download("molsysviewer.png", "image/png", image_bytes)
                 except Exception as error:
                     projection = {
                         "op": "remote_download_failed",
@@ -3079,9 +3027,7 @@ class MolSysView(
                         "media_type": "image/png",
                         "url": url,
                     }
-        self._send_widget_message(
-            router.wrap_outbound(projection, target_endpoint_id=client_endpoint)
-        )
+        self._send_widget_message(router.wrap_outbound(projection, target_endpoint_id=client_endpoint))
 
     def _export_image_headless(
         self,
@@ -3187,9 +3133,7 @@ class MolSysView(
                 continue
 
         if QApplication is None:
-            raise ImportError(
-                "Neither PySide6_uibcdf nor PySide6 with QtWebEngineWidgets is available."
-            )
+            raise ImportError("Neither PySide6_uibcdf nor PySide6 with QtWebEngineWidgets is available.")
 
         viewer_js = pathlib.Path(__file__).parent.parent / "viewer.js"
         if not viewer_js.exists():
@@ -3206,9 +3150,7 @@ class MolSysView(
             runtime_urls=[viewer_js.resolve().as_uri()],
         )
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".html", delete=False, encoding="utf-8"
-        ) as _f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encoding="utf-8") as _f:
             _f.write(html)
             tmp_html = _f.name
 
@@ -3232,9 +3174,9 @@ class MolSysView(
                         loop.quit()
                     else:
                         QTimer.singleShot(200, _check_rendered)
+
                 view.page().runJavaScript(  # type: ignore[union-attr]
-                    "!!document.getElementById('molsysviewer-root')"
-                    "?.getAttribute('data-molsysviewer-rendered')",
+                    "!!document.getElementById('molsysviewer-root')?.getAttribute('data-molsysviewer-rendered')",
                     _cb,
                 )
 
@@ -3288,9 +3230,7 @@ class MolSysView(
             from playwright.sync_api import sync_playwright
         except ImportError:
             raise ImportError(
-                "playwright is not installed. Install it with:\n"
-                "  pip install playwright\n"
-                "  playwright install chromium"
+                "playwright is not installed. Install it with:\n  pip install playwright\n  playwright install chromium"
             )
 
         viewer_js_path = pathlib.Path(__file__).parent.parent / "viewer.js"
@@ -3312,9 +3252,7 @@ class MolSysView(
             runtime_urls=[f"http://localhost:{port}/viewer.js"],
         )
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".html", dir=pkg_dir, delete=False, encoding="utf-8"
-        ) as _f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".html", dir=pkg_dir, delete=False, encoding="utf-8") as _f:
             _f.write(html)
             html_name = os.path.basename(_f.name)
             html_abs = _f.name
@@ -3329,9 +3267,7 @@ class MolSysView(
                 pass
 
         httpd = http.server.HTTPServer(("localhost", port), _SilentHandler)
-        threading.Thread(
-            target=httpd.serve_forever, kwargs={"poll_interval": 0.05}, daemon=True
-        ).start()
+        threading.Thread(target=httpd.serve_forever, kwargs={"poll_interval": 0.05}, daemon=True).start()
 
         try:
             w = int(width_px or 1280)
@@ -3481,7 +3417,9 @@ class MolSysView(
             "show_controls": bool(include_controls),
             "autohide_controls": bool(getattr(self.widget, "autohide_controls", False)),
             "controls_position": list(getattr(self.widget, "controls_position", ["top", "right"])),
-            "controls_position_fullscreen": list(getattr(self.widget, "controls_position_fullscreen", ["bottom", "right"])),
+            "controls_position_fullscreen": list(
+                getattr(self.widget, "controls_position_fullscreen", ["bottom", "right"])
+            ),
             "controls_mode": str(getattr(self.widget, "controls_mode", "classic")),
             "panel_mode_style": str(getattr(self.widget, "panel_mode_style", "drawer")),
             "enable_popout": bool(include_popout),

@@ -11,8 +11,9 @@ from molsysviewer._private.exceptions import ArgumentError
 
 def digest_samples(samples, caller=None):
     if isinstance(samples, bool) or not isinstance(samples, int):
-        raise ArgumentError("samples", value=samples, caller=caller,
-                            message="expected a whole number of palette samples")
+        raise ArgumentError(
+            "samples", value=samples, caller=caller, message="expected a whole number of palette samples"
+        )
     if samples < 1:
         raise ArgumentError(
             "samples",

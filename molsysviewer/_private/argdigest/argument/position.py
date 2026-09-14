@@ -1,6 +1,5 @@
 from ...exceptions import ArgumentError
 
-
 _VERTICAL = {"top", "bottom"}
 _HORIZONTAL = {"left", "right"}
 

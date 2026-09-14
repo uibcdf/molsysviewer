@@ -1,6 +1,5 @@
 from molsysviewer._private.exceptions import ArgumentError
-import numpy as np
-from molsysviewer._pyunitwizard import puw
+
 
 def digest_colormap(colormap, caller=None):
 
@@ -20,4 +19,4 @@ def digest_colormap(colormap, caller=None):
     if isinstance(colormap, LinearSegmentedColormap):
         return colormap
 
-    raise ArgumentError('colormap', value=colormap, caller=caller, message=None)
+    raise ArgumentError("colormap", value=colormap, caller=caller, message=None)

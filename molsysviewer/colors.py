@@ -5,7 +5,6 @@ from typing import Any, Iterable, Mapping, Sequence
 
 from ._private.argdigest import digest
 
-
 MOLSTAR_COLOR_NAMES: dict[str, int] = {
     "aliceblue": 0xF0F8FF,
     "antiquewhite": 0xFAEBD7,
@@ -337,7 +336,9 @@ class ColorRegistry:
         return self._palette_from_matplotlib_or_sequence(palette, samples=samples)
 
     @digest()
-    def register_palette(self, name: str, palette: Any, *, samples: int = 256, overwrite: bool = False) -> ContinuousPalette:
+    def register_palette(
+        self, name: str, palette: Any, *, samples: int = 256, overwrite: bool = False
+    ) -> ContinuousPalette:
         key = str(name).strip()
         if key == "":
             raise ValueError("Palette name must be a non-empty string.")
@@ -367,8 +368,7 @@ class ColorRegistry:
             palette = self.resolve_palette(palette_source, samples=max(len(categories), 1))
             fallback_color = normalize_color(fallback) if fallback is not None else generated_fallback
             mapping = {
-                str(category): palette.colors[idx % len(palette.colors)]
-                for idx, category in enumerate(categories)
+                str(category): palette.colors[idx % len(palette.colors)] for idx, category in enumerate(categories)
             }
             return CategoricalColorScheme(
                 name=scheme,
@@ -383,8 +383,7 @@ class ColorRegistry:
         if categories is not None:
             palette = self.resolve_palette(scheme, samples=max(len(categories), 1))
             mapping = {
-                str(category): palette.colors[idx % len(palette.colors)]
-                for idx, category in enumerate(categories)
+                str(category): palette.colors[idx % len(palette.colors)] for idx, category in enumerate(categories)
             }
             fallback_color = None if fallback is None else normalize_color(fallback)
             return CategoricalColorScheme(name=None, mapping=mapping, fallback=fallback_color, source=palette.source)
@@ -468,8 +467,7 @@ class ColorRegistry:
         if mcolors is not None and isinstance(palette, mcolors.Colormap):
             steps = max(int(samples), 2)
             colors = [
-                _rgb_to_int(tuple(float(channel) for channel in palette(idx / (steps - 1))[:3]))
-                for idx in range(steps)
+                _rgb_to_int(tuple(float(channel) for channel in palette(idx / (steps - 1))[:3])) for idx in range(steps)
             ]
             return ContinuousPalette(name=name or getattr(palette, "name", None), colors=colors, source="matplotlib")
 
@@ -477,6 +475,7 @@ class ColorRegistry:
 
 
 colors = ColorRegistry()
+
 
 def _register_builtin_palettes() -> None:
     for name in ("turbo", "viridis", "plasma", "magma", "inferno", "rainbow"):
@@ -580,14 +579,27 @@ colors.register_generated_scheme(
 _CVD_SAFE_QUALITATIVE: dict[str, list[str]] = {
     # Okabe-Ito 8-colour qualitative palette (skips black for category use).
     "okabe_ito": [
-        "#E69F00", "#56B4E9", "#009E73", "#F0E442",
-        "#0072B2", "#D55E00", "#CC79A7", "#000000",
+        "#E69F00",
+        "#56B4E9",
+        "#009E73",
+        "#F0E442",
+        "#0072B2",
+        "#D55E00",
+        "#CC79A7",
+        "#000000",
     ],
     # Paul Tol qualitative schemes.
     "tol_bright": ["#4477AA", "#EE6677", "#228833", "#CCBB44", "#66CCEE", "#AA3377", "#BBBBBB"],
     "tol_muted": [
-        "#CC6677", "#332288", "#DDCC77", "#117733", "#88CCEE",
-        "#882255", "#44AA99", "#999933", "#AA4499",
+        "#CC6677",
+        "#332288",
+        "#DDCC77",
+        "#117733",
+        "#88CCEE",
+        "#882255",
+        "#44AA99",
+        "#999933",
+        "#AA4499",
     ],
     "tol_vibrant": ["#EE7733", "#0077BB", "#33BBEE", "#EE3377", "#CC3311", "#009988", "#BBBBBB"],
     "tol_high_contrast": ["#004488", "#DDAA33", "#BB5566"],
@@ -657,16 +669,13 @@ def expand_values_to_atoms(
         if scope_atom_indices is not None:
             if len(color_list) != len(scope_atom_indices):
                 raise ValueError(
-                    f"values length ({len(color_list)}) does not match "
-                    f"atom count in scope ({len(scope_atom_indices)})."
+                    f"values length ({len(color_list)}) does not match atom count in scope ({len(scope_atom_indices)})."
                 )
             return list(scope_atom_indices), color_list
 
         n_atoms = int(msm.get(molsys, element="system", n_atoms=True, skip_digestion=True))
         if len(color_list) != n_atoms:
-            raise ValueError(
-                f"values length ({len(color_list)}) does not match atom count ({n_atoms})."
-            )
+            raise ValueError(f"values length ({len(color_list)}) does not match atom count ({n_atoms}).")
         return list(range(n_atoms)), color_list
 
     # Non-atom level: map element index → atom indices via msm.get

@@ -5,27 +5,28 @@ from pathlib import Path
 from typing import Any
 
 from ..demo import demo
+
 # `_get_helper` resolves these **by name** -- `getattr(module, name)` first, then
 # `globals()[name]`. Ruff cannot see a string lookup, so it reports every one of them
 # as unused: they are load-bearing, and deleting them breaks the Qt host at runtime
 # with a KeyError no test would attribute to the import.
 from .utils import (  # noqa: F401
-    _rebuild_qt_html,
-    _persist_shell_state,
-    _show_status,
-    _show_host_error,
-    _set_action_shortcut,
-    _record_recent_source,
-    _recent_section_title,
     _clear_recent_sources,
-    _load_recent_source,
+    _current_source_summary,
+    _export_qt_figure,
+    _host_info_message,
     _load_demo_into_qt_host,
+    _load_molecular_system_into_qt_host,
+    _load_recent_source,
+    _persist_shell_state,
+    _rebuild_qt_html,
+    _recent_section_title,
+    _record_recent_source,
     _restore_last_source,
     _send_viewer_message,
-    _load_molecular_system_into_qt_host,
-    _export_qt_figure,
-    _current_source_summary,
-    _host_info_message,
+    _set_action_shortcut,
+    _show_host_error,
+    _show_status,
 )
 
 
@@ -73,7 +74,9 @@ def _install_menu_bar(
                 status_message="Opened empty host.",
             )
         except Exception as exc:
-            _get_helper("_show_host_error")(window, QMessageBox, "New Empty Host Failed", f"Could not open empty host: {exc}")
+            _get_helper("_show_host_error")(
+                window, QMessageBox, "New Empty Host Failed", f"Could not open empty host: {exc}"
+            )
 
     new_empty_action.triggered.connect(_new_empty_host)
     file_menu.addAction(new_empty_action)
@@ -179,6 +182,7 @@ def _install_menu_bar(
                     )
                 )
                 target_menu.addAction(recent_action)
+
     for demo_name in sorted(demo.keys()):
         demo_action = QAction(demo_name, window)
         demo_action.triggered.connect(
@@ -286,14 +290,18 @@ def _install_menu_bar(
             )
             _refresh_recent_menu()
         except Exception as exc:
-            _get_helper("_show_host_error")(window, QMessageBox, "Restore Last Source Failed", f"Could not restore last source: {exc}")
+            _get_helper("_show_host_error")(
+                window, QMessageBox, "Restore Last Source Failed", f"Could not restore last source: {exc}"
+            )
 
     restore_last_action.triggered.connect(_restore_last)
     file_menu.addAction(restore_last_action)
 
     close_action = QAction("Close", window)
     _get_helper("_set_action_shortcut")(close_action, "Ctrl+W")
-    close_action.triggered.connect(lambda: (_get_helper("_persist_shell_state")(current_state, window=window), window.close()))
+    close_action.triggered.connect(
+        lambda: (_get_helper("_persist_shell_state")(current_state, window=window), window.close())
+    )
     file_menu.addAction(close_action)
 
     open_navigate_action = QAction("Open Studio", window)
@@ -382,7 +390,9 @@ def _install_menu_bar(
             )
             _get_helper("_show_status")(window, f"Exported Figure: {destination.name}")
         except Exception as exc:
-            _get_helper("_show_host_error")(window, QMessageBox, "Export Figure Failed", f"Could not export figure: {exc}")
+            _get_helper("_show_host_error")(
+                window, QMessageBox, "Export Figure Failed", f"Could not export figure: {exc}"
+            )
 
     export_figure_action.triggered.connect(_export_figure)
     export_menu.addAction(export_figure_action)
@@ -414,7 +424,9 @@ def _install_menu_bar(
             view.movie.export(str(destination))
             _get_helper("_show_status")(window, f"Exported Movie: {destination.name}")
         except Exception as exc:
-            _get_helper("_show_host_error")(window, QMessageBox, "Export Movie Failed", f"Could not export movie: {exc}")
+            _get_helper("_show_host_error")(
+                window, QMessageBox, "Export Movie Failed", f"Could not export movie: {exc}"
+            )
 
     export_movie_action.triggered.connect(_export_movie)
     export_menu.addAction(export_movie_action)

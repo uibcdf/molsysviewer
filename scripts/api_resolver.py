@@ -9,7 +9,6 @@ import sys
 from pathlib import Path
 from typing import Any, Iterable
 
-
 CHAIN_PATTERN = re.compile(r"\b(?:view|viewer)(?:\.[A-Za-z_]\w*)+")
 FENCE_PATTERN = re.compile(r"^```([^\n]*)\n(.*?)^```\s*$", re.DOTALL | re.MULTILINE)
 HISTORICAL_SNAPSHOTS = {

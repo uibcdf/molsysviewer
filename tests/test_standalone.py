@@ -1,18 +1,20 @@
 import json
 import logging
 import os
-import pytest
 import sys
 from types import ModuleType
+
+import pytest
 
 pytest.importorskip("anywidget")
 pytest.importorskip("traitlets")
 
-from molsysviewer import demo
-from molsysviewer.standalone import build_standalone0_html, launch_standalone0, main
 import molsysviewer.standalone_qt as standalone_qt
-from molsysviewer.standalone_qt import QT_IMPORT_ERROR, create_standalone_qt0_window, main as qt_main
-from molsysviewer.standalone_qt import QtViewChannel
+from molsysviewer.standalone import build_standalone0_html, launch_standalone0, main
+from molsysviewer.standalone_qt import QT_IMPORT_ERROR, QtViewChannel, create_standalone_qt0_window
+from molsysviewer.standalone_qt import main as qt_main
+
+from molsysviewer import demo
 
 
 def test_build_standalone0_html_writes_file(tmp_path):
@@ -505,9 +507,9 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     figure_calls = []
     monkeypatch.setattr(
         "molsysviewer.standalone_qt._export_qt_figure",
-        lambda molecular_system, *, output_filename, title: figure_calls.append(
-            (molecular_system, output_filename, title)
-        ) or output_filename,
+        lambda molecular_system, *, output_filename, title: (
+            figure_calls.append((molecular_system, output_filename, title)) or output_filename
+        ),
     )
     FakeFileDialog.saved = str(tmp_path / "exported-figure.png")
     export_menu.actions[1].triggered._callbacks[0]()
@@ -544,7 +546,8 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     assert '"height": 800' in persisted
 
     monkeypatch.setattr(
-        view, "load",
+        view,
+        "load",
         lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError("broken source")),
     )
     FakeFileDialog.selected = str(tmp_path / "broken-system.pdb")
@@ -575,13 +578,9 @@ def test_load_qt_shell_state_restores_recent_sources(tmp_path, monkeypatch):
     assert state["last_source"]["loaded_label"] == "1crn"
 
 
-def test_load_qt_shell_state_warns_for_corrupt_file_but_not_missing_file(
-    tmp_path, monkeypatch, caplog
-):
+def test_load_qt_shell_state_warns_for_corrupt_file_but_not_missing_file(tmp_path, monkeypatch, caplog):
     state_path = tmp_path / "standalone_qt0_state.json"
-    monkeypatch.setattr(
-        "molsysviewer.standalone_qt._qt_shell_state_path", lambda: state_path
-    )
+    monkeypatch.setattr("molsysviewer.standalone_qt._qt_shell_state_path", lambda: state_path)
     clean_state = {
         "recent_sources": [],
         "last_source": None,
@@ -596,9 +595,7 @@ def test_load_qt_shell_state_warns_for_corrupt_file_but_not_missing_file(
     with caplog.at_level(logging.WARNING, logger="molsysviewer.standalone_qt.utils"):
         assert standalone_qt._load_qt_shell_state() == clean_state
 
-    record = next(
-        record for record in caplog.records if "Could not load Qt shell state" in record.message
-    )
+    record = next(record for record in caplog.records if "Could not load Qt shell state" in record.message)
     assert str(state_path) in record.message
     assert record.exc_info is not None
     assert record.exc_info[0] is json.JSONDecodeError
@@ -608,16 +605,12 @@ def test_persist_qt_shell_state_reports_save_failure(monkeypatch, caplog):
     def fail_to_save(_state):
         raise PermissionError("read-only state directory")
 
-    monkeypatch.setattr(
-        "molsysviewer.standalone_qt._save_qt_shell_state", fail_to_save
-    )
+    monkeypatch.setattr("molsysviewer.standalone_qt._save_qt_shell_state", fail_to_save)
 
     with caplog.at_level(logging.WARNING, logger="molsysviewer.standalone_qt.utils"):
         standalone_qt._persist_shell_state({})
 
-    record = next(
-        record for record in caplog.records if "Could not save Qt shell state" in record.message
-    )
+    record = next(record for record in caplog.records if "Could not save Qt shell state" in record.message)
     assert record.exc_info is not None
     assert record.exc_info[0] is PermissionError
     assert str(record.exc_info[1]) == "read-only state directory"
@@ -733,9 +726,7 @@ def test_qt_bridge_does_not_hang_or_spin_when_delivery_keeps_failing(failure_mod
             return RejectingPage()
 
     statuses = []
-    bridge = standalone_qt.QtMessageBridge(
-        FakeWebView(), FakeQTimer, status_callback=statuses.append
-    )
+    bridge = standalone_qt.QtMessageBridge(FakeWebView(), FakeQTimer, status_callback=statuses.append)
     bridge.ready = True
 
     bridge.send({"op": "set_panel_mode", "mode": "studio"})
@@ -770,9 +761,18 @@ def test_qt_bridge_does_not_hang_or_spin_when_delivery_keeps_failing(failure_mod
 
 def test_qt_startup_status_for_empty_host(monkeypatch):
     messages = []
-    standalone_qt._show_startup_status(type("FakeWindow", (), {
-        "statusBar": lambda self: type("FakeStatusBar", (), {"showMessage": lambda _self, message: messages.append(message)})()
-    })(), {"loaded_label": None})
+    standalone_qt._show_startup_status(
+        type(
+            "FakeWindow",
+            (),
+            {
+                "statusBar": lambda self: type(
+                    "FakeStatusBar", (), {"showMessage": lambda _self, message: messages.append(message)}
+                )()
+            },
+        )(),
+        {"loaded_label": None},
+    )
 
     assert messages[-1] == "Ready. Use File to load a demo, file, PDB ID, or MolSysMT source."
 
@@ -994,9 +994,7 @@ def test_create_remote_qt_window_reuses_authenticated_session_page(monkeypatch):
             "QTimer": FakeTimer,
         },
     )
-    monkeypatch.setattr(
-        standalone_qt, "_get_or_create_application", lambda _class, _argv: fake_app
-    )
+    monkeypatch.setattr(standalone_qt, "_get_or_create_application", lambda _class, _argv: fake_app)
 
     url = "http://127.0.0.1:8765/session/client#token=secret"
     runtime = standalone_qt.create_remote_qt_window(url, width=1200, height=800)
@@ -1006,9 +1004,7 @@ def test_create_remote_qt_window_reuses_authenticated_session_page(monkeypatch):
     assert runtime["webview"].url == url
     assert runtime["window"].central is runtime["webview"]
     assert runtime["window"].size == (1200, 800)
-    assert runtime["webview"]._page._settings.attributes == {
-        "fullscreen-support": True
-    }
+    assert runtime["webview"]._page._settings.attributes == {"fullscreen-support": True}
 
     class FakeFullScreenRequest:
         def __init__(self, enabling):
@@ -1036,25 +1032,17 @@ def test_create_remote_qt_window_reuses_authenticated_session_page(monkeypatch):
     timer = runtime["window"]._molsysviewer_remote_status_timer
     assert timer.interval == 500
     assert timer.running is True
-    runtime["webview"]._page.result = json.dumps(
-        {"state": "negotiating", "text": "Starting remote video…"}
-    )
+    runtime["webview"]._page.result = json.dumps({"state": "negotiating", "text": "Starting remote video…"})
     timer.timeout.emit()
     assert runtime["window"].status.messages[-1] == "Starting remote video…"
-    runtime["webview"]._page.result = json.dumps(
-        {"state": "ready", "text": "Connected"}
-    )
+    runtime["webview"]._page.result = json.dumps({"state": "ready", "text": "Connected"})
     timer.timeout.emit()
     assert runtime["window"].status.messages[-1] == ""
     runtime["webview"].loadStarted.emit()
     runtime["webview"].loadFinished.emit(False)
     assert timer.running is False
-    assert runtime["window"].status.messages[-1] == (
-        "Could not load the remote MolSysViewer session."
-    )
-    assert [menu.title for menu in runtime["window"].menu_bar.menus] == [
-        "File", "View", "Export"
-    ]
+    assert runtime["window"].status.messages[-1] == ("Could not load the remote MolSysViewer session.")
+    assert [menu.title for menu in runtime["window"].menu_bar.menus] == ["File", "View", "Export"]
     file_menu, view_menu, export_menu = runtime["window"].menu_bar.menus
     assert file_menu.actions[0].shortcut == "Ctrl+O"
     file_menu.actions[0].triggered._callbacks[0]()
@@ -1114,12 +1102,17 @@ def test_qt_main_connects_remote_session_without_building_local_host(monkeypatch
 
     url = "https://viewer.example/session/client#token=secret"
     assert qt_main(["--connect", url, "--no-exec"]) == 0
-    assert calls == [(url, {
-        "title": "MolSysViewer Qt Prototype",
-        "width": 1440,
-        "height": 960,
-        "exec_app": False,
-    })]
+    assert calls == [
+        (
+            url,
+            {
+                "title": "MolSysViewer Qt Prototype",
+                "width": 1440,
+                "height": 960,
+                "exec_app": False,
+            },
+        )
+    ]
     assert capsys.readouterr().out.strip() == url
 
 
@@ -1217,9 +1210,7 @@ def test_payload_scheme_handler_serves_and_fails_correctly():
             self.failed = code
 
     payloads = {"qt-7": b'{"ok":1}'}
-    handler = standalone_qt._make_payload_scheme_handler(
-        FakeHandlerBase, FakeBuffer, FakeByteArray, payloads
-    )
+    handler = standalone_qt._make_payload_scheme_handler(FakeHandlerBase, FakeBuffer, FakeByteArray, payloads)
 
     job = FakeJob("/qt-7")
     handler.requestStarted(job)
@@ -1287,9 +1278,7 @@ def test_event_scheme_handler_delivers_event_to_bridge():
     webview = FakeWebView()
     bridge = FakeBridge()
     webview._molsysviewer_qt_bridge = bridge
-    handler = standalone_qt._make_event_scheme_handler(
-        FakeHandlerBase, FakeBuffer, FakeByteArray, webview
-    )
+    handler = standalone_qt._make_event_scheme_handler(FakeHandlerBase, FakeBuffer, FakeByteArray, webview)
 
     job = FakeJob()
     handler.requestStarted(job)
@@ -1349,19 +1338,13 @@ def test_malformed_qt_bridge_event_is_rejected_without_false_ok(payload, caplog)
             pass
 
     statuses = []
-    bridge = standalone_qt.QtMessageBridge(
-        object(), FakeQTimer, status_callback=statuses.append
-    )
+    bridge = standalone_qt.QtMessageBridge(object(), FakeQTimer, status_callback=statuses.append)
     webview = type("FakeWebView", (), {})()
     webview._molsysviewer_qt_bridge = bridge
-    handler = standalone_qt._make_event_scheme_handler(
-        FakeHandlerBase, FakeBuffer, FakeByteArray, webview
-    )
+    handler = standalone_qt._make_event_scheme_handler(FakeHandlerBase, FakeBuffer, FakeByteArray, webview)
 
     with caplog.at_level(logging.WARNING, logger="molsysviewer.standalone_qt.utils"):
-        assert bridge.handle_frontend_event(json.loads(
-            '"not a dict"' if payload.startswith("%22") else "{}"
-        )) is False
+        assert bridge.handle_frontend_event(json.loads('"not a dict"' if payload.startswith("%22") else "{}")) is False
         job = FakeJob()
         handler.requestStarted(job)
 
@@ -1389,9 +1372,7 @@ def test_qt_view_channel_rejects_malformed_event_before_callbacks():
 
     assert channel._dispatch_event({}) is False  # noqa: SLF001
     assert received == []
-    assert bridge.rejections == [
-        ({}, "Qt view channel", "expected a non-empty string 'event' field")
-    ]
+    assert bridge.rejections == [({}, "Qt view channel", "expected a non-empty string 'event' field")]
 
 
 def test_qt_bridge_reports_load_progress():
@@ -1471,7 +1452,10 @@ def test_qt_view_channel_delivers_bridge_events_to_on_msg():
 def test_qt_view_channel_close_only_detaches_its_own_event_sink():
     bridge = _FakeBridge()
     channel = QtViewChannel(bridge)
-    replacement_sink = lambda event: event
+
+    def replacement_sink(event):
+        return event
+
     bridge.event_sink = replacement_sink
 
     channel.close()
@@ -1524,9 +1508,7 @@ def test_qt_bridge_forwards_product_events_but_not_transport():
             pass
 
     forwarded = []
-    bridge = standalone_qt.QtMessageBridge(
-        object(), FakeQTimer, event_sink=forwarded.append
-    )
+    bridge = standalone_qt.QtMessageBridge(object(), FakeQTimer, event_sink=forwarded.append)
 
     bridge.handle_frontend_event({"event": "ready"})
     bridge.handle_frontend_event({"event": "interaction_hover", "kind": "empty"})
@@ -1550,17 +1532,13 @@ def test_qt_bridge_reports_view_event_failure_without_raising(caplog):
     def failing_sink(_event):
         raise RuntimeError("boom")
 
-    bridge = standalone_qt.QtMessageBridge(
-        object(), FakeQTimer, event_sink=failing_sink
-    )
+    bridge = standalone_qt.QtMessageBridge(object(), FakeQTimer, event_sink=failing_sink)
     event = {"event": "interaction_click", "kind": "structure"}
 
     with caplog.at_level(logging.ERROR, logger="molsysviewer.standalone_qt.utils"):
         bridge.handle_frontend_event(event)
 
-    record = next(
-        record for record in caplog.records if "Qt view event failed" in record.message
-    )
+    record = next(record for record in caplog.records if "Qt view event failed" in record.message)
     assert record.exc_info is not None
     assert record.exc_info[0] is RuntimeError
     assert str(record.exc_info[1]) == "boom"
@@ -1576,7 +1554,7 @@ def test_qt_bridge_reports_view_event_failure_without_raising(caplog):
 # subprocess because QtWebEngine cannot be initialized more than once per process
 # (doing so alongside the rest of the suite aborts the interpreter). The render
 # (which needs WebGL) is validated separately in test_qt_live_model_full_render_gpu.
-_QT_TRANSPORT_SMOKE_SCRIPT = r'''
+_QT_TRANSPORT_SMOKE_SCRIPT = r"""
 import os, sys, tempfile, time
 os.environ.setdefault("QTWEBENGINE_DISABLE_SANDBOX", "1")
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
@@ -1609,7 +1587,7 @@ while time.time() - start < 15.0:
 ok = bool(bridge.ready) and any(e.get("event") == "ready" for e in received)
 print("TRANSPORT_READY:" + ("yes" if ok else "no"))
 sys.exit(0 if ok else 1)
-'''
+"""
 
 
 def test_qt_event_transport_smoke_real_qt():
@@ -1829,7 +1807,6 @@ def test_qt_live_model_smoke_real_window(monkeypatch):
     if not os.environ.get("DISPLAY"):
         pytest.skip("Requires a real X11 display context to initialize WebGL (run manually, not in headless CI).")
 
-
     # Set threshold to 1 so dialanine payload goes through custom scheme handler
     monkeypatch.setenv("MOLSYSVIEWER_QT_PAYLOAD_REF_THRESHOLD", "1")
     monkeypatch.setenv("QTWEBENGINE_DISABLE_SANDBOX", "1")
@@ -1852,6 +1829,7 @@ def test_qt_live_model_smoke_real_window(monkeypatch):
 
     # Spin the event loop until the viewer is ready and the structure loads, with 15s timeout
     import time
+
     start_time = time.time()
     success = False
     status_msg = ""
@@ -1897,8 +1875,6 @@ def test_qt_live_model_smoke_real_window(monkeypatch):
     assert bridge.inflight is None
 
 
-
-
 def test_qt_live_model_full_render_gpu(monkeypatch):
     """Opt-in end-to-end render test: also validates the actual 3D/WebGL draw.
 
@@ -1929,6 +1905,7 @@ def test_qt_live_model_full_render_gpu(monkeypatch):
     bridge = webview._molsysviewer_qt_bridge
 
     import time
+
     start = time.time()
     success = False
     status_msg = ""

@@ -1,6 +1,5 @@
-import pyunitwizard as puw
 import molsysviewer._pyunitwizard  # noqa: F401 — configures puw
-
+import pyunitwizard as puw
 from molsysviewer.shapes import Rings
 
 

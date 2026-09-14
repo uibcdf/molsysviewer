@@ -16,9 +16,9 @@ from __future__ import annotations
 
 import molsysmt as msm
 import pytest
+from molsysviewer._private.exceptions import ArgumentError
 
 import molsysviewer as msv
-from molsysviewer._private.exceptions import ArgumentError
 
 
 @pytest.fixture(scope="module")

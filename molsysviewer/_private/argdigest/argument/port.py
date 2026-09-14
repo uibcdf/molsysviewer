@@ -8,6 +8,8 @@ def digest_port(port, caller=None):
         return port
 
     raise ArgumentError(
-        "port", value=port, caller=caller,
+        "port",
+        value=port,
+        caller=caller,
         message="Expected a TCP port between 1024 and 65535.",
     )

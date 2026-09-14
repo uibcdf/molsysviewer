@@ -65,14 +65,8 @@ class SceneRegistryMixin:
             value = record.get("value")
             kind = str(record.get("kind") or "measurement")
             source_unit = "angstrom" if kind == "distance" else "degree"
-            standardized_value, unit = _standardized_payload(
-                puw.quantity(0.0, source_unit) if value is None else value
-            )
-            atom_indices = sorted({
-                int(index)
-                for pick in record.get("picks_atom_indices") or []
-                for index in pick
-            })
+            standardized_value, unit = _standardized_payload(puw.quantity(0.0, source_unit) if value is None else value)
+            atom_indices = sorted({int(index) for pick in record.get("picks_atom_indices") or [] for index in pick})
             records.append(
                 {
                     "kind": kind,
@@ -101,7 +95,7 @@ class SceneRegistryMixin:
         bucket_size = max(1, math.ceil(len(values) / max(1, max_points // 2)))
         sampled: list[tuple[int, float]] = []
         for start in range(0, len(values), bucket_size):
-            bucket = values[start:start + bucket_size]
+            bucket = values[start : start + bucket_size]
             low = min(range(len(bucket)), key=bucket.__getitem__)
             high = max(range(len(bucket)), key=bucket.__getitem__)
             for offset in sorted({low, high}):
@@ -114,9 +108,7 @@ class SceneRegistryMixin:
         kind = str(record.get("kind") or "measurement")
         quantity = self.measurements.series(tag)
         source_unit = "angstrom" if kind == "distance" else "degree"
-        standardized, unit = _standardized_payload(
-            puw.quantity([], source_unit) if quantity is None else quantity
-        )
+        standardized, unit = _standardized_payload(puw.quantity([], source_unit) if quantity is None else quantity)
         values = [float(value) for value in standardized]
         sparkline, sparkline_indices = self._minmax_downsample(values)
         return {
@@ -163,26 +155,28 @@ class SceneRegistryMixin:
                 quantity = radius if puw.is_quantity(radius) else puw.quantity(radius, "angstrom")
                 magnitude, unit = _standardized_payload(quantity)
                 radius_payload = {"magnitude": float(magnitude), "unit": unit}
-            records.append({
-                "op": record.get("op"),
-                "kind": record.get("kind"),
-                "tag": record.get("tag"),
-                **({"owner": record["owner"]} if record.get("owner") is not None else {}),
-                "layer_tag": record.get("layer_tag"),
-                "title": title,
-                "subtitle": subtitle,
-                "atom_indices": list(record.get("atom_indices") or []),
-                "hidden": not bool(record.get("visible")),
-                "color": record.get("color"),
-                "n_colors": record.get("n_colors"),
-                "radius": radius_payload,
-                "n_radii": record.get("n_radii"),
-                "alpha": record.get("alpha"),
-                "radius_scale": record.get("radius_scale"),
-                "length_scale": record.get("length_scale"),
-                "broken": bool(record.get("broken")),
-                "broken_reason": record.get("broken_reason"),
-            })
+            records.append(
+                {
+                    "op": record.get("op"),
+                    "kind": record.get("kind"),
+                    "tag": record.get("tag"),
+                    **({"owner": record["owner"]} if record.get("owner") is not None else {}),
+                    "layer_tag": record.get("layer_tag"),
+                    "title": title,
+                    "subtitle": subtitle,
+                    "atom_indices": list(record.get("atom_indices") or []),
+                    "hidden": not bool(record.get("visible")),
+                    "color": record.get("color"),
+                    "n_colors": record.get("n_colors"),
+                    "radius": radius_payload,
+                    "n_radii": record.get("n_radii"),
+                    "alpha": record.get("alpha"),
+                    "radius_scale": record.get("radius_scale"),
+                    "length_scale": record.get("length_scale"),
+                    "broken": bool(record.get("broken")),
+                    "broken_reason": record.get("broken_reason"),
+                }
+            )
         return records
 
     def _layer_summary_records(self) -> list[dict]:
@@ -202,56 +196,68 @@ class SceneRegistryMixin:
             if not isinstance(record.get("tag"), str):
                 continue
             point, unit = _standardized_payload(puw.quantity(record.get("point", []), "nm"))
-            records.append({
-                "tag": str(record["tag"]),
-                "point": [float(value) for value in point],
-                "unit": unit,
-                "normal": [float(value) for value in record.get("normal", [])],
-                "invert": bool(record.get("invert", False)),
-                "hidden": bool(record.get("hidden", False)),
-                **({"owner": record["owner"]} if record.get("owner") is not None else {}),
-            })
+            records.append(
+                {
+                    "tag": str(record["tag"]),
+                    "point": [float(value) for value in point],
+                    "unit": unit,
+                    "normal": [float(value) for value in record.get("normal", [])],
+                    "invert": bool(record.get("invert", False)),
+                    "hidden": bool(record.get("hidden", False)),
+                    **({"owner": record["owner"]} if record.get("owner") is not None else {}),
+                }
+            )
         return records
 
     def _sync_annotation_summaries_runtime(self) -> None:
-        self._send_runtime_only({
-            "op": "set_annotation_summaries",
-            "annotations": self._annotation_summary_records(),
-            "active_selection_count": len(self.active_selection.atom_indices),
-            "system_loaded": self._molsys is not None,
-        })
+        self._send_runtime_only(
+            {
+                "op": "set_annotation_summaries",
+                "annotations": self._annotation_summary_records(),
+                "active_selection_count": len(self.active_selection.atom_indices),
+                "system_loaded": self._molsys is not None,
+            }
+        )
 
     def _sync_measurement_summaries_runtime(self) -> None:
         settings = self.measurements.settings(skip_digestion=True)
-        self._send_runtime_only({
-            "op": "set_measurement_summaries",
-            "measurements": self._measurement_summary_records(),
-            "endpoint_policy_default": settings["endpoint_policy_default"],
-            "representative_atoms": settings["representative_atoms"],
-            "active_selection_count": len(self.active_selection.group_indices),
-            "structure_index": int(self._current_structure_index),
-            "system_loaded": self._molsys is not None,
-        })
+        self._send_runtime_only(
+            {
+                "op": "set_measurement_summaries",
+                "measurements": self._measurement_summary_records(),
+                "endpoint_policy_default": settings["endpoint_policy_default"],
+                "representative_atoms": settings["representative_atoms"],
+                "active_selection_count": len(self.active_selection.group_indices),
+                "structure_index": int(self._current_structure_index),
+                "system_loaded": self._molsys is not None,
+            }
+        )
 
     def _sync_shape_summaries_runtime(self) -> None:
-        self._send_runtime_only({
-            "op": "set_shape_summaries",
-            "shapes": self._shape_summary_records(),
-        })
+        self._send_runtime_only(
+            {
+                "op": "set_shape_summaries",
+                "shapes": self._shape_summary_records(),
+            }
+        )
 
     def _sync_layer_summaries_runtime(self) -> None:
-        self._send_runtime_only({
-            "op": "set_layer_summaries",
-            "layers": self._layer_summary_records(),
-        })
+        self._send_runtime_only(
+            {
+                "op": "set_layer_summaries",
+                "layers": self._layer_summary_records(),
+            }
+        )
 
     def _sync_section_summaries_runtime(self) -> None:
-        self._send_runtime_only({
-            "op": "set_section_summaries",
-            "sections": self._section_summary_records(),
-            "active_selection_count": len(self.active_selection.atom_indices),
-            "system_loaded": self._molsys is not None,
-        })
+        self._send_runtime_only(
+            {
+                "op": "set_section_summaries",
+                "sections": self._section_summary_records(),
+                "active_selection_count": len(self.active_selection.atom_indices),
+                "system_loaded": self._molsys is not None,
+            }
+        )
 
     def _sync_scene_object_summaries_for_message(self, msg: dict) -> None:
         op = msg.get("op")
@@ -426,5 +432,6 @@ class SceneRegistryMixin:
         if current_tag is not None and text == current_tag:
             return text
         return text
+
 
 __all__ = ["SceneRegistryMixin"]

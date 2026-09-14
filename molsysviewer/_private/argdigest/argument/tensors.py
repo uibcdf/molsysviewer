@@ -1,9 +1,12 @@
-from molsysviewer._private.exceptions import ArgumentError
+from typing import Iterable, Sequence
+
 import numpy as np
-from typing import Sequence, Iterable
+
+from molsysviewer._private.exceptions import ArgumentError
+
 
 def digest_tensors(tensors, syntax="MolSysMT", caller=None):
-    """ Checks if tensors has the correct type (sequence of 3x3 float matrices). """
+    """Checks if tensors has the correct type (sequence of 3x3 float matrices)."""
 
     if tensors is None:
         return None
@@ -18,4 +21,4 @@ def digest_tensors(tensors, syntax="MolSysMT", caller=None):
     except (ValueError, TypeError):
         pass
 
-    raise ArgumentError('tensors', value=tensors, caller=caller, message="Expected a sequence of 3x3 tensors.")
+    raise ArgumentError("tensors", value=tensors, caller=caller, message="Expected a sequence of 3x3 tensors.")

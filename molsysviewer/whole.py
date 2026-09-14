@@ -66,7 +66,14 @@ class Whole:
     )
     @digest()
     @records_scene_history
-    def set_representation(self, representation: str | None = None, *, preset: str | None = None, skip_digestion: bool = False, **params: Any) -> None:
+    def set_representation(
+        self,
+        representation: str | None = None,
+        *,
+        preset: str | None = None,
+        skip_digestion: bool = False,
+        **params: Any,
+    ) -> None:
         """Set or update the global representation for the whole structure.
 
         Parameters
@@ -255,10 +262,10 @@ class Whole:
         structure_indices="all",
         syntax="MolSysMT",
         *,
-        duration: Any = '250 ms',
+        duration: Any = "250 ms",
         duration_ms: Any | None = None,
-        extra_radius: Any = '4.0 angstroms',
-        min_radius: Any = '1.0 angstroms',
+        extra_radius: Any = "4.0 angstroms",
+        min_radius: Any = "1.0 angstroms",
         skip_digestion: bool = False,
     ) -> None:
         """Focus the camera on a selection within the whole system."""
@@ -284,8 +291,8 @@ class Whole:
         if self._view._molsys is None:  # noqa: SLF001
             raise ValueError("No molecular system loaded.")
 
-        from molsysmt.structure import get_center
         import numpy as np
+        from molsysmt.structure import get_center
 
         center = get_center(
             self._view._molsys,  # noqa: SLF001

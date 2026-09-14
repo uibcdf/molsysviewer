@@ -15,7 +15,6 @@ import numpy as np
 
 from .._pyunitwizard import puw
 
-
 ARRAY_NATIVE_PROTOCOL_VERSION = 1
 
 
@@ -172,9 +171,7 @@ def serialize_array_native_molsys(molsys: Any) -> ArrayNativeMolSysPayload:
     # The transpose happens once here, vectorized, instead of atoms*structures*3
     # scalar assignments in the browser.
     coordinates = _wire_array(
-        np.asarray(
-            puw.get_value(structures.coordinates, to_unit="angstroms")
-        ).transpose(0, 2, 1),
+        np.asarray(puw.get_value(structures.coordinates, to_unit="angstroms")).transpose(0, 2, 1),
         dtype="<f4",
         shape=(n_structures, 3, n_atoms),
         name="coordinates",
@@ -197,9 +194,7 @@ def serialize_array_native_molsys(molsys: Any) -> ArrayNativeMolSysPayload:
             shape=(n_structures, 3, 3),
             name="box",
         )
-        descriptors.append(
-            _descriptor(box, kind="box", units="angstrom", buffer_index=len(arrays))
-        )
+        descriptors.append(_descriptor(box, kind="box", units="angstrom", buffer_index=len(arrays)))
         arrays.append(box)
 
     if structures.time is not None:
@@ -209,9 +204,7 @@ def serialize_array_native_molsys(molsys: Any) -> ArrayNativeMolSysPayload:
             shape=(n_structures,),
             name="time",
         )
-        descriptors.append(
-            _descriptor(time, kind="time", units="ps", buffer_index=len(arrays))
-        )
+        descriptors.append(_descriptor(time, kind="time", units="ps", buffer_index=len(arrays)))
         arrays.append(time)
 
     metadata = {

@@ -9,13 +9,13 @@ from argdigest import FunctionContract
 
 CONTRACTS = [
     FunctionContract(
-        caller='molsysviewer.scene.set_lighting',
-        requires_any_of=['ambient', 'diffuse', 'specular'],
-        description='Setting no channel at all would be a no-op.',
+        caller="molsysviewer.scene.set_lighting",
+        requires_any_of=["ambient", "diffuse", "specular"],
+        description="Setting no channel at all would be a no-op.",
     ),
     FunctionContract(
-        caller='molsysviewer.scene.set_clip_planes',
-        requires_any_of=['near', 'far', 'min_near', 'thickness'],
-        description='Adjusting no plane at all would be a no-op.',
+        caller="molsysviewer.scene.set_clip_planes",
+        requires_any_of=["near", "far", "min_near", "thickness"],
+        description="Adjusting no plane at all would be a no-op.",
     ),
 ]

@@ -5,7 +5,7 @@ REPRESENTATION_ALIASES = {
     "sticks": "ball-and-stick",
     "ball_and_stick": "ball-and-stick",
     "ballstick": "ball-and-stick",
-    "licorice": "ball-and-stick",   # licorice = cylinders, which is ball-and-stick in Mol*
+    "licorice": "ball-and-stick",  # licorice = cylinders, which is ball-and-stick in Mol*
     "cylinders": "ball-and-stick",
     # line family
     "lines": "line",
@@ -176,9 +176,7 @@ def normalize_representation_type(value: str | None) -> str | None:
     key = value.replace("_", "-").lower().strip()
     key = REPRESENTATION_ALIASES.get(key, key)
     if key not in ALLOWED_REPRESENTATIONS:
-        raise ValueError(
-            f"Unsupported representation type '{value}'. Allowed: {sorted(ALLOWED_REPRESENTATIONS)}"
-        )
+        raise ValueError(f"Unsupported representation type '{value}'. Allowed: {sorted(ALLOWED_REPRESENTATIONS)}")
     return key
 
 

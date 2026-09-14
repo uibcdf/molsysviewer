@@ -1,10 +1,7 @@
 from __future__ import annotations
 
-import pytest
 import molsysmt as msm
-
-from molsysviewer import pyunitwizard as puw
-from molsysviewer import MolSysView
+import pytest
 from molsysviewer.demo import demo
 from molsysviewer.layers import Shape
 from molsysviewer.shapes import SHAPE_STYLE_CAPABILITIES
@@ -14,6 +11,9 @@ from molsysviewer.viewer.panel_actions.scene_objects import (
     set_annotation_style,
     set_shape_color,
 )
+
+from molsysviewer import MolSysView
+from molsysviewer import pyunitwizard as puw
 
 
 def _view():
@@ -55,26 +55,29 @@ def test_scene_object_summary_records_project_manager_info():
         skip_digestion=True,
     )
 
-    assert view._annotation_summary_records() == [{  # noqa: SLF001
-        "kind": "label",
-        "tag": "note",
-        "layer_tag": "analysis",
-        "text": "site",
-        "style": {
-            "color": "#123456",
-            "size_em": 1.25,
-            "background": True,
-            "background_opacity": 0.6,
-        },
-        "n_atoms": 2,
-        "atom_indices": [0, 1],
-        "anchor": {"type": "atoms", "indices": [0, 1]},
-        "hidden": False,
-        "broken": False,
-        "broken_reason": None,
-    }]
+    assert view._annotation_summary_records() == [
+        {  # noqa: SLF001
+            "kind": "label",
+            "tag": "note",
+            "layer_tag": "analysis",
+            "text": "site",
+            "style": {
+                "color": "#123456",
+                "size_em": 1.25,
+                "background": True,
+                "background_opacity": 0.6,
+            },
+            "n_atoms": 2,
+            "atom_indices": [0, 1],
+            "anchor": {"type": "atoms", "indices": [0, 1]},
+            "hidden": False,
+            "broken": False,
+            "broken_reason": None,
+        }
+    ]
     measurements = {
-        record["tag"]: record for record in view._measurement_summary_records()  # noqa: SLF001
+        record["tag"]: record
+        for record in view._measurement_summary_records()  # noqa: SLF001
     }
     assert measurements["distance"]["atom_indices"] == [0, 1]
     for tag, kind in (
@@ -288,11 +291,13 @@ def test_panel_visibility_actions_mutate_the_authoritative_python_model():
         ("toggle_measurement_visibility", "distance"),
         ("toggle_shape_visibility", "site"),
     ):
-        view._handle_frontend_event({  # noqa: SLF001
-            "event": "interaction_context_action",
-            "action": action,
-            "tag": tag,
-        })
+        view._handle_frontend_event(
+            {  # noqa: SLF001
+                "event": "interaction_context_action",
+                "action": action,
+                "tag": tag,
+            }
+        )
 
     assert view.annotations.info("note")["visible"] is False
     assert view.measurements.info("distance")["visible"] is False
@@ -304,11 +309,13 @@ def test_frame_change_refreshes_measurements_without_republishing_static_domains
     sent = []
     view._send_runtime_only = lambda message: sent.append(message)  # type: ignore[method-assign]
 
-    view._handle_frontend_event({  # noqa: SLF001
-        "event": "trajectory_frame_changed",
-        "frame": 0,
-        "is_playing": False,
-    })
+    view._handle_frontend_event(
+        {  # noqa: SLF001
+            "event": "trajectory_frame_changed",
+            "frame": 0,
+            "is_playing": False,
+        }
+    )
 
     assert [message["op"] for message in sent] == [
         "set_trajectory_summary",
@@ -340,11 +347,13 @@ def test_measurement_summary_reports_the_current_frame_value_in_presentation_uni
     sent = []
     view._send_runtime_only = lambda message: sent.append(message)  # type: ignore[method-assign]
 
-    view._handle_frontend_event({  # noqa: SLF001
-        "event": "trajectory_frame_changed",
-        "frame": 1,
-        "is_playing": False,
-    })
+    view._handle_frontend_event(
+        {  # noqa: SLF001
+            "event": "trajectory_frame_changed",
+            "frame": 1,
+            "is_playing": False,
+        }
+    )
 
     summary = sent[-1]["measurements"][0]
     assert summary["value"] == pytest.approx(expected)
@@ -377,12 +386,14 @@ def test_measurement_series_panel_request_uses_runtime_only_transport():
     view._send_runtime_only = lambda message: sent.append(message)  # type: ignore[method-assign]
     history_size = len(view._test_message_log)  # noqa: SLF001
 
-    view._handle_frontend_event({  # noqa: SLF001
-        "event": "interaction_context_action",
-        "action": "request_measurement_series",
-        "tag": "d1",
-        "request_id": 17,
-    })
+    view._handle_frontend_event(
+        {  # noqa: SLF001
+            "event": "interaction_context_action",
+            "action": "request_measurement_series",
+            "tag": "d1",
+            "request_id": 17,
+        }
+    )
 
     assert sent[-1]["op"] == "measurement_series"
     assert sent[-1]["request_id"] == 17
@@ -412,11 +423,13 @@ def test_create_measurement_panel_action_uses_active_selection_groups_as_endpoin
     view = _view()
     view.active_selection.set(selection="group_index in [0, 1]")
 
-    view._handle_frontend_event({  # noqa: SLF001
-        "event": "interaction_context_action",
-        "action": "create_measurement",
-        "kind": "distance",
-    })
+    view._handle_frontend_event(
+        {  # noqa: SLF001
+            "event": "interaction_context_action",
+            "action": "create_measurement",
+            "kind": "distance",
+        }
+    )
 
     record = view.measurements.info()[0]
     assert record["kind"] == "distance"
@@ -431,9 +444,7 @@ def test_create_measurement_panel_action_uses_active_selection_groups_as_endpoin
         ("distance", "group_index==0", "requires 2 selected endpoints"),
     ],
 )
-def test_create_measurement_panel_action_rejects_invalid_kind_or_endpoint_count(
-    kind, selection, match
-):
+def test_create_measurement_panel_action_rejects_invalid_kind_or_endpoint_count(kind, selection, match):
     view = _view()
     view.active_selection.set(selection=selection)
 
@@ -448,11 +459,13 @@ def test_measurement_panel_lifecycle_actions_mutate_the_python_model():
     view.measurements.add_distance([0], [1], tag="d1")
 
     def dispatch(action, **details):
-        view._handle_frontend_event({  # noqa: SLF001
-            "event": "interaction_context_action",
-            "action": action,
-            **details,
-        })
+        view._handle_frontend_event(
+            {  # noqa: SLF001
+                "event": "interaction_context_action",
+                "action": action,
+                **details,
+            }
+        )
 
     dispatch("toggle_measurement_visibility", tag="d1")
     assert view.measurements.info("d1")["visible"] is False
@@ -472,11 +485,13 @@ def test_annotation_panel_actions_mutate_authoritative_state_and_summary():
     view.active_selection.set(selection="group_index==0")
 
     def dispatch(action, **details):
-        view._handle_frontend_event({  # noqa: SLF001
-            "event": "interaction_context_action",
-            "action": action,
-            **details,
-        })
+        view._handle_frontend_event(
+            {  # noqa: SLF001
+                "event": "interaction_context_action",
+                "action": action,
+                **details,
+            }
+        )
 
     dispatch(
         "create_annotation",
@@ -531,11 +546,13 @@ def test_annotation_panel_reanchors_to_the_active_selection():
     view.active_selection.set(selection="group_index==1")
     expected = list(view.active_selection.atom_indices)
 
-    view._handle_frontend_event({  # noqa: SLF001
-        "event": "interaction_context_action",
-        "action": "reanchor_annotation",
-        "tag": "note",
-    })
+    view._handle_frontend_event(
+        {  # noqa: SLF001
+            "event": "interaction_context_action",
+            "action": "reanchor_annotation",
+            "tag": "note",
+        }
+    )
 
     assert view.annotations.info("note")["atom_indices"] == expected
 
@@ -547,9 +564,7 @@ def test_annotation_panel_reanchors_to_the_active_selection():
         ("reanchor_annotation", {"tag": "note"}, "non-empty active selection"),
     ],
 )
-def test_annotation_panel_actions_reject_invalid_style_or_empty_reanchor(
-    action, details, match
-):
+def test_annotation_panel_actions_reject_invalid_style_or_empty_reanchor(action, details, match):
     view = _view()
     view.annotations.add("Anchor", atom_indices=[0], tag="note")
 
@@ -563,23 +578,29 @@ def test_annotation_panel_actions_reject_invalid_style_or_empty_reanchor(
 def test_endpoint_policy_panel_action_affects_only_future_measurements_and_is_undoable():
     view = _view()
     view.active_selection.set(selection="group_index in [0, 1]")
-    view._handle_frontend_event({  # noqa: SLF001
-        "event": "interaction_context_action",
-        "action": "create_measurement",
-        "kind": "distance",
-    })
+    view._handle_frontend_event(
+        {  # noqa: SLF001
+            "event": "interaction_context_action",
+            "action": "create_measurement",
+            "kind": "distance",
+        }
+    )
     first_tag = view.measurements.tags()[0]
 
-    view._handle_frontend_event({  # noqa: SLF001
-        "event": "interaction_context_action",
-        "action": "set_measurement_endpoint_policy",
-        "policy": "representative_atom",
-    })
-    view._handle_frontend_event({  # noqa: SLF001
-        "event": "interaction_context_action",
-        "action": "create_measurement",
-        "kind": "distance",
-    })
+    view._handle_frontend_event(
+        {  # noqa: SLF001
+            "event": "interaction_context_action",
+            "action": "set_measurement_endpoint_policy",
+            "policy": "representative_atom",
+        }
+    )
+    view._handle_frontend_event(
+        {  # noqa: SLF001
+            "event": "interaction_context_action",
+            "action": "create_measurement",
+            "kind": "distance",
+        }
+    )
     second_tag = view.measurements.tags()[-1]
 
     assert view.measurements.info(first_tag)["endpoint_policy"] == "centroid"

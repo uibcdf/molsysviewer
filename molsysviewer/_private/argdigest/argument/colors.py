@@ -1,6 +1,5 @@
 from ...exceptions import ArgumentError
 
-
 _COLOR_SCALARS = (int, str)
 
 

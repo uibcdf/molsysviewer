@@ -79,6 +79,7 @@ class AnnotationsManager:
 
         if group_index is not None:
             import warnings
+
             warnings.warn(
                 "The group_index parameter is deprecated. Use selection or atom_indices instead.",
                 DeprecationWarning,
@@ -168,6 +169,7 @@ class AnnotationsManager:
             if "offset" in options:
                 if options.get("offset_mode") == "world":
                     from ._pyunitwizard import puw
+
                     offset_q = puw.quantity(options["offset"], "angstrom")
                     offset_std = puw.get_value(puw.standardize(offset_q))
                     res["offset"] = [float(x) for x in offset_std]
@@ -246,15 +248,14 @@ class AnnotationsManager:
             if not isinstance(position, (list, tuple)) or len(position) != 3:
                 raise ValueError("position must be a 3-element tuple or list of floats.")
             from ._pyunitwizard import puw
+
             pos_q = position if puw.is_quantity(position) else puw.quantity(position, "nm")
             pos_ang = puw.get_value(pos_q, to_unit="angstrom")
             resolved_position = [float(x) for x in pos_ang]
             resolved_atom_indices = None
         else:
             resolved_position = None
-            resolved_atom_indices = self._resolve_anchor_atom_indices(
-                selection, atom_indices=atom_indices
-            )
+            resolved_atom_indices = self._resolve_anchor_atom_indices(selection, atom_indices=atom_indices)
 
         object_tag = tag or self._view._next_annotation_tag()  # noqa: SLF001
         resolved_layer_tag = layer_tag if layer_tag is not None else object_tag
@@ -274,6 +275,7 @@ class AnnotationsManager:
         if offset_list != [0.0, 0.0, 0.0]:
             if offset_mode == "world":
                 from ._pyunitwizard import puw
+
                 offset_q = offset_list if puw.is_quantity(offset_list) else puw.quantity(offset_list, "nm")
                 offset_ang = puw.get_value(offset_q, to_unit="angstrom")
                 options["offset"] = [float(x) for x in offset_ang]
@@ -310,6 +312,7 @@ class AnnotationsManager:
     ) -> Layer:
         """Deprecated: use ``add_annotation()`` instead."""
         import warnings
+
         warnings.warn(
             "annotations.add_label() is deprecated; use add_annotation() instead.",
             DeprecationWarning,
@@ -530,9 +533,7 @@ class AnnotationsManager:
             Explicit atom indices list.  Takes priority over *selection*.
         """
         layer = self._require_annotation_layer(tag)
-        resolved_atom_indices = self._resolve_anchor_atom_indices(
-            selection, atom_indices=atom_indices
-        )
+        resolved_atom_indices = self._resolve_anchor_atom_indices(selection, atom_indices=atom_indices)
         record = self.info(tag, skip_digestion=True)
         if not isinstance(record, dict):
             raise ValueError(f"No annotation record found for tag {tag!r}.")
@@ -562,6 +563,7 @@ class AnnotationsManager:
     def set_group_index(self, tag: str, group_index: Any, skip_digestion: bool = False) -> Layer:
         """Deprecated: use ``set_anchor(selection='group_index==N')`` instead."""
         import warnings
+
         warnings.warn(
             "annotations.set_group_index() is deprecated; use set_anchor(selection='group_index==N') instead.",
             DeprecationWarning,

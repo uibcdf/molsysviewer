@@ -1,6 +1,5 @@
-import numpy as np
-from molsysviewer._pyunitwizard import puw
 from ...exceptions import ArgumentError
+
 
 def digest_clearance(clearance, caller=None):
 
@@ -8,6 +7,5 @@ def digest_clearance(clearance, caller=None):
 
     try:
         return digest_distance(clearance, caller=caller)
-    except:
-        raise ArgumentError('clearance', value=clearance, caller=caller, message=None)
-
+    except:  # noqa: E722
+        raise ArgumentError("clearance", value=clearance, caller=caller, message=None)

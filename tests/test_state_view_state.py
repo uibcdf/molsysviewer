@@ -81,8 +81,11 @@ def test_a_frame_the_loaded_trajectory_does_not_have_is_reported_not_approximate
     source.player.go_to_structure(500)
     document = source.export_state()
 
-    shorter = msm.extract(source._molsys, structure_indices=[0, 1, 2],  # noqa: SLF001
-                          to_form="molsysmt.MolSys")
+    shorter = msm.extract(
+        source._molsys,
+        structure_indices=[0, 1, 2],  # noqa: SLF001
+        to_form="molsysmt.MolSys",
+    )
     target = _mute(msv.new_view(shorter))
 
     with pytest.warns(StateStructureIndexOutOfRangeWarning) as caught:

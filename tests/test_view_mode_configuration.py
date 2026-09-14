@@ -28,9 +28,7 @@ def _view(**kwargs):
     return view
 
 
-@pytest.mark.parametrize(
-    "style", ["drawer", "floating", "floating-unified", "integrated", "ambient", "split"]
-)
+@pytest.mark.parametrize("style", ["drawer", "floating", "floating-unified", "integrated", "ambient", "split"])
 def test_every_panel_style_can_be_configured(style):
     """Including `drawer`, which was unrequestable while it was the sentinel."""
     config.panel_mode_style = style

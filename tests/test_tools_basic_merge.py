@@ -19,13 +19,11 @@ def test_tools_basic_merge_merges_scene_state_and_resolves_tag_collisions():
     pocket_a = view_a.shapes.add_pocket_surface(atom_indices=[0, 1, 2], tag="pocket", skip_digestion=True)
     pocket_a.hide(skip_digestion=True)
 
-
     view_b.regions.add(atom_indices=[0, 1], tag="frag", representation="line", skip_digestion=True)
     analysis_b = view_b.layers.add("analysis", kind="annotation", meta={"owner": "b"}, skip_digestion=True)
     analysis_b.hide(skip_digestion=True)
     pocket_b = view_b.shapes.add_links(atom_pairs=[[0, 1]], tag="pocket", skip_digestion=True)
     pocket_b.hide(skip_digestion=True)
-
 
     result = tools.basic.merge([view_a, view_b], debug_js=True)
 
@@ -52,7 +50,9 @@ def test_tools_basic_merge_merges_scene_state_and_resolves_tag_collisions():
     assert "hide_whole" in ops
 
     region_b_msg = next(
-        msg for msg in result._test_message_log if msg.get("op") == "create_region" and msg.get("tag") == "frag__2"  # noqa: SLF001
+        msg
+        for msg in result._test_message_log
+        if msg.get("op") == "create_region" and msg.get("tag") == "frag__2"  # noqa: SLF001
     )
     assert region_b_msg["atom_indices"] == [22, 23]
 
@@ -62,4 +62,3 @@ def test_tools_basic_merge_merges_scene_state_and_resolves_tag_collisions():
         if msg.get("op") == "add_network_links" and msg.get("options", {}).get("tag") == "pocket__2"
     )
     assert links_msg["options"]["atom_pairs"] == [[22, 23]]
-

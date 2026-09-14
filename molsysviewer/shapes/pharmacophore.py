@@ -7,19 +7,18 @@ from smonitor import signal
 
 from .. import pyunitwizard as puw
 from .._private.argdigest import digest
-from ..scene_history import records_scene_history
 from ..colors import colors as global_colors
+from ..scene_history import records_scene_history
 from ._registry import register_shape_layer
 
-
 INTERACTION_COLORS = {
-    "donor": 0x3b82f6,        # blue
-    "acceptor": 0xef4444,     # red
-    "hydrophobe": 0xf59e0b,   # amber
-    "aromatic": 0x8b5cf6,     # purple
-    "positive": 0x2563eb,     # deep blue
-    "negative": 0xf43f5e,     # pink/red
-    "metal": 0x10b981,        # green
+    "donor": 0x3B82F6,  # blue
+    "acceptor": 0xEF4444,  # red
+    "hydrophobe": 0xF59E0B,  # amber
+    "aromatic": 0x8B5CF6,  # purple
+    "positive": 0x2563EB,  # deep blue
+    "negative": 0xF43F5E,  # pink/red
+    "metal": 0x10B981,  # green
 }
 PHARM_COLORS = INTERACTION_COLORS
 
@@ -46,6 +45,7 @@ class PharmacophoreShapes:
         if vectors is None:
             return None
         import numpy as np
+
         arr = np.asarray(vectors, dtype=float)
         out: list[list[float]] = []
         for idx, v in enumerate(arr):
@@ -96,18 +96,17 @@ class PharmacophoreShapes:
             if color_table is not None:
                 resolved_color_scheme = color_scheme
                 normalized_color_table = {
-                    str(key).lower(): color_registry.normalize_color(value)
-                    for key, value in color_table.items()
+                    str(key).lower(): color_registry.normalize_color(value) for key, value in color_table.items()
                 }
             elif color_scheme is not None:
                 resolved_scheme = color_registry.resolve_scheme(color_scheme)
                 resolved_color_scheme = color_scheme
-                normalized_color_table = {
-                    str(key).lower(): value for key, value in resolved_scheme.mapping.items()
-                }
-        colors_list = colors if colors is not None else [
-            (normalized_color_table or INTERACTION_COLORS).get(k.lower(), 0xcccccc) for k in kinds_list
-        ]
+                normalized_color_table = {str(key).lower(): value for key, value in resolved_scheme.mapping.items()}
+        colors_list = (
+            colors
+            if colors is not None
+            else [(normalized_color_table or INTERACTION_COLORS).get(k.lower(), 0xCCCCCC) for k in kinds_list]
+        )
         directions_list = self._norm_vectors(directions)
 
         options = {

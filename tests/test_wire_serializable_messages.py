@@ -26,8 +26,8 @@ import json
 
 import molsysmt as msm
 import numpy as np
-import pyunitwizard as puw
 import pytest
+import pyunitwizard as puw
 
 from molsysviewer import MolSysView
 
@@ -67,9 +67,7 @@ def test_measurements_emit_wire_safe_messages():
 
     view.measurements.add_distance(selection_a=[0], selection_b=[10], tag="d1")
     view.measurements.add_angle(selection_a=[0], selection_b=[10], selection_c=[20], tag="a1")
-    view.measurements.add_dihedral(
-        selection_a=[0], selection_b=[10], selection_c=[20], selection_d=[30], tag="t1"
-    )
+    view.measurements.add_dihedral(selection_a=[0], selection_b=[10], selection_c=[20], selection_d=[30], tag="t1")
 
     assert [m for m in sent if m.get("op") == "add_distance_measurement"], (
         "the distance message must actually be emitted"
@@ -82,21 +80,14 @@ def test_measurements_from_numpy_indices_stay_wire_safe():
     view = _view()
     sent = _capture(view)
 
-    view.measurements.add_distance(
-        selection_a=np.array([0]), selection_b=np.array([10]), tag="np1"
-    )
+    view.measurements.add_distance(selection_a=np.array([0]), selection_b=np.array([10]), tag="np1")
     _assert_wire_safe(sent, "measurements from ndarray")
 
-    picks = [
-        m["options"]["picks_atom_indices"]
-        for m in sent
-        if m.get("op") == "add_distance_measurement"
-    ][0]
+    picks = [m["options"]["picks_atom_indices"] for m in sent if m.get("op") == "add_distance_measurement"][0]
     for endpoint in picks:
         for index in endpoint:
             assert type(index) is int, (
-                f"pick index is {type(index).__name__}, not a plain int; "
-                f"numpy scalars do not survive json.dumps"
+                f"pick index is {type(index).__name__}, not a plain int; numpy scalars do not survive json.dumps"
             )
 
 

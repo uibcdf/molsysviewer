@@ -1,5 +1,5 @@
 from molsysviewer._private.exceptions import ArgumentError
-import numpy as np
+
 
 def digest_step(step, caller=None):
 
@@ -9,10 +9,9 @@ def digest_step(step, caller=None):
         return None
 
     if isinstance(step, bool):
-        raise ArgumentError('step', value=step, caller=caller, message=None)
+        raise ArgumentError("step", value=step, caller=caller, message=None)
 
     if isinstance(step, int):
         return step
 
-    raise ArgumentError('step', value=step, caller=caller, message=None)
-
+    raise ArgumentError("step", value=step, caller=caller, message=None)

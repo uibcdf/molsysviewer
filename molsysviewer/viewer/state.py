@@ -1,18 +1,16 @@
 from __future__ import annotations
 
+import json
+import os
+import tempfile
+from contextlib import nullcontext
+from copy import deepcopy
+from pathlib import Path
+from typing import Any
+
 from smonitor import signal
 
 from .._private.argdigest import digest
-
-
-from contextlib import nullcontext
-from copy import deepcopy
-import json
-import os
-from pathlib import Path
-import tempfile
-from typing import Any
-
 from .._private.smonitor.warnings import (
     StateStructureDiffersWarning,
     StateStructureIndexOutOfRangeWarning,
@@ -48,7 +46,6 @@ def _structure_identity(molsys) -> dict | None:
     names = msm.get(molsys, element="atom", atom_name=True, skip_digestion=True)
     digest = hashlib.sha256("\n".join(map(str, names)).encode("utf-8")).hexdigest()
     return {"n_atoms": len(names), "fingerprint": f"sha256:{digest}"}
-
 
 
 class StateMixin:
@@ -94,6 +91,7 @@ class StateMixin:
             nothing to record -- no frontend has ever been ready and no system is
             loaded.
         """
+
         def _to_python(obj: Any) -> Any:
             if isinstance(obj, dict):
                 return {k: _to_python(v) for k, v in obj.items()}
@@ -101,6 +99,7 @@ class StateMixin:
                 return [_to_python(v) for v in obj]
             try:
                 import numpy as np
+
                 if isinstance(obj, (np.integer,)):
                     return int(obj)
                 if isinstance(obj, (np.floating,)):
@@ -224,34 +223,35 @@ class StateMixin:
             "color_layer": self._color_layer_record("whole"),
         }
 
-        return _to_python({
-            "version": STATE_VERSION,
-            **({"view": view_state} if (view_state := self._export_view_state()) else {}),
-            **({"focus": focus_state} if (focus_state := self._export_focus_overlays()) else {}),
-            # Absent when no system is loaded, and absent from every document written
-            # before this key existed. Contract S5's additive-key rule: a reader that
-            # does not find it imports cleanly, and must not be told off for it.
-            **({"structure": identity} if (identity := self._structure_identity()) else {}),
-            "annotations": annotations,
-            "measurements": measurements,
-            "measurement_settings": self.measurements.settings(skip_digestion=True),
-            "shapes": shapes,
-            "layers": layers,
-            "selections": self._selection_records_with_identity(),
-            "regions": regions,
-            "sections": deepcopy(self._section_history),
-            "whole": whole,
-            "active_selection": active,
-            # The high-water marks let a region created after a reload keep
-            # winning over the ones restored from disk. A counter reset to zero
-            # would silently invert the precedence of every overlap.
-            "order_high_water_mark": int(self._region_order_counter),
-            "uid_high_water_mark": int(self._region_uid_counter),
-            "tag_high_water_marks": {
-                domain: manager.high_water_mark
-                for domain, manager in self._tag_managers.items()
-            },
-        })
+        return _to_python(
+            {
+                "version": STATE_VERSION,
+                **({"view": view_state} if (view_state := self._export_view_state()) else {}),
+                **({"focus": focus_state} if (focus_state := self._export_focus_overlays()) else {}),
+                # Absent when no system is loaded, and absent from every document written
+                # before this key existed. Contract S5's additive-key rule: a reader that
+                # does not find it imports cleanly, and must not be told off for it.
+                **({"structure": identity} if (identity := self._structure_identity()) else {}),
+                "annotations": annotations,
+                "measurements": measurements,
+                "measurement_settings": self.measurements.settings(skip_digestion=True),
+                "shapes": shapes,
+                "layers": layers,
+                "selections": self._selection_records_with_identity(),
+                "regions": regions,
+                "sections": deepcopy(self._section_history),
+                "whole": whole,
+                "active_selection": active,
+                # The high-water marks let a region created after a reload keep
+                # winning over the ones restored from disk. A counter reset to zero
+                # would silently invert the precedence of every overlap.
+                "order_high_water_mark": int(self._region_order_counter),
+                "uid_high_water_mark": int(self._region_uid_counter),
+                "tag_high_water_marks": {
+                    domain: manager.high_water_mark for domain, manager in self._tag_managers.items()
+                },
+            }
+        )
 
     @signal(tags=["state"])
     @digest()
@@ -414,9 +414,7 @@ class StateMixin:
                     representative_atoms = measurement_settings.get("representative_atoms")
                     if isinstance(representative_atoms, dict):
                         for target, atom_name in representative_atoms.items():
-                            self.measurements.set_representative_atom(
-                                str(target), str(atom_name), skip_digestion=True
-                            )
+                            self.measurements.set_representative_atom(str(target), str(atom_name), skip_digestion=True)
                 if self._molsys is not None:
                     for record in ordered_records:
                         tag = self._import_tag("region", str(record.get("tag") or ""), on_conflict)
@@ -678,8 +676,13 @@ class StateMixin:
             import molsysmt as msm
 
             chain_id, group_id, group_name, atom_name = msm.get(
-                molsys, element="atom", chain_id=True, group_id=True,
-                group_name=True, atom_name=True, skip_digestion=True,
+                molsys,
+                element="atom",
+                chain_id=True,
+                group_id=True,
+                group_name=True,
+                atom_name=True,
+                skip_digestion=True,
             )
             identities = [
                 (str(c), str(g), str(gn), str(an))
@@ -754,10 +757,7 @@ class StateMixin:
         current = self._structure_identity()
         if current is None:
             return False
-        return (
-            recorded.get("n_atoms") != current["n_atoms"]
-            or recorded.get("fingerprint") != current["fingerprint"]
-        )
+        return recorded.get("n_atoms") != current["n_atoms"] or recorded.get("fingerprint") != current["fingerprint"]
 
     def _restore_high_water_marks(self, state: dict) -> None:
         self._region_order_counter = max(
@@ -870,9 +870,7 @@ class StateMixin:
                 # broken -- restoring it at the old indices would put a label on whatever
                 # atoms happen to occupy those slots, which is the failure this whole
                 # mechanism exists to prevent.
-                resolved = self._reindex_by_identity(
-                    anchor.get("identity") if isinstance(anchor, dict) else None
-                )
+                resolved = self._reindex_by_identity(anchor.get("identity") if isinstance(anchor, dict) else None)
                 if resolved is None:
                     unresolved = True
                 else:
@@ -1088,10 +1086,7 @@ class StateMixin:
         layer_tag_map: dict[str, str],
     ) -> str | None:
         """Preserve the distinction between implicit and user-owned layers."""
-        if (
-            requested_layer_tag == original_object_tag
-            and requested_layer_tag not in layer_tag_map
-        ):
+        if requested_layer_tag == original_object_tag and requested_layer_tag not in layer_tag_map:
             return None
         return layer_tag_map.get(requested_layer_tag, requested_layer_tag)
 
@@ -1126,18 +1121,14 @@ class StateMixin:
             if uid in placed:
                 return
             if uid in visiting:
-                raise ValueError(
-                    f"Corrupt state: region dependency graph has a cycle involving {uid!r}."
-                )
+                raise ValueError(f"Corrupt state: region dependency graph has a cycle involving {uid!r}.")
             visiting.add(uid)
             for dep_uid in Region._dependency_uids_from_provenance(  # noqa: SLF001
                 dict(record.get("provenance", {}))
             ):
                 dep = by_uid.get(str(dep_uid))
                 if dep is None:
-                    raise ValueError(
-                        f"Corrupt state: region {uid!r} depends on missing operand {dep_uid!r}."
-                    )
+                    raise ValueError(f"Corrupt state: region {uid!r} depends on missing operand {dep_uid!r}.")
                 visit(dep)
             visiting.discard(uid)
             placed.add(uid)

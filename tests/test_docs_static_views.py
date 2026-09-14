@@ -77,14 +77,8 @@ def test_conf_places_the_runtime_through_the_public_api():
     source = (DOCS / "conf.py").read_text(encoding="utf-8")
     tree = ast.parse(source)
 
-    called = {
-        node.func.id
-        for node in ast.walk(tree)
-        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
-    }
-    assert "export_runtime_asset" in called, (
-        "docs/conf.py no longer places the runtime; every exported view would 404"
-    )
+    called = {node.func.id for node in ast.walk(tree) if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)}
+    assert "export_runtime_asset" in called, "docs/conf.py no longer places the runtime; every exported view would 404"
     assert "builder-inited" in source, "the placement is not connected to the build"
 
 

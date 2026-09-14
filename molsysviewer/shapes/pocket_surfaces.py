@@ -10,9 +10,7 @@ from ._registry import register_shape_layer
 
 
 def _normalize_mouths(mouth_atom_indices: Sequence[int] | Sequence[Sequence[int]]):
-    if not isinstance(mouth_atom_indices, Sequence) or isinstance(
-        mouth_atom_indices, (str, bytes)
-    ):
+    if not isinstance(mouth_atom_indices, Sequence) or isinstance(mouth_atom_indices, (str, bytes)):
         raise TypeError("mouth_atom_indices must be a sequence of indices or sequences")
 
     # List of lists (normalized)

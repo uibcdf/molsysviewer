@@ -5,12 +5,11 @@ from molsysviewer.addons import (
     AddonExportHelperSpec,
     AddonLifecycleSpec,
     AddonPanelSpec,
+    AddonSectionSpec,
     AddonShapeProviderSpec,
     AddonSpec,
-    AddonSectionSpec,
     AddonWorkspaceSpec,
 )
-
 
 addon = AddonSpec(
     name="elastnetmt-template",

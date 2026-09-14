@@ -16,6 +16,7 @@ def digest_edge_color(edge_color, caller=None):
     a name, an RGB(A) triplet). ``None`` keeps the shape's own default.
     """
     from molsysviewer.colors import normalize_color  # deferred: see module note
+
     if edge_color is None:
         return None
 

@@ -1,26 +1,26 @@
-from ...exceptions import ArgumentError
-import numpy as np
-from molsysviewer._pyunitwizard import puw
 from molsysviewer._private.input_arguments import can_be_selection
 from molsysviewer._private.variables import make_coordinates_like
+from molsysviewer._pyunitwizard import puw
 
-methods_where_bool = [
-]
+from ...exceptions import ArgumentError
+
+methods_where_bool = []
 
 methods_where_none = [
-    'molsysmt.thirds.nglview.add_arrows.add_arrows',
-    'molsysmt.thirds.nglview.add_cylinders.add_cylinders'
+    "molsysmt.thirds.nglview.add_arrows.add_arrows",
+    "molsysmt.thirds.nglview.add_cylinders.add_cylinders",
 ]
 
 methods_where_xyz = [
-    'molsysmt.thirds.nglview.add_arrows.add_arrows',
-    'molsysmt.thirds.nglview.add_cylinders.add_cylinders'
+    "molsysmt.thirds.nglview.add_arrows.add_arrows",
+    "molsysmt.thirds.nglview.add_cylinders.add_cylinders",
 ]
 
 methods_where_can_be_selection = [
-    'molsysmt.thirds.nglview.add_arrows.add_arrows',
-    'molsysmt.thirds.nglview.add_cylinders.add_cylinders'
+    "molsysmt.thirds.nglview.add_arrows.add_arrows",
+    "molsysmt.thirds.nglview.add_cylinders.add_cylinders",
 ]
+
 
 def digest_vectors(vectors, caller=None):
 
@@ -35,7 +35,7 @@ def digest_vectors(vectors, caller=None):
     if caller in methods_where_xyz:
         try:
             return make_coordinates_like(vectors)
-        except:
+        except:  # noqa: E722
             pass
 
     if caller in methods_where_can_be_selection:
@@ -49,13 +49,12 @@ def digest_vectors(vectors, caller=None):
     # PyUnitWizard quantity (validate length dimensionality, normalize to the
     # suite-native unit) or a plain coordinate-like array.
     if puw.is_quantity(vectors):
-        if puw.check(vectors, dimensionality={'[L]': 1}):
+        if puw.check(vectors, dimensionality={"[L]": 1}):
             return puw.standardize(vectors)
-        raise ArgumentError('vectors', value=vectors, caller=caller, message=None)
+        raise ArgumentError("vectors", value=vectors, caller=caller, message=None)
     try:
         return make_coordinates_like(vectors)
     except Exception:
         pass
 
-    raise ArgumentError('vectors', value=vectors, caller=caller, message=None)
-
+    raise ArgumentError("vectors", value=vectors, caller=caller, message=None)

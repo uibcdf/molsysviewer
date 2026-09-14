@@ -1,11 +1,10 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from pathlib import Path
-import re
 
 import pytest
-
 from molsysviewer.transport import (
     AckDisposition,
     StructureTransferManager,
@@ -35,10 +34,12 @@ def make_manager(*, target: str | None = "canvas-popup-1"):
     payload = object()
     transfer = manager.start(
         begin_message={"op": "structure_data_begin", "chunk_count": 1},
-        chunks=[(
-            {"op": "structure_data_chunk", "chunk_id": 0},
-            [memoryview(b"coordinates")],
-        )],
+        chunks=[
+            (
+                {"op": "structure_data_chunk", "chunk_id": 0},
+                [memoryview(b"coordinates")],
+            )
+        ],
         fallback_factory=lambda _generation: {"op": "load_molsys_payload", "payload": {}},
         payload=payload,
         target_endpoint_id=target,
@@ -61,11 +62,13 @@ def identity(transfer):
 def complete(manager, transfer):
     begin = manager.handle_event({"event": "structure_data_begin_ack", **identity(transfer)})
     assert begin.disposition is AckDisposition.SEND_CHUNK
-    chunk = manager.handle_event({
-        "event": "structure_data_chunk_ack",
-        "chunk_id": 0,
-        **identity(transfer),
-    })
+    chunk = manager.handle_event(
+        {
+            "event": "structure_data_chunk_ack",
+            "chunk_id": 0,
+            **identity(transfer),
+        }
+    )
     assert chunk.disposition is AckDisposition.WAIT_COMPLETE
     return manager.handle_event({"event": "structure_data_complete", **identity(transfer)})
 
@@ -75,9 +78,7 @@ def complete(manager, transfer):
     [
         (TransferState.COMPLETED, lambda manager, transfer, clock: complete(manager, transfer)),
         (TransferState.CANCELLED, lambda manager, transfer, clock: manager.cancel("cancelled")),
-        (TransferState.EXPIRED, lambda manager, transfer, clock: (
-            clock.advance(31.0), manager.expire_if_due()
-        )[1]),
+        (TransferState.EXPIRED, lambda manager, transfer, clock: (clock.advance(31.0), manager.expire_if_due())[1]),
         (TransferState.FALLBACK, lambda manager, transfer, clock: manager.fallback("failed")),
     ],
 )
@@ -134,21 +135,25 @@ def test_start_allocates_monotonic_generations_and_stamps_the_exact_destination(
 def test_acknowledgement_must_belong_to_the_transfer_target_endpoint():
     manager, transfer, _, _ = make_manager(target="canvas-popup-1")
 
-    foreign = manager.handle_event({
-        **identity(transfer),
-        "event": "structure_data_begin_ack",
-        "target_endpoint_id": "canvas-popup-2",
-    })
+    foreign = manager.handle_event(
+        {
+            **identity(transfer),
+            "event": "structure_data_begin_ack",
+            "target_endpoint_id": "canvas-popup-2",
+        }
+    )
 
     assert foreign.disposition is AckDisposition.FOREIGN
     assert manager.active is transfer
     assert transfer.state is TransferState.WAITING_BEGIN_ACK
 
-    accepted = manager.handle_event({
-        "event": "structure_data_begin_ack",
-        "target_endpoint_id": "canvas-popup-1",
-        **identity(transfer),
-    })
+    accepted = manager.handle_event(
+        {
+            "event": "structure_data_begin_ack",
+            "target_endpoint_id": "canvas-popup-1",
+            **identity(transfer),
+        }
+    )
     assert accepted.disposition is AckDisposition.SEND_CHUNK
 
 
@@ -160,9 +165,7 @@ def test_fallback_factory_is_bound_to_the_transfer_generation():
     second = manager.start(
         begin_message={"op": "structure_data_begin"},
         chunks=[],
-        fallback_factory=lambda generation: (
-            observed.append(generation) or {"generation": generation}
-        ),
+        fallback_factory=lambda generation: observed.append(generation) or {"generation": generation},
         payload=object(),
         target_endpoint_id=None,
     )
@@ -203,10 +206,12 @@ def test_only_the_expected_ack_advances_and_refreshes_the_deadline():
     manager, transfer, clock, _ = make_manager()
     original_deadline = transfer.deadline
 
-    foreign = manager.handle_event({
-        "event": "structure_data_begin_ack",
-        **{**identity(transfer), "session_id": "another-session"},
-    })
+    foreign = manager.handle_event(
+        {
+            "event": "structure_data_begin_ack",
+            **{**identity(transfer), "session_id": "another-session"},
+        }
+    )
     assert foreign.disposition is AckDisposition.FOREIGN
     assert transfer.state is TransferState.WAITING_BEGIN_ACK
     assert transfer.deadline == original_deadline
@@ -245,11 +250,13 @@ def test_late_ack_cannot_revive_a_terminal_generation(terminal):
 def test_frontend_error_terminates_as_fallback_with_the_reported_generation():
     manager, transfer, _, _ = make_manager()
 
-    result = manager.handle_event({
-        "event": "structure_data_error",
-        "error": "bad descriptor",
-        **identity(transfer),
-    })
+    result = manager.handle_event(
+        {
+            "event": "structure_data_error",
+            "error": "bad descriptor",
+            **identity(transfer),
+        }
+    )
 
     assert result.disposition is AckDisposition.FALLBACK
     assert result.termination is not None

@@ -38,9 +38,7 @@ class _SystemsCatalog:
 
     dialanine = _SystemEntry("alanine dipeptide", "alanine_dipeptide.h5msm")
     pentalanine = _SystemEntry("pentalanine", "traj_pentalanine.h5msm")
-    chicken_villin_HP35 = _SystemEntry(
-        "chicken villin HP35", "traj_chicken_villin_HP35_solvated.h5msm"
-    )
+    chicken_villin_HP35 = _SystemEntry("chicken villin HP35", "traj_chicken_villin_HP35_solvated.h5msm")
     TCD_1 = _SystemEntry("TcTIM", "1tcd.bcif.gz")
     L_181 = _SystemEntry("T4 lysozyme L99A", "181l.bcif.gz")
 

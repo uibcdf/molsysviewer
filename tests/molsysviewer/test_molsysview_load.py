@@ -4,7 +4,6 @@ import pytest
 
 from molsysviewer import MolSysView
 
-
 PDB_TEXT = """\
 ATOM      1  N   MET A   1      11.104  13.207   8.551  1.00 20.00           N
 ATOM      2  CA  MET A   1      12.560  13.329   8.276  1.00 20.00           C
@@ -31,6 +30,7 @@ def _import_molsysmt():
     """Import molsysmt or skip the integration test if it is not installed."""
     try:
         import molsysmt as msm  # type: ignore
+
         return msm
     except ImportError:
         pytest.skip("molsysmt not available for load() integration test")
@@ -56,9 +56,7 @@ def test_molsysview_load_uses_molsysmt_payload():
 
     # The scene is retained for the ready handshake, but not sent before the widget is ready.
     msg = next(  # noqa: SLF001
-        message
-        for message in reversed(view._test_message_log)
-        if message.get("op") == "load_molsys_payload"
+        message for message in reversed(view._test_message_log) if message.get("op") == "load_molsys_payload"
     )
     assert sent == []
 
@@ -79,6 +77,7 @@ def test_molsysview_load_uses_molsysmt_payload():
 # ---------------------------------------------------------------------------
 # BUG 1 — load accounting: _load_blocks populated after first load
 # ---------------------------------------------------------------------------
+
 
 def test_first_load_populates_load_blocks():
     """After the first load(), _load_blocks must have exactly one entry and _empty must be False."""
@@ -117,6 +116,7 @@ def test_first_load_no_regions_created():
 # ---------------------------------------------------------------------------
 # Race condition fix — registry_cleared must not wipe Python state
 # ---------------------------------------------------------------------------
+
 
 def test_registry_cleared_does_not_reset_load_blocks():
     """Simulates the async registry_cleared event arriving after load(); _load_blocks must survive."""
@@ -159,6 +159,7 @@ def test_registry_cleared_does_not_wipe_regions():
 # ---------------------------------------------------------------------------
 # BUG 3 — additive load region creation
 # ---------------------------------------------------------------------------
+
 
 def test_second_load_creates_two_regions():
     """After two additive loads, exactly two regions must exist covering each load's atoms."""

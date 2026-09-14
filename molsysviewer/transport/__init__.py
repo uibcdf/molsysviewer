@@ -1,5 +1,11 @@
 """Transport lifecycle primitives."""
 
+from .endpoints import EndpointTransferRegistry, EndpointTransferState
+from .lazy_molecular import (
+    LazyMolecularMessage,
+    StaleMolecularProjectionError,
+    is_lazy_molecular_message,
+)
 from .transfer import (
     AckDisposition,
     StructureTransfer,
@@ -9,12 +15,6 @@ from .transfer import (
     TransferState,
     TransferTermination,
 )
-from .lazy_molecular import (
-    LazyMolecularMessage,
-    StaleMolecularProjectionError,
-    is_lazy_molecular_message,
-)
-from .endpoints import EndpointTransferRegistry, EndpointTransferState
 
 __all__ = [
     "AckDisposition",

@@ -1,9 +1,9 @@
-import anywidget
-import traitlets as T
 from pathlib import Path
 
-from .runtime_contract import wrap_outbound
+import anywidget
+import traitlets as T
 
+from .runtime_contract import wrap_outbound
 
 _VIEWER_JS_PATH = Path(__file__).parent / "viewer.js"
 _WIDGET_BOOTSTRAP_ESM = r"""const CACHE_KEY = "__molsysviewer_anywidget_runtime__";

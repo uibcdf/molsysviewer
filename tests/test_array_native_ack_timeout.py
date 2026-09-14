@@ -8,12 +8,11 @@ Tests inject a clock rather than sleeping.
 
 import threading
 
+import molsysviewer.viewer.core as viewer_core
 import pytest
-
 from molsysviewer.demo import demo
 from molsysviewer.loaders.json_molsys import serialize_json_molsys
 from molsysviewer.transport import TransferState
-import molsysviewer.viewer.core as viewer_core
 
 
 def _capture_widget_send(view):
@@ -45,10 +44,12 @@ def _view_with_pending_stream():
     clock = _Clock()
     view._monotonic = clock  # noqa: SLF001
     sent = _capture_widget_send(view)
-    view._handle_frontend_event({  # noqa: SLF001
-        "event": "ready",
-        "capabilities": {"binary_structure_data": [1], "max_buffer_bytes": 16 * 1024 * 1024},
-    })
+    view._handle_frontend_event(
+        {  # noqa: SLF001
+            "event": "ready",
+            "capabilities": {"binary_structure_data": [1], "max_buffer_bytes": 16 * 1024 * 1024},
+        }
+    )
     assert any(m.get("op") == "structure_data_begin" for m, _ in sent)
     manager = view._structure_transfer_manager(None)  # noqa: SLF001
     assert manager.active is not None
@@ -107,13 +108,15 @@ def test_each_acknowledgement_restarts_the_deadline():
     first_deadline = manager.active.deadline
 
     clock.advance(manager.timeout_s - 1)
-    view._handle_frontend_event({  # noqa: SLF001
-        "event": "structure_data_begin_ack",
-        "viewer_id": view._binary_viewer_id,  # noqa: SLF001
-        "session_id": view._binary_session_id,  # noqa: SLF001
-        "stream_id": "structures:main",
-        "generation": manager.active.generation,
-    })
+    view._handle_frontend_event(
+        {  # noqa: SLF001
+            "event": "structure_data_begin_ack",
+            "viewer_id": view._binary_viewer_id,  # noqa: SLF001
+            "session_id": view._binary_session_id,  # noqa: SLF001
+            "stream_id": "structures:main",
+            "generation": manager.active.generation,
+        }
+    )
     transfer = manager.active
     assert transfer is not None, "progress must keep the stream alive"
     # A peer that is slow but alive gets a fresh budget rather than being dropped.
@@ -132,13 +135,14 @@ def test_a_completed_stream_is_released_and_never_expires():
     }
     view._handle_frontend_event({"event": "structure_data_begin_ack", **identity})  # noqa: SLF001
     chunk_id = 0
-    while (
-        manager.active is not None
-        and manager.active.state is not TransferState.WAITING_COMPLETE
-    ):
-        view._handle_frontend_event({  # noqa: SLF001
-            "event": "structure_data_chunk_ack", "chunk_id": chunk_id, **identity,
-        })
+    while manager.active is not None and manager.active.state is not TransferState.WAITING_COMPLETE:
+        view._handle_frontend_event(
+            {  # noqa: SLF001
+                "event": "structure_data_chunk_ack",
+                "chunk_id": chunk_id,
+                **identity,
+            }
+        )
         chunk_id += 1
         if chunk_id > 64:
             pytest.fail("chunk acknowledgement loop did not converge")

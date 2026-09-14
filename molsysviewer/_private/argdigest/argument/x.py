@@ -19,6 +19,5 @@ def digest_x(x, caller=None):
     if isinstance(x, (str, bytes)) or not (
         isinstance(x, Sequence) or (hasattr(x, "__len__") and hasattr(x, "__getitem__"))
     ):
-        raise ArgumentError("x", value=x, caller=caller,
-                            message="expected a sequence of x-axis values")
+        raise ArgumentError("x", value=x, caller=caller, message="expected a sequence of x-axis values")
     return x

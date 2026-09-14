@@ -193,8 +193,7 @@ class SessionRuntimeRouter:
         present_forbidden = forbidden & capabilities
         if present_forbidden:
             raise ValueError(
-                f"role {role} may not activate capabilities {sorted(present_forbidden)} "
-                "for this rendering placement"
+                f"role {role} may not activate capabilities {sorted(present_forbidden)} for this rendering placement"
             )
 
     def unregister_endpoint(self, endpoint_id: str) -> bool:
@@ -210,30 +209,18 @@ class SessionRuntimeRouter:
         if envelope is None:
             return self._rejected("malformed-envelope", "Runtime envelope is malformed")
         if envelope.protocol_version != RUNTIME_PROTOCOL_VERSION:
-            return self._rejected(
-                "protocol-mismatch", f"Unsupported protocol {envelope.protocol_version}"
-            )
+            return self._rejected("protocol-mismatch", f"Unsupported protocol {envelope.protocol_version}")
         if envelope.viewer_id != self.viewer_id:
-            return self._rejected(
-                "viewer-mismatch", f"Envelope belongs to viewer {envelope.viewer_id}"
-            )
+            return self._rejected("viewer-mismatch", f"Envelope belongs to viewer {envelope.viewer_id}")
         if envelope.session_id != self.session_id:
-            return self._rejected(
-                "session-mismatch", f"Envelope belongs to session {envelope.session_id}"
-            )
+            return self._rejected("session-mismatch", f"Envelope belongs to session {envelope.session_id}")
         source = self._endpoints.get(envelope.endpoint_id)
         if source is None or source.role == "python":
-            return self._rejected(
-                "unknown-source", f"Unexpected source endpoint {envelope.endpoint_id}"
-            )
+            return self._rejected("unknown-source", f"Unexpected source endpoint {envelope.endpoint_id}")
         if envelope.target_endpoint_id not in (None, self.python_endpoint):
-            return self._rejected(
-                "unknown-target", f"Unexpected target endpoint {envelope.target_endpoint_id}"
-            )
+            return self._rejected("unknown-target", f"Unexpected target endpoint {envelope.target_endpoint_id}")
         if envelope.actor_id != source.actor_id or envelope.actor_kind != source.actor_kind:
-            return self._rejected(
-                "actor-mismatch", f"Envelope actor does not own endpoint {source.endpoint_id}"
-            )
+            return self._rejected("actor-mismatch", f"Envelope actor does not own endpoint {source.endpoint_id}")
 
         action = envelope.action
         if action in RAW_ACTIONS or action in DATA_PLANE_ACTIONS:
@@ -249,16 +236,13 @@ class SessionRuntimeRouter:
                 f"Action {action} is {category} but envelope declares {envelope.direction}",
             )
         if category in {"command", "request"} and "command-origin" not in source.capabilities:
-            return self._rejected(
-                "capability-mismatch", f"Endpoint {source.endpoint_id} may not originate commands"
-            )
+            return self._rejected("capability-mismatch", f"Endpoint {source.endpoint_id} may not originate commands")
         if not isinstance(envelope.payload, Mapping):
             return self._rejected("malformed-payload", f"Action {action} payload is not a mapping")
         if envelope.payload.get("event") != action:
             return self._rejected(
                 "action-payload-mismatch",
-                f"Envelope action {action} does not match payload event "
-                f"{envelope.payload.get('event')!r}",
+                f"Envelope action {action} does not match payload event {envelope.payload.get('event')!r}",
             )
 
         if category == "command":

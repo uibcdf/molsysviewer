@@ -6,9 +6,9 @@ from smonitor import signal
 
 from .. import pyunitwizard as puw
 from .._private.argdigest import digest
-from ..scene_history import records_scene_history
 from ..colors import colors as global_colors
 from ..colors import normalize_color
+from ..scene_history import records_scene_history
 from ._registry import register_shape_layer
 
 
@@ -148,8 +148,7 @@ class ChannelTubes:
         if structure_centers is not None:
             structure_centers = puw.get_value(structure_centers, to_unit="angstroms")
             options["structures_coords"] = [
-                self._normalize_centers_raw(fc) if fc is not None else None
-                for fc in structure_centers
+                self._normalize_centers_raw(fc) if fc is not None else None for fc in structure_centers
             ]
 
         self._view._send({"op": "add_channel_tube", "options": options})

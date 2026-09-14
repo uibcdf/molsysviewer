@@ -214,9 +214,7 @@ def test_internal_host_rejects_a_worker_with_the_wrong_session_identity():
 def test_real_worker_loads_the_pentalanine_demo_through_array_native():
     async def probe() -> None:
         source_view = demo["pentalanine"]
-        host = InternalRenderWorkerHost(
-            RenderWorkerConfig(startup_timeout=30, shutdown_timeout=5)
-        )
+        host = InternalRenderWorkerHost(RenderWorkerConfig(startup_timeout=30, shutdown_timeout=5))
         view = MolSysView(transport=host.channel)
         try:
             view.load(source_view.molsys, skip_digestion=True)

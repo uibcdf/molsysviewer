@@ -66,9 +66,7 @@ def test_worker_monitor_recovers_once_and_renegotiates_the_attached_client():
             service._monitor_worker()  # noqa: SLF001
         )
         try:
-            await asyncio.wait_for(
-                _wait_until(lambda: service.worker_recovery_count == 1), timeout=2
-            )
+            await asyncio.wait_for(_wait_until(lambda: service.worker_recovery_count == 1), timeout=2)
             assert service.worker_recovery_state == "recovered"
             assert service.failure is None
             assert socket.messages == [
@@ -164,9 +162,7 @@ def test_client_rendering_uses_the_same_authenticated_gateway_without_a_worker()
                     service.channel.send({"op": "set_panel_mode", "mode": "studio"})
                     for _ in range(30):
                         wire = await socket.receive_json(timeout=2)
-                        if wire.get("kind") == "control" and wire["envelope"].get(
-                            "action"
-                        ) == "set_panel_mode":
+                        if wire.get("kind") == "control" and wire["envelope"].get("action") == "set_panel_mode":
                             break
                     else:
                         raise AssertionError("client renderer received no control projection")
@@ -281,16 +277,12 @@ def test_session_auth_registration_signaling_input_and_command_share_one_identit
                     "figure.png", "image/png", b"\x89PNG\r\n\x1a\n"
                 )
                 async with aiohttp.ClientSession() as unauthenticated:
-                    async with unauthenticated.get(
-                        f"{service.origin}{artifact_url}"
-                    ) as response:
+                    async with unauthenticated.get(f"{service.origin}{artifact_url}") as response:
                         assert response.status == 403
                 async with session.get(f"{service.origin}{artifact_url}") as response:
                     assert response.status == 200
                     assert await response.read() == b"\x89PNG\r\n\x1a\n"
-                    assert response.headers["Content-Disposition"] == (
-                        'attachment; filename="figure.png"'
-                    )
+                    assert response.headers["Content-Disposition"] == ('attachment; filename="figure.png"')
 
                 upload = aiohttp.FormData()
                 upload.add_field(
@@ -335,15 +327,14 @@ def test_session_auth_registration_signaling_input_and_command_share_one_identit
                     assert endpoint is not None and endpoint.actor_kind == "human"
 
                     kind, peer_start = await asyncio.wait_for(
-                        service.worker_host._queue.get(), timeout=2  # noqa: SLF001
+                        service.worker_host._queue.get(),
+                        timeout=2,  # noqa: SLF001
                     )
                     assert kind == "wire"
                     assert peer_start["kind"] == "peer-start"
                     assert peer_start["clientEndpointId"] == service.client_endpoint_id
 
-                    await socket.send_json(
-                        {"kind": "control", "envelope": _panel_snapshot_request(service)}
-                    )
+                    await socket.send_json({"kind": "control", "envelope": _panel_snapshot_request(service)})
                     # Client and server intentionally share this test's event
                     # loop; let the loopback client writer flush before awaiting
                     # the correlated reply on that same loop. Production peers
@@ -363,7 +354,8 @@ def test_session_auth_registration_signaling_input_and_command_share_one_identit
                     answer = _signal(service, service.client_endpoint_id, "answer")
                     await socket.send_json({"kind": "signal", "packet": answer})
                     kind, worker_signal = await asyncio.wait_for(
-                        service.worker_host._queue.get(), timeout=2  # noqa: SLF001
+                        service.worker_host._queue.get(),
+                        timeout=2,  # noqa: SLF001
                     )
                     assert kind == "wire"
                     assert worker_signal == {"kind": "signal", "packet": answer}
@@ -378,7 +370,8 @@ def test_session_auth_registration_signaling_input_and_command_share_one_identit
                     input_packet = _input(service)
                     await socket.send_json({"kind": "input", "packet": input_packet})
                     kind, worker_input = await asyncio.wait_for(
-                        service.worker_host._queue.get(), timeout=2  # noqa: SLF001
+                        service.worker_host._queue.get(),
+                        timeout=2,  # noqa: SLF001
                     )
                     assert kind == "input"
                     assert worker_input == {"kind": "input", "packet": input_packet}
@@ -407,9 +400,7 @@ def test_session_auth_registration_signaling_input_and_command_share_one_identit
                     assert sorted(view.active_selection.atom_indices) == [1, 2]
 
                     close_task = asyncio.create_task(service.close())
-                    assert await socket.receive_json(timeout=2) == {
-                        "kind": "session-closing"
-                    }
+                    assert await socket.receive_json(timeout=2) == {"kind": "session-closing"}
                     await asyncio.wait_for(close_task, timeout=2)
             for _ in range(20):
                 if service.channel.router.endpoint(service.client_endpoint_id) is None:

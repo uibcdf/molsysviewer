@@ -1,11 +1,13 @@
-import molsysviewer as msv
 from molsysviewer.tools import benchmark as benchmark_module
+
+import molsysviewer as msv
+
 
 def test_benchmark_smoke():
     """Verify that the benchmarking suite executes successfully with a few iterations."""
     # Run the benchmark suite with 2 iterations to keep it fast
     report = msv.tools.run_benchmarks(iterations=2, verbose=True)
-    
+
     assert isinstance(report, str)
     assert "# MolSysViewer Performance Benchmark Report" in report
     assert "1. Topology & Structure Loading Speed" in report
@@ -18,6 +20,7 @@ def test_benchmark_smoke():
     assert "SMonitor-only" in report
     assert "ArgDigest-only" in report
     assert "Full Telemetry" in report
+
 
 def test_benchmark_serialization_uses_live_coordinate_update_contract(monkeypatch):
     payloads = []

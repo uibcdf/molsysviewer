@@ -1,9 +1,10 @@
 import ast
 from pathlib import Path
 
-from molsysviewer import MolSysView, demo
 from molsysviewer.loaders import load_from_molsysmt
 from molsysviewer.transport import LazyMolecularMessage
+
+from molsysviewer import MolSysView, demo
 
 
 def test_load_from_molsysmt_creates_a_lazy_direct_molsys_projection(monkeypatch):
@@ -48,11 +49,7 @@ def test_product_python_never_requests_a_viewerjson_intermediate():
     offenders: list[str] = []
     for path in package_root.rglob("*.py"):
         tree = ast.parse(path.read_text(), filename=str(path))
-        if any(
-            isinstance(node, ast.Constant)
-            and node.value == "molsysmt.ViewerJSON"
-            for node in ast.walk(tree)
-        ):
+        if any(isinstance(node, ast.Constant) and node.value == "molsysmt.ViewerJSON" for node in ast.walk(tree)):
             offenders.append(str(path.relative_to(package_root)))
 
     assert offenders == []

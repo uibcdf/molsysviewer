@@ -15,8 +15,9 @@ def digest_layer_visibility(layer_visibility, caller=None):
     if layer_visibility is None:
         return None
     if not isinstance(layer_visibility, Mapping):
-        raise ArgumentError("layer_visibility", value=layer_visibility, caller=caller,
-                            message="expected a {tag: visible} mapping")
+        raise ArgumentError(
+            "layer_visibility", value=layer_visibility, caller=caller, message="expected a {tag: visible} mapping"
+        )
     for tag, visible in layer_visibility.items():
         if not isinstance(tag, str) or not isinstance(visible, bool):
             raise ArgumentError(

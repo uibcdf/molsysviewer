@@ -9,7 +9,6 @@ unvalidated.
 from __future__ import annotations
 
 import pytest
-
 from molsysviewer._private.argdigest.argument.fade import digest_fade
 from molsysviewer._private.argdigest.argument.layer import digest_layer
 from molsysviewer._private.argdigest.argument.meta import digest_meta
@@ -28,6 +27,7 @@ class _Tagged:
 
 # --- region ----------------------------------------------------------------
 
+
 def test_region_accepts_a_tag_or_a_region_object():
     assert digest_region("pocket") == "pocket"
     assert digest_region("  pocket  ") == "pocket"
@@ -43,6 +43,7 @@ def test_region_rejects_empty_or_unrelated_values(given):
 
 # --- fade ------------------------------------------------------------------
 
+
 @pytest.mark.parametrize("given, expected", [(0, 0.0), (0.85, 0.85), (1, 1.0)])
 def test_fade_accepts_transparencies_in_range(given, expected):
     assert digest_fade(given) == expected
@@ -56,6 +57,7 @@ def test_fade_rejects_values_outside_a_transparency(given):
 
 
 # --- meta ------------------------------------------------------------------
+
 
 def test_meta_accepts_none_and_copies_mappings():
     assert digest_meta(None) is None
@@ -75,8 +77,9 @@ def test_meta_rejects_non_mappings(given):
 
 # --- layer -----------------------------------------------------------------
 
+
 def test_layer_accepts_none_a_tag_or_a_layer_object():
-    assert digest_layer(None) is None      # detaches from the current layer
+    assert digest_layer(None) is None  # detaches from the current layer
     assert digest_layer("  surface  ") == "surface"
     obj = _Tagged("surface")
     assert digest_layer(obj) is obj
@@ -90,6 +93,7 @@ def test_layer_rejects_empty_or_unrelated_values(given):
 
 # --- target ----------------------------------------------------------------
 
+
 def test_target_is_normalized_for_lookup():
     assert digest_target("  Group  ") == "group"
     assert digest_target("MOLECULE") == "molecule"
@@ -102,6 +106,7 @@ def test_target_rejects_empty_or_non_string(given):
 
 
 # --- transaction_id --------------------------------------------------------
+
 
 def test_transaction_id_accepts_none_ints_and_strings():
     assert digest_transaction_id(None) is None

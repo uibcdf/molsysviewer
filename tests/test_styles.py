@@ -1,5 +1,6 @@
-from molsysviewer import MolSysView, Style, demo
 from molsysviewer.config.user_presets import user_presets
+
+from molsysviewer import MolSysView, Style, demo
 
 
 def test_style_requires_exactly_one_source():

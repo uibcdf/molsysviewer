@@ -34,17 +34,30 @@ E2E_ROOT = ROOT / "molsysviewer" / "js" / "tests" / "e2e"
 #: What the report asked the audit to cover. Pinned so a capability cannot quietly leave
 #: the table — the row disappearing is exactly as misleading as the row being wrong.
 REQUIRED_CAPABILITIES = {
-    "Whole", "Regions", "Layers", "Selections and active selection",
-    "Representations, styles and presets", "Annotations", "Measurements", "Shapes",
-    "Trajectories and frames", "Trajectory plot", "Movie", "Camera",
+    "Whole",
+    "Regions",
+    "Layers",
+    "Selections and active selection",
+    "Representations, styles and presets",
+    "Annotations",
+    "Measurements",
+    "Shapes",
+    "Trajectories and frames",
+    "Trajectory plot",
+    "Movie",
+    "Camera",
     "save_state / load_state",
     # Added 2026-09-02 with the capability itself (#38): a session carries the molecular
     # system, which a state document deliberately does not, so it is a second capability
     # rather than a wider first one.
     "save_session / load_session",
-    "HTML export and replay", "Popup",
+    "HTML export and replay",
+    "Popup",
     "Remote sessions",
-    "Standalone (Qt host)", "Add-ons", "MolSysMT integration", "Units",
+    "Standalone (Qt host)",
+    "Add-ons",
+    "MolSysMT integration",
+    "Units",
 }
 
 
@@ -105,9 +118,7 @@ def test_every_row_names_a_public_api_that_exists(capability, audit):
     """
     row = next(item for item in audit["rows"] if item["capability"] == capability.name)
 
-    assert row["public_callables"] > 0, (
-        f"{capability.name} declares {capability.api} and no public callable matches"
-    )
+    assert row["public_callables"] > 0, f"{capability.name} declares {capability.api} and no public callable matches"
 
 
 @pytest.mark.parametrize("capability", CAPABILITIES, ids=lambda c: c.name)
@@ -160,9 +171,7 @@ def test_every_capability_is_documented_where_its_row_points(capability):
     assert page.exists(), f"{capability.name} links {capability.docs}, which does not exist"
 
     page_text = page.read_text(encoding="utf-8")
-    api_text = (ROOT / "docs" / "content" / "developer" / "public_api.md").read_text(
-        encoding="utf-8"
-    )
+    api_text = (ROOT / "docs" / "content" / "developer" / "public_api.md").read_text(encoding="utf-8")
 
     for entry_point in capability.api:
         # A row may declare a prefix (`view.layers.`), a whole name (`view.save_state`)
@@ -177,8 +186,7 @@ def test_every_capability_is_documented_where_its_row_points(capability):
             )
         if (entry_point, "public_api") not in KNOWN_UNDOCUMENTED:
             assert name in api_text, (
-                f"{capability.name} declares {entry_point!r} and public_api.md does not "
-                f"mention it."
+                f"{capability.name} declares {entry_point!r} and public_api.md does not mention it."
             )
 
 
@@ -188,9 +196,7 @@ def test_the_undocumented_baseline_does_not_rot():
     Without this, documenting something would silently keep its exemption and the next
     regression on the same symbol would pass.
     """
-    api_text = (ROOT / "docs" / "content" / "developer" / "public_api.md").read_text(
-        encoding="utf-8"
-    )
+    api_text = (ROOT / "docs" / "content" / "developer" / "public_api.md").read_text(encoding="utf-8")
     pages = {c.api: (ROOT / c.docs) for c in CAPABILITIES}
 
     stale = []
@@ -204,9 +210,7 @@ def test_the_undocumented_baseline_does_not_rot():
                 if entry_point in api and name in page.read_text(encoding="utf-8"):
                     stale.append((entry_point, where))
 
-    assert stale == [], (
-        f"these are documented now — remove them from KNOWN_UNDOCUMENTED: {stale}"
-    )
+    assert stale == [], f"these are documented now — remove them from KNOWN_UNDOCUMENTED: {stale}"
 
 
 @pytest.mark.parametrize("capability", CAPABILITIES, ids=lambda c: c.name)
@@ -254,8 +258,7 @@ def test_the_generated_document_is_current(audit):
     assert DOCUMENT.exists(), "run python devtools/capability_audit.py --write"
 
     assert DOCUMENT.read_text(encoding="utf-8") == _markdown(audit) + "\n", (
-        "devguide/capability_audit.md is out of date; regenerate it with "
-        "`python devtools/capability_audit.py --write`"
+        "devguide/capability_audit.md is out of date; regenerate it with `python devtools/capability_audit.py --write`"
     )
 
 
@@ -316,7 +319,10 @@ def test_the_generator_runs_as_a_command():
     """It is meant to be run by a person before a release, not only imported by a test."""
     completed = subprocess.run(
         [sys.executable, str(ROOT / "devtools" / "capability_audit.py")],
-        capture_output=True, text=True, cwd=ROOT, timeout=900,
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
+        timeout=900,
     )
 
     assert completed.returncode == 0, completed.stderr
@@ -378,10 +384,7 @@ def test_the_document_names_what_nothing_has_watched_draw(audit):
     that a particular set of four still lacks it.
     """
     text = DOCUMENT.read_text(encoding="utf-8")
-    unobserved = [
-        row["capability"] for row in audit["rows"]
-        if "browser-observed" not in row["evidence"]
-    ]
+    unobserved = [row["capability"] for row in audit["rows"] if "browser-observed" not in row["evidence"]]
     assert unobserved, "every capability is browser-observed; this section should be gone"
 
     assert "## Nothing has watched these draw" in text

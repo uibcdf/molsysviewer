@@ -1,9 +1,12 @@
-from molsysviewer._private.exceptions import ArgumentError
-import numpy as np
 from typing import Sequence
 
+import numpy as np
+
+from molsysviewer._private.exceptions import ArgumentError
+
+
 def digest_iso_levels(iso_levels, syntax="MolSysMT", caller=None):
-    """ Checks if iso_levels has the correct type (sequence of floats). """
+    """Checks if iso_levels has the correct type (sequence of floats)."""
 
     if iso_levels is None:
         return None
@@ -14,4 +17,4 @@ def digest_iso_levels(iso_levels, syntax="MolSysMT", caller=None):
         except (ValueError, TypeError):
             pass
 
-    raise ArgumentError('iso_levels', value=iso_levels, caller=caller, message="Expected a sequence of floats.")
+    raise ArgumentError("iso_levels", value=iso_levels, caller=caller, message="Expected a sequence of floats.")

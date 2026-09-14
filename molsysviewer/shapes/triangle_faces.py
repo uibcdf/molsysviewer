@@ -1,15 +1,14 @@
 from __future__ import annotations
 
 import json
-
 from typing import Iterable, Sequence
 
 from smonitor import signal
 
 from .. import pyunitwizard as puw
 from .._private.argdigest import digest
-from ..scene_history import records_scene_history
 from ..colors import normalize_color
+from ..scene_history import records_scene_history
 from ._registry import register_shape_layer
 
 
@@ -45,9 +44,7 @@ class TriangleFaces:
                     ]
                 )
             else:
-                raise ValueError(
-                    "Each triangle must be [[x1,y1,z1],[x2,y2,z2],[x3,y3,z3]] or a list of 9 numbers"
-                )
+                raise ValueError("Each triangle must be [[x1,y1,z1],[x2,y2,z2],[x3,y3,z3]] or a list of 9 numbers")
         return normalized
 
     @staticmethod
@@ -59,17 +56,21 @@ class TriangleFaces:
         for tri in vertices:
             tri_list = list(tri)
             if len(tri_list) == 3 and all(hasattr(v, "__len__") and len(v) == 3 for v in tri_list):
-                normalized.append([
-                    [float(tri_list[0][0]), float(tri_list[0][1]), float(tri_list[0][2])],
-                    [float(tri_list[1][0]), float(tri_list[1][1]), float(tri_list[1][2])],
-                    [float(tri_list[2][0]), float(tri_list[2][1]), float(tri_list[2][2])],
-                ])
+                normalized.append(
+                    [
+                        [float(tri_list[0][0]), float(tri_list[0][1]), float(tri_list[0][2])],
+                        [float(tri_list[1][0]), float(tri_list[1][1]), float(tri_list[1][2])],
+                        [float(tri_list[2][0]), float(tri_list[2][1]), float(tri_list[2][2])],
+                    ]
+                )
             elif len(tri_list) == 9:
-                normalized.append([
-                    [float(tri_list[0]), float(tri_list[1]), float(tri_list[2])],
-                    [float(tri_list[3]), float(tri_list[4]), float(tri_list[5])],
-                    [float(tri_list[6]), float(tri_list[7]), float(tri_list[8])],
-                ])
+                normalized.append(
+                    [
+                        [float(tri_list[0]), float(tri_list[1]), float(tri_list[2])],
+                        [float(tri_list[3]), float(tri_list[4]), float(tri_list[5])],
+                        [float(tri_list[6]), float(tri_list[7]), float(tri_list[8])],
+                    ]
+                )
             else:
                 raise ValueError("Each triangle must be [[x1,y1,z1],[x2,y2,z2],[x3,y3,z3]] or a list of 9 numbers")
         return normalized
@@ -101,7 +102,6 @@ class TriangleFaces:
         if len(seq) == 1:
             return [cast(seq[0])] * n
         return [cast(v) for v in seq]
-
 
     @staticmethod
     def _normalize_entity_refs(entity_refs, n: int):
@@ -153,8 +153,7 @@ class TriangleFaces:
         if structure_vertices is not None and not atom_triplets_list:
             structure_vertices = puw.get_value(structure_vertices, to_unit="angstroms")
             structures_list = [
-                self._normalize_vertices_raw(fv) if fv is not None else None
-                for fv in structure_vertices
+                self._normalize_vertices_raw(fv) if fv is not None else None for fv in structure_vertices
             ]
             if not vertices_list and structures_list and structures_list[0] is not None:
                 vertices_list = structures_list[0]
@@ -168,11 +167,7 @@ class TriangleFaces:
 
         colors_list = self._normalize_optional_list(colors, n, normalize_color)
         labels_list = self._normalize_optional_list(labels, n, str)
-        alphas_list = (
-            self._normalize_optional_list(alphas, n, float)
-            if alphas is not None
-            else None
-        )
+        alphas_list = self._normalize_optional_list(alphas, n, float) if alphas is not None else None
         entity_refs_list = self._normalize_entity_refs(entity_refs, n)
 
         options: dict = {"alpha": float(alpha)}

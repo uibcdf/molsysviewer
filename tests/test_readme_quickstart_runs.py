@@ -75,10 +75,7 @@ def test_every_quick_start_snippet_runs(tmp_path, monkeypatch):
             try:
                 exec(compile(block, f"<README quick start block {number}>", "exec"), namespace)
             except Exception as error:  # noqa: BLE001 - the message is the point
-                pytest.fail(
-                    f"README quick start block {number} failed with "
-                    f"{type(error).__name__}: {error}\n\n{block}"
-                )
+                pytest.fail(f"README quick start block {number} failed with {type(error).__name__}: {error}\n\n{block}")
         executed += 1
 
     assert executed >= 5, "almost nothing ran; the guards are too eager"

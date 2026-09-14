@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import pytest
-
 from molsysviewer.demo import demo
 
 
@@ -83,6 +82,7 @@ def test_complement_of_several_regions():
 
 # ── Symmetry: Region.visible, Region.set_color_scheme, RegionsManager parity ──
 
+
 def test_region_visible_property_tracks_show_hide():
     view = _mute(demo["dialanine"])
     r = view.regions.add(atom_indices=[0, 1], tag="A", skip_digestion=True)
@@ -125,13 +125,13 @@ def test_regions_manager_parity_methods():
 
 # ── Symmetry: Region visual state and tag are read-only ──────────────────────
 
+
 def test_region_visual_state_and_tag_are_read_only():
     view = _mute(demo["dialanine"])
     r = view.regions.add(atom_indices=[0, 1], tag="A", skip_digestion=True)
     r.set_representation("spacefill", skip_digestion=True)
     assert r.representation == "spacefill"
-    for attr, value in [("representation", "cartoon"), ("preset", "auto"),
-                        ("tag", "X"), ("repr_params", {})]:
+    for attr, value in [("representation", "cartoon"), ("preset", "auto"), ("tag", "X"), ("repr_params", {})]:
         with pytest.raises(AttributeError):
             setattr(r, attr, value)
     # rename is the supported way to change the tag, and it keeps the registry key.
@@ -141,6 +141,7 @@ def test_region_visual_state_and_tag_are_read_only():
 
 
 # ── Unified creation idiom: view.regions.add, view.new_region removed ────────
+
 
 def test_regions_add_creates_and_view_new_region_is_removed():
     view = _mute(demo["dialanine"])

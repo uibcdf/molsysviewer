@@ -14,8 +14,6 @@ import re
 from pathlib import Path
 
 import pytest
-
-import molsysviewer as msv
 from molsysviewer._private.runtime_asset import (
     RUNTIME_ASSET_MARKER,
     RUNTIME_ASSET_NAME,
@@ -24,6 +22,8 @@ from molsysviewer._private.runtime_asset import (
     runtime_asset_source,
 )
 from molsysviewer.demo import demo
+
+import molsysviewer as msv
 
 
 def _view():
@@ -172,9 +172,7 @@ def test_cdn_export_from_a_release_writes_the_pinned_url(tmp_path, monkeypatch):
     output = tmp_path / "view.html"
     _view().export.html(str(output), shared_runtime="cdn", skip_digestion=True)
 
-    assert _runtime_candidates(output) == [
-        "https://cdn.jsdelivr.net/npm/@uibcdf/molsysviewer@0.7.0/dist/viewer.js"
-    ]
+    assert _runtime_candidates(output) == ["https://cdn.jsdelivr.net/npm/@uibcdf/molsysviewer@0.7.0/dist/viewer.js"]
 
 
 @pytest.mark.parametrize(
@@ -194,9 +192,7 @@ def test_release_version_detection(version, released):
 
 
 @pytest.mark.parametrize("version", ["0.20.0", "0.20.0+96.g6362914c.dirty", "0.20.1.dev3"])
-def test_a_shared_export_addresses_the_local_runtime_and_nothing_else(
-    tmp_path, monkeypatch, version
-):
+def test_a_shared_export_addresses_the_local_runtime_and_nothing_else(tmp_path, monkeypatch, version):
     """No CDN tail, at any version, unless the author asks for one.
 
     A pinned jsDelivr URL was appended here for a day, to rescue a shared view
@@ -219,9 +215,7 @@ def test_a_shared_export_addresses_the_local_runtime_and_nothing_else(
 def test_explicit_candidates_are_preserved_in_order(tmp_path):
     output = tmp_path / "view.html"
     explicit = ["./viewer.js", "https://example.org/viewer.js"]
-    _view().export.html(
-        str(output), shared_runtime=explicit, skip_digestion=True
-    )
+    _view().export.html(str(output), shared_runtime=explicit, skip_digestion=True)
 
     assert _runtime_candidates(output) == explicit
 
@@ -240,9 +234,7 @@ def test_without_shared_runtime_the_file_stands_alone(tmp_path):
     assert _embedded_runtime(output).startswith("// @generated"), (
         "the self-contained export does not carry the runtime it needs"
     )
-    assert not (tmp_path / RUNTIME_ASSET_NAME).exists(), (
-        "a self-contained export placed a shared asset it does not use"
-    )
+    assert not (tmp_path / RUNTIME_ASSET_NAME).exists(), "a self-contained export placed a shared asset it does not use"
     for host in ("cdn.jsdelivr.net", "cdnjs.cloudflare.com", "unpkg.com"):
         assert host not in html, f"a self-contained export still reaches {host}"
 
@@ -272,16 +264,17 @@ def test_embed_iframe_accepts_its_own_defaults(tmp_path):
     was rejected by the length digester that serves shapes and boxes. The
     documented call raised while the tests were green.
     """
-    markup = msv.tools.embed_iframe(
-        str(tmp_path / "v.html"), path=str(tmp_path / "p.ipynb")
-    )
+    markup = msv.tools.embed_iframe(str(tmp_path / "v.html"), path=str(tmp_path / "p.ipynb"))
 
     assert 'width="100%"' in markup and 'height="480px"' in markup
 
 
 def test_embed_iframe_takes_pixels_as_a_number(tmp_path):
     markup = msv.tools.embed_iframe(
-        str(tmp_path / "v.html"), path=str(tmp_path / "p.ipynb"), width=600, height=320,
+        str(tmp_path / "v.html"),
+        path=str(tmp_path / "p.ipynb"),
+        width=600,
+        height=320,
     )
 
     assert 'width="600px"' in markup and 'height="320px"' in markup
@@ -303,9 +296,7 @@ def test_embed_iframe_renders_in_a_notebook_and_is_still_a_string(tmp_path):
     Plain text would force `print()` on the notebook path; a display object alone
     would make pasting into a Markdown page awkward. Both must keep working.
     """
-    markup = msv.tools.embed_iframe(
-        str(tmp_path / "v.html"), path=str(tmp_path / "p.ipynb")
-    )
+    markup = msv.tools.embed_iframe(str(tmp_path / "v.html"), path=str(tmp_path / "p.ipynb"))
 
     assert isinstance(markup, str), "the result stopped behaving as a string"
     assert markup._repr_html_() == str(markup), "the result no longer renders"
@@ -314,8 +305,10 @@ def test_embed_iframe_renders_in_a_notebook_and_is_still_a_string(tmp_path):
 
 def test_embed_iframe_honours_the_requested_size(tmp_path):
     markup = msv.tools.embed_iframe(
-        str(tmp_path / "v.html"), path=str(tmp_path / "p.md"),
-        height="640px", width="80%",
+        str(tmp_path / "v.html"),
+        path=str(tmp_path / "p.md"),
+        height="640px",
+        width="80%",
     )
 
     assert 'height="640px"' in markup and 'width="80%"' in markup
@@ -366,12 +359,8 @@ def test_the_default_page_asks_the_page_around_it_first(tmp_path):
     assert "prefers-color-scheme: dark" in _page_css(html)
     assert '"background_mode":"auto"' in html
     for reading_the_host in ("window.parent.document", "MutationObserver"):
-        assert reading_the_host in html, (
-            f"the page stopped following the site it is embedded in ({reading_the_host})"
-        )
-    assert "window.self !== window.top" not in html, (
-        "the default page gave away its background to whatever embeds it"
-    )
+        assert reading_the_host in html, f"the page stopped following the site it is embedded in ({reading_the_host})"
+    assert "window.self !== window.top" not in html, "the default page gave away its background to whatever embeds it"
 
 
 def test_a_transparent_page_defers_to_the_host_only_when_embedded(tmp_path):
@@ -411,8 +400,7 @@ def test_an_embedded_transparent_page_declares_its_colour_scheme(tmp_path):
 
     embedded_branch = html.split("window.self !== window.top", 1)[1]
     assert "color-scheme: light dark" in embedded_branch, (
-        "a transparent page embedded in a dark host will show the browser's white base "
-        "canvas through it"
+        "a transparent page embedded in a dark host will show the browser's white base canvas through it"
     )
 
 

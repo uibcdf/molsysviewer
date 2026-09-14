@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
-
 from molsysviewer._private.argdigest.argument.alpha_atoms import digest_alpha_atoms
 from molsysviewer._private.argdigest.argument.atom_quads import digest_atom_quads
 from molsysviewer._private.argdigest.argument.atom_triplets import digest_atom_triplets
@@ -26,8 +25,8 @@ from molsysviewer._private.argdigest.argument.structures_atom_indices import (
 )
 from molsysviewer._private.exceptions import ArgumentError
 
-
 # --- optional boolean flags -------------------------------------------------
+
 
 def test_optional_flag_passes_none_through_to_the_shape_default():
     assert digest_draw_edges(None) is None
@@ -50,6 +49,7 @@ def test_required_flag_rejects_none():
 
 # --- colors -----------------------------------------------------------------
 
+
 def test_edge_color_normalizes_colour_forms():
     assert digest_edge_color(None) is None
     assert digest_edge_color(0xFF0000) == 0xFF0000
@@ -62,6 +62,7 @@ def test_edge_color_rejects_nonsense():
 
 
 # --- opacities --------------------------------------------------------------
+
 
 @pytest.mark.parametrize("given, expected", [(0, 0.0), (0.3, 0.3), (1, 1.0)])
 def test_opacity_accepts_range(given, expected):
@@ -76,6 +77,7 @@ def test_opacity_rejects_out_of_range_and_booleans(given):
 
 # --- fixed-size index groups ------------------------------------------------
 
+
 def test_index_groups_accept_lists_and_numpy():
     assert digest_atom_quads([[0, 1, 2, 3]]) == [[0, 1, 2, 3]]
     assert digest_atom_quads(np.array([[0, 1, 2, 3]])) == [[0, 1, 2, 3]]
@@ -86,12 +88,12 @@ def test_index_groups_accept_lists_and_numpy():
 @pytest.mark.parametrize(
     "given",
     [
-        [[0, 1, 2]],          # wrong group size for quads
-        [[0, 1, 2, 3, 4]],    # wrong group size for quads
-        [[0, 1, 2, -1]],      # negative index
-        [[0, 1, 2, 1.5]],     # non-integer
-        [[0, 1, 2, True]],    # boolean masquerading as an index
-        [],                   # nothing to draw
+        [[0, 1, 2]],  # wrong group size for quads
+        [[0, 1, 2, 3, 4]],  # wrong group size for quads
+        [[0, 1, 2, -1]],  # negative index
+        [[0, 1, 2, 1.5]],  # non-integer
+        [[0, 1, 2, True]],  # boolean masquerading as an index
+        [],  # nothing to draw
         "0123",
     ],
 )
@@ -108,6 +110,7 @@ def test_structures_atom_indices_allows_an_empty_structure():
 
 # --- 3D vectors -------------------------------------------------------------
 
+
 def test_vectors_accept_lists_and_numpy():
     assert digest_normals([[0.0, 0.0, 1.0]]) == [[0.0, 0.0, 1.0]]
     assert digest_directions(np.array([[1.0, 0.0, 0.0]])) == [[1.0, 0.0, 0.0]]
@@ -117,9 +120,9 @@ def test_vectors_accept_lists_and_numpy():
 @pytest.mark.parametrize(
     "given",
     [
-        [[0.0, 1.0]],                   # not 3D
-        [[0.0, 0.0, 0.0, 0.0]],         # not 3D
-        [[0.0, 0.0, float("nan")]],     # non-finite would be degenerate geometry
+        [[0.0, 1.0]],  # not 3D
+        [[0.0, 0.0, 0.0, 0.0]],  # not 3D
+        [[0.0, 0.0, float("nan")]],  # non-finite would be degenerate geometry
         [[0.0, 0.0, float("inf")]],
         [],
     ],
@@ -130,6 +133,7 @@ def test_vectors_reject_degenerate_input(given):
 
 
 # --- the remaining scalars --------------------------------------------------
+
 
 def test_segments_needs_at_least_three():
     assert digest_segments(None) is None

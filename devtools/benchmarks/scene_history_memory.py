@@ -34,8 +34,8 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from devtools.benchmarks.representative_scale_gate import build_representative_molsys
-from molsysviewer import MolSysView
 
+from molsysviewer import MolSysView
 
 MIB = 1024 * 1024
 HISTORY_LIMIT = 25
@@ -63,8 +63,7 @@ def run_worker(case: str) -> dict:
         # following public mutations snapshot it through export_state().
         atom_count = int(molsys.get_n_atoms())
         view._atom_color_layers["whole"] = {  # noqa: SLF001
-            index: (index * 2654435761) & 0xFFFFFF
-            for index in range(atom_count)
+            index: (index * 2654435761) & 0xFFFFFF for index in range(atom_count)
         }
 
     view.history.clear()
@@ -81,7 +80,8 @@ def run_worker(case: str) -> dict:
     gc.collect()
     rss_with_history = _current_rss_bytes()
     serialized_bytes = sum(
-        len(snapshot) for snapshot in view.history._undo  # noqa: SLF001
+        len(snapshot)
+        for snapshot in view.history._undo  # noqa: SLF001
     )
     history_depth = len(view.history._undo)  # noqa: SLF001
 
@@ -135,10 +135,7 @@ def _summary(samples: list[dict]) -> dict:
         "repeats": len(samples),
         "snapshot_bytes": samples[0]["snapshot_bytes"],
         "timings_ms": {"record_25": summarize(("timings_ms", "record_25"))},
-        "rss_mib": {
-            key: summarize(("rss_mib", key))
-            for key in samples[0]["rss_mib"]
-        },
+        "rss_mib": {key: summarize(("rss_mib", key)) for key in samples[0]["rss_mib"]},
         "samples": samples,
     }
 

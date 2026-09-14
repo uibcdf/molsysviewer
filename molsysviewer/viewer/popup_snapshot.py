@@ -17,11 +17,10 @@ the host disappears and embeds it in the exported artifact.
 """
 
 from copy import deepcopy
-
-from .._private.smonitor_emit import emit_suppressed_exception
 from typing import Any
 
 from .._private.argdigest import digest
+from .._private.smonitor_emit import emit_suppressed_exception
 
 # Deterministic order for the coalesced scene-look entries.
 _SCENE_LOOK_ORDER = (
@@ -34,11 +33,13 @@ _SCENE_LOOK_ORDER = (
     "trajectory_plot",
 )
 
-_PANEL_OPS_ALREADY_IN_CANVAS = frozenset({
-    "save_selection",
-    "set_active_selection",
-    "set_measurement_settings",
-})
+_PANEL_OPS_ALREADY_IN_CANVAS = frozenset(
+    {
+        "save_selection",
+        "set_active_selection",
+        "set_measurement_settings",
+    }
+)
 
 
 class PopupSnapshotMixin:
@@ -69,9 +70,7 @@ class PopupSnapshotMixin:
 
         # 1. current molecular projection (box/time absent stay absent).
         if include_molecular and self._current_molecular_projection is not None:
-            messages.append(
-                self._materialize_molecular_projection(self._current_molecular_projection)
-            )
+            messages.append(self._materialize_molecular_projection(self._current_molecular_projection))
 
         # 2. scene look, deterministic order.
         for key in _SCENE_LOOK_ORDER:
@@ -81,10 +80,12 @@ class PopupSnapshotMixin:
 
         # Hover telemetry is endpoint runtime state, not scene state. Reproject
         # it so a reconnected canvas follows the current Python subscription.
-        messages.append({
-            "op": "set_hover_telemetry",
-            "enabled": bool(self._hover_telemetry_active),
-        })
+        messages.append(
+            {
+                "op": "set_hover_telemetry",
+                "enabled": bool(self._hover_telemetry_active),
+            }
+        )
 
         # 3. whole: representation, then visibility (separate ops).
         #
@@ -105,12 +106,14 @@ class PopupSnapshotMixin:
         user_layers = [layer for layer in self.layers.values() if layer.provenance == "user"]
         user_layers.sort(key=lambda layer: layer.tag)
         for layer in user_layers:
-            messages.append({
-                "op": "create_layer",
-                "tag": layer.tag,
-                "kind": layer.kind,
-                "meta": deepcopy(dict(layer.meta)),
-            })
+            messages.append(
+                {
+                    "op": "create_layer",
+                    "tag": layer.tag,
+                    "kind": layer.kind,
+                    "meta": deepcopy(dict(layer.meta)),
+                }
+            )
 
         # 5. regions in topological/order order; dynamic regions carry the
         #    materialized indices of the current frame (via _create_message).
@@ -155,29 +158,35 @@ class PopupSnapshotMixin:
         #     already complete `save_selection` messages; emit them verbatim.
         for record in self.selections.records(skip_digestion=True):
             messages.append(deepcopy(record))
-        messages.append({
-            "op": "set_active_selection",
-            "atom_indices": list(self.active_selection.atom_indices),
-        })
+        messages.append(
+            {
+                "op": "set_active_selection",
+                "atom_indices": list(self.active_selection.atom_indices),
+            }
+        )
 
         # 11. measurement settings.
-        messages.append({
-            "op": "set_measurement_settings",
-            **deepcopy(self.measurements.settings(skip_digestion=True)),
-        })
+        messages.append(
+            {
+                "op": "set_measurement_settings",
+                **deepcopy(self.measurements.settings(skip_digestion=True)),
+            }
+        )
 
         # 13. current frame and playback. The settings are current state; the play
         #     action is only replayed when playback is actually running.
         messages.append({"op": "set_trajectory_frame", "index": int(self._current_structure_index)})
         player = getattr(self, "player", None)
         if player is not None:
-            messages.append({
-                "op": "set_trajectory_playback",
-                "fps": player._fps,              # noqa: SLF001
-                "mode": player._mode,            # noqa: SLF001
-                "direction": player._direction,  # noqa: SLF001
-                "step": player._step_size,       # noqa: SLF001
-            })
+            messages.append(
+                {
+                    "op": "set_trajectory_playback",
+                    "fps": player._fps,  # noqa: SLF001
+                    "mode": player._mode,  # noqa: SLF001
+                    "direction": player._direction,  # noqa: SLF001
+                    "step": player._step_size,  # noqa: SLF001
+                }
+            )
             if getattr(player, "_is_playing", False):  # noqa: SLF001
                 messages.append({"op": "set_trajectory_playback", "action": "play"})
 
@@ -224,9 +233,7 @@ class PopupSnapshotMixin:
         addons = getattr(self, "addons", None)
         if addons is not None and hasattr(addons, "build_context_items"):
             try:
-                items = addons.build_context_items(
-                    dict(self._last_active_selection_event or {})
-                )
+                items = addons.build_context_items(dict(self._last_active_selection_event or {}))
             except Exception as exc:
                 emit_suppressed_exception(
                     "molsysviewer.viewer.popup_snapshot.addon_context_items",
@@ -263,11 +270,13 @@ class PopupSnapshotMixin:
             messages.append(deepcopy(self._current_figure_spec))
         messages.append(deepcopy(self._build_addon_runtime_summary_message()))
         if self._last_camera_snapshot:
-            messages.append({
-                "op": "set_camera_snapshot",
-                "snapshot": deepcopy(self._last_camera_snapshot),
-                "duration_ms": 0,
-            })
+            messages.append(
+                {
+                    "op": "set_camera_snapshot",
+                    "snapshot": deepcopy(self._last_camera_snapshot),
+                    "duration_ms": 0,
+                }
+            )
         return messages
 
     def _build_embedded_runtime_snapshot(
@@ -286,9 +295,7 @@ class PopupSnapshotMixin:
         if self._current_figure_spec:
             messages.append(deepcopy(self._current_figure_spec))
         messages.extend(
-            message
-            for message in self._build_panel_snapshot()
-            if message.get("op") not in _PANEL_OPS_ALREADY_IN_CANVAS
+            message for message in self._build_panel_snapshot() if message.get("op") not in _PANEL_OPS_ALREADY_IN_CANVAS
         )
         return messages
 
@@ -301,11 +308,7 @@ class PopupSnapshotMixin:
         whatever is on screen came from the frontend's own default at load time,
         and no `set_whole_representation` was ever sent.
         """
-        return bool(
-            self.whole.representation is not None
-            or self.whole.preset is not None
-            or dict(self.whole.params)
-        )
+        return bool(self.whole.representation is not None or self.whole.preset is not None or dict(self.whole.params))
 
     def _whole_representation_message(self) -> dict:
         return {

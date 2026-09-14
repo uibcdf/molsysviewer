@@ -30,16 +30,18 @@ def check_milliseconds(name, value, caller=None, *, allow_none=True):
     if value is None:
         if allow_none:
             return None
-        raise ArgumentError(name, value=value, caller=caller,
-                            message="a time in milliseconds is required here")
+        raise ArgumentError(name, value=value, caller=caller, message="a time in milliseconds is required here")
     if isinstance(value, bool) or not isinstance(value, (int, float)):
-        raise ArgumentError(name, value=value, caller=caller,
-                            message="expected a time in milliseconds")
+        raise ArgumentError(name, value=value, caller=caller, message="expected a time in milliseconds")
     if value < 0:
-        raise ArgumentError(name, value=value, caller=caller,
-                            message="must be positive or zero: a timeline starts at "
-                                    "zero, and a negative time sorts ahead of every "
-                                    "keyframe")
+        raise ArgumentError(
+            name,
+            value=value,
+            caller=caller,
+            message="must be positive or zero: a timeline starts at "
+            "zero, and a negative time sorts ahead of every "
+            "keyframe",
+        )
     return float(value)
 
 
@@ -52,11 +54,9 @@ def check_structure_index(name, value, caller=None):
     if value is None:
         return None
     if isinstance(value, bool) or not isinstance(value, int):
-        raise ArgumentError(name, value=value, caller=caller,
-                            message="a structure index is a whole number")
+        raise ArgumentError(name, value=value, caller=caller, message="a structure index is a whole number")
     if value < 0:
-        raise ArgumentError(name, value=value, caller=caller,
-                            message="structure indices start at zero")
+        raise ArgumentError(name, value=value, caller=caller, message="structure indices start at zero")
     return value
 
 
@@ -77,6 +77,9 @@ def check_expected_identity(name, value, caller=None):
         return None
     if isinstance(value, str) and value.strip():
         return value
-    raise ArgumentError(name, value=value, caller=caller,
-                        message="expected the identifier a packet must claim, or None to "
-                                "leave this identity unchecked")
+    raise ArgumentError(
+        name,
+        value=value,
+        caller=caller,
+        message="expected the identifier a packet must claim, or None to leave this identity unchecked",
+    )

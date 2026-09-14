@@ -1,86 +1,75 @@
 from ...exceptions import ArgumentError
-from ...variables import is_all
 from ..helpers import normalize_viewer_caller
+
 
 def digest_output_type(output_type, caller=None):
 
     caller = normalize_viewer_caller(caller)
 
-    if caller=='molsysmt.basic.info.info':
-
+    if caller == "molsysmt.basic.info.info":
         if isinstance(output_type, str):
-            if output_type.lower() in ['dataframe', 'short_string', 'long_string']:
+            if output_type.lower() in ["dataframe", "short_string", "long_string"]:
                 return output_type.lower()
 
     elif caller in {
-        'molsysviewer.viewer.MolSysView.info',
-        'molsysviewer.viewer.info',
-        'molsysviewer.regions.Region.info',
-        'molsysviewer.regions.info',
+        "molsysviewer.viewer.MolSysView.info",
+        "molsysviewer.viewer.info",
+        "molsysviewer.regions.Region.info",
+        "molsysviewer.regions.info",
     }:
-
         if isinstance(output_type, str):
-            if output_type.lower() in ['styler', 'dataframe', 'dictionary']:
+            if output_type.lower() in ["styler", "dataframe", "dictionary"]:
                 return output_type.lower()
 
     elif caller in [
-        'molsysmt.basic.get.get',
-        'molsysviewer.viewer.MolSysView.get',
-        'molsysviewer.viewer.get',
-        'molsysviewer.regions.Region.get',
-        'molsysviewer.regions.get',
+        "molsysmt.basic.get.get",
+        "molsysviewer.viewer.MolSysView.get",
+        "molsysviewer.viewer.get",
+        "molsysviewer.regions.Region.get",
+        "molsysviewer.regions.get",
     ]:
-
         if isinstance(output_type, str):
-            if output_type.lower() in ['values', 'dictionary']:
+            if output_type.lower() in ["values", "dictionary"]:
                 return output_type.lower()
 
-    elif caller=='molsysmt.basic.compare.compare':
-
+    elif caller == "molsysmt.basic.compare.compare":
         if isinstance(output_type, str):
-            if output_type.lower() in ['boolean', 'dictionary']:
+            if output_type.lower() in ["boolean", "dictionary"]:
                 return output_type.lower()
 
-    elif caller=='molsysmt.basic.get_attributes.get_attributes':
-
+    elif caller == "molsysmt.basic.get_attributes.get_attributes":
         if isinstance(output_type, str):
-            if output_type.lower() in ['list', 'dictionary']:
+            if output_type.lower() in ["list", "dictionary"]:
                 return output_type.lower()
 
-    elif caller=='molsysmt.structure.get_distances.get_distances':
-
+    elif caller == "molsysmt.structure.get_distances.get_distances":
         if isinstance(output_type, str):
-            if output_type.lower() in ['numpy.ndarray', 'dictionary']:
+            if output_type.lower() in ["numpy.ndarray", "dictionary"]:
                 return output_type.lower()
 
-    elif caller=='molsysmt.structure.get_neighbors.get_neighbors':
-
+    elif caller == "molsysmt.structure.get_neighbors.get_neighbors":
         if isinstance(output_type, str):
-            if output_type.lower() in ['numpy.ndarray', 'pairs', 'dictionary']:
+            if output_type.lower() in ["numpy.ndarray", "pairs", "dictionary"]:
                 return output_type.lower()
 
-    elif caller=='molsysmt.structure.get_contacts.get_contacts':
-
+    elif caller == "molsysmt.structure.get_contacts.get_contacts":
         if isinstance(output_type, str):
-            if output_type.lower() in ['pairs', 'sorted pairs', 'numpy.ndarray']:
+            if output_type.lower() in ["pairs", "sorted pairs", "numpy.ndarray"]:
                 return output_type.lower()
 
-    elif caller=='molsysmt.topology.get_covalent_blocks.get_covalent_blocks':
-
+    elif caller == "molsysmt.topology.get_covalent_blocks.get_covalent_blocks":
         if isinstance(output_type, str):
-            if output_type.lower() in ['numpy.ndarray', 'sets']:
+            if output_type.lower() in ["numpy.ndarray", "sets"]:
                 return output_type.lower()
 
-    elif caller.endswith(('.iterator.__init__', '.iterators.__init__')):
-
+    elif caller.endswith((".iterator.__init__", ".iterators.__init__")):
         if isinstance(output_type, str):
-            if output_type.lower() in ['values', 'dictionary']:
+            if output_type.lower() in ["values", "dictionary"]:
                 return output_type.lower()
 
-    elif caller=='molsysmt.hbonds.get_hbonds.get_hbonds':
-
+    elif caller == "molsysmt.hbonds.get_hbonds.get_hbonds":
         if isinstance(output_type, str):
-            if output_type.lower() in ['numpy.ndarray', 'dictionary']:
+            if output_type.lower() in ["numpy.ndarray", "dictionary"]:
                 return output_type.lower()
 
-    raise ArgumentError('output_type', value=output_type, caller=caller, message=None)
+    raise ArgumentError("output_type", value=output_type, caller=caller, message=None)

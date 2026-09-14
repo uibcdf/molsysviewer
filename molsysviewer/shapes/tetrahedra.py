@@ -1,15 +1,14 @@
 from __future__ import annotations
 
 import json
-
 from typing import Iterable, Sequence
 
 from smonitor import signal
 
 from .. import pyunitwizard as puw
 from .._private.argdigest import digest
-from ..scene_history import records_scene_history
 from ..colors import normalize_color
+from ..scene_history import records_scene_history
 from ._registry import register_shape_layer
 
 
@@ -33,9 +32,7 @@ class Tetrahedra:
             vertices: list[list[float]] = []
             for v in coords:
                 if len(v) != 3:
-                    raise ValueError(
-                        f"Each vertex in tetra_coords[{idx}] must be [x, y, z]; got {v}"
-                    )
+                    raise ValueError(f"Each vertex in tetra_coords[{idx}] must be [x, y, z]; got {v}")
                 vertices.append([float(v[0]), float(v[1]), float(v[2])])
             normalized.append(vertices)
         return normalized
@@ -67,7 +64,6 @@ class Tetrahedra:
         if len(seq) == 1:
             return [cast(seq[0])] * n
         return [cast(v) for v in seq]
-
 
     @staticmethod
     def _normalize_entity_refs(entity_refs, n: int):

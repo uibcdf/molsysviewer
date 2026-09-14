@@ -1,4 +1,3 @@
-from ...exceptions import ArgumentError
 from .._group_indices import digest_fixed_size_index_groups
 
 

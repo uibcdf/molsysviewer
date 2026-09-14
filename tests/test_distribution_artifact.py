@@ -100,8 +100,8 @@ def test_the_conda_recipe_stays_noarch_and_agrees_with_requires_python():
     2026-09-02 in coordination with the MolSysMT maintainers, who depend on this package
     and were blocked by exactly that gap (uibcdf/molsysmt#195).
 
-    The floor is checked against `requires-python` because they drifted apart before: the
-    artefacts still on the channel are py310, built when the wheel allowed 3.10.
+    The complete supported interval is checked against `requires-python` because a noarch
+    package must not silently widen either bound.
     """
     recipe = (ROOT / "devtools" / "conda-build" / "meta.yaml").read_text(encoding="utf-8")
     assert re.search(r"(?m)^\s*noarch:\s*python\s*$", recipe), (
@@ -111,10 +111,9 @@ def test_the_conda_recipe_stays_noarch_and_agrees_with_requires_python():
 
     pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     requires_python = pyproject["project"]["requires-python"]
-    floor = requires_python.lstrip(">=").strip()
-    assert re.search(rf"(?m)^\s*-\s+python\s+>={re.escape(floor)},", recipe), (
+    assert re.search(rf"(?m)^\s*-\s+python\s+{re.escape(requires_python)}\s*$", recipe), (
         f"pyproject requires-python is {requires_python!r}; the recipe must constrain "
-        f"python >={floor} so the published package cannot claim interpreters the wheel "
+        f"python {requires_python} so the published package cannot claim interpreters the wheel "
         "refuses"
     )
 
@@ -136,9 +135,7 @@ def test_every_floor_the_wheel_declares_survives_into_the_conda_recipe():
 
     missing = []
     for name, requirement in wheel_requirements.items():
-        floor = next(
-            (spec.version for spec in requirement.specifier if spec.operator == ">="), None
-        )
+        floor = next((spec.version for spec in requirement.specifier if spec.operator == ">="), None)
         if floor is None:
             continue
         if not re.search(rf"(?m)^\s*-\s+{re.escape(name)}\s+>={re.escape(floor)}\b", recipe):
@@ -245,9 +242,7 @@ def test_every_declared_console_script_resolves():
     is not in the tree. It is not: the module became the package `standalone_qt/`, and the
     entry point resolves. Nothing had checked either way, which is the real finding.
     """
-    scripts = tomllib.loads(
-        (ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    )["project"]["scripts"]
+    scripts = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]["scripts"]
 
     assert scripts, "no console scripts are declared"
 
@@ -259,8 +254,7 @@ def test_every_declared_console_script_resolves():
         entry = getattr(module, attribute, None)
 
         assert callable(entry), (
-            f"the {command!r} console script points at {target!r}, which does not resolve "
-            "to a callable"
+            f"the {command!r} console script points at {target!r}, which does not resolve to a callable"
         )
 
 
@@ -272,8 +266,7 @@ def test_every_publicly_exported_name_resolves():
     calls them. Listing a name that cannot be produced is the packaging defect; calling
     each one is not this test's business.
     """
-    missing = [name for name in molsysviewer_package.__all__
-               if not hasattr(molsysviewer_package, name)]
+    missing = [name for name in molsysviewer_package.__all__ if not hasattr(molsysviewer_package, name)]
 
     assert missing == [], f"names in __all__ that do not resolve: {missing}"
 
@@ -310,13 +303,13 @@ def test_the_published_python_matrix_is_the_one_we_actually_test():
     }
     assert classifiers == set(SUPPORTED_PYTHON_VERSIONS)
 
-    # The floor must be the oldest supported version, not an older one nobody runs.
-    assert project["requires-python"] == f">={min(SUPPORTED_PYTHON_VERSIONS)}"
+    # The interval must be exactly the tested minors: neither an older floor nor an
+    # untested future interpreter may enter the published claim.
+    assert project["requires-python"] == f">={min(SUPPORTED_PYTHON_VERSIONS)},<3.14"
 
     tested = _matrix_versions("CI.yaml", r'python-version:\s*"(3\.\d+)"')
     assert tested == set(SUPPORTED_PYTHON_VERSIONS), (
-        f"the test matrix runs {sorted(tested)} against a published "
-        f"{sorted(SUPPORTED_PYTHON_VERSIONS)}"
+        f"the test matrix runs {sorted(tested)} against a published {sorted(SUPPORTED_PYTHON_VERSIONS)}"
     )
 
     # Since 2026-09-02 conda publishes one noarch artefact instead of one per
@@ -327,9 +320,7 @@ def test_the_published_python_matrix_is_the_one_we_actually_test():
     recipe = (ROOT / "devtools" / "conda-build" / "meta.yaml").read_text(encoding="utf-8")
     lowest = min(SUPPORTED_PYTHON_VERSIONS)
     ceiling = f"3.{int(max(SUPPORTED_PYTHON_VERSIONS).split('.')[1]) + 1}"
-    assert re.search(
-        rf"(?m)^\s*-\s+python\s+>={re.escape(lowest)},<{re.escape(ceiling)}\s*$", recipe
-    ), (
+    assert re.search(rf"(?m)^\s*-\s+python\s+>={re.escape(lowest)},<{re.escape(ceiling)}\s*$", recipe), (
         f"the conda recipe must constrain python >={lowest},<{ceiling} so the noarch "
         f"artefact claims exactly the tested set {sorted(SUPPORTED_PYTHON_VERSIONS)}"
     )
@@ -369,9 +360,11 @@ def test_the_recommended_version_is_the_one_the_single_version_jobs_use():
         f"single-cell CI steps run on {sorted(gated)}, not the recommended version"
     )
 
-    for path in ("devtools/conda-envs/development_env.yaml",
-                 "devtools/conda-envs/docs_env.yaml",
-                 ".github/workflows/sphinx_docs_to_gh_pages.yaml"):
+    for path in (
+        "devtools/conda-envs/development_env.yaml",
+        "devtools/conda-envs/docs_env.yaml",
+        ".github/workflows/sphinx_docs_to_gh_pages.yaml",
+    ):
         text = (ROOT / path).read_text(encoding="utf-8")
         found = set(re.findall(r"python=(3\.\d+)", text))
         assert found == {RECOMMENDED_PYTHON_VERSION}, f"{path} pins {sorted(found)}"

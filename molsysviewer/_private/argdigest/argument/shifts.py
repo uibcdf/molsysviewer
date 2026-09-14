@@ -1,18 +1,14 @@
-import numpy as np
-from molsysviewer._pyunitwizard import puw
 from ...exceptions import ArgumentError
+
 
 def digest_shifts(shifts, caller=None):
 
-    if caller=='molsysmt.structure.shift_dihedral_angles.shift_dihedral_angles':
-
+    if caller == "molsysmt.structure.shift_dihedral_angles.shift_dihedral_angles":
         from .angles import digest_angles
 
         try:
             return digest_angles(shifts, caller=caller)
-        except:
-            raise ArgumentError('shifts', value=shifts, caller=caller, message=None)
+        except:  # noqa: E722
+            raise ArgumentError("shifts", value=shifts, caller=caller, message=None)
 
-
-    raise ArgumentError('shifts', value=shifts, caller=caller, message=None)
-
+    raise ArgumentError("shifts", value=shifts, caller=caller, message=None)

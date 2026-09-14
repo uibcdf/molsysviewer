@@ -8,8 +8,9 @@ from smonitor import signal
 
 from .. import pyunitwizard as puw
 from .._private.argdigest import digest
+from ..colors import colors as global_colors
+from ..colors import normalize_color
 from ..scene_history import records_scene_history
-from ..colors import colors as global_colors, normalize_color
 from ._registry import register_shape_layer
 
 
@@ -44,7 +45,9 @@ class LinkShapes:
             start, end = pair
             if len(start) != 3 or len(end) != 3:
                 raise ValueError("Each point must have 3 coordinates (x, y, z)")
-            normalized.append([[float(start[0]), float(start[1]), float(start[2])], [float(end[0]), float(end[1]), float(end[2])]])
+            normalized.append(
+                [[float(start[0]), float(start[1]), float(start[2])], [float(end[0]), float(end[1]), float(end[2])]]
+            )
         return normalized
 
     @staticmethod
@@ -57,7 +60,9 @@ class LinkShapes:
             if len(pair) != 2:
                 raise ValueError("Each entry must have two points (start, end)")
             start, end = pair
-            normalized.append([[float(start[0]), float(start[1]), float(start[2])], [float(end[0]), float(end[1]), float(end[2])]])
+            normalized.append(
+                [[float(start[0]), float(start[1]), float(start[2])], [float(end[0]), float(end[1]), float(end[2])]]
+            )
         return normalized
 
     @staticmethod
@@ -86,7 +91,7 @@ class LinkShapes:
         coordinate_pairs: Iterable[Sequence[Sequence[float]]] | None = None,
         structure_coordinate_pairs: Iterable | None = None,
         radius="0.2 nm",
-        color: int | Sequence[int] = 0x4499ff,
+        color: int | Sequence[int] = 0x4499FF,
         radii=None,
         colors=None,
         pocket_ids: Sequence[int | str] | None = None,
@@ -133,6 +138,7 @@ class LinkShapes:
         """
 
         import warnings
+
         if radii is not None:
             warnings.warn("'radii' is deprecated; use 'radius'.", DeprecationWarning, stacklevel=2)
             radius = radii
@@ -146,8 +152,7 @@ class LinkShapes:
         structures_list: list | None = None
         if structure_coordinate_pairs is not None:
             structures_list = [
-                self._to_coord_pairs_raw(fcp) if fcp is not None else None
-                for fcp in structure_coordinate_pairs
+                self._to_coord_pairs_raw(fcp) if fcp is not None else None for fcp in structure_coordinate_pairs
             ]
             if not coordinate_pairs_list and structures_list and structures_list[0] is not None:
                 coordinate_pairs_list = structures_list[0]
@@ -227,7 +232,7 @@ class LinkShapes:
         *,
         structures,
         radius="0.1 nm",
-        color: int = 0x4499ff,
+        color: int = 0x4499FF,
         alpha: float = 0.8,
         radial_segments: int | None = None,
         tag: str | None = None,
@@ -259,10 +264,7 @@ class LinkShapes:
         radial_segments
             Cylinder facet count (default 16).
         """
-        structures_list = [
-            [[int(d), int(a)] for d, a in entry] if entry is not None else None
-            for entry in structures
-        ]
+        structures_list = [[[int(d), int(a)] for d, a in entry] if entry is not None else None for entry in structures]
 
         radius_ang = float(puw.get_value(radius, to_unit="angstroms"))
 

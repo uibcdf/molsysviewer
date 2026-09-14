@@ -22,7 +22,6 @@ from pathlib import Path
 
 import pytest
 
-
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "devtools"))
 
@@ -72,13 +71,9 @@ def test_no_argument_name_arrives_without_a_digester(inventory, baseline):
     current = set(inventory["missing_digesters"])
     recorded = set(baseline["missing_digesters"])
 
-    assert sorted(current - recorded) == [], (
-        "new public arguments with no digester: "
-        f"{sorted(current - recorded)}"
-    )
+    assert sorted(current - recorded) == [], f"new public arguments with no digester: {sorted(current - recorded)}"
     assert sorted(recorded - current) == [], (
-        "digesters were written for these — regenerate the baseline: "
-        f"{sorted(recorded - current)}"
+        f"digesters were written for these — regenerate the baseline: {sorted(recorded - current)}"
     )
 
 
@@ -95,8 +90,7 @@ def test_the_private_package_is_never_public(inventory):
     Reachability alone therefore walks straight into `_private`, and that one import
     accounted for 38 apparent public callables before it was excluded.
     """
-    leaked = [item["path"] for item in inventory["callables"]
-              if "_private" in item["module"].split(".")]
+    leaked = [item["path"] for item in inventory["callables"] if "_private" in item["module"].split(".")]
 
     assert leaked == []
 
@@ -150,8 +144,7 @@ def test_no_exemption_is_a_ghost(inventory):
 def test_every_exemption_gives_a_reason():
     from public_api_inventory import DELIBERATELY_NOT_DIGESTED
 
-    silent = [path for path, reason in DELIBERATELY_NOT_DIGESTED.items()
-              if not reason or len(reason) < 20]
+    silent = [path for path, reason in DELIBERATELY_NOT_DIGESTED.items() if not reason or len(reason) < 20]
 
     assert silent == [], f"exemptions without a usable reason: {silent}"
 
@@ -203,8 +196,7 @@ def test_a_pure_forwarder_is_never_decorated():
                 offenders.append(f"{path.relative_to(ROOT)}:{node.name}")
 
     assert offenders == [], (
-        "these take only *args/**kwargs and are decorated, so they digest nothing and "
-        f"warn on every call: {offenders}"
+        f"these take only *args/**kwargs and are decorated, so they digest nothing and warn on every call: {offenders}"
     )
 
 
@@ -264,16 +256,16 @@ def test_no_digester_relies_only_on_a_caller_string_that_cannot_occur():
         for node in ast.walk(ast.parse(source)):
             if not isinstance(node, ast.Set):
                 continue
-            literals = [element.value for element in node.elts
-                        if isinstance(element, ast.Constant) and isinstance(element.value, str)]
+            literals = [
+                element.value
+                for element in node.elts
+                if isinstance(element, ast.Constant) and isinstance(element.value, str)
+            ]
             callers = [name for name in literals if name.startswith("molsysviewer.")]
             if not callers:
                 continue
             # A class-qualified caller has a CamelCase component before the last one.
-            class_qualified = [
-                name for name in callers
-                if re.search(r"\.[A-Z][A-Za-z0-9]*\.[A-Za-z_][\w]*$", name)
-            ]
+            class_qualified = [name for name in callers if re.search(r"\.[A-Z][A-Za-z0-9]*\.[A-Za-z_][\w]*$", name)]
             if callers and len(class_qualified) == len(callers):
                 offenders.append(f"{path.name}: {sorted(callers)}")
 

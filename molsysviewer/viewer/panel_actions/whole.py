@@ -80,47 +80,57 @@ def get_whole_details(view: Any, content: Mapping[str, Any]) -> None:
             ("entities", "n_entities"),
         ):
             try:
-                composition[key] = int(msm.get(
-                    view._molsys,
-                    element="system",
-                    output_type="values",
-                    skip_digestion=True,
-                    **{flag: True},
-                ))
+                composition[key] = int(
+                    msm.get(
+                        view._molsys,
+                        element="system",
+                        output_type="values",
+                        skip_digestion=True,
+                        **{flag: True},
+                    )
+                )
             except Exception:
                 composition[key] = 0
     contains: dict[str, int] = {}
     composed_of: dict[str, bool] = {}
     for token, attribute in view._WHOLE_COMPOSITION_PROBES:
         try:
-            contains[token] = int(msm.get(
-                view._molsys,
-                element="system",
-                output_type="values",
-                skip_digestion=True,
-                **{attribute: True},
-            ))
+            contains[token] = int(
+                msm.get(
+                    view._molsys,
+                    element="system",
+                    output_type="values",
+                    skip_digestion=True,
+                    **{attribute: True},
+                )
+            )
         except Exception:
             contains[token] = 0
         # `msm.is_composed_of` directly, like the `contains` probe two lines up: the
         # viewer's own wrappers were removed in uibcdf/molsysviewer#71, and internal code
         # has no reason to go through a public façade to reach MolSysMT.
         try:
-            composed_of[token] = bool(msm.is_composed_of(
-                view._molsys, skip_digestion=True, **{attribute: True},
-            ))
+            composed_of[token] = bool(
+                msm.is_composed_of(
+                    view._molsys,
+                    skip_digestion=True,
+                    **{attribute: True},
+                )
+            )
         except Exception:
             composed_of[token] = False
-    view._send_runtime_only({
-        "op": "whole_details",
-        "request_id": content.get("request_id"),
-        "atom_count": int(view._molsys.get_n_atoms()) if view._molsys is not None else 0,
-        "composition": composition,
-        "contains": contains,
-        "is_composed_of": composed_of,
-        "center_nm": puw.get_value(center, to_unit="nm").tolist(),
-        "structure_index": view.current_structure_index,
-    })
+    view._send_runtime_only(
+        {
+            "op": "whole_details",
+            "request_id": content.get("request_id"),
+            "atom_count": int(view._molsys.get_n_atoms()) if view._molsys is not None else 0,
+            "composition": composition,
+            "contains": contains,
+            "is_composed_of": composed_of,
+            "center_nm": puw.get_value(center, to_unit="nm").tolist(),
+            "structure_index": view.current_structure_index,
+        }
+    )
 
 
 HANDLERS = {

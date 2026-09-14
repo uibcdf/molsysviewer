@@ -1,6 +1,7 @@
 """Jupyter helper for embedding pre-rendered MolSysViewer HTML in docs/notebooks."""
 
 from pathlib import Path
+
 from IPython.display import IFrame
 
 
@@ -17,4 +18,3 @@ def load_html_in_notebook(
     MolSysViewer widget layout.
     """
     return IFrame(src=str(filename), width=width, height=height)
-

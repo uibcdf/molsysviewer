@@ -72,11 +72,7 @@ def test_add_topomt_feature_channel():
     mgr = ShapesManager(view)
 
     # Test Channel with centers and radii
-    channel = MockFeature(
-        "channel",
-        centers=[[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]],
-        radii=[1.5, 2.5]
-    )
+    channel = MockFeature("channel", centers=[[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]], radii=[1.5, 2.5])
     mgr.add_topomt_feature(channel)
 
     assert len(view.messages) == 1

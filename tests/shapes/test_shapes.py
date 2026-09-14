@@ -1,10 +1,10 @@
+import molsysviewer._pyunitwizard  # noqa: F401 — configures puw
 import pytest
 import pyunitwizard as puw
-import molsysviewer._pyunitwizard  # noqa: F401 — configures puw
-
-from molsysviewer import MolSysView
 from molsysviewer.layers import Shape, _bounding_sphere_nm
 from molsysviewer.shapes import ShapesManager, SphereShapes
+
+from molsysviewer import MolSysView
 
 
 class DummyView:
@@ -23,7 +23,6 @@ class DummyView:
     def _next_shape_tag(self):
         self._layer_counter += 1
         return f"shape-{self._layer_counter}"
-
 
 
 def test_bounding_sphere_empty_points_returns_scene_fallback():
@@ -94,7 +93,7 @@ def test_add_sphere_sends_message():
             "op": "add_sphere",
             "options": {
                 "center": [10.0, 20.0, 30.0],  # 1 nm = 10 Å (wire format is Å for Mol*)
-                "radius": 25.0,                  # 2.5 nm = 25 Å
+                "radius": 25.0,  # 2.5 nm = 25 Å
                 "color": 0x123456,
                 "alpha": 0.7,
                 "tag": "foo",
@@ -224,7 +223,7 @@ def test_sphere_shape_supports_rich_mutators_and_replay_state():
 
     assert puw.get_value(layer.get_center(), to_unit="angstroms").tolist() == pytest.approx([10.0, 20.0, 30.0])
 
-    layer.set_color(0xabcdef)
+    layer.set_color(0xABCDEF)
     layer.set_alpha(0.8)
     layer.set_center(puw.quantity([4, 5, 6], "nm"))
     layer.set_radius(puw.quantity(7, "nm"))
@@ -234,7 +233,9 @@ def test_sphere_shape_supports_rich_mutators_and_replay_state():
     assert view._shape_history[0]["options"]["center"] == [40.0, 50.0, 60.0]  # 4 nm = 40 Å  # noqa: SLF001
     assert view._shape_history[0]["options"]["radius"] == 70.0  # 7 nm = 70 Å  # noqa: SLF001
     assert view._shape_history[0]["options"]["layer_tag"] == "cluster"  # noqa: SLF001
-    assert puw.get_value(layer.get_center(), to_unit="angstroms").tolist() == pytest.approx([40.0, 50.0, 60.0])  # 4 nm = 40 Å
+    assert puw.get_value(layer.get_center(), to_unit="angstroms").tolist() == pytest.approx(
+        [40.0, 50.0, 60.0]
+    )  # 4 nm = 40 Å
 
     exported = [msg for msg in view._build_export_messages() if msg.get("options", {}).get("tag") == "foo"]  # noqa: SLF001
     assert exported[0]["options"]["color"] == 0xABCDEF
@@ -351,7 +352,6 @@ def test_triangle_face_shape_supports_rich_mutators_and_replay_state():
     assert exported[0]["options"]["alpha"] == 0.9
     assert exported[0]["options"]["colors"] == [0xCCCCCC, 0xDDDDDD]
     assert exported[0]["options"]["layer_tag"] == "surfaces"
-
 
 
 def test_triangle_face_shape_preserves_entity_refs_in_payload():
@@ -487,7 +487,6 @@ def test_tetrahedra_shape_supports_rich_mutators_and_replay_state():
     assert exported[0]["options"]["alphas"] == 0.9
     assert exported[0]["options"]["colors"] == [0xCCCCCC, 0xDDDDDD]
     assert exported[0]["options"]["layer_tag"] == "polyhedra"
-
 
 
 def test_tetrahedra_shape_preserves_entity_refs_and_face_edge_refs_in_payload():
@@ -691,18 +690,23 @@ def test_add_sphere_batch_broadcasts_and_validates():
     shapes = SphereShapes(view)
 
     centers = puw.quantity([(0, 0, 0), (1, 1, 1)], "nm")
-    shapes.add_sphere(centers, radius=puw.quantity([1.0, 2.0], "nm"), color=0x00FF00, alpha=[0.1, 0.2], skip_digestion=True)
+    shapes.add_sphere(
+        centers, radius=puw.quantity([1.0, 2.0], "nm"), color=0x00FF00, alpha=[0.1, 0.2], skip_digestion=True
+    )
 
     assert len(view.messages) == 2
     assert view.messages[0]["options"]["radius"] == 10.0  # 1 nm = 10 Å
     assert view.messages[1]["options"]["radius"] == 20.0  # 2 nm = 20 Å
 
     with pytest.raises(ValueError):
-        shapes.add_sphere(centers, radius=puw.quantity([1.0, 1.5, 2.0], "nm"), color=0x00FF00, alpha=0.5, skip_digestion=True)
+        shapes.add_sphere(
+            centers, radius=puw.quantity([1.0, 1.5, 2.0], "nm"), color=0x00FF00, alpha=0.5, skip_digestion=True
+        )
 
 
 def test_add_sphere_selection_and_indices():
     from molsysviewer.demo import demo
+
     view = demo["dialanine"]
 
     # 1. Test selection (should be static since it's atom_index == 0)
@@ -718,5 +722,7 @@ def test_add_sphere_selection_and_indices():
 
     # 3. Test explicit structures_atom_indices
     view.shapes.add_sphere(structures_atom_indices=[[0, 1], [2, 3]], tag="s_struct_indices")
-    msg3 = [m for m in view._shape_history if m.get("op") == "add_sphere" and m["options"]["tag"] == "s_struct_indices"][0]
+    msg3 = [
+        m for m in view._shape_history if m.get("op") == "add_sphere" and m["options"]["tag"] == "s_struct_indices"
+    ][0]
     assert msg3["options"]["structures_atom_indices"] == [[0, 1], [2, 3]]

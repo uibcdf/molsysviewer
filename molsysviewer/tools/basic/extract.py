@@ -7,7 +7,6 @@ from depdigest import dep_digest
 from smonitor import signal
 
 from ..._private.argdigest import digest
-
 from ...new_view import new_view
 from ...viewer import MolSysView
 
@@ -33,9 +32,7 @@ def _import_extracted_state(
     # ── Global settings ────────────────────────────────────────────────────
     result.widget.show_controls = bool(getattr(source.widget, "show_controls", True))
     result.widget.autohide_controls = bool(getattr(source.widget, "autohide_controls", False))
-    result.widget.controls_position = list(
-        getattr(source.widget, "controls_position", ["top", "right"])
-    )
+    result.widget.controls_position = list(getattr(source.widget, "controls_position", ["top", "right"]))
     result.widget.controls_position_fullscreen = list(
         getattr(source.widget, "controls_position_fullscreen", ["bottom", "right"])
     )
@@ -81,11 +78,7 @@ def _import_extracted_state(
     for region in source.regions.values():
         if not getattr(region, "_active", True):
             continue
-        remapped_indices = [
-            atom_index_map[int(i)]
-            for i in (region.atom_indices or [])
-            if int(i) in atom_index_map
-        ]
+        remapped_indices = [atom_index_map[int(i)] for i in (region.atom_indices or []) if int(i) in atom_index_map]
         if not remapped_indices:
             continue
         new_region = result.regions.add(
@@ -168,11 +161,7 @@ def _import_extracted_state(
     # ── Per-atom colors ────────────────────────────────────────────────────
     atom_color_map = getattr(source, "_atom_color_map", {})
     if atom_color_map:
-        remapped_colors = {
-            atom_index_map[k]: v
-            for k, v in atom_color_map.items()
-            if k in atom_index_map
-        }
+        remapped_colors = {atom_index_map[k]: v for k, v in atom_color_map.items() if k in atom_index_map}
         if remapped_colors:
             result._atom_color_map = remapped_colors  # noqa: SLF001
             result._send(  # noqa: SLF001

@@ -15,5 +15,6 @@ from molsysviewer._private.exceptions import ArgumentError
 def digest_renderer(renderer, caller=None):
     if isinstance(renderer, str) and renderer.strip():
         return renderer
-    raise ArgumentError("renderer", value=renderer, caller=caller,
-                        message="expected the GL renderer string a browser reports")
+    raise ArgumentError(
+        "renderer", value=renderer, caller=caller, message="expected the GL renderer string a browser reports"
+    )

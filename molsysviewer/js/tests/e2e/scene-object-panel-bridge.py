@@ -4,8 +4,8 @@ import json
 import sys
 
 from molsysviewer.demo import demo
-from molsysviewer import pyunitwizard as puw
 
+from molsysviewer import pyunitwizard as puw
 
 content = json.loads(sys.stdin.read())
 view = demo["dialanine"]
@@ -18,18 +18,25 @@ sent.clear()
 
 view._handle_frontend_event(content)  # noqa: SLF001
 
-print(json.dumps({
-    "visible": view.annotations.info("note")["visible"],
-    "section_point_nm": (
-        puw.get_value(section.get_point(), to_unit="nm").tolist()
-        if view.scene.sections()
-        else None
-    ),
-    "section_count": len(view.scene.sections()),
-    "messages": [
-        message for message in sent
-        if message.get("op") in {
-            "hide_layer", "set_annotation_summaries", "set_sections", "set_section_summaries",
+print(
+    json.dumps(
+        {
+            "visible": view.annotations.info("note")["visible"],
+            "section_point_nm": (
+                puw.get_value(section.get_point(), to_unit="nm").tolist() if view.scene.sections() else None
+            ),
+            "section_count": len(view.scene.sections()),
+            "messages": [
+                message
+                for message in sent
+                if message.get("op")
+                in {
+                    "hide_layer",
+                    "set_annotation_summaries",
+                    "set_sections",
+                    "set_section_summaries",
+                }
+            ],
         }
-    ],
-}))
+    )
+)

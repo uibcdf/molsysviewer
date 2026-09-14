@@ -11,5 +11,4 @@ from molsysviewer._private.exceptions import ArgumentError
 def digest_x_label(x_label, caller=None):
     if x_label is None or isinstance(x_label, str):
         return x_label
-    raise ArgumentError("x_label", value=x_label, caller=caller,
-                        message="an axis label is a string")
+    raise ArgumentError("x_label", value=x_label, caller=caller, message="an axis label is a string")

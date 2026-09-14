@@ -8,7 +8,6 @@ REPO_ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(REPO_ROOT))
 
 import molsysmt as msm
-
 from molsysviewer.demo import demo
 
 
@@ -36,11 +35,15 @@ def main() -> None:
         skip_digestion=True,
     )
 
-    print(json.dumps({
-        "messages": sent,
-        "annotation": view.annotations.info("broken-note"),
-        "measurement": view.measurements.info("broken-distance"),
-    }))
+    print(
+        json.dumps(
+            {
+                "messages": sent,
+                "annotation": view.annotations.info("broken-note"),
+                "measurement": view.measurements.info("broken-distance"),
+            }
+        )
+    )
 
 
 if __name__ == "__main__":

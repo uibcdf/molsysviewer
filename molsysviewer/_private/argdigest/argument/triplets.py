@@ -1,5 +1,7 @@
-from ...exceptions import ArgumentError
 import numpy as np
+
+from ...exceptions import ArgumentError
+
 
 def digest_triplets(triplets, caller=None):
 
@@ -17,5 +19,4 @@ def digest_triplets(triplets, caller=None):
             if shape[1] == 3:
                 return triplets
 
-    raise ArgumentError('triplets', value=triplets, caller=caller, message=None)
-
+    raise ArgumentError("triplets", value=triplets, caller=caller, message=None)

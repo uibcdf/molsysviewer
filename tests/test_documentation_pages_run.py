@@ -23,7 +23,6 @@ from pathlib import Path
 
 import pytest
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 #: Pages whose python blocks are executable as written. Adding one here is the way to
@@ -64,10 +63,7 @@ def test_the_page_runs_as_written(relative, tmp_path, monkeypatch):
             try:
                 exec(compile(block, f"{relative}#{number}", "exec"), namespace)  # noqa: S102
             except Exception as error:  # noqa: BLE001 — the point is to name the block
-                pytest.fail(
-                    f"{relative}, python block {number} failed:\n"
-                    f"{block}\n{type(error).__name__}: {error}"
-                )
+                pytest.fail(f"{relative}, python block {number} failed:\n{block}\n{type(error).__name__}: {error}")
             view = namespace.get("view")
             if view is not None and hasattr(view, "widget"):
                 # A demo view would otherwise try to talk to a frontend that is not there.
@@ -107,9 +103,7 @@ def test_every_documented_page_is_reachable_from_a_toctree():
 # the example wrong. This reads every page instead, statically, so the rest of the
 # documentation is covered before `EXECUTABLE_PAGES` grows to meet it.
 
-SUBJECT = re.compile(
-    r'^(?:The |the )?[\'"`]?([A-Za-z_][\w.]*)[\'"`]?(\(\.\.\.\)|\(\))?(?: parameter)? is deprecated'
-)
+SUBJECT = re.compile(r'^(?:The |the )?[\'"`]?([A-Za-z_][\w.]*)[\'"`]?(\(\.\.\.\)|\(\))?(?: parameter)? is deprecated')
 
 
 def _deprecations() -> tuple[set[str], dict[str, set[str]]]:
@@ -226,8 +220,6 @@ def test_no_documented_example_calls_a_deprecated_api():
                 found.append(f"{relative}, block {number}: {called}() is deprecated")
             for keyword in node.keywords:
                 if keyword.arg in keywords.get(called, ()):
-                    found.append(
-                        f"{relative}, block {number}: {called}({keyword.arg}=…) is deprecated"
-                    )
+                    found.append(f"{relative}, block {number}: {called}({keyword.arg}=…) is deprecated")
 
     assert found == [], "documented examples use deprecated APIs:\n" + "\n".join(found)

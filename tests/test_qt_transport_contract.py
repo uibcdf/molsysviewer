@@ -154,6 +154,7 @@ def test_the_scheme_handler_serves_binary_and_json_by_id():
 
 # --- R3: the two connectors must not fork the protocol ---------------------
 
+
 def test_both_connectors_classify_from_the_same_manifest():
     """Qt had a hardcoded set of transport events; now it reads the manifest.
 
@@ -270,11 +271,13 @@ def _ready_bridge():
 def _acknowledge(bridge, *, event: str | None = None) -> None:
     entry = bridge.inflight
     assert entry is not None, "nothing was in flight to acknowledge"
-    bridge.handle_frontend_event({
-        "event": event or entry["wait_event"],
-        "id": entry["id"],
-        "generation": entry["generation"],
-    })
+    bridge.handle_frontend_event(
+        {
+            "event": event or entry["wait_event"],
+            "id": entry["id"],
+            "generation": entry["generation"],
+        }
+    )
 
 
 def test_qt_delivers_one_message_at_a_time_and_waits_for_it_to_be_handled():

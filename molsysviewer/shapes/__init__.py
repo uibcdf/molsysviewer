@@ -19,7 +19,6 @@ from .spheres import SphereShapes
 from .tetrahedra import Tetrahedra
 from .triangle_faces import TriangleFaces
 
-
 SHAPE_STYLE_CAPABILITIES: dict[str, frozenset[str]] = {
     "add_sphere": frozenset({"set_color", "set_alpha", "set_radius"}),
     "add_network_links": frozenset({"set_colors", "set_alpha", "set_radii"}),
@@ -99,11 +98,7 @@ class ShapesManager:
     @signal(tags=["shape"])
     @digest()
     def tags(self, skip_digestion: bool = False) -> list[str]:
-        return [
-            tag
-            for kind, tag in getattr(self._view, "_scene_objects", {})
-            if kind == "shape"
-        ]  # noqa: SLF001
+        return [tag for kind, tag in getattr(self._view, "_scene_objects", {}) if kind == "shape"]  # noqa: SLF001
 
     @signal(tags=["shape"])
     @digest()
@@ -229,6 +224,7 @@ class ShapesManager:
         PyUnitWizard quantities; wire-format conversion belongs to the viewer
         summary projection.
         """
+
         def _hex(v: int | None) -> str | None:
             if v is None:
                 return None
@@ -303,6 +299,7 @@ class ShapesManager:
             }
 
             from .. import pyunitwizard as puw
+
             def _to_standard_unit(val, unit="angstrom"):
                 if val is None:
                     return None
@@ -368,10 +365,15 @@ class ShapesManager:
         ``layer_tag``).
         """
         return self.spheres.add_sphere(
-            center, radius, color, alpha,
-            tag=tag, layer_tag=layer_tag, skip_digestion=True, **kwargs,
+            center,
+            radius,
+            color,
+            alpha,
+            tag=tag,
+            layer_tag=layer_tag,
+            skip_digestion=True,
+            **kwargs,
         )
-
 
     @records_scene_history
     @signal(tags=["shape"])
@@ -555,15 +557,12 @@ class ShapesManager:
                 kwargs_passed["mouth_atom_indices"] = mouth_atom_indices
 
             return self.add_pocket_surface(
-                atom_indices=list(atom_indices),
-                tag=tag,
-                layer_tag=layer_tag,
-                skip_digestion=True,
-                **kwargs_passed
+                atom_indices=list(atom_indices), tag=tag, layer_tag=layer_tag, skip_digestion=True, **kwargs_passed
             )
 
         elif f_type in ("channel", "branched_channel"):
             from .. import pyunitwizard as puw
+
             # Extract centers and radii
             centers = getattr(feature, "centers", None)
             if centers is None:
@@ -600,16 +599,12 @@ class ShapesManager:
                 radii = puw.quantity(radii, "nm")
 
             return self.add_channel_tube(
-                centers=centers,
-                radii=radii,
-                tag=tag,
-                layer_tag=layer_tag,
-                skip_digestion=True,
-                **kwargs
+                centers=centers, radii=radii, tag=tag, layer_tag=layer_tag, skip_digestion=True, **kwargs
             )
 
         elif f_type in ("mouth", "boundary"):
             from .. import pyunitwizard as puw
+
             atom_indices = getattr(feature, "atom_indices", None)
             if atom_indices is not None and len(atom_indices) > 0:
                 centers = getattr(feature, "centers", None)
@@ -622,24 +617,14 @@ class ShapesManager:
                     if not puw.is_quantity(radii):
                         radii = puw.quantity(radii, "nm")
                     return self.add_channel_tube(
-                        centers=centers,
-                        radii=radii,
-                        tag=tag,
-                        layer_tag=layer_tag,
-                        skip_digestion=True,
-                        **kwargs
+                        centers=centers, radii=radii, tag=tag, layer_tag=layer_tag, skip_digestion=True, **kwargs
                     )
                 else:
                     return self.add_pocket_surface(
-                        atom_indices=list(atom_indices),
-                        tag=tag,
-                        layer_tag=layer_tag,
-                        skip_digestion=True,
-                        **kwargs
+                        atom_indices=list(atom_indices), tag=tag, layer_tag=layer_tag, skip_digestion=True, **kwargs
                     )
             raise ValueError(
-                f"TopoMT feature {feature} of type {f_type} "
-                "has no atom_indices or coordinate points to render."
+                f"TopoMT feature {feature} of type {f_type} has no atom_indices or coordinate points to render."
             )
 
         else:
@@ -654,9 +639,7 @@ class ShapesManager:
         if hasattr(self._view, "_unregister_scene_object"):
             if tag is None:
                 shape_tags = [
-                    t
-                    for (kind, t), obj in getattr(self._view, "_scene_objects", {}).items()
-                    if kind == "shape"
+                    t for (kind, t), obj in getattr(self._view, "_scene_objects", {}).items() if kind == "shape"
                 ]
                 for t in shape_tags:
                     self._view._unregister_scene_object("shape", t)
@@ -671,7 +654,6 @@ class ShapesManager:
                         scene_objects.pop(("shape", t), None)
                 else:
                     scene_objects.pop(("shape", tag), None)
-
 
 
 __all__ = [

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import molsysviewer.viewer.core as core_module
+
 from molsysviewer import MolSysView
 
 
@@ -18,11 +19,13 @@ def test_frontend_context_action_error_sends_runtime_ack_and_smonitor(monkeypatc
 
     monkeypatch.setattr(core_module, "emit_from_catalog", fake_emit)
 
-    view._handle_frontend_event({  # noqa: SLF001
-        "event": "interaction_context_action",
-        "action": "delete_region",
-        "tag": "missing-region",
-    })
+    view._handle_frontend_event(
+        {  # noqa: SLF001
+            "event": "interaction_context_action",
+            "action": "delete_region",
+            "tag": "missing-region",
+        }
+    )
 
     assert sent == [
         {

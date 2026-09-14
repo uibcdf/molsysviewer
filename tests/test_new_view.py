@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import pytest
-
-from molsysviewer.new_view import new_view
 from molsysviewer._private.exceptions import ArgumentError
+from molsysviewer.new_view import new_view
 
 
 class DummyWhole:
@@ -22,9 +21,7 @@ class DummyRegion:
         self.repr_calls: list[dict] = []
 
     def set_representation(self, representation=None, *, preset=None, **params) -> None:
-        self.repr_calls.append(
-            {"representation": representation, "preset": preset, "params": params}
-        )
+        self.repr_calls.append({"representation": representation, "preset": preset, "params": params})
 
 
 class DummyRegions:
@@ -48,7 +45,16 @@ class DummyView:
         self.region = DummyRegion()
         self.regions = DummyRegions(self)
 
-    def load(self, molecular_system, *, selection="all", structure_indices="all", syntax="MolSysMT", skip_digestion=False, **_kwargs) -> None:
+    def load(
+        self,
+        molecular_system,
+        *,
+        selection="all",
+        structure_indices="all",
+        syntax="MolSysMT",
+        skip_digestion=False,
+        **_kwargs,
+    ) -> None:
         self.load_calls.append(
             {
                 "molecular_system": molecular_system,
@@ -62,7 +68,6 @@ class DummyView:
     def select(self, selection="all", *, syntax="MolSysMT", skip_digestion=False, **_kwargs):
         self.select_calls.append({"selection": selection, "syntax": syntax, "skip_digestion": skip_digestion})
         return list(self.select_result)
-
 
 
 def test_new_view_selection_mode_loads_selection():
@@ -111,10 +116,7 @@ def test_new_view_all_mode_loads_all_and_creates_selection_region():
     assert view.new_region_calls == [
         {"selection": "molecule_index == 0", "tag": "selection", "syntax": "MolSysMT", "skip_digestion": True}
     ]
-    assert view.region.repr_calls == [
-        {"representation": "inherit", "preset": None, "params": {"skip_digestion": True}}
-    ]
-
+    assert view.region.repr_calls == [{"representation": "inherit", "preset": None, "params": {"skip_digestion": True}}]
 
 
 def test_new_view_all_mode_warns_and_keeps_whole_visible_for_empty_selection():
@@ -140,11 +142,10 @@ def test_new_view_all_mode_warns_and_keeps_whole_visible_for_empty_selection():
             "skip_digestion": True,
         }
     ]
-    assert view.select_calls == [
-        {"selection": "missing ligand", "syntax": "MolSysMT", "skip_digestion": True}
-    ]
+    assert view.select_calls == [{"selection": "missing ligand", "syntax": "MolSysMT", "skip_digestion": True}]
     assert view.new_region_calls == []
     assert view.region.repr_calls == []
+
 
 def test_new_view_all_mode_inherits_whole_preset():
     view = DummyView()

@@ -12,5 +12,6 @@ from molsysviewer._private.exceptions import ArgumentError
 def digest_addon_name(addon_name, caller=None):
     if isinstance(addon_name, str) and addon_name.strip():
         return addon_name
-    raise ArgumentError("addon_name", value=addon_name, caller=caller,
-                        message="expected the name an add-on is registered under")
+    raise ArgumentError(
+        "addon_name", value=addon_name, caller=caller, message="expected the name an add-on is registered under"
+    )

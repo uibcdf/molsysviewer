@@ -38,8 +38,11 @@ def shifted_181l():
     """181L with its first group removed, so every remaining atom keeps its identity
     and loses its index. This is the fixture the whole design is for."""
     source = _mute(demo["181L"])
-    return msm.extract(source._molsys, selection="group_index>0",  # noqa: SLF001
-                       to_form="molsysmt.MolSys")
+    return msm.extract(
+        source._molsys,
+        selection="group_index>0",  # noqa: SLF001
+        to_form="molsysmt.MolSys",
+    )
 
 
 def test_export_state_records_the_system_it_was_written_from():

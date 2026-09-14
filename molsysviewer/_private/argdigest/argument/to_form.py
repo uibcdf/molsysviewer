@@ -1,7 +1,8 @@
 from molsysviewer._private.exceptions import ArgumentError
 
+
 def digest_to_form(to_form, caller=None):
-    """ Checks if the to_form value is supported.
+    """Checks if the to_form value is supported.
 
     If the to_form value is a string correctly spelled but not capitalized, the method returns the right name.
 
@@ -27,7 +28,7 @@ def digest_to_form(to_form, caller=None):
     if to_form is None:
         return None
 
-    from molsysmt.form import is_file, _dict_forms_lowercase
+    from molsysmt.form import _dict_forms_lowercase, is_file
 
     if isinstance(to_form, (list, tuple)):
         return [digest_to_form(ii, caller=caller) for ii in to_form]
@@ -37,8 +38,7 @@ def digest_to_form(to_form, caller=None):
         else:
             try:
                 return _dict_forms_lowercase[to_form.lower()]
-            except:
+            except:  # noqa: E722
                 pass
 
-    raise ArgumentError('to_form', value=to_form, caller=caller, message=None)
-
+    raise ArgumentError("to_form", value=to_form, caller=caller, message=None)

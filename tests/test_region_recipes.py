@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import pytest
-
 from molsysviewer.demo import demo
 
 from _edit_helpers import apply_remove

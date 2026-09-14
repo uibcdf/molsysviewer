@@ -1,6 +1,5 @@
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).parents[1]
 DEVGUIDE = REPO_ROOT / "devguide"
 
@@ -46,32 +45,20 @@ def test_current_molecular_projection_docs_do_not_depend_on_viewerjson():
 
 def test_s9_and_completed_design_records_have_current_status():
     contracts = _text("scene_contracts.md")
-    s9 = contracts.split("### Contract S9", maxsplit=1)[1].split(
-        "### Contract S10", maxsplit=1
-    )[0]
+    s9 = contracts.split("### Contract S9", maxsplit=1)[1].split("### Contract S10", maxsplit=1)[0]
     normalized_s9 = " ".join(s9.split())
     assert "Status: implemented and measured" in normalized_s9
     assert "implementation pending" not in normalized_s9
 
-    assert not (
-        DEVGUIDE / "pending_proposals/report_molstar_empty_scene_camera_bounds.md"
-    ).exists()
-    assert (
-        DEVGUIDE / "archive/report_molstar_empty_scene_camera_bounds.md"
-    ).is_file()
-    assert not (
-        DEVGUIDE / "pending_proposals/post_1.0/zero_copy_visual_rendering.md"
-    ).exists()
+    assert not (DEVGUIDE / "pending_proposals/report_molstar_empty_scene_camera_bounds.md").exists()
+    assert (DEVGUIDE / "archive/report_molstar_empty_scene_camera_bounds.md").is_file()
+    assert not (DEVGUIDE / "pending_proposals/post_1.0/zero_copy_visual_rendering.md").exists()
     assert (DEVGUIDE / "archive/zero_copy_visual_rendering.md").is_file()
 
 
 def test_qt_docs_distinguish_control_channel_from_binary_payload_scheme():
-    source = (
-        REPO_ROOT / "molsysviewer/standalone_qt/view_channel.py"
-    ).read_text(encoding="utf-8")
-    catalog = (
-        REPO_ROOT / "molsysviewer/_private/smonitor/catalog.py"
-    ).read_text(encoding="utf-8")
+    source = (REPO_ROOT / "molsysviewer/standalone_qt/view_channel.py").read_text(encoding="utf-8")
+    catalog = (REPO_ROOT / "molsysviewer/_private/smonitor/catalog.py").read_text(encoding="utf-8")
 
     normalized_source = " ".join(source.lower().split())
     assert "control channel carries json only" in normalized_source
@@ -88,9 +75,7 @@ def test_resume_route_does_not_reopen_closed_work_or_orphan_public_digestion():
     master = _text("pre_1_0_architecture_rework_and_hardening_master_plan.md")
     checkpoint = _text("checkpoints.md")
 
-    assert not (
-        DEVGUIDE / "pending_proposals/post_1.0/scene_object_owner_field.md"
-    ).exists()
+    assert not (DEVGUIDE / "pending_proposals/post_1.0/scene_object_owner_field.md").exists()
     assert (DEVGUIDE / "archive/scene_object_owner_field.md").is_file()
     assert "There is no `owner` field in the model today" not in contracts
     assert "finish Phases 9 and 10" not in pending_index

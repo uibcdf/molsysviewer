@@ -5,8 +5,6 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-
-from molsysviewer import pyunitwizard as puw
 from molsysviewer.demo import demo
 from molsysviewer.viewer.panel_actions import (
     CONTEXT_ONLY_ACTIONS,
@@ -15,12 +13,12 @@ from molsysviewer.viewer.panel_actions import (
     dispatch_panel_action,
 )
 
+from molsysviewer import pyunitwizard as puw
+
 
 def _typescript_panel_actions() -> set[str]:
     source = Path("molsysviewer/js/src/ui/panels/types.ts").read_text()
-    declaration = source.split("export type PanelAction =", 1)[1].split(
-        "export interface PanelContext", 1
-    )[0]
+    declaration = source.split("export type PanelAction =", 1)[1].split("export interface PanelContext", 1)[0]
     return set(re.findall(r'"([^"]+)"', declaration))
 
 
@@ -28,9 +26,7 @@ def test_python_handlers_cover_the_closed_panel_action_vocabulary_exactly():
     panel_actions = _typescript_panel_actions()
 
     assert FRONTEND_LOCAL_PANEL_ACTIONS <= panel_actions
-    assert (panel_actions - FRONTEND_LOCAL_PANEL_ACTIONS) == (
-        set(HANDLERS) - CONTEXT_ONLY_ACTIONS
-    )
+    assert (panel_actions - FRONTEND_LOCAL_PANEL_ACTIONS) == (set(HANDLERS) - CONTEXT_ONLY_ACTIONS)
 
 
 def test_every_declared_context_only_action_has_a_handler():
@@ -54,10 +50,13 @@ def test_remote_context_focus_and_clear_use_authoritative_selection_state():
     view.widget.send = lambda message: sent.append(message)  # type: ignore[method-assign]
     view._ready = True  # noqa: SLF001
 
-    dispatch_panel_action(view, {
-        "action": "focus_target",
-        "context": {"kind": "structure", "atom_indices": [0, 1]},
-    })
+    dispatch_panel_action(
+        view,
+        {
+            "action": "focus_target",
+            "context": {"kind": "structure", "atom_indices": [0, 1]},
+        },
+    )
     assert sent[-1]["op"] == "zoom"
     assert sent[-1]["atom_indices"] == [0, 1]
 
@@ -94,14 +93,17 @@ def test_trajectory_context_actions_mutate_python_authority_and_project_summary(
 
     dispatch_panel_action(view, {"action": "step_trajectory", "by": -2})
     assert view.player.index == 2
-    dispatch_panel_action(view, {
-        "action": "set_trajectory_playback",
-        "playback_action": "play",
-        "fps": 12,
-        "step": 2,
-        "mode": "once",
-        "direction": "backward",
-    })
+    dispatch_panel_action(
+        view,
+        {
+            "action": "set_trajectory_playback",
+            "playback_action": "play",
+            "fps": 12,
+            "step": 2,
+            "mode": "once",
+            "direction": "backward",
+        },
+    )
     assert view.player.is_playing is True
     assert sent[-1] == {
         "op": "set_trajectory_summary",
@@ -114,10 +116,13 @@ def test_trajectory_context_actions_mutate_python_authority_and_project_summary(
         "direction": "backward",
     }
 
-    dispatch_panel_action(view, {
-        "action": "set_trajectory_playback",
-        "playback_action": "stop",
-    })
+    dispatch_panel_action(
+        view,
+        {
+            "action": "set_trajectory_playback",
+            "playback_action": "stop",
+        },
+    )
     assert view.player.is_playing is False
     assert sent[-1]["op"] == "set_trajectory_summary"
     assert sent[-1]["is_playing"] is False
@@ -144,10 +149,12 @@ def test_unknown_panel_action_reports_a_backend_error_instead_of_failing_silentl
     view.widget.send = lambda message: sent.append(message)  # type: ignore[method-assign]
     view._ready = True  # noqa: SLF001
 
-    view._handle_frontend_event({  # noqa: SLF001
-        "event": "interaction_context_action",
-        "action": "action_without_handler",
-    })
+    view._handle_frontend_event(
+        {  # noqa: SLF001
+            "event": "interaction_context_action",
+            "action": "action_without_handler",
+        }
+    )
 
     error = sent[-1]
     assert error["op"] == "backend_error_occurred"
@@ -169,11 +176,13 @@ def test_viewport_panel_actions_use_the_public_python_scene_api():
         ("set_fog", {"enable": True, "intensity": 0.4}),
         ("set_figure_spec", {"figure_preset": "publication-dark", "figure_scale": 3.0}),
     ):
-        view._handle_frontend_event({  # noqa: SLF001
-            "event": "interaction_context_action",
-            "action": action,
-            **details,
-        })
+        view._handle_frontend_event(
+            {  # noqa: SLF001
+                "event": "interaction_context_action",
+                "action": action,
+                **details,
+            }
+        )
 
     messages = [message["op"] for message in sent]
     assert messages == [
@@ -211,14 +220,19 @@ def test_viewport_section_actions_mutate_live_sections_and_use_molsysmt_center()
     view = demo["dialanine"]
     view.active_selection.set([0, 1], syntax="Indices", skip_digestion=True)
 
-    view._handle_frontend_event({  # noqa: SLF001
-        "event": "interaction_context_action",
-        "action": "create_section_from_selection",
-        "camera_forward": [0.0, 1.0, 0.0],
-    })
+    view._handle_frontend_event(
+        {  # noqa: SLF001
+            "event": "interaction_context_action",
+            "action": "create_section_from_selection",
+            "camera_forward": [0.0, 1.0, 0.0],
+        }
+    )
     section = view.scene.sections()[0]
     expected = view.regions.add(
-        [0, 1], syntax="Indices", tag="selected", skip_digestion=True,
+        [0, 1],
+        syntax="Indices",
+        tag="selected",
+        skip_digestion=True,
     ).get_center(
         structure_indices=[view.current_structure_index],
         skip_digestion=True,
@@ -234,18 +248,27 @@ def test_viewport_section_actions_mutate_live_sections_and_use_molsysmt_center()
         ("set_section_invert", {"invert": True}),
         ("set_section_visibility", {"visible": False}),
     ):
-        view._handle_frontend_event({  # noqa: SLF001
-            "event": "interaction_context_action", "action": action, "tag": section.tag, **details,
-        })
+        view._handle_frontend_event(
+            {  # noqa: SLF001
+                "event": "interaction_context_action",
+                "action": action,
+                "tag": section.tag,
+                **details,
+            }
+        )
 
     assert np.allclose(puw.get_value(section.get_point(), to_unit="nm"), [0.4, 0.5, 0.6])
     assert section.get_normal() == [0.0, 0.0, 1.0]
     assert section.is_inverted() is True
     assert section.visible is False
 
-    view._handle_frontend_event({  # noqa: SLF001
-        "event": "interaction_context_action", "action": "remove_section", "tag": section.tag,
-    })
+    view._handle_frontend_event(
+        {  # noqa: SLF001
+            "event": "interaction_context_action",
+            "action": "remove_section",
+            "tag": section.tag,
+        }
+    )
     assert view.scene.sections() == []
 
 
@@ -253,16 +276,22 @@ def test_creating_a_section_from_the_active_selection_places_it_at_the_centroid(
     view = demo["dialanine"]
     view.active_selection.set([0, 1], syntax="Indices", skip_digestion=True)
     expected = view.regions.add(
-        [0, 1], syntax="Indices", tag="selected", skip_digestion=True,
+        [0, 1],
+        syntax="Indices",
+        tag="selected",
+        skip_digestion=True,
     ).get_center(
         structure_indices=[view.current_structure_index],
         skip_digestion=True,
     )
 
-    dispatch_panel_action(view, {
-        "action": "create_section_from_selection",
-        "camera_forward": [0.0, 0.0, -1.0],
-    })
+    dispatch_panel_action(
+        view,
+        {
+            "action": "create_section_from_selection",
+            "camera_forward": [0.0, 0.0, -1.0],
+        },
+    )
     section = view.scene.sections()[-1]
 
     assert np.allclose(
@@ -273,13 +302,19 @@ def test_creating_a_section_from_the_active_selection_places_it_at_the_centroid(
 
     empty = demo["dialanine"]
     with pytest.raises(ValueError, match="non-empty active selection"):
-        dispatch_panel_action(empty, {
-            "action": "create_section_from_selection",
-            "camera_forward": [0.0, 0.0, -1.0],
-        })
+        dispatch_panel_action(
+            empty,
+            {
+                "action": "create_section_from_selection",
+                "camera_forward": [0.0, 0.0, -1.0],
+            },
+        )
 
     with pytest.raises(ValueError, match="non-zero vector"):
-        dispatch_panel_action(view, {
-            "action": "create_section_from_selection",
-            "camera_forward": [0.0, 0.0, 0.0],
-        })
+        dispatch_panel_action(
+            view,
+            {
+                "action": "create_section_from_selection",
+                "camera_forward": [0.0, 0.0, 0.0],
+            },
+        )

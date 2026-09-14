@@ -1,9 +1,9 @@
 import pytest
-
-from molsysviewer import MolSysView, pyunitwizard as puw
-from molsysviewer.layers import LayersManager
 from molsysviewer.demo import demo
+from molsysviewer.layers import LayersManager
 
+from molsysviewer import MolSysView
+from molsysviewer import pyunitwizard as puw
 
 CANONICAL_MANAGER_METHODS = (
     "add",
@@ -79,9 +79,9 @@ def test_layers_manager_add_preserves_kind_and_explicit_meta():
     assert layer.meta == {"owner": "test"}
     assert view.layers.records(skip_digestion=True) == [
         {
-                "tag": "analysis",
-                "owner": None,
-                "meta": {"owner": "test"},
+            "tag": "analysis",
+            "owner": None,
+            "meta": {"owner": "test"},
             "provenance": "user",
             "visible": True,
             "n_members": 0,

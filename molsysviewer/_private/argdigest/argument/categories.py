@@ -19,8 +19,9 @@ def digest_categories(categories, caller=None):
     if categories is None:
         return None
     if isinstance(categories, str) or not isinstance(categories, Sequence):
-        raise ArgumentError("categories", value=categories, caller=caller,
-                            message="expected a sequence of category keys")
+        raise ArgumentError(
+            "categories", value=categories, caller=caller, message="expected a sequence of category keys"
+        )
     if not categories:
         raise ArgumentError(
             "categories",

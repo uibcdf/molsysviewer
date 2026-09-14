@@ -11,5 +11,6 @@ from molsysviewer._private.exceptions import ArgumentError
 def digest_include_known_modules(include_known_modules, caller=None):
     if isinstance(include_known_modules, bool):
         return include_known_modules
-    raise ArgumentError("include_known_modules", value=include_known_modules, caller=caller,
-                        message="expected True or False")
+    raise ArgumentError(
+        "include_known_modules", value=include_known_modules, caller=caller, message="expected True or False"
+    )

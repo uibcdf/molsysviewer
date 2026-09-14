@@ -17,8 +17,7 @@ def digest_events(events, caller=None):
     if events is None:
         return None
     if isinstance(events, (str, bytes)) or not isinstance(events, Sequence):
-        raise ArgumentError("events", value=events, caller=caller,
-                            message="expected a list of event mappings")
+        raise ArgumentError("events", value=events, caller=caller, message="expected a list of event mappings")
     for event in events:
         if not isinstance(event, Mapping) or "frame" not in event:
             raise ArgumentError(

@@ -29,11 +29,15 @@ def main() -> None:
     section = restored.scene.sections()[0]
     section.set_point([0.4, 0.2, 0.3])
     set_sections = [message for message in sent if message.get("op") == "set_sections"]
-    print(json.dumps({
-        "document": document,
-        "restored": restored.export_state()["sections"],
-        "message": set_sections[-1],
-    }))
+    print(
+        json.dumps(
+            {
+                "document": document,
+                "restored": restored.export_state()["sections"],
+                "message": set_sections[-1],
+            }
+        )
+    )
 
 
 if __name__ == "__main__":

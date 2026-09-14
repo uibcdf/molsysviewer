@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import pytest
 
-from molsysviewer import MolSysView
 from _edit_helpers import apply_remove
-
+from molsysviewer import MolSysView
 
 # ---------------------------------------------------------------------------
 # reset_viewer / clear_all
 # ---------------------------------------------------------------------------
+
 
 def test_reset_viewer_sends_clear_all_op():
     view = MolSysView()
@@ -54,6 +54,7 @@ def test_reset_viewer_last_message_is_clear_all():
 # ---------------------------------------------------------------------------
 # clear_decorations → clear_scene op
 # ---------------------------------------------------------------------------
+
 
 def test_clear_decorations_sends_clear_scene_op_with_correct_flags():
     view = MolSysView()
@@ -162,6 +163,7 @@ def test_measurement_set_layer_tag_rewrites_measurement_history():
 # ---------------------------------------------------------------------------
 # set_whole_representation replay after rebuild
 # ---------------------------------------------------------------------------
+
 
 def test_set_whole_representation_survives_rebuild():
     view = demo["pentalanine"]

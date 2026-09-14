@@ -14,9 +14,7 @@ REMOTE_PROTOCOL_VERSION = 1
 _MANIFEST_PATH = Path(__file__).resolve().parent.parent / "remote_protocol.json"
 _MANIFEST = json.loads(_MANIFEST_PATH.read_text(encoding="utf-8"))
 if _MANIFEST.get("protocol_version") != REMOTE_PROTOCOL_VERSION:
-    raise ValueError(
-        f"remote_protocol.json protocol_version must be {REMOTE_PROTOCOL_VERSION}"
-    )
+    raise ValueError(f"remote_protocol.json protocol_version must be {REMOTE_PROTOCOL_VERSION}")
 
 SIGNALING_KINDS = frozenset(_MANIFEST["signaling_kinds"])
 INPUT_KINDS = frozenset(_MANIFEST["input_kinds"])
@@ -62,11 +60,7 @@ def _non_empty(value: Any) -> bool:
 
 
 def _number(value: Any) -> bool:
-    return (
-        isinstance(value, (int, float))
-        and not isinstance(value, bool)
-        and math.isfinite(float(value))
-    )
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(float(value))
 
 
 def _common_identity(
@@ -93,9 +87,7 @@ def _common_identity(
     }
     for key, wanted in expected.items():
         if wanted is not None and value.get(key) != wanted:
-            return value, _rejected(
-                "identity-mismatch", f"{key} belongs to {value.get(key)!r}, expected {wanted!r}"
-            )
+            return value, _rejected("identity-mismatch", f"{key} belongs to {value.get(key)!r}, expected {wanted!r}")
     if not isinstance(value.get("payload"), Mapping):
         return value, _rejected("malformed-payload", "payload must be a mapping")
     return value, None
@@ -133,9 +125,7 @@ def validate_signaling_packet(
         if sdp_mid is not None and not _non_empty(sdp_mid):
             return _rejected("malformed-payload", "sdpMid must be null or non-empty")
         line = payload.get("sdpMLineIndex")
-        if line is not None and (
-            not isinstance(line, int) or isinstance(line, bool) or line < 0
-        ):
+        if line is not None and (not isinstance(line, int) or isinstance(line, bool) or line < 0):
             return _rejected("malformed-payload", "sdpMLineIndex must be null or non-negative")
     return _accepted(
         RemotePacket(
@@ -166,11 +156,7 @@ def validate_input_packet(
     if failure is not None:
         return failure
     sequence = packet.get("sequence")
-    if (
-        not isinstance(sequence, int)
-        or isinstance(sequence, bool)
-        or not 0 <= sequence <= MAX_SAFE_SEQUENCE
-    ):
+    if not isinstance(sequence, int) or isinstance(sequence, bool) or not 0 <= sequence <= MAX_SAFE_SEQUENCE:
         return _rejected("malformed-packet", "sequence must be a non-negative safe integer")
     timestamp_ms = packet.get("timestampMs")
     if not _number(timestamp_ms) or timestamp_ms < 0:
@@ -209,8 +195,7 @@ def validate_input_packet(
 def _validate_input_payload(kind: str, payload: Mapping[str, Any]) -> PacketValidation | None:
     modifiers = payload.get("modifiers", {})
     if not isinstance(modifiers, Mapping) or any(
-        key not in {"alt", "ctrl", "meta", "shift"} or not isinstance(value, bool)
-        for key, value in modifiers.items()
+        key not in {"alt", "ctrl", "meta", "shift"} or not isinstance(value, bool) for key, value in modifiers.items()
     ):
         return _rejected("malformed-payload", "modifiers must contain only boolean modifier keys")
     if kind in {"pointer", "wheel", "context-menu"}:

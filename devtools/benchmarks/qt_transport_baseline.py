@@ -77,16 +77,12 @@ def measure(case_name: str) -> dict:
     peak_before = _peak_rss_mb()
 
     molsys, convert_ms = _timed(
-        lambda: msm.convert(
-            source, to_form="molsysmt.MolSys", structure_indices=structure_indices
-        )
+        lambda: msm.convert(source, to_form="molsysmt.MolSys", structure_indices=structure_indices)
     )
 
     # --- direct portable JSON ----------------------------------------------
     payload, payload_ms = _timed(lambda: serialize_json_molsys(molsys))
-    payload_bytes, json_ms = _timed(
-        lambda: json.dumps(payload, separators=(",", ":")).encode("utf-8")
-    )
+    payload_bytes, json_ms = _timed(lambda: json.dumps(payload, separators=(",", ":")).encode("utf-8"))
     json_total_ms = payload_ms + json_ms
     json_peak = _peak_rss_mb()
 
@@ -118,9 +114,7 @@ def measure(case_name: str) -> dict:
             "prepare_ms": round(array_ms, 1),
         },
         "ratios": {
-            "bytes_json_over_binary": round(
-                len(payload_bytes) / max(1, array_bytes + metadata_bytes), 1
-            ),
+            "bytes_json_over_binary": round(len(payload_bytes) / max(1, array_bytes + metadata_bytes), 1),
             "prepare_json_over_binary": round(json_total_ms / max(0.001, array_ms), 1),
         },
         "python_memory_mb": {

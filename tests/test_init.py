@@ -23,9 +23,8 @@ def test_viewer_modes_and_parameters_resolution():
     buttons, not as separate viewer modes.
     """
     import pytest
-
-    from molsysviewer.viewer.core import MolSysView
     from molsysviewer._private.exceptions import ArgumentError
+    from molsysviewer.viewer.core import MolSysView
 
     # 1. Default (integrated)
     v = MolSysView()

@@ -24,8 +24,9 @@ def digest_atom_index_map(atom_index_map, caller=None):
     if atom_index_map is None:
         return None
     if not isinstance(atom_index_map, Mapping):
-        raise ArgumentError("atom_index_map", value=atom_index_map, caller=caller,
-                            message="expected {old_atom_index: new_atom_index}")
+        raise ArgumentError(
+            "atom_index_map", value=atom_index_map, caller=caller, message="expected {old_atom_index: new_atom_index}"
+        )
     for old, new in atom_index_map.items():
         if not _is_index(old) or not _is_index(new):
             raise ArgumentError(

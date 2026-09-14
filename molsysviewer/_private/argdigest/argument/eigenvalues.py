@@ -1,9 +1,12 @@
-from molsysviewer._private.exceptions import ArgumentError
+from typing import Iterable, Sequence
+
 import numpy as np
-from typing import Sequence, Iterable
+
+from molsysviewer._private.exceptions import ArgumentError
+
 
 def digest_eigenvalues(eigenvalues, syntax="MolSysMT", caller=None):
-    """ Checks if eigenvalues has the correct type (sequence of (3,) float arrays). """
+    """Checks if eigenvalues has the correct type (sequence of (3,) float arrays)."""
 
     if eigenvalues is None:
         return None
@@ -19,4 +22,6 @@ def digest_eigenvalues(eigenvalues, syntax="MolSysMT", caller=None):
     except (ValueError, TypeError):
         pass
 
-    raise ArgumentError('eigenvalues', value=eigenvalues, caller=caller, message="Expected a sequence of 3-component eigenvalues.")
+    raise ArgumentError(
+        "eigenvalues", value=eigenvalues, caller=caller, message="Expected a sequence of 3-component eigenvalues."
+    )

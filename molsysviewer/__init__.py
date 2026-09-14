@@ -10,7 +10,6 @@ from smonitor.integrations import ensure_configured as _ensure_smonitor_configur
 from ._private.smonitor import PACKAGE_ROOT as _SMONITOR_PACKAGE_ROOT
 from ._version import __version__
 
-
 _ensure_smonitor_configured(_SMONITOR_PACKAGE_ROOT)
 if not getattr(sys.modules.get(__name__), "_checked_dep", False):
     _check_dependency(__name__)

@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import argparse
 import html
-from pathlib import Path
 import tempfile
 import webbrowser
+from pathlib import Path
 from typing import Any, Sequence
 
 from .addons import addons as global_addons
@@ -287,7 +287,7 @@ def build_standalone0_html(
                 include_controls=include_controls,
                 include_popout=include_popout,
                 debug_js=debug_js,
-                    runtime_urls=runtime_urls,
+                runtime_urls=runtime_urls,
                 host_event_transport=host_event_transport,
                 show_empty_host_overlay=show_empty_host_overlay,
             )

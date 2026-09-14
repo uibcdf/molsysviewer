@@ -14,7 +14,6 @@ from __future__ import annotations
 import warnings
 
 import molsysmt as msm
-
 from molsysviewer.demo import demo
 
 

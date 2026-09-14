@@ -27,15 +27,13 @@ async def main() -> None:
                         break
                     await asyncio.sleep(0.05)
                 print(
-                    "MSV_CLIENT_RENDER_CAMERA="
-                    + json.dumps(view._last_camera_snapshot),  # noqa: SLF001
+                    "MSV_CLIENT_RENDER_CAMERA=" + json.dumps(view._last_camera_snapshot),  # noqa: SLF001
                     flush=True,
                 )
                 continue
             if command == "selection-count":
                 print(
-                    "MSV_CLIENT_RENDER_SELECTION="
-                    + json.dumps({"count": len(view.active_selection.atom_indices)}),
+                    "MSV_CLIENT_RENDER_SELECTION=" + json.dumps({"count": len(view.active_selection.atom_indices)}),
                     flush=True,
                 )
                 continue

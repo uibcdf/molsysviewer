@@ -1,4 +1,5 @@
 from molsysviewer._private.exceptions import ArgumentError
+
 from ..helpers import normalize_viewer_caller
 
 # `mode` is the most overloaded argument name in this library: five unrelated closed sets,
@@ -11,6 +12,7 @@ from ..helpers import normalize_viewer_caller
 # branch, and every value it was meant to accept is then refused; that is how
 # `camera.set_mode` came to raise for both of its valid values.
 
+
 def digest_mode(mode, caller=None):
 
     caller = normalize_viewer_caller(caller)
@@ -22,8 +24,8 @@ def digest_mode(mode, caller=None):
         return None
 
     if isinstance(mode, str):
-        if caller.startswith('molsysmt.file'):
-            if mode in ['auto', 'read', 'write']:
+        if caller.startswith("molsysmt.file"):
+            if mode in ["auto", "read", "write"]:
                 return mode
         if caller in {
             "molsysviewer.viewer.load",
@@ -62,4 +64,4 @@ def digest_mode(mode, caller=None):
             if mode in ["loop", "once", "ping-pong"]:
                 return mode
 
-    raise ArgumentError('mode', value=mode, caller=caller, message=None)
+    raise ArgumentError("mode", value=mode, caller=caller, message=None)

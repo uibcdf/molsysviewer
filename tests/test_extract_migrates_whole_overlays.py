@@ -24,9 +24,7 @@ def populated():
     view.regions.add(selection='molecule_type=="protein"', tag="prot", representation="cartoon")
     view.shapes.add_sphere(center="[1.0, 1.0, 1.0] nm", radius="0.5 nm", tag="s1")
     view.annotations.add_annotation(text="hola", selection="atom_index==[0]", tag="a1")
-    view.measurements.add_distance(
-        selection_a="atom_index==[0]", selection_b="atom_index==[10]", tag="d1"
-    )
+    view.measurements.add_distance(selection_a="atom_index==[0]", selection_b="atom_index==[10]", tag="d1")
     return view
 
 
@@ -59,9 +57,7 @@ def test_nothing_is_migrated_twice(populated, extracted, collection):
     Measurements escaped it only because their recorder de-duplicates by tag, which is why
     two collections were visibly wrong and the third was quietly wrong.
     """
-    assert len(getattr(extracted, collection).records()) == len(
-        getattr(populated, collection).records()
-    )
+    assert len(getattr(extracted, collection).records()) == len(getattr(populated, collection).records())
 
 
 def test_the_extracted_view_can_be_saved(extracted):

@@ -1,7 +1,10 @@
 import json
+
 import pytest
-from molsysviewer import MolSysView, pyunitwizard as puw
 from molsysviewer.demo import demo
+
+from molsysviewer import MolSysView
+from molsysviewer import pyunitwizard as puw
 
 
 def test_export_state_returns_json_serializable_dict():
@@ -36,11 +39,13 @@ def test_tag_high_water_marks_round_trip_before_next_allocation():
 def test_export_state_captures_annotations():
     view = MolSysView()
     # Simulate annotation history directly (no structure needed)
-    view._annotation_history.append({  # noqa: SLF001
-        "op": "add_label",
-        "tag": "ann1",
-        "options": {"text": "Hello", "atom_indices": [3, 4], "tag": "ann1"},
-    })
+    view._annotation_history.append(
+        {  # noqa: SLF001
+            "op": "add_label",
+            "tag": "ann1",
+            "options": {"text": "Hello", "atom_indices": [3, 4], "tag": "ann1"},
+        }
+    )
 
     state = view.export_state()
 
@@ -64,20 +69,22 @@ def test_export_state_captures_measurements():
 def test_export_state_captures_selections():
     view = MolSysView()
     # Inject a selection record directly (no structure needed)
-    view._selection_history.append({  # noqa: SLF001
-        "op": "save_selection",
-        "tag": "sel1",
-        "atom_indices": [0, 1, 2],
-        "source_kind": "element",
-        "element_level": "group",
-        "target_level": "none",
-        "items": [],
-        "group_indices": [],
-        "component_indices": [],
-        "chain_indices": [],
-        "molecule_indices": [],
-        "entity_indices": [],
-    })
+    view._selection_history.append(
+        {  # noqa: SLF001
+            "op": "save_selection",
+            "tag": "sel1",
+            "atom_indices": [0, 1, 2],
+            "source_kind": "element",
+            "element_level": "group",
+            "target_level": "none",
+            "items": [],
+            "group_indices": [],
+            "component_indices": [],
+            "chain_indices": [],
+            "molecule_indices": [],
+            "entity_indices": [],
+        }
+    )
 
     state = view.export_state()
 
@@ -104,11 +111,13 @@ def test_import_state_replays_measurements():
 
 def test_import_state_replays_annotations():
     source = MolSysView()
-    source._annotation_history.append({  # noqa: SLF001
-        "op": "add_label",
-        "tag": "ann1",
-        "options": {"text": "Active site", "atom_indices": [10, 11], "tag": "ann1"},
-    })
+    source._annotation_history.append(
+        {  # noqa: SLF001
+            "op": "add_label",
+            "tag": "ann1",
+            "options": {"text": "Active site", "atom_indices": [10, 11], "tag": "ann1"},
+        }
+    )
 
     state = source.export_state()
 
@@ -162,13 +171,21 @@ def test_import_state_merge_keeps_existing_measurements():
     extra_state = {
         "version": 2,
         "annotations": [],
-        "measurements": [{
-            "op": "add_distance_measurement",
-            "tag": "new",
-            "options": {"tag": "new", "picks_atom_indices": [[2], [3]], "endpoint_atom_indices": [[2], [3]],
-                        "endpoint_kinds": ["atom", "atom"], "endpoint_policy": "centroid",
-                        "endpoint_labels": ["atom", "atom"], "layer_tag": "new"},
-        }],
+        "measurements": [
+            {
+                "op": "add_distance_measurement",
+                "tag": "new",
+                "options": {
+                    "tag": "new",
+                    "picks_atom_indices": [[2], [3]],
+                    "endpoint_atom_indices": [[2], [3]],
+                    "endpoint_kinds": ["atom", "atom"],
+                    "endpoint_policy": "centroid",
+                    "endpoint_labels": ["atom", "atom"],
+                    "layer_tag": "new",
+                },
+            }
+        ],
         "selections": [],
         "regions": [],
     }
@@ -180,10 +197,18 @@ def test_import_state_merge_keeps_existing_measurements():
 def test_import_state_requires_explicit_skip_for_duplicate_selection_tags():
     view = MolSysView()
     msg = {
-        "op": "save_selection", "tag": "sel1", "atom_indices": [1, 2],
-        "source_kind": "element", "element_level": "group", "target_level": "none",
-        "items": [], "group_indices": [], "component_indices": [],
-        "chain_indices": [], "molecule_indices": [], "entity_indices": [],
+        "op": "save_selection",
+        "tag": "sel1",
+        "atom_indices": [1, 2],
+        "source_kind": "element",
+        "element_level": "group",
+        "target_level": "none",
+        "items": [],
+        "group_indices": [],
+        "component_indices": [],
+        "chain_indices": [],
+        "molecule_indices": [],
+        "entity_indices": [],
     }
     view._selection_history.append(msg)  # noqa: SLF001
 
@@ -199,12 +224,15 @@ def test_import_state_requires_explicit_skip_for_duplicate_selection_tags():
 def test_export_state_numpy_int_serializable():
     """Atom indices from real MolSysMT operations are numpy.int64 — must be converted."""
     import numpy as np
+
     view = MolSysView()
-    view._annotation_history.append({  # noqa: SLF001
-        "op": "add_label",
-        "tag": "np-ann",
-        "options": {"text": "test", "atom_indices": [np.int64(0), np.int64(1)], "tag": "np-ann"},
-    })
+    view._annotation_history.append(
+        {  # noqa: SLF001
+            "op": "add_label",
+            "tag": "np-ann",
+            "options": {"text": "test", "atom_indices": [np.int64(0), np.int64(1)], "tag": "np-ann"},
+        }
+    )
     state = view.export_state()
     # Should not raise
     serialized = json.dumps(state)
@@ -290,7 +318,6 @@ def test_the_export_state_docstring_lists_the_keys_it_emits():
     view = demo["dialanine"]
     view.widget.send = lambda _message: None  # type: ignore[attr-defined]
 
-    documented = set(re.findall(r"``(\w+)``",
-                                StateMixin.export_state.__doc__.split("Returns", 1)[1]))
+    documented = set(re.findall(r"``(\w+)``", StateMixin.export_state.__doc__.split("Returns", 1)[1]))
 
     assert documented == set(view.export_state())

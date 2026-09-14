@@ -2,6 +2,7 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from molsysviewer._private.exceptions import ArgumentError
+
 from ..helpers import normalize_viewer_caller
 
 _EXPORT_CALLERS = {
@@ -32,4 +33,4 @@ def digest_shared_runtime(shared_runtime, caller=None):
             if candidates and all(isinstance(item, str) and item for item in candidates):
                 return candidates
 
-    raise ArgumentError('shared_runtime', value=shared_runtime, caller=caller, message=None)
+    raise ArgumentError("shared_runtime", value=shared_runtime, caller=caller, message=None)

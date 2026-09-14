@@ -4,14 +4,13 @@ from __future__ import annotations
 
 from typing import Iterable, Sequence
 
+import numpy as np
 from smonitor import signal
 
 from .. import pyunitwizard as puw
 from .._private.argdigest import digest
 from ..scene_history import records_scene_history
 from ._registry import register_shape_layer
-
-import numpy as np
 
 
 class DisplacementVectors:

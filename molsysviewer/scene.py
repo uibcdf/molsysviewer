@@ -207,20 +207,23 @@ class SceneManager:
             ``"bottom-right"`` or ``"bottom-left"``.
         """
         entries: list[dict] = []
-        for item in (items or []):
+        for item in items or []:
             if isinstance(item, dict):
                 label, color = item.get("label"), item.get("color")
             else:
                 label, color = item[0], item[1]
             entries.append({"label": str(label), "color": int(color)})
         self._view._send(  # noqa: SLF001
-            {"op": "set_legend", "options": {"items": entries,
-             # `digest_position` canonicalises to ["bottom", "left"]; the wire
-             # format is the hyphenated spelling.
-             "position": "-".join(position) if isinstance(position, (list, tuple))
-                         else str(position)}}
+            {
+                "op": "set_legend",
+                "options": {
+                    "items": entries,
+                    # `digest_position` canonicalises to ["bottom", "left"]; the wire
+                    # format is the hyphenated spelling.
+                    "position": "-".join(position) if isinstance(position, (list, tuple)) else str(position),
+                },
+            }
         )
-
 
     # ── Sectioning ────────────────────────────────────────────────────────
 
@@ -279,8 +282,8 @@ class SceneManager:
             Two interactive handles appear in the canvas automatically (see
             :class:`~layers.Section` for details on the gizmo UX).
         """
-        from .layers import Section as _Section  # noqa: PLC0415
         from . import pyunitwizard as puw  # noqa: PLC0415
+        from .layers import Section as _Section  # noqa: PLC0415
 
         # ── Resolve point ──────────────────────────────────────────────────
         if isinstance(point, str):
@@ -359,50 +362,34 @@ class SceneManager:
         if obj is None:
             raise ValueError(f"No scene object found with tag {tag!r}.")
         if not hasattr(obj, "get_coordinates"):
-            raise TypeError(
-                f"Scene object {tag!r} (type {type(obj).__name__}) does not support "
-                "get_coordinates()."
-            )
+            raise TypeError(f"Scene object {tag!r} (type {type(obj).__name__}) does not support get_coordinates().")
         coords = obj.get_coordinates()
-        arr = (
-            puw.get_value(coords, to_unit="nm")
-            if puw.is_quantity(coords)
-            else np.asarray(coords, dtype=float)
-        )
+        arr = puw.get_value(coords, to_unit="nm") if puw.is_quantity(coords) else np.asarray(coords, dtype=float)
         if arr.ndim == 1:
             return arr.tolist()
         if arr.ndim == 2:
             return arr.mean(axis=0).tolist()
-        raise ValueError(
-            f"Unexpected coordinate shape {arr.shape!r} from object {tag!r}."
-        )
+        raise ValueError(f"Unexpected coordinate shape {arr.shape!r} from object {tag!r}.")
 
     def _resolve_point_string(self, s: str) -> list:
         if s.startswith("centroid:"):
-            target_tag = s[len("centroid:"):]
+            target_tag = s[len("centroid:") :]
             return self._get_object_centroid_nm(target_tag)
-        raise ValueError(
-            f"Unrecognised point string {s!r}. "
-            "Supported forms: \"centroid:<tag>\"."
-        )
+        raise ValueError(f'Unrecognised point string {s!r}. Supported forms: "centroid:<tag>".')
 
     def _resolve_normal_string(self, s: str, point_nm: list) -> list:
         if s.startswith("toward:") or s.startswith("mouth:"):
             prefix = "toward:" if s.startswith("toward:") else "mouth:"
-            target_tag = s[len(prefix):]
+            target_tag = s[len(prefix) :]
             target_centroid = self._get_object_centroid_nm(target_tag)
             n = np.array(target_centroid) - np.array(point_nm)
             norm = float(np.linalg.norm(n))
             if norm < 1e-10:
                 raise ValueError(
-                    f"Cannot compute normal: point centroid and target {target_tag!r} "
-                    "centroid are coincident."
+                    f"Cannot compute normal: point centroid and target {target_tag!r} centroid are coincident."
                 )
             return (n / norm).tolist()
-        raise ValueError(
-            f"Unrecognised normal string {s!r}. "
-            "Supported forms: \"toward:<tag>\", \"mouth:<tag>\"."
-        )
+        raise ValueError(f'Unrecognised normal string {s!r}. Supported forms: "toward:<tag>", "mouth:<tag>".')
 
     @records_scene_history
     @digest()
@@ -429,7 +416,8 @@ class SceneManager:
         """Remove all active clipping planes."""
         view = self._view
         section_tags = [
-            tag for (kind, tag), _obj in view._scene_objects.items()  # noqa: SLF001
+            tag
+            for (kind, tag), _obj in view._scene_objects.items()  # noqa: SLF001
             if kind == "section"
         ]
         for tag in section_tags:

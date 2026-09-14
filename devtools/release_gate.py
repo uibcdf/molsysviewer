@@ -68,32 +68,25 @@ def _sibling_releases_ready() -> str | None:
 
 
 STEPS = (
-    Step("python", "the full Python suite",
-         [sys.executable, "-m", "pytest", "tests/", "-q", "-x"]),
-    Step("devguide", "generated indexes are current",
-         [sys.executable, "devtools/devguide_index.py", "--check"]),
-    Step("citation", "citation and Zenodo metadata agree",
-         [sys.executable, "devtools/validate_citation.py"]),
+    Step("python", "the full Python suite", [sys.executable, "-m", "pytest", "tests/", "-q", "-x"]),
+    Step("devguide", "generated indexes are current", [sys.executable, "devtools/devguide_index.py", "--check"]),
+    Step("citation", "citation and Zenodo metadata agree", [sys.executable, "devtools/validate_citation.py"]),
     # The capability audit's currency, the API inventory baseline and the wheel build are
     # covered by the suite above and are deliberately not repeated here. A gate step that
     # ran their writers instead of their checks would regenerate rather than refuse, which
     # is worse than not checking at all.
-    Step("version", "one version across the package, the built runtime and the npm manifest",
-         None),  # reads rather than shells out; see _check_version_consistency
-    Step("typescript", "tsc is clean", ["npx", "tsc", "--noEmit"],
-         blocked_by=_node_available, cwd=JS_ROOT),
-    Step("js", "the JS unit suite", ["npm", "run", "test:js"],
-         blocked_by=_node_available, cwd=JS_ROOT),
-    Step("runtime", "the runtime builds", ["npm", "run", "build:runtime"],
-         blocked_by=_node_available, cwd=JS_ROOT),
-    Step("perf", "the performance gates hold", ["npm", "run", "test:perf"],
-         blocked_by=_node_available, cwd=JS_ROOT),
-    Step("e2e", "all E2E suites in one real browser", ["npm", "run", "test:e2e"],
-         blocked_by=_node_available, cwd=JS_ROOT),
-    Step("qt", "Qt real-window and GPU render observation", None,
-         blocked_by=_display_available),
-    Step("conda", "conda artefacts against final dependency versions", None,
-         blocked_by=_sibling_releases_ready),
+    Step(
+        "version", "one version across the package, the built runtime and the npm manifest", None
+    ),  # reads rather than shells out; see _check_version_consistency
+    Step("typescript", "tsc is clean", ["npx", "tsc", "--noEmit"], blocked_by=_node_available, cwd=JS_ROOT),
+    Step("js", "the JS unit suite", ["npm", "run", "test:js"], blocked_by=_node_available, cwd=JS_ROOT),
+    Step("runtime", "the runtime builds", ["npm", "run", "build:runtime"], blocked_by=_node_available, cwd=JS_ROOT),
+    Step("perf", "the performance gates hold", ["npm", "run", "test:perf"], blocked_by=_node_available, cwd=JS_ROOT),
+    Step(
+        "e2e", "all E2E suites in one real browser", ["npm", "run", "test:e2e"], blocked_by=_node_available, cwd=JS_ROOT
+    ),
+    Step("qt", "Qt real-window and GPU render observation", None, blocked_by=_display_available),
+    Step("conda", "conda artefacts against final dependency versions", None, blocked_by=_sibling_releases_ready),
 )
 
 
@@ -119,8 +112,7 @@ def _check_version_consistency() -> tuple[bool, str]:
     text = runtime.read_text(encoding="utf-8", errors="replace")
     if reported not in text:
         return False, (
-            f"molsysviewer reports {reported!r} and viewer.js does not carry that string; "
-            "run `npm run build:runtime`"
+            f"molsysviewer reports {reported!r} and viewer.js does not carry that string; run `npm run build:runtime`"
         )
 
     # The npm manifest is *reported*, not enforced. `npm run build` is
@@ -134,9 +126,10 @@ def _check_version_consistency() -> tuple[bool, str]:
     base = reported.split("+", 1)[0]
     package = json.loads((JS_ROOT / "package.json").read_text(encoding="utf-8"))
     declared = package.get("version", "")
-    note = "" if declared == base else (
-        f"; molsysviewer/js/package.json lags at {declared!r} — harmless, `npm run build` "
-        "syncs it on publish"
+    note = (
+        ""
+        if declared == base
+        else (f"; molsysviewer/js/package.json lags at {declared!r} — harmless, `npm run build` syncs it on publish")
     )
     return True, f"viewer.js carries {reported}{note}"
 
@@ -171,8 +164,7 @@ def main() -> int:
     parser.add_argument("--only", default="", help="comma-separated step names")
     arguments = parser.parse_args()
 
-    selected = [s for s in STEPS
-                if not arguments.only or s.name in arguments.only.split(",")]
+    selected = [s for s in STEPS if not arguments.only or s.name in arguments.only.split(",")]
 
     if arguments.list:
         for step in selected:
@@ -195,16 +187,14 @@ def main() -> int:
     blocked = [s.name for s, state, _ in results if state == "BLOCKED"]
 
     print()
-    print(f"{len(results) - len(failed) - len(blocked)} passed, "
-          f"{len(failed)} failed, {len(blocked)} blocked")
+    print(f"{len(results) - len(failed) - len(blocked)} passed, {len(failed)} failed, {len(blocked)} blocked")
 
     if failed:
         print("\nRELEASE BLOCKED — failing: " + ", ".join(failed))
         return 1
     if blocked:
         print("\nRELEASE NOT CLEARED — these could not run: " + ", ".join(blocked))
-        print("Each is reported above with its reason. A release needs every one of them "
-              "run, not skipped.")
+        print("Each is reported above with its reason. A release needs every one of them run, not skipped.")
         return 2
     print("\nEvery gate step passed.")
     return 0

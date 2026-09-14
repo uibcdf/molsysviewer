@@ -1,8 +1,16 @@
-from molsysviewer import demo
-from molsysviewer import addons, AddonExportHelperSpec, AddonPanelSpec, AddonSpec, AddonSectionSpec, AddonWorkspaceSpec
-from types import ModuleType
 import json
 import sys
+from types import ModuleType
+
+from molsysviewer import (
+    AddonExportHelperSpec,
+    AddonPanelSpec,
+    AddonSectionSpec,
+    AddonSpec,
+    AddonWorkspaceSpec,
+    addons,
+    demo,
+)
 
 
 def test_build_export_messages_captures_reproducible_workbench_state_end_to_end():
@@ -74,7 +82,9 @@ def test_build_export_messages_captures_reproducible_workbench_state_end_to_end(
     region_msg = next(msg for msg in messages if msg.get("op") == "create_region" and msg.get("tag") == "picked")
     assert region_msg["atom_indices"] == atom_indices
 
-    selection_msg = next(msg for msg in messages if msg.get("op") == "save_selection" and msg.get("tag") == "picked-selection")
+    selection_msg = next(
+        msg for msg in messages if msg.get("op") == "save_selection" and msg.get("tag") == "picked-selection"
+    )
     assert selection_msg["atom_indices"] == atom_indices
     assert selection_msg["group_indices"] == [1]
 

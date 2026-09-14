@@ -1,6 +1,6 @@
+import molsysviewer._pyunitwizard  # noqa: F401
 import pytest
 import pyunitwizard as puw
-import molsysviewer._pyunitwizard  # noqa: F401
 
 from molsysviewer import demo
 
@@ -48,7 +48,9 @@ def test_group_label_uses_annotation_prefix_by_default():
 def test_clear_decorations_labels_clears_annotation_history_only():
     view = demo["dialanine"]
     view.annotations.add_annotation(text="Group 0", selection="group_index==0", tag="notes")
-    view.shapes.add_sphere(center=puw.quantity([0.0, 0.0, 0.0], "nm"), radius=puw.quantity(1.0, "nm"), tag="shape-notes")
+    view.shapes.add_sphere(
+        center=puw.quantity([0.0, 0.0, 0.0], "nm"), radius=puw.quantity(1.0, "nm"), tag="shape-notes"
+    )
 
     assert len(view._annotation_history) == 1  # noqa: SLF001
     assert len(view._shape_history) == 1  # noqa: SLF001
@@ -120,8 +122,12 @@ def test_annotation_manager_rejects_duplicate_tags():
 
 def test_annotation_manager_supports_explicit_shared_layer_tag():
     view = demo["dialanine"]
-    first = view.annotations.add_annotation(text="Group 0", selection="group_index==0", tag="notes-a", layer_tag="analysis")
-    second = view.annotations.add_annotation(text="Group 1", selection="group_index==1", tag="notes-b", layer_tag="analysis")
+    first = view.annotations.add_annotation(
+        text="Group 0", selection="group_index==0", tag="notes-a", layer_tag="analysis"
+    )
+    second = view.annotations.add_annotation(
+        text="Group 1", selection="group_index==1", tag="notes-b", layer_tag="analysis"
+    )
 
     assert first.layer_tag == "analysis"
     assert second.layer_tag == "analysis"

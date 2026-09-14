@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import warnings
 
-import pytest
-
 import molsysmt as msm  # noqa: F401
-import molsysviewer as viewer
+import pytest
 import pyunitwizard as puw
-from molsysviewer import demo
 from molsysviewer.loaders.load_molsysmt import load_from_molsysmt
+
+import molsysviewer as viewer
+from molsysviewer import demo
 
 
 def test_demo_region_hide():
@@ -51,7 +51,6 @@ def test_region_scoped_indices_bond_subset():
     assert len(bond_indices) > 0
 
 
-
 def _empty_view():
     view = viewer.MolSysView()
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
@@ -72,9 +71,7 @@ def test_region_boolean_composition_from_atom_indices():
     assert union.atom_indices == (0, 1, 2, 3)
     assert "left_and_right" in view.regions
     assert any(
-        msg.get("op") == "create_region"
-        and msg.get("tag") == "left-minus-right"
-        and msg.get("atom_indices") == [0, 1]
+        msg.get("op") == "create_region" and msg.get("tag") == "left-minus-right" and msg.get("atom_indices") == [0, 1]
         for msg in view._test_message_log  # noqa: SLF001
     )
 
@@ -180,8 +177,7 @@ def test_new_region_with_visual_spec_preserves_representation_semantics():
     operations = [
         message
         for message in view._test_message_log  # noqa: SLF001
-        if message.get("tag") == "one-build"
-        and message.get("op") in {"create_region", "set_region_representation"}
+        if message.get("tag") == "one-build" and message.get("op") in {"create_region", "set_region_representation"}
     ]
     assert operations[0] == {
         "op": "create_region",
@@ -667,10 +663,12 @@ def test_region_operations_stay_in_loaded_subset_index_space():
         for operation in view._test_message_log[-1]["operations"]  # noqa: SLF001
         if operation["op"] == "create_region"
     ]
-    assert sorted(index for operation in create_operations for index in operation["atom_indices"]) == list(range(n_atoms))
+    assert sorted(index for operation in create_operations for index in operation["atom_indices"]) == list(
+        range(n_atoms)
+    )
 
 
-def test_state_none_drops_representation_params(): 
+def test_state_none_drops_representation_params():
     """Contract A: state None owns no visual, so params have nothing to apply to.
 
     Retaining them would make `repr_params` advertise styling the region does not

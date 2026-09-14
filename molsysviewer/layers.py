@@ -6,17 +6,17 @@ from typing import Any, Dict, Optional
 
 from smonitor import signal
 
-from ._private.argdigest import digest
-from .viewer.utils import quantity_value_in_unit
 from . import pyunitwizard as puw
+from ._private.argdigest import digest
 from .scene_history import records_scene_history
-
+from .viewer.utils import quantity_value_in_unit
 
 _NM_TO_ANGSTROM = puw.conversion_factor("nm", "angstroms")
 
 
 def _extract_shape_points_nm(options: dict, op: str) -> list[list[float]]:
     """Return a flat list of 3D points (in nm) extracted from any shape message."""
+
     def _flat(seq):
         out = []
         for item in seq or []:
@@ -33,9 +33,14 @@ def _extract_shape_points_nm(options: dict, op: str) -> list[list[float]]:
             return [[float(c[0]), float(c[1]), float(c[2])]]
         return []
 
-    if op in ("add_pocket_blob", "add_pocket_surface", "add_channel_tube",
-              "add_pharmacophore_features", "add_anisotropy_ellipsoids",
-              "add_displacement_vectors"):
+    if op in (
+        "add_pocket_blob",
+        "add_pocket_surface",
+        "add_channel_tube",
+        "add_pharmacophore_features",
+        "add_anisotropy_ellipsoids",
+        "add_displacement_vectors",
+    ):
         # alpha spheres: two sub-arrays (alpha_spheres and atom_spheres)
         if op == "add_pocket_blob":
             pts = []
@@ -101,10 +106,7 @@ def _bounding_sphere_nm(points: list[list[float]]) -> tuple[list[float], float]:
     cx = sum(p[0] for p in points) / n
     cy = sum(p[1] for p in points) / n
     cz = sum(p[2] for p in points) / n
-    radius = max(
-        math.sqrt((p[0] - cx) ** 2 + (p[1] - cy) ** 2 + (p[2] - cz) ** 2)
-        for p in points
-    )
+    radius = max(math.sqrt((p[0] - cx) ** 2 + (p[1] - cy) ** 2 + (p[2] - cz) ** 2) for p in points)
     return [cx, cy, cz], max(radius, 0.1)  # at least 0.1 nm
 
 
@@ -451,12 +453,14 @@ class Layer(LayerHandle):
         rows = []
         for (_kind, tag), obj in self.members.items():
             kind = getattr(obj, "kind", "unknown")
-            rows.append({
-                "kind": kind,
-                "tag": tag,
-                "visible": not getattr(obj, "_hidden", False),
-                "type": getattr(obj, "shape_type", getattr(obj, "meta", {}).get("kind", kind)),
-            })
+            rows.append(
+                {
+                    "kind": kind,
+                    "tag": tag,
+                    "visible": not getattr(obj, "_hidden", False),
+                    "type": getattr(obj, "shape_type", getattr(obj, "meta", {}).get("kind", kind)),
+                }
+            )
         return rows
 
     @records_scene_history
@@ -607,7 +611,9 @@ class LayersManager(dict[str, Layer]):
 
 
 class Shape(SceneObject):
-    def __init__(self, view: Any, tag: str, *, layer_tag: str | None = None, meta: Optional[Dict[str, Any]] = None) -> None:
+    def __init__(
+        self, view: Any, tag: str, *, layer_tag: str | None = None, meta: Optional[Dict[str, Any]] = None
+    ) -> None:
         super().__init__(view, tag, kind="shape", layer_tag=layer_tag, meta=meta)
 
     def _sync_summary_runtime(self) -> None:
@@ -852,8 +858,12 @@ class Shape(SceneObject):
                 raise ValueError(f"Shape {self.tag!r} has no geometric center.")
             return puw.standardize(puw.quantity(center, "angstroms"))
 
-        if op in ("add_channel_tube", "add_pharmacophore_features",
-                  "add_displacement_vectors", "add_anisotropy_ellipsoids"):
+        if op in (
+            "add_channel_tube",
+            "add_pharmacophore_features",
+            "add_displacement_vectors",
+            "add_anisotropy_ellipsoids",
+        ):
             centers = options.get("centers")
             if not isinstance(centers, list) or len(centers) == 0:
                 raise ValueError(f"Shape {self.tag!r} has no centers data.")
@@ -864,8 +874,7 @@ class Shape(SceneObject):
             if isinstance(pairs, list) and len(pairs) > 0:
                 return puw.standardize(puw.quantity(pairs, "angstroms"))
             raise ValueError(
-                f"Shape {self.tag!r} is a link shape with atom-pair-only data; "
-                "no explicit coordinates are stored."
+                f"Shape {self.tag!r} is a link shape with atom-pair-only data; no explicit coordinates are stored."
             )
 
         if op in ("add_pocket_blob", "add_pocket_surface", "add_alpha_sphere_set"):
@@ -887,9 +896,7 @@ class Shape(SceneObject):
                 raise ValueError(f"Shape {self.tag!r} has no tetrahedra coordinate data.")
             return puw.standardize(puw.quantity(coords, "angstroms"))
 
-        raise NotImplementedError(
-            f"get_coordinates is not implemented for shape op {op!r}."
-        )
+        raise NotImplementedError(f"get_coordinates is not implemented for shape op {op!r}.")
 
     @records_scene_history
     def set_coordinates(self, coordinates) -> None:
@@ -950,9 +957,7 @@ class Shape(SceneObject):
             self._apply_pocket_centers_update(op=op, centers=coords_a)
             return
 
-        raise NotImplementedError(
-            f"set_coordinates is not implemented for shape op {op!r}."
-        )
+        raise NotImplementedError(f"set_coordinates is not implemented for shape op {op!r}.")
 
     @records_scene_history
     def set_center(self, center, skip_digestion: bool = False) -> None:
@@ -965,6 +970,7 @@ class Shape(SceneObject):
     @records_scene_history
     def set_color(self, color, skip_digestion: bool = False) -> None:
         from .colors import normalize_color
+
         self._apply_sphere_update(color=normalize_color(color))
 
     @records_scene_history
@@ -1005,6 +1011,7 @@ class Shape(SceneObject):
     @records_scene_history
     def set_colors(self, colors, skip_digestion: bool = False) -> None:
         from .colors import normalize_color
+
         msg = self._require_shape_message()
         op = msg.get("op")
         options = msg.get("options") if isinstance(msg.get("options"), dict) else {}
@@ -1029,7 +1036,9 @@ class Shape(SceneObject):
             )
             return
         if op == "add_tetrahedra":
-            count = self._shape_element_count(options, "tetra_coords", "tetraCoords", "atom_quads", "atomQuads", "colors")
+            count = self._shape_element_count(
+                options, "tetra_coords", "tetraCoords", "atom_quads", "atomQuads", "colors"
+            )
             self._apply_tetrahedra_update(colors=self._normalize_to_count(colors, count, _cast_color))
             return
         if op == "add_anisotropy_ellipsoids":
@@ -1150,16 +1159,20 @@ class Shape(SceneObject):
         # Convert nm → Å (scene coordinates match atomic coordinates which are in Å)
         center_ang = [v * _NM_TO_ANGSTROM for v in center_nm]
         radius_ang = radius_nm * _NM_TO_ANGSTROM
-        self._view._send({  # noqa: SLF001
-            "op": "zoom_to_position",
-            "center": center_ang,
-            "radius": radius_ang,
-            "duration_ms": int(quantity_value_in_unit(duration, "milliseconds")),
-        })
+        self._view._send(
+            {  # noqa: SLF001
+                "op": "zoom_to_position",
+                "center": center_ang,
+                "radius": radius_ang,
+                "duration_ms": int(quantity_value_in_unit(duration, "milliseconds")),
+            }
+        )
 
 
 class Annotation(SceneObject):
-    def __init__(self, view: Any, tag: str, *, layer_tag: str | None = None, meta: Optional[Dict[str, Any]] = None) -> None:
+    def __init__(
+        self, view: Any, tag: str, *, layer_tag: str | None = None, meta: Optional[Dict[str, Any]] = None
+    ) -> None:
         super().__init__(view, tag, kind="annotation", layer_tag=layer_tag, meta=meta)
 
     def _require_annotation_record(self) -> dict:
@@ -1188,9 +1201,7 @@ class Annotation(SceneObject):
 
         atom_indices = options.get("atom_indices")
         if not isinstance(atom_indices, list) or len(atom_indices) == 0:
-            raise ValueError(
-                f"Annotation {self.tag!r} has no anchor (no position and no atom_indices)."
-            )
+            raise ValueError(f"Annotation {self.tag!r} has no anchor (no position and no atom_indices).")
         molsys = getattr(self._view, "_molsys", None)
         if molsys is None:
             raise ValueError("No molecular system loaded.")
@@ -1218,7 +1229,9 @@ class Annotation(SceneObject):
 
 
 class Measurement(SceneObject):
-    def __init__(self, view: Any, tag: str, *, layer_tag: str | None = None, meta: Optional[Dict[str, Any]] = None) -> None:
+    def __init__(
+        self, view: Any, tag: str, *, layer_tag: str | None = None, meta: Optional[Dict[str, Any]] = None
+    ) -> None:
         super().__init__(view, tag, kind="measurement", layer_tag=layer_tag, meta=meta)
 
     def get_coordinates(self):
@@ -1300,6 +1313,7 @@ class Measurement(SceneObject):
             try:
                 import molsysmt as _msm
                 import numpy as _np
+
                 result = _msm.get(
                     molsys,
                     element="atom",
@@ -1317,18 +1331,19 @@ class Measurement(SceneObject):
                     # shape: (n_structures, n_atoms, 3) in nm
                     frame = arr[0]
                     points = [
-                        [float(frame[i, 0]), float(frame[i, 1]), float(frame[i, 2])]
-                        for i in range(frame.shape[0])
+                        [float(frame[i, 0]), float(frame[i, 1]), float(frame[i, 2])] for i in range(frame.shape[0])
                     ]
                     if points:
                         center_nm, radius_nm = _bounding_sphere_nm(points)
                         radius_nm = max(radius_nm + quantity_value_in_unit(extra_radius, "nanometers"), 0.5)
-                        self._view._send({  # noqa: SLF001
-                            "op": "zoom_to_position",
-                            "center": [v * _NM_TO_ANGSTROM for v in center_nm],
-                            "radius": radius_nm * _NM_TO_ANGSTROM,
-                            "duration_ms": int(quantity_value_in_unit(duration, "milliseconds")),
-                        })
+                        self._view._send(
+                            {  # noqa: SLF001
+                                "op": "zoom_to_position",
+                                "center": [v * _NM_TO_ANGSTROM for v in center_nm],
+                                "radius": radius_nm * _NM_TO_ANGSTROM,
+                                "duration_ms": int(quantity_value_in_unit(duration, "milliseconds")),
+                            }
+                        )
                         return
             except Exception:
                 pass
@@ -1409,6 +1424,7 @@ class Section(SceneObject):
     def set_point(self, point) -> None:
         """Move the plane anchor to *point* (puw quantity or plain ``[x,y,z]`` in nm)."""
         import numpy as _np
+
         coords_nm = puw.get_value(point, to_unit="nm") if puw.is_quantity(point) else point
         arr = _np.asarray(coords_nm, dtype=float).tolist()
         if len(arr) != 3:
@@ -1421,6 +1437,7 @@ class Section(SceneObject):
     def set_normal(self, normal) -> None:
         """Set the plane normal direction (plain list or array, no units required)."""
         import numpy as _np
+
         arr = _np.asarray(normal, dtype=float)
         norm = float(_np.linalg.norm(arr))
         if norm < 1e-10:

@@ -46,8 +46,8 @@ def test_a_duplicated_command_envelope_mutates_once_and_is_acked(monkeypatch):
     monkeypatch.setattr(view, "_handle_frontend_event", spy)
 
     envelope = _command_envelope(view, "cmd-1")
-    view._handle_inbound_message(envelope)          # noqa: SLF001
-    view._handle_inbound_message(dict(envelope))    # noqa: SLF001  same messageId
+    view._handle_inbound_message(envelope)  # noqa: SLF001
+    view._handle_inbound_message(dict(envelope))  # noqa: SLF001  same messageId
 
     # The mutation runs exactly once despite two deliveries...
     assert len(applied) == 1
@@ -102,15 +102,15 @@ def test_a_popup_snapshot_request_is_answered_with_a_correlated_projection():
     assert len(sent) == 1
     answer = sent[0]
     assert answer["direction"] == "projection"
-    assert answer["correlationId"] == "req-7"          # correlated to the request
+    assert answer["correlationId"] == "req-7"  # correlated to the request
     assert answer["targetEndpointId"] == router.widget_host_endpoint
     assert answer["action"] == "popup_scene_snapshot"
     body = answer["payload"]
-    assert body["event"] == answer["action"]           # coherence guard
+    assert body["event"] == answer["action"]  # coherence guard
     assert body["popup_endpoint_id"] == "panel-popup-42"
     ops = {m.get("op") for m in body["messages"]}
-    assert "set_region_summaries" in ops               # a panel projection
-    assert "load_molsys_payload" not in ops            # and no molecular data
+    assert "set_region_summaries" in ops  # a panel projection
+    assert "load_molsys_payload" not in ops  # and no molecular data
 
 
 def test_an_invalid_popup_snapshot_mode_answers_nothing():
@@ -119,17 +119,19 @@ def test_an_invalid_popup_snapshot_mode_answers_nothing():
     sent: list = []
     view.widget.send = lambda content, buffers=None: sent.append(content)  # type: ignore[assignment]
     router = view._runtime_router  # noqa: SLF001
-    view._handle_inbound_message({  # noqa: SLF001
-        "protocolVersion": 1,
-        "viewerId": view._binary_viewer_id,  # noqa: SLF001
-        "sessionId": view._binary_session_id,  # noqa: SLF001
-        "endpointId": router.widget_host_endpoint,
-        "targetEndpointId": router.python_endpoint,
-        "messageId": "req-8",
-        "direction": "request",
-        "action": "request_popup_scene_snapshot",
-        "payload": {"event": "request_popup_scene_snapshot", "mode": "bogus"},
-    })
+    view._handle_inbound_message(
+        {  # noqa: SLF001
+            "protocolVersion": 1,
+            "viewerId": view._binary_viewer_id,  # noqa: SLF001
+            "sessionId": view._binary_session_id,  # noqa: SLF001
+            "endpointId": router.widget_host_endpoint,
+            "targetEndpointId": router.python_endpoint,
+            "messageId": "req-8",
+            "direction": "request",
+            "action": "request_popup_scene_snapshot",
+            "payload": {"event": "request_popup_scene_snapshot", "mode": "bogus"},
+        }
+    )
     assert sent == []
 
 
@@ -174,17 +176,19 @@ def test_frontend_transport_diagnostics_cross_the_envelope_and_reach_smonitor(
         lambda catalog, **kwargs: emitted.append((catalog, kwargs)),
     )
     router = view._runtime_router  # noqa: SLF001
-    view._handle_inbound_message({  # noqa: SLF001
-        "protocolVersion": 1,
-        "viewerId": view._binary_viewer_id,  # noqa: SLF001
-        "sessionId": view._binary_session_id,  # noqa: SLF001
-        "endpointId": router.widget_host_endpoint,
-        "targetEndpointId": router.python_endpoint,
-        "messageId": f"diagnostic-{action}",
-        "direction": "error",
-        "action": action,
-        "payload": payload,
-    })
+    view._handle_inbound_message(
+        {  # noqa: SLF001
+            "protocolVersion": 1,
+            "viewerId": view._binary_viewer_id,  # noqa: SLF001
+            "sessionId": view._binary_session_id,  # noqa: SLF001
+            "endpointId": router.widget_host_endpoint,
+            "targetEndpointId": router.python_endpoint,
+            "messageId": f"diagnostic-{action}",
+            "direction": "error",
+            "action": action,
+            "payload": payload,
+        }
+    )
 
     assert len(emitted) == 1
     assert emitted[0][0] is core_module.CATALOG[catalog_key]
@@ -222,21 +226,23 @@ def test_a_canvas_popup_snapshot_streams_the_molecular_generation_to_its_endpoin
     view.widget.send = lambda content, buffers=None: sent.append((content, buffers))  # type: ignore[assignment]
 
     router = view._runtime_router  # noqa: SLF001
-    view._handle_inbound_message({  # noqa: SLF001
-        "protocolVersion": 1,
-        "viewerId": view._binary_viewer_id,  # noqa: SLF001
-        "sessionId": view._binary_session_id,  # noqa: SLF001
-        "endpointId": router.widget_host_endpoint,
-        "targetEndpointId": router.python_endpoint,
-        "messageId": "req-canvas",
-        "direction": "request",
-        "action": "request_popup_scene_snapshot",
-        "payload": {
-            "event": "request_popup_scene_snapshot",
-            "mode": "canvas",
-            "popup_endpoint_id": "canvas-popup-7",
-        },
-    })
+    view._handle_inbound_message(
+        {  # noqa: SLF001
+            "protocolVersion": 1,
+            "viewerId": view._binary_viewer_id,  # noqa: SLF001
+            "sessionId": view._binary_session_id,  # noqa: SLF001
+            "endpointId": router.widget_host_endpoint,
+            "targetEndpointId": router.python_endpoint,
+            "messageId": "req-canvas",
+            "direction": "request",
+            "action": "request_popup_scene_snapshot",
+            "payload": {
+                "event": "request_popup_scene_snapshot",
+                "mode": "canvas",
+                "popup_endpoint_id": "canvas-popup-7",
+            },
+        }
+    )
 
     # The binary stream begins, addressed to the popup endpoint so the host
     # relays it instead of consuming it.
@@ -302,11 +308,13 @@ def test_a_popup_targeted_stream_fallback_cancels_and_loads_the_same_endpoint():
     assert not manager.has_active
 
     view._endpoint_transfers.register("canvas-popup-7", "canvas")  # noqa: SLF001
-    view._handle_frontend_event({  # noqa: SLF001
-        "event": "popup_endpoint_closed",
-        "mode": "canvas",
-        "popup_endpoint_id": "canvas-popup-7",
-    })
+    view._handle_frontend_event(
+        {  # noqa: SLF001
+            "event": "popup_endpoint_closed",
+            "mode": "canvas",
+            "popup_endpoint_id": "canvas-popup-7",
+        }
+    )
     assert view._structure_transfer_manager("canvas-popup-7") is None  # noqa: SLF001
 
 
@@ -365,21 +373,23 @@ def test_a_panel_popup_snapshot_never_starts_a_molecular_stream():
     sent: list = []
     view.widget.send = lambda content, buffers=None: sent.append((content, buffers))  # type: ignore[assignment]
     router = view._runtime_router  # noqa: SLF001
-    view._handle_inbound_message({  # noqa: SLF001
-        "protocolVersion": 1,
-        "viewerId": view._binary_viewer_id,  # noqa: SLF001
-        "sessionId": view._binary_session_id,  # noqa: SLF001
-        "endpointId": router.widget_host_endpoint,
-        "targetEndpointId": router.python_endpoint,
-        "messageId": "req-panel",
-        "direction": "request",
-        "action": "request_popup_scene_snapshot",
-        "payload": {
-            "event": "request_popup_scene_snapshot",
-            "mode": "panel",
-            "popup_endpoint_id": "panel-popup-7",
-        },
-    })
+    view._handle_inbound_message(
+        {  # noqa: SLF001
+            "protocolVersion": 1,
+            "viewerId": view._binary_viewer_id,  # noqa: SLF001
+            "sessionId": view._binary_session_id,  # noqa: SLF001
+            "endpointId": router.widget_host_endpoint,
+            "targetEndpointId": router.python_endpoint,
+            "messageId": "req-panel",
+            "direction": "request",
+            "action": "request_popup_scene_snapshot",
+            "payload": {
+                "event": "request_popup_scene_snapshot",
+                "mode": "panel",
+                "popup_endpoint_id": "panel-popup-7",
+            },
+        }
+    )
     assert not [m for m, _ in sent if m.get("op") == "structure_data_begin"]
 
 
@@ -413,11 +423,13 @@ def test_popup_transfer_does_not_block_the_embedded_host_and_close_releases_it()
     assert not any(message.get("op") == "popup-only-scene" for message in sent)
 
     sent.clear()
-    view._handle_frontend_event({  # noqa: SLF001
-        "event": "popup_endpoint_closed",
-        "mode": "canvas",
-        "popup_endpoint_id": "canvas-popup-7",
-    })
+    view._handle_frontend_event(
+        {  # noqa: SLF001
+            "event": "popup_endpoint_closed",
+            "mode": "canvas",
+            "popup_endpoint_id": "canvas-popup-7",
+        }
+    )
 
     assert transfer.release_count == 1
     assert transfer.payload is None
@@ -436,10 +448,12 @@ def test_popup_close_releases_every_active_transfer_state(state):
     manager = view._structure_transfer_manager(endpoint_id, create=True)  # noqa: SLF001
     transfer = manager.start(
         begin_message={"op": "structure_data_begin", "chunk_count": 1},
-        chunks=[(
-            {"op": "structure_data_chunk", "chunk_id": 0},
-            [memoryview(b"coordinates")],
-        )],
+        chunks=[
+            (
+                {"op": "structure_data_chunk", "chunk_id": 0},
+                [memoryview(b"coordinates")],
+            )
+        ],
         fallback_factory=lambda _generation: {"op": "load_molsys_payload"},
         payload=object(),
         target_endpoint_id=endpoint_id,
@@ -455,18 +469,22 @@ def test_popup_close_releases_every_active_transfer_state(state):
         result = manager.handle_event({"event": "structure_data_begin_ack", **identity})
         assert result.disposition is AckDisposition.SEND_CHUNK
     if state == "completion_wait":
-        result = manager.handle_event({
-            "event": "structure_data_chunk_ack",
-            "chunk_id": 0,
-            **identity,
-        })
+        result = manager.handle_event(
+            {
+                "event": "structure_data_chunk_ack",
+                "chunk_id": 0,
+                **identity,
+            }
+        )
         assert result.disposition is AckDisposition.WAIT_COMPLETE
 
-    view._handle_frontend_event({  # noqa: SLF001
-        "event": "popup_endpoint_closed",
-        "mode": "canvas",
-        "popup_endpoint_id": endpoint_id,
-    })
+    view._handle_frontend_event(
+        {  # noqa: SLF001
+            "event": "popup_endpoint_closed",
+            "mode": "canvas",
+            "popup_endpoint_id": endpoint_id,
+        }
+    )
 
     assert transfer.release_count == 1
     assert transfer.payload is None
@@ -498,9 +516,7 @@ def test_live_molecular_reload_starts_independent_host_and_canvas_generations(
         None,
         "canvas-popup-live",
     }
-    assert not any(
-        message.get("target_endpoint_id") == "panel-popup-live" for message in begins
-    )
+    assert not any(message.get("target_endpoint_id") == "panel-popup-live" for message in begins)
 
     complete_structure_stream(view)
     assert view._structure_transfer_manager("canvas-popup-live").has_active  # noqa: SLF001
@@ -514,10 +530,7 @@ def test_live_molecular_reload_starts_independent_host_and_canvas_generations(
     view._deliver_transport_message(view._current_molecular_projection)  # noqa: SLF001
     second_begins = [message for message in sent if message.get("op") == "structure_data_begin"]
     assert len(second_begins) == 2
-    assert {
-        (message.get("target_endpoint_id"), message["generation"])
-        for message in second_begins
-    } == {
+    assert {(message.get("target_endpoint_id"), message["generation"]) for message in second_begins} == {
         (None, 2),
         ("canvas-popup-live", 2),
     }
@@ -532,10 +545,12 @@ def test_closing_panel_endpoint_does_not_release_canvas_transfer():
     canvas_manager = view._structure_transfer_manager(canvas_id, create=True)  # noqa: SLF001
     transfer = canvas_manager.start(
         begin_message={"op": "structure_data_begin", "chunk_count": 1},
-        chunks=[(
-            {"op": "structure_data_chunk", "chunk_id": 0},
-            [memoryview(b"coordinates")],
-        )],
+        chunks=[
+            (
+                {"op": "structure_data_chunk", "chunk_id": 0},
+                [memoryview(b"coordinates")],
+            )
+        ],
         fallback_factory=lambda _generation: {"op": "load_molsys_payload"},
         payload=object(),
         target_endpoint_id=canvas_id,
@@ -544,11 +559,13 @@ def test_closing_panel_endpoint_does_not_release_canvas_transfer():
         panel_id, {"op": "panel-only"}, None
     )
 
-    view._handle_frontend_event({  # noqa: SLF001
-        "event": "popup_endpoint_closed",
-        "mode": "panel",
-        "popup_endpoint_id": panel_id,
-    })
+    view._handle_frontend_event(
+        {  # noqa: SLF001
+            "event": "popup_endpoint_closed",
+            "mode": "panel",
+            "popup_endpoint_id": panel_id,
+        }
+    )
 
     assert canvas_manager.active is transfer
     assert transfer.release_count == 0

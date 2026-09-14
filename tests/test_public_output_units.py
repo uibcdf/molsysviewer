@@ -5,10 +5,9 @@ import subprocess
 import sys
 
 import pytest
-
-from molsysviewer import pyunitwizard as puw
 from molsysviewer.demo import demo
 
+from molsysviewer import pyunitwizard as puw
 
 FACTORY_STANDARD_UNITS = [
     "nm",

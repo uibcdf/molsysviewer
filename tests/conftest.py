@@ -5,7 +5,6 @@ from pathlib import Path
 
 import pytest
 
-
 # Ensure `pytest` and `python -m pytest` resolve the in-repo package the same way.
 REPO_ROOT = Path(__file__).resolve().parents[1]
 repo_root_str = str(REPO_ROOT)
@@ -34,12 +33,12 @@ if repo_root_str not in sys.path:
 # Importing here means `sys.modules` already holds them by the time any warning crosses,
 # so `import_module` is a dict lookup and no import runs in the receiver thread at all.
 import molsysmt  # noqa: E402,F401
+
 import molsysviewer  # noqa: E402,F401
 
 
 def _close_registered_molsysviewer_widgets() -> None:
     from ipywidgets.widgets.widget import _instances
-
     from molsysviewer.addons import AddonPanelWidget
     from molsysviewer.widget import MolSysViewerWidget
 
@@ -96,8 +95,9 @@ def _close_registered_molsysviewer_widgets() -> None:
 @pytest.fixture(autouse=True)
 def _capture_domain_protocol_for_tests(monkeypatch):
     """Capture domain sends for assertions without a production replay journal."""
-    from molsysviewer import MolSysView
     from molsysviewer.viewer.history import HistoryMixin
+
+    from molsysviewer import MolSysView
 
     original_init = MolSysView.__init__
     original_send = HistoryMixin._send

@@ -31,6 +31,7 @@ def test_interactive_measurement_is_registered_automatically():
     ]
     assert view.get_last_measurement_created_event()["tag"] == "measurement1"
 
+
 def test_measurements_info_and_records_report_persisted_measurements():
     view = MolSysView()
     event = {
@@ -109,7 +110,6 @@ def test_measurements_info_reports_centroid_endpoint_policy_for_multi_atom_picks
     ]
 
 
-
 def test_measurement_series_preserves_all_coordinate_frames(monkeypatch):
     view = MolSysView()
     view._molsys = object()  # noqa: SLF001
@@ -150,6 +150,7 @@ def test_measurement_series_preserves_all_coordinate_frames(monkeypatch):
 
     assert puw.get_value(view.measurements.info("d01")["value"], to_unit="angstrom") == pytest.approx(2.0)
     assert puw.get_value(view.measurements.series("d01"), to_unit="angstrom").tolist() == pytest.approx([1.0, 2.0])
+
 
 def test_measurements_manager_supports_registry_access_and_duplicate_tag_guard():
     view = MolSysView()

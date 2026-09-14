@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import pytest
-
 from molsysviewer.demo import demo
+
 from molsysviewer import pyunitwizard as puw
 
 
@@ -58,13 +58,15 @@ def test_export_state_v2_captures_scene_objects_layers_and_structured_anchor():
     assert state["shapes"][0]["options"]["radius"] == 2.0
     assert state["shapes"][0]["layer_tag"] == "analysis"
     assert state["shapes"][0]["hidden"] is True
-    assert state["layers"] == [{
-        "tag": "analysis",
-        "kind": "shape",
-        "meta": {"owner": "lab"},
-        "provenance": "user",
-        "hidden": True,
-    }]
+    assert state["layers"] == [
+        {
+            "tag": "analysis",
+            "kind": "shape",
+            "meta": {"owner": "lab"},
+            "provenance": "user",
+            "hidden": True,
+        }
+    ]
 
 
 def test_scene_objects_and_user_layer_round_trip_as_usable_python_model():
@@ -210,17 +212,21 @@ def test_stored_tag_high_water_gap_is_restored_before_new_allocations():
 def test_missing_anchors_restore_as_broken_manageable_objects():
     state = {
         "version": 2,
-        "annotations": [{
-            "op": "add_label",
-            "tag": "note1",
-            "options": {"tag": "note1", "text": "lost"},
-            "anchor": {"type": "atoms", "indices": [999]},
-        }],
-        "measurements": [{
-            "op": "add_distance_measurement",
-            "tag": "distance1",
-            "options": {"tag": "distance1", "picks_atom_indices": [[0], [999]]},
-        }],
+        "annotations": [
+            {
+                "op": "add_label",
+                "tag": "note1",
+                "options": {"tag": "note1", "text": "lost"},
+                "anchor": {"type": "atoms", "indices": [999]},
+            }
+        ],
+        "measurements": [
+            {
+                "op": "add_distance_measurement",
+                "tag": "distance1",
+                "options": {"tag": "distance1", "picks_atom_indices": [[0], [999]]},
+            }
+        ],
         "regions": [],
         "selections": [],
     }
@@ -321,10 +327,8 @@ def test_round_trip_preserves_overlap_colour_winner_via_order():
     lower = source.regions.add(atom_indices=[0, 1, 2], tag="lower", skip_digestion=True)
     upper = source.regions.add(atom_indices=[1, 2, 3], tag="upper", skip_digestion=True)
     # lower.order < upper.order, so upper wins on the shared atoms {1, 2}.
-    lower.set_color_by_values([0.0, 0.0, 0.0], element="atom",
-                              palette=[0xAA0000, 0xAA0000], skip_digestion=True)
-    upper.set_color_by_values([0.0, 0.0, 0.0], element="atom",
-                              palette=[0x0000BB, 0x0000BB], skip_digestion=True)
+    lower.set_color_by_values([0.0, 0.0, 0.0], element="atom", palette=[0xAA0000, 0xAA0000], skip_digestion=True)
+    upper.set_color_by_values([0.0, 0.0, 0.0], element="atom", palette=[0x0000BB, 0x0000BB], skip_digestion=True)
     assert source._atom_color_map[1] == 0x0000BB  # noqa: SLF001  (upper wins)
 
     state = source.export_state()
@@ -374,9 +378,7 @@ def test_export_filters_ephemeral_regions_and_keeps_focus_unmanageable():
     source = _mute(demo["dialanine"])
     source.regions.add(atom_indices=[0, 1], tag="keep", skip_digestion=True)
     source.regions.add(atom_indices=[4, 5], tag="plane-region1", skip_digestion=True)
-    focus_tag = source.styles.focus(
-        atom_indices=[2, 3], representation="spacefill", skip_digestion=True
-    )
+    focus_tag = source.styles.focus(atom_indices=[2, 3], representation="spacefill", skip_digestion=True)
 
     state = source.export_state()
 
@@ -434,10 +436,20 @@ def test_import_raises_on_dependency_cycle():
     state = {
         "version": 2,
         "regions": [
-            {"uid": "u1", "tag": "a", "atom_indices": [0],
-             "provenance": {"kind": "boolean", "op": "or", "operands": ["u2"]}, "order": 1},
-            {"uid": "u2", "tag": "b", "atom_indices": [1],
-             "provenance": {"kind": "boolean", "op": "or", "operands": ["u1"]}, "order": 2},
+            {
+                "uid": "u1",
+                "tag": "a",
+                "atom_indices": [0],
+                "provenance": {"kind": "boolean", "op": "or", "operands": ["u2"]},
+                "order": 1,
+            },
+            {
+                "uid": "u2",
+                "tag": "b",
+                "atom_indices": [1],
+                "provenance": {"kind": "boolean", "op": "or", "operands": ["u1"]},
+                "order": 2,
+            },
         ],
     }
     with pytest.raises(ValueError, match="cycle"):
@@ -487,9 +499,9 @@ def test_pre_phase1_v2_document_still_imports_cleanly():
     view.import_state(old_document)
 
     assert view.annotations.tags() == ["legacy"]
-    assert view.shapes.tags() == []                       # absent key -> empty, not an error
+    assert view.shapes.tags() == []  # absent key -> empty, not an error
     assert view.annotations.info("legacy")["n_atoms"] == 1  # the flat anchor was understood
-    view.annotations.hide("legacy")                        # and the object is manageable
+    view.annotations.hide("legacy")  # and the object is manageable
     assert view.annotations.info("legacy")["visible"] is False
 
 
@@ -505,7 +517,7 @@ def test_broken_measurement_reports_no_value_not_a_stale_one():
     assert original is not None
     document = source.export_state()
 
-    target = demo["dialanine"]          # 22 atoms: atom 1400 does not exist here
+    target = demo["dialanine"]  # 22 atoms: atom 1400 does not exist here
     target.import_state(document)
 
     restored = target.measurements.info("far")

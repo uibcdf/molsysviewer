@@ -16,7 +16,6 @@ from pathlib import Path
 
 import pytest
 
-
 ROOT = Path(__file__).resolve().parents[1]
 DEVGUIDE = ROOT / "devguide"
 
@@ -113,9 +112,7 @@ def test_a_blocked_entry_names_what_it_waits_on(path):
     fields = _front_matter(path)
 
     if fields["status"] == "blocked":
-        assert fields.get("blocked_by", "[]") != "[]", (
-            "blocked must name what it waits on in blocked_by"
-        )
+        assert fields.get("blocked_by", "[]") != "[]", "blocked must name what it waits on in blocked_by"
 
 
 def test_no_queue_entry_is_a_plan_or_an_inventory():
@@ -172,7 +169,7 @@ def test_the_report_template_exists_and_starts_unfilled():
     text = template.read_text(encoding="utf-8")
     assert text.startswith("---\n")
     assert "uibcdf/molsysviewer#000" in text
-    assert not ISSUE.match("uibcdf/molsysviewer#000") is None  # well formed, but a placeholder
+    assert ISSUE.match("uibcdf/molsysviewer#000") is not None  # well formed, but a placeholder
 
 
 def test_the_issue_forms_exist_and_carry_the_right_labels():
@@ -226,13 +223,15 @@ def test_the_generated_indexes_are_current():
 
     completed = subprocess.run(
         [sys.executable, str(ROOT / "devtools" / "devguide_index.py"), "--check"],
-        capture_output=True, text=True, cwd=ROOT, timeout=120,
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
+        timeout=120,
     )
 
     assert completed.returncode == 0, (
-        (completed.stderr or completed.stdout).strip()
-        or "devguide_index.py --check failed"
-    )
+        completed.stderr or completed.stdout
+    ).strip() or "devguide_index.py --check failed"
 
 
 def test_the_board_check_exists_and_refuses_to_write_state_into_a_document():

@@ -45,11 +45,13 @@ def lifecycle_payload(events: list[dict]) -> dict:
         message_batches.append(list(sent))
         sent.clear()
         info = view.annotations.info("note")
-        states.append({
-            "text": info["text"],
-            "visible": info["visible"],
-            "undo_depth": len(view.history._undo),  # noqa: SLF001
-        })
+        states.append(
+            {
+                "text": info["text"],
+                "visible": info["visible"],
+                "undo_depth": len(view.history._undo),  # noqa: SLF001
+            }
+        )
     return {"message_batches": message_batches, "states": states}
 
 

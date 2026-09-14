@@ -17,7 +17,9 @@ def test_export_html_namespace_delegates(monkeypatch, tmp_path):
     monkeypatch.setattr(view, "_write_html_impl", fake_impl)
 
     outfile = tmp_path / "out.html"
-    view.export.html(str(outfile), title="TestTitle", include_controls=False, include_popout=False, shared_runtime=str(tmp_path))
+    view.export.html(
+        str(outfile), title="TestTitle", include_controls=False, include_popout=False, shared_runtime=str(tmp_path)
+    )
 
     assert called["output_filename"] == str(outfile)
     assert called["kwargs"] == {

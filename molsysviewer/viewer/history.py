@@ -235,7 +235,9 @@ class HistoryMixin:
             kind = msg.get("kind")
             if not isinstance(cleared_tag, str) or kind not in {"measurement", "layer"}:
                 return
-            self._measurement_history = [m for m in self._measurement_history if self._tag_from_message(m) != cleared_tag]
+            self._measurement_history = [
+                m for m in self._measurement_history if self._tag_from_message(m) != cleared_tag
+            ]
             return
 
         if op == "set_layer_tag":
@@ -269,7 +271,9 @@ class HistoryMixin:
 
         tag = self._tag_from_message(msg)
         if isinstance(tag, str):
-            self._measurement_history = [item for item in self._measurement_history if self._tag_from_message(item) != tag]
+            self._measurement_history = [
+                item for item in self._measurement_history if self._tag_from_message(item) != tag
+            ]
         self._measurement_history.append(dict(msg))
 
     def _record_selection_message(self, msg: dict) -> None:
@@ -367,7 +371,8 @@ class HistoryMixin:
             return (
                 isinstance(op, str)
                 and op.startswith("add_")
-                and op not in {"add_label", "add_distance_measurement", "add_angle_measurement", "add_dihedral_measurement"}
+                and op
+                not in {"add_label", "add_distance_measurement", "add_angle_measurement", "add_dihedral_measurement"}
             )
 
         def rewrite(history: list[dict]) -> list[dict]:

@@ -7,11 +7,10 @@ Also tests add_hbonds with per-structure atom-index pairs.
 
 import pytest
 import pyunitwizard as puw
-
+from molsysviewer.shapes.channel_tubes import ChannelTubes
+from molsysviewer.shapes.links import LinkShapes
 from molsysviewer.shapes.spheres import SphereShapes
 from molsysviewer.shapes.triangle_faces import TriangleFaces
-from molsysviewer.shapes.links import LinkShapes
-from molsysviewer.shapes.channel_tubes import ChannelTubes
 
 
 class DummyView:

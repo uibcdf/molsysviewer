@@ -10,7 +10,6 @@ refused from the public entry point.
 from __future__ import annotations
 
 import pytest
-
 from molsysviewer._private.argdigest.argument.direction import digest_direction
 from molsysviewer._private.argdigest.argument.mode import digest_mode
 from molsysviewer._private.argdigest.argument.step import digest_step
@@ -21,6 +20,7 @@ PLAYER_CALLER = "molsysviewer.player.play"
 
 
 # --- mode ------------------------------------------------------------------
+
 
 @pytest.mark.parametrize("caller", [PLAY_CALLER, PLAYER_CALLER])
 def test_mode_none_is_left_to_the_callee(caller):
@@ -40,6 +40,7 @@ def test_mode_rejects_unknown_playback_mode(caller):
 
 
 # --- direction -------------------------------------------------------------
+
 
 @pytest.mark.parametrize("caller", [PLAY_CALLER, PLAYER_CALLER])
 def test_direction_none_is_left_to_the_callee(caller):
@@ -65,6 +66,7 @@ def test_direction_still_digests_vectors_outside_playback():
 
 
 # --- step ------------------------------------------------------------------
+
 
 def test_step_none_is_left_to_the_callee():
     assert digest_step(None, caller=PLAY_CALLER) is None

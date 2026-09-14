@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-
 from typing import Any
 
 from smonitor import signal
@@ -13,9 +12,7 @@ class MolSysMTInterfaceMixin:
         current_style = self.styles.current(skip_digestion=True) if hasattr(self, "styles") else None
         layer_tags = sorted(self._layers.keys())
         region_tags = sorted(self._regions.keys())
-        shape_tags = sorted(
-            tag for (kind, tag) in self._scene_objects if kind == "shape"
-        )
+        shape_tags = sorted(tag for (kind, tag) in self._scene_objects if kind == "shape")
         annotation_tags = sorted(self.annotations.tags())
         measurement_tags = sorted(self.measurements.tags(skip_digestion=True))
         selection_tags = sorted(self.selections.tags())
@@ -93,7 +90,9 @@ class MolSysMTInterfaceMixin:
                 "n atoms": None,
                 "n members": None,
                 "n picks": None,
-                "details": ", ".join(f"{key}={value}" for key, value in sorted(whole["params"].items())) if whole["params"] else "",
+                "details": ", ".join(f"{key}={value}" for key, value in sorted(whole["params"].items()))
+                if whole["params"]
+                else "",
             }
         )
 
@@ -126,7 +125,9 @@ class MolSysMTInterfaceMixin:
                 "active": current_style is not None,
                 "layer tag": None,
                 "representation": None if current_style is None else current_style.get("representation"),
-                "preset": None if current_style is None else (current_style.get("user_preset") or current_style.get("preset")),
+                "preset": None
+                if current_style is None
+                else (current_style.get("user_preset") or current_style.get("preset")),
                 "n atoms": None,
                 "n members": styles["registered_count"],
                 "n picks": None,
@@ -279,7 +280,7 @@ class MolSysMTInterfaceMixin:
     def _records_to_styler(self, records: list[dict[str, Any]]):
         from pandas import DataFrame as df
 
-        return df(records).style.hide(axis='index')
+        return df(records).style.hide(axis="index")
 
     def _styler_to_dataframe(self, styler):
         data = getattr(styler, "data", None)
@@ -304,7 +305,7 @@ class MolSysMTInterfaceMixin:
 
     @signal(tags=["query"])
     @digest()
-    def info(self, output_type='styler', skip_digestion=False):
+    def info(self, output_type="styler", skip_digestion=False):
         """Summarise **the view**: what is in the scene and how it is drawn.
 
         One row per scene object across its sections -- the whole, the loads, the styles,

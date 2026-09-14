@@ -30,7 +30,9 @@ def digest_structures_atom_indices(structures_atom_indices, caller=None):
         indices = []
         for index in per_structure:
             if isinstance(index, bool) or not isinstance(index, (int, np.integer)) or int(index) < 0:
-                raise ArgumentError("structures_atom_indices", value=structures_atom_indices, caller=caller, message=None)
+                raise ArgumentError(
+                    "structures_atom_indices", value=structures_atom_indices, caller=caller, message=None
+                )
             indices.append(int(index))
         out.append(indices)
     return out

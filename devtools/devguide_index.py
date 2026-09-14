@@ -55,9 +55,7 @@ STATUS_HEADING = {
 def _front_matter(path: Path) -> dict[str, str]:
     text = path.read_text(encoding="utf-8")
     if not text.startswith("---\n"):
-        raise SystemExit(
-            f"{path.relative_to(ROOT)} has no front matter; see devguide/reporting_protocol.md"
-        )
+        raise SystemExit(f"{path.relative_to(ROOT)} has no front matter; see devguide/reporting_protocol.md")
     block = text.split("---\n", 2)[1]
     fields: dict[str, str] = {}
     for line in block.splitlines():
@@ -101,10 +99,7 @@ def _render(queues: tuple[str, ...], readme_directory: str) -> str:
             lines += ["", f"### Deferred until after 1.0 ({len(entries)})", ""]
             prefix = "post_1.0/"
             for name, fields in sorted(entries, key=lambda item: item[0]):
-                lines.append(
-                    f"- [`{name}`]({prefix}{name}) — {_issue_link(fields['issue'])} — "
-                    f"{fields['summary']}"
-                )
+                lines.append(f"- [`{name}`]({prefix}{name}) — {_issue_link(fields['issue'])} — {fields['summary']}")
             continue
 
         by_status: dict[str, list[tuple[str, dict[str, str]]]] = {}
@@ -117,7 +112,9 @@ def _render(queues: tuple[str, ...], readme_directory: str) -> str:
             lines += ["", f"### {STATUS_HEADING[status]} ({len(group)})", ""]
             for name, fields in sorted(group, key=lambda item: item[0]):
                 blocked_by = fields.get("blocked_by", "[]")
-                waiting = f" — waiting on {blocked_by.strip('[]')}" if status == "blocked" and blocked_by != "[]" else ""
+                waiting = (
+                    f" — waiting on {blocked_by.strip('[]')}" if status == "blocked" and blocked_by != "[]" else ""
+                )
                 lines.append(
                     f"- [`{name}`]({name}) — {_issue_link(fields['issue'])} — "
                     f"{fields['summary']}{_qualifiers(fields)}{waiting}"
@@ -139,8 +136,7 @@ def _block(readme: Path, body: str) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--check", action="store_true",
-                        help="exit non-zero if a rendered index is out of date")
+    parser.add_argument("--check", action="store_true", help="exit non-zero if a rendered index is out of date")
     arguments = parser.parse_args()
 
     stale = []

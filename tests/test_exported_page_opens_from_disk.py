@@ -91,12 +91,8 @@ def test_a_self_contained_export_renders_with_no_server_and_no_network(tmp_path)
 
     dom, console = _open_from_disk(output)
 
-    assert "blocked by CORS" not in console, (
-        "the page tried to reach across an origin it does not have from disk"
-    )
-    assert 'data-molsysviewer-rendered="true"' in dom, (
-        "the runtime never booted; console was:\n" + console[-3000:]
-    )
+    assert "blocked by CORS" not in console, "the page tried to reach across an origin it does not have from disk"
+    assert 'data-molsysviewer-rendered="true"' in dom, "the runtime never booted; console was:\n" + console[-3000:]
     # Mol* needs a GPU that a headless test machine may not have. That is a
     # limitation of the harness, not of the page, and it happens *after* the
     # runtime booted — which is what this test is about.
@@ -121,8 +117,7 @@ def test_the_exported_file_is_the_only_file_needed(tmp_path):
     dom, console = _open_from_disk(moved)
 
     assert 'data-molsysviewer-rendered="true"' in dom, (
-        "an export that only works next to its siblings is not self-contained; "
-        "console was:\n" + console[-3000:]
+        "an export that only works next to its siblings is not self-contained; console was:\n" + console[-3000:]
     )
 
 
@@ -182,9 +177,7 @@ def test_a_scene_from_another_release_says_so(tmp_path):
 
     dom, _ = _open_from_disk(stale)
 
-    assert 'data-molsysviewer-version-mismatch="true"' in dom, (
-        "a scene from another release rendered without a word"
-    )
+    assert 'data-molsysviewer-version-mismatch="true"' in dom, "a scene from another release rendered without a word"
 
 
 def test_the_notice_names_both_versions(tmp_path):
@@ -209,9 +202,9 @@ def test_a_matching_pair_stays_quiet(tmp_path):
 
     dom, _ = _open_from_disk(view)
 
-    assert re.search(
-        r'<div[^>]*data-molsysviewer-version-mismatch="true"', dom
-    ) is None, "a matching pair produced a mismatch notice"
+    assert re.search(r'<div[^>]*data-molsysviewer-version-mismatch="true"', dom) is None, (
+        "a matching pair produced a mismatch notice"
+    )
 
 
 def test_the_studio_says_it_cannot_act_here(tmp_path):

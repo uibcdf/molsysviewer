@@ -15,7 +15,16 @@ def test_request_image_export_sends_message_when_ready():
     result = view._request_image_export(width_px=640, height_px=480, scale=2.0, transparent=True, timeout_s=0)  # noqa: SLF001
 
     assert result is None
-    assert sent == [{"op": "request_image_export", "transparent": True, "scale": 2.0, "preset": "current", "width": 640, "height": 480}]
+    assert sent == [
+        {
+            "op": "request_image_export",
+            "transparent": True,
+            "scale": 2.0,
+            "preset": "current",
+            "width": 640,
+            "height": 480,
+        }
+    ]
 
 
 def test_request_image_export_includes_camera_snapshot_when_provided():
@@ -29,7 +38,15 @@ def test_request_image_export_includes_camera_snapshot_when_provided():
     result = view._request_image_export(camera_snapshot=snapshot, timeout_s=0)  # noqa: SLF001
 
     assert result is None
-    assert sent == [{"op": "request_image_export", "transparent": False, "scale": 1.0, "preset": "current", "camera_snapshot": snapshot}]
+    assert sent == [
+        {
+            "op": "request_image_export",
+            "transparent": False,
+            "scale": 1.0,
+            "preset": "current",
+            "camera_snapshot": snapshot,
+        }
+    ]
 
 
 def test_request_image_export_includes_preset_when_provided():
@@ -436,7 +453,6 @@ def test_frontend_image_export_event_is_recorded():
     view._handle_frontend_event(event)  # noqa: SLF001
 
     assert view._last_image_export_event == event  # noqa: SLF001
-
 
 
 def test_export_image_frontend_gpu_limit_error_raises_valueerror(monkeypatch, tmp_path: Path):

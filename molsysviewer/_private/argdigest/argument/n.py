@@ -8,4 +8,4 @@ def digest_n(n, caller=None):
             return v
     except (TypeError, ValueError):
         pass
-    raise ArgumentError('n', value=n, caller=caller, message=None)
+    raise ArgumentError("n", value=n, caller=caller, message=None)

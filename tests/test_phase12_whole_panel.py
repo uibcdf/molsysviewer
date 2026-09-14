@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import molsysmt as msm
-
-from molsysviewer import MolSysView
 from molsysviewer.demo import demo
 from molsysviewer.styles import STRUCTURAL_COLOR_SCHEMES
+
+from molsysviewer import MolSysView
 
 
 def _fresh_view():

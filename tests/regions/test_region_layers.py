@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import warnings
 
-
 from molsysviewer.demo import demo
+
 from molsysviewer import pyunitwizard as puw
 
 
@@ -144,9 +144,13 @@ def test_region_summary_runtime_record_carries_layer():
 
 
 def _action(view, action, **content):
-    view._handle_frontend_event({  # noqa: SLF001
-        "event": "interaction_context_action", "action": action, **content,
-    })
+    view._handle_frontend_event(
+        {  # noqa: SLF001
+            "event": "interaction_context_action",
+            "action": action,
+            **content,
+        }
+    )
 
 
 def test_context_action_assigns_and_detaches_region_layer():

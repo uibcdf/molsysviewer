@@ -67,7 +67,7 @@ def _preallocated_metrics(buffers) -> dict:
     offset = 0
     for buffer in buffers:
         view = memoryview(buffer).cast("B")
-        out[offset:offset + len(view)] = view
+        out[offset : offset + len(view)] = view
         offset += len(view)
 
     _, traced_peak = tracemalloc.get_traced_memory()
@@ -122,16 +122,11 @@ def _join_metrics(buffers, label: str, extra: dict) -> dict:
 
 def _real_case(label: str, system_name: str, resource_name: str, n_structures) -> dict:
     import molsysmt as msm
-
     from molsysviewer.loaders.array_native_molsys import serialize_array_native_molsys
 
     source = msm.systems[system_name][resource_name]
-    structure_indices = (
-        "all" if n_structures == "all" else list(range(int(n_structures)))
-    )
-    molsys = msm.convert(
-        source, to_form="molsysmt.MolSys", structure_indices=structure_indices
-    )
+    structure_indices = "all" if n_structures == "all" else list(range(int(n_structures)))
+    molsys = msm.convert(source, to_form="molsysmt.MolSys", structure_indices=structure_indices)
     payload = serialize_array_native_molsys(molsys)
     return _join_metrics(
         payload.buffers,
@@ -172,16 +167,10 @@ def _synthetic_case(label: str, megabytes: int, buffers: int = 3) -> dict:
 
 
 CASES: dict[str, callable] = {
-    "pentalanine-5000": lambda: _real_case(
-        "pentalanine-5000", "pentalanine", "traj_pentalanine.h5msm", "all"
-    ),
+    "pentalanine-5000": lambda: _real_case("pentalanine-5000", "pentalanine", "traj_pentalanine.h5msm", "all"),
     "4v4z": lambda: _real_case("4v4z", "4V4Z", "4v4z.bcif.gz", "all"),
-    "representative-large-100": lambda: _representative_case(
-        "representative-large-100", "large", 100
-    ),
-    "representative-xlarge-10": lambda: _representative_case(
-        "representative-xlarge-10", "xlarge", 10
-    ),
+    "representative-large-100": lambda: _representative_case("representative-large-100", "large", 100),
+    "representative-xlarge-10": lambda: _representative_case("representative-xlarge-10", "xlarge", 10),
     "synthetic-50mb": lambda: _synthetic_case("synthetic-50mb", 50),
     "synthetic-200mb": lambda: _synthetic_case("synthetic-200mb", 200),
     "synthetic-800mb": lambda: _synthetic_case("synthetic-800mb", 800),

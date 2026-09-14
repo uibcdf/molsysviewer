@@ -24,17 +24,16 @@ def initial_payload() -> dict:
     initial_messages = list(sent)
     view._measurement_history[0]["options"]["value_series"] = [1.09, 2.18]  # noqa: SLF001
     sent.clear()
-    view._handle_frontend_event({  # noqa: SLF001
-        "event": "trajectory_frame_changed",
-        "frame": 1,
-        "is_playing": False,
-    })
+    view._handle_frontend_event(
+        {  # noqa: SLF001
+            "event": "trajectory_frame_changed",
+            "frame": 1,
+            "is_playing": False,
+        }
+    )
     return {
         "initial_messages": initial_messages,
-        "frame_messages": [
-            message for message in sent
-            if message.get("op") == "set_measurement_summaries"
-        ],
+        "frame_messages": [message for message in sent if message.get("op") == "set_measurement_summaries"],
     }
 
 
@@ -48,21 +47,21 @@ def lifecycle_payload(events: list[dict]) -> dict:
         view._handle_frontend_event(event)  # noqa: SLF001
         message_batches.append(list(sent))
         sent.clear()
-        states.append({
-            "contains": view.measurements.contains("d1"),
-            "visible": (
-                view.measurements.info("d1")["visible"]
-                if view.measurements.contains("d1")
-                else None
-            ),
-        })
+        states.append(
+            {
+                "contains": view.measurements.contains("d1"),
+                "visible": (view.measurements.info("d1")["visible"] if view.measurements.contains("d1") else None),
+            }
+        )
 
     view._handle_frontend_event({"event": "scene_history_undo"})  # noqa: SLF001
     message_batches.append(list(sent))
-    states.append({
-        "contains": view.measurements.contains("d1"),
-        "visible": view.measurements.info("d1")["visible"],
-    })
+    states.append(
+        {
+            "contains": view.measurements.contains("d1"),
+            "visible": view.measurements.info("d1")["visible"],
+        }
+    )
     return {"message_batches": message_batches, "states": states}
 
 

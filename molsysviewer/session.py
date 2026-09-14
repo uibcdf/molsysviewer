@@ -52,21 +52,16 @@ def _read_manifest(archive: zipfile.ZipFile) -> dict:
     try:
         manifest = json.loads(archive.read(_MANIFEST_MEMBER).decode("utf-8"))
     except KeyError as error:
-        raise SessionFormatError(
-            "This file is not a MolSysViewer session: it has no manifest."
-        ) from error
+        raise SessionFormatError("This file is not a MolSysViewer session: it has no manifest.") from error
     except (json.JSONDecodeError, UnicodeDecodeError) as error:
         raise SessionFormatError("The session manifest is not readable JSON.") from error
 
     if manifest.get("format") != SESSION_FORMAT:
-        raise SessionFormatError(
-            f"This file declares format {manifest.get('format')!r}, not {SESSION_FORMAT!r}."
-        )
+        raise SessionFormatError(f"This file declares format {manifest.get('format')!r}, not {SESSION_FORMAT!r}.")
     version = manifest.get("version")
     if version != SESSION_VERSION:
         raise SessionFormatError(
-            f"Unsupported session version: {version!r}. This build reads version "
-            f"{SESSION_VERSION}."
+            f"Unsupported session version: {version!r}. This build reads version {SESSION_VERSION}."
         )
     return manifest
 
@@ -116,9 +111,7 @@ def save_session(view: Any, path: str | os.PathLike[str]) -> None:
                 delete=False,
             ) as temporary:
                 temporary_path = Path(temporary.name)
-            with zipfile.ZipFile(
-                temporary_path, "w", compression=zipfile.ZIP_DEFLATED
-            ) as archive:
+            with zipfile.ZipFile(temporary_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
                 archive.writestr(_MANIFEST_MEMBER, json.dumps(manifest, indent=2, sort_keys=True))
                 archive.writestr(_STATE_MEMBER, json.dumps(state, indent=2, sort_keys=True))
                 archive.write(structure_path, _STRUCTURE_MEMBER)

@@ -15,4 +15,4 @@ re-scoping rules MolSysMT already applies.
 If a future method digests here and then forwards with `skip_digestion=True`, it is the
 last layer that can rename its arguments and it will need a table again. That shape is what
 to look for; the emptiness of this package is not a licence to skip the question.
-""" 
+"""

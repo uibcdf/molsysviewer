@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-
 from smonitor import signal
 
 from .._private.argdigest import digest

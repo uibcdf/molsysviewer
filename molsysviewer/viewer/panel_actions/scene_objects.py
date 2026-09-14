@@ -84,18 +84,14 @@ def set_annotation_text(view: Any, content: Mapping[str, Any]) -> None:
     text = content.get("text")
     if not isinstance(text, str) or not text.strip():
         raise ValueError("set_annotation_text requires non-empty text.")
-    view.annotations.set_text(
-        _tag(content, "set_annotation_text"), text.strip(), skip_digestion=True
-    )
+    view.annotations.set_text(_tag(content, "set_annotation_text"), text.strip(), skip_digestion=True)
 
 
 def rename_annotation(view: Any, content: Mapping[str, Any]) -> None:
     new_tag = content.get("new_tag")
     if not isinstance(new_tag, str) or not new_tag.strip():
         raise ValueError("rename_annotation requires non-empty new_tag.")
-    view.annotations.set_tag(
-        _tag(content, "rename_annotation"), new_tag.strip(), skip_digestion=True
-    )
+    view.annotations.set_tag(_tag(content, "rename_annotation"), new_tag.strip(), skip_digestion=True)
 
 
 def set_annotation_layer(view: Any, content: Mapping[str, Any]) -> None:
@@ -123,9 +119,7 @@ def set_annotation_style(view: Any, content: Mapping[str, Any]) -> None:
     style = content.get("style")
     if not isinstance(style, Mapping):
         raise ValueError("set_annotation_style requires a style mapping.")
-    view.annotations.set_style(
-        _tag(content, "set_annotation_style"), dict(style), skip_digestion=True
-    )
+    view.annotations.set_style(_tag(content, "set_annotation_style"), dict(style), skip_digestion=True)
 
 
 def show_all_annotations(view: Any, _content: Mapping[str, Any]) -> None:
@@ -293,11 +287,13 @@ def _active_measurement_picks(view: Any) -> list[list[int]]:
     if view.molsys is None:
         raise ValueError("A molecular system must be loaded before creating a measurement.")
     picks = [
-        list(msm.select(
-            view.molsys,
-            selection=f"group_index=={group_index}",
-            syntax="MolSysMT",
-        ))
+        list(
+            msm.select(
+                view.molsys,
+                selection=f"group_index=={group_index}",
+                syntax="MolSysMT",
+            )
+        )
         for group_index in view.active_selection.group_indices
     ]
     return [pick for pick in picks if pick]
@@ -312,9 +308,7 @@ def create_measurement(view: Any, content: Mapping[str, Any]) -> None:
     if picks is None:
         picks = _active_measurement_picks(view)
     if len(picks) != required[kind]:
-        raise ValueError(
-            f"{kind} requires {required[kind]} selected endpoints; received {len(picks)}."
-        )
+        raise ValueError(f"{kind} requires {required[kind]} selected endpoints; received {len(picks)}.")
     endpoint_policy = content.get("endpoint_policy")
     tag = content.get("tag")
     kwargs = {"skip_digestion": True}
@@ -329,9 +323,7 @@ def rename_measurement(view: Any, content: Mapping[str, Any]) -> None:
     new_tag = content.get("new_tag")
     if not isinstance(new_tag, str) or not new_tag.strip():
         raise ValueError("rename_measurement requires non-empty new_tag.")
-    view.measurements.set_tag(
-        _tag(content, "rename_measurement"), new_tag.strip(), skip_digestion=True
-    )
+    view.measurements.set_tag(_tag(content, "rename_measurement"), new_tag.strip(), skip_digestion=True)
 
 
 def set_measurement_layer(view: Any, content: Mapping[str, Any]) -> None:
@@ -363,9 +355,7 @@ def clear_measurements(view: Any, _content: Mapping[str, Any]) -> None:
 
 
 def set_measurement_endpoint_policy(view: Any, content: Mapping[str, Any]) -> None:
-    view.measurements.set_endpoint_policy(
-        str(content.get("policy") or ""), skip_digestion=True
-    )
+    view.measurements.set_endpoint_policy(str(content.get("policy") or ""), skip_digestion=True)
 
 
 def set_measurement_representative_atom(view: Any, content: Mapping[str, Any]) -> None:

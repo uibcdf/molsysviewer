@@ -7,8 +7,8 @@ current state.
 """
 
 import molsysmt as msm
-import pyunitwizard as puw
 import pytest
+import pyunitwizard as puw
 
 from molsysviewer import MolSysView
 
@@ -31,6 +31,7 @@ def _one(messages, op, tag=None):
 
 # 1. dynamic region at the current frame ------------------------------------
 
+
 def test_a_dynamic_region_carries_the_indices_materialized_for_the_current_frame():
     v = _view()
     region = v._new_region_impl(  # noqa: SLF001
@@ -51,6 +52,7 @@ def test_a_dynamic_region_carries_the_indices_materialized_for_the_current_frame
 
 # 2. dynamic shape -----------------------------------------------------------
 
+
 def test_a_trajectory_bound_shape_survives_in_the_snapshot():
     v = _view()
     v.shapes.add_sphere(
@@ -68,6 +70,7 @@ def test_a_trajectory_bound_shape_survives_in_the_snapshot():
 
 
 # 3. hidden object inside a hidden layer ------------------------------------
+
 
 def test_a_hidden_object_inside_a_hidden_layer_stays_hidden():
     v = _view()
@@ -95,6 +98,7 @@ def test_a_hidden_object_inside_a_hidden_layer_stays_hidden():
 
 # 4. inherit representation --------------------------------------------------
 
+
 def test_a_region_inheriting_its_representation_does_not_invent_one():
     v = _view()
     v.regions.add("atom_index < 6", tag="inh", representation="inherit")
@@ -105,6 +109,7 @@ def test_a_region_inheriting_its_representation_does_not_invent_one():
 
 
 # 5. overlapping colours and order -------------------------------------------
+
 
 def test_overlapping_region_colours_resolve_by_order_in_the_snapshot():
     v = _view()
@@ -127,12 +132,11 @@ def test_overlapping_region_colours_resolve_by_order_in_the_snapshot():
 
     # Colours come after the regions that own them.
     ops = [m.get("op") for m in snapshot]
-    assert ops.index("set_atom_colors") > max(
-        i for i, op in enumerate(ops) if op == "create_region"
-    )
+    assert ops.index("set_atom_colors") > max(i for i, op in enumerate(ops) if op == "create_region")
 
 
 # 6. saved selection ---------------------------------------------------------
+
 
 def test_a_saved_selection_is_projected_as_a_real_save_selection_message():
     v = _view()
@@ -145,6 +149,7 @@ def test_a_saved_selection_is_projected_as_a_real_save_selection_message():
 
 
 # 7. absent box and time stay absent -----------------------------------------
+
 
 def test_absent_box_and_time_are_not_invented():
     v = _view()
@@ -161,6 +166,7 @@ def test_absent_box_and_time_are_not_invented():
 
 
 # 8. panel/canvas separation under a full scene ------------------------------
+
 
 def test_a_full_scene_keeps_canvas_and_panel_projections_separate():
     v = _view()

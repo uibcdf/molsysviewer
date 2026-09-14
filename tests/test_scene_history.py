@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import pytest
-
 from molsysviewer.demo import demo
+
 from molsysviewer import pyunitwizard as puw
 
 
@@ -15,8 +15,11 @@ def _scene(state):
     """The reproducible scene content, minus the monotonic high-water marks.
     Undo restores the scene but never rolls the uid/order counters back (that
     would let a later create collide with a redo-able snapshot)."""
-    return {k: v for k, v in state.items()
-            if k not in ("order_high_water_mark", "uid_high_water_mark", "tag_high_water_marks")}
+    return {
+        k: v
+        for k, v in state.items()
+        if k not in ("order_high_water_mark", "uid_high_water_mark", "tag_high_water_marks")
+    }
 
 
 def test_undo_restores_prior_scene_compared_via_export_state():
@@ -113,9 +116,7 @@ def test_history_byte_budget_discards_oldest_checkpoints_observably():
 
     with pytest.warns(RuntimeWarning, match="storage budget"):
         for index in range(10):
-            view.active_selection.set(
-                [index], syntax="Indices", skip_digestion=True
-            )
+            view.active_selection.set([index], syntax="Indices", skip_digestion=True)
 
     retained = view.history._undo_bytes + view.history._redo_bytes  # noqa: SLF001
     assert retained <= view.history._byte_limit  # noqa: SLF001
@@ -128,9 +129,7 @@ def test_history_byte_budget_discards_oldest_checkpoints_observably():
 def test_history_byte_budget_counts_undo_and_redo_together():
     view = _mute(demo["dialanine"])
     for index in range(6):
-        view.active_selection.set(
-            [index], syntax="Indices", skip_digestion=True
-        )
+        view.active_selection.set([index], syntax="Indices", skip_digestion=True)
 
     checkpoint_size = max(len(snapshot) for snapshot in view.history._undo)  # noqa: SLF001
     view.history._byte_limit = checkpoint_size * 3  # noqa: SLF001
@@ -152,10 +151,12 @@ def test_undo_absorbs_active_selection_changes():
 
 
 def _pick(view, indices):
-    view._handle_frontend_event({  # noqa: SLF001
-        "event": "interaction_active_selection_changed",
-        "atom_indices": list(indices),
-    })
+    view._handle_frontend_event(
+        {  # noqa: SLF001
+            "event": "interaction_active_selection_changed",
+            "atom_indices": list(indices),
+        }
+    )
 
 
 def test_frontend_pick_is_checkpointed_and_undoable():
@@ -298,12 +299,14 @@ def test_specialized_shape_and_interactive_measurement_paths_enter_history():
     assert not view.shapes.contains("specialized", skip_digestion=True)
 
     view.history.clear()
-    view._handle_frontend_event({  # noqa: SLF001
-        "event": "interaction_measurement_created",
-        "action": "distance",
-        "picked_count": 2,
-        "picks_atom_indices": [[0], [1]],
-    })
+    view._handle_frontend_event(
+        {  # noqa: SLF001
+            "event": "interaction_measurement_created",
+            "action": "distance",
+            "picked_count": 2,
+            "picks_atom_indices": [[0], [1]],
+        }
+    )
     assert view.measurements.contains("measurement1", skip_digestion=True)
     assert view.history.undo()
     assert not view.measurements.contains("measurement1", skip_digestion=True)

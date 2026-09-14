@@ -6,7 +6,7 @@ import sys
 
 
 def test_top_level_import_is_lazy_and_public_api_materializes_on_demand():
-    code = r'''
+    code = r"""
 import json
 import sys
 import molsysviewer as m
@@ -27,7 +27,7 @@ materialized = {
     "config": m.config.__name__,
 }
 print(json.dumps({"before": before, "materialized": materialized}))
-'''
+"""
 
     completed = subprocess.run(
         [sys.executable, "-c", code],

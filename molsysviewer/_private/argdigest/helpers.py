@@ -19,14 +19,22 @@ def normalize_viewer_caller(caller: str | None) -> str | None:
     parts = caller.split(".")
     if len(parts) >= 4 and parts[0] == "molsysviewer" and parts[1] == "viewer":
         mixin_names = {
-            "regions", "panel_mode", "load", "visibility", "scene",
-            "molsysmt_interface", "state", "interaction", "history", "export", "scene_registry"
+            "regions",
+            "panel_mode",
+            "load",
+            "visibility",
+            "scene",
+            "molsysmt_interface",
+            "state",
+            "interaction",
+            "history",
+            "export",
+            "scene_registry",
         }
         if parts[2] in mixin_names:
             return f"molsysviewer.viewer.{parts[-1]}"
 
     return caller
-
 
 
 def digest_selection_and_syntax(

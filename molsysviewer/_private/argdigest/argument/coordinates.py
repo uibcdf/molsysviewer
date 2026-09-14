@@ -1,19 +1,21 @@
-from ...exceptions import ArgumentError
 import numpy as np
+
 from molsysviewer._pyunitwizard import puw
 
+from ...exceptions import ArgumentError
+
 functions_where_boolean = (
-    'molsysmt.basic.get.get',
-    'molsysviewer.viewer.get',
-    'molsysmt.basic.compare.compare',
-    'molsysmt.basic.iterator.__init__',
-    '.iterators.__init__'
-    )
+    "molsysmt.basic.get.get",
+    "molsysviewer.viewer.get",
+    "molsysmt.basic.compare.compare",
+    "molsysmt.basic.iterator.__init__",
+    ".iterators.__init__",
+)
+
 
 def digest_coordinates(coordinates, caller=None):
 
     if caller is not None:
-
         if caller.endswith(functions_where_boolean):
             if isinstance(coordinates, bool):
                 return coordinates
@@ -23,12 +25,11 @@ def digest_coordinates(coordinates, caller=None):
 
     value, unit = puw.get_value_and_unit(coordinates)
 
-    if not puw.check(unit, dimensionality={'[L]':1}):
-        raise ArgumentError('coordinates', value=coordinates, caller=caller, message=None)
+    if not puw.check(unit, dimensionality={"[L]": 1}):
+        raise ArgumentError("coordinates", value=coordinates, caller=caller, message=None)
 
     if not isinstance(value, np.ndarray):
         value = np.array(value)
-
 
     value = value.astype(np.float64)
     shape = value.shape
@@ -43,5 +44,4 @@ def digest_coordinates(coordinates, caller=None):
         if shape[2] == 3:
             return puw.quantity(value, unit, standardized=True)
 
-    raise ArgumentError('coordinates', value=coordinates, caller=caller, message=None)
-
+    raise ArgumentError("coordinates", value=coordinates, caller=caller, message=None)

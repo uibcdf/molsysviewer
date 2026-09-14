@@ -8,17 +8,12 @@ from molsysviewer.demo import demo
 from molsysviewer.regions import Region
 from molsysviewer.selections import Selection
 
-
-PUBLIC_API_DOC = (
-    Path(__file__).parents[1] / "docs" / "content" / "developer" / "public_api.md"
-)
+PUBLIC_API_DOC = Path(__file__).parents[1] / "docs" / "content" / "developer" / "public_api.md"
 DECLARATION_PATTERN = re.compile(
     r"`(?P<symbol>view(?:\.[A-Za-z_][A-Za-z0-9_]*)+)"
     r"(?P<call>\(\))?` \((?P<kind>method|property)\)"
 )
-VIEW_SYMBOL_PATTERN = re.compile(
-    r"(?<![A-Za-z0-9_])view(?:\.[A-Za-z_][A-Za-z0-9_]*|\[tag\])+"
-)
+VIEW_SYMBOL_PATTERN = re.compile(r"(?<![A-Za-z0-9_])view(?:\.[A-Za-z_][A-Za-z0-9_]*|\[tag\])+")
 PUBLIC_VIEW_API_START = "`MolSysView` is also explicitly growing"
 PUBLIC_VIEW_API_END = "## Internal Python APIs"
 
@@ -84,9 +79,7 @@ def test_public_api_doc_declares_existing_methods_and_properties():
         actual_kind = "property" if isinstance(descriptor, property) else "method"
         if actual_kind == "method":
             assert callable(getattr(parent, attribute)), f"{symbol} is not callable"
-        assert actual_kind == declared_kind, (
-            f"{symbol} is documented as {declared_kind}, but is a {actual_kind}"
-        )
+        assert actual_kind == declared_kind, f"{symbol} is documented as {declared_kind}, but is a {actual_kind}"
 
 
 def test_public_api_doc_never_names_a_symbol_that_does_not_exist():

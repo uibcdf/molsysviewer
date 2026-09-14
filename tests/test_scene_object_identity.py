@@ -1,4 +1,5 @@
 from molsysviewer.demo import demo
+
 from molsysviewer import pyunitwizard as puw
 
 
@@ -52,10 +53,12 @@ def test_renaming_shape_does_not_rewrite_same_tag_annotation_layer_tag():
     shape.set_tag("sphere1", skip_digestion=True)
 
     annotation_layer_tags = [
-        record.get("options", {}).get("layer_tag") for record in view._annotation_history  # noqa: SLF001
+        record.get("options", {}).get("layer_tag")
+        for record in view._annotation_history  # noqa: SLF001
     ]
     shape_layer_tags = [
-        record.get("options", {}).get("layer_tag") for record in view._shape_history  # noqa: SLF001
+        record.get("options", {}).get("layer_tag")
+        for record in view._shape_history  # noqa: SLF001
     ]
     assert annotation_layer_tags == ["site1"], "the shape's rename bled into the annotation"
     assert shape_layer_tags == ["sphere1"], "the shape's own layer_tag was not rewritten"

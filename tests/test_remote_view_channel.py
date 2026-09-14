@@ -97,17 +97,12 @@ def test_remote_command_crosses_real_view_seam_once_and_duplicate_is_acknowledge
         assert second.status == "duplicate"
         assert sorted(view.active_selection.atom_indices) == [0, 1, 2]
         assert len(view.history._undo) == depth + 1  # noqa: SLF001
-        duplicate_acks = [
-            item for item in control
-            if item.get("action") == "command_duplicate_ack"
-        ]
+        duplicate_acks = [item for item in control if item.get("action") == "command_duplicate_ack"]
         assert len(duplicate_acks) == 1
         assert duplicate_acks[0]["correlationId"] == "command-1"
         assert duplicate_acks[0]["targetEndpointId"] == endpoint_id
         assert duplicate_acks[0]["operationId"] == "selection-operation-1"
-        selection_projections = [
-            item for item in control if item.get("action") == "set_active_selection"
-        ]
+        selection_projections = [item for item in control if item.get("action") == "set_active_selection"]
         assert len(selection_projections) == 1
         assert selection_projections[0]["payload"]["atom_indices"] == [0, 1, 2]
     finally:
@@ -237,13 +232,9 @@ def test_remote_channel_rejects_data_from_unregistered_endpoint_or_control_actio
     channel, _control, _data = make_channel()
     view = MolSysView(transport=channel)
     try:
-        unknown = channel.receive_data(
-            {"event": "ready"}, source_endpoint_id="render-worker:unknown"
-        )
+        unknown = channel.receive_data({"event": "ready"}, source_endpoint_id="render-worker:unknown")
         endpoint_id = register_worker(channel)
-        wrong_plane = channel.receive_data(
-            {"event": "interaction_click"}, source_endpoint_id=endpoint_id
-        )
+        wrong_plane = channel.receive_data({"event": "interaction_click"}, source_endpoint_id=endpoint_id)
 
         assert unknown.status == "rejected"
         assert unknown.reason == "unknown-source"

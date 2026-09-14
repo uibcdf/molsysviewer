@@ -1,18 +1,15 @@
-from . import basic
+from . import basic, benchmark, embed, runtime_asset
+from . import preview as preview_module
 from .basic import (
     concatenate_structures,
     copy,
     extract,
     merge,
 )
-from . import benchmark
 from .benchmark import run_benchmarks
-from . import runtime_asset
-from .runtime_asset import export_runtime_asset
-from . import embed
 from .embed import IframeMarkup, embed_iframe
-from . import preview as preview_module
 from .preview import preview
+from .runtime_asset import export_runtime_asset
 
 __all__ = [
     "basic",

@@ -1,11 +1,11 @@
-import pyunitwizard as puw
 import molsysmt as msm
 import molsysviewer._pyunitwizard  # noqa: F401
 import pytest
-
-from molsysviewer import demo
+import pyunitwizard as puw
 from molsysviewer.addons import AddonLifecycleSpec, AddonSpec, addons
+
 from _edit_helpers import apply_remove
+from molsysviewer import demo
 
 
 def _seed_group_selection(view, group_index):
@@ -88,7 +88,11 @@ def test_context_action_create_region_from_selection_executes_python_bridge():
         {
             "event": "interaction_context_action",
             "action": "create_region_from_selection",
-            "context": {"event": "interaction_context_menu", "kind": "structure", "atom_indices": event["atom_indices"]},
+            "context": {
+                "event": "interaction_context_menu",
+                "kind": "structure",
+                "atom_indices": event["atom_indices"],
+            },
         }
     )  # noqa: SLF001
 
@@ -765,7 +769,10 @@ def test_full_reproducible_workflow_remaps_region_selection_label_and_measuremen
     measurement_msg = next(
         msg for msg in messages if msg.get("op") == "add_distance_measurement" and msg.get("tag") == "picked-distance"
     )
-    assert measurement_msg["options"]["picks_atom_indices"] == [[remapped_group_0_atoms[0]], [remapped_group_1_atoms[0]]]
-    assert measurement_msg["options"]["value"] == pytest.approx(float(
-        puw.get_value(measurement_value, to_unit="angstrom")
-    ))
+    assert measurement_msg["options"]["picks_atom_indices"] == [
+        [remapped_group_0_atoms[0]],
+        [remapped_group_1_atoms[0]],
+    ]
+    assert measurement_msg["options"]["value"] == pytest.approx(
+        float(puw.get_value(measurement_value, to_unit="angstrom"))
+    )

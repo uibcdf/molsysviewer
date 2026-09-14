@@ -5,7 +5,6 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any, Callable
 
-
 _LAZY_MARKER = "_molsysviewer_lazy_molecular_projection"
 
 
@@ -30,12 +29,14 @@ class LazyMolecularMessage(dict[str, Any]):
         current_revision: Callable[[], int],
         builder: Callable[[], dict[str, Any]],
     ) -> None:
-        super().__init__({
-            "op": "load_molsys_payload",
-            "label": label,
-            "multiple_structures": bool(multiple_structures),
-            _LAZY_MARKER: object(),
-        })
+        super().__init__(
+            {
+                "op": "load_molsys_payload",
+                "label": label,
+                "multiple_structures": bool(multiple_structures),
+                _LAZY_MARKER: object(),
+            }
+        )
         self._molecular_revision = molecular_revision
         self._current_revision = current_revision
         self._builder = builder
@@ -53,14 +54,9 @@ class LazyMolecularMessage(dict[str, Any]):
         if self._materialized is None:
             current = self._current_revision()
             if current != self._molecular_revision:
-                suffix = (
-                    f" for transfer generation {transfer_generation}"
-                    if transfer_generation is not None
-                    else ""
-                )
+                suffix = f" for transfer generation {transfer_generation}" if transfer_generation is not None else ""
                 raise StaleMolecularProjectionError(
-                    f"molecular revision {self._molecular_revision} is stale; "
-                    f"current revision is {current}{suffix}"
+                    f"molecular revision {self._molecular_revision} is stale; current revision is {current}{suffix}"
                 )
             message = self._builder()
             if message.get("op") != "load_molsys_payload" or "payload" not in message:

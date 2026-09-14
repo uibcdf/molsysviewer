@@ -35,8 +35,7 @@ def resolve_reference_addon(name: str) -> str:
     if normalized in REFERENCE_ADDON_MODULES:
         return REFERENCE_ADDON_MODULES[normalized]
     raise ValueError(
-        f"Unknown bundled reference add-on {normalized!r}. "
-        f"Available references: {', '.join(list_reference_addons())}."
+        f"Unknown bundled reference add-on {normalized!r}. Available references: {', '.join(list_reference_addons())}."
     )
 
 

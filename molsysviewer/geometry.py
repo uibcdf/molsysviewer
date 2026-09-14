@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from typing import Any
-import json
 
 import numpy as np
 
 from ._private.argdigest import digest
-
 
 MESH_LOCAL = "mesh_local"
 MOLECULAR_SYSTEM = "molecular_system"
@@ -202,7 +201,9 @@ class IndexedTriangleGeometry:
         if coordinates and len(coordinates) != len(triplets):
             raise ValueError("IndexedTriangleGeometry coordinates must match atom triplets.")
         if refs and len(triplets) != len(refs):
-            raise ValueError("IndexedTriangleGeometry requires one entity reference per triangle when refs are provided.")
+            raise ValueError(
+                "IndexedTriangleGeometry requires one entity reference per triangle when refs are provided."
+            )
         object.__setattr__(self, "unit", _require_unit(self.unit, "IndexedTriangleGeometry"))
         object.__setattr__(self, "coordinates", coordinates)
         object.__setattr__(self, "atom_triplets", triplets)

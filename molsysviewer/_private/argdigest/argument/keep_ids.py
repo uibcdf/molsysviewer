@@ -2,11 +2,11 @@ from ...exceptions import ArgumentError
 from ..helpers import normalize_viewer_caller
 
 functions_with_boolean = (
-        'merge.merge',
-        'add.add',
-        'viewer.add',
-        'add_missing_terminal_cappings.add_missing_terminal_cappings'
-        )
+    "merge.merge",
+    "add.add",
+    "viewer.add",
+    "add_missing_terminal_cappings.add_missing_terminal_cappings",
+)
 
 
 def digest_keep_ids(keep_ids, caller=None):
@@ -16,4 +16,4 @@ def digest_keep_ids(keep_ids, caller=None):
         if isinstance(keep_ids, bool):
             return keep_ids
 
-    raise ArgumentError('keep_ids', value=keep_ids, caller=caller, message=None)
+    raise ArgumentError("keep_ids", value=keep_ids, caller=caller, message=None)

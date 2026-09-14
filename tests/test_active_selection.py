@@ -1,9 +1,9 @@
 import molsysmt as msm
 import pytest
-
-from molsysviewer import demo
 from molsysviewer.active_selection import _combine
 from molsysviewer.loaders.load_molsysmt import load_from_molsysmt
+
+from molsysviewer import demo
 
 
 def _seed_group_selection(view, group_index=1):

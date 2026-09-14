@@ -69,10 +69,12 @@ class Selection:
         if not isinstance(atom_indices, list) or len(atom_indices) == 0:
             raise ValueError(f"Selection {self.tag!r} does not resolve to any atoms.")
 
-        self._view._send({  # noqa: SLF001
-            "op": "set_active_selection",
-            "atom_indices": list(atom_indices),
-        })
+        self._view._send(
+            {  # noqa: SLF001
+                "op": "set_active_selection",
+                "atom_indices": list(atom_indices),
+            }
+        )
         recipe = [dict(step) for step in (info.get("recipe") or []) if isinstance(step, dict)]
         payload = {
             "event": "interaction_active_selection_changed",
@@ -196,7 +198,9 @@ class SelectionsManager:
     @digest()
     def tags(self, skip_digestion: bool = False) -> list[str]:
         """Return the stored persistent selection tags."""
-        return [str(record.get("tag")) for record in self._view._selection_history if isinstance(record.get("tag"), str)]  # noqa: SLF001
+        return [
+            str(record.get("tag")) for record in self._view._selection_history if isinstance(record.get("tag"), str)
+        ]  # noqa: SLF001
 
     @signal(tags=["selection"])
     @digest()
@@ -498,16 +502,20 @@ class SelectionsManager:
         if len(resolved) == 0:
             raise ValueError("Persistent selections require non-empty atom indices.")
         source = "query" if isinstance(selection, str) and syntax != "Indices" else "indices"
-        recipe = [
-            self._view._selection_recipe_step(  # noqa: SLF001
-                source=source,
-                op="replace",
-                atom_indices=resolved,
-                expression=selection if source == "query" else None,
-                syntax=syntax,
-                element=element,
-            )
-        ] if hasattr(self._view, "_selection_recipe_step") else None
+        recipe = (
+            [
+                self._view._selection_recipe_step(  # noqa: SLF001
+                    source=source,
+                    op="replace",
+                    atom_indices=resolved,
+                    expression=selection if source == "query" else None,
+                    syntax=syntax,
+                    element=element,
+                )
+            ]
+            if hasattr(self._view, "_selection_recipe_step")
+            else None
+        )
         return self._store_selection_record(
             tag,
             resolved,
@@ -539,7 +547,9 @@ class SelectionsManager:
             chain_indices=list(event.get("chain_indices") or []),
             molecule_indices=list(event.get("molecule_indices") or []),
             entity_indices=list(event.get("entity_indices") or []),
-            recipe=[dict(step) for step in (event.get("recipe") or getattr(self._view, "_active_selection_recipe", []))],
+            recipe=[
+                dict(step) for step in (event.get("recipe") or getattr(self._view, "_active_selection_recipe", []))
+            ],
         )
 
     @signal(tags=["selection"])

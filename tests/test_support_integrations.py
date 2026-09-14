@@ -4,20 +4,20 @@ import ast
 from pathlib import Path
 
 import pytest
-
-from molsysviewer import config
-from molsysviewer import _depdigest as depdigest_config
+from molsysviewer._private import variables
 from molsysviewer._private.argdigest.argument.atom_indices import digest_atom_indices
 from molsysviewer._private.argdigest.argument.element import digest_element
 from molsysviewer._private.argdigest.argument.mask import digest_mask
-from molsysviewer._private import variables
 from molsysviewer._pyunitwizard import puw
+
+from molsysviewer import _depdigest as depdigest_config
+from molsysviewer import config
 
 
 def test_package_checks_dependencies_before_importing_heavy_modules():
     init_text = Path("molsysviewer/__init__.py").read_text(encoding="utf-8")
 
-    check_pos = init_text.index('_check_dependency(__name__)')
+    check_pos = init_text.index("_check_dependency(__name__)")
     lazy_registry_pos = init_text.index("_LAZY_ATTRIBUTES = {")
 
     assert check_pos < lazy_registry_pos
@@ -98,7 +98,6 @@ def test_scoped_wrappers_pass_skip_digestion_through_instead_of_forcing_it():
     arguments are owned.
     """
     import molsysmt as msm
-
     from molsysviewer.demo import demo
 
     view = demo["dialanine"]
@@ -123,9 +122,7 @@ def test_scoped_wrappers_pass_skip_digestion_through_instead_of_forcing_it():
     finally:
         msm.get = original  # type: ignore[assignment]
 
-    assert observed[:2] == [False, False], (
-        f"the default must let MolSysMT digest, got {observed[:2]}"
-    )
+    assert observed[:2] == [False, False], f"the default must let MolSysMT digest, got {observed[:2]}"
     assert observed[2] is True, "skip_digestion=True must reach MolSysMT, not be swallowed"
 
 
@@ -142,8 +139,9 @@ def test_skipping_digestion_also_skips_the_renaming():
     view = demo["dialanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
-    assert list(view.whole.get(element="atom", index=True)) \
-        == list(view.whole.get(element="atom", atom_index=True, skip_digestion=True))
+    assert list(view.whole.get(element="atom", index=True)) == list(
+        view.whole.get(element="atom", atom_index=True, skip_digestion=True)
+    )
 
     with pytest.raises(KeyError):
         view.whole.get(element="atom", index=True, skip_digestion=True)
@@ -164,11 +162,7 @@ def test_thin_variadic_forwarders_do_not_carry_digest_decorators():
             has_varargs = item.args.vararg is not None or item.args.kwarg is not None
             decorators = [ast.unparse(deco) for deco in item.decorator_list]
             has_digest = any("digest" in deco for deco in decorators)
-            named_runtime_args = [
-                arg.arg
-                for arg in item.args.args[1:]
-                if arg.arg != "skip_digestion"
-            ]
+            named_runtime_args = [arg.arg for arg in item.args.args[1:] if arg.arg != "skip_digestion"]
             kwonly_runtime_args = [arg.arg for arg in item.args.kwonlyargs if arg.arg != "skip_digestion"]
             has_named_contract = bool(named_runtime_args or kwonly_runtime_args)
             if has_varargs and not has_named_contract and has_digest:

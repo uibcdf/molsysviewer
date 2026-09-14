@@ -22,9 +22,7 @@ from .render_worker import ManagedRenderWorker, RenderWorkerConfig, RenderWorker
 from .view_channel import RemoteViewChannel
 
 _INTERNAL_SUBPROTOCOL = "molsysviewer-internal-v1"
-_WORKER_CAPABILITIES = frozenset(
-    {"input-receive", "render", "structure-receive", "video-send"}
-)
+_WORKER_CAPABILITIES = frozenset({"input-receive", "render", "structure-receive", "video-send"})
 _VIEWER_JS = Path(__file__).resolve().parents[1] / "viewer.js"
 
 _WORKER_HTML = """<!doctype html>
@@ -162,9 +160,7 @@ class InternalRenderWorkerHost:
         self.last_structure_error = None
         diagnostics = await self.worker.start(self.worker_url)
         try:
-            await asyncio.wait_for(
-                self.frontend_ready.wait(), timeout=self.worker.config.startup_timeout
-            )
+            await asyncio.wait_for(self.frontend_ready.wait(), timeout=self.worker.config.startup_timeout)
         except TimeoutError as error:
             await self.worker.close()
             detail = self.failure or "the internal worker sent no accepted ready event"
@@ -196,9 +192,7 @@ class InternalRenderWorkerHost:
         self.last_structure_error = None
         diagnostics = await self.worker.restart()
         try:
-            await asyncio.wait_for(
-                self.frontend_ready.wait(), timeout=self.worker.config.startup_timeout
-            )
+            await asyncio.wait_for(self.frontend_ready.wait(), timeout=self.worker.config.startup_timeout)
         except BaseException:
             await self.worker.close()
             raise
@@ -219,9 +213,7 @@ class InternalRenderWorkerHost:
             expected_session_id=self.channel.router.session_id,
         )
         if validation.status != "accepted" or validation.packet is None:
-            raise ValueError(
-                f"remote input rejected: {validation.reason}: {validation.detail}"
-            )
+            raise ValueError(f"remote input rejected: {validation.reason}: {validation.detail}")
         source = self.channel.router.endpoint(validation.packet.endpoint_id)
         if (
             source is None
@@ -337,10 +329,7 @@ class InternalRenderWorkerHost:
             not self._authorized(request)
             or request.headers.get("Origin") != self.origin
             or _INTERNAL_SUBPROTOCOL
-            not in {
-                item.strip()
-                for item in request.headers.get("Sec-WebSocket-Protocol", "").split(",")
-            }
+            not in {item.strip() for item in request.headers.get("Sec-WebSocket-Protocol", "").split(",")}
             or (self._socket is not None and not self._socket.closed)
         ):
             raise web.HTTPForbidden()
@@ -410,9 +399,7 @@ class InternalRenderWorkerHost:
         }
         if any(value.get(key) != expected_value for key, expected_value in expected.items()):
             raise ValueError("worker registration identity is invalid")
-        if frozenset(capabilities) != _WORKER_CAPABILITIES or len(capabilities) != len(
-            _WORKER_CAPABILITIES
-        ):
+        if frozenset(capabilities) != _WORKER_CAPABILITIES or len(capabilities) != len(_WORKER_CAPABILITIES):
             raise ValueError("worker registration capabilities are invalid")
         return {**expected, "capabilities": tuple(capabilities)}
 
@@ -423,9 +410,7 @@ class InternalRenderWorkerHost:
         if kind == "control":
             result = self.channel.receive_control(value.get("envelope"))
         elif kind == "raw":
-            result = self.channel.receive_data(
-                value.get("message"), source_endpoint_id=self.endpoint_id
-            )
+            result = self.channel.receive_data(value.get("message"), source_endpoint_id=self.endpoint_id)
             message = value.get("message")
             event = message.get("event") if isinstance(message, Mapping) else None
             if result.status == "accepted" and event == "ready":
@@ -442,9 +427,7 @@ class InternalRenderWorkerHost:
                 expected_endpoint_id=self.endpoint_id,
             )
             if validation.status != "accepted":
-                raise ValueError(
-                    f"worker signaling rejected: {validation.reason}: {validation.detail}"
-                )
+                raise ValueError(f"worker signaling rejected: {validation.reason}: {validation.detail}")
             sink = self.worker_signal_sink
             if sink is not None:
                 outcome = sink(dict(value["packet"]))
@@ -466,9 +449,7 @@ class InternalRenderWorkerHost:
         else:
             raise ValueError("worker wire message kind is invalid")
         if result.status == "rejected":
-            raise ValueError(
-                f"worker message rejected: {result.reason}: {result.detail}"
-            )
+            raise ValueError(f"worker message rejected: {result.reason}: {result.detail}")
 
     async def _pump_outbound(self, socket: web.WebSocketResponse) -> None:
         try:

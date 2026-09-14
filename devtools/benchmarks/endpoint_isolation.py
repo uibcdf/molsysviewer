@@ -12,16 +12,15 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from devtools.benchmarks.representative_scale_gate import (
+    CASE_SPECS,
+    build_representative_molsys,
+)
 from molsysmt.form.string_pdb_text.to_molsysmt_MolSys import (
     to_molsysmt_MolSys as pdb_text_to_molsys,
 )
 
 from molsysviewer import MolSysView
-from devtools.benchmarks.representative_scale_gate import (
-    CASE_SPECS,
-    build_representative_molsys,
-)
-
 
 ATOM_NAMES = ("N", "CA", "C", "O", "CB", "CG", "CD", "CE", "NZ", "H")
 LOCAL_OFFSETS = (
@@ -104,9 +103,7 @@ def run(atom_count: int, threshold_ms: float, representative_case: str | None = 
         if not popup_still_pending:
             raise AssertionError("benchmark did not measure during an active popup transfer")
         if host_latency_ms >= threshold_ms:
-            raise AssertionError(
-                f"host latency {host_latency_ms:.3f}ms exceeded {threshold_ms:.1f}ms"
-            )
+            raise AssertionError(f"host latency {host_latency_ms:.3f}ms exceeded {threshold_ms:.1f}ms")
         return {
             "atoms": atom_count,
             "fixture": fixture,

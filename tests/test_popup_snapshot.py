@@ -46,6 +46,7 @@ def _normalize(messages: list[dict]) -> list[dict]:
 
 # -- mode validation (mutation: accept an unknown mode) ----------------------
 
+
 def test_mode_is_strictly_validated():
     v = _view_with_scene()
     assert isinstance(v.build_popup_scene_snapshot("canvas"), list)
@@ -56,6 +57,7 @@ def test_mode_is_strictly_validated():
 
 
 # -- panel isolation (mutation: include molecular data in panel) -------------
+
 
 def test_panel_snapshot_contains_no_molecular_or_structural_ops():
     v = _view_with_scene()
@@ -78,6 +80,7 @@ def test_canvas_snapshot_reprojects_hover_telemetry_but_panel_does_not():
 
 # -- purity: no history, no send, no state change ----------------------------
 
+
 def test_projector_is_pure_with_respect_to_history_and_state():
     v = _view_with_scene()
     history_len = len(v._test_message_log)  # noqa: SLF001
@@ -89,6 +92,7 @@ def test_projector_is_pure_with_respect_to_history_and_state():
 
 
 # -- invariance under emitted-traffic growth ---------------------------------
+
 
 def test_snapshot_is_byte_for_byte_identical_under_protocol_trace_growth():
     v = _view_with_scene()
@@ -130,6 +134,7 @@ def test_embedded_runtime_combines_canvas_and_panel_without_duplicate_state_ops(
 
 # -- defensive copies (mutation: return internal references) -----------------
 
+
 def test_consumer_cannot_mutate_internal_state_through_the_result():
     v = _view_with_scene()
     snap = v.build_popup_scene_snapshot("canvas")
@@ -151,6 +156,7 @@ def test_consumer_cannot_mutate_internal_state_through_the_result():
 
 
 # -- dynamic/region fidelity (mutation: omit current indices) ----------------
+
 
 def test_region_create_carries_current_materialized_indices():
     v = _view_with_scene()

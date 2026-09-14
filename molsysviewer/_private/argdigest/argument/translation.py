@@ -1,6 +1,5 @@
-import numpy as np
-from molsysviewer._pyunitwizard import puw
 from ...exceptions import ArgumentError
+
 
 def digest_translation(translation, caller=None):
 
@@ -8,6 +7,5 @@ def digest_translation(translation, caller=None):
 
     try:
         return digest_coordinates(translation, caller=caller)
-    except:
-        raise ArgumentError('translation', value=translation, caller=caller, message=None)
-
+    except:  # noqa: E722
+        raise ArgumentError("translation", value=translation, caller=caller, message=None)

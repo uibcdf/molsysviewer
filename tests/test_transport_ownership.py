@@ -5,7 +5,6 @@ from pathlib import Path
 
 from molsysviewer import MolSysView
 
-
 ROOT = Path(__file__).parents[1]
 VIEWER_PACKAGE = ROOT / "molsysviewer" / "viewer"
 
@@ -20,15 +19,10 @@ def test_core_has_no_parallel_endpoint_lifecycle_containers():
         "_deferred_widget_messages",
         "_flushing_deferred_widget_messages",
     }
-    present = sorted({
-        node.attr
-        for node in ast.walk(tree)
-        if isinstance(node, ast.Attribute) and node.attr in forbidden
-    })
-    assert not present, (
-        "endpoint lifecycle state escaped EndpointTransferRegistry: "
-        f"{present}"
+    present = sorted(
+        {node.attr for node in ast.walk(tree) if isinstance(node, ast.Attribute) and node.attr in forbidden}
     )
+    assert not present, f"endpoint lifecycle state escaped EndpointTransferRegistry: {present}"
 
 
 def test_static_export_snapshot_has_one_constructor():
@@ -36,8 +30,7 @@ def test_static_export_snapshot_has_one_constructor():
     for path in VIEWER_PACKAGE.glob("*.py"):
         tree = ast.parse(path.read_text(), filename=str(path))
         if any(
-            isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
-            and node.name == "_build_static_export_snapshot"
+            isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == "_build_static_export_snapshot"
             for node in ast.walk(tree)
         ):
             definitions.append(path)

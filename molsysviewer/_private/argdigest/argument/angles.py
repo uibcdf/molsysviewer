@@ -1,7 +1,10 @@
 import numpy as np
+
 from molsysviewer._pyunitwizard import puw
+
 from ...exceptions import ArgumentError
 from ...variables import is_iterable
+
 
 def digest_angles(angles, caller=None):
 
@@ -10,8 +13,7 @@ def digest_angles(angles, caller=None):
             angles = puw.utils.sequences.concatenate(angles)
 
     if puw.is_quantity(angles):
-        if puw.are_compatible(angles, '0.0 radians'):
-
+        if puw.are_compatible(angles, "0.0 radians"):
             value, unit = puw.get_value_and_unit(angles)
 
             if isinstance(value, (int, float)):
@@ -30,5 +32,4 @@ def digest_angles(angles, caller=None):
             elif len(shape) == 2:
                 return puw.quantity(value, unit, standardized=True)
 
-    raise ArgumentError('angles', value=angles, caller=caller, message=None)
-
+    raise ArgumentError("angles", value=angles, caller=caller, message=None)

@@ -9,15 +9,14 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
-
 from molsysviewer._private.argdigest.argument.color_scheme import digest_color_scheme
 from molsysviewer._private.argdigest.argument.replace import digest_replace
 from molsysviewer._private.argdigest.argument.scheme import digest_scheme
 from molsysviewer._private.argdigest.argument.value_range import digest_value_range
 from molsysviewer._private.exceptions import ArgumentError
 
-
 # --- value_range -----------------------------------------------------------
+
 
 def test_value_range_none_is_inferred():
     assert digest_value_range(None) is None
@@ -61,6 +60,7 @@ def test_value_range_invalid_raises_argument_error(given):
 
 # --- replace ---------------------------------------------------------------
 
+
 @pytest.mark.parametrize("given", [True, False])
 def test_replace_accepts_bool_unchanged(given):
     assert digest_replace(given) is given
@@ -73,6 +73,7 @@ def test_replace_rejects_non_bool(given):
 
 
 # --- scheme / color_scheme -------------------------------------------------
+
 
 @pytest.mark.parametrize(
     "given, expected",

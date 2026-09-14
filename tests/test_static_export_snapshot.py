@@ -1,16 +1,17 @@
 from __future__ import annotations
 
-from copy import deepcopy
 import json
+from copy import deepcopy
+
+from molsysviewer.demo import demo
 
 from molsysviewer import FigureSpec, MolSysView
-from molsysviewer.demo import demo
 
 
 def _normalized(messages: list[dict]) -> list[dict]:
     result = deepcopy(messages)
     for message in result:
-            message.get("options", {}).pop("version", None)
+        message.get("options", {}).pop("version", None)
     return result
 
 
@@ -20,15 +21,12 @@ def test_static_export_content_and_size_ignore_one_hundred_thousand_trace_entrie
     before = view._build_export_messages()  # noqa: SLF001
 
     view._test_message_log.extend(  # noqa: SLF001
-        {"op": "irrelevant_interaction", "index": index}
-        for index in range(100_000)
+        {"op": "irrelevant_interaction", "index": index} for index in range(100_000)
     )
     after = view._build_export_messages()  # noqa: SLF001
 
     assert _normalized(after) == _normalized(before)
-    assert len(json.dumps(after, separators=(",", ":"))) == len(
-        json.dumps(before, separators=(",", ":"))
-    )
+    assert len(json.dumps(after, separators=(",", ":"))) == len(json.dumps(before, separators=(",", ":")))
 
 
 def test_static_export_embeds_hostless_state_that_live_popup_excludes():

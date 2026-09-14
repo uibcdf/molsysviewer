@@ -1,22 +1,21 @@
 from __future__ import annotations
 
-
 import re
 import time
 from contextlib import contextmanager
 from typing import Any, Mapping
 
 import molsysmt as msm
-from smonitor.integrations import emit_from_catalog
 from smonitor import signal
+from smonitor.integrations import emit_from_catalog
 
 from .._private.argdigest import digest
-from .._private.smonitor import CATALOG, PACKAGE_ROOT, META
+from .._private.smonitor import CATALOG, META, PACKAGE_ROOT
 from .._private.smonitor.warnings import RegionOverlapWarning, warn
 from .._private.smonitor_emit import emit_suppressed_exception
 from ..regions import Region
-from .representations import normalize_representation_type
 from .presets import normalize_representation_preset, resolve_user_preset
+from .representations import normalize_representation_type
 
 
 class RegionsMixin:
@@ -46,12 +45,8 @@ class RegionsMixin:
     # scene and left there, so it belongs in a saved state. Conflating the two meant a
     # focus survived a save only if the user had named it, since the pattern below
     # matches auto-generated tags alone.
-    _TRANSIENT_REGION_TAG = re.compile(
-        r"^(?:(?:orientation|plane)-(?:region)?\d+|focus\d+)$"
-    )
-    _EPHEMERAL_REGION_TAG = re.compile(
-        r"^(?:orientation|plane)-(?:region)?\d+$"
-    )
+    _TRANSIENT_REGION_TAG = re.compile(r"^(?:(?:orientation|plane)-(?:region)?\d+|focus\d+)$")
+    _EPHEMERAL_REGION_TAG = re.compile(r"^(?:orientation|plane)-(?:region)?\d+$")
 
     def _enrich_interaction_payload(self, payload: dict) -> dict:
         if payload.get("kind") != "structure":
@@ -110,8 +105,7 @@ class RegionsMixin:
 
     def _operands_frame_dependent(self, operand_uids: list[str]) -> bool:
         return any(
-            bool(region and region.frame_dependent)
-            for region in (self._region_by_uid(uid) for uid in operand_uids)
+            bool(region and region.frame_dependent) for region in (self._region_by_uid(uid) for uid in operand_uids)
         )
 
     def _clear_dynamic_region_cache(self, uid: str | None = None) -> None:
@@ -257,11 +251,7 @@ class RegionsMixin:
         return [
             region
             for region in self._regions.values()
-            if (
-                bool(getattr(region, "_active", False))
-                and region.mode == "dynamic"
-                and region.frame_dependent
-            )
+            if (bool(getattr(region, "_active", False)) and region.mode == "dynamic" and region.frame_dependent)
         ]
 
     def _handle_dynamic_region_evaluation_request(self, content: Mapping[str, Any]) -> None:
@@ -437,13 +427,15 @@ class RegionsMixin:
     def representations(self) -> list[str]:
         """Sorted list of allowed representation type identifiers."""
         from .representations import ALLOWED_REPRESENTATIONS
+
         return sorted(ALLOWED_REPRESENTATIONS)
 
     @property
     def presets(self) -> list[str]:
         """Sorted list of allowed preset identifiers (built-in and user-defined)."""
-        from .presets import ALLOWED_PRESETS
         from ..config.user_presets import user_presets
+        from .presets import ALLOWED_PRESETS
+
         return sorted(ALLOWED_PRESETS | set(user_presets.keys()))
 
     def _unregister_region(self, tag: str) -> None:
@@ -534,15 +526,11 @@ class RegionsMixin:
         )
         return [name for name in self._REGION_ATTRIBUTE_CANDIDATES if name in available]
 
-    def _region_summary_records(
-        self, available_attributes: list[str] | None = None
-    ) -> list[dict[str, Any]]:
+    def _region_summary_records(self, available_attributes: list[str] | None = None) -> list[dict[str, Any]]:
         if available_attributes is None:
             available_attributes = self._available_region_attributes()
         manageable = {
-            tag: region
-            for tag, region in self._regions.items()
-            if not self._TRANSIENT_REGION_TAG.fullmatch(tag)
+            tag: region for tag, region in self._regions.items() if not self._TRANSIENT_REGION_TAG.fullmatch(tag)
         }
         visual_sets = {
             tag: set(region.atom_indices or ())
@@ -553,7 +541,7 @@ class RegionsMixin:
         visual_tags = sorted(visual_sets)
         for index, left_tag in enumerate(visual_tags):
             left_atoms = visual_sets[left_tag]
-            for right_tag in visual_tags[index + 1:]:
+            for right_tag in visual_tags[index + 1 :]:
                 if left_atoms.isdisjoint(visual_sets[right_tag]):
                     continue
                 overlap_map[left_tag].append(right_tag)
@@ -609,9 +597,7 @@ class RegionsMixin:
         )
         self._sync_whole_summary_runtime(available_attributes)
 
-    def _whole_summary_record(
-        self, available_attributes: list[str] | None = None
-    ) -> dict[str, Any]:
+    def _whole_summary_record(self, available_attributes: list[str] | None = None) -> dict[str, Any]:
         inheriting_count = 0
         none_state_count = 0
         for region in self._regions.values():
@@ -622,9 +608,7 @@ class RegionsMixin:
             if not getattr(region, "_has_own_visual")():
                 none_state_count += 1
         covering_layer_count = sum(
-            1
-            for owner, layer in getattr(self, "_atom_color_layers", {}).items()
-            if owner != "whole" and bool(layer)
+            1 for owner, layer in getattr(self, "_atom_color_layers", {}).items() if owner != "whole" and bool(layer)
         )
         composition: dict[str, int] = {}
         if self._molsys is not None:
@@ -636,25 +620,29 @@ class RegionsMixin:
                 ("entities", "n_entities"),
             ):
                 try:
-                    composition[key] = int(msm.get(
-                        self._molsys,
-                        element="system",
-                        output_type="values",
-                        skip_digestion=True,
-                        **{flag: True},
-                    ))
+                    composition[key] = int(
+                        msm.get(
+                            self._molsys,
+                            element="system",
+                            output_type="values",
+                            skip_digestion=True,
+                            **{flag: True},
+                        )
+                    )
                 except Exception:
                     composition[key] = 0
         contains: dict[str, int] = {}
         for token, attribute in self._WHOLE_COMPOSITION_PROBES:
             try:
-                contains[token] = int(msm.get(
-                    self._molsys,
-                    element="system",
-                    output_type="values",
-                    skip_digestion=True,
-                    **{attribute: True},
-                ))
+                contains[token] = int(
+                    msm.get(
+                        self._molsys,
+                        element="system",
+                        output_type="values",
+                        skip_digestion=True,
+                        **{attribute: True},
+                    )
+                )
             except Exception:
                 contains[token] = 0
         return {
@@ -665,9 +653,7 @@ class RegionsMixin:
             "color_scheme": self.whole.color_scheme,
             "scene_style_name": self.whole.scene_style_name,
             "available_attributes": (
-                self._available_region_attributes()
-                if available_attributes is None
-                else available_attributes
+                self._available_region_attributes() if available_attributes is None else available_attributes
             ),
             "color_schemes": self.styles.structural_color_schemes(skip_digestion=True),
             "inheriting_region_count": inheriting_count,
@@ -677,9 +663,7 @@ class RegionsMixin:
             "contains": contains,
         }
 
-    def _sync_whole_summary_runtime(
-        self, available_attributes: list[str] | None = None
-    ) -> None:
+    def _sync_whole_summary_runtime(self, available_attributes: list[str] | None = None) -> None:
         if getattr(self, "_region_batch_depth", 0) > 0:
             self._region_batch_summary_dirty = True
             return
@@ -694,10 +678,7 @@ class RegionsMixin:
         return (
             bool(getattr(region, "_active", False))
             and not bool(getattr(region, "_hidden", False))
-            and (
-                region.representation is not None
-                or region.preset is not None
-            )
+            and (region.representation is not None or region.preset is not None)
         )
 
     def _overlapping_visual_region_tags(

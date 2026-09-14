@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from molsysviewer import MolSysView
 from molsysviewer.config import load_project_config
+
+from molsysviewer import MolSysView
 
 
 def _write_project_config(path: Path) -> None:
@@ -66,15 +67,17 @@ def test_styles_load_project_config_can_apply_default_explicitly(tmp_path):
 def test_view_load_project_config_bridge_registers_styles_and_returns_addon_summary(tmp_path):
     config_path = tmp_path / "_molsysviewer.py"
     config_path.write_text(
-        "\n".join([
-            "from molsysviewer import Style",
-            'DEFAULT_SCENE_STYLE = Style(preset="polymer-cartoon", name="Default")',
-            "STYLES = {",
-            '    "publication": Style(preset="polymer-cartoon", name="Publication"),',
-            "}",
-            'ADDONS_ENABLED = ["fake-addon-a"]',
-            'ADDONS_DISABLED = ["fake-addon-b"]',
-        ]),
+        "\n".join(
+            [
+                "from molsysviewer import Style",
+                'DEFAULT_SCENE_STYLE = Style(preset="polymer-cartoon", name="Default")',
+                "STYLES = {",
+                '    "publication": Style(preset="polymer-cartoon", name="Publication"),',
+                "}",
+                'ADDONS_ENABLED = ["fake-addon-a"]',
+                'ADDONS_DISABLED = ["fake-addon-b"]',
+            ]
+        ),
         encoding="utf-8",
     )
     view = MolSysView()

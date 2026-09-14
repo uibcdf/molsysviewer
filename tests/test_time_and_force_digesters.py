@@ -30,15 +30,16 @@ BOTH = (digest_duration, digest_duration_ms)
 
 # --- the defect: a foreign exception reaching the caller -------------------
 
+
 @pytest.mark.parametrize("digest", BOTH)
 @pytest.mark.parametrize(
     "rejected",
     [
-        "banana",          # UndefinedUnitError from pint
-        "250 bananas",     # likewise, with a plausible shape
-        True,              # NotImplementedMethodError from PyUnitWizard
-        "250",             # parsed as 250 radians, then DimensionalityError
-        "3.5 angstroms",   # a quantity, but not a time
+        "banana",  # UndefinedUnitError from pint
+        "250 bananas",  # likewise, with a plausible shape
+        True,  # NotImplementedMethodError from PyUnitWizard
+        "250",  # parsed as 250 radians, then DimensionalityError
+        "3.5 angstroms",  # a quantity, but not a time
         object(),
     ],
 )
@@ -75,6 +76,7 @@ def test_the_original_exception_is_kept_as_the_cause():
 
 # --- what the two agree on -------------------------------------------------
 
+
 @pytest.mark.parametrize("digest", BOTH)
 @pytest.mark.parametrize("accepted", ["250 ms", "0.25 s", "250000 us"])
 def test_a_time_with_its_units_is_standardized(digest, accepted):
@@ -93,6 +95,7 @@ def test_the_two_names_agree_wherever_they_overlap(spelling):
 
 
 # --- the one place they deliberately differ --------------------------------
+
 
 @pytest.mark.parametrize("bare", [5, 0, 2.5])
 def test_a_bare_number_is_milliseconds_only_where_the_name_says_so(bare):
@@ -116,6 +119,7 @@ def test_the_refusal_of_a_bare_number_points_at_the_name_that_accepts_one():
 
 # --- the movie timeline's carve-out ----------------------------------------
 
+
 def test_the_movie_timeline_still_gets_plain_milliseconds():
     """Keyframes are serialised to JSON by `to_dict`, where a quantity cannot travel."""
     value = digest_duration_ms(250, caller=MOVIE)
@@ -129,6 +133,7 @@ def test_the_movie_timeline_refuses_what_it_cannot_serialise(rejected):
 
 
 # --- force -----------------------------------------------------------------
+
 
 @pytest.mark.parametrize("caller", ["molsysviewer.viewer.show", "molsysviewer.viewer.MolSysView.show"])
 @pytest.mark.parametrize("flag", [True, False])
@@ -150,6 +155,7 @@ def test_a_force_that_is_not_one_raises_this_packages_error(rejected):
 
 
 # --- the shared boundary itself --------------------------------------------
+
 
 @pytest.mark.parametrize(
     ("dimensionality", "accepted"),

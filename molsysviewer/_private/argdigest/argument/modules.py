@@ -18,11 +18,11 @@ def digest_modules(modules, caller=None):
     if modules is None:
         return None
     if isinstance(modules, str):
-        raise ArgumentError("modules", value=modules, caller=caller,
-                            message="expected a sequence of module names; for one, wrap it")
+        raise ArgumentError(
+            "modules", value=modules, caller=caller, message="expected a sequence of module names; for one, wrap it"
+        )
     if not isinstance(modules, Sequence):
-        raise ArgumentError("modules", value=modules, caller=caller,
-                            message="expected a sequence of module names")
+        raise ArgumentError("modules", value=modules, caller=caller, message="expected a sequence of module names")
     if not modules:
         raise ArgumentError(
             "modules",
@@ -32,6 +32,5 @@ def digest_modules(modules, caller=None):
         )
     for name in modules:
         if not isinstance(name, str):
-            raise ArgumentError("modules", value=name, caller=caller,
-                                message="a module name is a string")
+            raise ArgumentError("modules", value=name, caller=caller, message="a module name is a string")
     return list(modules)

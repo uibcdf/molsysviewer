@@ -26,10 +26,9 @@ import re
 import subprocess
 import warnings
 
-import pytest
-
-from molsysviewer._private.smonitor import CATALOG
 import molsysviewer._private.smonitor.warnings as warnings_module
+import pytest
+from molsysviewer._private.smonitor import CATALOG
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
@@ -151,17 +150,15 @@ def test_every_catalog_class_is_actually_raised_somewhere(cls):
     that defines them, so declaring a class is not evidence of raising it.
     """
     mentions = subprocess.run(
-        ["grep", "-rn", cls.__name__, "molsysviewer/", "--include=*.py",
-         "--exclude-dir=smonitor"],
-        capture_output=True, text=True, cwd=ROOT,
+        ["grep", "-rn", cls.__name__, "molsysviewer/", "--include=*.py", "--exclude-dir=smonitor"],
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
     ).stdout.splitlines()
 
     # An import is not a use. Counting it would let a call site be reverted to a plain
     # `warnings.warn` while its now-unused import kept this test green — measured: it did.
-    uses = [
-        line for line in mentions
-        if not _IMPORT_LINE.match(line.split(":", 2)[-1])
-    ]
+    uses = [line for line in mentions if not _IMPORT_LINE.match(line.split(":", 2)[-1])]
 
     assert uses, (
         f"{cls.__name__} is imported or declared but never raised. Either migrate the "

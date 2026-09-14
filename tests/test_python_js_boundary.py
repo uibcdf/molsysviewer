@@ -65,8 +65,7 @@ def test_every_digested_argument_has_a_digester():
                     missing.setdefault(name, f"{path.name}:{node.name}")
 
     assert not missing, (
-        "public arguments declared under @digest() with no digester "
-        f"(each emits DigestNotDigestedWarning): {missing}"
+        f"public arguments declared under @digest() with no digester (each emits DigestNotDigestedWarning): {missing}"
     )
 
 
@@ -92,6 +91,4 @@ def test_every_op_python_emits_is_handled_somewhere():
         handled |= set(re.findall(r'op\s*(?:===|!==)\s*["\']([a-z0-9_]+)["\']', text))
 
     orphans = {op: where for op, where in emitted.items() if op not in handled}
-    assert not orphans, (
-        f"ops emitted by Python that no frontend handler reads: {orphans}"
-    )
+    assert not orphans, f"ops emitted by Python that no frontend handler reads: {orphans}"

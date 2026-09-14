@@ -75,12 +75,6 @@ def test_no_link_resolves_only_on_the_machine_that_wrote_it(links):
     Inside this repository the answer is a relative path; in a sibling repository it is
     that project's URL. Either travels; an absolute path off this disk does not.
     """
-    local = [
-        f"{document.relative_to(ROOT)} -> {target}"
-        for document, target in links
-        if target.startswith("file://")
-    ]
+    local = [f"{document.relative_to(ROOT)} -> {target}" for document, target in links if target.startswith("file://")]
 
-    assert local == [], (
-        "links to an absolute path on one developer's machine:\n  " + "\n  ".join(local)
-    )
+    assert local == [], "links to an absolute path on one developer's machine:\n  " + "\n  ".join(local)

@@ -93,15 +93,25 @@ class WidgetRuntimeRouter:
         if envelope is None:
             return RouteResult("rejected", reason="malformed-envelope", detail="Runtime envelope is malformed")
         if envelope.protocol_version != RUNTIME_PROTOCOL_VERSION:
-            return RouteResult("rejected", reason="protocol-mismatch", detail=f"Unsupported protocol {envelope.protocol_version}")
+            return RouteResult(
+                "rejected", reason="protocol-mismatch", detail=f"Unsupported protocol {envelope.protocol_version}"
+            )
         if envelope.viewer_id != self.viewer_id:
-            return RouteResult("rejected", reason="viewer-mismatch", detail=f"Envelope belongs to viewer {envelope.viewer_id}")
+            return RouteResult(
+                "rejected", reason="viewer-mismatch", detail=f"Envelope belongs to viewer {envelope.viewer_id}"
+            )
         if envelope.session_id != self.session_id:
-            return RouteResult("rejected", reason="session-mismatch", detail=f"Envelope belongs to session {envelope.session_id}")
+            return RouteResult(
+                "rejected", reason="session-mismatch", detail=f"Envelope belongs to session {envelope.session_id}"
+            )
         if envelope.endpoint_id != self.widget_host_endpoint:
-            return RouteResult("rejected", reason="unknown-source", detail=f"Unexpected source endpoint {envelope.endpoint_id}")
+            return RouteResult(
+                "rejected", reason="unknown-source", detail=f"Unexpected source endpoint {envelope.endpoint_id}"
+            )
         if envelope.target_endpoint_id is not None and envelope.target_endpoint_id != self.python_endpoint:
-            return RouteResult("rejected", reason="unknown-target", detail=f"Unexpected target endpoint {envelope.target_endpoint_id}")
+            return RouteResult(
+                "rejected", reason="unknown-target", detail=f"Unexpected target endpoint {envelope.target_endpoint_id}"
+            )
 
         action = envelope.action
         if action in RAW_ACTIONS or action in DATA_PLANE_ACTIONS:
@@ -119,7 +129,9 @@ class WidgetRuntimeRouter:
             )
 
         if not isinstance(envelope.payload, Mapping):
-            return RouteResult("rejected", reason="malformed-payload", detail=f"Action {action} payload is not a mapping")
+            return RouteResult(
+                "rejected", reason="malformed-payload", detail=f"Action {action} payload is not a mapping"
+            )
         # Coherence guard: the envelope action must equal the payload's own action
         # key, or a hover envelope could smuggle a context-action mutation past
         # classification and deduplication. Browser->Python payloads key on `event`.

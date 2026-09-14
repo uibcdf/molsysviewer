@@ -100,8 +100,7 @@ class RemoteViewChannel:
         if uses_data_plane:
             if self._send_data is None:
                 raise NotImplementedError(
-                    "RemoteViewChannel has no data-plane sender; refusing to drop "
-                    f"buffers or raw action {action!r}"
+                    f"RemoteViewChannel has no data-plane sender; refusing to drop buffers or raw action {action!r}"
                 )
             self._send_data(message, buffers)
             return
@@ -116,10 +115,7 @@ class RemoteViewChannel:
             )
         result = self.router.route_inbound(value)
         if result.status == "accepted":
-            if (
-                result.envelope is not None
-                and result.envelope.action == "request_popup_scene_snapshot"
-            ):
+            if result.envelope is not None and result.envelope.action == "request_popup_scene_snapshot":
                 for callback in tuple(self._runtime_request_callbacks):
                     callback(result.envelope)
             else:
@@ -149,13 +145,9 @@ class RemoteViewChannel:
     ) -> SessionRouteResult:
         """Accept one authenticated raw/data-plane message from a live endpoint."""
         if self._closed:
-            return SessionRouteResult(
-                "rejected", reason="channel-closed", detail="Remote channel is closed"
-            )
+            return SessionRouteResult("rejected", reason="channel-closed", detail="Remote channel is closed")
         if not isinstance(value, Mapping):
-            return SessionRouteResult(
-                "rejected", reason="malformed-data", detail="Data-plane message is not a mapping"
-            )
+            return SessionRouteResult("rejected", reason="malformed-data", detail="Data-plane message is not a mapping")
         source = self.router.endpoint(source_endpoint_id)
         if source is None or source.role == "python":
             return SessionRouteResult(
@@ -222,7 +214,7 @@ class RemoteViewChannel:
     @initial_messages.setter
     def initial_messages(self, value) -> None:
         messages = list(value or [])
-        for message in messages[len(self._forwarded_initial):]:
+        for message in messages[len(self._forwarded_initial) :]:
             self.send(message)
         self._forwarded_initial = messages
         self._initial_messages = messages

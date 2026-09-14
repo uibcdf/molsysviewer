@@ -1,22 +1,24 @@
-from pathlib import Path
-
 import molsysviewer as msv
 
-
-view = msv.demo['181L']
+view = msv.demo["181L"]
 camera_snapshot = {
-    'mode': 'perspective',
-    'fov': 0.7853981633974483,
-    'position': [33.70566533935736, -2.8023437337061745, 18.882755226605074],
-    'up': [0.1445312180996829, 0.8739959558312091, 0.4639415870401301],
-    'target': [26.911489856486416, 6.126255176505263, 4.179204023614221],
-    'radius': 7.077834488226701,
-    'radiusMax': 72.78181150350126,
-    'fog': 15,
-    'clipFar': True,
-    'minNear': 1,
-    'minFar': 0
+    "mode": "perspective",
+    "fov": 0.7853981633974483,
+    "position": [33.70566533935736, -2.8023437337061745, 18.882755226605074],
+    "up": [0.1445312180996829, 0.8739959558312091, 0.4639415870401301],
+    "target": [26.911489856486416, 6.126255176505263, 4.179204023614221],
+    "radius": 7.077834488226701,
+    "radiusMax": 72.78181150350126,
+    "fog": 15,
+    "clipFar": True,
+    "minNear": 1,
+    "minFar": 0,
 }
 view.set_camera_snapshot(camera_snapshot)
 view.show()
-view.export.html("../_static/views/181L_benzene_only_set_camera.html", title="181L", shared_runtime="../_static", background="transparent")
+view.export.html(
+    "../_static/views/181L_benzene_only_set_camera.html",
+    title="181L",
+    shared_runtime="../_static",
+    background="transparent",
+)

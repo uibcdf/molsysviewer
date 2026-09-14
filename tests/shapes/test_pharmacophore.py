@@ -1,7 +1,7 @@
 import warnings
-import pyunitwizard as puw
-import molsysviewer._pyunitwizard  # noqa: F401 — configures puw
 
+import molsysviewer._pyunitwizard  # noqa: F401 — configures puw
+import pyunitwizard as puw
 from molsysviewer.shapes import PharmacophoreShapes, ShapesManager
 
 
@@ -46,7 +46,7 @@ def test_add_interaction_sites():
                 "kinds": ["donor", "acceptor"],
                 "radii": [5.0, 6.0],
                 "alphas": [0.4, 0.5],
-                "colors": [0x3b82f6, 0xef4444],
+                "colors": [0x3B82F6, 0xEF4444],
                 "directions": [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]],
                 "tag": "ph4",
                 "layer_tag": "ph4",
@@ -99,7 +99,7 @@ def test_add_pharmacophore_features_warns_and_uses_same_payload():
                 "kinds": ["donor"],
                 "radii": [0.6],
                 "alphas": [0.6],
-                "colors": [0x3b82f6],
+                "colors": [0x3B82F6],
                 "tag": "ph4",
                 "layer_tag": "ph4",
             },

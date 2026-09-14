@@ -17,9 +17,7 @@ import molsysviewer as msv
 
 
 def _served(directory, **kwargs):
-    server = msv.tools.preview(
-        str(directory), open_browser=False, serve_forever=False, skip_digestion=True, **kwargs
-    )
+    server = msv.tools.preview(str(directory), open_browser=False, serve_forever=False, skip_digestion=True, **kwargs)
     port = server.server_address[1]
     return server, f"http://127.0.0.1:{port}"
 

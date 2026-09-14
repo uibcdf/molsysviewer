@@ -1,6 +1,6 @@
-from types import ModuleType
-import sys
 import importlib
+import sys
+from types import ModuleType
 
 import pytest
 
@@ -10,11 +10,11 @@ from molsysviewer import (
     AddonExportHelperSpec,
     AddonPanelSpec,
     AddonPanelWidget,
+    AddonSectionSpec,
     AddonShapeProviderSpec,
     AddonSpec,
     AddonStyleHelperSpec,
     AddonToolModeSpec,
-    AddonSectionSpec,
     AddonWorkspaceSpec,
     MolSysView,
     addon_templates,
@@ -167,7 +167,6 @@ def test_global_addons_registry_supports_complete_fake_addon():
     assert addons.style_helper_specs()[0]["tags"] == ["topography-publication"]
     assert addons.export_helper_specs()[0]["formats"] == ["png", "html"]
     assert addons.tool_mode_specs()[0]["id"] == "pocket-pick"
-
 
 
 def test_addons_registry_rejects_incompatible_molsysviewer_requirement():
@@ -323,7 +322,7 @@ def test_addons_can_load_project_config_defaults_and_new_views_inherit_them(tmp_
             [
                 "from molsysviewer import Style",
                 "",
-                'DEFAULT_SCENE_STYLE = Style(preset=\"polymer-cartoon\", name=\"Default Polymer\")',
+                'DEFAULT_SCENE_STYLE = Style(preset="polymer-cartoon", name="Default Polymer")',
                 "STYLES = {}",
                 "ADDONS_ENABLED = ['topomt']",
                 "ADDONS_DISABLED = ['pharmacophoremt']",
@@ -363,7 +362,7 @@ def test_addons_project_disabled_defaults_apply_to_later_registrations(tmp_path)
             [
                 "from molsysviewer import Style",
                 "",
-                'DEFAULT_SCENE_STYLE = Style(preset=\"polymer-cartoon\", name=\"Default Polymer\")',
+                'DEFAULT_SCENE_STYLE = Style(preset="polymer-cartoon", name="Default Polymer")',
                 "STYLES = {}",
                 "ADDONS_DISABLED = ['topomt']",
                 "",
@@ -405,7 +404,9 @@ def test_addons_registry_supports_manual_module_registration():
     )
     module.on_enable = lambda view: setattr(view, "_topomt_dev_enabled", True)
     module.on_disable = lambda view: setattr(view, "_topomt_dev_disabled", True)
-    module.on_context_action = lambda view, action_id, payload: setattr(view, "_topomt_dev_action", (action_id, payload["addon"]))
+    module.on_context_action = lambda view, action_id, payload: setattr(
+        view, "_topomt_dev_action", (action_id, payload["addon"])
+    )
     sys.modules[module.__name__] = module
     try:
         addon = addons.register_module(module)
@@ -435,6 +436,7 @@ def test_addons_registry_can_discover_known_modules(monkeypatch):
         )
 
     from importlib.machinery import ModuleSpec
+
     module.get_addon = _get_addon
     module.__spec__ = ModuleSpec(module.__name__, None)
     sys.modules[module.__name__] = module
@@ -458,6 +460,7 @@ def test_addons_registry_does_not_import_known_modules_by_default(monkeypatch):
         return AddonSpec(name="topomt", package="molsysviewer-topomt")
 
     from importlib.machinery import ModuleSpec
+
     module.get_addon = _get_addon
     module.__spec__ = ModuleSpec(module.__name__, None)
     sys.modules[module.__name__] = module
@@ -548,6 +551,7 @@ def test_addons_registry_loads_lifecycle_for_callable_entry_point(monkeypatch):
 
 def test_addons_registry_emits_smonitor_warning_on_discovery_failure(monkeypatch):
     import smonitor
+
     addons.clear()
     module = ModuleType("molsysviewer_topomt")
 
@@ -555,6 +559,7 @@ def test_addons_registry_emits_smonitor_warning_on_discovery_failure(monkeypatch
         raise ValueError("Simulated load failure")
 
     from importlib.machinery import ModuleSpec
+
     module.get_addon = _get_addon
     module.__spec__ = ModuleSpec(module.__name__, None)
     sys.modules[module.__name__] = module
@@ -572,7 +577,6 @@ def test_addons_registry_emits_smonitor_warning_on_discovery_failure(monkeypatch
     finally:
         sys.modules.pop(module.__name__, None)
         addons.clear()
-
 
 
 def test_addons_registry_records_entry_point_discovery_failures(monkeypatch):
@@ -597,7 +601,6 @@ def test_addons_registry_records_entry_point_discovery_failures(monkeypatch):
     assert failures[0]["reason"] == "broken entry point"
     assert "RuntimeError: broken entry point" in failures[0]["traceback"]
     addons.clear()
-
 
 
 def test_view_addons_runtime_summary_includes_discovery_failures(monkeypatch):
@@ -648,9 +651,7 @@ def test_view_addons_refresh_context_items_from_active_selection_hook():
 
     try:
         addon = AddonSpec(name="topomt")
-        lifecycle = addons_module.AddonLifecycleSpec(
-            on_active_selection_changed=on_active_selection_changed
-        )
+        lifecycle = addons_module.AddonLifecycleSpec(on_active_selection_changed=on_active_selection_changed)
         addons.register(addon, lifecycle=lifecycle)
         view = MolSysView()
         view._send = lambda message: sent.append(message)
@@ -683,7 +684,13 @@ def test_addon_template_module_is_importable_and_registerable():
         assert addons.workspace_specs()[0]["id"] == "dummy"
         assert [item["id"] for item in addons.panel_specs()] == ["main", "secondary"]
         assert [item["id"] for item in addons.context_action_specs()] == ["focus-dummy", "inspect-dummy"]
-        assert [item["id"] for item in addons.addon_section_specs()] == ["interactive", "inputs", "status", "secondary_overview", "secondary_details"]
+        assert [item["id"] for item in addons.addon_section_specs()] == [
+            "interactive",
+            "inputs",
+            "status",
+            "secondary_overview",
+            "secondary_details",
+        ]
         assert addons.shape_provider_specs()[0]["id"] == "dummy-shape"
         assert addons.export_helper_specs()[0]["id"] == "dummy-export"
         assert addons.lifecycle_for("dummy") is not None
@@ -732,7 +739,13 @@ def test_addon_template_module_has_visible_runtime_lifecycle_flow():
         assert view._dummy_addon_runtime["enabled"] is True
         assert view._dummy_addon_runtime["workspace"] == "dummy"
         assert view._dummy_addon_runtime["panels"] == ["main", "secondary"]
-        assert view._dummy_addon_runtime["sections"] == ["interactive", "inputs", "status", "secondary_overview", "secondary_details"]
+        assert view._dummy_addon_runtime["sections"] == [
+            "interactive",
+            "inputs",
+            "status",
+            "secondary_overview",
+            "secondary_details",
+        ]
         assert view._dummy_addon_runtime["context_actions"] == ["focus-dummy", "inspect-dummy"]
         assert view._dummy_addon_runtime["export_helpers"] == ["dummy-export"]
 
@@ -812,7 +825,13 @@ def test_addon_template_module_syncs_richer_runtime_summary_message():
         assert addon_msg["addons"] == ["dummy"]
         assert [item["id"] for item in addon_msg["panel_specs"]] == ["main", "secondary"]
         assert [item["id"] for item in addon_msg["context_action_specs"]] == ["focus-dummy", "inspect-dummy"]
-        assert [item["id"] for item in addon_msg["addon_sections"]] == ["interactive", "inputs", "status", "secondary_overview", "secondary_details"]
+        assert [item["id"] for item in addon_msg["addon_sections"]] == [
+            "interactive",
+            "inputs",
+            "status",
+            "secondary_overview",
+            "secondary_details",
+        ]
         assert [item["id"] for item in addon_msg["export_helper_specs"]] == ["dummy-export"]
     finally:
         addons.clear()
@@ -822,8 +841,13 @@ def test_addon_templates_helper_lists_and_registers_reference_addons():
     addons.clear()
     try:
         assert addon_templates.list_reference_addons() == ["dummy", "elastnetmt"]
-        assert addon_templates.resolve_reference_addon("elastnetmt") == "molsysviewer.addon_templates.minimal_elastnetmt"
-        assert addon_templates.resolve_reference_addon("minimal_elastnetmt") == "molsysviewer.addon_templates.minimal_elastnetmt"
+        assert (
+            addon_templates.resolve_reference_addon("elastnetmt") == "molsysviewer.addon_templates.minimal_elastnetmt"
+        )
+        assert (
+            addon_templates.resolve_reference_addon("minimal_elastnetmt")
+            == "molsysviewer.addon_templates.minimal_elastnetmt"
+        )
         assert addon_templates.resolve_reference_addon("dummy") == "molsysviewer.addon_templates.dummy_addon"
         assert addon_templates.resolve_reference_addon("minimal_dummy") == "molsysviewer.addon_templates.dummy_addon"
 
@@ -964,7 +988,6 @@ def test_widget_teardown_deactivates_the_view_addon_runtime():
 
     assert events == ["enable", "disable"]
     view.close()
-
 
 
 def test_view_addons_lifecycle_on_enable_failure_isolated_and_reported():
@@ -1160,33 +1183,41 @@ def test_view_handles_addon_manager_context_actions():
     assert view.addons.is_enabled("topomt") is True
 
     # Test addon_disable
-    view._handle_frontend_event({
-        "event": "interaction_context_action",
-        "action": "addon_disable",
-        "name": "topomt",
-    })
+    view._handle_frontend_event(
+        {
+            "event": "interaction_context_action",
+            "action": "addon_disable",
+            "name": "topomt",
+        }
+    )
     assert view.addons.is_enabled("topomt") is False
 
     # Test addon_enable
-    view._handle_frontend_event({
-        "event": "interaction_context_action",
-        "action": "addon_enable",
-        "name": "topomt",
-    })
+    view._handle_frontend_event(
+        {
+            "event": "interaction_context_action",
+            "action": "addon_enable",
+            "name": "topomt",
+        }
+    )
     assert view.addons.is_enabled("topomt") is True
 
     # Test addon_rescan
-    view._handle_frontend_event({
-        "event": "interaction_context_action",
-        "action": "addon_rescan",
-    })
+    view._handle_frontend_event(
+        {
+            "event": "interaction_context_action",
+            "action": "addon_rescan",
+        }
+    )
 
     # Test addon_register_module with a failing import (recorded failure)
-    view._handle_frontend_event({
-        "event": "interaction_context_action",
-        "action": "addon_register_module",
-        "name": "non_existent_addon_module_test",
-    })
+    view._handle_frontend_event(
+        {
+            "event": "interaction_context_action",
+            "action": "addon_register_module",
+            "name": "non_existent_addon_module_test",
+        }
+    )
     failures = view.addons.discovery_failures()
     assert any(f["source"] == "non_existent_addon_module_test" for f in failures)
 
@@ -1387,6 +1418,7 @@ def test_view_addons_refresh_runtime_summary_after_context_action():
 # AddonPanelWidget
 # ---------------------------------------------------------------------------
 
+
 class _EchoPanel(AddonPanelWidget):
     _esm = "export function render() {}"
 
@@ -1408,6 +1440,7 @@ class _EchoPanel(AddonPanelWidget):
 
 def test_addon_panel_widget_is_subclass():
     import anywidget
+
     assert issubclass(AddonPanelWidget, anywidget.AnyWidget)
     assert issubclass(_EchoPanel, AddonPanelWidget)
 
@@ -1505,13 +1538,12 @@ def test_resolve_panel_widget_returns_none_when_no_widget_class():
             package="NoPanelAddon",
             version="0.1.0",
             description="Addon without widget_class",
-            panels=(
-                AddonPanelSpec(id="main", title="Main", entry="nopanel.panels.main"),
-            ),
+            panels=(AddonPanelSpec(id="main", title="Main", entry="nopanel.panels.main"),),
         )
         addons.register(addon)
         view = MolSysView.__new__(MolSysView)
         from molsysviewer.addons import ViewAddonsManager
+
         mgr = ViewAddonsManager(view, addons)
         result = mgr.resolve_panel_widget("nopanel-addon", "main")
         assert result is None
@@ -1521,6 +1553,7 @@ def test_resolve_panel_widget_returns_none_when_no_widget_class():
 
 def test_addon_panel_widget_state_is_bound_to_widget_addon_namespace():
     import types
+
     addons.clear()
     module = types.ModuleType("_test_state_panel_mod")
 
@@ -1552,6 +1585,7 @@ def test_addon_panel_widget_state_is_bound_to_widget_addon_namespace():
             _active_panel_widget=None,
         )
         from molsysviewer.addons import ViewAddonsManager
+
         mgr = ViewAddonsManager(view, addons)
         panel_a = mgr.resolve_panel_widget("addon-a", "main")
         panel_b = mgr.resolve_panel_widget("addon-b", "main")
@@ -1577,6 +1611,7 @@ def test_addon_panel_widget_state_is_bound_to_widget_addon_namespace():
 
 def test_resolve_panel_widget_returns_instance():
     import types
+
     addons.clear()
     module = types.ModuleType("_test_panel_mod")
 
@@ -1603,6 +1638,7 @@ def test_resolve_panel_widget_returns_instance():
         addons.register(addon)
         view = MolSysView.__new__(MolSysView)
         from molsysviewer.addons import ViewAddonsManager
+
         mgr = ViewAddonsManager(view, addons)
         widget = mgr.resolve_panel_widget("panel-addon", "main")
         assert isinstance(widget, AddonPanelWidget)

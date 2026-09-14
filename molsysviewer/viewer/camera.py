@@ -235,9 +235,7 @@ class CameraManager:
         if obj is None:
             raise KeyError(f"Unknown object tag: {tag!r}")
         if not hasattr(obj, "focus"):
-            raise NotImplementedError(
-                f"Objects of kind {getattr(obj, 'kind', '?')!r} do not support focus()."
-            )
+            raise NotImplementedError(f"Objects of kind {getattr(obj, 'kind', '?')!r} do not support focus().")
         obj.focus(duration=duration, extra_radius=extra_radius)
 
     @signal(tags=["camera"])
@@ -248,9 +246,10 @@ class CameraManager:
 
     # ── Snapshot ──────────────────────────────────────────────────────────
 
-    @signal(tags=["camera"], extra_factory=lambda args, kwargs: {
-        "pretty": args[1] if len(args) > 1 else kwargs.get("pretty", False)
-    })
+    @signal(
+        tags=["camera"],
+        extra_factory=lambda args, kwargs: {"pretty": args[1] if len(args) > 1 else kwargs.get("pretty", False)},
+    )
     @digest()
     def get_snapshot(self, *, pretty: bool = False, skip_digestion: bool = False) -> dict | str | None:
         """Return the last camera snapshot received from the frontend.

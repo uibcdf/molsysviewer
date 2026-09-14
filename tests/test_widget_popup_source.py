@@ -1,5 +1,6 @@
-from molsysviewer import MolSysView
 from molsysviewer.widget import MolSysViewerWidget
+
+from molsysviewer import MolSysView
 
 
 def test_widget_state_syncs_small_bootstrap_not_full_runtime():

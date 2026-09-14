@@ -3,9 +3,9 @@ from __future__ import annotations
 from typing import Any, Literal
 
 from smonitor import signal
-from .scene_history import records_scene_history
 
 from ._private.argdigest import digest
+from .scene_history import records_scene_history
 
 SelectionCombineOperation = Literal["replace", "add", "subtract", "intersect", "invert"]
 
@@ -140,10 +140,10 @@ class ActiveSelection:
     def focus(
         self,
         *,
-        duration: Any = '250 ms',
+        duration: Any = "250 ms",
         duration_ms: Any | None = None,
-        extra_radius: Any = '4.0 angstroms',
-        min_radius: Any = '1.0 angstroms',
+        extra_radius: Any = "4.0 angstroms",
+        min_radius: Any = "1.0 angstroms",
         skip_digestion: bool = False,
     ) -> None:
         """Focus the camera on the current active selection."""
@@ -209,16 +209,15 @@ class ActiveSelection:
             skip_digestion=True,
             **{f"{level}_index": True for level in levels},
         )
-        level_indices = {
-            level: sorted({int(value) for value in metadata[f"{level}_index"]})
-            for level in levels
-        }
+        level_indices = {level: sorted({int(value) for value in metadata[f"{level}_index"]}) for level in levels}
 
         # _molsys index space == frontend index space, so send the atoms as-is.
-        self._view._send({  # noqa: SLF001
-            "op": "set_active_selection",
-            "atom_indices": list(atom_indices),
-        })
+        self._view._send(
+            {  # noqa: SLF001
+                "op": "set_active_selection",
+                "atom_indices": list(atom_indices),
+            }
+        )
         self._view._last_active_selection_event = {  # noqa: SLF001
             "event": "interaction_active_selection_changed",
             "source_kind": "element",

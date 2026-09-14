@@ -6,8 +6,9 @@ from smonitor import signal
 
 from .. import pyunitwizard as puw
 from .._private.argdigest import digest
+from ..colors import colors as global_colors
+from ..colors import normalize_color
 from ..scene_history import records_scene_history
-from ..colors import colors as global_colors, normalize_color
 from ._registry import register_shape_layer
 
 
@@ -25,8 +26,7 @@ class Rings:
         self._view = view
 
     @staticmethod
-    def _normalize_vectors(values: Iterable[Sequence[float]], name: str,
-                           to_angstroms: bool) -> list[list[float]]:
+    def _normalize_vectors(values: Iterable[Sequence[float]], name: str, to_angstroms: bool) -> list[list[float]]:
         raw = puw.get_value(values, to_unit="angstroms") if to_angstroms else values
         out: list[list[float]] = []
         for idx, v in enumerate(raw):

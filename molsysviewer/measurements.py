@@ -2,16 +2,15 @@ from __future__ import annotations
 
 from typing import Any
 
-import numpy as np
 import molsysmt as msm
-import pyunitwizard as puw
+import numpy as np
 from smonitor import signal
 
+from . import pyunitwizard as puw
 from ._private.argdigest import digest
 from ._private.smonitor_emit import emit_suppressed_exception
 from .layers import Layer, Measurement
 from .scene_history import records_scene_history
-from . import pyunitwizard as puw
 
 _MEASUREMENT_POLICIES = {"atom", "centroid", "representative_atom"}
 _NM_TO_ANGSTROM = puw.conversion_factor("nm", "angstroms")
@@ -108,13 +107,17 @@ class MeasurementsManager:
     def _normalize_endpoint_policy(self, endpoint_policy: str | None) -> str:
         policy = self._endpoint_policy_default if endpoint_policy is None else str(endpoint_policy).strip().lower()
         if policy not in _MEASUREMENT_POLICIES:
-            raise ValueError(f"Unsupported measurement endpoint policy {endpoint_policy!r}. Allowed: {sorted(_MEASUREMENT_POLICIES)}")
+            raise ValueError(
+                f"Unsupported measurement endpoint policy {endpoint_policy!r}. Allowed: {sorted(_MEASUREMENT_POLICIES)}"
+            )
         return policy
 
     def _normalize_representative_target(self, target: str) -> str:
         key = str(target).strip().lower()
         if key not in self._representative_atoms:
-            raise ValueError(f"Unsupported representative-atom target {target!r}. Allowed: {sorted(self._representative_atoms)}")
+            raise ValueError(
+                f"Unsupported representative-atom target {target!r}. Allowed: {sorted(self._representative_atoms)}"
+            )
         return key
 
     def _atom_metadata_for_pick(self, atom_indices: list[int]) -> dict[str, list[Any]]:
@@ -149,7 +152,9 @@ class MeasurementsManager:
         atom_names: list[str],
         group_types: list[str],
     ) -> str:
-        normalized_group_types = {str(group_type).strip().lower() for group_type in group_types if str(group_type).strip()}
+        normalized_group_types = {
+            str(group_type).strip().lower() for group_type in group_types if str(group_type).strip()
+        }
         if "amino acid" in normalized_group_types:
             return "protein"
         if "nucleotide" in normalized_group_types:
@@ -222,7 +227,9 @@ class MeasurementsManager:
         style: dict | None = None,
     ) -> dict:
         policy = self._normalize_endpoint_policy(endpoint_policy)
-        endpoint_kinds, endpoint_labels, endpoint_atom_indices = self._resolve_endpoint_metadata(picks_atom_indices, policy)
+        endpoint_kinds, endpoint_labels, endpoint_atom_indices = self._resolve_endpoint_metadata(
+            picks_atom_indices, policy
+        )
         options: dict = {
             "tag": tag,
             "layer_tag": layer_tag or tag,
@@ -298,7 +305,9 @@ class MeasurementsManager:
                 atoms = [pick[0]]
             else:
                 return None
-            result = msm.get(molsys, element="atom", selection=atoms, output_type="dictionary", coordinates=True, skip_digestion=True)
+            result = msm.get(
+                molsys, element="atom", selection=atoms, output_type="dictionary", coordinates=True, skip_digestion=True
+            )
             coords = result.get("coordinates")
             if coords is None:
                 return None
@@ -590,9 +599,13 @@ class MeasurementsManager:
                     "n_picks": len(picks) if isinstance(picks, list) else 0,
                     "picks_atom_indices": [list(item) for item in picks] if isinstance(picks, list) else [],
                     "endpoint_kinds": list(endpoint_kinds) if isinstance(endpoint_kinds, list) else [],
-                    "endpoint_policy": endpoint_policy if isinstance(endpoint_policy, str) else self._endpoint_policy_default,
+                    "endpoint_policy": endpoint_policy
+                    if isinstance(endpoint_policy, str)
+                    else self._endpoint_policy_default,
                     "endpoint_labels": list(endpoint_labels) if isinstance(endpoint_labels, list) else [],
-                    "endpoint_atom_indices": [list(item) for item in endpoint_atom_indices] if isinstance(endpoint_atom_indices, list) else [],
+                    "endpoint_atom_indices": [list(item) for item in endpoint_atom_indices]
+                    if isinstance(endpoint_atom_indices, list)
+                    else [],
                     "value": stored_value,
                     "visible": False if layer is None else not getattr(layer, "_hidden", False),
                     "active": False if layer is None else bool(getattr(layer, "_active", False)),
@@ -631,7 +644,11 @@ class MeasurementsManager:
         picks = options.get("picks_atom_indices")
         endpoint_atom_indices = options.get("endpoint_atom_indices")
         endpoint_policy = options.get("endpoint_policy", self._endpoint_policy_default)
-        if not isinstance(picks, list) or not isinstance(endpoint_atom_indices, list) or not isinstance(endpoint_policy, str):
+        if (
+            not isinstance(picks, list)
+            or not isinstance(endpoint_atom_indices, list)
+            or not isinstance(endpoint_policy, str)
+        ):
             return None
         series = self._compute_measurement_series(op, picks, endpoint_atom_indices, endpoint_policy)
         if series is None or len(series) == 0:
@@ -729,6 +746,7 @@ class MeasurementsManager:
         skip_digestion: bool = False,
     ) -> Layer:
         import warnings
+
         if atom_indices_a is not None:
             warnings.warn("atom_indices_a is deprecated; use selection_a instead.", DeprecationWarning, stacklevel=2)
             if selection_a is None:
@@ -768,6 +786,7 @@ class MeasurementsManager:
         skip_digestion: bool = False,
     ) -> Layer:
         import warnings
+
         if atom_indices_a is not None:
             warnings.warn("atom_indices_a is deprecated; use selection_a instead.", DeprecationWarning, stacklevel=2)
             if selection_a is None:
@@ -817,6 +836,7 @@ class MeasurementsManager:
         skip_digestion: bool = False,
     ) -> Layer:
         import warnings
+
         if atom_indices_a is not None:
             warnings.warn("atom_indices_a is deprecated; use selection_a instead.", DeprecationWarning, stacklevel=2)
             if selection_a is None:

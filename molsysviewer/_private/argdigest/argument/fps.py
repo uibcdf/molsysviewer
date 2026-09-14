@@ -10,4 +10,4 @@ def digest_fps(fps, caller=None):
             return v
     except (TypeError, ValueError):
         pass
-    raise ArgumentError('fps', value=fps, caller=caller, message=None)
+    raise ArgumentError("fps", value=fps, caller=caller, message=None)

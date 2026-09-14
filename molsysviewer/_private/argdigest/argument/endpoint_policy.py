@@ -1,6 +1,5 @@
 from molsysviewer._private.exceptions import ArgumentError
 
-
 _ALLOWED_ENDPOINT_POLICIES = {"atom", "centroid", "representative_atom"}
 
 

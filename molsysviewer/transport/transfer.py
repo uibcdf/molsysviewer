@@ -20,12 +20,14 @@ class TransferState(str, Enum):
     FALLBACK = "fallback"
 
 
-TERMINAL_STATES = frozenset({
-    TransferState.COMPLETED,
-    TransferState.CANCELLED,
-    TransferState.EXPIRED,
-    TransferState.FALLBACK,
-})
+TERMINAL_STATES = frozenset(
+    {
+        TransferState.COMPLETED,
+        TransferState.CANCELLED,
+        TransferState.EXPIRED,
+        TransferState.FALLBACK,
+    }
+)
 
 
 class AckDisposition(str, Enum):
@@ -188,10 +190,7 @@ class StructureTransferManager:
             "generation": self._generation,
         }
         begin = {**begin_message, **identity}
-        prepared_chunks = [
-            TransferChunk({**message, **identity}, list(buffers))
-            for message, buffers in chunks
-        ]
+        prepared_chunks = [TransferChunk({**message, **identity}, list(buffers)) for message, buffers in chunks]
         if target_endpoint_id is not None:
             begin["target_endpoint_id"] = target_endpoint_id
             for chunk in prepared_chunks:
@@ -221,11 +220,7 @@ class StructureTransferManager:
 
     def expire_if_due(self) -> TransferTermination | None:
         transfer = self._active
-        if (
-            transfer is None
-            or transfer.state is TransferState.WAITING_COMPLETE
-            or self.monotonic() < transfer.deadline
-        ):
+        if transfer is None or transfer.state is TransferState.WAITING_COMPLETE or self.monotonic() < transfer.deadline:
             return None
         return self._terminate(
             TransferState.EXPIRED,

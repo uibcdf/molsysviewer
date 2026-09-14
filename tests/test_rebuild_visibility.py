@@ -3,18 +3,20 @@
 Focus: behaviours that are not purely live-edit operations and are not covered
 by test_live_edit_rebuild.py or test_visibility_semantics.py individually.
 """
+
 from __future__ import annotations
 
 import pytest
 
 pytest.importorskip("molsysmt")
 from molsysviewer.demo import demo
-from _edit_helpers import apply_append_structures, apply_remove
 
+from _edit_helpers import apply_append_structures, apply_remove
 
 # ---------------------------------------------------------------------------
 # Hidden region survives a global show/hide cycle AFTER a rebuild
 # ---------------------------------------------------------------------------
+
 
 def test_hidden_region_stays_sticky_after_rebuild_and_global_show():
     """A region hidden before a rebuild must remain hidden after global show."""
@@ -51,19 +53,19 @@ def test_global_hide_after_rebuild_does_not_duplicate_hide_region():
     apply_remove(view, selection="atom_index < 2")
 
     pre_hide_count = sum(
-        1 for m in view._test_message_log  # noqa: SLF001
+        1
+        for m in view._test_message_log  # noqa: SLF001
         if m.get("op") == "hide_region" and m.get("tag") == "site"
     )
 
     view.whole.hide(skip_digestion=True)
 
     post_hide_count = sum(
-        1 for m in view._test_message_log  # noqa: SLF001
+        1
+        for m in view._test_message_log  # noqa: SLF001
         if m.get("op") == "hide_region" and m.get("tag") == "site"
     )
     assert post_hide_count == pre_hide_count, "view.hide() must not re-emit hide_region for already-hidden region"
-
-
 
 
 def test_scene_look_state_survives_rebuild_and_export():
@@ -112,8 +114,7 @@ def test_scene_focus_fade_is_dropped_when_focus_atoms_are_removed():
 
     assert "focus_fade" not in view._scene_look  # noqa: SLF001
     assert not any(  # noqa: SLF001
-        msg.get("op") == "set_focus_fade"
-        for msg in view._test_message_log[before_rebuild:]
+        msg.get("op") == "set_focus_fade" for msg in view._test_message_log[before_rebuild:]
     )
 
 
@@ -127,13 +128,15 @@ def test_player_state_survives_rebuild_and_export():
     apply_remove(view, selection="atom_index < 2")
 
     frame_msg = next(
-        msg for msg in view._test_message_log  # noqa: SLF001
+        msg
+        for msg in view._test_message_log  # noqa: SLF001
         if msg.get("op") == "set_trajectory_frame"
     )
     assert frame_msg["index"] == 2
 
     playback_msg = next(
-        msg for msg in reversed(view._test_message_log)  # noqa: SLF001
+        msg
+        for msg in reversed(view._test_message_log)  # noqa: SLF001
         if msg.get("op") == "set_trajectory_playback"
     )
     assert playback_msg == {
@@ -146,7 +149,8 @@ def test_player_state_survives_rebuild_and_export():
     }
 
     exported_playback = [
-        msg for msg in view._build_export_messages()  # noqa: SLF001
+        msg
+        for msg in view._build_export_messages()  # noqa: SLF001
         if msg.get("op") == "set_trajectory_playback"
     ]
     assert exported_playback == [
@@ -170,7 +174,8 @@ def test_player_settings_export_without_autoplay_when_paused():
     view.player.set_step_size(3, skip_digestion=True)
 
     exported_playback = next(
-        msg for msg in reversed(view._build_export_messages())  # noqa: SLF001
+        msg
+        for msg in reversed(view._build_export_messages())  # noqa: SLF001
         if msg.get("op") == "set_trajectory_playback"
     )
     assert exported_playback == {
@@ -185,6 +190,7 @@ def test_player_settings_export_without_autoplay_when_paused():
 # ---------------------------------------------------------------------------
 # Annotation layer-tag retag survives rebuild
 # ---------------------------------------------------------------------------
+
 
 def test_annotation_retag_survives_rebuild():
     """A layer_tag change to an annotation must appear in the rebuilt message history."""
@@ -209,7 +215,8 @@ def test_annotation_retag_survives_rebuild():
 
     # After rebuild the add_label message in _test_message_log must carry the updated layer_tag
     replayed = next(
-        m for m in view._test_message_log  # noqa: SLF001
+        m
+        for m in view._test_message_log  # noqa: SLF001
         if m.get("op") == "add_label" and m.get("tag") == "res0"
     )
     assert replayed["options"]["layer_tag"] == "updated_layer"
@@ -218,6 +225,7 @@ def test_annotation_retag_survives_rebuild():
 # ---------------------------------------------------------------------------
 # Selection history remapping: indices shift correctly after rebuild
 # ---------------------------------------------------------------------------
+
 
 def test_selection_history_remapped_after_rebuild():
     """Named selections must have their atom indices remapped in history after a rebuild."""
@@ -231,17 +239,17 @@ def test_selection_history_remapped_after_rebuild():
     apply_remove(view, selection="atom_index < 3")
 
     save_msg = next(
-        m for m in view._test_message_log  # noqa: SLF001
+        m
+        for m in view._test_message_log  # noqa: SLF001
         if m.get("op") == "save_selection" and m.get("tag") == "pair"
     )
-    assert save_msg["atom_indices"] == [7, 8], (
-        f"Expected remapped indices [7, 8], got {save_msg['atom_indices']}"
-    )
+    assert save_msg["atom_indices"] == [7, 8], f"Expected remapped indices [7, 8], got {save_msg['atom_indices']}"
 
 
 # ---------------------------------------------------------------------------
 # Global style survives rebuild and then is respected by a second rebuild
 # ---------------------------------------------------------------------------
+
 
 def test_set_whole_representation_replayed_across_two_rebuilds():
     """The applied global style must appear in the replay after each of two successive rebuilds."""
@@ -254,7 +262,8 @@ def test_set_whole_representation_replayed_across_two_rebuilds():
     apply_remove(view, selection="atom_index < 2")
 
     repr_after_first = [
-        m for m in view._test_message_log  # noqa: SLF001
+        m
+        for m in view._test_message_log  # noqa: SLF001
         if m.get("op") == "set_whole_representation"
     ]
     assert len(repr_after_first) >= 1
@@ -264,7 +273,8 @@ def test_set_whole_representation_replayed_across_two_rebuilds():
     apply_remove(view, selection="atom_index < 2")
 
     repr_after_second = [
-        m for m in view._test_message_log  # noqa: SLF001
+        m
+        for m in view._test_message_log  # noqa: SLF001
         if m.get("op") == "set_whole_representation"
     ]
     assert len(repr_after_second) >= 1
@@ -274,6 +284,7 @@ def test_set_whole_representation_replayed_across_two_rebuilds():
 # ---------------------------------------------------------------------------
 # Export message ordering after a multi-step rebuild chain (item 2)
 # ---------------------------------------------------------------------------
+
 
 def test_export_messages_ordered_after_remove_then_append():
     """After remove() + append_structures(), export messages keep load → region → label → camera."""
@@ -302,12 +313,9 @@ def test_export_messages_ordered_after_remove_then_append():
     assert "load_molsys_payload" in ops
     assert "create_region" in ops
     assert "add_label" in ops
-    assert ops.index("load_molsys_payload") < ops.index("create_region"), \
-        "load must precede create_region"
-    assert ops.index("create_region") < ops.index("add_label"), \
-        "create_region must precede add_label"
-    assert ops[-1] == "set_camera_snapshot", \
-        "camera snapshot must be last"
+    assert ops.index("load_molsys_payload") < ops.index("create_region"), "load must precede create_region"
+    assert ops.index("create_region") < ops.index("add_label"), "create_region must precede add_label"
+    assert ops[-1] == "set_camera_snapshot", "camera snapshot must be last"
 
 
 def test_export_messages_region_atom_indices_remapped_after_rebuild_chain():

@@ -17,7 +17,6 @@ it stood before the migration.
 
 from __future__ import annotations
 
-
 import pytest
 from argdigest import ArgumentConsistencyError, describe_normalization
 from argdigest.core.function_loader import load_normalization
@@ -74,13 +73,13 @@ def test_the_same_bare_name_follows_the_element_it_was_asked_about(view):
     assert list(view.whole.get(selection=selection, element="group", name=True)) == ["ACE"]
 
 
-@pytest.mark.parametrize("synonym, canonical", [("atom_names", "atom_name"),
-                                                ("atom_indices", "atom_index")])
+@pytest.mark.parametrize("synonym, canonical", [("atom_names", "atom_name"), ("atom_indices", "atom_index")])
 def test_attribute_synonyms_reach_get(view, synonym, canonical):
     selection = "atom_index==[0,1]"
 
-    assert list(view.whole.get(selection=selection, element="atom", **{synonym: True})) \
-        == list(view.whole.get(selection=selection, element="atom", **{canonical: True}))
+    assert list(view.whole.get(selection=selection, element="atom", **{synonym: True})) == list(
+        view.whole.get(selection=selection, element="atom", **{canonical: True})
+    )
 
 
 def test_an_alias_and_its_canonical_name_are_rejected_together(view):
@@ -88,15 +87,14 @@ def test_an_alias_and_its_canonical_name_are_rejected_together(view):
         view.whole.get(element="atom", atom_names=True, atom_name=False)
 
 
-def test_attribute_synonyms_reach_get(view):
+def test_removed_predicate_attributes_have_get_replacements(view):
     """`contains` and `is_composed_of` were removed; `get` carries the same names.
 
     The rename that mattered to them still has to happen, and now MolSysMT is the one
     doing it — see `uibcdf/molsysviewer#71`.
     """
     assert view.whole.get(n_waters=True) == 0
-    assert list(view.whole.get(element="group", name=True)) \
-        == list(view.whole.get(element="group", group_name=True))
+    assert list(view.whole.get(element="group", name=True)) == list(view.whole.get(element="group", group_name=True))
 
 
 def test_a_region_gets_the_same_renames_as_the_view(view):
@@ -108,13 +106,13 @@ def test_a_region_gets_the_same_renames_as_the_view(view):
     view.regions.add(selection="atom_index==[0,1]", tag="_normalization_probe")
     region = view.regions["_normalization_probe"]
 
-    assert list(region.get(element="group", index=True)) \
-        == list(region.get(element="group", group_index=True))
+    assert list(region.get(element="group", index=True)) == list(region.get(element="group", group_index=True))
 
 
 def test_the_whole_gets_the_synonyms_too(view):
-    assert list(view.whole.get(element="group", residue_name=True)) \
-        == list(view.whole.get(element="group", group_name=True))
+    assert list(view.whole.get(element="group", residue_name=True)) == list(
+        view.whole.get(element="group", group_name=True)
+    )
 
 
 def test_a_pure_forwarder_needs_no_table_of_its_own(view):
@@ -124,8 +122,7 @@ def test_a_pure_forwarder_needs_no_table_of_its_own(view):
     appearing in any table. Pinned because adding it would look like a fix and would
     instead mean renaming twice.
     """
-    assert list(view.whole.get(element="group", index=True)) \
-        == list(view.whole.get(element="group", group_index=True))
+    assert list(view.whole.get(element="group", index=True)) == list(view.whole.get(element="group", group_index=True))
 
 
 def test_every_method_that_forwards_undigested_kwargs_has_a_table(registry):
@@ -144,10 +141,12 @@ def test_every_method_that_forwards_undigested_kwargs_has_a_table(registry):
     # Forwarding undigested kwargs is only a problem when those kwargs are *attribute
     # names*. These forward conversion options, representation parameters and shape
     # parameters, none of which the synonym tables touch.
-    exempt = {("molsysviewer/viewer/molsysmt_interface.py", "convert"),
-              ("molsysviewer/shapes/__init__.py", "add_sphere"),
-              ("molsysviewer/shapes/__init__.py", "add_topomt_feature"),
-              ("molsysviewer/shapes/pharmacophore.py", "add_pharmacophore_features")}
+    exempt = {
+        ("molsysviewer/viewer/molsysmt_interface.py", "convert"),
+        ("molsysviewer/shapes/__init__.py", "add_sphere"),
+        ("molsysviewer/shapes/__init__.py", "add_topomt_feature"),
+        ("molsysviewer/shapes/pharmacophore.py", "add_pharmacophore_features"),
+    }
 
     root = Path(__file__).resolve().parents[1]
     delegators = set()
@@ -163,9 +162,11 @@ def test_every_method_that_forwards_undigested_kwargs_has_a_table(registry):
             if "**kwargs" in source and "skip_digestion=True" in source:
                 relative = str(path.relative_to(root))
                 if (relative, node.name) not in exempt:
-                    delegators.add(f"molsysviewer.{path.stem}.{node.name}"
-                                   if path.stem != "molsysmt_interface"
-                                   else f"molsysviewer.viewer.{node.name}")
+                    delegators.add(
+                        f"molsysviewer.{path.stem}.{node.name}"
+                        if path.stem != "molsysmt_interface"
+                        else f"molsysviewer.viewer.{node.name}"
+                    )
 
     covered = {table["applies_to"] for table in describe_normalization(registry)}
 

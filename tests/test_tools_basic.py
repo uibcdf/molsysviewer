@@ -169,7 +169,6 @@ def test_tools_basic_copy_returns_independent_view_with_scene_state():
     pocket = view.shapes.add_pocket_surface(atom_indices=[0, 1, 2], tag="pocket", skip_digestion=True)
     pocket.hide(skip_digestion=True)
 
-
     result = tools.copy(view, debug_js=True)
 
     assert isinstance(result, MolSysView)

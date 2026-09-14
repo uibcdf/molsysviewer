@@ -67,9 +67,7 @@ def preview(
         except OSError:
             continue
     if server is None:
-        raise OSError(
-            f"no free port between {port} and {port + 19}. Pass another `port`."
-        )
+        raise OSError(f"no free port between {port} and {port + 19}. Pass another `port`.")
 
     url = f"http://localhost:{server.server_address[1]}/"
     print(f"MolSysViewer is serving {root} at {url} (Ctrl-C to stop)")

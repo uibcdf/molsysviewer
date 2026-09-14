@@ -1,24 +1,41 @@
 from __future__ import annotations
 
-
-import json
-
 import inspect
+import json
 from typing import Any
 
 from smonitor import signal
+
 from .._private.argdigest import digest
 from .signals import (
     controls_signal_extra as _controls_signal_extra,
+)
+from .signals import (
     panel_mode_signal_extra as _panel_mode_signal_extra,
+)
+from .signals import (
     panel_mode_state_query_extra as _panel_mode_state_query_extra,
-    workspace_catalog_signal_extra as _workspace_catalog_signal_extra,
-    workspace_panel_signal_extra as _workspace_panel_signal_extra,
-    workspace_panels_signal_extra as _workspace_panels_signal_extra,
-    workspace_runtime_signal_extra as _workspace_runtime_signal_extra,
-    workspace_sections_signal_extra as _workspace_sections_signal_extra,
-    workspace_signal_extra as _workspace_signal_extra,
+)
+from .signals import (
     resolve_entry_callable as _resolve_entry_callable,
+)
+from .signals import (
+    workspace_catalog_signal_extra as _workspace_catalog_signal_extra,
+)
+from .signals import (
+    workspace_panel_signal_extra as _workspace_panel_signal_extra,
+)
+from .signals import (
+    workspace_panels_signal_extra as _workspace_panels_signal_extra,
+)
+from .signals import (
+    workspace_runtime_signal_extra as _workspace_runtime_signal_extra,
+)
+from .signals import (
+    workspace_sections_signal_extra as _workspace_sections_signal_extra,
+)
+from .signals import (
+    workspace_signal_extra as _workspace_signal_extra,
 )
 
 
@@ -187,7 +204,11 @@ class PanelModeMixin:
         active_panel = state.get("workspace_panel") if isinstance(state, dict) else None
         if workspace == "core":
             return [
-                {"id": "navigate", "title": "Navigate", "active": active_workspace == "core" and active_panel == "navigate"},
+                {
+                    "id": "navigate",
+                    "title": "Navigate",
+                    "active": active_workspace == "core" and active_panel == "navigate",
+                },
                 {"id": "addons", "title": "Add-ons", "active": active_workspace == "core" and active_panel == "addons"},
             ]
 
@@ -360,13 +381,9 @@ class PanelModeMixin:
         addon_names = self.addons.enabled(skip_digestion=True)
         workspace_specs = self.addons.workspace_specs(skip_digestion=True)
         panel_specs = self.addons.panel_specs(skip_digestion=True)
-        addon_sections = self._enrich_addon_sections(
-            self.addons.addon_section_specs(skip_digestion=True)
-        )
+        addon_sections = self._enrich_addon_sections(self.addons.addon_section_specs(skip_digestion=True))
         context_action_specs = self.addons.context_action_specs(skip_digestion=True)
-        export_helper_specs = self._enrich_export_helper_specs(
-            self.addons.export_helper_specs(skip_digestion=True)
-        )
+        export_helper_specs = self._enrich_export_helper_specs(self.addons.export_helper_specs(skip_digestion=True))
         discovery_failures = self.addons.discovery_failures(skip_digestion=True)
         lifecycle_failures = self.addons.lifecycle_failures(skip_digestion=True)
         return {
@@ -392,12 +409,14 @@ class PanelModeMixin:
             return
 
         def _routed_send(msg: dict, buffers: Any = None) -> None:
-            self._send_runtime_only({
-                "op": "addon_panel_message",
-                "addon": addon_name,
-                "panel": panel_id,
-                "content": msg,
-            })
+            self._send_runtime_only(
+                {
+                    "op": "addon_panel_message",
+                    "addon": addon_name,
+                    "panel": panel_id,
+                    "content": msg,
+                }
+            )
 
         widget.send = _routed_send
         self._active_panel_widget = (addon_name, panel_id, widget)
@@ -407,13 +426,15 @@ class PanelModeMixin:
         ctx = widget._build_viewer_context()
         _routed_send({"type": "context", "context": ctx})
 
-        self._send_runtime_only({
-            "op": "mount_addon_panel",
-            "addon": addon_name,
-            "panel": panel_id,
-            "esm": widget._esm,
-            "css": getattr(widget, "_css", "") or "",
-        })
+        self._send_runtime_only(
+            {
+                "op": "mount_addon_panel",
+                "addon": addon_name,
+                "panel": panel_id,
+                "esm": widget._esm,
+                "css": getattr(widget, "_css", "") or "",
+            }
+        )
 
     def _unmount_addon_panel(self) -> None:
         if self._active_panel_widget is None:

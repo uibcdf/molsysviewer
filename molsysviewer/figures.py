@@ -128,9 +128,7 @@ class FigureSpec:
                 except TypeError as exc:
                     raise ValueError(f"Invalid overrides for figure variant {name!r}: {exc}") from exc
                 continue
-            raise ValueError(
-                f"Figure variant {name!r} must be a FigureSpec or a dictionary of explicit overrides."
-            )
+            raise ValueError(f"Figure variant {name!r} must be a FigureSpec or a dictionary of explicit overrides.")
         return resolved
 
     def build_publication_variants(self, *, include_current: bool = False) -> dict[str, "FigureSpec"]:

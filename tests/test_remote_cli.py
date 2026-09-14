@@ -27,29 +27,32 @@ def test_public_server_cli_parses_its_bounded_configuration(monkeypatch):
 
     monkeypatch.setattr(server_cli, "_run", fake_run)
 
-    assert server_cli.main(
-        [
-            "pentalanine",
-            "--demo",
-            "--render-on",
-            "server",
-            "--port",
-            "9123",
-            "--chromium",
-            "/opt/chrome",
-            "--video-width",
-            "1280",
-            "--video-height",
-            "720",
-            "--video-fps",
-            "24",
-            "--video-max-bitrate",
-            "3000000",
-            "--ice-server",
-            "stun:stun.example.org",
-            "--json",
-        ]
-    ) == 0
+    assert (
+        server_cli.main(
+            [
+                "pentalanine",
+                "--demo",
+                "--render-on",
+                "server",
+                "--port",
+                "9123",
+                "--chromium",
+                "/opt/chrome",
+                "--video-width",
+                "1280",
+                "--video-height",
+                "720",
+                "--video-fps",
+                "24",
+                "--video-max-bitrate",
+                "3000000",
+                "--ice-server",
+                "stun:stun.example.org",
+                "--json",
+            ]
+        )
+        == 0
+    )
     assert len(captured) == 1
     args, stream = captured[0]
     assert args.source == "pentalanine"
@@ -205,17 +208,20 @@ def test_client_rendering_cli_runs_a_real_demo_session_and_emits_json(monkeypatc
 
     monkeypatch.setattr(server_cli, "_wait_for_shutdown", stop_immediately)
 
-    assert server_cli.main(
-        [
-            "pentalanine",
-            "--demo",
-            "--render-on",
-            "client",
-            "--port",
-            "0",
-            "--json",
-        ]
-    ) == 0
+    assert (
+        server_cli.main(
+            [
+                "pentalanine",
+                "--demo",
+                "--render-on",
+                "client",
+                "--port",
+                "0",
+                "--json",
+            ]
+        )
+        == 0
+    )
 
     record = json.loads(capsys.readouterr().out)
     assert record["schema_version"] == 1
@@ -283,29 +289,28 @@ def test_human_startup_output_is_directly_actionable():
 
 def test_load_worker_and_bind_failures_have_distinct_exit_codes(tmp_path, capsys):
     missing_source = tmp_path / "missing.pdb"
-    assert server_cli.main(
-        [str(missing_source), "--render-on", "client", "--port", "0"]
-    ) == 3
+    assert server_cli.main([str(missing_source), "--render-on", "client", "--port", "0"]) == 3
     assert "load failed:" in capsys.readouterr().err
 
     missing_chromium = tmp_path / "missing-chromium"
-    assert server_cli.main(
-        [
-            "--render-on",
-            "server",
-            "--port",
-            "0",
-            "--chromium",
-            str(missing_chromium),
-        ]
-    ) == 5
+    assert (
+        server_cli.main(
+            [
+                "--render-on",
+                "server",
+                "--port",
+                "0",
+                "--chromium",
+                str(missing_chromium),
+            ]
+        )
+        == 5
+    )
     assert "worker failed:" in capsys.readouterr().err
 
     with socket.socket() as occupied:
         occupied.bind(("127.0.0.1", 0))
         occupied.listen()
         port = occupied.getsockname()[1]
-        assert server_cli.main(
-            ["--render-on", "client", "--port", str(port)]
-        ) == 4
+        assert server_cli.main(["--render-on", "client", "--port", str(port)]) == 4
     assert "session failed:" in capsys.readouterr().err

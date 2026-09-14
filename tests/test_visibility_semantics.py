@@ -33,9 +33,7 @@ def view():
 def sent(view, monkeypatch):
     log: list[str] = []
     original = view._send  # noqa: SLF001
-    monkeypatch.setattr(
-        view, "_send", lambda msg, *a, **k: (log.append(msg.get("op")), original(msg, *a, **k))[1]
-    )
+    monkeypatch.setattr(view, "_send", lambda msg, *a, **k: (log.append(msg.get("op")), original(msg, *a, **k))[1])
     return log
 
 
@@ -45,9 +43,7 @@ def test_show_does_not_disturb_what_the_whole_and_the_regions_decided(view, sent
     `show()` used to reset every visibility decision on its way to displaying the widget,
     because displaying and deciding shared one method.
     """
-    region = view.regions.add(
-        atom_indices=[0, 1, 2], tag="frag", representation="sticks", skip_digestion=True
-    )
+    region = view.regions.add(atom_indices=[0, 1, 2], tag="frag", representation="sticks", skip_digestion=True)
     view.whole.hide(skip_digestion=True)
     region.hide(skip_digestion=True)
 

@@ -17,12 +17,10 @@ from __future__ import annotations
 import logging
 from typing import Any, Callable
 
-from .utils import _frontend_event_validation_error
-
 from smonitor.integrations import context_extra, emit_from_catalog
 
 from .._private.smonitor import CATALOG, META, PACKAGE_ROOT
-
+from .utils import _frontend_event_validation_error
 
 logger = logging.getLogger(__name__)
 
@@ -111,7 +109,7 @@ class QtViewChannel:
         # Forward only the newly-appended messages to the bridge (which queues
         # them until the frontend is ready), each exactly once.
         value = list(value or [])
-        for msg in value[len(self._forwarded_initial):]:
+        for msg in value[len(self._forwarded_initial) :]:
             self._bridge.send(dict(msg))
         self._forwarded_initial = value
         self._initial_messages = value

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from .meta import DOC_URL, ISSUES_URL, API_URL
+from .meta import API_URL, DOC_URL, ISSUES_URL
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[2]
 
@@ -290,9 +290,7 @@ MESSAGES = {
         "{n_structures}. The frame was left where it is rather than moved somewhere the "
         "document did not ask for."
     ),
-    "region_without_own_visual": (
-        "Region {tag} has no own representation to {action}."
-    ),
+    "region_without_own_visual": ("Region {tag} has no own representation to {action}."),
     "region_overlaps_visible_regions": (
         "Region {tag} overlaps visible represented region(s) {overlaps}. Overlapping "
         "region representations can produce z-fighting; use difference(), "
@@ -307,9 +305,7 @@ MESSAGES = {
         "checkpoints were discarded where possible while preserving the current scene "
         "and newest checkpoint."
     ),
-    "index_map_dropped_indices": (
-        "IndexMapper dropped {count} unmapped index/indices in {context}: {dropped}"
-    ),
+    "index_map_dropped_indices": ("IndexMapper dropped {count} unmapped index/indices in {context}: {dropped}"),
     "state_structure_differs": (
         "This state was saved from a different system ({saved_atoms} atoms; this one has "
         "{current_atoms}), so its stored atom indices do not address the same atoms here. "
@@ -362,18 +358,16 @@ def _code_entry(template: str) -> dict:
 #: What SMonitor actually consumes: keyed by the code string, valued by a per-profile
 #: dict. Derived, never hand-written -- a second hand-maintained list of the same
 #: messages is the drift this repository spends its guards on.
-CODES = {
-    CATALOG[key]["code"]: _code_entry(template)
-    for key, template in MESSAGES.items()
-    if key in CATALOG
-}
+CODES = {CATALOG[key]["code"]: _code_entry(template) for key, template in MESSAGES.items() if key in CATALOG}
 
 #: Templates whose catalog entry disappeared would be silently unreachable.
 _ORPHAN_MESSAGES = sorted(set(MESSAGES) - set(CATALOG))
 assert not _ORPHAN_MESSAGES, f"MESSAGES entries with no CATALOG entry: {_ORPHAN_MESSAGES}"
 
 SIGNALS = {
-    "molsysviewer.new_view.new_view": {"extra_required": ["load_mode", "syntax", "reused_view", "molecular_system_form"]},
+    "molsysviewer.new_view.new_view": {
+        "extra_required": ["load_mode", "syntax", "reused_view", "molecular_system_form"]
+    },
     "molsysviewer.viewer.load": {"extra_required": ["molecular_system"]},
     "molsysviewer.viewer.zoom": {"extra_required": ["selection"]},
     "molsysviewer.viewer.set_controls_visible": {"extra_required": ["visible", "autohide"]},
@@ -390,7 +384,9 @@ SIGNALS = {
     "molsysviewer.exports.image": {"extra_required": ["output_filename", "transparent", "preset"]},
     "molsysviewer.exports.figure": {"extra_required": ["output_filename", "has_figure_spec", "preset"]},
     "molsysviewer.exports.figure_variants": {"extra_required": ["output_directory", "stem", "variant_count"]},
-    "molsysviewer.exports.figure_publication_set": {"extra_required": ["output_directory", "stem", "include_current", "has_figure_spec"]},
+    "molsysviewer.exports.figure_publication_set": {
+        "extra_required": ["output_directory", "stem", "include_current", "has_figure_spec"]
+    },
     "molsysviewer.whole.set_representation": {"extra_required": ["representation", "preset"]},
     "molsysviewer.regions.set_representation": {"extra_required": ["representation", "preset"]},
     "molsysviewer.layers.set_tag": {"extra_required": ["new_tag"]},

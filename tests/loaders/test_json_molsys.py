@@ -1,9 +1,9 @@
 import numpy as np
 import pytest
-
-from molsysviewer import demo
 from molsysviewer._pyunitwizard import puw
 from molsysviewer.loaders.json_molsys import serialize_json_molsys
+
+from molsysviewer import demo
 
 
 def test_json_payload_uses_the_same_canonical_topology_as_array_native():

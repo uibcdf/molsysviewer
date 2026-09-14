@@ -7,12 +7,13 @@ from typing import Any, Dict, List, Optional
 import molsysmt as msm
 from depdigest import dep_digest
 from smonitor import signal
+
 from ._private.argdigest import digest
 from ._private.delegated_errors import as_our_argument_error
 from ._private.exceptions import ArgumentError
-from ._private.variables import is_all
 from ._private.smonitor.warnings import RegionWithoutOwnVisualWarning, warn
 from ._private.smonitor_emit import emit_suppressed_exception
+from ._private.variables import is_all
 from .colors import expand_values_to_atoms, normalize_color
 from .scene_history import records_scene_history
 
@@ -41,7 +42,9 @@ class Region:
         self._tag = tag
         self.selection = selection
         self._atom_indices = tuple(atom_indices) if atom_indices is not None else None
-        self._provenance = deepcopy(provenance) if provenance is not None else {"kind": "imported", "state_version": None}
+        self._provenance = (
+            deepcopy(provenance) if provenance is not None else {"kind": "imported", "state_version": None}
+        )
         if frame_dependent is not None:
             self._provenance["frame_dependent"] = bool(frame_dependent)
         else:
@@ -330,7 +333,9 @@ class Region:
         try:
             indices = tuple(int(index) for index in other)
         except TypeError as exc:
-            raise TypeError("Boolean region composition expects another Region or an iterable of atom indices.") from exc
+            raise TypeError(
+                "Boolean region composition expects another Region or an iterable of atom indices."
+            ) from exc
         return "indices", indices
 
     def _new_boolean_region(
@@ -358,8 +363,7 @@ class Region:
         # operand makes the result static (§R.5, closure under composition).
         mode = (
             "dynamic"
-            if not has_non_region and self.mode == "dynamic"
-            and all(o.mode == "dynamic" for o in region_others)
+            if not has_non_region and self.mode == "dynamic" and all(o.mode == "dynamic" for o in region_others)
             else "static"
         )
         provenance: dict[str, Any] = {
@@ -767,8 +771,8 @@ class Region:
         if self._view._molsys is None:  # noqa: SLF001
             raise ValueError("No molecular system loaded.")
 
-        from molsysmt.structure import get_center
         import numpy as np
+        from molsysmt.structure import get_center
 
         center = get_center(
             self._view._molsys,  # noqa: SLF001
@@ -787,10 +791,10 @@ class Region:
     def focus(
         self,
         *,
-        duration: Any = '250 ms',
+        duration: Any = "250 ms",
         duration_ms: Any | None = None,
-        extra_radius: Any = '4.0 angstroms',
-        min_radius: Any = '1.0 angstroms',
+        extra_radius: Any = "4.0 angstroms",
+        min_radius: Any = "1.0 angstroms",
         skip_digestion: bool = False,
     ) -> None:
         """Focus the camera on this region."""
@@ -812,7 +816,14 @@ class Region:
     )
     @digest()
     @records_scene_history
-    def set_representation(self, representation: str | None = None, *, preset: str | None = None, skip_digestion: bool = False, **params: Any) -> None:
+    def set_representation(
+        self,
+        representation: str | None = None,
+        *,
+        preset: str | None = None,
+        skip_digestion: bool = False,
+        **params: Any,
+    ) -> None:
         """Apply or update a representation for this region.
 
         Allowed Mol* types (normalized, case-insensitive): cartoon, backbone,
@@ -964,25 +975,22 @@ class Region:
             element=element,
             selection=scoped_indices,
             structure_indices=(
-                [int(self._view.current_structure_index)]
-                if structure_indices is None
-                else structure_indices
+                [int(self._view.current_structure_index)] if structure_indices is None else structure_indices
             ),
             output_type="values",
             skip_digestion=True,
             **{resolved: True},
         )
 
-        from . import pyunitwizard as puw
         import numpy as np
+
+        from . import pyunitwizard as puw
 
         raw_values = puw.get_value(values) if puw.is_quantity(values) else values
         array = np.asarray(raw_values)
         array = np.squeeze(array)
         if array.ndim != 1 or array.shape[0] != len(scoped_indices):
-            raise ValueError(
-                f"Attribute {resolved!r} did not produce one scalar per {element} in this region."
-            )
+            raise ValueError(f"Attribute {resolved!r} did not produce one scalar per {element} in this region.")
         if any(value is None for value in array.tolist()):
             raise ValueError(f"Attribute {resolved!r} contains missing values in this region.")
         try:
@@ -1266,7 +1274,7 @@ class RegionsManager(dict):
         super().__init__()
         self._view = view
 
-    @dep_digest('molsysmt')
+    @dep_digest("molsysmt")
     @records_scene_history
     @signal(tags=["region"])
     @digest()

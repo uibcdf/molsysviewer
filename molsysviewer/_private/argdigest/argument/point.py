@@ -41,12 +41,12 @@ def digest_point(point, caller=None):
         try:
             point = puw.quantity(np.asarray(point, dtype=np.float64), IMPLICIT_UNIT)
         except (TypeError, ValueError):
-            raise ArgumentError('point', value=point, caller=caller, message=None) from None
+            raise ArgumentError("point", value=point, caller=caller, message=None) from None
 
     value, unit = puw.get_value_and_unit(point)
 
-    if not puw.check(unit, dimensionality={'[L]': 1}):
-        raise ArgumentError('point', value=point, caller=caller, message=None)
+    if not puw.check(unit, dimensionality={"[L]": 1}):
+        raise ArgumentError("point", value=point, caller=caller, message=None)
 
     if not isinstance(value, np.ndarray):
         value = np.array(value)
@@ -61,4 +61,4 @@ def digest_point(point, caller=None):
         if shape[1] == 3:
             return puw.quantity(value, unit, standardized=True)
 
-    raise ArgumentError('point', value=point, caller=caller, message=None)
+    raise ArgumentError("point", value=point, caller=caller, message=None)

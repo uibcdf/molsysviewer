@@ -1,5 +1,5 @@
-from molsysviewer import demo
 from _edit_helpers import apply_remove
+from molsysviewer import demo
 
 
 def _seed_group_selection(view, group_index=1):
@@ -182,68 +182,83 @@ def test_selection_frontend_actions():
     # Seed active selection and save as "picked-g0"
     view.active_selection.set(g0)
 
-    view._handle_frontend_event({
-        "event": "interaction_context_action",
-        "action": "save_selection",
-        "tag": "picked-g0",
-    })
+    view._handle_frontend_event(
+        {
+            "event": "interaction_context_action",
+            "action": "save_selection",
+            "tag": "picked-g0",
+        }
+    )
     assert "picked-g0" in view.selections
 
     # 1. rename_selection
-    view._handle_frontend_event({
-        "event": "interaction_context_action",
-        "action": "rename_selection",
-        "tag": "picked-g0",
-        "new_tag": "g0-saved",
-    })
+    view._handle_frontend_event(
+        {
+            "event": "interaction_context_action",
+            "action": "rename_selection",
+            "tag": "picked-g0",
+            "new_tag": "g0-saved",
+        }
+    )
     assert "picked-g0" not in view.selections
     assert "g0-saved" in view.selections
 
     # Rename conflict raises ValueError
     view.active_selection.set(g1)
-    view._handle_frontend_event({
-        "event": "interaction_context_action",
-        "action": "save_selection",
-        "tag": "picked-g1",
-    })
+    view._handle_frontend_event(
+        {
+            "event": "interaction_context_action",
+            "action": "save_selection",
+            "tag": "picked-g1",
+        }
+    )
     import pytest
+
     with pytest.raises(ValueError, match="already exists"):
         view.selections.set_tag("g0-saved", "picked-g1", skip_digestion=True)
 
     # 2. compose_saved_selection
     view.active_selection.set(g1)
-    view._handle_frontend_event({
-        "event": "interaction_context_action",
-        "action": "compose_saved_selection",
-        "tag": "g0-saved",
-        "op": "add",
-    })
+    view._handle_frontend_event(
+        {
+            "event": "interaction_context_action",
+            "action": "compose_saved_selection",
+            "tag": "g0-saved",
+            "op": "add",
+        }
+    )
     assert sorted(view.active_selection.atom_indices) == sorted(g0 + g1)
 
-    view._handle_frontend_event({
-        "event": "interaction_context_action",
-        "action": "compose_saved_selection",
-        "tag": "g0-saved",
-        "op": "subtract",
-    })
+    view._handle_frontend_event(
+        {
+            "event": "interaction_context_action",
+            "action": "compose_saved_selection",
+            "tag": "g0-saved",
+            "op": "subtract",
+        }
+    )
     assert sorted(view.active_selection.atom_indices) == sorted(g1)
 
     # 3. create_region_from_saved_selection
-    view._handle_frontend_event({
-        "event": "interaction_context_action",
-        "action": "create_region_from_saved_selection",
-        "selection_tag": "g0-saved",
-        "tag": "region-g0",
-    })
+    view._handle_frontend_event(
+        {
+            "event": "interaction_context_action",
+            "action": "create_region_from_saved_selection",
+            "selection_tag": "g0-saved",
+            "tag": "region-g0",
+        }
+    )
     assert "region-g0" in view.regions
     assert view.regions["region-g0"].atom_indices == tuple(g0)
 
     # 4. create_label_from_saved_selection
-    view._handle_frontend_event({
-        "event": "interaction_context_action",
-        "action": "create_label_from_saved_selection",
-        "selection_tag": "g0-saved",
-        "text": "My Label",
-        "tag": "label-g0",
-    })
+    view._handle_frontend_event(
+        {
+            "event": "interaction_context_action",
+            "action": "create_label_from_saved_selection",
+            "selection_tag": "g0-saved",
+            "text": "My Label",
+            "tag": "label-g0",
+        }
+    )
     assert view.annotations.contains("label-g0") is True

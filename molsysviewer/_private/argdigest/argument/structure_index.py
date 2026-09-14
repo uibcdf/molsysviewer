@@ -1,21 +1,23 @@
-from ...exceptions import ArgumentError
-from ...variables import is_all
 import numpy as np
 
+from ...exceptions import ArgumentError
+
 functions_with_boolean = (
-        'molsysmt.basic.get.get',
-        'molsysviewer.viewer.get',
-        'molsysmt.basic.compare.compare',
-        'molsysmt.basic.iterator.__init__',
-        'iterators.__init__',
-        )
+    "molsysmt.basic.get.get",
+    "molsysviewer.viewer.get",
+    "molsysmt.basic.compare.compare",
+    "molsysmt.basic.iterator.__init__",
+    "iterators.__init__",
+)
 
 #: A movie keyframe may set the structure or leave it alone, and `None` is how it says the
 #: latter. Every other caller here means an index into the loaded structures.
-_OPTIONAL_STRUCTURE_INDEX_CALLERS = frozenset({
-    "molsysviewer.viewer.movie.add_keyframe",
-    "molsysviewer.viewer.movie.add_structure_sweep",
-})
+_OPTIONAL_STRUCTURE_INDEX_CALLERS = frozenset(
+    {
+        "molsysviewer.viewer.movie.add_keyframe",
+        "molsysviewer.viewer.movie.add_structure_sweep",
+    }
+)
 
 
 def digest_structure_index(structure_index, caller=None):
@@ -45,18 +47,14 @@ def digest_structure_index(structure_index, caller=None):
     if caller in _OPTIONAL_STRUCTURE_INDEX_CALLERS and structure_index is None:
         return None
 
-
     if caller is not None:
-
         if caller.endswith(functions_with_boolean):
             if isinstance(structure_index, bool):
                 return structure_index
             else:
-                raise ArgumentError('structure_index', value=structure_index, caller=caller, message=None)
+                raise ArgumentError("structure_index", value=structure_index, caller=caller, message=None)
 
     if isinstance(structure_index, (int, np.int64)):
-        
         return structure_index
 
-    raise ArgumentError('structure_index', value=structure_index, caller=caller, message=None)
-
+    raise ArgumentError("structure_index", value=structure_index, caller=caller, message=None)

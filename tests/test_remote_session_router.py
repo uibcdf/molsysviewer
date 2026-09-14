@@ -82,12 +82,8 @@ def envelope(
 
 def test_shared_remote_vocabulary_is_complete_and_role_bounded():
     assert RENDER_PLACEMENTS == {"client", "server"}
-    assert {"browser-client", "qt-client", "render-worker", "agent"} <= set(
-        ENDPOINT_ROLE_CAPABILITIES
-    )
-    assert ENDPOINT_CAPABILITIES == frozenset().union(
-        *ENDPOINT_ROLE_CAPABILITIES.values()
-    )
+    assert {"browser-client", "qt-client", "render-worker", "agent"} <= set(ENDPOINT_ROLE_CAPABILITIES)
+    assert ENDPOINT_CAPABILITIES == frozenset().union(*ENDPOINT_ROLE_CAPABILITIES.values())
     assert "authority" in ENDPOINT_ROLE_CAPABILITIES["python"]
     assert "native-host" in ENDPOINT_ROLE_CAPABILITIES["qt-client"]
     assert "video-send" in ENDPOINT_ROLE_CAPABILITIES["render-worker"]
@@ -189,9 +185,7 @@ def test_stale_session_wrong_actor_and_unknown_endpoint_are_rejected_before_disp
 def test_non_command_endpoint_cannot_smuggle_a_command():
     router = SessionRuntimeRouter(VIEWER, SESSION, render_on="server")
     router.register_endpoint("canvas:one", "canvas", {"render", "structure-receive"})
-    result = router.route_inbound(
-        envelope("canvas:one", actor_id=None, actor_kind=None)
-    )
+    result = router.route_inbound(envelope("canvas:one", actor_id=None, actor_kind=None))
     assert result.status == "rejected"
     assert result.reason == "capability-mismatch"
 

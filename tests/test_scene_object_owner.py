@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import pytest
-
 from molsysviewer.demo import demo
+
 from molsysviewer import pyunitwizard as puw
 
 

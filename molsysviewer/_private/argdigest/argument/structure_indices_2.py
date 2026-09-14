@@ -1,5 +1,6 @@
 from ...exceptions import ArgumentError
 
+
 def digest_structure_indices_2(structure_indices_2, caller=None):
 
     if structure_indices_2 is None:
@@ -9,6 +10,5 @@ def digest_structure_indices_2(structure_indices_2, caller=None):
 
     try:
         return digest_structure_indices(structure_indices_2, caller=caller)
-    except:
-        raise ArgumentError('structure_indices_2', value=structure_indices_2, caller=caller, message=None)
-
+    except:  # noqa: E722
+        raise ArgumentError("structure_indices_2", value=structure_indices_2, caller=caller, message=None)

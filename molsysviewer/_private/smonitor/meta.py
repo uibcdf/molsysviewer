@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..webs import github, github_issues, api_doc
+from ..webs import api_doc, github, github_issues
 
 DOC_URL = "https://www.uibcdf.org/molsysviewer"
 ISSUES_URL = github_issues or ""

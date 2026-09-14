@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-
 from typing import Any, Mapping
 
 import molsysmt as msm
-from smonitor import signal
 from depdigest import dep_digest
+from smonitor import signal
 
 from .._private.argdigest import digest
 from ..loaders import load_from_molsysmt as _load_from_molsysmt
@@ -160,7 +159,7 @@ class LoadMixin:
             )
             block["region_tag"] = tag
 
-    @dep_digest('molsysmt')
+    @dep_digest("molsysmt")
     @signal(tags=["load"], extra_factory=_load_signal_extra)
     @digest()
     def load(
@@ -262,9 +261,7 @@ class LoadMixin:
         Equivalent to calling ``view.styles.load_project_config(path, ...)``
         and ``molsysviewer.addons.load_project_config(path)`` separately.
         """
-        styles_result = self.styles.load_project_config(
-            path, apply_default=apply_default, skip_digestion=True
-        )
+        styles_result = self.styles.load_project_config(path, apply_default=apply_default, skip_digestion=True)
         addons_result = self.addons._host.load_project_config(  # noqa: SLF001
             path, skip_digestion=True
         )
@@ -285,4 +282,3 @@ for _name, _value in LoadMixin.__dict__.items():
             _value.__module__ = "molsysviewer.viewer"
         except Exception:
             pass
-

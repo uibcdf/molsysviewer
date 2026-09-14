@@ -1,16 +1,17 @@
 # molsysviewer/shapes/spheres.py
 
 from typing import Sequence
-import numpy as np
+
 import molsysmt as msm
+import numpy as np
 from smonitor import signal
 
 from .. import pyunitwizard as puw
-from ..layers import Layer, Shape
 from .._private.argdigest import digest
-from ..scene_history import records_scene_history
 from ..colors import normalize_color
-from ._registry import register_shape_layer, normalize_new_shape_tag
+from ..layers import Layer, Shape
+from ..scene_history import records_scene_history
+from ._registry import normalize_new_shape_tag, register_shape_layer
 
 
 def _resolve_batch_tags(view, n: int, tag) -> list[str]:
@@ -87,6 +88,7 @@ class SphereShapes:
             own tag (single) or a new auto-generated ``layerN`` (batch).
         """
         import warnings
+
         if "centers" in kwargs:
             warnings.warn("'centers' is deprecated; use 'center'.", DeprecationWarning, stacklevel=2)
             center = kwargs.pop("centers")
@@ -152,15 +154,13 @@ class SphereShapes:
             options["atom_indices"] = [int(i) for i in atom_indices]
         if structures_atom_indices is not None:
             options["structures_atom_indices"] = [
-                None if f is None else [int(i) for i in f]
-                for f in structures_atom_indices
+                None if f is None else [int(i) for i in f] for f in structures_atom_indices
             ]
 
         if structure_centers is not None:
             fc_arr = np.asarray(puw.get_value(structure_centers, to_unit="angstroms"), dtype=float)
             options["structures_coords"] = [
-                fc_arr[i].tolist() if fc_arr[i] is not None else None
-                for i in range(len(fc_arr))
+                fc_arr[i].tolist() if fc_arr[i] is not None else None for i in range(len(fc_arr))
             ]
         self._view._send({"op": "add_sphere", "options": options})  # noqa: SLF001
         return layer
@@ -230,7 +230,6 @@ class SphereShapes:
             layers.append(shape)
         return layers
 
-
     @signal(tags=["shape", "sphere"])
     @digest()
     @records_scene_history
@@ -297,7 +296,9 @@ class SphereShapes:
         self._view._send({"op": "clear_shapes_by_tag", "tag": tag})
         if hasattr(self._view, "_unregister_scene_object"):
             if tag is None:
-                shape_tags = [t for (kind, t), obj in getattr(self._view, "_scene_objects", {}).items() if kind == "shape"]
+                shape_tags = [
+                    t for (kind, t), obj in getattr(self._view, "_scene_objects", {}).items() if kind == "shape"
+                ]
                 for t in shape_tags:
                     self._view._unregister_scene_object("shape", t)
             else:

@@ -57,9 +57,7 @@ def test_the_scalar_length_digesters_go_through_the_shared_boundary(name):
         digest(3.5, caller="test")
     message = str(raised.value)
     assert "explicit units" in message, message
-    assert "angstrom" in message.lower(), (
-        "the error does not name a unit the caller could actually type"
-    )
+    assert "angstrom" in message.lower(), "the error does not name a unit the caller could actually type"
 
 
 def test_a_list_of_bond_lengths_is_accepted_element_by_element():

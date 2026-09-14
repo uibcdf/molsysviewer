@@ -19,13 +19,11 @@ import re
 from pathlib import Path
 
 import pytest
-
 from molsysviewer.demo import demo
 from molsysviewer.viewer.representations import (
     ALLOWED_REPRESENTATIONS,
     REPRESENTATION_ALIASES,
 )
-
 
 PAGE = Path(__file__).resolve().parents[1] / "docs/content/user/representations/types.md"
 
@@ -98,8 +96,7 @@ def test_the_geometry_helpers_bypass_the_setter_rather_than_widening_it():
     someone ever routes them through the public setter, that list has to grow and this
     page's promise changes with it.
     """
-    source = (Path(__file__).resolve().parents[1]
-              / "molsysviewer/viewer/regions.py").read_text(encoding="utf-8")
+    source = (Path(__file__).resolve().parents[1] / "molsysviewer/viewer/regions.py").read_text(encoding="utf-8")
 
     for helper in ("show_orientation_axes", "show_best_fit_plane"):
         body = source.split(f"def {helper}(", 1)[1].split("\n    @", 1)[0]

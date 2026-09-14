@@ -8,4 +8,4 @@ def digest_surface_resolution(surface_resolution, caller=None):
         value = float(surface_resolution)
         if value > 0.0:
             return value
-    raise ArgumentError('surface_resolution', value=surface_resolution, caller=caller, message=None)
+    raise ArgumentError("surface_resolution", value=surface_resolution, caller=caller, message=None)

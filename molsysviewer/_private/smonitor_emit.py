@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
-from molsysviewer._private.smonitor import CATALOG, PACKAGE_ROOT, META
 from smonitor.integrations import emit_from_catalog
+
+from molsysviewer._private.smonitor import CATALOG, META, PACKAGE_ROOT
 
 
 def message_from_catalog(

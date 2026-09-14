@@ -11,9 +11,9 @@ import json
 import re
 
 import pytest
+from molsysviewer.widget import MolSysViewerWidget
 
 from molsysviewer import MolSysView
-from molsysviewer.widget import MolSysViewerWidget
 
 
 def _block(html: str, element_id: str):
@@ -57,8 +57,7 @@ def test_build_html_uses_canonical_state_instead_of_test_message_log(monkeypatch
 
 @pytest.mark.parametrize(
     "machinery",
-    ["requirejs", "anywidget-inline", "cdn.jsdelivr.net", "cdnjs.cloudflare.com",
-     "vnd.jupyter.widget-state+json"],
+    ["requirejs", "anywidget-inline", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "vnd.jupyter.widget-state+json"],
 )
 def test_a_self_contained_export_needs_nobody(machinery):
     """The name has to be true: no host, no loader, no widget manager.
@@ -137,8 +136,7 @@ def test_export_messages_include_hide_region_for_hidden_region():
     ops = [m["op"] for m in messages if m.get("op") != "set_addon_runtime_summary"]
 
     assert "hide_region" in ops
-    assert ops.index("create_region") < ops.index("hide_region"), \
-        "create_region must precede hide_region in export"
+    assert ops.index("create_region") < ops.index("hide_region"), "create_region must precede hide_region in export"
 
 
 def test_export_messages_include_hide_whole_when_view_is_hidden():
@@ -158,6 +156,7 @@ def test_export_messages_include_hide_whole_when_view_is_hidden():
 def test_export_messages_after_post_load_region_and_label():
     """Popup live-sync: region + label added after load appear in export in correct order (item 7)."""
     import pytest
+
     pytest.importorskip("molsysmt")
     from molsysviewer.demo import demo
 

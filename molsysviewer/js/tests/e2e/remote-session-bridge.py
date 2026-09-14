@@ -11,9 +11,7 @@ from molsysviewer.viewer import MolSysView
 
 async def main() -> None:
     source_view = demo["pentalanine"]
-    service = RemoteSessionService(
-        RenderWorkerConfig(startup_timeout=30, shutdown_timeout=5)
-    )
+    service = RemoteSessionService(RenderWorkerConfig(startup_timeout=30, shutdown_timeout=5))
     view = MolSysView(transport=service.channel)
     try:
         view.load(source_view.molsys, skip_digestion=True)
@@ -45,8 +43,7 @@ async def main() -> None:
                 await process.wait()
                 await asyncio.wait_for(
                     _wait_until(
-                        lambda: service.worker_recovery_count == 1
-                        or service.worker_recovery_state == "failed"
+                        lambda: service.worker_recovery_count == 1 or service.worker_recovery_state == "failed"
                     ),
                     timeout=45,
                 )

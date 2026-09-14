@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import numpy as np
-
-from molsysviewer.demo import demo
 from molsysviewer._pyunitwizard import puw
+from molsysviewer.demo import demo
 
 
 def test_whole_representation_properties_and_visibility_are_orthogonal():
@@ -16,9 +15,7 @@ def test_whole_representation_properties_and_visibility_are_orthogonal():
     assert view.whole.visible is False
     assert view.whole.representation == "cartoon"
     assert view.whole.preset is None
-    assert view.whole.params == {
-        "molstar_color_theme": {"name": "uniform", "params": {"value": 0xFF0000}}
-    }
+    assert view.whole.params == {"molstar_color_theme": {"name": "uniform", "params": {"value": 0xFF0000}}}
 
 
 def test_whole_reset_representation_returns_to_load_time_explicit_style():

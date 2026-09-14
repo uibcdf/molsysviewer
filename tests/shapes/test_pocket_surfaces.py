@@ -1,5 +1,4 @@
 import pytest
-
 from molsysviewer.shapes import PocketSurfaces
 
 

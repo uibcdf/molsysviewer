@@ -17,7 +17,6 @@ REPO_ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(REPO_ROOT))
 
 import molsysmt as msm
-
 from molsysviewer.demo import demo
 
 
@@ -29,10 +28,14 @@ def main() -> None:
     output = output_dir / "view.html"
     view.export.html(str(output), skip_digestion=True)
 
-    print(json.dumps({
-        "page": str(output),
-        "n_atoms": int(msm.get(view.molsys, n_atoms=True)),
-    }))
+    print(
+        json.dumps(
+            {
+                "page": str(output),
+                "n_atoms": int(msm.get(view.molsys, n_atoms=True)),
+            }
+        )
+    )
 
 
 if __name__ == "__main__":

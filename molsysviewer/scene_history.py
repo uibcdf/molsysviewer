@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import json
 from contextlib import contextmanager
+from functools import wraps
+from typing import Any
 
 from ._private.argdigest import digest
 from ._private.smonitor.warnings import SceneHistoryOverBudgetWarning, warn
-from functools import wraps
-from typing import Any
 
 
 def _history_operation_key(
@@ -46,6 +46,7 @@ def records_scene_history(fn):
     ``Whole`` (found via ``self._view``), i.e. anything reachable to the view's
     ``history``.
     """
+
     @wraps(fn)
     def wrapper(self, *args, **kwargs):
         view = self if hasattr(self, "history") else getattr(self, "_view", None)
@@ -57,6 +58,7 @@ def records_scene_history(fn):
             return fn(self, *args, **kwargs)
         finally:
             history._end_operation()  # noqa: SLF001
+
     return wrapper
 
 
@@ -134,11 +136,13 @@ class SceneHistory:
         send = getattr(self._view, "_send_runtime_only", None)
         if send is None:
             return
-        send({
-            "op": "set_history_state",
-            "can_undo": self.can_undo(),
-            "can_redo": self.can_redo(),
-        })
+        send(
+            {
+                "op": "set_history_state",
+                "can_undo": self.can_undo(),
+                "can_redo": self.can_redo(),
+            }
+        )
 
     # ── Public API ─────────────────────────────────────────────────────────
 

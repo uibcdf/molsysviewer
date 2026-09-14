@@ -98,11 +98,7 @@ def test_the_deferred_scene_keeps_the_order_python_produced_it_in(complete_struc
     view._handle_frontend_event({"event": "ready", "capabilities": BINARY_CAPABILITIES})  # noqa: SLF001
     complete_structure_stream(view)
 
-    delivered = [
-        message
-        for message in sent
-        if not str(message.get("op", "")).startswith("structure_data_")
-    ]
+    delivered = [message for message in sent if not str(message.get("op", "")).startswith("structure_data_")]
     assert delivered == expected
 
 

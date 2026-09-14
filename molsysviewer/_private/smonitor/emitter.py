@@ -1,4 +1,5 @@
 from smonitor.integrations import DiagnosticBundle
+
 from . import CATALOG, META, PACKAGE_ROOT
 
 bundle = DiagnosticBundle(CATALOG, META, PACKAGE_ROOT)

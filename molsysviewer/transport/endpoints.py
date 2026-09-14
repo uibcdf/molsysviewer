@@ -9,7 +9,6 @@ from typing import Any
 
 from .transfer import StructureTransferManager
 
-
 DeferredMessage = tuple[Mapping[str, Any], Any]
 
 
@@ -122,9 +121,7 @@ class EndpointTransferRegistry:
 
     @property
     def has_deferred(self) -> bool:
-        return bool(self._embedded.deferred) or any(
-            state.deferred for state in self._popups.values()
-        )
+        return bool(self._embedded.deferred) or any(state.deferred for state in self._popups.values())
 
     @property
     def modes(self) -> dict[str, str]:

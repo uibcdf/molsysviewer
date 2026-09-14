@@ -15,10 +15,8 @@ def digest_names(names, caller=None):
     if not isinstance(names, tuple):
         raise ArgumentError("names", value=names, caller=caller, message=None)
     if not names:
-        raise ArgumentError("names", value=names, caller=caller,
-                            message="marking nothing as CVD-safe is not a claim")
+        raise ArgumentError("names", value=names, caller=caller, message="marking nothing as CVD-safe is not a claim")
     for name in names:
         if not isinstance(name, str):
-            raise ArgumentError("names", value=name, caller=caller,
-                                message="a colour name is a string")
+            raise ArgumentError("names", value=name, caller=caller, message="a colour name is a string")
     return names

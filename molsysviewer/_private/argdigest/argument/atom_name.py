@@ -1,14 +1,15 @@
 import numpy as np
+
 from ...exceptions import ArgumentError
-from ...variables import is_all
 
 functions_with_boolean = (
-        'molsysmt.basic.get.get',
-        'molsysviewer.viewer.get',
-        'molsysmt.basic.compare.compare',
-        'molsysmt.basic.iterator.__init__',
-        'iterators.__init__',
-        )
+    "molsysmt.basic.get.get",
+    "molsysviewer.viewer.get",
+    "molsysmt.basic.compare.compare",
+    "molsysmt.basic.iterator.__init__",
+    "iterators.__init__",
+)
+
 
 def digest_atom_name(atom_name, caller=None):
     """Checks if `atom_name` has the expected type and value.
@@ -37,7 +38,7 @@ def digest_atom_name(atom_name, caller=None):
     if caller.endswith(functions_with_boolean):
         if isinstance(atom_name, bool):
             return atom_name
-    elif caller.startswith('molsysmt.form.') and caller.count('.to_')==2:
+    elif caller.startswith("molsysmt.form.") and caller.count(".to_") == 2:
         return atom_name
 
     if isinstance(atom_name, str):
@@ -52,5 +53,4 @@ def digest_atom_name(atom_name, caller=None):
     if isinstance(atom_name, np.ndarray):
         return atom_name.tolist()
 
-    raise ArgumentError('atom_name', value=atom_name, caller=caller, message=None)
-
+    raise ArgumentError("atom_name", value=atom_name, caller=caller, message=None)

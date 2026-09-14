@@ -40,9 +40,7 @@ def _load_manifest() -> tuple[
 ]:
     data = json.loads(_MANIFEST_PATH.read_text(encoding="utf-8"))
     if int(data.get("protocol_version", 0)) != RUNTIME_PROTOCOL_VERSION:
-        raise ValueError(
-            f"runtime_actions.json protocol_version must be {RUNTIME_PROTOCOL_VERSION}"
-        )
+        raise ValueError(f"runtime_actions.json protocol_version must be {RUNTIME_PROTOCOL_VERSION}")
     actions = {str(name): str(category) for name, category in data["actions"].items()}
     bad = {name: cat for name, cat in actions.items() if cat not in _VALID_CATEGORIES}
     if bad:
@@ -90,9 +88,7 @@ def _load_endpoint_vocabulary() -> tuple[
     data = json.loads(_MANIFEST_PATH.read_text(encoding="utf-8"))
     placements = frozenset(str(item) for item in data.get("render_placements", ()))
     if placements != {"client", "server"}:
-        raise ValueError(
-            "runtime_actions.json render_placements must be exactly client and server"
-        )
+        raise ValueError("runtime_actions.json render_placements must be exactly client and server")
     raw_roles = data.get("endpoint_role_capabilities")
     if not isinstance(raw_roles, Mapping) or not raw_roles:
         raise ValueError("runtime_actions.json endpoint_role_capabilities must be a mapping")
@@ -111,9 +107,7 @@ def _load_endpoint_vocabulary() -> tuple[
     return placements, roles, capabilities
 
 
-RENDER_PLACEMENTS, ENDPOINT_ROLE_CAPABILITIES, ENDPOINT_CAPABILITIES = (
-    _load_endpoint_vocabulary()
-)
+RENDER_PLACEMENTS, ENDPOINT_ROLE_CAPABILITIES, ENDPOINT_CAPABILITIES = _load_endpoint_vocabulary()
 ENDPOINT_ROLES = frozenset(ENDPOINT_ROLE_CAPABILITIES)
 
 
@@ -196,9 +190,7 @@ def validate_envelope_shape(value: Any) -> RuntimeEnvelope | None:
         return None
     deadline_unix_ms = value.get("deadlineUnixMs")
     if deadline_unix_ms is not None and (
-        not isinstance(deadline_unix_ms, int)
-        or isinstance(deadline_unix_ms, bool)
-        or deadline_unix_ms < 0
+        not isinstance(deadline_unix_ms, int) or isinstance(deadline_unix_ms, bool) or deadline_unix_ms < 0
     ):
         return None
     generation = value.get("generation")

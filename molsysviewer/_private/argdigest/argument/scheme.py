@@ -7,12 +7,14 @@ from ...exceptions import ArgumentError
 #: a `CategoricalColorScheme`. Digesting those against the registry of known names is
 #: exactly backwards: it refuses every scheme that is not registered yet, which is all of
 #: them at the moment they are registered.
-_SCHEME_DEFINING_CALLERS = frozenset({
-    "molsysviewer.colors.register_scheme",
-    "molsysviewer.colors.resolve_scheme",
-    "molsysviewer.colors.ColorRegistry.register_scheme",
-    "molsysviewer.colors.ColorRegistry.resolve_scheme",
-})
+_SCHEME_DEFINING_CALLERS = frozenset(
+    {
+        "molsysviewer.colors.register_scheme",
+        "molsysviewer.colors.resolve_scheme",
+        "molsysviewer.colors.ColorRegistry.register_scheme",
+        "molsysviewer.colors.ColorRegistry.resolve_scheme",
+    }
+)
 
 
 def digest_scheme(scheme, caller=None):
