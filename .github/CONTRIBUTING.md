@@ -15,7 +15,7 @@ We welcome contributions! Please follow these guidelines:
 
 ## Before opening a PR
 - Run the test suite (`pytest`); include MolSysMT if your changes depend on it.
-- Optionally run lint/format (`ruff`, `black`) if configured in your env.
+- Run `ruff check .` and `ruff format --check .` before opening the PR.
 - For docs demos, use static exports (`write_html`) instead of executing widgets in CI.
 
 ## Opening a PR
