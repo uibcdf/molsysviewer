@@ -9,15 +9,19 @@ dependencies:
   - versioningit
   - pytest
   - pytest-cov
-  - anywidget
-  - traitlets
-  - packaging
+  # Runtime dependencies, with the floors pyproject.toml declares. The package is
+  # installed with --no-deps, so this list is the only thing that brings them in;
+  # tests/test_distribution_artifact.py keeps the two in step.
+  - aiohttp>=3.10
+  - anywidget>=0.9.15
+  - argdigest>=0.12.1
   - depdigest
-  - argdigest
-  - smonitor
-  - molsysmt
-  - pyunitwizard
+  - molsysmt>=0.22.0
   - numpy
+  - packaging>=23
+  - pyunitwizard
+  - smonitor>=0.13.0
+  - traitlets>=5
   - pandas
   - imageio
   - nodejs>=18

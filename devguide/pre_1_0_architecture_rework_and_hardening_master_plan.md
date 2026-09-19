@@ -42,7 +42,7 @@ audit.
 | 7 | Missing seam evidence | ⚠ | 90% | working tree from `ca3dd2e7` | Automated seam evidence complete; blocked on Qt real-window/GPU and human reload smoke observations |
 | 8 | Representative performance and memory gate | ✓ | 100% | `15d86a8a` | Matrix evidence and byte-budget guard independently audited; small worker remeasured coherently; closed 2026-08-09 |
 | 9 | Documentation and upstream closure | ✓ | 100% | `55839d23` | Closed-architecture phrase guard independently mutation-audited; closed 2026-08-09 |
-| 10 | Product and release gates | ◐ | 36% | `78b485f9`, `d048126d` plus the gate 9 slices | 4 of 11 gates closed: notebook CI, state-file persistence, hover policy and public-callable digestion — 474 public callables, 442 digested, 0 undigested, 34 exempt with a stated reason, 0 missing digesters. Dependency/artifact, dogfooding and final gates remain |
+| 10 | Product and release gates | ◐ | 27% | `78b485f9`, `d048126d` plus the gate 9 slices | 3 of 11 gates closed: state-file persistence, hover policy and public-callable digestion — notebook CI was reopened on 2026-09-19, having been closed on a workflow that has never passed — 474 public callables, 442 digested, 0 undigested, 34 exempt with a stated reason, 0 missing digesters. Dependency/artifact, dogfooding and final gates remain |
 
 Status vocabulary:
 
@@ -1213,9 +1213,14 @@ not repeated for this documentation slice.
 7. **Done.** Hover telemetry is off by
    default, callback subscriptions activate it, and query state distinguishes
    disabled/waiting/actual targets without inventing emptiness.
-8. **Done.** Notebook execution is enforced by
-   `.github/workflows/docs-notebooks.yaml` through
-   `docs/execute_notebooks.py`.
+8. **Reopened 2026-09-19 — the workflow exists and has never passed.** Notebook
+   execution is *described* by `.github/workflows/docs-notebooks.yaml` through
+   `docs/execute_notebooks.py`, and that workflow has failed every one of its 29 runs:
+   `docs_env.yaml` pins `python=3.13` and the channel's newest MolSysMT is `0.12.0`, with
+   no 3.13 build, so the environment never solves and no notebook is ever executed. The
+   gate was closed on the existence of the mechanism rather than on its result. It closes
+   with Phase 10 gate 1, when the environment can be built. See
+   [`pending_bugs/hosted_ci_has_never_passed.md`](pending_bugs/hosted_ci_has_never_passed.md).
 9. **Done.** Every public callable is digested or deliberately exempt, and every
    argument name they introduce has a digester: **474 public callables, 442
    digested, 0 undigested, 34 exempt with a stated reason, 0 missing

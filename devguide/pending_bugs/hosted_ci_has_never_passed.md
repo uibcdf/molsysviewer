@@ -1,13 +1,13 @@
 ---
 summary: Hosted CI has never passed, for three causes that live in how CI builds its environment.
 issue: uibcdf/molsysviewer#88
-status: open
+status: partial
 opened: 2026-09-19
 closed:
 severity: high
 verification: measured
 area: [ci, packaging, testing]
-guard:
+guard: tests/test_distribution_artifact.py::test_every_environment_installed_without_deps_carries_the_runtime_dependencies, tests/test_js_build_version_resolution.py, tests/test_release_gate.py
 normative:
 blocked_by: []
 supersedes: []
@@ -76,6 +76,19 @@ in. In the same run, on Python 3.12, four modules fail at collection with
 `pyproject.toml` by hand, and the two drifted. Adding the one missing name repairs this
 occurrence. A guard comparing the two lists is what would keep it repaired.
 
+**Fixed on 2026-09-19.** Both `test_env.yaml` and `docs_env.yaml` now carry every runtime
+dependency with the floor `pyproject.toml` declares, and
+`test_every_environment_installed_without_deps_carries_the_runtime_dependencies` derives
+the environments to check from the workflows that install the package with `--no-deps`,
+so one added later is checked without anyone remembering. Mutation-verified four ways:
+dropping `depdigest`, and weakening the `aiohttp`, `molsysmt` and `smonitor` floors, each
+fails naming exactly what is missing.
+
+Carrying `molsysmt>=0.22.0` changes what CI does on 3.11 and 3.12: instead of resolving
+0.12.0 and testing against it, the solver now fails naming the release that does not
+exist. That is the intended outcome. Red for a reason that is true beats green for a
+reason that is not.
+
 ## Cause 3: `CI_e2e` never generates `_version.py`
 
 `.github/workflows/CI_e2e.yaml` sets up Node, then runs `npm ci` and `npm run build`.
@@ -90,9 +103,43 @@ Error: ENOENT: no such file or directory, open '…/molsysviewer/_version.py'
 
 Before that, on 2026-07-31 (run 30619723193), the job was getting further and failing on
 `ModuleNotFoundError: No module named 'depdigest'`. So some E2E scenarios need a Python
-environment with the package installed. Examples are the bridges such as
-`tests/e2e/exported-page-colour-bridge.py`. Repairing the build step will therefore
-expose those scenarios to cause 1. They are fixable here only as far as the build.
+environment with the package installed: 13 of the 37 drive the page from a bridge such as
+`tests/e2e/exported-page-colour-bridge.py`, and `molsysviewer` imports `molsysmt` at
+module level. Repairing the build therefore exposes those scenarios to cause 1.
+
+**Fixed on 2026-09-19.** `CI_e2e` now creates the `test_env` environment and installs the
+package before the npm steps, which is what writes `_version.py` — measured in a clean
+clone: `pip install . --no-deps` leaves the file in the source tree. The npm steps run in
+a login shell so the bridges get that environment's interpreter, and its `nodejs` serves
+npm, as it already does for the JS step in `CI.yaml`.
+
+### The same defect had stopped three npm releases and would have stopped conda
+
+`build-runtime.mjs` read `_version.py` directly, while `sync-python-version.mjs` — the
+other half of the same `npm run build` — already fell back to `RELEASE_VERSION`,
+`GITHUB_REF_NAME` or `GIT_REF_NAME`. `f4afc675` (2026-08-05) introduced that read, and the
+divergence is exactly as old:
+
+- **npm.** `@uibcdf/molsysviewer` carries `0.0.2, 0.5.3, 0.6.0, 0.6.1, 0.7.0, 0.20.0`, and
+  `0.20.0` was published on 2026-08-05 at 10:43, seven hours before that commit. The three
+  tags since — `0.20.1`, `0.22.0`, `0.23.0` — each ran `NPM Release` and each failed with
+  the same `ENOENT`. So every `shared_runtime="cdn"` export produced by those versions
+  points at a runtime npm does not have. This is the failure the workflow's own header
+  says it was written to end, returning in a different place. Tracked as
+  uibcdf/molsysviewer#89.
+- **conda.** `devtools/conda-build/build.sh` exports `RELEASE_VERSION` from `PKG_VERSION`
+  precisely so the bundle can be built before `pip install`, and it builds in that order.
+  Nothing has published a conda package since 2025-12-28, so this never showed as a
+  failure; the next release would have hit it. Phase 10 gate 2 would have opened onto it.
+
+**Fixed on 2026-09-19.** Both scripts resolve through a new
+`molsysviewer/js/scripts/resolve-version.mjs`: `_version.py` first, then the release
+environment, then the manifest, and the last two say so out loud.
+`tests/test_js_build_version_resolution.py` builds the runtime from a miniature source
+tree with no `_version.py` and a `RELEASE_VERSION` in hand, asserts the file outranks the
+environment, checks the manifest resolves the same way, and refuses any build script that
+parses `_version.py` on its own. Mutation-verified: restoring the old `build-runtime.mjs`
+fails two of them; removing `RELEASE_VERSION` from the resolver fails two.
 
 ## What this invalidates
 
@@ -106,35 +153,73 @@ expose those scenarios to cause 1. They are fixable here only as far as the buil
 
 ## A related local fragility (not a CI cause)
 
-`tests/test_release_gate.py::test_the_version_check_enforces_the_runtime_and_only_reports_the_manifest`
-runs `_check_version_consistency()` from `devtools/release_gate.py` on a development
-checkout. The check requires the string in `_version.py` to appear in the committed
-`viewer.js`. That is a correct release invariant, but on a development checkout it is
-false whenever the package has been reinstalled after a commit:
+`test_the_version_check_enforces_the_runtime_and_only_reports_the_manifest`, as it stood
+until this entry, ran `_check_version_consistency()` from `devtools/release_gate.py` on
+the development checkout it happened to be in. The check requires the string in
+`_version.py` to appear in the committed `viewer.js`. That is a correct release invariant,
+but on a development checkout it is false whenever the package has been reinstalled after
+a commit:
 
 - On 2026-09-06 at 13:18, after `af97098d`, an editable reinstall rewrote `_version.py`
   to `0.23.0+17.g3fa27e68`. `viewer.js`, built at 08:39 that day, carries `0.23.0`.
 - On 2026-09-19 that is the one failure in the local suite.
 
 Rebuilding the runtime would make the test pass by writing a development version string
-into a tracked file, which is worse. Where this invariant is checked is a decision still
-to be taken. The release gate itself is the natural place. The unit test could instead
-check that the comparison works, rather than that this particular checkout happens to
-satisfy it.
+into a tracked file, which is worse.
 
-## Recommended corrections
+**Decided and done on 2026-09-19:** the check now takes the reported version, the runtime
+and the manifest as arguments. The suite exercises the comparison on versions it chooses —
+a runtime built from another version is refused, a matching one is accepted, a lagging
+manifest is reported rather than enforced, and an absent runtime fails — while the
+statement about *this* checkout stays in `devtools/release_gate.py`, which still answers
+`RELEASE BLOCKED — failing: version` here, because that is where the question is being
+asked. Mutation-verified: neutering the comparison or tolerating an absent runtime each
+fails a test.
 
-1. **Cause 2:** add `aiohttp>=3.10` to `test_env.yaml`, plus a test that every
-   `pyproject.toml` runtime dependency appears in `test_env.yaml`. Mutation-verify it by
-   removing one name.
-2. **Cause 3:** have `CI_e2e` produce `_version.py` before `npm run build`, by
-   installing the package with its Python environment. The Python-backed scenarios will
-   then meet cause 1, and the report should say so rather than skip them.
-3. **Gate 8:** set its status in the master plan to what is actually enforced, pointing
-   here.
-4. **Cause 1:** closes with Phase 10 gate 1, once MolSysMT is released on the channel
-   with 3.11–3.13 builds.
-5. **The version test:** a decision, recorded here when taken.
+The general lesson is worth more than the fix. The old test was not wrong about the
+invariant; it asserted it in a place where it is routinely and legitimately false. A guard
+in the wrong place is indistinguishable from a broken guard, and it trains people to
+ignore a red suite — which is what happened here, on a repository whose CI was already
+red.
+
+## One measurement that nearly became a false finding
+
+While verifying the above, the `remote-client-rendering` E2E scenario failed twice with
+`Timeout 30000ms exceeded while waiting for event "download"` on the PNG export. Reverting
+the 302 Python files that `918cd35a` ("style(ruff): normalize Python sources") had touched
+made it pass; reverting only `molsysviewer/remote/` also made it pass. Two observations,
+one clean story: a formatting commit had changed behaviour.
+
+It was wrong. Comparing the ASTs of every one of those 302 files against their previous
+versions, with string whitespace normalised, showed 118 files with real differences and
+**none of them under `molsysviewer/remote/`** — the seven remote files are semantically
+identical. The scenario then passed three times in a row on the untouched tree.
+
+What actually distinguishes the runs is load: both failures happened while the full Python
+suite was running on the same machine, and all five passes happened with the machine free.
+A 30-second wait for a browser download is not generous enough to survive a busy host.
+Worth knowing before the same scenario is run on a CI runner, which is a smaller machine
+than this one.
+
+## State of the corrections
+
+1. **Cause 2 — done** (2026-09-19). Environment files carry the runtime dependencies and
+   their floors; guarded and mutation-verified.
+2. **Cause 3 — done** (2026-09-19). `CI_e2e` installs the package; both build scripts
+   resolve the version through one module; guarded and mutation-verified. The npm and
+   conda consequences are uibcdf/molsysviewer#89.
+3. **Gate 8 — done** (2026-09-19). The master plan now states that the workflow exists
+   and has never passed.
+4. **Cause 1 — open.** Closes with Phase 10 gate 1, once MolSysMT is released on the
+   channel with 3.11–3.13 builds. Until then CI fails at environment creation, which is
+   the true statement of where this project stands.
+5. **The version test — done** (2026-09-19). The comparison is guarded on chosen
+   versions; the statement about this checkout stays in the release gate.
+
+None of the three repaired causes can be *confirmed* on hosted CI while cause 1 stands,
+because no job reaches the point where they would show. They were verified locally and by
+mutation; the hosted confirmation comes with gate 1, and this entry does not close before
+it.
 
 ## Acceptance
 

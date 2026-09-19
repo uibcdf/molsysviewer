@@ -90,19 +90,31 @@ STEPS = (
 )
 
 
-def _check_version_consistency() -> tuple[bool, str]:
+def _check_version_consistency(
+    reported: str | None = None,
+    runtime: Path | None = None,
+    manifest: Path | None = None,
+) -> tuple[bool, str]:
     """The version the package reports must be the one built into the runtime.
 
     `viewer.js` carries the version that built it, so a runtime rebuilt from a different
     checkout than the wheel is the failure this catches — and it is invisible until a user
     reports a mismatch in the browser console.
+
+    The three inputs are arguments so the suite can check the comparison with versions it
+    chooses. Called with none, as the gate calls it, it reads this checkout — and that
+    reading belongs to the gate, not to the suite: in a development checkout the two
+    legitimately disagree from the first commit after a release until the runtime is
+    rebuilt, and a unit test asserting otherwise fails on every developer's machine for a
+    condition that only matters at publish time (uibcdf/molsysviewer#88).
     """
-    import importlib
+    if reported is None:
+        import importlib
 
-    module = importlib.import_module("molsysviewer")
-    reported = module.__version__
+        reported = importlib.import_module("molsysviewer").__version__
 
-    runtime = ROOT / "molsysviewer" / "viewer.js"
+    runtime = runtime or ROOT / "molsysviewer" / "viewer.js"
+    manifest = manifest or JS_ROOT / "package.json"
     if not runtime.is_file():
         return False, "molsysviewer/viewer.js is missing; run `npm run build:runtime`"
 
@@ -124,7 +136,7 @@ def _check_version_consistency() -> tuple[bool, str]:
     # `viewer.js` is different and is enforced above: Python packaging never runs npm, so
     # a stale runtime ships in the wheel exactly as it sits in the checkout.
     base = reported.split("+", 1)[0]
-    package = json.loads((JS_ROOT / "package.json").read_text(encoding="utf-8"))
+    package = json.loads(manifest.read_text(encoding="utf-8"))
     declared = package.get("version", "")
     note = (
         ""

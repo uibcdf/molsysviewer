@@ -147,6 +147,56 @@ def test_every_floor_the_wheel_declares_survives_into_the_conda_recipe():
     )
 
 
+def _environments_installed_without_deps() -> dict[str, set[str]]:
+    """Environment file -> the workflows that install this package into it with `--no-deps`."""
+    environments: dict[str, set[str]] = {}
+    for workflow in sorted((ROOT / ".github" / "workflows").glob("*.y*ml")):
+        text = workflow.read_text(encoding="utf-8")
+        if "pip install . --no-deps" not in text:
+            continue
+        for path in re.findall(r"(?m)^\s*environment-file:\s*(\S+)\s*$", text):
+            environments.setdefault(path, set()).add(workflow.name)
+    return environments
+
+
+def test_every_environment_installed_without_deps_carries_the_runtime_dependencies():
+    """`pip install . --no-deps` means the environment file is the only thing that brings the
+    runtime dependencies in, so it must carry every one `pyproject.toml` declares, floors
+    included.
+
+    Both halves failed on hosted CI (uibcdf/molsysviewer#88). `test_env.yaml` lacked
+    `aiohttp`, so four remote test modules died at import. It also listed `molsysmt` with
+    no floor, so the solver quietly picked 0.12.0 on 3.11 and 3.12 -- nine months older
+    than the `>=0.22.0` this package declares -- and the jobs ran against it. Carrying the
+    floor turns that into a solve failure that names the missing release.
+
+    Derived from the workflows rather than enumerated, so an environment that starts being
+    installed this way is checked without anyone remembering to add it here.
+    """
+    pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    wheel_requirements = _dependencies_by_name(pyproject["project"]["dependencies"])
+    environments = _environments_installed_without_deps()
+    assert "devtools/conda-envs/test_env.yaml" in environments, (
+        "the workflow scan no longer finds the test environment; the check below would pass on nothing"
+    )
+
+    missing = {}
+    for path, workflows in environments.items():
+        text = (ROOT / path).read_text(encoding="utf-8")
+        for name, requirement in wheel_requirements.items():
+            floor = next((spec.version for spec in requirement.specifier if spec.operator == ">="), None)
+            spec = rf">={re.escape(floor)}\b" if floor else r"(?=[\s<>=!]|$)"
+            if not re.search(rf"(?m)^\s*-\s+{re.escape(name)}\s*{spec}", text):
+                missing.setdefault(f"{path} (used by {', '.join(sorted(workflows))})", []).append(
+                    f"{name}>={floor}" if floor else name
+                )
+
+    assert missing == {}, (
+        "these environments receive the package with --no-deps and do not carry what "
+        f"pyproject.toml declares: {missing}"
+    )
+
+
 def test_distribution_manifests_bound_the_shared_alias_contract():
     """A resolver-valid dependency set must also be import-compatible.
 
@@ -364,6 +414,7 @@ def test_the_recommended_version_is_the_one_the_single_version_jobs_use():
         "devtools/conda-envs/development_env.yaml",
         "devtools/conda-envs/docs_env.yaml",
         ".github/workflows/sphinx_docs_to_gh_pages.yaml",
+        ".github/workflows/CI_e2e.yaml",
     ):
         text = (ROOT / path).read_text(encoding="utf-8")
         found = set(re.findall(r"python=(3\.\d+)", text))

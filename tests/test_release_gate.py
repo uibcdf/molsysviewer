@@ -13,6 +13,7 @@ recursion nobody wants.
 
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -58,19 +59,63 @@ def test_the_blocked_steps_name_what_they_are_waiting_for():
         assert "DISPLAY" in reasons["qt"]
 
 
-def test_the_version_check_enforces_the_runtime_and_only_reports_the_manifest():
-    """Two invariants with different strengths, and the distinction is deliberate.
+def _checkout(tmp_path, runtime_version, manifest_version="4.5.6"):
+    tmp_path.mkdir(parents=True, exist_ok=True)
+    runtime = tmp_path / "viewer.js"
+    runtime.write_text(f'var v="{runtime_version}";\n', encoding="utf-8")
+    manifest = tmp_path / "package.json"
+    manifest.write_text(json.dumps({"version": manifest_version}), encoding="utf-8")
+    return runtime, manifest
 
-    `viewer.js` is enforced: Python packaging never runs npm, so a stale runtime ships in
-    the wheel exactly as it sits in the checkout. `package.json` is reported: the publish
-    workflow runs `npm run build`, which syncs it, so failing on it would make the gate
-    refuse a release over something CI repairs — and a false gate teaches people to pass
-    `--only`.
+
+def test_the_version_check_notices_a_runtime_built_from_another_version(tmp_path):
+    """The failure it exists for: a wheel shipping a runtime someone else's checkout built.
+
+    Checked on versions this test chooses rather than on the versions this machine happens
+    to have. Asserting the latter made the suite fail on every development checkout from
+    the first commit after a release — a true statement about a released artefact, made in
+    the one place where it is routinely false (uibcdf/molsysviewer#88). The gate still
+    makes it, on the checkout, where it is the question being asked.
     """
-    passed, detail = _check_version_consistency()
+    runtime, manifest = _checkout(tmp_path, "1.2.3")
+
+    passed, detail = _check_version_consistency("4.5.6", runtime=runtime, manifest=manifest)
+
+    assert not passed
+    assert "4.5.6" in detail, "the message must name the version the package reports"
+    assert "npm run build:runtime" in detail, "and say what to do about it"
+
+
+def test_the_version_check_accepts_a_runtime_that_carries_the_reported_version(tmp_path):
+    """The other direction, so the check cannot pass by always refusing.
+
+    The manifest is *reported*, not enforced: `npm run build` syncs it at publish time, so
+    failing on it would make the gate refuse a release over something CI repairs — and a
+    false gate teaches people to pass `--only`.
+    """
+    runtime, manifest = _checkout(tmp_path, "4.5.6+7.gabcdef", manifest_version="4.5.6")
+
+    passed, detail = _check_version_consistency("4.5.6+7.gabcdef", runtime=runtime, manifest=manifest)
 
     assert passed, detail
-    assert "viewer.js carries" in detail
+    assert "viewer.js carries 4.5.6+7.gabcdef" in detail
+
+    lagging, _ = _checkout(tmp_path / "lagging", "4.5.6+7.gabcdef", manifest_version="4.5.5")
+    passed, detail = _check_version_consistency(
+        "4.5.6+7.gabcdef", runtime=lagging, manifest=lagging.parent / "package.json"
+    )
+
+    assert passed, "a lagging manifest is reported, not enforced"
+    assert "lags at '4.5.5'" in detail
+
+
+def test_the_version_check_refuses_a_runtime_that_is_not_there(tmp_path):
+    """`viewer.js` is a build product and git-ignored in some checkouts; absence is a failure,
+    not an exemption."""
+    passed, detail = _check_version_consistency("4.5.6", runtime=tmp_path / "absent.js")
+
+    assert not passed
+    assert "missing" in detail
 
 
 def test_the_gate_reports_blocked_steps_as_a_non_zero_exit():
