@@ -221,6 +221,21 @@ because no job reaches the point where they would show. They were verified local
 mutation; the hosted confirmation comes with gate 1, and this entry does not close before
 it.
 
+**Measured on `b4a119a4`, the commit that carries these fixes.** All three workflows still
+fail, and every one of them now fails at environment creation with the same line:
+
+```
+molsysmt >=0.22.0 * does not exist (perhaps a typo or a missing channel).
+```
+
+Seven of seven `CI` jobs — the six matrix cells and the Qt pipeline — plus `CI_e2e` and
+`Documentation notebooks`. Before, the 3.11 and 3.12 cells resolved an old MolSysMT and
+failed later on a missing import, the 3.13 cells and Qt printed fifteen lines of solver
+tree about Python ABIs, and `CI_e2e` failed on a missing file. Nine jobs, four stories,
+none of them naming the cause. Now they say it in one line, and the one line is true:
+this repository is waiting for a MolSysMT release. `MolSysSuite policy` and `Ruff Lint`
+pass, as before.
+
 ## Acceptance
 
 - `CI`, `CI_e2e` and `Documentation notebooks` pass on `main` against the MolSysMT this
