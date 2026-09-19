@@ -240,6 +240,11 @@ five-platform × three-interpreter exact-pair matrix pass. The existing `0.22.0`
 `0.23.0` tags predate the #88/#89 packaging fixes and must not be moved; a new patch
 candidate is required.
 
+Suite-wide standardization of this protocol is tracked by `uibcdf/molsyssuite#27`.
+MolSysViewer owns the noarch implementation and its release evidence; candidate identity,
+staging/public separation, bootstrap rules, coordinate integrity and evidence retention
+must converge on the shared contract instead of remaining a local convention.
+
 ## State of the corrections
 
 1. **Cause 2 — done** (2026-09-19). Environment files carry the runtime dependencies and
