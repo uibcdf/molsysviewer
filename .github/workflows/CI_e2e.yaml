@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: ["main"]
   workflow_dispatch:
+    inputs:
+      use_staging:
+        description: Test the coordinated MolSysMT/MolSysViewer candidates from staging
+        required: true
+        default: false
+        type: boolean
 
 jobs:
   e2e:
@@ -41,6 +47,8 @@ jobs:
             channel_priority: strict
           create-args: >-
             python=3.13
+            ${{ inputs.use_staging && '--override-channels --channel uibcdf/label/staging --channel uibcdf --channel conda-forge --channel ambermd' || '' }}
+            ${{ inputs.use_staging && 'molsysmt=0.22.0' || '' }}
 
       - name: Install package
         shell: bash -l {0}

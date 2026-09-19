@@ -11,6 +11,7 @@ import zipfile
 from email.parser import BytesParser
 from pathlib import Path
 
+import yaml
 from packaging.requirements import Requirement
 from packaging.utils import canonicalize_name
 
@@ -392,6 +393,37 @@ def test_every_supported_version_is_tested_on_both_operating_systems():
     }
 
     assert cells == expected, f"missing cells: {sorted(expected - cells)}"
+
+
+def test_hosted_gates_can_select_the_exact_coordinated_staging_candidate():
+    """The dependency cycle must be testable before either package reaches `main`.
+
+    MolSysMT is a hard dependency of MolSysViewer and its Conda package depends back on
+    MolSysViewer. A normal push must keep using the public channel, while a deliberate
+    dispatch must be able to put staging first and pin the agreed MolSysMT candidate.
+    Otherwise the only way to make hosted CI green would be an unvalidated publication.
+    """
+    for workflow_name in ("CI.yaml", "CI_e2e.yaml", "docs-notebooks.yaml"):
+        path = ROOT / ".github" / "workflows" / workflow_name
+        text = path.read_text(encoding="utf-8")
+        workflow = yaml.safe_load(text)
+        setup_steps = [
+            step
+            for job in workflow["jobs"].values()
+            for step in job["steps"]
+            if step.get("uses") == "mamba-org/setup-micromamba@v3.2.1"
+        ]
+
+        assert re.search(r"(?ms)^\s{2}workflow_dispatch:\n\s{4}inputs:\n\s{6}use_staging:", text)
+        assert setup_steps, f"{workflow_name} no longer creates a Conda environment"
+        for step in setup_steps:
+            condarc = step["with"]["condarc"]
+            create_args = step["with"]["create-args"]
+            assert "uibcdf/label/staging" not in condarc
+            assert "\n  - uibcdf\n" in condarc
+            assert "inputs.use_staging && '--override-channels" in create_args
+            assert "--channel uibcdf/label/staging --channel uibcdf --channel conda-forge" in create_args
+            assert "inputs.use_staging && 'molsysmt=0.22.0'" in create_args
 
 
 def test_the_recommended_version_is_the_one_the_single_version_jobs_use():

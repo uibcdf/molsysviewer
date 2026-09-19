@@ -30,6 +30,12 @@ on:
     # found by a job and not by a reader.
     - cron: "0 7 * * MON"
   workflow_dispatch:
+    inputs:
+      use_staging:
+        description: Test the coordinated MolSysMT/MolSysViewer candidates from staging
+        required: true
+        default: false
+        type: boolean
 
 jobs:
   execute:
@@ -54,6 +60,9 @@ jobs:
               - uibcdf
               - conda-forge
             channel_priority: strict
+          create-args: >-
+            ${{ inputs.use_staging && '--override-channels --channel uibcdf/label/staging --channel uibcdf --channel conda-forge' || '' }}
+            ${{ inputs.use_staging && 'molsysmt=0.22.0' || '' }}
 
       - name: Install MolSysViewer
         shell: bash -l {0}

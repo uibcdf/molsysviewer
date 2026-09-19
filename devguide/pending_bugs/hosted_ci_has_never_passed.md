@@ -58,11 +58,16 @@ Effects, from run 34890243748 (`96f12779`):
   tested this package against a MolSysMT nine months older than the one it is written
   against, and a green result there would have meant nothing.
 
-This is Phase 10 gate 1 as seen from CI, and this repository cannot close it: it needs
-a MolSysMT release on the channel with Python 3.11–3.13 builds. The other siblings on
-the channel (`argdigest` 0.12.1, `depdigest` 0.10.1, `smonitor` 0.15.0, `pyunitwizard`
-0.25.0) match their latest tags. Their latest builds are listed as `py311`; whether
-those are `noarch` has **not been checked**.
+This is Phase 10 gate 1 as seen from CI. The public path needs a MolSysMT release on the
+channel with Python 3.11–3.13 support; the coordinated pair can and must be proved first
+on the staging label.
+
+The hygiene question about the supporting packages was checked on 2026-09-19. The
+inspected Linux records for `argdigest` 0.12.1, `depdigest` 0.10.0 and `smonitor` 0.13.0
+are **not noarch**: their `py311_1` files live under `linux-64` and constrain both
+`python>=3.11,<3.12.0a0` and `python_abi=3.11`. Separate `py312` and `py313` records are
+present on that platform. This does not explain the current Python 3.13 failure; the
+solver tree names the absence of a compatible public MolSysViewer package.
 
 ## Cause 2: `test_env.yaml` lacks `aiohttp`
 
@@ -201,6 +206,40 @@ A 30-second wait for a browser download is not generous enough to survive a busy
 Worth knowing before the same scenario is run on a CI runner, which is a smaller machine
 than this one.
 
+## Coordinated staging path — implemented, execution pending
+
+MolSysMT has already completed the one bootstrap step that cannot test itself. Workflow
+run `33849332945`, exact commit `e5820d4794f8ce31a1f64e345c5edf9073ade975`, published
+MolSysMT 0.22.0 build-2 ABI3 artefacts to `uibcdf/label/staging` for all five native
+platforms. Live channel queries on 2026-09-19 found one build on each of `linux-64`,
+`linux-aarch64`, `osx-64`, `osx-arm64` and `win-64`.
+
+That is necessary but not sufficient. A Linux dry-run using staging and requesting
+`python=3.13 molsysmt=0.22.0` still fails because MolSysMT depends on MolSysViewer and the
+public MolSysViewer records stop before Python 3.13. The same request resolves for Python
+3.12. The result identifies the dependency cycle; it does not justify promoting MolSysMT
+untested.
+
+MolSysViewer now has the missing second half:
+
+- the manual Conda workflow requires an exact candidate SHA and version, validates their
+  identity, builds against the staging channel, executes the recipe tests and uploads
+  only to the staging label;
+- a GitHub Release remains the only path to the public label and uses a distinct build
+  number, so verified staging bytes are never overwritten under the same coordinate;
+- `CI`, `CI_e2e` and `Documentation notebooks` expose an explicit manual
+  `use_staging` input which pins MolSysMT 0.22.0 and puts staging first; their ordinary
+  triggers continue using only the public channel;
+- guards reject a staging path that skips the recipe test, loses exact-SHA checkout,
+  merges the staging and release labels, drops producer evidence or leaves any hosted
+  gate unable to select the candidate.
+
+This is source readiness, not release evidence. It becomes evidence only after a new
+MolSysViewer candidate is frozen, uploaded and the hosted gates plus MolSysMT's
+five-platform × three-interpreter exact-pair matrix pass. The existing `0.22.0` and
+`0.23.0` tags predate the #88/#89 packaging fixes and must not be moved; a new patch
+candidate is required.
+
 ## State of the corrections
 
 1. **Cause 2 — done** (2026-09-19). Environment files carry the runtime dependencies and
@@ -210,9 +249,9 @@ than this one.
    conda consequences are uibcdf/molsysviewer#89.
 3. **Gate 8 — done** (2026-09-19). The master plan now states that the workflow exists
    and has never passed.
-4. **Cause 1 — open.** Closes with Phase 10 gate 1, once MolSysMT is released on the
-   channel with 3.11–3.13 builds. Until then CI fails at environment creation, which is
-   the true statement of where this project stands.
+4. **Cause 1 — active.** The staging mechanism is implemented and locally guarded. It
+   closes only after the exact pair passes the hosted candidate gates, MolSysMT reaches
+   the public channel with Python 3.11–3.13 support, and ordinary CI passes against it.
 5. **The version test — done** (2026-09-19). The comparison is guarded on chosen
    versions; the statement about this checkout stays in the release gate.
 

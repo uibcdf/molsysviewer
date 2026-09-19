@@ -36,6 +36,12 @@ on:
     #   (from https://help.github.com/en/actions/reference/events-that-trigger-workflows#scheduled-events-schedule)
     - cron: "0 9 * * MON"
   workflow_dispatch:
+    inputs:
+      use_staging:
+        description: Test the coordinated MolSysMT/MolSysViewer candidates from staging
+        required: true
+        default: false
+        type: boolean
 
 jobs:
   qt-pipeline:
@@ -80,6 +86,8 @@ jobs:
         create-args: >-
           python=3.13
           pyside6-addons-uibcdf
+          ${{ inputs.use_staging && '--override-channels --channel uibcdf/label/staging --channel uibcdf --channel conda-forge --channel ambermd' || '' }}
+          ${{ inputs.use_staging && 'molsysmt=0.22.0' || '' }}
 
     - name: Install package
       shell: bash -l {0}
@@ -156,6 +164,8 @@ jobs:
 
         create-args: >-
           python=${{ matrix.cfg.python-version }}
+          ${{ inputs.use_staging && '--override-channels --channel uibcdf/label/staging --channel uibcdf --channel conda-forge --channel ambermd' || '' }}
+          ${{ inputs.use_staging && 'molsysmt=0.22.0' || '' }}
 
     - name: Info conda
       shell: bash -l {0}

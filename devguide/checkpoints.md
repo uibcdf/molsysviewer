@@ -5,8 +5,8 @@ changes. Normative behavior remains in the contracts linked below.
 
 ## Repository state
 
-- Branch: `main`, pushed. The latest committed slice adopted MolSysMT's reporting
-  protocol for the two work queues and built the governance around it.
+- Branch: `main`. The current delivery slice implements the coordinated staging path
+  with MolSysMT 0.22.0; publication and hosted candidate execution remain pending.
 - Phases 5, 6, 8 and 9 and the Phase 10 persistence slice were independently
   audited and closed on 2026-08-09. Phase 8 evidence remains in
   [`performance/representative_scale_gate_2026_08.md`](performance/representative_scale_gate_2026_08.md).
@@ -52,107 +52,73 @@ changes. Normative behavior remains in the contracts linked below.
   `argdigest>=0.12.1`; publication of that release remains a prerequisite for clean
   installation dogfooding.
 
-## Release 0.21.0 is coordinated with MolSysMT 0.22.0 — in flight
+## Coordinated Conda release with MolSysMT 0.22.0 — in flight
 
-Agreed with the MolSysMT maintainers on 2026-09-02. **Do not cut the tag on our side
-first**, and do not lower the floor to unblock it.
+MolSysViewer must keep `molsysmt>=0.22.0`: that is the first MolSysMT line providing
+`molsysmt.attribute.get_argument_aliases()`, which MolSysViewer imports without a
+fallback. Lowering the floor would make the environment solve and the package fail at
+import time.
 
-The two conda recipes require each other, and only one side can move alone. Ours declares
-`molsysmt >=0.22.0`, which is correct and must not be relaxed: MolSysViewer imports
-`molsysmt.attribute.get_argument_aliases()` at module import time with no fallback, and
-0.22.0 is the first MolSysMT release that provides it. A lower floor yields a package that
-installs and then fails on import.
+The current boundary was remeasured on 2026-09-19:
 
-The agreed sequence, and the reason for it:
+- MolSysMT workflow run `33849332945`, commit
+  `e5820d4794f8ce31a1f64e345c5edf9073ade975`, published build-2 ABI3 artefacts for
+  `linux-64`, `linux-aarch64`, `osx-64`, `osx-arm64` and `win-64` to
+  `uibcdf/label/staging`. Each supports Python 3.11--3.13.
+- The public channel still stops at MolSysMT 0.12.0 and MolSysViewer 0.7.0. A Linux
+  dry-run with staged MolSysMT 0.22.0 resolves on Python 3.12 but not 3.13: MolSysMT is a
+  hard dependency of MolSysViewer, and its own runtime dependency on MolSysViewer can find
+  only the old interpreter-specific public artefacts. This is the publication cycle,
+  reproduced rather than inferred.
+- The `0.22.0` and `0.23.0` MolSysViewer tags predate the fixes for
+  uibcdf/molsysviewer#88 and #89. They must not be moved, and rebuilding either tag would
+  omit the fixes that make hosted CI and the package build reach the dependency boundary.
+  Freeze a new candidate version from a reviewed commit before dispatch; `0.23.1` is the
+  natural patch candidate, but it is not declared until that release decision is made.
+- The MolSysViewer Conda core remains `noarch: python`, bounded to
+  `python>=3.11,<3.14`. One package therefore serves the entire supported matrix.
 
-1. MolSysMT prepares 0.22.0 and builds **real** per-platform conda packages into a staging
-   label. Their recipe grew a native extension (`molsysmt._rust`) and their workflow was
-   converting an Ubuntu build for other platforms, which they are fixing first, along with
-   adding a `test:` section.
-2. We build and test our candidate against those staging packages — a condarc change, not
-   a code change.
-3. Both verified in clean environments, then promoted: MolSysMT first, us immediately
-   after.
-4. `uibcdf/molsysmt#195` closes when 3.11/3.12/3.13 install and import for both.
+The repository now carries the two missing pre-publication routes:
 
-An earlier draft of this plan proposed that MolSysMT simply publish first, on the grounds
-that their recipe has no `test:` section and so their build resolves nothing. They declined
-that reasoning and were right to: a package conda can upload but nobody can install is not
-validation. Staging replaced it.
+1. A manual Conda dispatch requires an exact SHA, a new version and a build number. It
+   builds the noarch package against `uibcdf/label/staging`, runs the full recipe test,
+   and uploads only to the `staging` label. There is deliberately no `--no-test`
+   exception: conda-build places the just-built MolSysViewer package in its test channel,
+   closing the dependency loop with staged MolSysMT.
+2. Manual dispatches of `CI`, `CI_e2e` and `Documentation notebooks` may explicitly
+   put staging first and pin MolSysMT 0.22.0. Normal push, pull-request and scheduled runs
+   continue to use the public channel. Staging is a release-candidate input, never a
+   silent development default.
+3. Staging uses Conda build 0 and a GitHub Release uses build 1. Validated coordinates are
+   not overwritten with different bytes.
+4. Structural guards require the exact checkout, separate staging/main publication
+   branches, retained producer evidence, the recipe test on both branches, and the
+   explicit staging input on every hosted gate.
 
-**Step 3 is already done, 2026-09-02.** MolSysMT staged 0.22.0 ahead of the window --
-twelve artefacts, linux-64 / linux-aarch64 / osx-64 / osx-arm64 x py311/312/313, all
-labelled `staging`, real per-platform builds. Our package was built and tested against
-them with `devtools/build_against_staging.sh`, and all five checks they asked for pass:
-both imports, both packaged runtime resources, the solved environment honouring
-`molsysmt>=0.22.0`, and resolution on all three interpreters -- the *same* noarch artefact
-pairing with each per-python molsysmt build, which is what noarch was adopted for.
+The remaining execution order is:
 
-**Phase 10 gates 4 and 5, run against the installed artefact rather than the source tree**
-(2026-09-02), which is what they had been waiting for:
+1. freeze the new MolSysViewer candidate commit and version;
+2. dispatch its staging build and retain the producer evidence;
+3. run all three MolSysViewer hosted gates with `use_staging=true`;
+4. run MolSysMT's exact-pair 5-platform × 3-interpreter staging matrix;
+5. resolve or explicitly disposition the clean-install PDB path in
+   `uibcdf/molsysmt#200`;
+6. publish MolSysMT to the public channel first, then MolSysViewer, with no bootstrap
+   exception in either public build.
 
-- **Gate 4 passes.** `runtime_actions.json` (5 397 B) and `viewer.js` (6 410 531 B, md5
-  `992bf3d6`, matching the committed one) are both readable from the installed package.
-- **Gate 5 fails, and not on our side.** The README's one-line path,
-  `msv.new_view("1TRS")`, raises `ModuleNotFoundError: No module named 'mmcif'` in a clean
-  environment. MolSysMT imports `mmcif` on the PDB-identifier path and declares it in
-  neither its recipe nor its `pyproject`; the shared development environment has it from
-  PyPI, so no source-tree test could see it. Reported as `uibcdf/molsysmt#200`, where the
-  first version of the report was wrong about the remedy: it said the module is not on
-  conda-forge under any name — true — and concluded it was therefore hard to declare, which
-  does not follow. **`uibcdf/py-mmcif` exists**, in this ecosystem's own channel, which is
-  where it packages what conda-forge does not carry. Checking conda-forge and stopping
-  there was the error; the correction is on the issue. What survives is one undeclared
-  dependency, and the observation that `py-mmcif` publishes only `linux-64` and
-  `osx-arm64` while 0.22.0 is staged for four platforms.
-
-  Everything else in that environment works: demos, `export_state`, and HTML export with
-  the `color-scheme` fix present in the artefact.
-
-**Our candidate:** `15c9a39b`, version **0.21.0** (confirmed). At that commit
-`devtools/release_gate.py` reports **9 passed, 0 failed, 2 blocked** — `conda` blocked by
-this very coordination, and `qt` blocked for want of a `DISPLAY`. The Qt gate is stated to
-them explicitly rather than glossed; see [`what_needs_a_human_2026_08.md`](what_needs_a_human_2026_08.md).
-
-Written up for them in `/tmp/conda-release-coordination.md` and
-`/tmp/molsysviewer-release-candidate.md` (scratch, not repository files — regenerate from
-this section if needed).
-
-**The conda package is `noarch: python` since 2026-09-02**, agreed with them for 0.21.0.
-One artefact, build string `py_1`, instead of one per interpreter per platform — which is
-how the channel came to hold no 3.13 build while the workflow had been running a
-3.11/3.12/3.13 matrix for months. The workflow lost its matrix with it: building the same
-file three times and uploading it three times is not a matrix.
-
-Verified locally by building the artefact and reading it, not by rendering alone:
-`subdir: noarch`, `platform` and `arch` null, `runtime_actions.json` and `viewer.js` both
-inside `site-packages/molsysviewer/`, and zero compiled binaries among 1 270 files.
-
-The recipe bounds python `>=3.11,<3.14` on purpose. Publishing one artefact per
-interpreter used to bound the claim implicitly; an open `>=3.11` would offer the package
-to 3.14 the day it exists, which is the drift
-`test_the_published_python_matrix_is_the_one_we_actually_test` was written about. **Raise
-the ceiling when the test matrix gains the version, not before.**
-
-**When the standalone Qt host leaves Linux, it becomes a second output, not a reason to
-undo this.** Its Qt stack (`pyside6-addons-uibcdf` and the four packages under it) is
-`linux-64` only today, and a macOS or Windows build will need a different dependency set —
-which a noarch package cannot express, since it carries one set of metadata. The conda
-pattern for that is a per-platform `molsysviewer-qt` output depending on this noarch core,
-the way `matplotlib` depends on `matplotlib-base`. The `molsysviewer-qt` entry point ships
-in the core harmlessly: without PySide6 it raises `QT_IMPORT_ERROR`, which names the
-package to install.
-
-Previously open and now closed: whether to move our package to
-`noarch: python`. They agreed and asked that the candidate demonstrate five things from the
-noarch artefact itself; three are verified above and the remaining two — resolution on
-3.11/3.12/3.13, and the `molsysmt>=0.22.0` floor honoured by a solved environment — need
-their staging channel and are encoded in the recipe's `test:` section so they run at build
-time in the window.
+A prior local `devtools/build_against_staging.sh` result remains useful evidence about
+the noarch shape and recipe tests, but it is not a substitute for these exact hosted
+candidate gates. Neither repository may publish unilaterally merely to turn the other's
+CI green.
 
 ## Validation observed
 
-- Latest full run, 2026-08-15: **1,612 Python passed, 4 skips, exit 0**
+- Current full run, 2026-09-19: **2,067 Python passed, 13 accepted skips, exit 0** in
+  65.80 seconds with 12 workers
+  (`python -m pytest --receptor=llm -n 12 tests/`). The focused distribution and
+  staging-contract slice passes 16 tests; Ruff and the generated devguide indexes pass;
+  the Conda recipe renders as one `noarch` build-0 candidate. No artifact was uploaded.
+- Previous baseline, 2026-08-15: **1,612 Python passed, 4 skips, exit 0**
   (`python -m pytest --receptor=llm -n 12 tests/`). The `selections.md` failure of
   2026-08-14 is closed: the page called deprecated `add_label()` while the documentation
   harness promotes `DeprecationWarning` to an error, and it now uses the canonical

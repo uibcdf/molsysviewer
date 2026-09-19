@@ -17,7 +17,10 @@ build:
   # linux-64 only today), and when it leaves Linux it becomes a second, per-platform
   # output that depends on this one -- not a reason to make this one per-platform.
   noarch: python
-  number: 1
+  # Staging and release builds use distinct coordinates. The manual staging path sets
+  # build 0; a GitHub Release uses the default build 1 after the staged pair has passed.
+  # Never overwrite staged bytes under a coordinate that has already been inspected.
+  number: "{{ environ.get('MOLSYSVIEWER_CONDA_BUILD_NUMBER', '1') }}"
 
 requirements:
   host:
