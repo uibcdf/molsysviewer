@@ -1,12 +1,12 @@
 ---
 summary: Adopt the shared Python and Ruff development baseline.
 issue: uibcdf/molsysviewer#87
-status: active
+status: resolved
 opened: 2026-09-12
-closed:
+closed: 2026-09-19
 verification: measured
 area: [process, ci]
-guard:
+guard: .github/workflows/molsyssuite-policy.yml
 normative:
 blocked_by: []
 supersedes: []
@@ -48,3 +48,11 @@ environment file.
 - The relevant MolSysViewer Python tests pass.
 - The local issue and this record close together after the guard is published.
 
+## Resolution
+
+MolSysViewer now declares Python `>=3.11,<3.14`, pins Ruff 0.16.5, removes
+Black from active development tooling and runs the versioned common gate.
+Distribution, project-style and reporting tests passed locally; policy 1.1.6
+passed in GitHub Actions run `35468887226`. Environment-dependent browser,
+socket and external-integration failures observed in the broader checkout were
+not reclassified as tooling-policy regressions.
