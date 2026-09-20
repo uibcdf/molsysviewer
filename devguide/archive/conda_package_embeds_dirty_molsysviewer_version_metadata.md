@@ -1,13 +1,13 @@
 ---
 summary: Conda package embeds dirty MolSysViewer version metadata
 issue: uibcdf/molsysviewer#91
-status: active
+status: resolved
 opened: 2026-09-20
-closed:
+closed: 2026-09-20
 severity: high
-verification: reproduced
+verification: measured
 area: [packaging, release]
-guard:
+guard: tests/test_conda_version_identity.py::test_conda_build_freezes_version_before_generating_assets
 normative:
 blocked_by: []
 supersedes: []
@@ -16,8 +16,8 @@ supersedes: []
 # Conda package embeds dirty MolSysViewer version metadata
 
 **Reported:** 2026-09-20, in the exact MolSysMT--MolSysViewer staging matrix.
-**Status:** active; the package is rejected by the coordinated gate and a corrective
-non-overwriting build is being prepared.
+**Status:** resolved in corrective staging build 1; build 0 remains available as the
+rejected evidence and was not overwritten.
 
 ## What
 
@@ -59,8 +59,12 @@ the ephemeral copy produced both exact wheel metadata and an exact runtime versi
 The resulting dirty-source wheel was named `molsysviewer-0.23.1-py3-none-any.whl`, its
 METADATA reported `Version: 0.23.1`, and its packaged `_version.py` reported `0.23.1`.
 
-**Assumed pending hosted confirmation:** the complete correction will produce an exact
-internal `0.23.1` in corrective build 1.
+**Measured in hosted staging:** GitHub Actions run `35502257553` built and uploaded
+`molsysviewer-0.23.1-py_1` from exact commit
+`a9f7c2ce062f5a69ed1fd6fac55ba333a244c3ac`. A clean Python 3.13 environment resolved
+that artifact together with `molsysmt-0.22.0-pyabi3h03bb3b7_3`; both
+`importlib.metadata.version("molsysviewer")` and `molsysviewer.__version__` returned
+exactly `0.23.1`.
 
 ## What was refuted
 
@@ -79,8 +83,8 @@ change MolSysViewer's public API.
 - A unit test requires version freezing before generated assets modify the source tree.
 - The Conda recipe test requires both distribution metadata and `__version__` to equal
   `PKG_VERSION` exactly.
-- Corrective build 1 is additive and passes the exact installed-pair gate; build 0 is not
-  overwritten.
+- Corrective build 1 is additive and passes an exact clean-environment installed-pair
+  audit; build 0 is not overwritten.
 - The eventual public release uses a distinct build number.
 
 ## Dependencies and risks
@@ -94,3 +98,18 @@ but it does not weaken or replace the exact identity requirement.
 GitHub Actions run `35499866604`, MolSysMT 0.22.0 build 3, MolSysViewer 0.23.1 build 0,
 Python 3.11--3.13, Linux x86_64, macOS Intel and macOS ARM, 2026-09-20. Evidence captured
 with GH Run Receptor's Conda profile and checked against the cached authoritative logs.
+
+## Resolution
+
+Fixed in `a9f7c2ce`. The Conda build now freezes `PKG_VERSION` into the ephemeral source
+tree and removes versioningit's build hook before generated assets can dirty that tree.
+The repository itself continues to use dynamic VCS versioning.
+
+The recipe test independently requires exact distribution and module versions. Hosted
+run `35502257553` passed and published additive build `py_1`; the clean-environment audit
+above verifies the identity users actually install rather than only the source or channel
+record. The remaining Linux ARM and Windows solver gaps belong to the support-package
+coverage work and do not reopen this version-identity defect.
+
+The guard is
+`tests/test_conda_version_identity.py::test_conda_build_freezes_version_before_generating_assets`.
