@@ -86,6 +86,14 @@ if the defect returns.
 2. Move the document to `archive/`.
 3. Close the issue with a comment naming the fix, the guard and the record.
 
+For reports resolved on or after 2026-09-20, the local validator applies the default
+Python guard profile defined by MolSysSuite: one addressable pytest module, function, or
+class-method selector under `tests/` or `devtools/tests/`. This mechanical check proves
+addressability, not relevance; the resolution must explain why the selected assertion
+protects the reported failure mechanism. See `MOLSYSSUITE_GUIDE.md` and the canonical
+`uibcdf/molsyssuite` reporting protocol for the complete contract. A non-pytest guard
+requires a bounded local selector profile before it can be used for a new closure.
+
 **Archive, never delete.** A repository that deletes a closed entry breaks every reference
 into it.
 
