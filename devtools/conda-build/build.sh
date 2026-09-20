@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -ex
 
+# Freeze the immutable Conda coordinate before generated JS assets make the Git checkout
+# dirty. The build backend must not derive a local-version suffix from build products.
+$PYTHON devtools/conda-build/freeze_project_version.py "$PKG_VERSION"
+
 # 1) Build JS bundle (viewer.js) into molsysviewer/
 pushd molsysviewer/js
 # Conda build sets PKG_VERSION; use it if RELEASE_VERSION is unset.

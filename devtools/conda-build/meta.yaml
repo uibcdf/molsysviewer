@@ -17,8 +17,9 @@ build:
   # linux-64 only today), and when it leaves Linux it becomes a second, per-platform
   # output that depends on this one -- not a reason to make this one per-platform.
   noarch: python
-  # Staging and release builds use distinct coordinates. The manual staging path sets
-  # build 0; a GitHub Release uses the default build 1 after the staged pair has passed.
+  # Staging and release builds use distinct coordinates. Build 0 is historical; the
+  # corrected manual staging path sets build 1, and a GitHub Release uses build 2 after
+  # the staged pair has passed.
   # Never overwrite staged bytes under a coordinate that has already been inspected.
   number: "{{ environ.get('MOLSYSVIEWER_CONDA_BUILD_NUMBER', '1') }}"
 
@@ -55,6 +56,7 @@ test:
     - molsysviewer
     - molsysviewer.runtime_contract
   commands:
+    - python -c "import importlib.metadata as md, os, molsysviewer; expected=os.environ['PKG_VERSION']; assert md.version('molsysviewer') == expected; assert molsysviewer.__version__ == expected"
     # Both packaged runtime resources travel inside the artefact.
     - python -c "from importlib.resources import files; assert files('molsysviewer').joinpath('runtime_actions.json').is_file()"
     - python -c "from importlib.resources import files; assert files('molsysviewer').joinpath('viewer.js').is_file()"

@@ -23,7 +23,7 @@ on:
       build_number:
         description: Staging build number; increment only to supersede a defective artifact
         required: true
-        default: 0
+        default: 1
         type: number
 
 permissions:
@@ -138,7 +138,7 @@ jobs:
         if: github.event_name == 'release'
         uses: uibcdf/action-build-and-upload-conda-packages@v2.1.0
         env:
-          MOLSYSVIEWER_CONDA_BUILD_NUMBER: 1
+          MOLSYSVIEWER_CONDA_BUILD_NUMBER: 2
         with:
           meta_yaml_dir: devtools/conda-build
           mambabuild: false

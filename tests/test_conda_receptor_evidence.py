@@ -38,13 +38,16 @@ def test_staging_closes_the_dependency_cycle_without_weakening_the_package_test(
     identity = next(step for step in steps if step.get("name") == "Validate the immutable candidate identity")
     staging = next(step for step in steps if step.get("id") == "conda_staging")
     release = next(step for step in steps if step.get("id") == "conda_release")
+    build_number = workflow[True]["workflow_dispatch"]["inputs"]["build_number"]
 
     assert checkout["with"]["ref"] == "${{ inputs.candidate_sha || github.event.release.tag_name }}"
     assert 'test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"' in identity["run"]
     assert staging["if"] == "github.event_name == 'workflow_dispatch'"
     assert staging["with"]["label"] == "staging"
+    assert build_number["default"] == 1
     assert release["if"] == "github.event_name == 'release'"
     assert release["with"]["label"] == "main"
+    assert release["env"]["MOLSYSVIEWER_CONDA_BUILD_NUMBER"] == 2
     assert "--no-test" not in staging["with"]["conda_build_args"]
     assert "--no-test" not in release["with"]["conda_build_args"]
     assert "uibcdf/label/staging" in WORKFLOW.read_text(encoding="utf-8")

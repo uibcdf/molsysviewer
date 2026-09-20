@@ -88,6 +88,10 @@ How the version is chosen
 - The Python wheel includes `molsysviewer/viewer.js` and `.map` as package data.
 - Conda build uses `devtools/conda-build/build.sh`, which builds the JS bundle
   and then installs the Python package.
+- Conda freezes its already validated `PKG_VERSION` into the ephemeral build source and
+  disables versioningit's hook in that private copy before regenerating tracked JS
+  assets. Otherwise those build products make Git dirty and the hook gives the installed
+  package a local `.dirty` suffix that disagrees with the Conda coordinate.
 
 GitHub workflow
 - `.github/workflows/build_and_upload_conda_packages.yaml`
