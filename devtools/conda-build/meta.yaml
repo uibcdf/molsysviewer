@@ -24,7 +24,7 @@ build:
 
 requirements:
   host:
-    - python >=3.11
+    - python >=3.11,<3.14
     - pip
     - setuptools >=64
     - versioningit >=3

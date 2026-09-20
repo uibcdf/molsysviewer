@@ -245,6 +245,19 @@ MolSysViewer owns the noarch implementation and its release evidence; candidate 
 staging/public separation, bootstrap rules, coordinate integrity and evidence retention
 must converge on the shared contract instead of remaining a local convention.
 
+The first hosted staging attempt, run `35475976799`, failed before upload. GH Run
+Receptor 1.0.0 reduced the run to one root cause: conda-build selected Python 3.14.7 for
+the host environment because the recipe said `python>=3.11` there, while the runtime and
+project contract correctly said `python>=3.11,<3.14`. The package therefore refused its
+own host interpreter during the recipe test. An independent staging-channel query found
+no MolSysViewer 0.23.1 artefact, so build 0 remains unused rather than overwritten.
+
+The host requirement now carries the same closed interval as `requires-python` and the
+runtime requirement. The distribution guard parses host and run as separate sections;
+either bound drifting now fails with a message naming that side of the recipe. The full
+suite passes 2,067 tests with 13 accepted skips under 12 workers after the repair. A new
+exact commit, not the failed attempt's SHA, is required for the next staging dispatch.
+
 ## State of the corrections
 
 1. **Cause 2 — done** (2026-09-19). Environment files carry the runtime dependencies and

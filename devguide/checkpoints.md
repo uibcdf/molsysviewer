@@ -114,7 +114,7 @@ CI green.
 ## Validation observed
 
 - Current full run, 2026-09-19: **2,067 Python passed, 13 accepted skips, exit 0** in
-  65.80 seconds with 12 workers
+  63.09 seconds with 12 workers
   (`python -m pytest --receptor=llm -n 12 tests/`). The focused distribution and
   staging-contract slice passes 16 tests; Ruff and the generated devguide indexes pass;
   the Conda recipe renders as one `noarch` build-0 candidate. No artifact was uploaded.

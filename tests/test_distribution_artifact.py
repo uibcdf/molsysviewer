@@ -112,10 +112,17 @@ def test_the_conda_recipe_stays_noarch_and_agrees_with_requires_python():
 
     pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     requires_python = pyproject["project"]["requires-python"]
-    assert re.search(rf"(?m)^\s*-\s+python\s+{re.escape(requires_python)}\s*$", recipe), (
-        f"pyproject requires-python is {requires_python!r}; the recipe must constrain "
-        f"python {requires_python} so the published package cannot claim interpreters the wheel "
-        "refuses"
+    requirements = recipe.split("requirements:\n", 1)[1]
+    host, run_and_beyond = requirements.split("  run:\n", 1)
+    run = run_and_beyond.split("test:\n", 1)[0]
+    expected_python = rf"(?m)^\s*-\s+python\s+{re.escape(requires_python)}\s*$"
+    assert re.search(expected_python, host), (
+        f"pyproject requires-python is {requires_python!r}; the recipe host must constrain "
+        f"python {requires_python} so conda-build cannot select an interpreter the package refuses"
+    )
+    assert re.search(expected_python, run), (
+        f"pyproject requires-python is {requires_python!r}; the recipe runtime must constrain "
+        f"python {requires_python} so the published package cannot claim an interpreter the wheel refuses"
     )
 
 
