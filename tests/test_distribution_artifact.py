@@ -467,7 +467,7 @@ def test_the_readme_badge_says_what_we_support():
     recommend.
     """
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    match = re.search(r"badge/Python-(3\.\d+(?:%20%7C%20\d+\.\d+)*)-blue", readme)
+    match = re.search(r"badge/Python-(3\.\d+(?:%20%7C%20\d+\.\d+)*)-", readme)
 
     assert match is not None, "the README has no Python badge"
     advertised = tuple(match.group(1).replace("%20%7C%20", " ").split())

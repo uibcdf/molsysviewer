@@ -31,9 +31,7 @@ def test_freezer_writes_one_exact_version_source(tmp_path):
     assert 'version = "0.23.1"' in pyproject
     assert 'dynamic = ["version"]' not in pyproject
     assert "[tool.versioningit" not in pyproject
-    assert (package / "_version.py").read_text(encoding="utf-8") == (
-        '__version__ = "0.23.1"\n'
-    )
+    assert (package / "_version.py").read_text(encoding="utf-8") == ('__version__ = "0.23.1"\n')
 
 
 def test_freezer_rejects_an_untrusted_version(tmp_path):
@@ -42,16 +40,12 @@ def test_freezer_rejects_an_untrusted_version(tmp_path):
 
 
 def test_conda_build_freezes_version_before_generating_assets():
-    build_script = (ROOT / "devtools" / "conda-build" / "build.sh").read_text(
-        encoding="utf-8"
-    )
+    build_script = (ROOT / "devtools" / "conda-build" / "build.sh").read_text(encoding="utf-8")
     freeze = build_script.index("freeze_project_version.py")
     javascript = build_script.index("npm run build")
     install = build_script.index("pip install")
     assert freeze < javascript < install
 
-    recipe = (ROOT / "devtools" / "conda-build" / "meta.yaml").read_text(
-        encoding="utf-8"
-    )
+    recipe = (ROOT / "devtools" / "conda-build" / "meta.yaml").read_text(encoding="utf-8")
     assert "md.version('molsysviewer') == expected" in recipe
     assert "molsysviewer.__version__ == expected" in recipe
