@@ -10,10 +10,12 @@ MolSysViewer does not invent its own definition of a molecular system. Instead, 
 - When you write selections, MolSysViewer relies on MolSysMT to parse and evaluate them.
 - When you ask the whole or a region about the system — `view.whole.get(...)`, `view.whole.info(...)`, `view.whole.select(...)`, and their `region` counterparts — you are using MolSysMT concepts through a viewer-oriented API.
 
-## The methods a view borrows from MolSysMT
+## Asking MolSysMT questions about a view
 
-Five viewer methods are MolSysMT questions asked of the system a view is showing. They take
-MolSysMT's own argument names, so what you know from `msm` transfers directly.
+The whole and every region expose MolSysMT-backed `get`, `info`, `select`, and `convert`
+methods. They take MolSysMT's own argument names, so what you know from `msm` transfers
+directly. Predicate functions such as `contains` and `is_composed_of` remain functions in
+MolSysMT rather than methods on the view.
 
 ### Asking what the system holds
 
@@ -24,10 +26,10 @@ answer yes or no, and the difference between them is worth having straight:
 ```python
 view = msv.demo["1TCD"]
 
-view.contains(protein=True)                    # True  — there is protein in it
-view.is_composed_of(protein=True)              # False — but it is not *only* protein
-view.is_composed_of(protein=True, water=True)  # True  — protein and water is all of it
-view.contains(lipid=True)                      # False — no lipid at all
+msm.contains(view, protein=True)                    # True  — there is protein in it
+msm.is_composed_of(view, protein=True)              # False — but it is not *only* protein
+msm.is_composed_of(view, protein=True, water=True)  # True  — protein and water is all of it
+msm.contains(view, lipid=True)                      # False — no lipid at all
 ```
 
 `contains` asks *is any of this here*. `is_composed_of` asks *is this all there is*.

@@ -39,11 +39,11 @@ These concepts are user-visible and must remain stable.
 - Acks to Python: `region_ack` (includes `atom_indices` and `selection`), `layer_ack`, `registry_cleared`.
 - Shapes: are tagged and registered as layers via `tagIndex`.
 
-## Visibility (whole vs regions vs viewer)
+## Visibility (whole vs regions vs display)
 
 - `region.hide()/show()`: affects only that region; the `hidden` state is remembered. `viewer.show()` must not re-enable hidden regions.
 - `whole.hide()/show()`: affects only the baseline representation. It does not touch region visibility; regions in state None disappear because they have no own visual.
-- `viewer.hide()/show()` with `selection="all"`: updates the atom mask. It composes with whole/region visibility and the ownership transparency mask.
+- `viewer.show()`: displays the notebook widget. It does not change whole or region visibility. There is no viewer-wide `hide()` or atom mask; visibility belongs to scene objects that can be saved and replayed.
 
 Reference flows
 
@@ -54,20 +54,21 @@ view.whole.hide()
 view.show()  # regions may be created; whole stays hidden
 ```
 
-2) Hide one region and preserve it across hide/show
+2) Hide one region and preserve it across redisplay
 ```python
 view = viewer.demo["1TCD"]
 r1 = view.regions.add("chain_id == 'A'", representation="sticks")
 r2 = view.regions.add("chain_id == 'B'", representation="sticks")
 r2.hide()
-view.hide()
-view.show()  # r1 visible, r2 still hidden; whole follows its flag
+view.show()  # displaying the widget does not change either region
 ```
 
-3) Hide everything and restore only what should be visible
+3) Hide every structural scene object and restore only what should be visible
 ```python
-view.hide()  # hides whole + regions + atom mask
-view.show()  # hidden regions stay hidden; whole follows its state
+view.whole.hide()
+view.regions.hide_all()
+view.whole.show()
+r1.show()
 ```
 
 ## Whole presets and tags: collision risk

@@ -53,6 +53,7 @@ Issues = "https://github.com/uibcdf/molsysviewer/issues"
 [project.optional-dependencies]
 dev = [
   "build",
+  "pyyaml",
   "ruff==0.16.5",
   "pytest",
   "pytest-cov",

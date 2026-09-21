@@ -23,11 +23,14 @@ These are thin wrappers over MolSysMT, so `msm.get(view, ...)`, `msm.select(view
 
 `get` already carries what they answered:
 
-```python
+```text
+# Before 0.22 (removed API; shown only for migration)
 view.contains(water=True)                       # before
-view.whole.get(n_waters=True) > 0               # now
-
 view.is_composed_of(protein=True, water=True)   # before
+```
+
+```python
+view.whole.get(n_waters=True) > 0               # now
 set(view.whole.get(element='molecule', molecule_type=True)) == {"protein", "water"}
 ```
 
@@ -61,9 +64,12 @@ back with nothing to warn you.
 
 Visibility is now a property of the objects that a saved scene does carry:
 
-```python
+```text
+# Before 0.22 (removed API; shown only for migration)
 view.hide('molecule_type=="water"')              # before
+```
 
+```python
 view.whole.hide()                                # now
 waters = view.regions.add(selection='molecule_type=="water"', tag="waters")
 waters.hide()

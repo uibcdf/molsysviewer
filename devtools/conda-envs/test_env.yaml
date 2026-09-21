@@ -9,6 +9,8 @@ dependencies:
   - versioningit
   - pytest
   - pytest-cov
+  # The distribution-contract tests parse the Conda YAML recipe during collection.
+  - pyyaml
   # Runtime dependencies, with the floors pyproject.toml declares. The package is
   # installed with --no-deps, so this list is the only thing that brings them in;
   # tests/test_distribution_artifact.py keeps the two in step.
