@@ -7,7 +7,7 @@ on:
   # `shared_runtime="cdn"` export written by their users pointed at nothing.
   push:
     tags:
-      - "[0-9]+.[0-9]+.[0-9]+"
+      - "*"
   release:
     types: [published]
   workflow_dispatch:
@@ -49,7 +49,8 @@ jobs:
       - name: Inject version and repo info
         id: get_version
         run: |
-          CLEAN_VERSION=$(echo "${{ github.event.inputs.tag || github.ref_name }}" | sed 's/^v//')
+          CLEAN_VERSION="${{ github.event.inputs.tag || github.ref_name }}"
+          [[ "$CLEAN_VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]
           npm version $CLEAN_VERSION --no-git-tag-version
           npm pkg set repository.type="git"
           npm pkg set repository.url="https://github.com/uibcdf/molsysviewer"
