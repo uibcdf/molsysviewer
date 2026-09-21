@@ -106,8 +106,8 @@ Mol* already provides several useful precedents.
 
 Mol* has a built-in label representation:
 
-- [label.ts](/home/diego/repos@others/molstar/src/mol-repr/structure/representation/label.ts)
-- [label-text.ts](/home/diego/repos@others/molstar/src/mol-repr/structure/visual/label-text.ts)
+- [label.ts](https://github.com/molstar/molstar/blob/v5.4.1/src/mol-repr/structure/representation/label.ts)
+- [label-text.ts](https://github.com/molstar/molstar/blob/v5.4.1/src/mol-repr/structure/visual/label-text.ts)
 
 This shows that persistent text tied to molecular content is a first-class
 visual concern, not just a tooltip.
@@ -123,7 +123,7 @@ Useful takeaways:
 
 Mol* also has labels built from explicit `loci` data:
 
-- [shape/loci/label.ts](/home/diego/repos@others/molstar/src/mol-repr/shape/loci/label.ts)
+- [shape/loci/label.ts](https://github.com/molstar/molstar/blob/v5.4.1/src/mol-repr/shape/loci/label.ts)
 
 Useful takeaways:
 
@@ -148,9 +148,9 @@ For MolSysViewer this should be interpreted carefully:
 
 Mol* MVS extensions include:
 
-- [custom-label/representation.ts](/home/diego/repos@others/molstar/src/extensions/mvs/components/custom-label/representation.ts)
-- [annotation-label/visual.ts](/home/diego/repos@others/molstar/src/extensions/mvs/components/annotation-label/visual.ts)
-- [annotation-tooltips-prop.ts](/home/diego/repos@others/molstar/src/extensions/mvs/components/annotation-tooltips-prop.ts)
+- [custom-label/representation.ts](https://github.com/molstar/molstar/blob/v5.4.1/src/extensions/mvs/components/custom-label/representation.ts)
+- [annotation-label/visual.ts](https://github.com/molstar/molstar/blob/v5.4.1/src/extensions/mvs/components/annotation-label/visual.ts)
+- [annotation-tooltips-prop.ts](https://github.com/molstar/molstar/blob/v5.4.1/src/extensions/mvs/components/annotation-tooltips-prop.ts)
 
 Useful takeaways:
 
