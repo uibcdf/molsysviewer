@@ -90,6 +90,7 @@ include = ["*.py", "*.pyi"]
 # Directories to analyze (adjust if needed).
 src = ["molsysviewer", "tests"]
 extend-exclude = [
+    "ACKREDIT_GUIDE.md",
     "ARGDIGEST_GUIDE.md",
     "DEPDIGEST_GUIDE.md",
     "devtools/quarantine",
