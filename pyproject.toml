@@ -96,6 +96,7 @@ extend-exclude = [
     "devtools/quarantine",
     "GH_RUN_RECEPTOR_GUIDE.md",
     "MOLSYSSUITE_GUIDE.md",
+    "PYTEST_RECEPTOR_GUIDE.md",
     "PYUNITWIZARD_GUIDE.md",
     "SMONITOR_GUIDE.md",
 ]

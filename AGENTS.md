@@ -200,3 +200,5 @@ These guides are required reading for anyone developing this library. They descr
 - `ACKREDIT_GUIDE.md` — Required guide for optional scientific attribution and citation
   reporting.
 - `GH_RUN_RECEPTOR_GUIDE.md` — Required guide for compact, truth-preserving GitHub Actions diagnostics.
+- `PYTEST_RECEPTOR_GUIDE.md` — Required guide for compact, truth-preserving pytest output
+  in local and hosted development.
