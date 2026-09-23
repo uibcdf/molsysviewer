@@ -147,6 +147,14 @@ MolSysViewer participates.
   UIBCDF recipe Python pins alone is therefore insufficient. The aligned Qt
   runtime and PySide family must move to a solver-compatible version or be
   rebuilt against a coherent dependency set, then pass real Qt tests on 3.14.
+- The first Qt-family 6.10.1 candidate is now locally validated under
+  `uibcdf/qt6-positioning-uibcdf#1`: Qt Positioning built from the exact
+  upstream source commit against conda-forge `qt6-main=6.10.1`. Its Conda
+  package test passed on Linux/Python 3.14.7, and an independent clean Conda
+  installation loaded Positioning, PositioningQuick, and the QML plugin. The
+  artifact has no Python ABI dependency and pins the exact Qt 6.10.1 runtime
+  line. This removes one native package boundary; WebEngine and the three
+  PySide packages, full Qt tests, and other platforms remain unverified.
 
 ## Resolution
 
