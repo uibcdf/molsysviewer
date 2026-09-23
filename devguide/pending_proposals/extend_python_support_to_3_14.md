@@ -172,9 +172,9 @@ MolSysViewer participates.
   Python 3.14.7. The durable smoke exercises QtCore, QtGui, QtWidgets,
   QtNetwork, QtQml, QtQuick, signals, Shiboken object validity, and an
   offscreen Qt event loop. This is generated-binding evidence for the
-  Essentials slice, not a validated full Qt host. Coexistence with canonical
-  PySide6, regression coverage for 3.11–3.13, and other platforms remain
-  unverified. The existing release-triggered
+  Essentials slice, not a validated full Qt host. Safe file ownership when
+  co-installed with canonical PySide6, regression coverage for 3.11–3.13,
+  and other platforms remain unverified. The existing release-triggered
   Shiboken workflow still targets Python 3.13 and uploads directly to the
   main Conda label; it must not be used to publish this 3.14 candidate before
   coordinated staging.
@@ -193,9 +193,34 @@ MolSysViewer participates.
   QtPositioning, QtWebChannel, QtWebEngineCore and QtWebEngineWidgets, and
   loaded local HTML in `QWebEngineView` under Xvfb with Conda activation.
   Headless Chromium sandbox/GPU flags were applied only to that test, not to
-  the package. This proves a usable Qt-family smoke but not MolSysViewer's
-  own optional Qt-host gate. Python 3.11–3.13 regression, cross-platform
-  builds, staged-channel installation, and coordinated release remain open.
+  the package. This established a usable Qt-family smoke before running
+  MolSysViewer's own optional Qt-host gate.
+- MolSysViewer's real Qt integration now passes on Linux/Python 3.14.7 with
+  the five aligned local 6.10.1 UIBCDF packages and no canonical `pyside6`
+  installed. The existing transport test, two-generation payload test, and
+  live-window test passed under Xvfb; the opt-in full-render test also passed
+  with SwiftShader. The browser reached the ready state and completed a
+  molecular-system render, not merely a Python import or blank HTML load.
+  The same four focused tests passed in a separate environment that also had
+  canonical `pyside6=6.10.1` installed. That environment's full Python suite
+  passed 2,078 tests with 13 skips using 12 workers and pytest-receptor.
+- Canonical PySide6 is **not** required by the intended UIBCDF-only install.
+  It entered the earlier source-pair probe as a dependency of conda-forge's
+  `matplotlib` metapackage; `matplotlib-base` remained after removing both.
+  The UIBCDF-only environment solved without it and produced no file-overlap
+  warnings. In the coexistence experiment, Conda warned about 63 shared paths
+  between canonical `pyside6` and `shiboken6-uibcdf`, and 99 shared paths with
+  `pyside6-essentials-uibcdf`; package manifests record 17 and 13 differing
+  hashes respectively. These are CMake, tool, include, plugin, and shared-data
+  paths, not a collision of the already-distinct `PySide6_uibcdf` Python
+  import. `uibcdf/shiboken6-uibcdf#2` and
+  `uibcdf/pyside6-essentials-uibcdf#2` own the future namespacing-or-exclusion
+  decision. Coexistence is not a blocker for the validated UIBCDF-only route.
+- Python 3.11–3.13 regression, cross-platform Qt builds, staged-channel
+  installation, and coordinated publication remain open. The source-pair
+  development versions still do not satisfy the published MolSysMT/Viewer
+  release floor, so this is feasibility evidence rather than admission of a
+  versioned distribution pair.
 
 ## Resolution
 
