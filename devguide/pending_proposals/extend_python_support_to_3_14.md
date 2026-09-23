@@ -244,6 +244,18 @@ MolSysViewer participates.
   from the indexed local channel and Addons from its local build directory;
   the latter file matches the channel copy by SHA-256. This closes one
   revised-recipe Linux cell, not the remaining minors or staging provenance.
+- On 2026-09-23, the same committed Shiboken, Essentials, and Addons recipes
+  also built and passed Conda package tests on Linux/Python 3.13 using 12
+  build workers. Finalized metadata requires the 3.13 Python and `cp313`
+  ABI variants. An independent offline environment installed Python 3.13.15,
+  Qt 6.10.1, and all five local UIBCDF packages without canonical PySide6.
+  Conda initially reused the Addons package cache record from its build
+  directory; explicitly reinstalling the byte-identical indexed-channel
+  file made all five installed records name the local channel. The ordinary
+  Addons smoke and local-HTML WebEngine load under Xvfb passed. The latter
+  needed a display outside the restricted sandbox; that environmental
+  restriction did not indicate a package failure. This closes a second
+  revised-recipe Linux cell, not staging, public support, or other platforms.
 
 ## Resolution
 
