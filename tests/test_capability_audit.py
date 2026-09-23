@@ -286,6 +286,24 @@ def test_first_release_considers_every_retained_history(monkeypatch):
     assert _first_release_containing("molsysviewer/whole.py") == "0.5.0"
 
 
+def test_first_release_ignores_local_only_tags(monkeypatch):
+    """An unpublished local tag must not alter the generated release history."""
+    from types import SimpleNamespace
+
+    def run(command, **kwargs):
+        if command[:3] == ["git", "log", "--all"]:
+            return SimpleNamespace(stdout="adding-commit\n")
+        if command == ["git", "tag", "--contains", "adding-commit"]:
+            return SimpleNamespace(stdout="0.8.0\n0.9.0\n")
+        if command == ["git", "tag", "--sort=creatordate"]:
+            return SimpleNamespace(stdout="0.8.0\n0.9.0\n")
+        raise AssertionError(command)
+
+    monkeypatch.setattr("capability_audit.subprocess.run", run)
+
+    assert _first_release_containing("molsysviewer/annotations.py") == "0.9.0"
+
+
 @pytest.mark.parametrize("capability", CAPABILITIES, ids=lambda c: c.name)
 def test_status_is_a_word_the_document_defines(capability):
     assert capability.status in {"stable", "experimental", "roadmap"}

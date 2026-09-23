@@ -33,6 +33,11 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 DOCUMENT = ROOT / "devguide" / "capability_audit.md"
 
+# Historical local tags are not necessarily published releases. In particular,
+# 0.8.0 exists in some developer clones but has no tag in the GitHub repository.
+# Keep this explicit so the generated "Since" column is reproducible in CI.
+UNPUBLISHED_TAGS = frozenset({"0.8.0"})
+
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 
@@ -438,7 +443,7 @@ def _first_release_containing(path: str) -> str:
         text=True,
         check=False,
     ).stdout.split()
-    return next((tag for tag in tags_by_date if tag in containing), "unreleased")
+    return next((tag for tag in tags_by_date if tag in containing and tag not in UNPUBLISHED_TAGS), "unreleased")
 
 
 def _api_evidence(capability: Capability, inventory: dict[str, Any]) -> tuple[int, int]:
