@@ -1,0 +1,87 @@
+name: Python 3.14 source pair
+
+# Feasibility gate for the coordinated source branches. It does not establish
+# resolver-consistent package installation or authorize a public Python badge.
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/ci-python-314-source-pair.yaml
+      - devtools/conda-envs/test_source_pair_py314.yaml
+      - pyproject.toml
+      - molsysviewer/**
+      - tests/**
+
+permissions:
+  contents: read
+
+jobs:
+  source-pair:
+    name: Source pair on ${{ matrix.cfg.os }}, Python ${{ matrix.cfg.python-version }}
+    runs-on: ${{ matrix.cfg.os }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        cfg:
+          - { os: ubuntu-latest, python-version: "3.14" }
+          - { os: macos-latest,  python-version: "3.14" }
+
+    steps:
+      - name: Check out MolSysViewer
+        uses: actions/checkout@v4
+        with:
+          path: molsysviewer-source
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check out the exact MolSysMT source candidate
+        uses: actions/checkout@v4
+        with:
+          repository: uibcdf/molsysmt
+          ref: 3485f8ddf0924f307dd8a089dea4ed8b51276600
+          path: molsysmt-source
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Select MolSysMT's pinned Rust toolchain
+        run: |
+          rustup toolchain install 1.97.1 --profile minimal
+          rustup default 1.97.1
+          rustc --version
+
+      - name: Create the Python 3.14 source-pair environment
+        uses: mamba-org/setup-micromamba@v3.2.1
+        with:
+          environment-file: molsysviewer-source/devtools/conda-envs/test_source_pair_py314.yaml
+          environment-name: source-pair
+          condarc: |
+            channels:
+              - uibcdf
+              - conda-forge
+            channel_priority: strict
+
+      - name: Install both exact source candidates
+        shell: bash -l {0}
+        run: |
+          set -euo pipefail
+          python -m pip install --no-deps --no-build-isolation ./molsysmt-source
+          python -m pip install --no-deps --no-build-isolation ./molsysviewer-source
+
+      - name: Check installed Rust and viewer resources
+        shell: bash -l {0}
+        run: |
+          set -euo pipefail
+          python molsysmt-source/devtools/scripts/validate_installed_rust_extension.py
+          python -c "from importlib.resources import files; assert files('molsysviewer').joinpath('viewer.js').is_file(); assert files('molsysviewer').joinpath('runtime_actions.json').is_file()"
+
+      - name: Install JavaScript test dependencies
+        shell: bash -l {0}
+        working-directory: molsysviewer-source/molsysviewer/js
+        run: npm ci
+
+      - name: Run MolSysViewer Python tests
+        shell: bash -l {0}
+        working-directory: molsysviewer-source
+        run: python -m pytest --receptor=ci tests/

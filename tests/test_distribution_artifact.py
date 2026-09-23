@@ -329,9 +329,11 @@ def test_every_publicly_exported_name_resolves():
     assert missing == [], f"names in __all__ that do not resolve: {missing}"
 
 
-SUPPORTED_PYTHON_VERSIONS = ("3.11", "3.12", "3.13")
-#: The one we recommend, develop and document on. It is the newest supported
-#: version, and it is what the single-version jobs and the README badge must say.
+SUPPORTED_PYTHON_VERSIONS = ("3.11", "3.12", "3.13", "3.14")
+#: The last independently verified public release still covers these versions.
+#: The candidate's wider metadata must not widen the README claim before release.
+PUBLIC_PYTHON_VERSIONS = ("3.11", "3.12", "3.13")
+#: The routine development version remains 3.13 during the suite transition.
 RECOMMENDED_PYTHON_VERSION = "3.13"
 
 
@@ -341,7 +343,7 @@ def _matrix_versions(workflow: str, pattern: str) -> set[str]:
 
 
 def test_the_published_python_matrix_is_the_one_we_actually_test():
-    """Three files decide which Pythons we support, and nothing kept them together.
+    """Candidate metadata must match the required source-test coverage.
 
     They had drifted in both directions at once: `requires-python` and the classifiers
     advertised 3.10 while CI tested only 3.11 and 3.12 — and the conda workflow *built and
@@ -363,11 +365,13 @@ def test_the_published_python_matrix_is_the_one_we_actually_test():
 
     # The interval must be exactly the tested minors: neither an older floor nor an
     # untested future interpreter may enter the published claim.
-    assert project["requires-python"] == f">={min(SUPPORTED_PYTHON_VERSIONS)},<3.14"
+    ceiling = f"3.{int(max(SUPPORTED_PYTHON_VERSIONS).split('.')[1]) + 1}"
+    assert project["requires-python"] == f">={min(SUPPORTED_PYTHON_VERSIONS)},<{ceiling}"
 
     tested = _matrix_versions("CI.yaml", r'python-version:\s*"(3\.\d+)"')
+    tested |= _matrix_versions("ci-python-314-source-pair.yaml", r'python-version:\s*"(3\.\d+)"')
     assert tested == set(SUPPORTED_PYTHON_VERSIONS), (
-        f"the test matrix runs {sorted(tested)} against a published {sorted(SUPPORTED_PYTHON_VERSIONS)}"
+        f"the test matrices run {sorted(tested)} against candidate {sorted(SUPPORTED_PYTHON_VERSIONS)}"
     )
 
     # Since 2026-09-02 conda publishes one noarch artefact instead of one per
@@ -390,7 +394,10 @@ def test_every_supported_version_is_tested_on_both_operating_systems():
     Pinned separately because the counts can agree while a cell is missing: dropping one
     macOS row leaves the set of versions unchanged.
     """
-    text = (ROOT / ".github" / "workflows" / "CI.yaml").read_text(encoding="utf-8")
+    text = "\n".join(
+        (ROOT / ".github" / "workflows" / workflow).read_text(encoding="utf-8")
+        for workflow in ("CI.yaml", "ci-python-314-source-pair.yaml")
+    )
     cells = set(re.findall(r'os:\s*(\S+?),\s*python-version:\s*"(3\.\d+)"', text))
 
     expected = {
@@ -400,6 +407,15 @@ def test_every_supported_version_is_tested_on_both_operating_systems():
     }
 
     assert cells == expected, f"missing cells: {sorted(expected - cells)}"
+
+
+def test_python_314_source_pair_uses_exact_provider_commit_without_metadata_bypass():
+    """The source gate is reproducible but remains distinct from package admission."""
+    workflow = (ROOT / ".github" / "workflows" / "ci-python-314-source-pair.yaml").read_text(encoding="utf-8")
+    assert "repository: uibcdf/molsysmt" in workflow
+    assert re.search(r"(?m)^\s+ref: [0-9a-f]{40}$", workflow)
+    assert "--ignore-requires-python" not in workflow
+    assert "--receptor=ci tests/" in workflow
 
 
 def test_hosted_gates_can_select_the_exact_coordinated_staging_candidate():
@@ -441,7 +457,7 @@ def test_the_recommended_version_is_the_one_the_single_version_jobs_use():
     JS suite and the coverage upload run on one cell; the documentation is rendered by one
     environment.
     """
-    assert RECOMMENDED_PYTHON_VERSION == max(SUPPORTED_PYTHON_VERSIONS)
+    assert RECOMMENDED_PYTHON_VERSION in SUPPORTED_PYTHON_VERSIONS
 
     ci = (ROOT / ".github" / "workflows" / "CI.yaml").read_text(encoding="utf-8")
     gated = set(re.findall(r"matrix\.cfg\.python-version == '(3\.\d+)'", ci))
@@ -472,7 +488,8 @@ def test_the_readme_badge_says_what_we_support():
     assert match is not None, "the README has no Python badge"
     advertised = tuple(match.group(1).replace("%20%7C%20", " ").split())
 
-    assert advertised == SUPPORTED_PYTHON_VERSIONS
+    assert set(PUBLIC_PYTHON_VERSIONS) <= set(SUPPORTED_PYTHON_VERSIONS)
+    assert advertised == PUBLIC_PYTHON_VERSIONS
 
 
 def test_ruff_targets_the_floor_rather_than_the_recommendation():
