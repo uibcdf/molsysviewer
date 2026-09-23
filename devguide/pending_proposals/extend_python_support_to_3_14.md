@@ -161,9 +161,23 @@ MolSysViewer participates.
   final local artifact imported `shiboken6_uibcdf` and ran the generator.
   Packaged metadata explicitly requires Qt 6.10.1 and `libclang13`; binary
   inspection exposed the latter as a missing direct runtime dependency in
-  earlier local candidates. This is not yet generated-binding or downstream
-  Essentials evidence. WebEngine, Essentials, Addons, full Qt tests, and
-  other platforms remain unverified.
+  earlier local candidates. The published candidate branch is
+  `python-3.14-qt-6.10.1` at `524745e`.
+- The matching PySide6 Essentials candidate under
+  `uibcdf/pyside6-essentials-uibcdf#1` is now published at `07552c0` on the
+  `python-3.14-qt-6.10.1` branch. It ports official PySide 6.10.1 while
+  retaining the UIBCDF namespace, and builds against that Shiboken candidate
+  and conda-forge Qt 6.10.1. The final local Linux/Python 3.14 artifact
+  passed its Conda package tests and an independent clean installation with
+  Python 3.14.7. The durable smoke exercises QtCore, QtGui, QtWidgets,
+  QtNetwork, QtQml, QtQuick, signals, Shiboken object validity, and an
+  offscreen Qt event loop. This is generated-binding evidence for the
+  Essentials slice, not a validated full Qt host. WebEngine, Addons,
+  coexistence with canonical PySide6, regression coverage for 3.11–3.13,
+  and other platforms remain unverified. The existing release-triggered
+  Shiboken workflow still targets Python 3.13 and uploads directly to the
+  main Conda label; it must not be used to publish this 3.14 candidate before
+  coordinated staging.
 
 ## Resolution
 
