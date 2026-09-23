@@ -95,9 +95,10 @@ MolSysViewer participates.
   `qt6-positioning-uibcdf` -> `qt6-webengine-uibcdf` and
   `shiboken6-uibcdf` -> `pyside6-essentials-uibcdf` ->
   `pyside6-addons-uibcdf`, with Addons also consuming both Qt runtime
-  packages. Their 6.9.2 recipes all pin Python 3.13. The upstream Qt for
-  Python release notes describe only initial 3.14 adaptations in 6.9.2 and
-  first declare Python 3.14 supported in 6.10.1. A local probe did import
+  packages. Their 6.9.2 recipes all pin Python 3.13. The [upstream Qt for
+  Python release notes](https://doc.qt.io/qtforpython-6/release_notes/pyside6_release_notes.html)
+  describe only initial 3.14 adaptations in 6.9.2 and first declare Python
+  3.14 supported in 6.10.1. A local probe did import
   the canonical 6.9.2 `PySide6.QtCore` and `QtWebEngineWidgets` ABI3 modules
   under CPython 3.14.7, but that does not validate the suffixed UIBCDF stack
   or its Conda metadata. This is a separate package-family gate; it does not
@@ -136,8 +137,16 @@ MolSysViewer participates.
   that unpublished tag, the Qt-shell test isolates its export-menu wiring
   while existing tests retain real HTML-generation coverage, and the path
   assertion compares resolved paths. The focused 3.14 rerun passed 237 tests
-  with four optional Qt skips; the full remote source-pair gate must still be
-  rerun.
+  with four optional Qt skips. Its rerun `35828199753` passed both Linux and
+  macOS jobs. This validates the source-pair Python suite, not clean Conda
+  installation or the optional Qt host.
+- A stricter Conda solve for Python 3.14.7 with `qt6-main=6.9.2` also failed
+  before adding the UIBCDF bindings: the current Python build requires
+  `libffi>=3.7`, while the available Qt 6.9.2 dependency chain resolves only
+  through older `libglib` builds requiring `libffi<3.6`. Widening the five
+  UIBCDF recipe Python pins alone is therefore insufficient. The aligned Qt
+  runtime and PySide family must move to a solver-compatible version or be
+  rebuilt against a coherent dependency set, then pass real Qt tests on 3.14.
 
 ## Resolution
 
