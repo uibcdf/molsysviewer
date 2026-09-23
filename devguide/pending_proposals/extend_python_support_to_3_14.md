@@ -233,9 +233,17 @@ MolSysViewer participates.
   3.14 result, this reduces the Linux regression risk but does not establish
   staged-channel or other-platform support. The three binding recipes now
   select the Python variant instead of pinning 3.14; no-download renders
-  distinguish `py311`–`py314`, but the revised recipes still require actual
-  builds and finalized runtime checks. The MolSysMT
+  distinguish `py311`–`py314`, but the revised recipes need actual
+  builds and finalized runtime checks in each cell. The MolSysMT
   `uibcdf/molsysmt#237` checkpoint holds the cross-component gate order.
+- Later on 2026-09-23, the revised Shiboken, Essentials, and Addons recipes
+  each built and passed Conda package tests for Linux/Python 3.12. Their
+  finalized metadata pins Python and `python_abi` to 3.12, and a fresh
+  five-package UIBCDF-only installation passed imports, Positioning, and
+  local-HTML WebEngine loading under Xvfb. Conda recorded four artifacts
+  from the indexed local channel and Addons from its local build directory;
+  the latter file matches the channel copy by SHA-256. This closes one
+  revised-recipe Linux cell, not the remaining minors or staging provenance.
 
 ## Resolution
 
