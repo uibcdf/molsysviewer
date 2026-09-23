@@ -153,8 +153,17 @@ MolSysViewer participates.
   package test passed on Linux/Python 3.14.7, and an independent clean Conda
   installation loaded Positioning, PositioningQuick, and the QML plugin. The
   artifact has no Python ABI dependency and pins the exact Qt 6.10.1 runtime
-  line. This removes one native package boundary; WebEngine and the three
-  PySide packages, full Qt tests, and other platforms remain unverified.
+  line. This removes one native package boundary.
+- The first Shiboken 6.10.1 candidate is also locally validated under
+  `uibcdf/shiboken6-uibcdf#1`. It ports the official 6.10.1 source while
+  retaining the UIBCDF namespace. Its Linux/Python 3.14.7 Conda build and
+  package test passed, and a separate clean Conda installation from the
+  final local artifact imported `shiboken6_uibcdf` and ran the generator.
+  Packaged metadata explicitly requires Qt 6.10.1 and `libclang13`; binary
+  inspection exposed the latter as a missing direct runtime dependency in
+  earlier local candidates. This is not yet generated-binding or downstream
+  Essentials evidence. WebEngine, Essentials, Addons, full Qt tests, and
+  other platforms remain unverified.
 
 ## Resolution
 
