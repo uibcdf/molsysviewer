@@ -256,6 +256,16 @@ MolSysViewer participates.
   needed a display outside the restricted sandbox; that environmental
   restriction did not indicate a package failure. This closes a second
   revised-recipe Linux cell, not staging, public support, or other platforms.
+- On 2026-09-23, the revised recipes also built and passed Conda package
+  tests for Linux/Python 3.14 using 12 build workers. A fresh offline
+  environment installed all five exact UIBCDF artifacts from an indexed
+  local channel, with matching installed-record hashes and no canonical
+  PySide6. The ordinary Addons and Xvfb WebEngine smokes passed. In a
+  separate environment containing the same exact local artifacts, the
+  three real-Qt Viewer integration tests and the opt-in full molecular
+  render passed under Xvfb. That environment uses development source
+  versions of MolSysMT and Viewer, so this is local Qt/application evidence,
+  not a resolver-clean, versioned Conda pair or staged-channel admission.
 
 ## Resolution
 
