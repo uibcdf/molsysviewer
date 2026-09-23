@@ -63,10 +63,13 @@ MolSysViewer participates.
 
 ## Current evidence and open gates
 
-- Source `pyproject.toml`, Conda recipe, and the Linux/macOS CI matrix currently
-  stop at Python 3.13. `tests/test_distribution_artifact.py` intentionally
-  guards their agreement. The routine development and documentation jobs use
-  Python 3.13 and need not move merely to add a supported minor.
+- At the start of this work, source `pyproject.toml`, Conda recipe, and the
+  Linux/macOS CI matrix stopped at Python 3.13. The candidate branch now
+  widens wheel metadata and has a focused Python 3.14 source-pair CI gate,
+  but the staged noarch artifact and installed-package matrix remain at
+  3.11–3.13. `tests/test_distribution_artifact.py` guards metadata
+  agreement. Routine development and documentation jobs use Python 3.13
+  and need not move merely to add a supported minor.
 - The core Python package is pure Python plus a bundled JavaScript runtime.
   The optional Qt host has a separate native dependency stack; investigate
   its Python 3.14 availability explicitly rather than silently making core
@@ -216,11 +219,23 @@ MolSysViewer participates.
   import. `uibcdf/shiboken6-uibcdf#2` and
   `uibcdf/pyside6-essentials-uibcdf#2` own the future namespacing-or-exclusion
   decision. Coexistence is not a blocker for the validated UIBCDF-only route.
-- Python 3.11–3.13 regression, cross-platform Qt builds, staged-channel
+- Python 3.11–3.13 regression on the revised committed recipes and outside
+  Linux, cross-platform Qt builds, staged-channel
   installation, and coordinated publication remain open. The source-pair
   development versions still do not satisfy the published MolSysMT/Viewer
   release floor, so this is feasibility evidence rather than admission of a
   versioned distribution pair.
+- On 2026-09-23, Linux-64 disposable Shiboken, Essentials, and Addons
+  6.10.1 variants for Python 3.11, 3.12, and 3.13 each passed their Conda
+  package tests. Independent clean installations of the complete five-package
+  UIBCDF-only family passed imports, Positioning checks, and a local-HTML
+  WebEngine smoke under Xvfb for all three minors. Combined with the earlier
+  3.14 result, this reduces the Linux regression risk but does not establish
+  staged-channel or other-platform support. The three binding recipes now
+  select the Python variant instead of pinning 3.14; no-download renders
+  distinguish `py311`–`py314`, but the revised recipes still require actual
+  builds and finalized runtime checks. The MolSysMT
+  `uibcdf/molsysmt#237` checkpoint holds the cross-component gate order.
 
 ## Resolution
 
