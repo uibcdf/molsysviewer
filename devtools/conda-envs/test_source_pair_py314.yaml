@@ -33,3 +33,4 @@ dependencies:
   - imageio
   - jinja2
   - mdtraj
+  - biopython

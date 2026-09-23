@@ -91,8 +91,17 @@ MolSysViewer participates.
 - A separate Conda dry run for `python=3.14 pyside6-addons-uibcdf=6.9.2`
   failed: its `shiboken6-uibcdf` dependency requires `python_abi=3.13`.
   This optional Qt host must not be claimed on 3.14 without a compatible
-  package and its own Qt tests. It does not invalidate the core notebook
-  viewer probe above.
+  package and its own Qt tests. The five-package UIBCDF stack is ordered
+  `qt6-positioning-uibcdf` -> `qt6-webengine-uibcdf` and
+  `shiboken6-uibcdf` -> `pyside6-essentials-uibcdf` ->
+  `pyside6-addons-uibcdf`, with Addons also consuming both Qt runtime
+  packages. Their 6.9.2 recipes all pin Python 3.13. The upstream Qt for
+  Python release notes describe only initial 3.14 adaptations in 6.9.2 and
+  first declare Python 3.14 supported in 6.10.1. A local probe did import
+  the canonical 6.9.2 `PySide6.QtCore` and `QtWebEngineWidgets` ABI3 modules
+  under CPython 3.14.7, but that does not validate the suffixed UIBCDF stack
+  or its Conda metadata. This is a separate package-family gate; it does not
+  invalidate the core notebook viewer probe above.
 - The candidate branch adds a two-platform Python 3.14 source-pair workflow
   with MolSysMT pinned to exact commit
   `3485f8ddf0924f307dd8a089dea4ed8b51276600`. It exercises the full
@@ -117,6 +126,18 @@ MolSysViewer participates.
   `pull_request` workflow when it does. The PR title uses that marker only
   for the repository's own older-job guards, so the focused source-pair gate
   can run without launching the existing six-cell package matrix.
+- Draft PR `uibcdf/molsysviewer#94` ran the source-pair suite on Linux and
+  macOS (`35825682709`). Both reached all 2,090 tests, but failed for
+  incomplete probe dependencies (`Bio`), a generated audit that varied with
+  a local-only unpublished `0.8.0` tag, and a Qt-shell test that used a fake
+  PDB ID as real export input. macOS also exposed an assertion that treated
+  `/tmp` and its resolved `/private/tmp` path as different locations. The
+  dependency environment now includes Biopython, the audit generator ignores
+  that unpublished tag, the Qt-shell test isolates its export-menu wiring
+  while existing tests retain real HTML-generation coverage, and the path
+  assertion compares resolved paths. The focused 3.14 rerun passed 237 tests
+  with four optional Qt skips; the full remote source-pair gate must still be
+  rerun.
 
 ## Resolution
 
