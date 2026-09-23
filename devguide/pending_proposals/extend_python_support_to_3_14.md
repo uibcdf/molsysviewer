@@ -266,6 +266,19 @@ MolSysViewer participates.
   render passed under Xvfb. That environment uses development source
   versions of MolSysMT and Viewer, so this is local Qt/application evidence,
   not a resolver-clean, versioned Conda pair or staged-channel admission.
+- Later on 2026-09-23, temporary local-only tags produced a MolSysMT ABI3
+  archive and a Viewer noarch archive. An exact Linux/Python 3.14.7 Conda
+  installation resolved the pair from an indexed local channel and passed
+  the installed-pair validator. A PDB-text smoke exposed and then verified
+  the fix for `uibcdf/molsysmt#238`: the corrected local MolSysMT `0.22.2`
+  package and unchanged Viewer `0.23.2` package resolve in a second fresh
+  environment without Biopython, classify and convert PDB text, and load its
+  four atoms in `MolSysView`. The two existing Viewer pytest functions are
+  not yet installed-package evidence because `tests/conftest.py` injects the
+  source checkout, while disabling it removes their `_test_message_log`
+  fixture. A direct installed smoke covers the user behavior, but an
+  installed-test harness and remote staging gates remain open under
+  `uibcdf/molsysviewer#82`. Neither local tag is a release-version decision.
 
 ## Resolution
 
