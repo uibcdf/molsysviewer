@@ -172,12 +172,30 @@ MolSysViewer participates.
   Python 3.14.7. The durable smoke exercises QtCore, QtGui, QtWidgets,
   QtNetwork, QtQml, QtQuick, signals, Shiboken object validity, and an
   offscreen Qt event loop. This is generated-binding evidence for the
-  Essentials slice, not a validated full Qt host. WebEngine, Addons,
-  coexistence with canonical PySide6, regression coverage for 3.11–3.13,
-  and other platforms remain unverified. The existing release-triggered
+  Essentials slice, not a validated full Qt host. Coexistence with canonical
+  PySide6, regression coverage for 3.11–3.13, and other platforms remain
+  unverified. The existing release-triggered
   Shiboken workflow still targets Python 3.13 and uploads directly to the
   main Conda label; it must not be used to publish this 3.14 candidate before
   coordinated staging.
+- `uibcdf/qt6-webengine-uibcdf#1` now has a 6.10.1 candidate branch at
+  `45b2209`. Its Linux package uses the official Qt WebEngine source and
+  PySide wheel payloads with checked hashes, declares the native Linux
+  runtime libraries, and leaves Chromium sandboxing enabled by default.
+  The Conda package tests passed; a separate clean Python 3.14.7 environment
+  loaded WebEngineCore and WebEngineWidgets without falling back to host
+  libraries for NSS, udev, GBM, XKB, or related dependencies. That was a
+  native-runtime gate, not a rendered-page test by itself.
+- `uibcdf/pyside6-addons-uibcdf#1` now has the aligned 6.10.1 candidate branch
+  at `e95053a`. Its reduced Addons bindings compiled and passed Conda tests
+  on Linux/Python 3.14.7. An independent clean environment installed all
+  five local UIBCDF Qt candidates plus `qt6-main=6.10.1`, imported
+  QtPositioning, QtWebChannel, QtWebEngineCore and QtWebEngineWidgets, and
+  loaded local HTML in `QWebEngineView` under Xvfb with Conda activation.
+  Headless Chromium sandbox/GPU flags were applied only to that test, not to
+  the package. This proves a usable Qt-family smoke but not MolSysViewer's
+  own optional Qt-host gate. Python 3.11–3.13 regression, cross-platform
+  builds, staged-channel installation, and coordinated release remain open.
 
 ## Resolution
 
