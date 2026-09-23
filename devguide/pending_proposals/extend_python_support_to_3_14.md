@@ -111,6 +111,12 @@ MolSysViewer participates.
   The three affected test files then passed 208 tests. This is not a clean
   full-suite run; the hosted two-platform workflow remains the required
   confirmation.
+- GitHub cannot dispatch this new workflow while its file exists only on the
+  feature branch. A draft pull request supplies the source-pair run. Its HEAD
+  commit must not contain `[skip ci]`: GitHub suppresses every
+  `pull_request` workflow when it does. The PR title uses that marker only
+  for the repository's own older-job guards, so the focused source-pair gate
+  can run without launching the existing six-cell package matrix.
 
 ## Resolution
 
