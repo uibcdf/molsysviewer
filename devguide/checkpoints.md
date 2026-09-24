@@ -199,22 +199,34 @@ the failed hosted run into a success.
 
 The `0.23.4` citation surfaces are prepared with the intended 2026-09-24
 release date; if publication slips, rerun the preparation and candidate gates
-before tagging. The candidate now deliberately advertises Python 3.14 in its
-README: `tests/test_distribution_artifact.py` checks that claim against the
-explicit public-version set. This branch must not become the public `main`
-claim until the exact 20-cell installed-pair gate and other applicable
-pre-1.0 release checks pass. npm returned 404 for
+before tagging. MolSysSuite `policy-v1.4.11` now registers both transition
+issues (`uibcdf/molsysmt#237`, `uibcdf/molsysviewer#93`) as `authorized`.
+Both candidate callers pin that policy release and synchronize its canonical
+guide; the exact central repository checker passes locally for each. The
+package metadata and test matrix still target Python 3.14, while the README
+badge and its distribution test retain the publicly admitted 3.11–3.13 range.
+The badge may add 3.14 only after the coordinated release and independent
+channel installations permit central `admitted` status. This branch must not
+become the public `main` claim until the exact 20-cell installed-pair gate and
+other applicable pre-1.0 release checks pass. npm returned 404 for
 `@uibcdf/molsysviewer@0.23.4` when checked on 2026-09-24. No npm package,
 Git tag, GitHub Release, or Conda promotion has been created for this
 candidate.
 
 The complete local Viewer Python suite passed **2,112 tests with 14 accepted
-skips** in 65.97 seconds using 12 workers and explicit source paths for both
+skips** in 61.43 seconds using 12 workers and explicit source paths for both
 candidate repositories plus the released SMonitor `0.16.0` tag. The prior
 unisolated run was not used as candidate evidence. MolSysMT's matching local
 suite passed 10,225 tests with 11 known skips; its fast release gate passed
-13/13. These local results permit an immutable source freeze but do not
-replace the hosted exact-commit gates or the 20-cell installed-pair rerun.
+13/13. These local results support the source candidate but do not replace
+the hosted exact-commit gates or the 20-cell installed-pair rerun. Source-pair
+workflow `36061167557` was launched on the earlier candidate SHAs to expose
+hosted Python 3.14 defects before final staging; it must not be credited to
+the new policy-pin commits, regardless of its eventual result.
+The new policy's Ruff 0.16.5 formatting gate exposed three older files in
+the Viewer test infrastructure; they were formatted without changing test
+behavior. Repository-wide Ruff lint and format checks now pass, and the
+focused distribution/release-route modules pass 23/23.
 
 ## Separate Python 3.14 staging slice
 

@@ -342,9 +342,9 @@ def test_every_publicly_exported_name_resolves():
 
 
 SUPPORTED_PYTHON_VERSIONS = ("3.11", "3.12", "3.13", "3.14")
-#: The coordinated 0.23.4 candidate intends to admit the full matrix. Its
-#: README claim may reach main only after the exact installed-pair gate passes.
-PUBLIC_PYTHON_VERSIONS = ("3.11", "3.12", "3.13", "3.14")
+#: The badge remains at the centrally admitted public range until the
+#: coordinated 0.23.4 release passes the independent installed-pair gate.
+PUBLIC_PYTHON_VERSIONS = ("3.11", "3.12", "3.13")
 #: The routine development version remains 3.13 during the suite transition.
 RECOMMENDED_PYTHON_VERSION = "3.13"
 
@@ -429,7 +429,7 @@ def test_python_314_source_pair_uses_exact_provider_commit_without_metadata_bypa
     assert "inputs.molsysmt_sha" in workflow
     assert "8ab42b58520892d54a05222b91c116b9e9114314" in workflow
     assert "^[0-9a-f]{40}$" in workflow
-    assert 'git -C molsysmt-source rev-parse HEAD' in workflow
+    assert "git -C molsysmt-source rev-parse HEAD" in workflow
     assert "--ignore-requires-python" not in workflow
     assert "--receptor=ci tests/" in workflow
 

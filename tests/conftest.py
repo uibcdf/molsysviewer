@@ -40,10 +40,7 @@ import molsysmt  # noqa: E402,F401
 import molsysviewer  # noqa: E402,F401
 
 if INSTALLED_PACKAGE_MODE:
-    site_packages = {
-        Path(sysconfig.get_path(kind)).resolve()
-        for kind in ("purelib", "platlib")
-    }
+    site_packages = {Path(sysconfig.get_path(kind)).resolve() for kind in ("purelib", "platlib")}
     for package in (molsysmt, molsysviewer):
         imported_directory = Path(package.__file__).resolve().parent
         if imported_directory not in {path / package.__name__ for path in site_packages}:

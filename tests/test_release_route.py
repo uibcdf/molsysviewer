@@ -36,8 +36,16 @@ def test_staged_plan_is_bound_to_the_new_version():
 def test_dispatch_command_emits_the_selected_route(tmp_path):
     output = tmp_path / "route-output"
     subprocess.run(
-        [sys.executable, str(ROUTE_FILE), "--version", "0.23.4", "--event", "workflow_dispatch",
-         "--github-output", str(output)],
+        [
+            sys.executable,
+            str(ROUTE_FILE),
+            "--version",
+            "0.23.4",
+            "--event",
+            "workflow_dispatch",
+            "--github-output",
+            str(output),
+        ],
         check=True,
         capture_output=True,
         text=True,
@@ -90,8 +98,14 @@ def test_promotion_requires_exact_release_and_installed_pair_evidence():
     workflow = yaml.safe_load(PROMOTION.read_text(encoding="utf-8"))
     inputs = workflow[True]["workflow_dispatch"]["inputs"]
     for name in (
-        "candidate_sha", "version", "build_number", "sha256", "pair_run_id",
-        "molsysmt_candidate_sha", "molsysmt_version", "molsysmt_build_number",
+        "candidate_sha",
+        "version",
+        "build_number",
+        "sha256",
+        "pair_run_id",
+        "molsysmt_candidate_sha",
+        "molsysmt_version",
+        "molsysmt_build_number",
     ):
         assert inputs[name]["required"] is True
     job = workflow["jobs"]["promote"]
