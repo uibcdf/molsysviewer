@@ -178,8 +178,14 @@ notebook host, and Mol\* reorders coordinate arrays in place.
 
 ### Correction to this document
 Item 16 (*E2E Playwright CI Automation*) was listed as `Planned`. `CI_e2e.yaml`
-already runs `npm run test:e2e` on every pull request to `main`. **Done.**
+already ran `npm run test:e2e` on every pull request to `main`. **Done.**
 Deciding release readiness against a stale plan is its own risk.
+
+As of 2026-09-24, hosted `CI_e2e` runs the 36-suite portable lane because
+`remote-session` additionally requires a managed hardware-GPU worker. The
+full 37-suite command remains available; the separate server-GPU lane and
+its deferred launch problem are tracked by uibcdf/molsysviewer#100. A green
+portable lane must not be described as 37/37 or server-rendering evidence.
 
 ---
 
@@ -202,7 +208,7 @@ This closes a major **pre-1.0 staging installation milestone**, not Phase 10
 gates 1–5 or the 1.0 release. The numbers `0.22.3`/`0.23.3` are technical
 coordinates, not chosen public versions. The final pair still needs an
 exact-commit release decision, broader scientific/Viewer/Qt-where-claimed
-validation, hosted CI/E2E/notebook gates against the selected candidate,
+validation, hosted CI/portable-E2E/notebook gates against the selected candidate,
 and fresh installation from the public channel after coordinated publication.
 The older 3.11–3.13 release candidates keep their own gate; do not silently
 reinterpret their artifacts as Python 3.14 packages. Windows passing the core

@@ -161,8 +161,14 @@ And, when the change touches rendering, interaction or the scene contracts:
 
 ```bash
 npm run test:e2e           # all suites against real Mol* (PW_CHROMIUM_BIN=/usr/bin/google-chrome)
+npm run test:e2e:portable  # 36 browser suites; no managed hardware-GPU worker
+npm run test:e2e:server-gpu # the one real server-rendering suite on a qualified GPU host
 npm run test:perf          # the message-toll and dynamic-region-frame harnesses
 ```
+
+The portable lane passed locally on 2026-09-24. It is explicit test selection,
+not `E2E_ALLOW_SKIP=1`; do not count it as a full 37-suite pass or as evidence
+that the managed GPU worker runs. See uibcdf/molsysviewer#100.
 
 ## Performance
 

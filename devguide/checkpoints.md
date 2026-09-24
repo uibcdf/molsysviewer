@@ -132,11 +132,22 @@ same scenario passed locally, but the local aggregate stopped at 25/37 on
 the command-line Chrome/localhost limitation of uibcdf/molsysviewer#77.
 Neither environment has certified the full E2E suite; uibcdf/molsysviewer#100
 tracks an evidence-lane redesign. Keep the 1.0 release gate open.
+
+The interim split under #100 is now explicit: local source-pair
+`test:e2e:portable` passed 36/36 with Chrome 149 and real WebGL2. Hosted
+`CI_e2e` has been changed to run that portable lane, but has not yet been
+rerun. The excluded `remote-session` is a separately runnable server-GPU
+lane, not a skipped pass. `nauta` does have real NVIDIA GPUs outside the
+sandbox; its worker still fails to commit command-line HTTP navigation.
+Changing the worker to navigate through CDP did not fix it (`Page.navigate`
+timed out), so that product change was reverted. The test bridge now reports
+stages and has a bounded wait. Defer the GPU launch investigation until after
+the coordinated pre-1.0 package publication; no 37/37 or 1.0 gate is claimed.
 The detailed diagnosis is in [`pending_bugs/hosted_ci_has_never_passed.md`](pending_bugs/hosted_ci_has_never_passed.md).
 
 The remaining order is:
 
-1. finish MolSysViewer's hosted CI, E2E and documentation gates against the
+1. finish MolSysViewer's hosted CI and portable E2E gates against the
    staged pair; the latest ordinary CI run `35984241119` could not resolve
    `molsysmt>=0.22.0` from the public channel before reaching product tests.
    The subsequent micromamba `ENOENT` was cleanup fallout, not the cause;
@@ -144,8 +155,9 @@ The remaining order is:
    final release candidate is selected, and settle the clean-install PDB path
    under `uibcdf/molsysmt#200`;
 3. decide on public release coordinates and publish only after both projects'
-   exact-commit gates pass, without a bootstrap exception in either public
-   build.
+   exact-commit package gates pass, without a bootstrap exception in either
+   public build. The deferred server-GPU lane remains visible in #100 and must
+   not be represented as a passing hosted or local test.
 
 ## Separate Python 3.14 staging slice
 

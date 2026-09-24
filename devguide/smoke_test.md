@@ -491,16 +491,24 @@ Current minimum:
 - `pytest tests/test_panel_mode_request.py -q`
 - `pytest tests/test_smonitor_integration.py -q`
 - `npm --prefix molsysviewer/js run test:js`
-- `npm --prefix molsysviewer/js run test:e2e`
+- `npm --prefix molsysviewer/js run test:e2e:portable`
 
 Notes:
 
-- `test:e2e` runs every E2E suite and fails if browser/WebGL2 support is unavailable.
+- `test:e2e:portable` runs 36 real-browser suites and fails if browser/WebGL2
+  support is unavailable. It excludes only `remote-session`, which certifies a
+  separate managed hardware-GPU render worker.
+- `test:e2e:server-gpu` runs that scenario on a qualified GPU host; `test:e2e`
+  runs all 37. A portable pass is not server-rendering evidence.
 - `E2E_ALLOW_SKIP=1` is an explicit decision to omit E2E validation, never a green validation result.
-- On this workstation, the verified E2E command is:
+- On this workstation, the portable lane is a separate fast source of browser
+  evidence; `nvidia-smi` outside the development sandbox also reports a GTX
+  1080 and a Quadro M2000, so the server-GPU lane is eligible for testing here.
+  A failed `nvidia-smi` call inside the sandbox is not evidence of absent GPU
+  hardware. The portable command is:
 
 ```bash
-PW_CHROMIUM_BIN=/usr/bin/google-chrome npm --prefix molsysviewer/js run test:e2e
+PW_CHROMIUM_BIN=/usr/bin/google-chrome npm --prefix molsysviewer/js run test:e2e:portable
 ```
 
 ## What To Record

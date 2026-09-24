@@ -362,6 +362,13 @@ Neither 22/37 hosted nor 24/37 local is a full E2E pass. The test-evidence
 redesign and release-policy decision are tracked by
 uibcdf/molsysviewer#100. No E2E has been disabled, skipped, or marked green.
 
+An interim selection now runs 36 portable scenarios in hosted `CI_e2e`; the
+managed-GPU `remote-session` scenario is independently runnable and still
+fails on this host. The 36/36 portable lane passed locally. This workflow
+change has not yet been rerun on GitHub, and its earlier scenario-23 PNG
+timeout remains an open hosted question. Neither the local portable pass nor
+the workflow edit certifies the server-GPU lane or closes this bug.
+
 - `CI`, `CI_e2e` and `Documentation notebooks` pass on `main` against the MolSysMT this
   package declares, not an older one the solver happens to find.
 - Gate 8 says what is enforced.

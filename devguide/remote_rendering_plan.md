@@ -526,6 +526,13 @@ finishes with no active retained transfer and rejects software rendering.
 **Exit:** a headless real-GPU test loads a real demo and renders/picks without
 xvfb or Mesa fallback; unexpected software rendering fails visibly.
 
+The real server-rendering E2E is `remote-session` in the explicit
+`test:e2e:server-gpu` lane. Standard hosted Ubuntu runs the separate portable
+browser lane and cannot certify this worker. The local command-line Chrome
+navigation failure and later revalidation are tracked by
+uibcdf/molsysviewer#100; the prior spika evidence above is historical, not a
+claim that the current branch passed this lane.
+
 ### RRS2 — session service and browser client
 
 **Server-rendered vertical slice completed 2026-09-02.** `RemoteSessionService`

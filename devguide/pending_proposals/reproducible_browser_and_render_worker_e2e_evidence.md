@@ -67,5 +67,35 @@ archived report.
 
 ## Resolution
 
-Pending lane design, exact-commit validation, and an explicit release-gate
-decision. No existing E2E has been disabled or counted as passed by a skip.
+Lane selection is implemented; exact-commit hosted validation, a working
+server-GPU run, and the final 1.0 gate decision remain. No existing E2E has
+been disabled or counted as passed by a skip.
+
+## 2026-09-24 interim decision for coordinated package publication
+
+The 37 suites are now selectable as 36 `portable` browser suites and one
+`server-gpu` suite (`remote-session`); the existing `test:e2e` command still
+runs all 37. `CI_e2e` uses the portable lane because a standard hosted Ubuntu
+runner is not a certified hardware-GPU render-worker host. The source-pair
+portable lane passed locally, 36/36, with Chrome 149 and real WebGL2; this is
+provisional evidence for the coordinated pre-1.0 package publication, **not**
+a 37/37 claim or a substitute for the later server-rendering gate.
+The portable pass printed one `aiohttp` task exception while closing a
+WebSocket in `remote-client-rendering`; the scenario still completed its real
+reconnect, export, and upload assertions. Review that shutdown noise during
+the deferred reliability pass instead of calling it a scenario failure.
+
+The earlier `nvidia-smi` failure occurred inside the development sandbox. A
+repeat outside it found a GTX 1080 and Quadro M2000 on `nauta`, so the local
+server-GPU failure cannot be classified as absent hardware. The original
+command-line URL launch again left the worker at `about:blank`. A focused
+attempt to launch `about:blank` and navigate with CDP `Page.navigate` hung until
+a 30-second bound, even with `no_sandbox=True`; Playwright with the same GL
+flags reached a trivial local HTTP page. That attempted production change was
+reverted. The test harness now prints startup stages and bounds its wait for
+the Python bridge so the next investigation will not silently hang.
+
+Defer the server-GPU launch fix and full 37/37 validation until after the
+coordinated MolSysMT/MolSysViewer package publication. Do not set
+`E2E_ALLOW_SKIP=1` in release evidence. A portable pass is labelled portable;
+the `server-gpu` lane remains runnable and fails if its capability is broken.
