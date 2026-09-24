@@ -384,6 +384,17 @@ MolSysViewer participates.
   The exact pair resolves in a Linux/Python 3.14 dry-run. This is not an
   installed-pair result, a public package, or a decision to release those
   version numbers.
+- Later on 2026-09-24, the exact Conda pair passed the four-interpreter
+  installed matrix on Linux x86-64 (`35992241212`), Linux ARM (`35993063086`),
+  Windows (`35993616429`) and macOS ARM (`35993242687`). Each run had four
+  successful validation jobs and retained four explicit environment records.
+  MolSysMT's validator checked version identity, staging channel/URL/hash
+  provenance, ABI3 code, bundled BCIF conversion, PDB-text conversion and
+  Viewer loading, and Viewer resources. That is 16 installed cells on four
+  native platforms. macOS Intel's native build and matrix remain pending.
+  The runs were deliberately platform-targeted; gh-run-receptor's all-platform
+  profile reports missing platforms despite GitHub's successful conclusions
+  (`uibcdf/gh-run-receptor#54`). No public 3.14 support is claimed.
 
 ## Resolution
 

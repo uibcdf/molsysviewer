@@ -120,9 +120,13 @@ On 2026-09-24, technical staging-only coordinates were created for the newer
 source branches: MolSysMT 0.22.3 ABI3 build 0 on Linux x86-64 (producer run
 `35990161344`) and MolSysViewer 0.23.3 noarch build 0 (build and recipe-test
 run `35990850975`). An exact Linux/Python 3.14 dry-run resolves both from
-`uibcdf/label/staging`. No fresh installed-pair validation has passed yet;
-the 3.14 branch proposal records the source and artifact hashes. These are not
-Git tags, public releases, or a decision to ship those version numbers.
+`uibcdf/label/staging`. Subsequent exact-pair runs passed Python 3.11–3.14
+on Linux x86-64 (`35992241212`), Linux ARM (`35993063086`), Windows
+(`35993616429`) and macOS ARM (`35993242687`): 16 installed cells with
+explicit environment records. macOS Intel's build and four-cell matrix remain
+pending. The 3.14 branch proposal records the source and artifact hashes.
+These are not Git tags, public releases, or a decision to ship those version
+numbers.
 
 A prior local `devtools/build_against_staging.sh` result remains useful evidence about
 the noarch shape and recipe tests, but it is not a substitute for these exact hosted
