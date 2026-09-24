@@ -312,8 +312,8 @@ MolSysViewer participates.
   (`uibcdf/molsysmt#241`). The MolSysMT branch now has a local fix awaiting
   Windows verification. Separate Viewer Windows failures include preview-port
   reuse and a test that assumes POSIX path spelling; they must be resolved or
-  classified independently before a Windows support claim. The next
-  source-pair run pins MolSysMT
+  classified independently before a Windows support claim. Run
+  `35972810430` pinned MolSysMT
   `e865b72ce20358c1bd33be318c170a91c18ff145`, which contains the
   native-path fix and its guard.
 - The first executable Windows suite also exposed four Viewer-local
@@ -330,6 +330,24 @@ MolSysViewer participates.
   Linux/Python 3.14 (132 tests), but Windows confirmation is pending. The
   Windows socket correction follows Microsoft's documented
   [`SO_EXCLUSIVEADDRUSE` behavior](https://learn.microsoft.com/en-us/windows/win32/winsock/using-so-reuseaddr-and-so-exclusiveaddruse).
+- Run `35972810430`, pinned to MolSysMT's `get_form()` path fix, again passed
+  Linux and macOS. Its Windows job advanced past form detection but still
+  failed 55 demo-dependent tests: MolSysViewer's own molecular-system
+  digester only normalized `PosixPath`, then delegated a `WindowsPath` to
+  MolSysMT conversion with `skip_digestion=True`. The BCIF reader in
+  `py-mmcif` expects a string and sliced the path, producing `TypeError` and
+  downstream `FormatError`. The Viewer digester now normalizes native
+  `PathLike` inputs once, including list/tuple inputs without mutating the
+  caller's container. The output-filename digester likewise accepts native
+  `Path` objects; that was a separate one-test Windows failure. Focused
+  local path/demo/README tests pass, but Windows confirmation must use a
+  newly pinned source-pair run. This is a trusted-delegation boundary fix,
+  not an upstream change to `py-mmcif`.
+- The next source-pair run pins MolSysMT
+  `86dcb5d078d8cbb45c38500e452944811fc5a5bc`, whose installed-path
+  guard covers PDB, H5MSM, and compressed BCIF. The Viewer branch now
+  passes its local Linux/Python 3.14 full suite with 12 workers: 2,082 passed
+  and 17 skipped. This does not establish the remote Windows result.
 
 ## Resolution
 

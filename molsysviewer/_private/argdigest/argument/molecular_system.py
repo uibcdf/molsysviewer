@@ -1,6 +1,17 @@
-from pathlib import PosixPath
+from os import PathLike
+from pathlib import Path
 
 from molsysviewer._private.exceptions import ArgumentError
+
+
+def _normalize_paths(molecular_system):
+    if isinstance(molecular_system, PathLike):
+        return str(Path(molecular_system).absolute())
+    if isinstance(molecular_system, list):
+        return [_normalize_paths(item) for item in molecular_system]
+    if isinstance(molecular_system, tuple):
+        return tuple(_normalize_paths(item) for item in molecular_system)
+    return molecular_system
 
 
 def digest_molecular_system(molecular_system, caller=None):
@@ -25,13 +36,7 @@ def digest_molecular_system(molecular_system, caller=None):
     """
     from molsysmt.basic import are_multiple_molecular_systems, is_a_molecular_system, merge
 
-    if isinstance(molecular_system, PosixPath):
-        molecular_system = molecular_system.absolute().__str__()
-
-    if isinstance(molecular_system, (list, tuple)):
-        for ii in range(len(molecular_system)):
-            if isinstance(molecular_system[ii], PosixPath):
-                molecular_system[ii] = molecular_system[ii].absolute().__str__()
+    molecular_system = _normalize_paths(molecular_system)
 
     if caller in ["molsysviewer.new_view.new_view", "molsysviewer.loaders.load_molsysmt.load_from_molsysmt"]:
         return molecular_system
