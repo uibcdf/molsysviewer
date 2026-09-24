@@ -123,8 +123,13 @@ run `35990850975`). An exact Linux/Python 3.14 dry-run resolves both from
 `uibcdf/label/staging`. Subsequent exact-pair runs passed Python 3.11–3.14
 on Linux x86-64 (`35992241212`), Linux ARM (`35993063086`), Windows
 (`35993616429`) and macOS ARM (`35993242687`): 16 installed cells with
-explicit environment records. macOS Intel's build and four-cell matrix remain
-pending. The 3.14 branch proposal records the source and artifact hashes.
+explicit environment records. macOS Intel's build (`35992423543`) and
+four-cell matrix (`35995465959`) then passed, bringing the exact staging pair
+to 20/20 installed cells across five native platforms. Every run retained
+four explicit environment records; the MolSysMT validator checked the
+staging URL and SHA-256 of both packages. These are five targeted runs, not
+a single combined workflow or a public-channel claim. The 3.14 branch
+proposal records the source and artifact hashes.
 These are not Git tags, public releases, or a decision to ship those version
 numbers.
 

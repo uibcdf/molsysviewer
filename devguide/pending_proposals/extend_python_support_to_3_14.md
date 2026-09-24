@@ -395,6 +395,15 @@ MolSysViewer participates.
   The runs were deliberately platform-targeted; gh-run-receptor's all-platform
   profile reports missing platforms despite GitHub's successful conclusions
   (`uibcdf/gh-run-receptor#54`). No public 3.14 support is claimed.
+- Later on 2026-09-24, macOS Intel producer run `35992423543` passed from the
+  same pinned MolSysMT source. The staging channel reports
+  `osx-64/molsysmt-0.22.3-pyabi3h3d50071_0.conda` with SHA-256
+  `61c0b2868ebfda386224c2afba8ef28be35da4f01429fecf1d597053b36b88da`.
+  Installed-pair run `35995465959` then passed all four Python 3.11–3.14
+  jobs and retained four explicit environment records. The immutable pair
+  therefore passed 20/20 installed cells across all five native platforms,
+  in five targeted runs. This is Conda staging evidence, not one combined
+  workflow run, public release evidence, or full scientific/Qt coverage.
 
 ## Resolution
 
