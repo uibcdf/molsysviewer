@@ -372,6 +372,18 @@ MolSysViewer participates.
   guard, and completed the full Viewer Python suite. This establishes the
   three-platform source-pair gate, not Conda channel admission or optional
   Windows/macOS Qt-host support.
+- On 2026-09-24, the first remote staging slice used new technical coordinates
+  without changing the older 0.22.0/0.23.1 release candidates. MolSysMT
+  `0.22.3` ABI3 build 0 was staged for Linux x86-64 from
+  `6bc7136093be1bcfff86d8600d00d630738ebd90` in run `35990161344`.
+  Viewer `0.23.3` noarch build 0 was built and recipe-tested from
+  `0152781987219846e5cfd0250b3e160324f9b6c5` in run `35990850975`.
+  An independent channel query found its exact staging artifact with
+  `python >=3.11,<3.15` and SHA-256
+  `7b24b77b5bdd3dfa6cb8a7691bc23680056039dc92f05ddb8f43a60edc6993c9`.
+  The exact pair resolves in a Linux/Python 3.14 dry-run. This is not an
+  installed-pair result, a public package, or a decision to release those
+  version numbers.
 
 ## Resolution
 

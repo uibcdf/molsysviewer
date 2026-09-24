@@ -5,8 +5,10 @@ changes. Normative behavior remains in the contracts linked below.
 
 ## Repository state
 
-- Branch: `main`. The current delivery slice implements the coordinated staging path
-  with MolSysMT 0.22.0; publication and hosted candidate execution remain pending.
+- Branch: `main` for the coordinated 0.22.0/0.23.1 release path. The exact
+  staged pair passed its hosted 15-cell installation matrix on 2026-09-24;
+  publication and the remaining Viewer release gates are pending. The separate
+  `python-3.14-support` branch has a Linux-first staging slice recorded below.
 - Phases 5, 6, 8 and 9 and the Phase 10 persistence slice were independently
   audited and closed on 2026-08-09. Phase 8 evidence remains in
   [`performance/representative_scale_gate_2026_08.md`](performance/representative_scale_gate_2026_08.md).
@@ -95,16 +97,31 @@ The repository now carries the two missing pre-publication routes:
    branches, retained producer evidence, the recipe test on both branches, and the
    explicit staging input on every hosted gate.
 
-The remaining execution order is:
+The 2026-09-24 state is: MolSysMT 0.22.0 ABI3 build 5 and MolSysViewer
+0.23.1 noarch build 1 are in staging. MolSysMT run `35967239820` passed the
+exact-pair matrix on five native platforms and Python 3.11–3.13 (15 cells).
+That run predated the later explicit Conda-record channel/URL/hash guard and
+does not satisfy that stronger check retroactively. The remaining order is:
 
-1. freeze the new MolSysViewer candidate commit and version;
-2. dispatch its staging build and retain the producer evidence;
-3. run all three MolSysViewer hosted gates with `use_staging=true`;
-4. run MolSysMT's exact-pair 5-platform × 3-interpreter staging matrix;
-5. resolve or explicitly disposition the clean-install PDB path in
-   `uibcdf/molsysmt#200`;
-6. publish MolSysMT to the public channel first, then MolSysViewer, with no bootstrap
-   exception in either public build.
+1. finish MolSysViewer's hosted CI, E2E and documentation gates against the
+   staged pair; the latest ordinary CI run `35984241119` failed during
+   micromamba setup, before reaching product tests;
+2. repeat the exact-pair gate with the stronger provenance assertion when a
+   final release candidate is selected, and settle the clean-install PDB path
+   under `uibcdf/molsysmt#200`;
+3. decide on public release coordinates and publish only after both projects'
+   exact-commit gates pass, without a bootstrap exception in either public
+   build.
+
+## Separate Python 3.14 staging slice
+
+On 2026-09-24, technical staging-only coordinates were created for the newer
+source branches: MolSysMT 0.22.3 ABI3 build 0 on Linux x86-64 (producer run
+`35990161344`) and MolSysViewer 0.23.3 noarch build 0 (build and recipe-test
+run `35990850975`). An exact Linux/Python 3.14 dry-run resolves both from
+`uibcdf/label/staging`. No fresh installed-pair validation has passed yet;
+the 3.14 branch proposal records the source and artifact hashes. These are not
+Git tags, public releases, or a decision to ship those version numbers.
 
 A prior local `devtools/build_against_staging.sh` result remains useful evidence about
 the noarch shape and recipe tests, but it is not a substitute for these exact hosted
