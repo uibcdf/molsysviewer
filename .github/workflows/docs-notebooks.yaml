@@ -36,6 +36,11 @@ on:
         required: true
         default: false
         type: boolean
+      molsysmt_version:
+        description: Exact staged MolSysMT version when use_staging is true
+        required: true
+        default: 0.22.4
+        type: string
 
 jobs:
   execute:
@@ -62,7 +67,7 @@ jobs:
             channel_priority: strict
           create-args: >-
             ${{ inputs.use_staging && '--override-channels --channel uibcdf/label/staging --channel uibcdf --channel conda-forge' || '' }}
-            ${{ inputs.use_staging && 'molsysmt=0.22.0' || '' }}
+            ${{ inputs.use_staging && format('molsysmt={0}', inputs.molsysmt_version) || '' }}
 
       - name: Install MolSysViewer
         shell: bash -l {0}

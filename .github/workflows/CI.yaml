@@ -42,6 +42,11 @@ on:
         required: true
         default: false
         type: boolean
+      molsysmt_version:
+        description: Exact staged MolSysMT version when use_staging is true
+        required: true
+        default: 0.22.4
+        type: string
 
 jobs:
   qt-pipeline:
@@ -87,7 +92,7 @@ jobs:
           python=3.13
           pyside6-addons-uibcdf
           ${{ inputs.use_staging && '--override-channels --channel uibcdf/label/staging --channel uibcdf --channel conda-forge --channel ambermd' || '' }}
-          ${{ inputs.use_staging && 'molsysmt=0.22.0' || '' }}
+          ${{ inputs.use_staging && format('molsysmt={0}', inputs.molsysmt_version) || '' }}
 
     - name: Install package
       shell: bash -l {0}
@@ -165,7 +170,7 @@ jobs:
         create-args: >-
           python=${{ matrix.cfg.python-version }}
           ${{ inputs.use_staging && '--override-channels --channel uibcdf/label/staging --channel uibcdf --channel conda-forge --channel ambermd' || '' }}
-          ${{ inputs.use_staging && 'molsysmt=0.22.0' || '' }}
+          ${{ inputs.use_staging && format('molsysmt={0}', inputs.molsysmt_version) || '' }}
 
     - name: Info conda
       shell: bash -l {0}

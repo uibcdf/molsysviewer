@@ -12,6 +12,11 @@ on:
         required: true
         default: false
         type: boolean
+      molsysmt_version:
+        description: Exact staged MolSysMT version when use_staging is true
+        required: true
+        default: 0.22.4
+        type: string
 
 jobs:
   e2e:
@@ -48,7 +53,7 @@ jobs:
           create-args: >-
             python=3.13
             ${{ inputs.use_staging && '--override-channels --channel uibcdf/label/staging --channel uibcdf --channel conda-forge --channel ambermd' || '' }}
-            ${{ inputs.use_staging && 'molsysmt=0.22.0' || '' }}
+            ${{ inputs.use_staging && format('molsysmt={0}', inputs.molsysmt_version) || '' }}
 
       - name: Install package
         shell: bash -l {0}

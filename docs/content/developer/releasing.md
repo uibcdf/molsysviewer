@@ -96,6 +96,20 @@ How the version is chosen
 GitHub workflow
 - `.github/workflows/build_and_upload_conda_packages.yaml`
 
+For a coupled release, commit `devtools/conda-build/release_plan.toml` with the
+`staged` route before building. The manual build workflow uploads one immutable
+candidate only to `uibcdf/label/staging`; an additive build number is required
+for a correction. Validate the exact MolSysMT/MolSysViewer pair before tagging.
+Publishing the GitHub Release does **not** rebuild that staged version. After
+the exact-commit gates and Release are complete, dispatch
+`.github/workflows/promote_conda_package.yaml` from `main` with the tag commit,
+version, build number, independently observed SHA-256 and successful full
+installed-pair run. It adds `main` to the same noarch file and verifies the
+public record. A direct, unstaged release remains a separate route and is
+rejected when Anaconda already has any file for that version. The tag-driven
+npm publication and Zenodo ingestion remain separate; neither is evidence that
+Conda promotion succeeded.
+
 Key points
 - Do not edit `viewer.js` or `.map` by hand.
 - Keep the JS build manual and controlled.

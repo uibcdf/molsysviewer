@@ -174,6 +174,20 @@ The remaining order is:
    public build. The deferred server-GPU lane remains visible in #100 and must
    not be represented as a passing hosted or local test.
 
+The next candidate decision is now recorded: `python-3.14-support` includes
+current `main` in both repositories, and fresh unoccupied versions
+MolSysMT `0.22.4` ABI3 build 0 / MolSysViewer `0.23.4` noarch build 0 are
+planned. Anaconda returned HTTP 404 for each version across labels. The
+committed route plans require staging; a Release event cannot rebuild a
+staged coordinate, and separate workflows promote one exact SHA-256-verified
+file at a time after the full 20-cell installed-pair gate. These promotion
+workflows have local structural and shell-syntax tests but no hosted promotion
+yet. The earlier Viewer CI 7/7 pinned staged MolSysMT `0.22.0`; manual CI,
+E2E and notebook gates now require an explicit MolSysMT version input and
+must be rerun for `0.22.4` rather than credited retroactively. No `0.22.4`
+or `0.23.4` package has been uploaded yet; #100 still owns the hosted E2E
+timeout and the separate server-GPU lane.
+
 ## Separate Python 3.14 staging slice
 
 On 2026-09-24, technical staging-only coordinates were created for the newer

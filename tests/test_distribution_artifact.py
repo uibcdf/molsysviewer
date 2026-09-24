@@ -426,7 +426,10 @@ def test_python_314_source_pair_uses_exact_provider_commit_without_metadata_bypa
     """The source gate is reproducible but remains distinct from package admission."""
     workflow = (ROOT / ".github" / "workflows" / "ci-python-314-source-pair.yaml").read_text(encoding="utf-8")
     assert "repository: uibcdf/molsysmt" in workflow
-    assert re.search(r"(?m)^\s+ref: [0-9a-f]{40}$", workflow)
+    assert "inputs.molsysmt_sha" in workflow
+    assert "8ab42b58520892d54a05222b91c116b9e9114314" in workflow
+    assert "^[0-9a-f]{40}$" in workflow
+    assert 'git -C molsysmt-source rev-parse HEAD' in workflow
     assert "--ignore-requires-python" not in workflow
     assert "--receptor=ci tests/" in workflow
 
@@ -451,6 +454,8 @@ def test_hosted_gates_can_select_the_exact_coordinated_staging_candidate():
         ]
 
         assert re.search(r"(?ms)^\s{2}workflow_dispatch:\n\s{4}inputs:\n\s{6}use_staging:", text)
+        triggers = workflow.get("on", workflow.get(True))
+        assert triggers["workflow_dispatch"]["inputs"]["molsysmt_version"]["required"] is True
         assert setup_steps, f"{workflow_name} no longer creates a Conda environment"
         for step in setup_steps:
             condarc = step["with"]["condarc"]
@@ -459,7 +464,7 @@ def test_hosted_gates_can_select_the_exact_coordinated_staging_candidate():
             assert "\n  - uibcdf\n" in condarc
             assert "inputs.use_staging && '--override-channels" in create_args
             assert "--channel uibcdf/label/staging --channel uibcdf --channel conda-forge" in create_args
-            assert "inputs.use_staging && 'molsysmt=0.22.0'" in create_args
+            assert "inputs.use_staging && format('molsysmt={0}', inputs.molsysmt_version)" in create_args
 
 
 def test_e2e_uses_the_hosted_browser_it_checks():

@@ -4,6 +4,11 @@ name: Python 3.14 source pair
 # resolver-consistent package installation or authorize a public Python badge.
 on:
   workflow_dispatch:
+    inputs:
+      molsysmt_sha:
+        description: Full MolSysMT source candidate commit SHA
+        required: true
+        type: string
   pull_request:
     branches: [main]
     paths:
@@ -41,10 +46,18 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: uibcdf/molsysmt
-          ref: 8ab42b58520892d54a05222b91c116b9e9114314
+          ref: ${{ inputs.molsysmt_sha || '8ab42b58520892d54a05222b91c116b9e9114314' }}
           path: molsysmt-source
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Require an exact MolSysMT commit
+        shell: bash
+        env:
+          MOLSYSMT_SHA: ${{ inputs.molsysmt_sha || '8ab42b58520892d54a05222b91c116b9e9114314' }}
+        run: |
+          [[ "$MOLSYSMT_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git -C molsysmt-source rev-parse HEAD)" = "$MOLSYSMT_SHA"
 
       - name: Select MolSysMT's pinned Rust toolchain
         run: |

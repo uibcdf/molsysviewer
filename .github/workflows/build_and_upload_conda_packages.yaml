@@ -23,7 +23,7 @@ on:
       build_number:
         description: Staging build number; increment only to supersede a defective artifact
         required: true
-        default: 1
+        default: 0
         type: number
 
 permissions:
@@ -75,6 +75,16 @@ jobs:
           [[ "$RELEASE_VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]
           test "$(git rev-parse HEAD)" = "$(git rev-list -n 1 "$RELEASE_VERSION")"
 
+      - name: Select the committed Conda release route
+        id: route
+        shell: bash
+        env:
+          RELEASE_VERSION: ${{ inputs.version || github.event.release.tag_name }}
+        run: |
+          python devtools/conda-build/release_route.py \
+            --version "$RELEASE_VERSION" --event "$GITHUB_EVENT_NAME" \
+            --github-output "$GITHUB_OUTPUT"
+
       - name: Additional info about the build
         shell: bash
         run: |
@@ -85,7 +95,8 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Setup conda env
+      - name: Setup staging conda env
+        if: github.event_name == 'workflow_dispatch'
         uses: mamba-org/setup-micromamba@v3.2.1
         with:
           environment-file: devtools/conda-envs/build_env.yaml
@@ -99,7 +110,22 @@ jobs:
           create-args: >-
             python=3.13
 
+      - name: Setup direct public conda env
+        if: github.event_name == 'release' && steps.route.outputs.route == 'direct'
+        uses: mamba-org/setup-micromamba@v3.2.1
+        with:
+          environment-file: devtools/conda-envs/build_env.yaml
+          environment-name: build
+          condarc: |
+            channels:
+              - uibcdf
+              - conda-forge
+            channel_priority: strict
+          create-args: >-
+            python=3.13
+
       - name: Info conda
+        if: github.event_name == 'workflow_dispatch' || steps.route.outputs.route == 'direct'
         shell: bash -l {0}
         run: |
           micromamba activate build
@@ -107,13 +133,14 @@ jobs:
           micromamba list
 
       - name: Verify the derived package version
+        if: github.event_name == 'workflow_dispatch' || steps.route.outputs.route == 'direct'
         shell: bash -l {0}
         env:
           EXPECTED_VERSION: ${{ inputs.version || github.event.release.tag_name }}
         run: test "$(python -m versioningit)" = "$EXPECTED_VERSION"
 
-      # MolSysMT 0.22.0 is already present in staging as the one unavoidable bootstrap
-      # package. Unlike that first half of the cycle, this package can run its recipe
+      # A matching MolSysMT candidate must already be present in staging as the one
+      # unavoidable bootstrap package. Unlike that first half of the cycle, this can run its recipe
       # test: conda-build places the just-built MolSysViewer package in the test channel,
       # where it closes the dependency loop with staged MolSysMT.
       - name: Build, test, and upload the staging candidate
@@ -133,12 +160,12 @@ jobs:
           platform_osx-64: false
           platform_osx-arm64: false
 
-      - name: Build, test, and upload the released package
+      - name: Build, test, and upload an unstaged release
         id: conda_release
-        if: github.event_name == 'release'
+        if: github.event_name == 'release' && steps.route.outputs.route == 'direct'
         uses: uibcdf/action-build-and-upload-conda-packages@v2.1.0
         env:
-          MOLSYSVIEWER_CONDA_BUILD_NUMBER: 2
+          MOLSYSVIEWER_CONDA_BUILD_NUMBER: 0
         with:
           meta_yaml_dir: devtools/conda-build
           mambabuild: false
@@ -156,7 +183,14 @@ jobs:
           platform_linux-64: false
           platform_osx-64: false
           platform_osx-arm64: false
-          token: ${{ secrets.ANACONDA_UIBCDF_TOKEN }} # Replace with the right name of your secret
+          token: ${{ secrets.ANACONDA_UIBCDF_TOKEN }}
+
+      - name: Report the staged-release promotion boundary
+        if: github.event_name == 'release' && steps.route.outputs.route == 'staged'
+        shell: bash
+        run: |
+          echo '::notice::This version was staged; no package is rebuilt or uploaded by the Release event.'
+          echo 'Promote the exact digest-verified noarch file through the separate promotion route.' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload staging producer evidence
         if: ${{ always() && steps.conda_staging.outputs.evidence_path != '' }}

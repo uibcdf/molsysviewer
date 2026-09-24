@@ -79,7 +79,9 @@ candidate commit must not use `[skip ci]`.
 ## A tag without a Release is a legitimate state
 
 `0.22.0` is tagged and has no GitHub Release, on purpose. Publishing the Release starts
-Conda publication and Zenodo ingestion, and Conda is the gate deferred to 1.0 — the
+Zenodo ingestion and the Conda route check. A direct route builds and uploads;
+a staged route requires a separate exact-file promotion after the Release.
+Conda is the gate deferred to 1.0 — the
 UIBCDF dependency channels are not frozen, so the artefacts would be built against
 versions nobody has closed, and Zenodo would mint a DOI that does not come back.
 
@@ -94,8 +96,9 @@ After the exact candidate passes its gates:
 
 1. create and push the version tag on that commit;
 2. verify the matching npm runtime according to the developer release guide;
-3. publish the GitHub Release, which also starts Conda publication and Zenodo
-   ingestion;
+3. publish the GitHub Release, which starts Zenodo ingestion and the Conda
+   route check; for a staged route, dispatch the exact SHA-256 promotion
+   workflow and independently verify the public package record;
 4. verify the Zenodo record:
 
    ```bash
