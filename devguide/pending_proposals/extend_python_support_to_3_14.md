@@ -287,8 +287,24 @@ MolSysViewer participates.
   not yet installed-package evidence because `tests/conftest.py` injects the
   source checkout, while disabling it removes their `_test_message_log`
   fixture. A direct installed smoke covers the user behavior, but an
-  installed-test harness and remote staging gates remain open under
+  installed-test harness and remote staging gates were still open under
   `uibcdf/molsysviewer#82`. Neither local tag is a release-version decision.
+- On 2026-09-24, an opt-in installed-package mode was added to the normal
+  Viewer pytest fixtures. It omits source-path injection and requires both
+  imported package directories to live in the active interpreter's
+  `site-packages`; package metadata alone is insufficient because a checkout's
+  `egg-info` can shadow the installed record. The two existing MolSysMT
+  integration tests passed against the earlier exact local Conda pair
+  (`0.22.2`/`0.23.2`) from outside both checkouts. A negative control run from
+  the Viewer checkout exited 4 with the expected source-contamination error.
+  This closes the local installed-test-harness gap, not the remote staged-pair
+  gate or the newer source commit's package evidence. The Python 3.14
+  source-pair workflow now invokes these tests in installed mode and pins
+  MolSysMT `8ab42b58520892d54a05222b91c116b9e9114314`; that updated hosted
+  workflow has not yet run. The local Viewer source suite passed with 12
+  workers (2,082 passed, 17 skipped) outside the sandbox. Its first run in
+  the restricted sandbox had 18 socket/Chromium failures, which disappeared
+  unchanged outside the sandbox.
 - On 2026-09-24, the updated local Python 3.14 source-pair environment passed
   the full Viewer suite with 12 workers: 2,075 passed and 17 skipped. The
   first hosted Linux/macOS/Windows source-pair run (`35968412395`) passed
