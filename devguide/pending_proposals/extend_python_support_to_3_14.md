@@ -300,6 +300,12 @@ MolSysViewer participates.
   had one connection-loss failure in an oversized-WebSocket test; the other
   2,090 passed or skipped. That failure is not yet classified as transient.
   Neither source-run outcome establishes a staged Conda installation.
+- NGLView remains an optional integration, not a hard runtime dependency of
+  MolSysViewer. A distribution-manifest test now guards its absence from both
+  wheel and Conda runtime requirements. In the paired MolSysMT source tests,
+  NGLView-dependent cases skip when it is absent; this does not reduce the
+  core Viewer source-pair gate or imply NGLView support has been tested on
+  every platform.
 
 ## Resolution
 

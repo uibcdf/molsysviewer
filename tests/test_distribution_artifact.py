@@ -92,6 +92,14 @@ def test_distribution_manifests_name_runtime_dependencies_and_resources():
     assert REQUIRED_RUNTIME_DEPENDENCIES <= _conda_run_dependencies(recipe)
 
 
+def test_nglview_is_not_a_hard_viewer_dependency():
+    pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    recipe = (ROOT / "devtools" / "conda-build" / "meta.yaml").read_text(encoding="utf-8")
+
+    assert "nglview" not in _dependency_names(pyproject["project"]["dependencies"])
+    assert "nglview" not in _conda_run_dependencies(recipe)
+
+
 def test_the_conda_recipe_stays_noarch_and_agrees_with_requires_python():
     """Two invariants that failed silently once each.
 
