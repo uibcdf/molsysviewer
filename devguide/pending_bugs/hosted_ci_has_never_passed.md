@@ -378,6 +378,18 @@ requires the checked Chrome executable and readable step name, and the
 distribution/E2E guard slice passes locally (24/24). No product failure was
 reported by this run before that guard; hosted confirmation is still pending.
 
+Staging-enabled `CI` rerun `36036802158` on branch commit `2594f1a2`
+passed all seven jobs: six Python matrix cells and Qt. This confirms the
+corrected guard and branch CI against the staged MolSysMT dependency. It does
+not close the issue: the public-channel `main` gate and hosted portable
+`CI_e2e` remain separate evidence. Portable `CI_e2e` run `36038233512`
+repeated the earlier hosted failure at scenario 23/36:
+`remote-client-rendering` timed out after 30 seconds waiting for the PNG
+download. It had passed locally in the 36/36 portable source-pair run.
+The managed server-GPU scenario remains outside that lane. Do not rerun
+the unchanged hosted test to seek a green result; #100 owns the evidence-lane
+decision after package publication.
+
 - `CI`, `CI_e2e` and `Documentation notebooks` pass on `main` against the MolSysMT this
   package declares, not an older one the solver happens to find.
 - Gate 8 says what is enforced.

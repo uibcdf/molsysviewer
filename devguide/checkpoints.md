@@ -147,13 +147,23 @@ Staging-enabled `CI` run `36034111547` on Viewer commit `ac3dd891` then
 passed Qt but all six Python jobs stopped at one stale distribution guard:
 it searched for the former E2E step name rather than the new portable
 command. The guard now checks the command itself; 24 focused local tests
-pass. A hosted rerun is needed before crediting CI.
+pass. The staging-enabled rerun `36036802158` on Viewer commit `2594f1a2`
+then passed all seven jobs (six Python matrix cells and Qt). This is branch
+CI against the staged dependency, not the public-channel `main` gate.
+The portable `CI_e2e` rerun `36038233512` reached scenario 23/36 and failed
+at the same hosted PNG-download timeout in `remote-client-rendering` as the
+earlier full-suite run. This is not a portable E2E pass and cannot certify
+the separately deferred server-GPU lane. Stop rerunning this unchanged test;
+the reproducibility/evidence work is tracked by #100.
 The detailed diagnosis is in [`pending_bugs/hosted_ci_has_never_passed.md`](pending_bugs/hosted_ci_has_never_passed.md).
 
 The remaining order is:
 
-1. finish MolSysViewer's hosted CI and portable E2E gates against the
-   staged pair; the latest ordinary CI run `35984241119` could not resolve
+1. resolve or explicitly defer the reproducible hosted
+   `remote-client-rendering` PNG-download timeout under #100 before claiming
+   a hosted E2E pass; staging-enabled CI passed 7/7 in `36036802158`, but
+   the latest ordinary
+   CI run `35984241119` could not resolve
    `molsysmt>=0.22.0` from the public channel before reaching product tests.
    The subsequent micromamba `ENOENT` was cleanup fallout, not the cause;
 2. repeat the exact-pair gate with the stronger provenance assertion when a
