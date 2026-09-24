@@ -188,6 +188,34 @@ must be rerun for `0.22.4` rather than credited retroactively. No `0.22.4`
 or `0.23.4` package has been uploaded yet; #100 still owns the hosted E2E
 timeout and the separate server-GPU lane.
 
+The maintainers accepted an explicit, limited pre-1.0 exception for this
+`0.22.4`/`0.23.4` candidate: the hosted portable E2E failure in
+`36038233512` and the unvalidated server-GPU lane do not block *this package
+publication* if all other exact-candidate gates pass. Local portable E2E
+passed 36/36, but hosted portable E2E did not pass and full 37/37 has no
+certification. #100 remains open; the strict 1.0 E2E and visible-window gates
+are unchanged. The exception must accompany the release decision, not turn
+the failed hosted run into a success.
+
+The `0.23.4` citation surfaces are prepared with the intended 2026-09-24
+release date; if publication slips, rerun the preparation and candidate gates
+before tagging. The candidate now deliberately advertises Python 3.14 in its
+README: `tests/test_distribution_artifact.py` checks that claim against the
+explicit public-version set. This branch must not become the public `main`
+claim until the exact 20-cell installed-pair gate and other applicable
+pre-1.0 release checks pass. npm returned 404 for
+`@uibcdf/molsysviewer@0.23.4` when checked on 2026-09-24. No npm package,
+Git tag, GitHub Release, or Conda promotion has been created for this
+candidate.
+
+The complete local Viewer Python suite passed **2,112 tests with 14 accepted
+skips** in 65.97 seconds using 12 workers and explicit source paths for both
+candidate repositories plus the released SMonitor `0.16.0` tag. The prior
+unisolated run was not used as candidate evidence. MolSysMT's matching local
+suite passed 10,225 tests with 11 known skips; its fast release gate passed
+13/13. These local results permit an immutable source freeze but do not
+replace the hosted exact-commit gates or the 20-cell installed-pair rerun.
+
 ## Separate Python 3.14 staging slice
 
 On 2026-09-24, technical staging-only coordinates were created for the newer

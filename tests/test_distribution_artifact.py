@@ -342,9 +342,9 @@ def test_every_publicly_exported_name_resolves():
 
 
 SUPPORTED_PYTHON_VERSIONS = ("3.11", "3.12", "3.13", "3.14")
-#: The last independently verified public release still covers these versions.
-#: The candidate's wider metadata must not widen the README claim before release.
-PUBLIC_PYTHON_VERSIONS = ("3.11", "3.12", "3.13")
+#: The coordinated 0.23.4 candidate intends to admit the full matrix. Its
+#: README claim may reach main only after the exact installed-pair gate passes.
+PUBLIC_PYTHON_VERSIONS = ("3.11", "3.12", "3.13", "3.14")
 #: The routine development version remains 3.13 during the suite transition.
 RECOMMENDED_PYTHON_VERSION = "3.13"
 

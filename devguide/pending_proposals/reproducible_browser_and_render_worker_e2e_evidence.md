@@ -99,3 +99,13 @@ Defer the server-GPU launch fix and full 37/37 validation until after the
 coordinated MolSysMT/MolSysViewer package publication. Do not set
 `E2E_ALLOW_SKIP=1` in release evidence. A portable pass is labelled portable;
 the `server-gpu` lane remains runnable and fails if its capability is broken.
+
+The maintainers explicitly accept this as a **pre-1.0 release exception** for
+the coordinated MolSysMT `0.22.4` / MolSysViewer `0.23.4` candidate, not as
+passing E2E evidence. Hosted portable run `36038233512` failed at scenario
+23/36 (`remote-client-rendering`, 30-second PNG-download timeout); the local
+source-pair portable run passed 36/36. The server-GPU lane is still not
+certified. This decision permits the pre-1.0 package candidate to proceed
+through its other exact-commit and installed-pair gates while #100 stays open.
+It does **not** waive the full E2E or real-window gates for 1.0, and must be
+visible in any pre-1.0 release decision rather than described as green CI.
