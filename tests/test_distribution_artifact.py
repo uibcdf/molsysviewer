@@ -468,12 +468,13 @@ def test_e2e_uses_the_hosted_browser_it_checks():
     workflow = yaml.safe_load(path.read_text(encoding="utf-8"))
     steps = workflow["jobs"]["e2e"]["steps"]
     verify_steps = [step for step in steps if step.get("name") == "Verify hosted Chrome"]
-    run_steps = [step for step in steps if step.get("name") == "Run E2E tests"]
+    run_steps = [step for step in steps if step.get("run") == "npm run test:e2e:portable"]
 
     assert len(verify_steps) == len(run_steps) == 1
     assert steps.index(verify_steps[0]) < steps.index(run_steps[0])
     assert "/usr/bin/google-chrome --version" in verify_steps[0]["run"]
     assert run_steps[0]["env"]["PW_CHROMIUM_BIN"] == "/usr/bin/google-chrome"
+    assert run_steps[0]["name"] == "Run portable E2E tests"
     assert not any("playwright install" in step.get("run", "") for step in steps)
 
 

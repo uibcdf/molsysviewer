@@ -143,6 +143,11 @@ Changing the worker to navigate through CDP did not fix it (`Page.navigate`
 timed out), so that product change was reverted. The test bridge now reports
 stages and has a bounded wait. Defer the GPU launch investigation until after
 the coordinated pre-1.0 package publication; no 37/37 or 1.0 gate is claimed.
+Staging-enabled `CI` run `36034111547` on Viewer commit `ac3dd891` then
+passed Qt but all six Python jobs stopped at one stale distribution guard:
+it searched for the former E2E step name rather than the new portable
+command. The guard now checks the command itself; 24 focused local tests
+pass. A hosted rerun is needed before crediting CI.
 The detailed diagnosis is in [`pending_bugs/hosted_ci_has_never_passed.md`](pending_bugs/hosted_ci_has_never_passed.md).
 
 The remaining order is:

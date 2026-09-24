@@ -369,6 +369,15 @@ change has not yet been rerun on GitHub, and its earlier scenario-23 PNG
 timeout remains an open hosted question. Neither the local portable pass nor
 the workflow edit certifies the server-GPU lane or closes this bug.
 
+Staging-enabled `CI` run `36034111547` on branch commit `ac3dd891` passed
+the Qt job but failed all six Python jobs at one shared repository guard:
+`test_e2e_uses_the_hosted_browser_it_checks` still selected the E2E step by
+its old name, `Run E2E tests`, after the workflow truthfully renamed it
+`Run portable E2E tests`. The test now selects the actual portable command,
+requires the checked Chrome executable and readable step name, and the
+distribution/E2E guard slice passes locally (24/24). No product failure was
+reported by this run before that guard; hosted confirmation is still pending.
+
 - `CI`, `CI_e2e` and `Documentation notebooks` pass on `main` against the MolSysMT this
   package declares, not an older one the solver happens to find.
 - Gate 8 says what is enforced.
