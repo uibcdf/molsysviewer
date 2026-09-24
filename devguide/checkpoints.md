@@ -104,8 +104,9 @@ That run predated the later explicit Conda-record channel/URL/hash guard and
 does not satisfy that stronger check retroactively. The remaining order is:
 
 1. finish MolSysViewer's hosted CI, E2E and documentation gates against the
-   staged pair; the latest ordinary CI run `35984241119` failed during
-   micromamba setup, before reaching product tests;
+   staged pair; the latest ordinary CI run `35984241119` could not resolve
+   `molsysmt>=0.22.0` from the public channel before reaching product tests.
+   The subsequent micromamba `ENOENT` was cleanup fallout, not the cause;
 2. repeat the exact-pair gate with the stronger provenance assertion when a
    final release candidate is selected, and settle the clean-install PDB path
    under `uibcdf/molsysmt#200`;
