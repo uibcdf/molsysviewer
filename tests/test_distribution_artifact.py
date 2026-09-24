@@ -14,6 +14,7 @@ from pathlib import Path
 import yaml
 from packaging.requirements import Requirement
 from packaging.utils import canonicalize_name
+from packaging.version import Version
 
 import molsysviewer as molsysviewer_package
 
@@ -486,6 +487,9 @@ def test_hosted_python_suite_installs_its_build_and_example_requirements():
 
     assert build_requirements <= dependencies
     assert {"python-build", "mdtraj", "jinja2"} <= dependencies
+    node_specifier = _dependencies_by_name(env["dependencies"])["nodejs"].specifier
+    assert Version("22.0") in node_specifier
+    assert Version("26.0") not in node_specifier
 
     workflow_path = ROOT / ".github" / "workflows" / "CI.yaml"
     workflow = yaml.safe_load(workflow_path.read_text(encoding="utf-8"))

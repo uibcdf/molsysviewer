@@ -1,0 +1,71 @@
+---
+summary: Define reproducible browser and render-worker E2E evidence lanes.
+issue: uibcdf/molsysviewer#100
+status: open
+opened: 2026-09-24
+closed:
+verification: measured
+area: [testing, ci, release]
+guard:
+normative:
+blocked_by: []
+supersedes: []
+---
+
+# Define reproducible browser and render-worker E2E evidence lanes
+
+**Reported:** 2026-09-24, after a hosted staging run and an exact-source local
+run reached different failures in the same 37-scenario suite.
+
+## What
+
+Separate the client-browser and server-render-worker scenarios into
+independently addressable evidence lanes. Keep local browser checks and a
+hosted route, with exact source and browser identity; do not silently skip a
+capability or call a partial suite green. Decide explicitly which observations
+are release requirements and which remain diagnostic.
+
+## How
+
+Hosted staging run `36019810581` reached 22/37 scenarios, then
+`remote-client-rendering` failed waiting 30 seconds for the PNG `download`
+event. That scenario passed locally using `/usr/bin/google-chrome` and the
+`python-3.14-support` MolSysMT and MolSysViewer source branches. The local
+full run then stopped in `remote-session` at scenario 25/37: the Python render
+worker opened a command-line headless Chrome target for a localhost URL, but
+the page remained `about:blank`. This matches the local host limitation
+documented in uibcdf/molsysviewer#77. Thus neither environment supplied a
+full 37/37 pass, although both supplied valuable non-overlapping evidence.
+
+The redesign should make each suite selectable without editing the runner;
+retain a full aggregate command; report scenario, browser version, source
+commit, and whether the canvas actually rendered. Export checks should
+distinguish a browser error from slow image generation and verify the real
+download bytes without treating a fixed 30-second wait as a product SLA.
+The render-worker lane needs a host capable of command-line HTTP navigation,
+or a validated change to the worker that removes that host dependency. An
+explicit release policy must say how local and hosted results compose.
+
+## Why
+
+Making all E2E local-only on this machine would lose server-render-worker
+coverage. Keeping a full hosted gate that stops at scenario 23 also prevents
+later scenarios from producing evidence. Both are poor choices when the goal
+is a truthful 1.0 checkpoint. The original assertion that #77 costs this
+repository nothing is now false for `remote-session` and is corrected in its
+archived report.
+
+## What was refuted
+
+- The Playwright browser installer was not necessary for these E2E scripts:
+  the harness already selected the runner's `/usr/bin/google-chrome`; hosted
+  runs stalled extracting an unused browser archive.
+- Local success of `remote-client-rendering` does not imply the full 37-case
+  suite is green. The local render-worker scenario failed immediately after.
+- Hosted failure at a 30-second PNG wait does not establish that exporting is
+  broken: the same scenario completed its PNG and HTML downloads locally.
+
+## Resolution
+
+Pending lane design, exact-commit validation, and an explicit release-gate
+decision. No existing E2E has been disabled or counted as passed by a skip.

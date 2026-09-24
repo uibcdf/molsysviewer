@@ -336,6 +336,32 @@ installs npm dependencies before Python tests, and includes captured output
 when the wheel build fails. The focused local slice passed 32 tests. This is
 source readiness; a hosted rerun is still required.
 
+### Follow-up hosted and local evidence, 2026-09-24
+
+The corrected `CI` run `36019810641` passed the Qt pipeline and four of six
+Python matrix jobs. Ubuntu/Python 3.13 passed its Python suite but failed
+later in JS coverage: unconstrained `nodejs>=18` selected Node 26.10.0,
+under which the installed `yargs` entrypoint threw `ReferenceError: require
+is not defined in ES module scope`. The test environment is now bounded to
+Node 22, with a guard against selecting Node 26. macOS/Python 3.13 reported
+2,088 Python passes, 24 skips, and one failure: the server closed an
+oversized WebSocket message before the client's `send_str` completed, yielding
+`ConnectionError: Connection lost`. The test now accepts that fast-close path
+only for the oversized send and still requires endpoint cleanup. The other
+five jobs passed. These two last changes have focused local checks but no
+hosted rerun.
+
+The corrected `CI_e2e` run `36019810581` used the runner's existing Chrome
+and entered the browser suite. Scenarios 1–22 passed. Scenario 23,
+`remote-client-rendering`, timed out waiting 30 seconds for a PNG download;
+the same complete scenario, including PNG and HTML bytes, passed on the local
+source pair. That local full suite then stopped at scenario 25,
+`remote-session`, because this host's command-line Chrome never navigated to
+the localhost render-worker page (the limitation in uibcdf/molsysviewer#77).
+Neither 22/37 hosted nor 24/37 local is a full E2E pass. The test-evidence
+redesign and release-policy decision are tracked by
+uibcdf/molsysviewer#100. No E2E has been disabled, skipped, or marked green.
+
 - `CI`, `CI_e2e` and `Documentation notebooks` pass on `main` against the MolSysMT this
   package declares, not an older one the solver happens to find.
 - Gate 8 says what is enforced.

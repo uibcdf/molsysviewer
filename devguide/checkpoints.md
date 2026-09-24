@@ -122,6 +122,16 @@ CI run `36017021764` passed the Qt job but failed all six Python matrix jobs
 after the solver barrier, exposing missing test-only dependencies and JS setup;
 the branch has a local fix and requires a hosted rerun. The staged-dependency
 documentation gate is green, but CI and E2E are not yet green.
+
+The follow-up `CI` run `36019810641` then passed Qt and four of six Python
+matrix jobs. The remaining cells exposed Node 26 incompatibility in JS
+coverage and a macOS fast-close WebSocket test race; the focused corrections
+are local only pending another hosted run. `CI_e2e` run `36019810581` reached
+22/37 real browser scenarios before a 30-second PNG-download timeout. The
+same scenario passed locally, but the local aggregate stopped at 25/37 on
+the command-line Chrome/localhost limitation of uibcdf/molsysviewer#77.
+Neither environment has certified the full E2E suite; uibcdf/molsysviewer#100
+tracks an evidence-lane redesign. Keep the 1.0 release gate open.
 The detailed diagnosis is in [`pending_bugs/hosted_ci_has_never_passed.md`](pending_bugs/hosted_ci_has_never_passed.md).
 
 The remaining order is:
