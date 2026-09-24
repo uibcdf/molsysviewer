@@ -18,16 +18,15 @@ supersedes: []
 (`uibcdf/molsyssuite#29`). This is paired with `uibcdf/molsysmt#237`.
 **Status:** Active feasibility work; no public Python 3.14 support is claimed.
 
-The source-pair workflow now includes a Windows/Python 3.14 job and pins a
-MolSysMT source commit that includes the portable Windows memory-budget fix
-from `uibcdf/molsysmt#239`. This is a test lane, not evidence that the Windows
-pair already passes or that the optional Qt host is available there. Its first
-three-platform run (`35968412395`) passed Linux; Windows stopped during test
-collection on a POSIX-only benchmark import, and macOS had one WebSocket
-connection-loss failure after completing the rest of its Python suite. The
-benchmark import is now guarded by platform-specific memory measurement and
-has a Windows-only test. A new hosted run is required to validate the fix and
-classify the macOS failure.
+The source-pair workflow includes a Windows/Python 3.14 job and pins exact
+MolSysMT source commits. The first three-platform run (`35968412395`) passed
+Linux; Windows stopped during test collection on a POSIX-only benchmark
+import, and macOS had one WebSocket connection-loss failure. The benchmark
+import now uses platform-specific memory measurement. Later runs passed
+macOS, and the exact corrected pair in run `35975122014` passed the native
+MolSysMT path guard and the full Viewer Python suite on Linux, macOS, and
+Windows. This is a source-compatibility result, not evidence of staged
+Conda installation or optional Qt-host availability on Windows.
 
 ## What
 
@@ -343,11 +342,16 @@ MolSysViewer participates.
   local path/demo/README tests pass, but Windows confirmation must use a
   newly pinned source-pair run. This is a trusted-delegation boundary fix,
   not an upstream change to `py-mmcif`.
-- The next source-pair run pins MolSysMT
+- The final source-pair run pins MolSysMT
   `86dcb5d078d8cbb45c38500e452944811fc5a5bc`, whose installed-path
   guard covers PDB, H5MSM, and compressed BCIF. The Viewer branch now
   passes its local Linux/Python 3.14 full suite with 12 workers: 2,082 passed
-  and 17 skipped. This does not establish the remote Windows result.
+  and 17 skipped. Hosted run `35975122014` checked out Viewer
+  `88a6c75a08c3e3660b626c697183ef53c7297852` and passed all three
+  jobs: each installed both exact sources, passed the MolSysMT native-path
+  guard, and completed the full Viewer Python suite. This establishes the
+  three-platform source-pair gate, not Conda channel admission or optional
+  Windows/macOS Qt-host support.
 
 ## Resolution
 
