@@ -27,6 +27,7 @@ jobs:
         cfg:
           - { os: ubuntu-latest, python-version: "3.14" }
           - { os: macos-latest,  python-version: "3.14" }
+          - { os: windows-2025, python-version: "3.14" }
 
     steps:
       - name: Check out MolSysViewer
@@ -40,7 +41,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: uibcdf/molsysmt
-          ref: 3485f8ddf0924f307dd8a089dea4ed8b51276600
+          ref: 93b8d1857cc4874d3cf72738fdbb7831e1632f8c
           path: molsysmt-source
           fetch-depth: 0
           persist-credentials: false

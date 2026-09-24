@@ -388,7 +388,7 @@ def test_the_published_python_matrix_is_the_one_we_actually_test():
     )
 
 
-def test_every_supported_version_is_tested_on_both_operating_systems():
+def test_every_supported_version_is_tested_on_linux_and_macos_with_windows_314():
     """A matrix that publishes a version is not the same as one that exercises it.
 
     Pinned separately because the counts can agree while a cell is missing: dropping one
@@ -405,6 +405,7 @@ def test_every_supported_version_is_tested_on_both_operating_systems():
         for operating_system in ("ubuntu-latest", "macos-latest")
         for version in SUPPORTED_PYTHON_VERSIONS
     }
+    expected.add(("windows-2025", "3.14"))
 
     assert cells == expected, f"missing cells: {sorted(expected - cells)}"
 

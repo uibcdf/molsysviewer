@@ -18,6 +18,11 @@ supersedes: []
 (`uibcdf/molsyssuite#29`). This is paired with `uibcdf/molsysmt#237`.
 **Status:** Active feasibility work; no public Python 3.14 support is claimed.
 
+The source-pair workflow now includes a Windows/Python 3.14 job and pins a
+MolSysMT source commit that includes the portable Windows memory-budget fix
+from `uibcdf/molsysmt#239`. This is a test lane, not evidence that the Windows
+pair already passes or that the optional Qt host is available there.
+
 ## What
 
 Extend the tested Python interval to 3.11–3.14 for the core MolSysViewer
