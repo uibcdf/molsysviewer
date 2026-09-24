@@ -77,6 +77,10 @@ jobs:
           python molsysmt-source/devtools/scripts/validate_installed_rust_extension.py
           python -c "from importlib.resources import files; assert files('molsysviewer').joinpath('viewer.js').is_file(); assert files('molsysviewer').joinpath('runtime_actions.json').is_file()"
 
+      - name: Guard native MolSysMT paths in the installed pair
+        shell: bash -l {0}
+        run: python -m pytest --receptor=ci molsysmt-source/tests/basic/test_get_form.py::test_bundled_path_is_detected_and_converted_on_native_platform
+
       - name: Install JavaScript test dependencies
         shell: bash -l {0}
         working-directory: molsysviewer-source/molsysviewer/js

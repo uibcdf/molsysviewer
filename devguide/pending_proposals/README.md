@@ -29,8 +29,9 @@ list. Deferred entries also carry the `post-1.0` milestone on the issue board.
 
 - [`molsysmt_known_source_form_and_large_string_detection.md`](molsysmt_known_source_form_and_large_string_detection.md) — [#42](https://github.com/uibcdf/molsysviewer/issues/42) — A large in-memory molecular string enters unbounded filename extension detection. *(measured)* — waiting on uibcdf/molsysmt#151
 
-### Open (3)
+### Open (4)
 
+- [`clarify_linux_only_standalone_qt_support.md`](clarify_linux_only_standalone_qt_support.md) — [#97](https://github.com/uibcdf/molsysviewer/issues/97) — Clarify the Linux-only support boundary of the Qt standalone host. *(inspected)*
 - [`classic_script_runtime_for_offline_bundles.md`](classic_script_runtime_for_offline_bundles.md) — [#39](https://github.com/uibcdf/molsysviewer/issues/39) — Build the runtime as a classic script so many shared views open from a disk with no server. *(measured)*
 - [`molsysmt_docs_pipeline_analysis.md`](molsysmt_docs_pipeline_analysis.md) — [#41](https://github.com/uibcdf/molsysviewer/issues/41) — MolSysMT's documentation pipeline read at the scale it is about to reach. *(measured)*
 - [`quarantined_digesters_await_a_decision.md`](quarantined_digesters_await_a_decision.md) — [#78](https://github.com/uibcdf/molsysviewer/issues/78) — 219 quarantined digesters are outside the package and undecided; deleting them is the open question. *(measured)*
