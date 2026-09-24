@@ -21,7 +21,13 @@ supersedes: []
 The source-pair workflow now includes a Windows/Python 3.14 job and pins a
 MolSysMT source commit that includes the portable Windows memory-budget fix
 from `uibcdf/molsysmt#239`. This is a test lane, not evidence that the Windows
-pair already passes or that the optional Qt host is available there.
+pair already passes or that the optional Qt host is available there. Its first
+three-platform run (`35968412395`) passed Linux; Windows stopped during test
+collection on a POSIX-only benchmark import, and macOS had one WebSocket
+connection-loss failure after completing the rest of its Python suite. The
+benchmark import is now guarded by platform-specific memory measurement and
+has a Windows-only test. A new hosted run is required to validate the fix and
+classify the macOS failure.
 
 ## What
 
@@ -284,6 +290,16 @@ MolSysViewer participates.
   fixture. A direct installed smoke covers the user behavior, but an
   installed-test harness and remote staging gates remain open under
   `uibcdf/molsysviewer#82`. Neither local tag is a release-version decision.
+- On 2026-09-24, the updated local Python 3.14 source-pair environment passed
+  the full Viewer suite with 12 workers: 2,075 passed and 17 skipped. The
+  first hosted Linux/macOS/Windows source-pair run (`35968412395`) passed
+  Linux (2,080 passed, 13 skipped). Windows failed at collection because a
+  development benchmark imported Python's POSIX-only `resource` module at
+  import time. Its current/peak working-set measurements now use the Windows
+  process-memory API, with a Windows-only test. macOS reached 2,091 tests and
+  had one connection-loss failure in an oversized-WebSocket test; the other
+  2,090 passed or skipped. That failure is not yet classified as transient.
+  Neither source-run outcome establishes a staged Conda installation.
 
 ## Resolution
 
