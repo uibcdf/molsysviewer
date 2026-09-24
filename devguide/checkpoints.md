@@ -220,9 +220,14 @@ unisolated run was not used as candidate evidence. MolSysMT's matching local
 suite passed 10,225 tests with 11 known skips; its fast release gate passed
 13/13. These local results support the source candidate but do not replace
 the hosted exact-commit gates or the 20-cell installed-pair rerun. Source-pair
-workflow `36061167557` was launched on the earlier candidate SHAs to expose
-hosted Python 3.14 defects before final staging; it must not be credited to
-the new policy-pin commits, regardless of its eventual result.
+workflow `36061167557` passed Linux and macOS/Python 3.14 but failed Windows
+in one release-route test; its other Windows results were 2,100 passed and
+23 skipped. Windows resolved the test's `bash -n` invocation to the WSL
+launcher, although the promotion script itself runs only on Ubuntu. The test
+now asserts that runner identity on every platform, retains its promotion
+contract checks on Windows, and checks Bash syntax on POSIX. The matching
+MolSysMT test uses the same rule. The failed run cannot be credited as a 3.14
+pass; the corrected exact commits need a new hosted Windows run.
 The new policy's Ruff 0.16.5 formatting gate exposed three older files in
 the Viewer test infrastructure; they were formatted without changing test
 behavior. Repository-wide Ruff lint and format checks now pass, and the
