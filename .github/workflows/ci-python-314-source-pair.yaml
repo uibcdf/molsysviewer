@@ -41,7 +41,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: uibcdf/molsysmt
-          ref: 93b8d1857cc4874d3cf72738fdbb7831e1632f8c
+          ref: e865b72ce20358c1bd33be318c170a91c18ff145
           path: molsysmt-source
           fetch-depth: 0
           persist-credentials: false

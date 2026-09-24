@@ -306,6 +306,16 @@ MolSysViewer participates.
   NGLView-dependent cases skip when it is absent; this does not reduce the
   core Viewer source-pair gate or imply NGLView support has been tested on
   every platform.
+- The source-pair rerun `35970837689` passed Linux and macOS/Python 3.14.
+  Windows passed installation and collection, but most demo-dependent tests
+  failed because MolSysMT rejected the native `WindowsPath` resource
+  (`uibcdf/molsysmt#241`). The MolSysMT branch now has a local fix awaiting
+  Windows verification. Separate Viewer Windows failures include preview-port
+  reuse and a test that assumes POSIX path spelling; they must be resolved or
+  classified independently before a Windows support claim. The next
+  source-pair run pins MolSysMT
+  `e865b72ce20358c1bd33be318c170a91c18ff145`, which contains the
+  native-path fix and its guard.
 
 ## Resolution
 
