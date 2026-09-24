@@ -86,7 +86,8 @@ def test_no_executable_asked_for_means_search_the_path():
 
 
 def test_a_path_object_is_handed_over_as_a_string():
-    assert digest_explicit(Path("/usr/bin/chromium")) == "/usr/bin/chromium"
+    path = Path("/usr/bin/chromium")
+    assert digest_explicit(path) == str(path)
 
 
 def test_a_string_path_is_kept():

@@ -316,6 +316,20 @@ MolSysViewer participates.
   source-pair run pins MolSysMT
   `e865b72ce20358c1bd33be318c170a91c18ff145`, which contains the
   native-path fix and its guard.
+- The first executable Windows suite also exposed four Viewer-local
+  portability defects independent of the MolSysMT path failure. The preview
+  server's `SO_REUSEADDR` behavior allowed a second Windows socket to claim
+  the same live port; the server now requests exclusive address use on
+  Windows while retaining POSIX reuse. An argument-table audit compared
+  Windows backslash paths to POSIX-style exemptions, and a digester test
+  assumed POSIX spelling for a native `Path`; both now compare the intended
+  platform-independent property. A foreground-CLI test used `selectors`
+  on a Windows pipe and assumed POSIX SIGTERM behavior; it now waits for
+  the ready line through a bounded reader thread and tests platform-appropriate
+  process termination. The four affected test modules pass locally on
+  Linux/Python 3.14 (132 tests), but Windows confirmation is pending. The
+  Windows socket correction follows Microsoft's documented
+  [`SO_EXCLUSIVEADDRUSE` behavior](https://learn.microsoft.com/en-us/windows/win32/winsock/using-so-reuseaddr-and-so-exclusiveaddruse).
 
 ## Resolution
 
