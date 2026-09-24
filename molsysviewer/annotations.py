@@ -170,9 +170,12 @@ class AnnotationsManager:
                 if options.get("offset_mode") == "world":
                     from ._pyunitwizard import puw
 
+                    # Reported in nm, the unit add_annotation reads bare numbers in, so
+                    # the report can be fed back; never in the session's standard length,
+                    # which the user may have changed (uibcdf/molsysviewer#96).
                     offset_q = puw.quantity(options["offset"], "angstrom")
-                    offset_std = puw.get_value(puw.standardize(offset_q))
-                    res["offset"] = [float(x) for x in offset_std]
+                    offset_nm = puw.get_value(offset_q, to_unit="nm")
+                    res["offset"] = [float(x) for x in offset_nm]
                 else:
                     res["offset"] = options["offset"]
             if "leader_line" in options:
