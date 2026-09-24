@@ -239,12 +239,15 @@ def test_built_wheel_imports_from_packaged_runtime_manifest(tmp_path):
     _copy_wheel_source(source)
 
     dist = tmp_path / "dist"
-    subprocess.run(
+    build_result = subprocess.run(
         [sys.executable, "-m", "build", "--wheel", "--no-isolation", "--outdir", str(dist)],
         cwd=source,
-        check=True,
         capture_output=True,
         text=True,
+    )
+    assert build_result.returncode == 0, (
+        f"wheel build failed (exit {build_result.returncode}):\n"
+        f"stdout:\n{build_result.stdout}\nstderr:\n{build_result.stderr}"
     )
     wheels = list(dist.glob("*.whl"))
     assert len(wheels) == 1
@@ -458,19 +461,42 @@ def test_hosted_gates_can_select_the_exact_coordinated_staging_candidate():
             assert "inputs.use_staging && 'molsysmt=0.22.0'" in create_args
 
 
-def test_e2e_browser_provisioning_is_bounded_and_diagnostic():
-    """A stalled Chromium install must not consume an entire hosted run silently."""
+def test_e2e_uses_the_hosted_browser_it_checks():
+    """The E2E harness must not download a browser it never launches."""
     path = ROOT / ".github" / "workflows" / "CI_e2e.yaml"
     workflow = yaml.safe_load(path.read_text(encoding="utf-8"))
-    install_steps = [
-        step for step in workflow["jobs"]["e2e"]["steps"] if step.get("name") == "Install Playwright browsers"
-    ]
+    steps = workflow["jobs"]["e2e"]["steps"]
+    verify_steps = [step for step in steps if step.get("name") == "Verify hosted Chrome"]
+    run_steps = [step for step in steps if step.get("name") == "Run E2E tests"]
 
-    assert len(install_steps) == 1
-    install_step = install_steps[0]
-    assert install_step["timeout-minutes"] <= 20
-    assert "pw:install" in install_step["env"]["DEBUG"]
-    assert "playwright install chromium" in install_step["run"]
+    assert len(verify_steps) == len(run_steps) == 1
+    assert steps.index(verify_steps[0]) < steps.index(run_steps[0])
+    assert "/usr/bin/google-chrome --version" in verify_steps[0]["run"]
+    assert run_steps[0]["env"]["PW_CHROMIUM_BIN"] == "/usr/bin/google-chrome"
+    assert not any("playwright install" in step.get("run", "") for step in steps)
+
+
+def test_hosted_python_suite_installs_its_build_and_example_requirements():
+    """The hosted suite must provision what its wheel, JS, README, and Styler tests use."""
+    env_path = ROOT / "devtools" / "conda-envs" / "test_env.yaml"
+    env = yaml.safe_load(env_path.read_text(encoding="utf-8"))
+    dependencies = _dependency_names(env["dependencies"])
+    pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    build_requirements = _dependency_names(pyproject["build-system"]["requires"])
+
+    assert build_requirements <= dependencies
+    assert {"python-build", "mdtraj", "jinja2"} <= dependencies
+
+    workflow_path = ROOT / ".github" / "workflows" / "CI.yaml"
+    workflow = yaml.safe_load(workflow_path.read_text(encoding="utf-8"))
+    steps = workflow["jobs"]["test"]["steps"]
+    test_index = next(index for index, step in enumerate(steps) if step.get("name") == "Run tests")
+    npm_steps = [
+        index
+        for index, step in enumerate(steps)
+        if step.get("working-directory") == "molsysviewer/js" and "npm ci" in step.get("run", "")
+    ]
+    assert npm_steps and min(npm_steps) < test_index
 
 
 def test_the_recommended_version_is_the_one_the_single_version_jobs_use():

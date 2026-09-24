@@ -179,6 +179,11 @@ jobs:
       run: |
         python -m pip install . --no-deps
 
+    - name: Install JS build dependencies for Python distribution tests
+      shell: bash -l {0}
+      working-directory: molsysviewer/js
+      run: npm ci
+
     - name: Test import module
       shell: bash -l {0}
       run: |
@@ -205,7 +210,6 @@ jobs:
       shell: bash -l {0}
       run: |
         cd molsysviewer/js
-        npm ci
         npm run build
         npm run test:js
         npm run coverage:js

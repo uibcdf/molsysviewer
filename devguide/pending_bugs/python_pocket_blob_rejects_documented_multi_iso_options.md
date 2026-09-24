@@ -60,6 +60,8 @@ message and the real public `MolSysView.shapes` path. `channels.ipynb` now calls
 The first full local suite reached 2,098 passes, 14 accepted skips, and one
 generated devguide-index failure caused by adding this report. The index was
 regenerated; the focused source/API/distribution/reporting slice then passed
-135 tests with 12 workers, and Ruff passed. Run the hosted notebook gate on
-the exact branch commit before closing this entry. Local execution alone is
-not hosted release evidence.
+135 tests with 12 workers, and Ruff passed. Hosted Documentation notebooks
+run `36016496850` passed on exact branch commit
+`7c4e0cd968e9530033e35221683ca085fe1d37cd`, including every documented
+notebook. The defect remains open until the fix reaches the release branch or
+`main`; success on this source branch is not public-channel admission.

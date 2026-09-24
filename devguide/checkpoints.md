@@ -109,9 +109,19 @@ The next hosted Viewer gates have now crossed the original dependency barrier:
 documentation run `35997846329` installed successfully, then exposed two
 Showcase API/example failures. The pocket-blob Python multi-iso gap is tracked
 as uibcdf/molsysviewer#99; the channel example used an obsolete argument.
-Both notebooks execute locally after branch fixes, but need a hosted rerun.
-E2E run `35998036249` installed and built, then stalled while provisioning
-Chromium and was cancelled before any browser test. Neither gate is green.
+Both notebooks execute locally after branch fixes, and the hosted
+Documentation notebooks rerun `36016496850` passed every notebook on exact
+branch commit `7c4e0cd968e9530033e35221683ca085fe1d37cd`. This closes
+the staged-dependency documentation execution gap for that candidate, not
+the ordinary public-channel `main` gate.
+E2E runs `35998036249` and `36016496630` installed and built, then stalled
+extracting an unused Playwright Chromium archive; neither entered the browser
+tests. The latter stopped at a deliberate 15-minute timeout. The workflow now
+checks and records the runner's Chrome, which the E2E harness already selects.
+CI run `36017021764` passed the Qt job but failed all six Python matrix jobs
+after the solver barrier, exposing missing test-only dependencies and JS setup;
+the branch has a local fix and requires a hosted rerun. The staged-dependency
+documentation gate is green, but CI and E2E are not yet green.
 The detailed diagnosis is in [`pending_bugs/hosted_ci_has_never_passed.md`](pending_bugs/hosted_ci_has_never_passed.md).
 
 The remaining order is:

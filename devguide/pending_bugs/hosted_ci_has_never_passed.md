@@ -303,9 +303,10 @@ failed in `showcase/pockets.ipynb` because the Python pocket-blob API rejected
 the frontend-supported plural iso options (uibcdf/molsysviewer#99), and in
 `showcase/channels.ipynb` because the example still used the old `smoothing`
 argument. Both have local fixes and successful notebook executions on the
-`python-3.14-support` branch, but the hosted gate has not yet been rerun on a
-committed candidate. This is a product/docs failure beyond the original solver
-barrier, not evidence that the release gate has passed.
+`python-3.14-support` branch. The rerun `36016496850` passed every documented
+notebook on exact commit `7c4e0cd968e9530033e35221683ca085fe1d37cd`.
+That is a green staged-dependency documentation gate on the source branch,
+not yet the required ordinary `main` gate against public packages.
 
 Manual `CI_e2e` staging run `35998036249` installed its environment and built
 the JavaScript harness. Chromium's 164.7 MiB download reached 100% within two
@@ -313,9 +314,27 @@ seconds, but browser installation emitted no further progress for over two
 hours and never entered the tests. It was cancelled. The result is an
 infrastructure/setup gap, neither an E2E pass nor a product E2E failure. Keep
 headless browser E2E in hosted CI; retain visible-window/GPU checks as a
-separate manual requirement. The branch now bounds browser provisioning to 15
-minutes and enables Playwright installer diagnostics. A hosted rerun must show
-whether the stall recurs before claiming this gate.
+separate manual requirement. A diagnostic rerun, `36016496630`, bounded the
+browser-install step to 15 minutes. Playwright reported a successful download
+in two seconds, then stopped at `extracting archive` until the step timed out.
+The E2E harness already selects `/usr/bin/google-chrome` by default, which the
+GitHub-hosted Ubuntu image provides. Installing Playwright's separate Chromium
+archive was unused by these tests and has now been replaced by an executable
+check and logged Chrome version. A hosted rerun must reach and execute the
+browser tests before this gate can be claimed.
+
+The full staging-enabled `CI` rerun `36017021764` crossed the solver barrier
+and passed its Qt pipeline, but all six Python matrix jobs failed in `Run
+tests`. Linux/Python 3.13 reported 2,088 passes, 17 skips and seven failures:
+the README examples lacked optional `mdtraj`; two information-table tests
+lacked `jinja2`; two JS-build tests lacked `node_modules/esbuild` because
+`npm ci` ran only after the Python suite; and the no-isolation wheel test
+failed without exposing the captured build stderr. The other five matrix jobs
+failed on the same README dependency boundary. The branch test environment
+now carries `mdtraj`, `jinja2`, and the declared wheel build requirements,
+installs npm dependencies before Python tests, and includes captured output
+when the wheel build fails. The focused local slice passed 32 tests. This is
+source readiness; a hosted rerun is still required.
 
 - `CI`, `CI_e2e` and `Documentation notebooks` pass on `main` against the MolSysMT this
   package declares, not an older one the solver happens to find.

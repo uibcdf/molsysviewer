@@ -6,7 +6,9 @@ channels:
 dependencies:
   - pip
   - python-build
+  - setuptools>=64
   - versioningit
+  - wheel
   - pytest
   - pytest-cov
   # The distribution-contract tests parse the Conda YAML recipe during collection.
@@ -27,3 +29,7 @@ dependencies:
   - pandas
   - imageio
   - nodejs>=18
+  # Test-only requirements: the README exercises an MDTraj input and the
+  # information-table tests render Pandas Styler HTML.
+  - mdtraj
+  - jinja2

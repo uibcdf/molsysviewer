@@ -67,15 +67,18 @@ jobs:
           npm run build:harness
           npm run build:e2e:all
 
-      - name: Install Playwright browsers
-        working-directory: molsysviewer/js
+      # The E2E harness selects /usr/bin/google-chrome by default. The hosted
+      # Ubuntu image provides it; downloading a second Chromium copy stalled
+      # during ZIP extraction before any tests could begin (#88).
+      - name: Verify hosted Chrome
         shell: bash -l {0}
-        timeout-minutes: 15
-        env:
-          DEBUG: pw:install
-        run: npx playwright install chromium
+        run: |
+          test -x /usr/bin/google-chrome
+          /usr/bin/google-chrome --version
 
       - name: Run E2E tests
         working-directory: molsysviewer/js
         shell: bash -l {0}
+        env:
+          PW_CHROMIUM_BIN: /usr/bin/google-chrome
         run: npm run test:e2e
