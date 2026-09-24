@@ -297,11 +297,15 @@ MolSysViewer participates.
   integration tests passed against the earlier exact local Conda pair
   (`0.22.2`/`0.23.2`) from outside both checkouts. A negative control run from
   the Viewer checkout exited 4 with the expected source-contamination error.
-  This closes the local installed-test-harness gap, not the remote staged-pair
-  gate or the newer source commit's package evidence. The Python 3.14
+  This closes the local installed-test-harness gap; by itself it did not test
+  newer sources or the remote staged-pair gate. The Python 3.14
   source-pair workflow now invokes these tests in installed mode and pins
-  MolSysMT `8ab42b58520892d54a05222b91c116b9e9114314`; that updated hosted
-  workflow has not yet run. The local Viewer source suite passed with 12
+  MolSysMT `8ab42b58520892d54a05222b91c116b9e9114314`. Hosted run
+  `35988170629` checked out Viewer
+  `b9a8c4c9c1672d6fca6fe6c5cb71cf41f8b5b845` and passed on Ubuntu,
+  macOS, and Windows: each job passed the installed-pair integration step
+  and the full Viewer Python suite. These were source-built pip installations,
+  not immutable Conda staging packages. The local Viewer source suite passed with 12
   workers (2,082 passed, 17 skipped) outside the sandbox. Its first run in
   the restricted sandbox had 18 socket/Chromium failures, which disappeared
   unchanged outside the sandbox.
