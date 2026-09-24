@@ -35,18 +35,23 @@ class SceneMixin:
         skip_digestion: bool = False,
     ) -> None:
         """Render the unit-cell or simulation-box edges in the canvas."""
-        sidx = 0 if structure_indices in ("all", None) else int(structure_indices)
+        # The digester turns an int into np.array([i]); int() on a 1-d array is an error
+        # under NumPy 2, which broke show_box() even with its default arguments.
+        if structure_indices is None or isinstance(structure_indices, str):
+            sidx = 0
+        else:
+            sidx = int(np.asarray(structure_indices).reshape(-1)[0])
 
         box_q = msm.get(self._molsys, element="system", box=True, skip_digestion=True)
         if box_q is None:
             raise ValueError("The loaded system does not have box information.")
 
-        box_nm = puw.get_value(box_q)  # shape (n_structures, 3, 3) in nm
-        if box_nm.ndim == 3:
-            box_nm = box_nm[sidx]  # shape (3, 3)
-
-        # Convert nm → Å
-        box_a = box_nm * _NM_TO_ANGSTROM  # (3, 3) in Å
+        # The frontend draws in Å. MolSysMT returns the box in the session's standard
+        # length, which the user may have set to anything; convert explicitly
+        # (uibcdf/molsysviewer#96).
+        box_a = np.asarray(puw.get_value(box_q, to_unit="angstrom"))  # (n_structures, 3, 3)
+        if box_a.ndim == 3:
+            box_a = box_a[sidx]  # shape (3, 3)
         a, b, c = box_a[0], box_a[1], box_a[2]
 
         # Build 8 vertices
