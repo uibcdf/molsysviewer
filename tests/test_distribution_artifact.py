@@ -458,6 +458,21 @@ def test_hosted_gates_can_select_the_exact_coordinated_staging_candidate():
             assert "inputs.use_staging && 'molsysmt=0.22.0'" in create_args
 
 
+def test_e2e_browser_provisioning_is_bounded_and_diagnostic():
+    """A stalled Chromium install must not consume an entire hosted run silently."""
+    path = ROOT / ".github" / "workflows" / "CI_e2e.yaml"
+    workflow = yaml.safe_load(path.read_text(encoding="utf-8"))
+    install_steps = [
+        step for step in workflow["jobs"]["e2e"]["steps"] if step.get("name") == "Install Playwright browsers"
+    ]
+
+    assert len(install_steps) == 1
+    install_step = install_steps[0]
+    assert install_step["timeout-minutes"] <= 20
+    assert "pw:install" in install_step["env"]["DEBUG"]
+    assert "playwright install chromium" in install_step["run"]
+
+
 def test_the_recommended_version_is_the_one_the_single_version_jobs_use():
     """One cell of the matrix does the work nobody repeats, and the docs are built once.
 

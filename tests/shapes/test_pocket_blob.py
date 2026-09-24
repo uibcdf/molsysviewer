@@ -1,5 +1,11 @@
 import molsysviewer._pyunitwizard  # noqa: F401 — configures puw
+import pytest
 import pyunitwizard as puw
+
+from molsysviewer import MolSysView
+
+# Materialize the public view before importing the shape package.
+# isort: split
 from molsysviewer.shapes import PocketBlobs
 
 
@@ -77,6 +83,63 @@ def test_add_pocket_blob_wireframe_message():
     assert options["wireframe_size"] == 2.5
 
 
+def test_add_pocket_blob_multi_iso_message():
+    view = DummyView()
+    blobs = PocketBlobs(view)
+
+    blobs.add_pocket_blob(
+        centers=puw.quantity([(0, 0, 0), (1, 1, 1)], "nm"),
+        radii=puw.quantity([1.0, 1.5], "nm"),
+        iso_levels=[0.08, 0.15],
+        iso_colors=[0x44CCFF, 0x003366],
+        iso_alphas=[0.35, 0.5],
+        tag="multi-iso",
+    )
+
+    options = view.messages[0]["options"]
+    assert options["iso_levels"] == [0.08, 0.15]
+    assert options["iso_colors"] == [0x44CCFF, 0x003366]
+    assert options["iso_alphas"] == [0.35, 0.5]
+    assert "iso_level" not in options
+
+
+def test_public_shapes_manager_accepts_pocket_blob_multi_iso_options():
+    view = MolSysView()
+
+    layer = view.shapes.add_pocket_blob(
+        centers=puw.quantity([(0, 0, 0)], "nm"),
+        radii=puw.quantity([1.0], "nm"),
+        iso_levels=[0.08, 0.15],
+        iso_colors=[0x44CCFF, 0x003366],
+        iso_alphas=[0.35, 0.5],
+        tag="multi-iso",
+    )
+
+    assert layer.tag == "multi-iso"
+
+
+@pytest.mark.parametrize(
+    ("iso_options", "message"),
+    [
+        ({"iso_levels": []}, "iso_levels must not be empty"),
+        ({"iso_level": 0.1, "iso_levels": [0.2]}, "cannot be used together"),
+        ({"iso_levels": [0.1, 0.2], "iso_colors": [0xFF0000]}, "iso_colors must match"),
+        ({"iso_levels": [0.1, 0.2], "iso_alphas": [0.5]}, "iso_alphas must match"),
+    ],
+)
+def test_add_pocket_blob_rejects_inconsistent_multi_iso_options(iso_options, message):
+    view = DummyView()
+    blobs = PocketBlobs(view)
+
+    with pytest.raises(ValueError, match=message):
+        blobs.add_pocket_blob(
+            centers=puw.quantity([(0, 0, 0)], "nm"),
+            radii=puw.quantity([1.0], "nm"),
+            **iso_options,
+        )
+    assert view.messages == []
+
+
 def test_add_pocket_blob_validates_lengths():
     view = DummyView()
     blobs = PocketBlobs(view)
@@ -113,3 +176,21 @@ def test_add_scalar_isosurface_message():
     assert options["tag"] == "iso"
     assert options["layer_tag"] == "iso"
     assert options["name"] == "generic iso"
+
+
+def test_add_scalar_isosurface_multi_iso_message():
+    view = DummyView()
+    blobs = PocketBlobs(view)
+
+    blobs.add_scalar_isosurface(
+        centers=puw.quantity([(0, 0, 0)], "nm"),
+        radii=puw.quantity([1.0], "nm"),
+        iso_levels=[0.08, 0.15],
+        iso_colors=[0x44CCFF, 0x003366],
+        iso_alphas=[0.35, 0.5],
+    )
+
+    assert view.messages[0]["op"] == "add_scalar_isosurface"
+    assert view.messages[0]["options"]["iso_levels"] == [0.08, 0.15]
+    assert view.messages[0]["options"]["iso_colors"] == [0x44CCFF, 0x003366]
+    assert view.messages[0]["options"]["iso_alphas"] == [0.35, 0.5]

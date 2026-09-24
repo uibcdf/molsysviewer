@@ -295,6 +295,28 @@ pass, as before.
 
 ## Acceptance
 
+### New hosted evidence, 2026-09-24
+
+Manual `Documentation notebooks` staging run `35997846329` successfully
+installed the coordinated dependencies and reached notebook execution. It then
+failed in `showcase/pockets.ipynb` because the Python pocket-blob API rejected
+the frontend-supported plural iso options (uibcdf/molsysviewer#99), and in
+`showcase/channels.ipynb` because the example still used the old `smoothing`
+argument. Both have local fixes and successful notebook executions on the
+`python-3.14-support` branch, but the hosted gate has not yet been rerun on a
+committed candidate. This is a product/docs failure beyond the original solver
+barrier, not evidence that the release gate has passed.
+
+Manual `CI_e2e` staging run `35998036249` installed its environment and built
+the JavaScript harness. Chromium's 164.7 MiB download reached 100% within two
+seconds, but browser installation emitted no further progress for over two
+hours and never entered the tests. It was cancelled. The result is an
+infrastructure/setup gap, neither an E2E pass nor a product E2E failure. Keep
+headless browser E2E in hosted CI; retain visible-window/GPU checks as a
+separate manual requirement. The branch now bounds browser provisioning to 15
+minutes and enables Playwright installer diagnostics. A hosted rerun must show
+whether the stall recurs before claiming this gate.
+
 - `CI`, `CI_e2e` and `Documentation notebooks` pass on `main` against the MolSysMT this
   package declares, not an older one the solver happens to find.
 - Gate 8 says what is enforced.

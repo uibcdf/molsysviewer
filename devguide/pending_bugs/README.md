@@ -19,6 +19,10 @@ list.
 
 <!-- generated: devguide_index -->
 
+### Being worked on (1)
+
+- [`python_pocket_blob_rejects_documented_multi_iso_options.md`](python_pocket_blob_rejects_documented_multi_iso_options.md) — [#99](https://github.com/uibcdf/molsysviewer/issues/99) — Python pocket blob API rejects its documented multi-iso options. *(medium, reproduced)*
+
 ### Partially done (2)
 
 - [`hosted_ci_has_never_passed.md`](hosted_ci_has_never_passed.md) — [#88](https://github.com/uibcdf/molsysviewer/issues/88) — Hosted CI has never passed, for three causes that live in how CI builds its environment. *(high, measured)*

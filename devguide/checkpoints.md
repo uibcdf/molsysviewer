@@ -103,7 +103,18 @@ The 2026-09-24 state is: MolSysMT 0.22.0 ABI3 build 5 and MolSysViewer
 0.23.1 noarch build 1 are in staging. MolSysMT run `35967239820` passed the
 exact-pair matrix on five native platforms and Python 3.11–3.13 (15 cells).
 That run predated the later explicit Conda-record channel/URL/hash guard and
-does not satisfy that stronger check retroactively. The remaining order is:
+does not satisfy that stronger check retroactively.
+
+The next hosted Viewer gates have now crossed the original dependency barrier:
+documentation run `35997846329` installed successfully, then exposed two
+Showcase API/example failures. The pocket-blob Python multi-iso gap is tracked
+as uibcdf/molsysviewer#99; the channel example used an obsolete argument.
+Both notebooks execute locally after branch fixes, but need a hosted rerun.
+E2E run `35998036249` installed and built, then stalled while provisioning
+Chromium and was cancelled before any browser test. Neither gate is green.
+The detailed diagnosis is in [`pending_bugs/hosted_ci_has_never_passed.md`](pending_bugs/hosted_ci_has_never_passed.md).
+
+The remaining order is:
 
 1. finish MolSysViewer's hosted CI, E2E and documentation gates against the
    staged pair; the latest ordinary CI run `35984241119` could not resolve

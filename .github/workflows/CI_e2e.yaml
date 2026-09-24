@@ -70,6 +70,9 @@ jobs:
       - name: Install Playwright browsers
         working-directory: molsysviewer/js
         shell: bash -l {0}
+        timeout-minutes: 15
+        env:
+          DEBUG: pw:install
         run: npx playwright install chromium
 
       - name: Run E2E tests
