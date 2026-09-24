@@ -185,6 +185,29 @@ Deciding release readiness against a stale plan is its own risk.
 
 ## Remaining `1.0.0` gates
 
+### Coordinated Conda distribution milestone — 2026-09-24
+
+The separate `python-3.14-support` branches now have exact technical staging
+candidates: MolSysMT `0.22.3` ABI3 build 0 on five native platforms and
+MolSysViewer `0.23.3` noarch build 0. The same immutable pair passed 20/20
+fresh installed-pair cells across `linux-64`, `linux-aarch64`, `osx-64`,
+`osx-arm64`, and `win-64`, each with Python 3.11–3.14. Each cell checked
+package versions, staging URL/SHA-256 provenance, MolSysMT native code,
+BCIF/PDB-text conversion, and Viewer loading/resources. The five targeted
+runs and exact source/artifact identities are recorded in
+[`checkpoints.md`](checkpoints.md#separate-python-314-staging-slice) and
+[`pending_proposals/extend_python_support_to_3_14.md`](pending_proposals/extend_python_support_to_3_14.md).
+
+This closes a major **pre-1.0 staging installation milestone**, not Phase 10
+gates 1–5 or the 1.0 release. The numbers `0.22.3`/`0.23.3` are technical
+coordinates, not chosen public versions. The final pair still needs an
+exact-commit release decision, broader scientific/Viewer/Qt-where-claimed
+validation, hosted CI/E2E/notebook gates against the selected candidate,
+and fresh installation from the public channel after coordinated publication.
+The older 3.11–3.13 release candidates keep their own gate; do not silently
+reinterpret their artifacts as Python 3.14 packages. Windows passing the core
+pair installation does not promote standalone/product Windows support.
+
 | # | Gate | Notes |
 |---|---|---|
 | 20 | **Qt parity (R3) and its own benchmark** | ✅ done. The benchmark measured 4.3 s of Python preparation for 5,000 structures against 36 ms array-native, so Qt now serves raw arrays through the scheme handler it already had. R3 closed a real fork: an unknown action was rejected observably on AnyWidget and accepted in silence on Qt. |
@@ -192,7 +215,7 @@ Deciding release readiness against a stale plan is its own risk.
 | 25 | **Legacy popup vocabulary** | ✅ done. The eleven host/popup actions are declared in a `popup_actions` group with the directions each may carry, and both ends validate against it. `molsysviewer-sync-op` is declared bidirectional, which makes explicit the ambiguity that motivated the envelope in the first place. |
 | 23 | **Widget seam E2E** | ✅ done. `widget-seam.e2e.ts` drives the real `render()` in Chromium: raw `ready`, enveloped outbound, a valid projection reaching the controller, and a foreign session never reaching it. |
 | 24 | **R2 tail** | ✅ done. The journal is gone from the interactive path — kept only in `bootDocsView`, where a static export has no Python to ask — and `build_context_items` is the pure half that lets the panel snapshot carry add-on context items. |
-| 26 | **Architecture rework and hardening** | In progress. Phases 0a–6, 8 and 9 are audited; Phase 7 awaits two visible Qt observations. Phase 10 has closed state-file persistence, hover semantics and public-callable digestion; notebook CI was reopened on 2026-09-19 because its workflow has never passed, and dependency-channel closure, final installed-artifact reruns, dogfooding and the final matrix remain. Gate 1 is the one that moves the others: gates 2-5 wait on its artifacts, and so does the release publication in uibcdf/molsysviewer#82. See [`pre_1_0_architecture_rework_and_hardening_master_plan.md`](pre_1_0_architecture_rework_and_hardening_master_plan.md). |
+| 26 | **Architecture rework and hardening** | In progress. Phases 0a–6, 8 and 9 are audited; Phase 7 awaits two visible Qt observations. Phase 10 has closed state-file persistence, hover semantics and public-callable digestion. The technical 3.11–3.14 pair now passes 20/20 staging installations, but final public dependency-channel closure, hosted CI/notebooks, final-artifact reruns, dogfooding and the release matrix remain. Gates 1–5 and release publication in uibcdf/molsysviewer#82 are not closed by staging evidence. See [`pre_1_0_architecture_rework_and_hardening_master_plan.md`](pre_1_0_architecture_rework_and_hardening_master_plan.md). |
 | 27 | **Experimental single-user remote session and rendering placement** | ✅ experimental 1.0 slice closed 2026-09-05; stabilization is post-1.0. RRS0–RRS3 and visible spika-to-aleph browser/Qt acceptance are complete. Server rendering provides the managed GPU worker, authenticated VP8 video/input, projected workbench, trajectory, picking/context menus, upload/export, recovery, compact chrome and Qt fullscreen; client rendering reuses the same authority and full frontend. A wheel-installed server outside the checkout repeated the 5000-frame pentalanine smoke from aleph. The Python API, CLI options, wire protocol, production deployment model, full parity and video-quality policy remain explicitly unstable and may change after 1.0. Fresh-channel dependency resolution remains a repository-wide packaging gate, not remote stabilization. See [`remote_rendering_plan.md`](remote_rendering_plan.md). |
 | 14 | **Scientific dogfooding** | Unchanged: daily lab usage is what finds what audits cannot. |
 | 15 | **Bug resolution from dogfooding** | Unchanged. |

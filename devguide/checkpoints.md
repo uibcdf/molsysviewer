@@ -8,7 +8,9 @@ changes. Normative behavior remains in the contracts linked below.
 - Branch: `main` for the coordinated 0.22.0/0.23.1 release path. The exact
   staged pair passed its hosted 15-cell installation matrix on 2026-09-24;
   publication and the remaining Viewer release gates are pending. The separate
-  `python-3.14-support` branch has a Linux-first staging slice recorded below.
+  `python-3.14-support` branch has a five-platform, 20-cell staging milestone
+  recorded below; the [1.0 release plan](path_to_1_0.md) distinguishes it from
+  public-channel admission.
 - Phases 5, 6, 8 and 9 and the Phase 10 persistence slice were independently
   audited and closed on 2026-08-09. Phase 8 evidence remains in
   [`performance/representative_scale_gate_2026_08.md`](performance/representative_scale_gate_2026_08.md).
