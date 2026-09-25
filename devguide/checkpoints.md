@@ -273,6 +273,11 @@ the corrected Viewer source. Regenerate the committed runtime for `0.23.4`,
 prove the ordinary Python wheel carries that same version, and rerun the
 Viewer producer and exact-pair gates before tagging. MolSysMT's unchanged
 build-3 ABI3 artifacts do not need to be rebuilt.
+The first Viewer build-4 attempt (`36119181642`) proved the source bundle
+check but stopped before packaging: the build environment lacked `wheel` for
+the new isolated-wheel preflight. No build-4 Conda file was uploaded; the
+environment now declares `wheel` and build 4 can be retried without replacing
+an existing staged coordinate.
 
 ## Separate Python 3.14 staging slice
 

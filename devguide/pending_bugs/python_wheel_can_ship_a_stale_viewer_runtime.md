@@ -67,6 +67,12 @@ run had 2,120 passes, 14 skips, and one expected version-mismatch failure in
 generated local package version was set to the intended `0.23.4`. The other
 2,120 results are retained as diagnostic source evidence, not a green full
 release suite. JavaScript unit tests pass 292/292.
+The first hosted wheel preflight (`36119181642`) failed before any Conda upload:
+`python -m build --no-isolation` reported that `wheel` was absent from the
+build environment. The source-version check had passed. `wheel` is now an
+explicit member of `devtools/conda-envs/build_env.yaml`; build number 4 was
+not published by that failed run and can be retried without overwriting a
+staged artifact.
 
 The local focused guard passes five tests. This report remains active until the
 new workflow succeeds on the corrected exact candidate and the release wheel
