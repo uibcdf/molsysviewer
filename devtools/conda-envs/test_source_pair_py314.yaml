@@ -25,7 +25,7 @@ dependencies:
   - argdigest>=0.13.0
   - depdigest>=0.10.0
   - smonitor>=0.13.0
-  - pyunitwizard>=0.24.0
+  - pyunitwizard>=0.25.0
   - aiohttp>=3.10
   - anywidget>=0.9.15
   - packaging>=23

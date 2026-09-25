@@ -250,6 +250,16 @@ and 12 workers. Both components now declare 0.13.0 as the minimum. The
 existing build-0 staged files and their passing installed cells remain
 technical evidence only; build 1 and the complete exact-pair gates must
 replace them before promotion.
+Build-1 producers passed in MolSysMT `36102277287` and Viewer
+`36102277047`, and the corrected source-pair run `36102309036` passed all
+three Python 3.14 platforms. MolSysMT's Rust-wheel run `36102309653` then
+found an independent stale sibling-source set in its installed-public-smoke
+job. Its PyUnitWizard revision lacks `configure.has_active_policy()`, an API
+used at import time by both packages and introduced in PyUnitWizard 0.25.0.
+The wheel and Conda minimums are being corrected to 0.25.0 in both projects,
+and MolSysMT's smoke will reuse the central controlled-source manifest and
+an exact Viewer commit. Build 1 becomes diagnostic only; build 2 and fresh
+exact-commit gates are required before promotion.
 
 ## Separate Python 3.14 staging slice
 

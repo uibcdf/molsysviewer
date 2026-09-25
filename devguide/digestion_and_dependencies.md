@@ -114,6 +114,11 @@ Current rule:
 - `molsysviewer` should use one local PyUnitWizard path;
 - do not mix local digestion/config with `molsysmt.pyunitwizard` aliases.
 
+Both components call `puw.configure.has_active_policy()` during package
+initialization. That API first appears in PyUnitWizard 0.25.0, so the wheel
+and Conda minimum must be at least 0.25.0; declaring an unconstrained
+PyUnitWizard dependency would permit a clean-install import failure.
+
 **Physical magnitudes (lengths, positions, …) must be quantities, never bare
 numbers.** This is a hard policy with its own document —
 [units_and_quantities.md](units_and_quantities.md) — covering how to write a

@@ -41,6 +41,7 @@ REQUIRED_RUNTIME_VERSION_FLOORS = {
     "aiohttp": "3.10",
     "argdigest": "0.13.0",
     "molsysmt": "0.22.0",
+    "pyunitwizard": "0.25.0",
 }
 
 
