@@ -14,3 +14,4 @@ dependencies:
   # Python packaging helpers
   - pip
   - python-build
+  - wheel

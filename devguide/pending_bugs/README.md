@@ -19,6 +19,12 @@ list.
 
 <!-- generated: devguide_index -->
 
+### Being worked on (3)
+
+- [`python_pocket_blob_rejects_documented_multi_iso_options.md`](python_pocket_blob_rejects_documented_multi_iso_options.md) — [#99](https://github.com/uibcdf/molsysviewer/issues/99) — Python pocket blob API rejects its documented multi-iso options. *(medium, reproduced)*
+- [`python_wheel_can_ship_a_stale_viewer_runtime.md`](python_wheel_can_ship_a_stale_viewer_runtime.md) — [#102](https://github.com/uibcdf/molsysviewer/issues/102) — Guard the bundled Python runtime version before tagging a release *(high, inspected)*
+- [`release_gate_conflates_staging_evidence_with_strict_1_0_requirements.md`](release_gate_conflates_staging_evidence_with_strict_1_0_requirements.md) — [#103](https://github.com/uibcdf/molsysviewer/issues/103) — Release gate conflates exact staging evidence with strict 1.0 requirements *(medium, reproduced)*
+
 ### Partially done (2)
 
 - [`hosted_ci_has_never_passed.md`](hosted_ci_has_never_passed.md) — [#88](https://github.com/uibcdf/molsysviewer/issues/88) — Hosted CI has never passed, for three causes that live in how CI builds its environment. *(high, measured)*

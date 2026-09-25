@@ -14,6 +14,7 @@ from pathlib import Path
 import yaml
 from packaging.requirements import Requirement
 from packaging.utils import canonicalize_name
+from packaging.version import Version
 
 import molsysviewer as molsysviewer_package
 
@@ -38,8 +39,9 @@ REQUIRED_RUNTIME_RESOURCES = {
 }
 REQUIRED_RUNTIME_VERSION_FLOORS = {
     "aiohttp": "3.10",
-    "argdigest": "0.12.1",
+    "argdigest": "0.13.0",
     "molsysmt": "0.22.0",
+    "pyunitwizard": "0.25.0",
 }
 
 
@@ -90,6 +92,14 @@ def test_distribution_manifests_name_runtime_dependencies_and_resources():
 
     recipe = (ROOT / "devtools" / "conda-build" / "meta.yaml").read_text(encoding="utf-8")
     assert REQUIRED_RUNTIME_DEPENDENCIES <= _conda_run_dependencies(recipe)
+
+
+def test_nglview_is_not_a_hard_viewer_dependency():
+    pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    recipe = (ROOT / "devtools" / "conda-build" / "meta.yaml").read_text(encoding="utf-8")
+
+    assert "nglview" not in _dependency_names(pyproject["project"]["dependencies"])
+    assert "nglview" not in _conda_run_dependencies(recipe)
 
 
 def test_the_conda_recipe_stays_noarch_and_agrees_with_requires_python():
@@ -231,12 +241,15 @@ def test_built_wheel_imports_from_packaged_runtime_manifest(tmp_path):
     _copy_wheel_source(source)
 
     dist = tmp_path / "dist"
-    subprocess.run(
+    build_result = subprocess.run(
         [sys.executable, "-m", "build", "--wheel", "--no-isolation", "--outdir", str(dist)],
         cwd=source,
-        check=True,
         capture_output=True,
         text=True,
+    )
+    assert build_result.returncode == 0, (
+        f"wheel build failed (exit {build_result.returncode}):\n"
+        f"stdout:\n{build_result.stdout}\nstderr:\n{build_result.stderr}"
     )
     wheels = list(dist.glob("*.whl"))
     assert len(wheels) == 1
@@ -329,9 +342,11 @@ def test_every_publicly_exported_name_resolves():
     assert missing == [], f"names in __all__ that do not resolve: {missing}"
 
 
-SUPPORTED_PYTHON_VERSIONS = ("3.11", "3.12", "3.13")
-#: The one we recommend, develop and document on. It is the newest supported
-#: version, and it is what the single-version jobs and the README badge must say.
+SUPPORTED_PYTHON_VERSIONS = ("3.11", "3.12", "3.13", "3.14")
+#: The badge remains at the centrally admitted public range until the
+#: coordinated 0.23.4 release passes the independent installed-pair gate.
+PUBLIC_PYTHON_VERSIONS = ("3.11", "3.12", "3.13")
+#: The routine development version remains 3.13 during the suite transition.
 RECOMMENDED_PYTHON_VERSION = "3.13"
 
 
@@ -341,7 +356,7 @@ def _matrix_versions(workflow: str, pattern: str) -> set[str]:
 
 
 def test_the_published_python_matrix_is_the_one_we_actually_test():
-    """Three files decide which Pythons we support, and nothing kept them together.
+    """Candidate metadata must match the required source-test coverage.
 
     They had drifted in both directions at once: `requires-python` and the classifiers
     advertised 3.10 while CI tested only 3.11 and 3.12 — and the conda workflow *built and
@@ -363,11 +378,13 @@ def test_the_published_python_matrix_is_the_one_we_actually_test():
 
     # The interval must be exactly the tested minors: neither an older floor nor an
     # untested future interpreter may enter the published claim.
-    assert project["requires-python"] == f">={min(SUPPORTED_PYTHON_VERSIONS)},<3.14"
+    ceiling = f"3.{int(max(SUPPORTED_PYTHON_VERSIONS).split('.')[1]) + 1}"
+    assert project["requires-python"] == f">={min(SUPPORTED_PYTHON_VERSIONS)},<{ceiling}"
 
     tested = _matrix_versions("CI.yaml", r'python-version:\s*"(3\.\d+)"')
+    tested |= _matrix_versions("ci-python-314-source-pair.yaml", r'python-version:\s*"(3\.\d+)"')
     assert tested == set(SUPPORTED_PYTHON_VERSIONS), (
-        f"the test matrix runs {sorted(tested)} against a published {sorted(SUPPORTED_PYTHON_VERSIONS)}"
+        f"the test matrices run {sorted(tested)} against candidate {sorted(SUPPORTED_PYTHON_VERSIONS)}"
     )
 
     # Since 2026-09-02 conda publishes one noarch artefact instead of one per
@@ -384,13 +401,16 @@ def test_the_published_python_matrix_is_the_one_we_actually_test():
     )
 
 
-def test_every_supported_version_is_tested_on_both_operating_systems():
+def test_every_supported_version_is_tested_on_linux_and_macos_with_windows_314():
     """A matrix that publishes a version is not the same as one that exercises it.
 
     Pinned separately because the counts can agree while a cell is missing: dropping one
     macOS row leaves the set of versions unchanged.
     """
-    text = (ROOT / ".github" / "workflows" / "CI.yaml").read_text(encoding="utf-8")
+    text = "\n".join(
+        (ROOT / ".github" / "workflows" / workflow).read_text(encoding="utf-8")
+        for workflow in ("CI.yaml", "ci-python-314-source-pair.yaml")
+    )
     cells = set(re.findall(r'os:\s*(\S+?),\s*python-version:\s*"(3\.\d+)"', text))
 
     expected = {
@@ -398,8 +418,21 @@ def test_every_supported_version_is_tested_on_both_operating_systems():
         for operating_system in ("ubuntu-latest", "macos-latest")
         for version in SUPPORTED_PYTHON_VERSIONS
     }
+    expected.add(("windows-2025", "3.14"))
 
     assert cells == expected, f"missing cells: {sorted(expected - cells)}"
+
+
+def test_python_314_source_pair_uses_exact_provider_commit_without_metadata_bypass():
+    """The source gate is reproducible but remains distinct from package admission."""
+    workflow = (ROOT / ".github" / "workflows" / "ci-python-314-source-pair.yaml").read_text(encoding="utf-8")
+    assert "repository: uibcdf/molsysmt" in workflow
+    assert "inputs.molsysmt_sha" in workflow
+    assert "8ab42b58520892d54a05222b91c116b9e9114314" in workflow
+    assert "^[0-9a-f]{40}$" in workflow
+    assert "git -C molsysmt-source rev-parse HEAD" in workflow
+    assert "--ignore-requires-python" not in workflow
+    assert "--receptor=ci tests/" in workflow
 
 
 def test_hosted_gates_can_select_the_exact_coordinated_staging_candidate():
@@ -422,6 +455,8 @@ def test_hosted_gates_can_select_the_exact_coordinated_staging_candidate():
         ]
 
         assert re.search(r"(?ms)^\s{2}workflow_dispatch:\n\s{4}inputs:\n\s{6}use_staging:", text)
+        triggers = workflow.get("on", workflow.get(True))
+        assert triggers["workflow_dispatch"]["inputs"]["molsysmt_version"]["required"] is True
         assert setup_steps, f"{workflow_name} no longer creates a Conda environment"
         for step in setup_steps:
             condarc = step["with"]["condarc"]
@@ -430,7 +465,49 @@ def test_hosted_gates_can_select_the_exact_coordinated_staging_candidate():
             assert "\n  - uibcdf\n" in condarc
             assert "inputs.use_staging && '--override-channels" in create_args
             assert "--channel uibcdf/label/staging --channel uibcdf --channel conda-forge" in create_args
-            assert "inputs.use_staging && 'molsysmt=0.22.0'" in create_args
+            assert "inputs.use_staging && format('molsysmt={0}', inputs.molsysmt_version)" in create_args
+
+
+def test_e2e_uses_the_hosted_browser_it_checks():
+    """The E2E harness must not download a browser it never launches."""
+    path = ROOT / ".github" / "workflows" / "CI_e2e.yaml"
+    workflow = yaml.safe_load(path.read_text(encoding="utf-8"))
+    steps = workflow["jobs"]["e2e"]["steps"]
+    verify_steps = [step for step in steps if step.get("name") == "Verify hosted Chrome"]
+    run_steps = [step for step in steps if step.get("run") == "npm run test:e2e:portable"]
+
+    assert len(verify_steps) == len(run_steps) == 1
+    assert steps.index(verify_steps[0]) < steps.index(run_steps[0])
+    assert "/usr/bin/google-chrome --version" in verify_steps[0]["run"]
+    assert run_steps[0]["env"]["PW_CHROMIUM_BIN"] == "/usr/bin/google-chrome"
+    assert run_steps[0]["name"] == "Run portable E2E tests"
+    assert not any("playwright install" in step.get("run", "") for step in steps)
+
+
+def test_hosted_python_suite_installs_its_build_and_example_requirements():
+    """The hosted suite must provision what its wheel, JS, README, and Styler tests use."""
+    env_path = ROOT / "devtools" / "conda-envs" / "test_env.yaml"
+    env = yaml.safe_load(env_path.read_text(encoding="utf-8"))
+    dependencies = _dependency_names(env["dependencies"])
+    pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    build_requirements = _dependency_names(pyproject["build-system"]["requires"])
+
+    assert build_requirements <= dependencies
+    assert {"python-build", "mdtraj", "jinja2"} <= dependencies
+    node_specifier = _dependencies_by_name(env["dependencies"])["nodejs"].specifier
+    assert Version("22.0") in node_specifier
+    assert Version("26.0") not in node_specifier
+
+    workflow_path = ROOT / ".github" / "workflows" / "CI.yaml"
+    workflow = yaml.safe_load(workflow_path.read_text(encoding="utf-8"))
+    steps = workflow["jobs"]["test"]["steps"]
+    test_index = next(index for index, step in enumerate(steps) if step.get("name") == "Run tests")
+    npm_steps = [
+        index
+        for index, step in enumerate(steps)
+        if step.get("working-directory") == "molsysviewer/js" and "npm ci" in step.get("run", "")
+    ]
+    assert npm_steps and min(npm_steps) < test_index
 
 
 def test_the_recommended_version_is_the_one_the_single_version_jobs_use():
@@ -441,7 +518,7 @@ def test_the_recommended_version_is_the_one_the_single_version_jobs_use():
     JS suite and the coverage upload run on one cell; the documentation is rendered by one
     environment.
     """
-    assert RECOMMENDED_PYTHON_VERSION == max(SUPPORTED_PYTHON_VERSIONS)
+    assert RECOMMENDED_PYTHON_VERSION in SUPPORTED_PYTHON_VERSIONS
 
     ci = (ROOT / ".github" / "workflows" / "CI.yaml").read_text(encoding="utf-8")
     gated = set(re.findall(r"matrix\.cfg\.python-version == '(3\.\d+)'", ci))
@@ -472,7 +549,8 @@ def test_the_readme_badge_says_what_we_support():
     assert match is not None, "the README has no Python badge"
     advertised = tuple(match.group(1).replace("%20%7C%20", " ").split())
 
-    assert advertised == SUPPORTED_PYTHON_VERSIONS
+    assert set(PUBLIC_PYTHON_VERSIONS) <= set(SUPPORTED_PYTHON_VERSIONS)
+    assert advertised == PUBLIC_PYTHON_VERSIONS
 
 
 def test_ruff_targets_the_floor_rather_than_the_recommendation():

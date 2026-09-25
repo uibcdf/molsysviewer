@@ -160,7 +160,7 @@ def test_every_method_that_forwards_undigested_kwargs_has_a_table(registry):
                 continue
             source = ast.unparse(node)
             if "**kwargs" in source and "skip_digestion=True" in source:
-                relative = str(path.relative_to(root))
+                relative = path.relative_to(root).as_posix()
                 if (relative, node.name) not in exempt:
                     delegators.add(
                         f"molsysviewer.{path.stem}.{node.name}"

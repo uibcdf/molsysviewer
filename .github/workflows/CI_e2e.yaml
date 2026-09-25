@@ -12,6 +12,11 @@ on:
         required: true
         default: false
         type: boolean
+      molsysmt_version:
+        description: Exact staged MolSysMT version when use_staging is true
+        required: true
+        default: 0.22.4
+        type: string
 
 jobs:
   e2e:
@@ -48,7 +53,7 @@ jobs:
           create-args: >-
             python=3.13
             ${{ inputs.use_staging && '--override-channels --channel uibcdf/label/staging --channel uibcdf --channel conda-forge --channel ambermd' || '' }}
-            ${{ inputs.use_staging && 'molsysmt=0.22.0' || '' }}
+            ${{ inputs.use_staging && format('molsysmt={0}', inputs.molsysmt_version) || '' }}
 
       - name: Install package
         shell: bash -l {0}
@@ -67,12 +72,22 @@ jobs:
           npm run build:harness
           npm run build:e2e:all
 
-      - name: Install Playwright browsers
-        working-directory: molsysviewer/js
+      # The E2E harness selects /usr/bin/google-chrome by default. The hosted
+      # Ubuntu image provides it; downloading a second Chromium copy stalled
+      # during ZIP extraction before any tests could begin (#88).
+      - name: Verify hosted Chrome
         shell: bash -l {0}
-        run: npx playwright install chromium
+        run: |
+          test -x /usr/bin/google-chrome
+          /usr/bin/google-chrome --version
 
-      - name: Run E2E tests
+      # Hosted Ubuntu has no certified hardware GPU for the managed server
+      # render worker. That scenario runs in the explicit server-gpu lane on
+      # a qualified host; the portable lane must still fail on any browser or
+      # WebGL problem rather than silently skipping it.
+      - name: Run portable E2E tests
         working-directory: molsysviewer/js
         shell: bash -l {0}
-        run: npm run test:e2e
+        env:
+          PW_CHROMIUM_BIN: /usr/bin/google-chrome
+        run: npm run test:e2e:portable

@@ -15,6 +15,21 @@ def test_default_e2e_command_runs_the_complete_suite():
     assert "e2e-runner.js" in package["scripts"]["test:e2e:all"]
 
 
+def test_portable_and_server_gpu_evidence_lanes_are_explicit():
+    package = json.loads((JS_ROOT / "package.json").read_text())
+    runner = (E2E_ROOT / "e2e-runner.ts").read_text()
+    workflow = (ROOT / ".github" / "workflows" / "CI_e2e.yaml").read_text()
+
+    assert "--lane=portable" in package["scripts"]["test:e2e:portable"]
+    assert "--lane=server-gpu" in package["scripts"]["test:e2e:server-gpu"]
+    gpu_block = runner.split("const SERVER_GPU_SUITES = new Set<string>([", 1)[1].split("])", 1)[0]
+    assert set(re.findall(r'"([^"]+)"', gpu_block)) == {"remote-session"}
+    assert "SUITES.filter(suite => !SERVER_GPU_SUITES.has(suite))" in runner
+    assert "SUITES.filter(suite => SERVER_GPU_SUITES.has(suite))" in runner
+    assert "run: npm run test:e2e:portable" in workflow
+    assert "E2E_ALLOW_SKIP" not in workflow
+
+
 def test_e2e_runner_inventory_matches_every_scientific_suite():
     suite_paths = sorted(E2E_ROOT.glob("*.e2e.ts"))
     expected = {path.name.removesuffix(".e2e.ts") for path in suite_paths}

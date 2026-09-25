@@ -44,10 +44,16 @@ def test_staging_closes_the_dependency_cycle_without_weakening_the_package_test(
     assert 'test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"' in identity["run"]
     assert staging["if"] == "github.event_name == 'workflow_dispatch'"
     assert staging["with"]["label"] == "staging"
-    assert build_number["default"] == 1
-    assert release["if"] == "github.event_name == 'release'"
+    assert build_number["default"] == 0
+    assert release["if"] == "github.event_name == 'release' && steps.route.outputs.route == 'direct'"
     assert release["with"]["label"] == "main"
-    assert release["env"]["MOLSYSVIEWER_CONDA_BUILD_NUMBER"] == 2
+    assert release["env"]["MOLSYSVIEWER_CONDA_BUILD_NUMBER"] == 0
     assert "--no-test" not in staging["with"]["conda_build_args"]
     assert "--no-test" not in release["with"]["conda_build_args"]
     assert "uibcdf/label/staging" in WORKFLOW.read_text(encoding="utf-8")
+    route = next(step for step in steps if step.get("id") == "route")
+    assert "release_route.py" in route["run"]
+    direct_env = next(step for step in steps if step.get("name") == "Setup direct public conda env")
+    assert "uibcdf/label/staging" not in direct_env["with"]["condarc"]
+    staged_notice = next(step for step in steps if step.get("name") == "Report the staged-release promotion boundary")
+    assert staged_notice["if"] == "github.event_name == 'release' && steps.route.outputs.route == 'staged'"

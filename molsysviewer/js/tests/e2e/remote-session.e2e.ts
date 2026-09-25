@@ -18,6 +18,10 @@ END
 
 function waitForPrefixedJson(lines: ReturnType<typeof createInterface>, prefix: string): Promise<Record<string, any>> {
     return new Promise((resolveValue, rejectValue) => {
+        const timeout = setTimeout(() => {
+            cleanup();
+            rejectValue(new Error(`Python bridge did not emit ${prefix} within 60 seconds`));
+        }, 60_000);
         const onLine = (line: string) => {
             if (!line.startsWith(prefix)) return;
             cleanup();
@@ -28,6 +32,7 @@ function waitForPrefixedJson(lines: ReturnType<typeof createInterface>, prefix: 
             rejectValue(new Error(`Python bridge ended before ${prefix}`));
         };
         const cleanup = () => {
+            clearTimeout(timeout);
             lines.off("line", onLine);
             lines.off("close", onClose);
         };

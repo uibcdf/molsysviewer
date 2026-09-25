@@ -45,6 +45,15 @@ const SUITES = [
     "trajectory-plot",
     "movie-playback",
 ] as const;
+const SERVER_GPU_SUITES = new Set<string>(["remote-session"]);
+
+function suitesForLane(argument: string | undefined): readonly string[] {
+    const lane = argument ?? "--lane=all";
+    if (lane === "--lane=all") return SUITES;
+    if (lane === "--lane=portable") return SUITES.filter(suite => !SERVER_GPU_SUITES.has(suite));
+    if (lane === "--lane=server-gpu") return SUITES.filter(suite => SERVER_GPU_SUITES.has(suite));
+    throw new Error(`unknown E2E lane ${lane}; choose --lane=all, --lane=portable or --lane=server-gpu`);
+}
 
 function runSuite(name: string, endpoint: string): Promise<void> {
     const timeoutMs = Number(process.env.E2E_SUITE_TIMEOUT_MS ?? 180_000);
@@ -73,6 +82,7 @@ function runSuite(name: string, endpoint: string): Promise<void> {
 }
 
 async function run(): Promise<void> {
+    const suites = suitesForLane(process.argv[2]);
     let server: BrowserServer;
     try {
         server = await playwrightChromium.launchServer(e2eLaunchOptions());
@@ -81,11 +91,11 @@ async function run(): Promise<void> {
     }
 
     try {
-        for (const [index, suite] of SUITES.entries()) {
-            console.log(`[E2E runner] ${index + 1}/${SUITES.length} ${suite}`);
+        for (const [index, suite] of suites.entries()) {
+            console.log(`[E2E runner:${process.argv[2] ?? "--lane=all"}] ${index + 1}/${suites.length} ${suite}`);
             await runSuite(suite, server.wsEndpoint());
         }
-        console.log(`[E2E runner] ${SUITES.length}/${SUITES.length} suites passed`);
+        console.log(`[E2E runner:${process.argv[2] ?? "--lane=all"}] ${suites.length}/${suites.length} suites passed`);
     } finally {
         await server.close();
     }

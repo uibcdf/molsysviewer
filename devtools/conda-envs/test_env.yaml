@@ -6,7 +6,9 @@ channels:
 dependencies:
   - pip
   - python-build
+  - setuptools>=64
   - versioningit
+  - wheel
   - pytest
   - pytest-cov
   # The distribution-contract tests parse the Conda YAML recipe during collection.
@@ -16,14 +18,19 @@ dependencies:
   # tests/test_distribution_artifact.py keeps the two in step.
   - aiohttp>=3.10
   - anywidget>=0.9.15
-  - argdigest>=0.12.1
+  - argdigest>=0.13.0
   - depdigest
   - molsysmt>=0.22.0
   - numpy
   - packaging>=23
-  - pyunitwizard
+  - pyunitwizard>=0.25.0
   - smonitor>=0.13.0
   - traitlets>=5
   - pandas
   - imageio
-  - nodejs>=18
+  # Node 26 currently breaks the bundled JS coverage tool's CommonJS loader.
+  - nodejs>=22,<23
+  # Test-only requirements: the README exercises an MDTraj input and the
+  # information-table tests render Pandas Styler HTML.
+  - mdtraj
+  - jinja2

@@ -42,6 +42,16 @@ on:
         required: true
         default: false
         type: boolean
+      molsysmt_version:
+        description: Exact staged MolSysMT version when use_staging is true
+        required: true
+        default: 0.22.4
+        type: string
+      viewer_version:
+        description: Intended Viewer release version for a staged candidate
+        required: true
+        default: 0.23.4
+        type: string
 
 jobs:
   qt-pipeline:
@@ -87,7 +97,23 @@ jobs:
           python=3.13
           pyside6-addons-uibcdf
           ${{ inputs.use_staging && '--override-channels --channel uibcdf/label/staging --channel uibcdf --channel conda-forge --channel ambermd' || '' }}
-          ${{ inputs.use_staging && 'molsysmt=0.22.0' || '' }}
+          ${{ inputs.use_staging && format('molsysmt={0}', inputs.molsysmt_version) || '' }}
+
+    - name: Validate and locally tag the staged Viewer candidate
+      if: github.event_name == 'workflow_dispatch' && inputs.use_staging
+      shell: bash -l {0}
+      env:
+        EXPECTED_VERSION: ${{ inputs.viewer_version }}
+      run: |
+        set -euo pipefail
+        [[ "$EXPECTED_VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]
+        test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+        python devtools/validate_python_wheel_runtime.py --expected-version "$EXPECTED_VERSION"
+        if git show-ref --verify --quiet "refs/tags/$EXPECTED_VERSION"; then
+          test "$(git rev-list -n 1 "$EXPECTED_VERSION")" = "$GITHUB_SHA"
+        else
+          git tag "$EXPECTED_VERSION" HEAD
+        fi
 
     - name: Install package
       shell: bash -l {0}
@@ -165,7 +191,23 @@ jobs:
         create-args: >-
           python=${{ matrix.cfg.python-version }}
           ${{ inputs.use_staging && '--override-channels --channel uibcdf/label/staging --channel uibcdf --channel conda-forge --channel ambermd' || '' }}
-          ${{ inputs.use_staging && 'molsysmt=0.22.0' || '' }}
+          ${{ inputs.use_staging && format('molsysmt={0}', inputs.molsysmt_version) || '' }}
+
+    - name: Validate and locally tag the staged Viewer candidate
+      if: github.event_name == 'workflow_dispatch' && inputs.use_staging
+      shell: bash -l {0}
+      env:
+        EXPECTED_VERSION: ${{ inputs.viewer_version }}
+      run: |
+        set -euo pipefail
+        [[ "$EXPECTED_VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]
+        test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+        python devtools/validate_python_wheel_runtime.py --expected-version "$EXPECTED_VERSION"
+        if git show-ref --verify --quiet "refs/tags/$EXPECTED_VERSION"; then
+          test "$(git rev-list -n 1 "$EXPECTED_VERSION")" = "$GITHUB_SHA"
+        else
+          git tag "$EXPECTED_VERSION" HEAD
+        fi
 
     - name: Info conda
       shell: bash -l {0}
@@ -178,6 +220,11 @@ jobs:
       shell: bash -l {0}
       run: |
         python -m pip install . --no-deps
+
+    - name: Install JS build dependencies for Python distribution tests
+      shell: bash -l {0}
+      working-directory: molsysviewer/js
+      run: npm ci
 
     - name: Test import module
       shell: bash -l {0}
@@ -205,7 +252,6 @@ jobs:
       shell: bash -l {0}
       run: |
         cd molsysviewer/js
-        npm ci
         npm run build
         npm run test:js
         npm run coverage:js

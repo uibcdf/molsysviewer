@@ -47,6 +47,9 @@ class PocketBlobs:
         radius_scale: float | None = None,
         resolution: float | None = None,
         iso_level: float | None = None,
+        iso_levels: Sequence[float] | None = None,
+        iso_colors: Sequence[int] | None = None,
+        iso_alphas: Sequence[float] | None = None,
         smoothing: float | None = None,
         values: Iterable[float] | None = None,
         color_map: Sequence[int] | str | None = None,
@@ -64,6 +67,19 @@ class PocketBlobs:
             raise ValueError("centers must not be empty")
         if len(centers_list) != len(radii_list):
             raise ValueError("centers and radii must have the same length")
+        if iso_levels is not None and iso_level is not None:
+            raise ValueError("iso_level and iso_levels cannot be used together")
+
+        levels = [float(level) for level in iso_levels] if iso_levels is not None else None
+        if levels is not None and not levels:
+            raise ValueError("iso_levels must not be empty")
+        level_count = len(levels) if levels is not None else 1
+        colors = [int(color) for color in iso_colors] if iso_colors is not None else None
+        alphas = [float(alpha) for alpha in iso_alphas] if iso_alphas is not None else None
+        if colors is not None and len(colors) != level_count:
+            raise ValueError("iso_colors must match the number of iso levels")
+        if alphas is not None and len(alphas) != level_count:
+            raise ValueError("iso_alphas must match the number of iso levels")
 
         values_list = self._normalize_sequence(values, len(centers_list), float)
 
@@ -76,6 +92,12 @@ class PocketBlobs:
             options["resolution"] = float(resolution)
         if iso_level is not None:
             options["iso_level"] = float(iso_level)
+        if levels is not None:
+            options["iso_levels"] = levels
+        if colors is not None:
+            options["iso_colors"] = colors
+        if alphas is not None:
+            options["iso_alphas"] = alphas
         if smoothing is not None:
             options["smoothing"] = float(smoothing)
         if radius_scale is not None:
@@ -111,6 +133,9 @@ class PocketBlobs:
         radius_scale: float | None = None,
         resolution: float | None = None,
         iso_level: float | None = None,
+        iso_levels: Sequence[float] | None = None,
+        iso_colors: Sequence[int] | None = None,
+        iso_alphas: Sequence[float] | None = None,
         smoothing: float | None = None,
         values: Iterable[float] | None = None,
         color_map: Sequence[int] | str | None = None,
@@ -122,7 +147,12 @@ class PocketBlobs:
         name: str | None = None,
         skip_digestion: bool = False,
     ):
-        """Create a generic scalar/gaussian isosurface from centers and radii."""
+        """Create scalar isosurfaces from centers and radii.
+
+        ``iso_levels`` creates multiple surfaces. If supplied, ``iso_colors``
+        and ``iso_alphas`` must each have one value per level. Use either
+        ``iso_level`` or ``iso_levels``, not both.
+        """
         return self._add_gaussian_isosurface(
             op="add_scalar_isosurface",
             centers=centers,
@@ -130,6 +160,9 @@ class PocketBlobs:
             radius_scale=radius_scale,
             resolution=resolution,
             iso_level=iso_level,
+            iso_levels=iso_levels,
+            iso_colors=iso_colors,
+            iso_alphas=iso_alphas,
             smoothing=smoothing,
             values=values,
             color_map=color_map,
@@ -152,6 +185,9 @@ class PocketBlobs:
         radius_scale: float | None = None,
         resolution: float | None = None,
         iso_level: float | None = None,
+        iso_levels: Sequence[float] | None = None,
+        iso_colors: Sequence[int] | None = None,
+        iso_alphas: Sequence[float] | None = None,
         smoothing: float | None = None,
         values: Iterable[float] | None = None,
         color_map: Sequence[int] | str | None = None,
@@ -163,7 +199,12 @@ class PocketBlobs:
         name: str | None = None,
         skip_digestion: bool = False,
     ):
-        """Create a volumetric blob (iso-surface) from alpha-spheres."""
+        """Create a volumetric blob from alpha-spheres.
+
+        ``iso_levels`` creates multiple surfaces. If supplied, ``iso_colors``
+        and ``iso_alphas`` must each have one value per level. Use either
+        ``iso_level`` or ``iso_levels``, not both.
+        """
 
         return self._add_gaussian_isosurface(
             op="add_pocket_blob",
@@ -172,6 +213,9 @@ class PocketBlobs:
             radius_scale=radius_scale,
             resolution=resolution,
             iso_level=iso_level,
+            iso_levels=iso_levels,
+            iso_colors=iso_colors,
+            iso_alphas=iso_alphas,
             smoothing=smoothing,
             values=values,
             color_map=color_map,

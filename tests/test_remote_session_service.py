@@ -611,13 +611,21 @@ def test_auth_and_client_websocket_have_limits_separate_from_molecular_uploads()
                 ) as socket:
                     await socket.send_json(_registration(service))
                     assert await socket.receive_json(timeout=2) == {"kind": "registered"}
-                    await socket.send_str("x" * (1024 * 1024 + 1))
-                    message = await socket.receive(timeout=2)
-                    assert message.type in {
-                        aiohttp.WSMsgType.CLOSE,
-                        aiohttp.WSMsgType.CLOSED,
-                        aiohttp.WSMsgType.ERROR,
-                    }
+                    # A fast server may close the oversized frame before the
+                    # client's send drains (notably on macOS). Both that reset
+                    # and a close received afterwards reject the same frame;
+                    # endpoint cleanup below is required in either case.
+                    try:
+                        await socket.send_str("x" * (1024 * 1024 + 1))
+                        message = await socket.receive(timeout=2)
+                    except (aiohttp.ClientConnectionError, ConnectionError):
+                        pass
+                    else:
+                        assert message.type in {
+                            aiohttp.WSMsgType.CLOSE,
+                            aiohttp.WSMsgType.CLOSED,
+                            aiohttp.WSMsgType.ERROR,
+                        }
 
             for _ in range(20):
                 if service.channel.router.endpoint(service.client_endpoint_id) is None:

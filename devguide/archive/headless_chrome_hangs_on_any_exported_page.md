@@ -171,3 +171,15 @@ to the same URL does not. Chrome's own `--v=1` log shows the component updater c
 and a QUIC handshake continuing, and no error. Whether this is a Chrome defect, a
 distribution one, or something about this host is unknown, and the canary does not depend
 on knowing.
+
+## Correction — 2026-09-24
+
+The third pass and withdrawal above claim that nothing in this repository
+still uses command-line HTTP navigation. That was false: the server-side
+render worker used by `molsysviewer/js/tests/e2e/remote-session.e2e.ts`
+launches headless Chrome against a localhost worker URL. On the local
+`python-3.14-support` source run, the first 24 E2E scenarios passed, but this
+25th scenario failed because the worker page remained `about:blank` after
+the command-line navigation. The same host behavior measured here is still
+relevant. uibcdf/molsysviewer#100 tracks how to retain valid local and
+hosted evidence without hiding that lane.

@@ -10,13 +10,17 @@ from molsysviewer.viewer import MolSysView
 
 
 async def main() -> None:
+    print("MSV_REMOTE_STAGE=loading-demo", file=sys.stderr, flush=True)
     source_view = demo["pentalanine"]
     service = RemoteSessionService(RenderWorkerConfig(startup_timeout=30, shutdown_timeout=5))
     view = MolSysView(transport=service.channel)
     try:
         view.load(source_view.molsys, skip_digestion=True)
+        print("MSV_REMOTE_STAGE=starting-service", file=sys.stderr, flush=True)
         client_url = await service.start()
+        print("MSV_REMOTE_STAGE=launching-worker", file=sys.stderr, flush=True)
         diagnostics = await service.launch_worker()
+        print("MSV_REMOTE_STAGE=waiting-for-structure", file=sys.stderr, flush=True)
         await service.worker_host.wait_for_structure(timeout=30)
         print(
             "MSV_REMOTE_SESSION="
@@ -111,6 +115,7 @@ async def main() -> None:
             flush=True,
         )
     finally:
+        print("MSV_REMOTE_STAGE=closing-service", file=sys.stderr, flush=True)
         await service.close()
         view.close()
         source_view.close()

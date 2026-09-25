@@ -40,6 +40,7 @@ def preview(
     used and the returned URL says which.
     """
     import http.server
+    import socket
     import socketserver
     import threading
     import webbrowser
@@ -54,7 +55,13 @@ def preview(
     handler = partial(http.server.SimpleHTTPRequestHandler, directory=os.fspath(root))
 
     class _Server(socketserver.TCPServer):
-        allow_reuse_address = True
+        allow_reuse_address = os.name != "nt"
+
+        def server_bind(self):
+            if os.name == "nt":
+                # SO_REUSEADDR can bind a second Windows socket to a live port.
+                self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+            super().server_bind()
 
     # The request log is left on deliberately: a view whose runtime is missing
     # shows up here as a 404 on `viewer.js`, which is the fastest answer there is

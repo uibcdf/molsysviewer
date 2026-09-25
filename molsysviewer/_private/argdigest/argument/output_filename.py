@@ -1,33 +1,30 @@
-from pathlib import PosixPath
+from pathlib import Path
 
 from ...exceptions import ArgumentError
 
 
 def digest_output_filename(output_filename, caller=None):
-    """Checks if `group_type` has the expected type and value.
+    """Validate and normalize an optional output filename.
 
     Parameters
     ----------
-    group_type : Any
-        The `group_type` argument for digestion.
-    caller: str, optional
-        Name of the function or method that is being digested.
-
-    .. _PEP 484:
-        https://www.python.org/dev/peps/pep-0484/#the-any-type
+    output_filename : str, pathlib.Path, or None
+        Destination filename; native path objects are converted to absolute strings.
+    caller : str, optional
+        Name of the calling function or method for error reporting.
 
     Returns
     -------
-    bool
-        Either True or False when caller is `get`.
+    str or None
+        Normalized filename, or None when no output was requested.
 
     Raises
-    -------
+    ------
     ArgumentError
-        If the given `group_type` has not of the correct type or value.
+        If the value is neither a string, native path, nor None.
     """
 
-    if isinstance(output_filename, PosixPath):
+    if isinstance(output_filename, Path):
         output_filename = output_filename.absolute().__str__()
 
     if output_filename is None:

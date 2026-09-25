@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import os
 import sys
+import sysconfig
 from pathlib import Path
 
 import pytest
@@ -8,7 +10,8 @@ import pytest
 # Ensure `pytest` and `python -m pytest` resolve the in-repo package the same way.
 REPO_ROOT = Path(__file__).resolve().parents[1]
 repo_root_str = str(REPO_ROOT)
-if repo_root_str not in sys.path:
+INSTALLED_PACKAGE_MODE = os.environ.get("MOLSYSVIEWER_TEST_INSTALLED") == "1"
+if not INSTALLED_PACKAGE_MODE and repo_root_str not in sys.path:
     sys.path.insert(0, repo_root_str)
 
 
@@ -35,6 +38,17 @@ if repo_root_str not in sys.path:
 import molsysmt  # noqa: E402,F401
 
 import molsysviewer  # noqa: E402,F401
+
+if INSTALLED_PACKAGE_MODE:
+    site_packages = {Path(sysconfig.get_path(kind)).resolve() for kind in ("purelib", "platlib")}
+    for package in (molsysmt, molsysviewer):
+        imported_directory = Path(package.__file__).resolve().parent
+        if imported_directory not in {path / package.__name__ for path in site_packages}:
+            raise pytest.UsageError(
+                f"Installed-package test mode imported {package.__name__} from "
+                f"{imported_directory}, outside {sorted(map(str, site_packages))}. Run pytest from "
+                "outside both source checkouts with --import-mode=importlib."
+            )
 
 
 def _close_registered_molsysviewer_widgets() -> None:

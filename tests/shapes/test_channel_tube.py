@@ -1,5 +1,10 @@
 import molsysviewer._pyunitwizard  # noqa: F401 — configures puw
 import pyunitwizard as puw
+
+from molsysviewer import MolSysView
+
+# Materialize the public view before importing the shape package.
+# isort: split
 from molsysviewer.shapes import ChannelTubes
 
 
@@ -54,6 +59,19 @@ def test_add_channel_tube_message():
     assert options["tag"] == "tube"
     assert options["layer_tag"] == "tube"
     assert options["name"] == "demo"
+
+
+def test_public_shapes_manager_accepts_smoothing_subdivisions():
+    view = MolSysView()
+
+    layer = view.shapes.add_channel_tube(
+        centers=puw.quantity([(0, 0, 0), (1, 0, 0)], "nm"),
+        radii=puw.quantity([1.0, 1.0], "angstroms"),
+        smoothing_subdivisions=4,
+        tag="channel-demo",
+    )
+
+    assert layer.tag == "channel-demo"
 
 
 def test_add_channel_tube_accepts_color_by_and_palette():

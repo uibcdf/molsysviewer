@@ -96,6 +96,45 @@ How the version is chosen
 GitHub workflow
 - `.github/workflows/build_and_upload_conda_packages.yaml`
 
+For a coupled release, commit `devtools/conda-build/release_plan.toml` with the
+`staged` route before building. The manual build workflow uploads one immutable
+candidate only to `uibcdf/label/staging`; an additive build number is required
+for a correction. Validate the exact MolSysMT/MolSysViewer pair before tagging.
+Before dispatching that build, generate and commit `viewer.js` for the intended
+release version from a clean checkout with no generated `molsysviewer/_version.py`:
+
+```bash
+cd molsysviewer/js
+RELEASE_VERSION=X.Y.Z npm run build:runtime
+cd ../..
+python devtools/validate_python_wheel_runtime.py --expected-version X.Y.Z
+```
+
+The build resolver intentionally prefers an existing `_version.py` over the
+environment variable. A development-generated version file would stamp the
+wrong version into the release bundle, so inspect the validator result before
+committing the generated asset. The staging workflow creates a local tag for
+the exact candidate commit, builds an ordinary Python wheel without rebuilding
+JS, then checks both wheel `METADATA` and its packaged runtime. A passing
+Conda build alone cannot certify this wheel route because Conda rebuilds JS in
+its private source copy. For the staged CI dispatch, provide the same
+`viewer_version`; CI creates a local tag at its exact workflow SHA so that
+Python tests see the intended release identity rather than an untagged
+versioningit development version. Give the same `viewer_version` to the
+Python 3.14 source-pair dispatch; it uses the identical exact-SHA local-tag
+rule before installing the two source candidates. See
+`uibcdf/molsysviewer#102`.
+
+Publishing the GitHub Release does **not** rebuild that staged version. After
+the exact-commit gates and Release are complete, dispatch
+`.github/workflows/promote_conda_package.yaml` from `main` with the tag commit,
+version, build number, independently observed SHA-256 and successful full
+installed-pair run. It adds `main` to the same noarch file and verifies the
+public record. A direct, unstaged release remains a separate route and is
+rejected when Anaconda already has any file for that version. The tag-driven
+npm publication and Zenodo ingestion remain separate; neither is evidence that
+Conda promotion succeeded.
+
 Key points
 - Do not edit `viewer.js` or `.map` by hand.
 - Keep the JS build manual and controlled.

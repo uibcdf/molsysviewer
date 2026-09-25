@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import sys
+from pathlib import Path
 from types import ModuleType
 
 import pytest
@@ -499,10 +500,20 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     export_menu = runtime["window"].menu_bar.menus[2]
     assert export_menu.actions[0].shortcut == "Ctrl+Shift+S"
     assert export_menu.actions[1].shortcut == "Ctrl+Shift+E"
+    html_export_calls = []
+
+    def fake_rebuild_qt_html(molecular_system, *, html_path, title):
+        html_export_calls.append((molecular_system, html_path, title))
+        Path(html_path).write_text("<html></html>", encoding="utf-8")
+        return html_path
+
+    monkeypatch.setattr("molsysviewer.standalone_qt._rebuild_qt_html", fake_rebuild_qt_html)
     FakeFileDialog.saved = str(tmp_path / "exported-view.html")
     export_menu.actions[0].triggered._callbacks[0]()
     exported = tmp_path / "exported-view.html"
+    assert html_export_calls, FakeMessageBox.calls
     assert exported.exists()
+    assert html_export_calls == [("1crn", str(exported.resolve()), "Qt Prototype")]
     assert runtime["window"].status_bar.messages[-1] == "Exported HTML: exported-view.html"
     figure_calls = []
     monkeypatch.setattr(
@@ -1079,7 +1090,7 @@ def test_create_remote_qt_window_reuses_authenticated_session_page(monkeypatch):
 
     download = FakeDownload()
     runtime["webview"]._page._profile.downloadRequested._callbacks[0](download)
-    assert download.directory == "/tmp"
+    assert Path(download.directory).resolve() == Path("/tmp").resolve()
     assert download.filename == "remote-view.png"
     assert download.accepted is True
     download.isFinishedChanged._callbacks[0]()

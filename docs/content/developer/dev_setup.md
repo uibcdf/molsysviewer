@@ -101,6 +101,18 @@ Python
 pytest
 ```
 
+To test an already installed MolSysMT–MolSysViewer pair, install both packages
+in a clean environment and run the integration tests from a directory outside
+either checkout:
+
+```bash
+MOLSYSVIEWER_TEST_INSTALLED=1 python -m pytest --receptor=llm --import-mode=importlib /path/to/molsysviewer/tests/integration/test_molsysmt_integration.py
+```
+
+This mode retains the normal test fixtures but refuses to load either package
+from a source checkout. Running the command from inside a checkout is an error;
+that prevents a source import from masquerading as an installed-package result.
+
 JS unit tests
 ```bash
 cd molsysviewer/js

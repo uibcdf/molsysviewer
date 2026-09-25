@@ -5,8 +5,12 @@ changes. Normative behavior remains in the contracts linked below.
 
 ## Repository state
 
-- Branch: `main`. The current delivery slice implements the coordinated staging path
-  with MolSysMT 0.22.0; publication and hosted candidate execution remain pending.
+- Branch: `main` for the coordinated 0.22.0/0.23.1 release path. The exact
+  staged pair passed its hosted 15-cell installation matrix on 2026-09-24;
+  publication and the remaining Viewer release gates are pending. The separate
+  `python-3.14-support` branch has a five-platform, 20-cell staging milestone
+  recorded below; the [1.0 release plan](path_to_1_0.md) distinguishes it from
+  public-channel admission.
 - Phases 5, 6, 8 and 9 and the Phase 10 persistence slice were independently
   audited and closed on 2026-08-09. Phase 8 evidence remains in
   [`performance/representative_scale_gate_2026_08.md`](performance/representative_scale_gate_2026_08.md).
@@ -95,16 +99,215 @@ The repository now carries the two missing pre-publication routes:
    branches, retained producer evidence, the recipe test on both branches, and the
    explicit staging input on every hosted gate.
 
-The remaining execution order is:
+The 2026-09-24 state is: MolSysMT 0.22.0 ABI3 build 5 and MolSysViewer
+0.23.1 noarch build 1 are in staging. MolSysMT run `35967239820` passed the
+exact-pair matrix on five native platforms and Python 3.11–3.13 (15 cells).
+That run predated the later explicit Conda-record channel/URL/hash guard and
+does not satisfy that stronger check retroactively.
 
-1. freeze the new MolSysViewer candidate commit and version;
-2. dispatch its staging build and retain the producer evidence;
-3. run all three MolSysViewer hosted gates with `use_staging=true`;
-4. run MolSysMT's exact-pair 5-platform × 3-interpreter staging matrix;
-5. resolve or explicitly disposition the clean-install PDB path in
-   `uibcdf/molsysmt#200`;
-6. publish MolSysMT to the public channel first, then MolSysViewer, with no bootstrap
-   exception in either public build.
+The next hosted Viewer gates have now crossed the original dependency barrier:
+documentation run `35997846329` installed successfully, then exposed two
+Showcase API/example failures. The pocket-blob Python multi-iso gap is tracked
+as uibcdf/molsysviewer#99; the channel example used an obsolete argument.
+Both notebooks execute locally after branch fixes, and the hosted
+Documentation notebooks rerun `36016496850` passed every notebook on exact
+branch commit `7c4e0cd968e9530033e35221683ca085fe1d37cd`. This closes
+the staged-dependency documentation execution gap for that candidate, not
+the ordinary public-channel `main` gate.
+E2E runs `35998036249` and `36016496630` installed and built, then stalled
+extracting an unused Playwright Chromium archive; neither entered the browser
+tests. The latter stopped at a deliberate 15-minute timeout. The workflow now
+checks and records the runner's Chrome, which the E2E harness already selects.
+CI run `36017021764` passed the Qt job but failed all six Python matrix jobs
+after the solver barrier, exposing missing test-only dependencies and JS setup;
+the branch has a local fix and requires a hosted rerun. The staged-dependency
+documentation gate is green, but CI and E2E are not yet green.
+
+The follow-up `CI` run `36019810641` then passed Qt and four of six Python
+matrix jobs. The remaining cells exposed Node 26 incompatibility in JS
+coverage and a macOS fast-close WebSocket test race; the focused corrections
+are local only pending another hosted run. `CI_e2e` run `36019810581` reached
+22/37 real browser scenarios before a 30-second PNG-download timeout. The
+same scenario passed locally, but the local aggregate stopped at 25/37 on
+the command-line Chrome/localhost limitation of uibcdf/molsysviewer#77.
+Neither environment has certified the full E2E suite; uibcdf/molsysviewer#100
+tracks an evidence-lane redesign. Keep the 1.0 release gate open.
+
+The interim split under #100 is now explicit: local source-pair
+`test:e2e:portable` passed 36/36 with Chrome 149 and real WebGL2. Hosted
+`CI_e2e` has been changed to run that portable lane, but has not yet been
+rerun. The excluded `remote-session` is a separately runnable server-GPU
+lane, not a skipped pass. `nauta` does have real NVIDIA GPUs outside the
+sandbox; its worker still fails to commit command-line HTTP navigation.
+Changing the worker to navigate through CDP did not fix it (`Page.navigate`
+timed out), so that product change was reverted. The test bridge now reports
+stages and has a bounded wait. Defer the GPU launch investigation until after
+the coordinated pre-1.0 package publication; no 37/37 or 1.0 gate is claimed.
+Staging-enabled `CI` run `36034111547` on Viewer commit `ac3dd891` then
+passed Qt but all six Python jobs stopped at one stale distribution guard:
+it searched for the former E2E step name rather than the new portable
+command. The guard now checks the command itself; 24 focused local tests
+pass. The staging-enabled rerun `36036802158` on Viewer commit `2594f1a2`
+then passed all seven jobs (six Python matrix cells and Qt). This is branch
+CI against the staged dependency, not the public-channel `main` gate.
+The portable `CI_e2e` rerun `36038233512` reached scenario 23/36 and failed
+at the same hosted PNG-download timeout in `remote-client-rendering` as the
+earlier full-suite run. This is not a portable E2E pass and cannot certify
+the separately deferred server-GPU lane. Stop rerunning this unchanged test;
+the reproducibility/evidence work is tracked by #100.
+The detailed diagnosis is in [`pending_bugs/hosted_ci_has_never_passed.md`](pending_bugs/hosted_ci_has_never_passed.md).
+
+The remaining order is:
+
+1. resolve or explicitly defer the reproducible hosted
+   `remote-client-rendering` PNG-download timeout under #100 before claiming
+   a hosted E2E pass; staging-enabled CI passed 7/7 in `36036802158`, but
+   the latest ordinary
+   CI run `35984241119` could not resolve
+   `molsysmt>=0.22.0` from the public channel before reaching product tests.
+   The subsequent micromamba `ENOENT` was cleanup fallout, not the cause;
+2. repeat the exact-pair gate with the stronger provenance assertion when a
+   final release candidate is selected, and settle the clean-install PDB path
+   under `uibcdf/molsysmt#200`;
+3. decide on public release coordinates and publish only after both projects'
+   exact-commit package gates pass, without a bootstrap exception in either
+   public build. The deferred server-GPU lane remains visible in #100 and must
+   not be represented as a passing hosted or local test.
+
+The next candidate decision is now recorded: `python-3.14-support` includes
+current `main` in both repositories, and fresh unoccupied versions
+MolSysMT `0.22.4` ABI3 build 0 / MolSysViewer `0.23.4` noarch build 0 are
+planned. Anaconda returned HTTP 404 for each version across labels. The
+committed route plans require staging; a Release event cannot rebuild a
+staged coordinate, and separate workflows promote one exact SHA-256-verified
+file at a time after the full 20-cell installed-pair gate. These promotion
+workflows have local structural and shell-syntax tests but no hosted promotion
+yet. The earlier Viewer CI 7/7 pinned staged MolSysMT `0.22.0`; manual CI,
+E2E and notebook gates now require an explicit MolSysMT version input and
+must be rerun for `0.22.4` rather than credited retroactively. At this
+selection checkpoint, neither package had been uploaded; build-0 staging is
+recorded below. #100 still owns the hosted E2E
+timeout and the separate server-GPU lane.
+
+The maintainers accepted an explicit, limited pre-1.0 exception for this
+`0.22.4`/`0.23.4` candidate: the hosted portable E2E failure in
+`36038233512` and the unvalidated server-GPU lane do not block *this package
+publication* if all other exact-candidate gates pass. Local portable E2E
+passed 36/36, but hosted portable E2E did not pass and full 37/37 has no
+certification. #100 remains open; the strict 1.0 E2E and visible-window gates
+are unchanged. The exception must accompany the release decision, not turn
+the failed hosted run into a success.
+
+The `0.23.4` citation surfaces were first prepared for 2026-09-24 and
+refreshed to the intended 2026-09-25 release date after the local date
+changed; if publication slips, rerun the preparation and candidate gates
+before tagging. MolSysSuite `policy-v1.4.11` now registers both transition
+issues (`uibcdf/molsysmt#237`, `uibcdf/molsysviewer#93`) as `authorized`.
+Both candidate callers pin that policy release and synchronize its canonical
+guide; the exact central repository checker passes locally for each. The
+package metadata and test matrix still target Python 3.14, while the README
+badge and its distribution test retain the publicly admitted 3.11–3.13 range.
+The badge may add 3.14 only after the coordinated release and independent
+channel installations permit central `admitted` status. This branch must not
+become the public `main` claim until the exact 20-cell installed-pair gate and
+other applicable pre-1.0 release checks pass. npm returned 404 for
+`@uibcdf/molsysviewer@0.23.4` when checked on 2026-09-24. No npm package,
+Git tag, GitHub Release, or Conda promotion has been created for this
+candidate.
+
+The complete local Viewer Python suite passed **2,112 tests with 14 accepted
+skips** in 61.43 seconds using 12 workers and explicit source paths for both
+candidate repositories plus the released SMonitor `0.16.0` tag. The prior
+unisolated run was not used as candidate evidence. MolSysMT's matching local
+suite passed 10,225 tests with 11 known skips; its fast release gate passed
+13/13. These local results support the source candidate but do not replace
+the hosted exact-commit gates or the 20-cell installed-pair rerun. Source-pair
+workflow `36061167557` passed Linux and macOS/Python 3.14 but failed Windows
+in one release-route test; its other Windows results were 2,100 passed and
+23 skipped. Windows resolved the test's `bash -n` invocation to the WSL
+launcher, although the promotion script itself runs only on Ubuntu. The test
+now asserts that runner identity on every platform, retains its promotion
+contract checks on Windows, and checks Bash syntax on POSIX. The matching
+MolSysMT test uses the same rule. The failed run cannot be credited as a 3.14
+pass; the corrected exact commits need a new hosted Windows run.
+The new policy's Ruff 0.16.5 formatting gate exposed three older files in
+the Viewer test infrastructure; they were formatted without changing test
+behavior. Repository-wide Ruff lint and format checks now pass, and the
+focused distribution/release-route modules pass 23/23.
+The corrected source-pair run `36062983964` passed Linux, macOS and
+Windows/Python 3.14. The first staged noarch `0.23.4` build 0 passed its
+recipe test (`36064255601`), the installed-pair run `36065287565` passed
+all 20 platform/Python cells, Viewer CI against staged MolSysMT passed all
+seven jobs (`36064424260`), and notebooks passed in `36064424563`.
+The first MolSysMT full-CI run `36063386092`
+exposed its outdated controlled ArgDigest source pin: release 0.12.1 writes
+the read-only `hint` property inherited from SMonitor 0.16.0. Published
+ArgDigest 0.13.0 fixes this; its exact tag source passed the 27 affected
+local MolSysMT contract tests. The complete local Viewer suite passed
+2,112 tests with 14 skips, and the matching MolSysMT suite passed 10,225
+with 11 skips, using the exact ArgDigest 0.13.0 and SMonitor 0.16.0 sources
+and 12 workers. Both components now declare 0.13.0 as the minimum. The
+existing build-0 staged files and their passing installed cells remain
+technical evidence only; build 1 and the complete exact-pair gates must
+replace them before promotion.
+Build-1 producers passed in MolSysMT `36102277287` and Viewer
+`36102277047`, and the corrected source-pair run `36102309036` passed all
+three Python 3.14 platforms. MolSysMT's Rust-wheel run `36102309653` then
+found an independent stale sibling-source set in its installed-public-smoke
+job. Its PyUnitWizard revision lacks `configure.has_active_policy()`, an API
+used at import time by both packages and introduced in PyUnitWizard 0.25.0.
+The wheel and Conda minimums are being corrected to 0.25.0 in both projects,
+and MolSysMT's smoke will reuse the central controlled-source manifest and
+an exact Viewer commit. Build 1 becomes diagnostic only; build 2 and fresh
+exact-commit gates are required before promotion.
+The subsequent MolSysMT build 3 (`36113593257`) passed all five ABI3
+platforms; Viewer build 3 (`36113593292`) passed as noarch. Their exact
+installed-pair run `36115388335` passed 20/20, Viewer CI `36115388294`
+passed 7/7, notebooks `36115388415` passed, the Python 3.14 source pair
+`36113593440` passed all three operating systems, and MolSysMT full CI
+`36113593532` and Rust wheels `36113593413` passed. The pre-tag source
+review then found `uibcdf/molsysviewer#102`: the committed Viewer runtime
+still embedded `0.23.0`, even though Conda and npm rebuild it for `0.23.4`.
+The earlier Viewer noarch artifact and pair gates are diagnostic only for
+the corrected Viewer source. Regenerate the committed runtime for `0.23.4`,
+prove the ordinary Python wheel carries that same version, and rerun the
+Viewer producer and exact-pair gates before tagging. MolSysMT's unchanged
+build-3 ABI3 artifacts do not need to be rebuilt.
+The first Viewer build-4 attempt (`36119181642`) proved the source bundle
+check but stopped before packaging: the build environment lacked `wheel` for
+the new isolated-wheel preflight. No build-4 Conda file was uploaded; the
+environment now declares `wheel` and build 4 can be retried without replacing
+an existing staged coordinate.
+The pre-final source-pair run `36119181575` passed macOS and Windows/Python
+3.14 but failed Ubuntu's browser export comparison: source installation had
+no release tag and reported a development version against the committed
+`0.23.4` bundle. The manual source-pair workflow now validates that bundle
+and locally tags its exact Viewer SHA before installation. This changes the
+Viewer candidate SHA again, so all preceding source-pair and Viewer staging
+results remain diagnostic until rerun on the new commit.
+The corrected Viewer build-4 run `36120275908` did pass the ordinary Python
+wheel/runtime check and uploaded its noarch file, but it precedes the
+source-pair workflow correction. A new immutable Viewer build number is
+required for the final exact candidate; build 4 is diagnostic.
+
+## Separate Python 3.14 staging slice
+
+On 2026-09-24, technical staging-only coordinates were created for the newer
+source branches: MolSysMT 0.22.3 ABI3 build 0 on Linux x86-64 (producer run
+`35990161344`) and MolSysViewer 0.23.3 noarch build 0 (build and recipe-test
+run `35990850975`). An exact Linux/Python 3.14 dry-run resolves both from
+`uibcdf/label/staging`. Subsequent exact-pair runs passed Python 3.11–3.14
+on Linux x86-64 (`35992241212`), Linux ARM (`35993063086`), Windows
+(`35993616429`) and macOS ARM (`35993242687`): 16 installed cells with
+explicit environment records. macOS Intel's build (`35992423543`) and
+four-cell matrix (`35995465959`) then passed, bringing the exact staging pair
+to 20/20 installed cells across five native platforms. Every run retained
+four explicit environment records; the MolSysMT validator checked the
+staging URL and SHA-256 of both packages. These are five targeted runs, not
+a single combined workflow or a public-channel claim. The 3.14 branch
+proposal records the source and artifact hashes.
+These are not Git tags, public releases, or a decision to ship those version
+numbers.
 
 A prior local `devtools/build_against_staging.sh` result remains useful evidence about
 the noarch shape and recipe tests, but it is not a substitute for these exact hosted

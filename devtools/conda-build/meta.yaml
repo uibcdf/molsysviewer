@@ -25,7 +25,7 @@ build:
 
 requirements:
   host:
-    - python >=3.11,<3.14
+    - python >=3.11,<3.15
     - pip
     - setuptools >=64
     - versioningit >=3
@@ -36,16 +36,16 @@ requirements:
     # claim implicitly -- py311, py312, py313 and nothing else. A noarch package with an
     # open `>=3.11` would silently offer itself to 3.14 the day it exists, which is the
     # failure `test_the_published_python_matrix_is_the_one_we_actually_test` was written
-    # about. Raise the ceiling when the test matrix gains the version, not before.
-    - python >=3.11,<3.14
+    # about. Raise the ceiling with the tested candidate, not before.
+    - python >=3.11,<3.15
     - aiohttp >=3.10
     - anywidget >=0.9.15
-    - argdigest >=0.12.1
+    - argdigest >=0.13.0
     - depdigest
     - molsysmt >=0.22.0
     - numpy
     - packaging >=23
-    - pyunitwizard
+    - pyunitwizard >=0.25.0
     - smonitor >=0.13.0
     - traitlets >=5
 

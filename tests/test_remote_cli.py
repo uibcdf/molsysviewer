@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import json
-import selectors
+import queue
 import signal
 import socket
 import subprocess
 import sys
+import threading
 from io import StringIO
 
 import pytest
@@ -232,7 +233,7 @@ def test_client_rendering_cli_runs_a_real_demo_session_and_emits_json(monkeypatc
     assert record["ssh_forward"]["target_port"] > 0
 
 
-def test_foreground_server_process_reports_ready_and_closes_on_sigterm():
+def test_foreground_server_process_reports_ready_and_stops():
     process = subprocess.Popen(
         [
             sys.executable,
@@ -250,16 +251,26 @@ def test_foreground_server_process_reports_ready_and_closes_on_sigterm():
     )
     try:
         assert process.stdout is not None
-        with selectors.DefaultSelector() as selector:
-            selector.register(process.stdout, selectors.EVENT_READ)
-            assert selector.select(timeout=15), "server emitted no session-ready record"
-        record = json.loads(process.stdout.readline())
+        ready_lines = queue.Queue(maxsize=1)
+        threading.Thread(target=lambda: ready_lines.put(process.stdout.readline()), daemon=True).start()
+        try:
+            ready_line = ready_lines.get(timeout=15)
+        except queue.Empty:
+            pytest.fail("server emitted no session-ready record")
+        assert ready_line, "server exited without a session-ready record"
+        record = json.loads(ready_line)
         assert record["event"] == "session-ready"
         assert record["render_on"] == "client"
 
-        process.send_signal(signal.SIGTERM)
+        if sys.platform == "win32":
+            process.terminate()
+        else:
+            process.send_signal(signal.SIGTERM)
         _stdout, stderr = process.communicate(timeout=10)
-        assert process.returncode == 0, stderr
+        if sys.platform != "win32":
+            assert process.returncode == 0, stderr
+        else:
+            assert process.returncode is not None, stderr
     finally:
         if process.poll() is None:
             process.kill()

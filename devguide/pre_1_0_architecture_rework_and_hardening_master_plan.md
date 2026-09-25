@@ -1257,6 +1257,18 @@ not repeated for this documentation slice.
     it cannot do passes on an untested release. Today `qt` is blocked on a screen
     and `conda` on gates 1-5; everything else runs. `--list` shows both.
 
+**Intermediate distribution milestone, 2026-09-24:** the separate Python
+3.14 candidate pair passed 20/20 clean staging installations on five native
+platforms and Python 3.11–3.14, with exact package provenance and bounded
+MolSysMT/Viewer functional checks. See
+[`path_to_1_0.md`](path_to_1_0.md)
+and [`checkpoints.md`](checkpoints.md#separate-python-314-staging-slice).
+This removes the technical uncertainty that the core pair can be built and
+installed across that matrix. It does **not** satisfy gates 1–5 for the final
+public versions: their release commits, hosted product checks, Qt boundary,
+and public-channel installations remain unverified. The 3.11–3.13 older
+candidate remains a distinct release decision.
+
 **Exit:** no open pre-1.0 gate remains in `path_to_1_0.md`.
 
 #### Phase 10 persistence slice evidence — 2026-08-09

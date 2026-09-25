@@ -295,6 +295,101 @@ pass, as before.
 
 ## Acceptance
 
+### New hosted evidence, 2026-09-24
+
+Manual `Documentation notebooks` staging run `35997846329` successfully
+installed the coordinated dependencies and reached notebook execution. It then
+failed in `showcase/pockets.ipynb` because the Python pocket-blob API rejected
+the frontend-supported plural iso options (uibcdf/molsysviewer#99), and in
+`showcase/channels.ipynb` because the example still used the old `smoothing`
+argument. Both have local fixes and successful notebook executions on the
+`python-3.14-support` branch. The rerun `36016496850` passed every documented
+notebook on exact commit `7c4e0cd968e9530033e35221683ca085fe1d37cd`.
+That is a green staged-dependency documentation gate on the source branch,
+not yet the required ordinary `main` gate against public packages.
+
+Manual `CI_e2e` staging run `35998036249` installed its environment and built
+the JavaScript harness. Chromium's 164.7 MiB download reached 100% within two
+seconds, but browser installation emitted no further progress for over two
+hours and never entered the tests. It was cancelled. The result is an
+infrastructure/setup gap, neither an E2E pass nor a product E2E failure. Keep
+headless browser E2E in hosted CI; retain visible-window/GPU checks as a
+separate manual requirement. A diagnostic rerun, `36016496630`, bounded the
+browser-install step to 15 minutes. Playwright reported a successful download
+in two seconds, then stopped at `extracting archive` until the step timed out.
+The E2E harness already selects `/usr/bin/google-chrome` by default, which the
+GitHub-hosted Ubuntu image provides. Installing Playwright's separate Chromium
+archive was unused by these tests and has now been replaced by an executable
+check and logged Chrome version. A hosted rerun must reach and execute the
+browser tests before this gate can be claimed.
+
+The full staging-enabled `CI` rerun `36017021764` crossed the solver barrier
+and passed its Qt pipeline, but all six Python matrix jobs failed in `Run
+tests`. Linux/Python 3.13 reported 2,088 passes, 17 skips and seven failures:
+the README examples lacked optional `mdtraj`; two information-table tests
+lacked `jinja2`; two JS-build tests lacked `node_modules/esbuild` because
+`npm ci` ran only after the Python suite; and the no-isolation wheel test
+failed without exposing the captured build stderr. The other five matrix jobs
+failed on the same README dependency boundary. The branch test environment
+now carries `mdtraj`, `jinja2`, and the declared wheel build requirements,
+installs npm dependencies before Python tests, and includes captured output
+when the wheel build fails. The focused local slice passed 32 tests. This is
+source readiness; a hosted rerun is still required.
+
+### Follow-up hosted and local evidence, 2026-09-24
+
+The corrected `CI` run `36019810641` passed the Qt pipeline and four of six
+Python matrix jobs. Ubuntu/Python 3.13 passed its Python suite but failed
+later in JS coverage: unconstrained `nodejs>=18` selected Node 26.10.0,
+under which the installed `yargs` entrypoint threw `ReferenceError: require
+is not defined in ES module scope`. The test environment is now bounded to
+Node 22, with a guard against selecting Node 26. macOS/Python 3.13 reported
+2,088 Python passes, 24 skips, and one failure: the server closed an
+oversized WebSocket message before the client's `send_str` completed, yielding
+`ConnectionError: Connection lost`. The test now accepts that fast-close path
+only for the oversized send and still requires endpoint cleanup. The other
+five jobs passed. These two last changes have focused local checks but no
+hosted rerun.
+
+The corrected `CI_e2e` run `36019810581` used the runner's existing Chrome
+and entered the browser suite. Scenarios 1–22 passed. Scenario 23,
+`remote-client-rendering`, timed out waiting 30 seconds for a PNG download;
+the same complete scenario, including PNG and HTML bytes, passed on the local
+source pair. That local full suite then stopped at scenario 25,
+`remote-session`, because this host's command-line Chrome never navigated to
+the localhost render-worker page (the limitation in uibcdf/molsysviewer#77).
+Neither 22/37 hosted nor 24/37 local is a full E2E pass. The test-evidence
+redesign and release-policy decision are tracked by
+uibcdf/molsysviewer#100. No E2E has been disabled, skipped, or marked green.
+
+An interim selection now runs 36 portable scenarios in hosted `CI_e2e`; the
+managed-GPU `remote-session` scenario is independently runnable and still
+fails on this host. The 36/36 portable lane passed locally. This workflow
+change has not yet been rerun on GitHub, and its earlier scenario-23 PNG
+timeout remains an open hosted question. Neither the local portable pass nor
+the workflow edit certifies the server-GPU lane or closes this bug.
+
+Staging-enabled `CI` run `36034111547` on branch commit `ac3dd891` passed
+the Qt job but failed all six Python jobs at one shared repository guard:
+`test_e2e_uses_the_hosted_browser_it_checks` still selected the E2E step by
+its old name, `Run E2E tests`, after the workflow truthfully renamed it
+`Run portable E2E tests`. The test now selects the actual portable command,
+requires the checked Chrome executable and readable step name, and the
+distribution/E2E guard slice passes locally (24/24). No product failure was
+reported by this run before that guard; hosted confirmation is still pending.
+
+Staging-enabled `CI` rerun `36036802158` on branch commit `2594f1a2`
+passed all seven jobs: six Python matrix cells and Qt. This confirms the
+corrected guard and branch CI against the staged MolSysMT dependency. It does
+not close the issue: the public-channel `main` gate and hosted portable
+`CI_e2e` remain separate evidence. Portable `CI_e2e` run `36038233512`
+repeated the earlier hosted failure at scenario 23/36:
+`remote-client-rendering` timed out after 30 seconds waiting for the PNG
+download. It had passed locally in the 36/36 portable source-pair run.
+The managed server-GPU scenario remains outside that lane. Do not rerun
+the unchanged hosted test to seek a green result; #100 owns the evidence-lane
+decision after package publication.
+
 - `CI`, `CI_e2e` and `Documentation notebooks` pass on `main` against the MolSysMT this
   package declares, not an older one the solver happens to find.
 - Gate 8 says what is enforced.
