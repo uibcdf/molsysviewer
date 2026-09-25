@@ -1,4 +1,4 @@
-"""The checks that must pass before a release, in one command.
+"""The strict 1.0 checks that must pass, in one command.
 
 Gate 11 of the pre-1.0 plan asks for "the final smoke matrix and release-version
 consistency checks". This is that command. It runs what can be run and **refuses to be
@@ -62,8 +62,10 @@ def _display_available() -> str | None:
 
 def _sibling_releases_ready() -> str | None:
     return (
-        "gates 1-5 of Phase 10 are open: the UIBCDF dependency versions and channels are "
-        "not closed, so conda artefacts cannot be built against final versions"
+        "the strict 1.0 gate requires a separately verified final-version Conda pair. "
+        "A published pre-1.0 pair is a distribution milestone, not proof of the final "
+        "1.0 coordinates; this step does not assess current pre-1.0 channel availability "
+        "(uibcdf/molsysviewer#103)"
     )
 
 
@@ -86,7 +88,7 @@ STEPS = (
         "e2e", "all E2E suites in one real browser", ["npm", "run", "test:e2e"], blocked_by=_node_available, cwd=JS_ROOT
     ),
     Step("qt", "Qt real-window and GPU render observation", None, blocked_by=_display_available),
-    Step("conda", "conda artefacts against final dependency versions", None, blocked_by=_sibling_releases_ready),
+    Step("conda", "the final-version Conda pair for 1.0", None, blocked_by=_sibling_releases_ready),
 )
 
 

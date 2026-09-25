@@ -5,12 +5,12 @@ changes. Normative behavior remains in the contracts linked below.
 
 ## Repository state
 
-- Branch: `main` for the coordinated 0.22.0/0.23.1 release path. The exact
-  staged pair passed its hosted 15-cell installation matrix on 2026-09-24;
-  publication and the remaining Viewer release gates are pending. The separate
-  `python-3.14-support` branch has a five-platform, 20-cell staging milestone
-  recorded below; the [1.0 release plan](path_to_1_0.md) distinguishes it from
-  public-channel admission.
+- Branch: `main` contains the tagged 0.23.4 release candidate and its
+  post-tag fixes; the immutable 0.23.4 tag is
+  `cf427942d0b08a1c5c60f262c6a6b33f248d6f8b`. The coordinated
+  MolSysMT 0.22.4 / Viewer 0.23.4 pair passed both staging and public
+  20-cell installed-package matrices on 2026-09-25. This is a pre-1.0
+  distribution milestone, not closure of the [1.0 release plan](path_to_1_0.md).
 - Phases 5, 6, 8 and 9 and the Phase 10 persistence slice were independently
   audited and closed on 2026-08-09. Phase 8 evidence remains in
   [`performance/representative_scale_gate_2026_08.md`](performance/representative_scale_gate_2026_08.md).
@@ -55,6 +55,41 @@ changes. Normative behavior remains in the contracts linked below.
   a public regression and raises its wheel and Conda floor to the planned patch release
   `argdigest>=0.12.1`; publication of that release remains a prerequisite for clean
   installation dogfooding.
+
+## Published pre-1.0 pair — 2026-09-25
+
+Viewer [0.23.4](https://github.com/uibcdf/molsysviewer/releases/tag/0.23.4)
+and MolSysMT [0.22.4](https://github.com/uibcdf/molsysmt/releases/tag/0.22.4)
+are published GitHub Releases on their exact tested candidate commits. The
+Viewer ordinary Python wheel and source `viewer.js` were checked against the
+0.23.4 runtime before tagging; [#102](https://github.com/uibcdf/molsysviewer/issues/102)
+records that guard. The npm runtime 0.23.4 is published and its CDN bundle
+returns HTTP 200. A redundant second npm publish triggered by the GitHub
+Release was corrected on `main` and archived under
+[#104](https://github.com/uibcdf/molsysviewer/issues/104); it did not alter
+the successful tag-push publication.
+
+MolSysMT's [public-channel matrix](https://github.com/uibcdf/molsysmt/actions/runs/36129993869)
+passed 20/20 clean installations on five platforms and Python 3.11–3.14,
+with exact build-3/build-5 coordinates and public `uibcdf` provenance. The
+prior staging matrix also passed 20/20 in run `36121427459`. All six exact
+Conda files are public with the verified SHA-256 digests. The promotion
+actions and receipt uploads passed, but their final duplicated verifier
+steps exited 1 after printing the correct public URLs; the workflows remain
+red and the defect is tracked by [#105](https://github.com/uibcdf/molsysviewer/issues/105),
+`uibcdf/molsysmt#246` and `uibcdf/molsyssuite#48`. Do not rerun mutation
+just to change a badge.
+
+The release explicitly excepts visible-window Qt and complete hosted E2E
+evidence for this pre-1.0 version; [#100](https://github.com/uibcdf/molsysviewer/issues/100)
+remains open and the strict 1.0 gate is not green. The stale unconditional
+Conda gate message is tracked by [#103](https://github.com/uibcdf/molsysviewer/issues/103)
+for correction on `main`, not by changing the tested tag. The two Zenodo
+verifiers have not yet found public version records. No exact-version DOI or
+complete citation lifecycle is claimed until independent verification passes.
+
+The older 0.22.0/0.23.1 and branch-candidate sections below are dated
+history, not the latest release coordinates.
 
 ## Coordinated Conda release with MolSysMT 0.22.0 — in flight
 

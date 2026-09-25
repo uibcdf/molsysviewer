@@ -21,8 +21,8 @@ list.
 
 ### Being worked on (3)
 
+- [`public_noarch_promotion_succeeds_but_final_verifier_exits_one.md`](public_noarch_promotion_succeeds_but_final_verifier_exits_one.md) — [#105](https://github.com/uibcdf/molsysviewer/issues/105) — Public noarch promotion succeeds but final verifier exits one *(medium, reproduced)*
 - [`python_pocket_blob_rejects_documented_multi_iso_options.md`](python_pocket_blob_rejects_documented_multi_iso_options.md) — [#99](https://github.com/uibcdf/molsysviewer/issues/99) — Python pocket blob API rejects its documented multi-iso options. *(medium, reproduced)*
-- [`python_wheel_can_ship_a_stale_viewer_runtime.md`](python_wheel_can_ship_a_stale_viewer_runtime.md) — [#102](https://github.com/uibcdf/molsysviewer/issues/102) — Guard the bundled Python runtime version before tagging a release *(high, inspected)*
 - [`release_gate_conflates_staging_evidence_with_strict_1_0_requirements.md`](release_gate_conflates_staging_evidence_with_strict_1_0_requirements.md) — [#103](https://github.com/uibcdf/molsysviewer/issues/103) — Release gate conflates exact staging evidence with strict 1.0 requirements *(medium, reproduced)*
 
 ### Partially done (2)

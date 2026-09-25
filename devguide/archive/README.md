@@ -31,6 +31,9 @@ user/developer documentation.
 
 Resolved defect reports, kept for their evidence:
 
+- [`python_wheel_can_ship_a_stale_viewer_runtime.md`](python_wheel_can_ship_a_stale_viewer_runtime.md)
+  — the 0.23.4 wheel preflight now checks its Python metadata and compiled JS
+  runtime together before Conda rebuilds the bundle.
 - [`npm_publisher_runs_twice_for_one_version.md`](npm_publisher_runs_twice_for_one_version.md)
   — the 0.23.4 tag published npm successfully, then the GitHub Release
   redundantly tried the immutable version again; tag push is now the sole

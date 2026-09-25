@@ -53,6 +53,16 @@ The passing 20-cell staging matrix does not close every Phase 10 gate. It
 demonstrates installation of the exact candidate pair from staging, not a
 visible Qt session, complete hosted E2E, or final public-channel availability.
 
+The later public installed-pair matrix `36129993869` passed 20/20 and does
+establish availability of the 0.22.4/0.23.4 pair from `uibcdf`. It still
+does not establish the final 1.0 pair or close Qt/E2E observations.
+
 ## Resolution
 
-Pending after the 0.23.4 tag.
+After the 0.23.4 tag, the stale unconditional statement that Phase 10's
+dependency channels remain closed was removed. The strict 1.0 gate now says
+precisely that it needs a *final-version* pair, while acknowledging that a
+pre-1.0 public pair is a separate milestone. A focused gate test guards
+against reinstating the old claim. The issue remains active until the Conda
+step can assess exact candidate evidence mechanically, report a bounded
+pre-1.0 exception separately from a pass, and retain the strict 1.0 check.

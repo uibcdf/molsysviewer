@@ -1,13 +1,13 @@
 ---
 summary: Guard the bundled Python runtime version before tagging a release
 issue: uibcdf/molsysviewer#102
-status: active
+status: resolved
 opened: 2026-09-25
-closed:
+closed: 2026-09-25
 severity: high
 verification: inspected
 area: [release, packaging, runtime]
-guard:
+guard: tests/test_validate_python_wheel_runtime.py
 normative:
 blocked_by: []
 supersedes: []
@@ -85,6 +85,13 @@ METADATA/runtime comparison and produced the noarch staging package. It is
 diagnostic for the final candidate because the source-pair workflow correction
 was committed afterward; that next candidate needs a new build number.
 
-The local focused guard passes five tests. This report remains active until the
-new workflow succeeds on the corrected exact candidate and the release wheel
-contract is observed, then the issue can close with that test module as guard.
+The final tagged candidate `cf427942d0b08a1c5c60f262c6a6b33f248d6f8b`
+passed the ordinary wheel/runtime preflight in build-5 run `36120923112`,
+the exact source-pair 3.14 gate in run `36120922984`, and hosted Viewer CI
+in run `36120938087`. The 0.23.4 tag published the matching npm runtime
+in run `36126333127`; the exact noarch build-5 package later passed the
+20-cell staging matrix (`36121427459`) and 20-cell public-channel matrix
+(`36129993869`) with MolSysMT 0.22.4 build 3. The focused five-test guard
+passes and fails if a future wheel packages an older bundle or wrong metadata.
+The separate double npm trigger discovered during publication was fixed as
+`uibcdf/molsysviewer#104`; it does not undo this wheel contract.

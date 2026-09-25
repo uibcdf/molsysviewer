@@ -45,7 +45,7 @@ def test_every_step_can_either_run_or_say_why_not():
 
 
 def test_the_blocked_steps_name_what_they_are_waiting_for():
-    """The two that cannot run here are Phase 7's screen and Phase 10's sibling releases.
+    """The two that cannot run here are Phase 7's screen and the final 1.0 pair.
 
     Their reasons are the load-bearing part: this repository's remaining pre-1.0 work is
     almost entirely those two, and a gate that said only "skipped" would hide it.
@@ -53,7 +53,9 @@ def test_the_blocked_steps_name_what_they_are_waiting_for():
     reasons = {step.name: step.blocked_by() for step in STEPS if step.blocked_by}
 
     assert reasons.get("conda"), "the conda step must always state why it cannot run"
-    assert "gates 1-5" in reasons["conda"]
+    assert "final-version Conda pair" in reasons["conda"]
+    assert "pre-1.0 pair" in reasons["conda"]
+    assert "gates 1-5 of Phase 10 are open" not in reasons["conda"]
     # `qt` is blocked here and not on a machine with a screen, which is the point.
     if reasons.get("qt"):
         assert "DISPLAY" in reasons["qt"]

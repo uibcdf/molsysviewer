@@ -2,6 +2,15 @@
 
 This document is the authoritative release plan for the **v1.0.0** release of MolSysViewer. 
 
+**Distribution checkpoint (2026-09-25):** Viewer 0.23.4 and MolSysMT 0.22.4
+are published pre-1.0 Releases. The exact noarch/ABI3 pair passed 20/20
+staging and 20/20 public-channel installations on Python 3.11–3.14 across
+five platforms (public run `36129993869`); npm 0.23.4 and its CDN runtime
+are public. This closes the current package-availability dependency cycle,
+not the visible Qt, complete hosted E2E, dogfooding or other 1.0 gates.
+Zenodo version records are not yet independently verified. See
+[`checkpoints.md`](checkpoints.md) for the exact evidence and open defects.
+
 It consolidates the strategic milestones with the competitive quality gaps (previously tracked under the confusing `path_to_8_5.md` document) to ensure that the stable `1.0.0` release reaches a high-quality competitive score (**8.5/10**) in the scientific Python ecosystem.
 
 ---
@@ -18,7 +27,7 @@ Work done against the `0.18.0` tag.
 | 4 | Fill 3 placeholder doc pages (`demo_systems/catalog`, `demo_systems/index`, `scene_management/visibility`) | Claude | ✅ 2026-04-28 |
 | 5 | Manual smoke test — 14-step flow in `devguide/smoke_test.md` | Diego | — |
 | 6 | Visual smoke of `controls_mode="minimal"` + `panel_mode_style="floating"` in a real notebook | Diego | — |
-| 7 | Publish conda + npm packages | Diego | npm at `0.20.0` since 2026-08-05; conda still at `0.7.0`. npm now triggers on a pushed tag — the trigger that stopped firing at `0.8.0` and cost thirteen unpublished versions. Conda stays on a GitHub Release by decision: a tag is a checkpoint, a conda package is something people install. See `docs/content/developer/releasing.md`. |
+| 7 | Publish conda + npm packages | Diego | Viewer 0.23.4 is on npm and the public `uibcdf` Conda channel; the exact public installed-pair matrix passed 20/20 with MolSysMT 0.22.4 on 2026-09-25. This is a pre-1.0 distribution milestone, not a Phase 7/E2E sign-off. See `docs/content/developer/releasing.md` and `checkpoints.md`. |
 
 ---
 
