@@ -260,6 +260,19 @@ The wheel and Conda minimums are being corrected to 0.25.0 in both projects,
 and MolSysMT's smoke will reuse the central controlled-source manifest and
 an exact Viewer commit. Build 1 becomes diagnostic only; build 2 and fresh
 exact-commit gates are required before promotion.
+The subsequent MolSysMT build 3 (`36113593257`) passed all five ABI3
+platforms; Viewer build 3 (`36113593292`) passed as noarch. Their exact
+installed-pair run `36115388335` passed 20/20, Viewer CI `36115388294`
+passed 7/7, notebooks `36115388415` passed, the Python 3.14 source pair
+`36113593440` passed all three operating systems, and MolSysMT full CI
+`36113593532` and Rust wheels `36113593413` passed. The pre-tag source
+review then found `uibcdf/molsysviewer#102`: the committed Viewer runtime
+still embedded `0.23.0`, even though Conda and npm rebuild it for `0.23.4`.
+The earlier Viewer noarch artifact and pair gates are diagnostic only for
+the corrected Viewer source. Regenerate the committed runtime for `0.23.4`,
+prove the ordinary Python wheel carries that same version, and rerun the
+Viewer producer and exact-pair gates before tagging. MolSysMT's unchanged
+build-3 ABI3 artifacts do not need to be rebuilt.
 
 ## Separate Python 3.14 staging slice
 

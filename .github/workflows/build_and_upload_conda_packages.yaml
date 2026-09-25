@@ -139,6 +139,21 @@ jobs:
           EXPECTED_VERSION: ${{ inputs.version || github.event.release.tag_name }}
         run: test "$(python -m versioningit)" = "$EXPECTED_VERSION"
 
+      - name: Verify the Python wheel and its committed JS runtime
+        if: github.event_name == 'workflow_dispatch' || steps.route.outputs.route == 'direct'
+        shell: bash -l {0}
+        env:
+          EXPECTED_VERSION: ${{ inputs.version || github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          python devtools/validate_python_wheel_runtime.py --expected-version "$EXPECTED_VERSION"
+          python -m build --wheel --no-isolation --outdir "$RUNNER_TEMP/python-wheel-contract"
+          shopt -s nullglob
+          wheels=("$RUNNER_TEMP/python-wheel-contract"/*.whl)
+          test "${#wheels[@]}" -eq 1
+          python devtools/validate_python_wheel_runtime.py \
+            --expected-version "$EXPECTED_VERSION" --wheel "${wheels[0]}"
+
       # A matching MolSysMT candidate must already be present in staging as the one
       # unavoidable bootstrap package. Unlike that first half of the cycle, this can run its recipe
       # test: conda-build places the just-built MolSysViewer package in the test channel,
