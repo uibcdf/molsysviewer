@@ -184,8 +184,9 @@ file at a time after the full 20-cell installed-pair gate. These promotion
 workflows have local structural and shell-syntax tests but no hosted promotion
 yet. The earlier Viewer CI 7/7 pinned staged MolSysMT `0.22.0`; manual CI,
 E2E and notebook gates now require an explicit MolSysMT version input and
-must be rerun for `0.22.4` rather than credited retroactively. No `0.22.4`
-or `0.23.4` package has been uploaded yet; #100 still owns the hosted E2E
+must be rerun for `0.22.4` rather than credited retroactively. At this
+selection checkpoint, neither package had been uploaded; build-0 staging is
+recorded below. #100 still owns the hosted E2E
 timeout and the separate server-GPU lane.
 
 The maintainers accepted an explicit, limited pre-1.0 exception for this
@@ -197,8 +198,9 @@ certification. #100 remains open; the strict 1.0 E2E and visible-window gates
 are unchanged. The exception must accompany the release decision, not turn
 the failed hosted run into a success.
 
-The `0.23.4` citation surfaces are prepared with the intended 2026-09-24
-release date; if publication slips, rerun the preparation and candidate gates
+The `0.23.4` citation surfaces were first prepared for 2026-09-24 and
+refreshed to the intended 2026-09-25 release date after the local date
+changed; if publication slips, rerun the preparation and candidate gates
 before tagging. MolSysSuite `policy-v1.4.11` now registers both transition
 issues (`uibcdf/molsysmt#237`, `uibcdf/molsysviewer#93`) as `authorized`.
 Both candidate callers pin that policy release and synchronize its canonical
@@ -232,6 +234,22 @@ The new policy's Ruff 0.16.5 formatting gate exposed three older files in
 the Viewer test infrastructure; they were formatted without changing test
 behavior. Repository-wide Ruff lint and format checks now pass, and the
 focused distribution/release-route modules pass 23/23.
+The corrected source-pair run `36062983964` passed Linux, macOS and
+Windows/Python 3.14. The first staged noarch `0.23.4` build 0 passed its
+recipe test (`36064255601`), the installed-pair run `36065287565` passed
+all 20 platform/Python cells, Viewer CI against staged MolSysMT passed all
+seven jobs (`36064424260`), and notebooks passed in `36064424563`.
+The first MolSysMT full-CI run `36063386092`
+exposed its outdated controlled ArgDigest source pin: release 0.12.1 writes
+the read-only `hint` property inherited from SMonitor 0.16.0. Published
+ArgDigest 0.13.0 fixes this; its exact tag source passed the 27 affected
+local MolSysMT contract tests. The complete local Viewer suite passed
+2,112 tests with 14 skips, and the matching MolSysMT suite passed 10,225
+with 11 skips, using the exact ArgDigest 0.13.0 and SMonitor 0.16.0 sources
+and 12 workers. Both components now declare 0.13.0 as the minimum. The
+existing build-0 staged files and their passing installed cells remain
+technical evidence only; build 1 and the complete exact-pair gates must
+replace them before promotion.
 
 ## Separate Python 3.14 staging slice
 

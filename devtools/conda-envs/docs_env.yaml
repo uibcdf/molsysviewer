@@ -16,7 +16,7 @@ dependencies:
   # them in; tests/test_distribution_artifact.py keeps the two in step.
   - aiohttp>=3.10
   - anywidget>=0.9.15
-  - argdigest>=0.12.1
+  - argdigest>=0.13.0
   - depdigest
   - molsysmt>=0.22.0
   - numpy

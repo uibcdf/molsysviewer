@@ -39,7 +39,7 @@ REQUIRED_RUNTIME_RESOURCES = {
 }
 REQUIRED_RUNTIME_VERSION_FLOORS = {
     "aiohttp": "3.10",
-    "argdigest": "0.12.1",
+    "argdigest": "0.13.0",
     "molsysmt": "0.22.0",
 }
 
