@@ -9,6 +9,11 @@ on:
         description: Full MolSysMT source candidate commit SHA
         required: true
         type: string
+      viewer_version:
+        description: Intended Viewer release version for the exact source candidate
+        required: true
+        default: 0.23.4
+        type: string
   pull_request:
     branches: [main]
     paths:
@@ -75,6 +80,23 @@ jobs:
               - uibcdf
               - conda-forge
             channel_priority: strict
+
+      - name: Validate and locally tag the exact Viewer source candidate
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash -l {0}
+        working-directory: molsysviewer-source
+        env:
+          EXPECTED_VERSION: ${{ inputs.viewer_version }}
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python devtools/validate_python_wheel_runtime.py --expected-version "$EXPECTED_VERSION"
+          if git show-ref --verify --quiet "refs/tags/$EXPECTED_VERSION"; then
+            test "$(git rev-list -n 1 "$EXPECTED_VERSION")" = "$GITHUB_SHA"
+          else
+            git tag "$EXPECTED_VERSION" HEAD
+          fi
 
       - name: Install both exact source candidates
         shell: bash -l {0}

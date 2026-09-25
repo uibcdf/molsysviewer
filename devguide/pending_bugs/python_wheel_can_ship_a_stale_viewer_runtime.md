@@ -73,6 +73,17 @@ build environment. The source-version check had passed. `wheel` is now an
 explicit member of `devtools/conda-envs/build_env.yaml`; build number 4 was
 not published by that failed run and can be retried without overwriting a
 staged artifact.
+The source-pair run `36119181575` then passed macOS and Windows but failed
+the Ubuntu exported-page matching-version test for the same reason as the
+untagged local checkout: it installed the Viewer candidate without a release
+tag while testing a `0.23.4` runtime. Its manual dispatch now validates the
+source bundle and creates the intended tag at the exact Viewer workflow SHA
+before installing either source candidate. This makes the 3.14 source-pair
+gate test the release identity, not a development-version approximation.
+The corrected build-4 workflow `36120275908` passed the actual wheel
+METADATA/runtime comparison and produced the noarch staging package. It is
+diagnostic for the final candidate because the source-pair workflow correction
+was committed afterward; that next candidate needs a new build number.
 
 The local focused guard passes five tests. This report remains active until the
 new workflow succeeds on the corrected exact candidate and the release wheel

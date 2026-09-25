@@ -278,6 +278,17 @@ check but stopped before packaging: the build environment lacked `wheel` for
 the new isolated-wheel preflight. No build-4 Conda file was uploaded; the
 environment now declares `wheel` and build 4 can be retried without replacing
 an existing staged coordinate.
+The pre-final source-pair run `36119181575` passed macOS and Windows/Python
+3.14 but failed Ubuntu's browser export comparison: source installation had
+no release tag and reported a development version against the committed
+`0.23.4` bundle. The manual source-pair workflow now validates that bundle
+and locally tags its exact Viewer SHA before installation. This changes the
+Viewer candidate SHA again, so all preceding source-pair and Viewer staging
+results remain diagnostic until rerun on the new commit.
+The corrected Viewer build-4 run `36120275908` did pass the ordinary Python
+wheel/runtime check and uploaded its noarch file, but it precedes the
+source-pair workflow correction. A new immutable Viewer build number is
+required for the final exact candidate; build 4 is diagnostic.
 
 ## Separate Python 3.14 staging slice
 
