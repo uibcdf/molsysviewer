@@ -42,6 +42,11 @@ Flow
 3. Pushing the tag runs `.github/workflows/npm-publish.yaml`, which publishes
    using Trusted Publisher (OIDC).
 
+Publishing the GitHub Release for that tag does not publish to npm again. npm
+versions are immutable; a second automatic publish of the same version is a
+workflow failure, not another release step. Manual workflow dispatch requires
+an explicit tag and is reserved for recovery of a version not yet on npm.
+
 **Conda is different, on purpose.** It publishes from a GitHub *Release*, not
 from a tag. A tag is a checkpoint and there are many; a conda package is
 something people install, and the cadence is a decision. So a version can be on

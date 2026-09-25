@@ -8,14 +8,11 @@ on:
   push:
     tags:
       - "*"
-  release:
-    types: [published]
   workflow_dispatch:
     inputs:
       tag:
         description: "Versión exacta (ej. 0.5.3)"
         required: true
-        default: "0.5.3"
 
 jobs:
   publish:

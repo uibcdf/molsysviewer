@@ -31,6 +31,10 @@ user/developer documentation.
 
 Resolved defect reports, kept for their evidence:
 
+- [`npm_publisher_runs_twice_for_one_version.md`](npm_publisher_runs_twice_for_one_version.md)
+  — the 0.23.4 tag published npm successfully, then the GitHub Release
+  redundantly tried the immutable version again; tag push is now the sole
+  automatic npm trigger.
 - [`docs_lite_views_pinned_to_unpublished_npm_version.md`](docs_lite_views_pinned_to_unpublished_npm_version.md)
 - [`standalone_export_mutates_live_widget_state.md`](standalone_export_mutates_live_widget_state.md)
 - [`tight_initial_camera_framing_for_exported_views.md`](tight_initial_camera_framing_for_exported_views.md)
