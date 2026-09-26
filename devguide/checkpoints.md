@@ -95,6 +95,10 @@ and the source archive `uibcdf/molsysmt-0.22.4.zip`. The initial 900-second
 verifiers timed out before ingestion; MT's stricter tree-tag predicate also
 caused a false red and was corrected in `uibcdf/molsysmt#247`. Neither
 Zenodo inventory contains the separately published Conda/npm packages.
+Read-only verification reruns passed on 2026-09-26:
+[MolSysMT run 36220716162](https://github.com/uibcdf/molsysmt/actions/runs/36220716162)
+and [Viewer run 36220722008](https://github.com/uibcdf/molsysviewer/actions/runs/36220722008)
+each reported its exact version DOI. The immutable tags were not moved.
 
 The older 0.22.0/0.23.1 and branch-candidate sections below are dated
 history, not the latest release coordinates.
