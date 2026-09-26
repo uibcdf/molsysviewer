@@ -55,3 +55,46 @@ test("stop_movie drains an in-flight camera write and restores the stopped posit
         globalThis.cancelAnimationFrame = originalCancel;
     }
 });
+
+test("movie_playback_done waits for the final camera write", async () => {
+    const originalRequest = globalThis.requestAnimationFrame;
+    const originalCancel = globalThis.cancelAnimationFrame;
+    let tick: FrameRequestCallback | undefined;
+    let releaseWrite: (() => void) | undefined;
+    let position = [0, 0, 60];
+    const events: string[] = [];
+
+    globalThis.requestAnimationFrame = callback => { tick = callback; return 1; };
+    globalThis.cancelAnimationFrame = () => { tick = undefined; };
+
+    try {
+        const movie = new MovieHandlers({
+            getCameraSnapshot: () => ({ position: [...position] }) as any,
+            setCameraSnapshot: async snapshot => {
+                await new Promise<void>(resolve => { releaseWrite = resolve; });
+                position = [...snapshot.position];
+            },
+            setTrajectoryFrame: async () => {},
+            getImageDataUri: async () => undefined,
+            showLayer: async () => {},
+            hideLayer: async () => {},
+            notify: message => events.push(message.event),
+        });
+        await movie.play([
+            { time_ms: 0, camera: { position: [0, 0, 60], target: [0, 0, 0], up: [0, 1, 0] } },
+            { time_ms: 900, camera: { position: [60, 0, 0], target: [0, 0, 0], up: [0, 1, 0] } },
+        ]);
+        assert.ok(tick);
+        tick(performance.now() + 1000);
+        await new Promise(resolve => setTimeout(resolve, 0));
+        assert.deepStrictEqual(events, []);
+        assert.ok(releaseWrite);
+        releaseWrite();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        assert.deepStrictEqual(position, [60, 0, 0]);
+        assert.deepStrictEqual(events, ["movie_playback_done"]);
+    } finally {
+        globalThis.requestAnimationFrame = originalRequest;
+        globalThis.cancelAnimationFrame = originalCancel;
+    }
+});

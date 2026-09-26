@@ -63,6 +63,7 @@ function computeT(kfA: MovieKeyframe, kfB: MovieKeyframe, time_ms: number): numb
 export class MovieHandlers {
     private rafId?: number;
     private cameraWrites = new Set<Promise<void>>();
+    private playbackGeneration = 0;
     private lastStructureIndex?: number;
     private lastMovieTime: number = 0;
     private lastVisibility: Record<string, boolean> = {};
@@ -88,14 +89,24 @@ export class MovieHandlers {
         this.lastStructureIndex = undefined;
         this.lastMovieTime = actualStart;
         this.lastVisibility = {};
+        const generation = this.playbackGeneration;
         const startRealTime = performance.now() - actualStart;
 
         const tick = (now: number) => {
             const elapsed = now - startRealTime;
             if (!loop && elapsed >= totalDuration) {
-                this.applyState(keyframes, totalDuration, baseSnapshot);
                 this.rafId = undefined;
-                this.context.notify?.({ event: "movie_playback_done" });
+                void (async () => {
+                    // Older camera commands may still be queued inside Mol*. Submit
+                    // the final keyframe only after they finish, then report done.
+                    await this.waitForCameraWrites();
+                    if (generation !== this.playbackGeneration) return;
+                    this.applyState(keyframes, totalDuration, baseSnapshot);
+                    await this.waitForCameraWrites();
+                    if (generation === this.playbackGeneration) {
+                        this.context.notify?.({ event: "movie_playback_done" });
+                    }
+                })();
                 return;
             }
             const movieTime = loop ? elapsed % totalDuration : Math.min(elapsed, totalDuration);
@@ -112,6 +123,7 @@ export class MovieHandlers {
     }
 
     async stop(): Promise<void> {
+        this.playbackGeneration += 1;
         if (this.rafId !== undefined) {
             cancelAnimationFrame(this.rafId);
             this.rafId = undefined;
@@ -119,11 +131,15 @@ export class MovieHandlers {
         // Mol* camera commands are asynchronous. Cancelling rAF alone can leave
         // already-submitted frames travelling after stop_movie has returned.
         const atStop = this.context.getCameraSnapshot();
-        const inFlight = Array.from(this.cameraWrites);
-        if (inFlight.length) {
-            await Promise.allSettled(inFlight);
+        const hadInFlight = this.cameraWrites.size > 0;
+        if (hadInFlight) {
+            await this.waitForCameraWrites();
             if (atStop) await this.context.setCameraSnapshot(atStop, 0);
         }
+    }
+
+    private async waitForCameraWrites(): Promise<void> {
+        await Promise.allSettled(Array.from(this.cameraWrites));
     }
 
     // ── Frame export ──────────────────────────────────────────────────────

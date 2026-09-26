@@ -95,7 +95,13 @@ async function run() {
         await controller.handleMessage({ op: "play_movie", keyframes, loop: false });
         const during = await sample(1200, 30);
 
-        const done = ((w.__messages ?? []) as any[]).some(m => m?.event === "movie_playback_done");
+        // Mol* applies camera snapshots asynchronously. Playback completion is
+        // signalled only once its final snapshot has landed, not at a fixed wall time.
+        const hasDone = () => ((w.__messages ?? []) as any[]).some(m => m?.event === "movie_playback_done");
+        for (let i = 0; i < 200 && !hasDone(); i++) {
+            await new Promise(r => setTimeout(r, 50));
+        }
+        const done = hasDone();
         const after = pos();
 
         // A second run, interrupted: it must stop where it was, short of the end.
