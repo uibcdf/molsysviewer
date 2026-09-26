@@ -1,6 +1,6 @@
 # Development roadmap
 
-**Updated:** 2026-09-25
+**Updated:** 2026-09-26
 
 This roadmap states current priorities. Release gating lives in
 [`path_to_1_0.md`](path_to_1_0.md), normative behavior in
@@ -23,8 +23,9 @@ strict 1.0 release gate remains open. Both Zenodo exact-version records are
 now published and independently verified. Next prioritize
 the remaining real-window observations, representative scientific
 dogfooding, first-contact onboarding, reproducible hosted E2E evidence and
-an exact-commit 1.0 candidate, while repairing the false-red promotion
-verifier for future releases (`uibcdf/molsyssuite#48`).
+an exact-commit 1.0 candidate. The false-red promotion verifier has been
+replaced by a read-only check that passed on GitHub for the published pair;
+the earlier promotion jobs remain red (`uibcdf/molsyssuite#48`).
 
 ## Completed foundations
 

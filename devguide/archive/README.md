@@ -31,6 +31,9 @@ user/developer documentation.
 
 Resolved defect reports, kept for their evidence:
 
+- [`public_noarch_promotion_succeeds_but_final_verifier_exits_one.md`](public_noarch_promotion_succeeds_but_final_verifier_exits_one.md)
+  — an exact public file can now be checked through a rerunnable read-only workflow;
+  verification never repeats a successful promotion.
 - [`python_wheel_can_ship_a_stale_viewer_runtime.md`](python_wheel_can_ship_a_stale_viewer_runtime.md)
   — the 0.23.4 wheel preflight now checks its Python metadata and compiled JS
   runtime together before Conda rebuilds the bundle.

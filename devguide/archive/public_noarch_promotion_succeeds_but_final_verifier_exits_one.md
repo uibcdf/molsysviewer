@@ -1,13 +1,13 @@
 ---
 summary: Public noarch promotion succeeds but final verifier exits one
 issue: uibcdf/molsysviewer#105
-status: active
+status: resolved
 opened: 2026-09-25
-closed:
+closed: 2026-09-26
 severity: medium
 verification: reproduced
 area: [release, conda, ci]
-guard:
+guard: tests/test_verify_public_package.py
 normative:
 blocked_by: []
 supersedes: []
@@ -51,8 +51,8 @@ The public installed-pair matrix passed all 20 cells in MolSysMT run
 ## Resolution
 
 The original shell exit-1 mechanism remains undiagnosed: the step log prints
-the correct URL and then reports status 1 without a traceback. A replacement
-is in progress. `devtools/conda-build/verify_public_package.py` checks the
+the correct URL and then reports status 1 without a traceback.
+`devtools/conda-build/verify_public_package.py` checks the
 public Anaconda release API for the exact basename, SHA-256 and `main` label,
 then checks the public `repodata.json` entry for solver visibility. It retries
 bounded propagation but fails immediately on a wrong digest.
@@ -61,5 +61,8 @@ The promotion workflow now calls that script. A separate
 `verify_public_conda_package.yaml` dispatch calls the same script without a
 publication token or promotion action. Local positive/negative tests pass,
 and a live read-only invocation passed for the public noarch build-5 file.
-Hosted execution of the new workflow remains to be verified before closing
-this report; the old failed run does not become green retroactively.
+The hosted read-only run `36227243079` passed on the committed `main`
+verifier. The old failed run does not become green retroactively, and no
+promotion was repeated. The guard `tests/test_verify_public_package.py`
+covers successful verification, wrong digests, missing labels and index
+entries, bounded retry and the no-promotion workflow boundary.

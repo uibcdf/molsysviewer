@@ -78,7 +78,11 @@ actions and receipt uploads passed, but their final duplicated verifier
 steps exited 1 after printing the correct public URLs; the workflows remain
 red and the defect is tracked by [#105](https://github.com/uibcdf/molsysviewer/issues/105),
 `uibcdf/molsysmt#246` and `uibcdf/molsyssuite#48`. Do not rerun mutation
-just to change a badge.
+just to change a badge. Replacement read-only verification passed on GitHub
+in [Viewer run 36227243079](https://github.com/uibcdf/molsysviewer/actions/runs/36227243079)
+and [MolSysMT run 36227235698](https://github.com/uibcdf/molsysmt/actions/runs/36227235698).
+The original shell exit mechanism is still unknown; its historical run
+conclusions do not change.
 
 The release explicitly excepts visible-window Qt and complete hosted E2E
 evidence for this pre-1.0 version; [#100](https://github.com/uibcdf/molsysviewer/issues/100)
@@ -461,9 +465,9 @@ Resume toward **1.0** in this order:
    do not repeat staging merely to rediscover that it solves. Finish the
    end-user one-line first-contact observation, and for the eventual 1.0
    coordinates repeat the exact wheel, Conda, import, resource and public
-   installation gates. Repair the false-red promotion verifier before the
-   next promotion (`uibcdf/molsyssuite#48`); never re-upload an immutable
-   artifact to change a workflow conclusion.
+   installation gates. Use the read-only public-file verifier now shared by
+   both promotion workflows (`uibcdf/molsyssuite#48`); never re-upload an
+   immutable artifact to change a workflow conclusion.
 5. Run `python devtools/release_gate.py` on the new exact 1.0 candidate and
    release 1.0 only when every required gate exits zero. The 0.23.4
    pre-1.0 release carried an explicit, bounded Qt/E2E exception, which does
