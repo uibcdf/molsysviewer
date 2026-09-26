@@ -17,13 +17,15 @@ roadmap blocker. See [the current checkpoint](checkpoints.md) for exact
 evidence and the release issues.
 
 This milestone certifies core package installation, not every optional Qt
-host or scientific workflow. Visible-window Qt and hosted core E2E
-remain unverified 1.0 gates. The remote-session feature and its three E2E
+host or scientific workflow. The 34-case core E2E passed on hosted Chrome
+at exact commit `6b519db0` in
+[run 36232475620](https://github.com/uibcdf/molsysviewer/actions/runs/36232475620);
+visible-window Qt remains unverified. The remote-session feature and its three E2E
 scenarios are now post-1.0 preview work (`uibcdf/molsysviewer#100`), and the
 strict 1.0 release gate remains open. Both Zenodo exact-version records are
 now published and independently verified. Next prioritize
 the remaining real-window observations, representative scientific
-dogfooding, first-contact onboarding, reproducible hosted E2E evidence and
+dogfooding, first-contact onboarding, continued hosted E2E reliability and
 an exact-commit 1.0 candidate. The false-red promotion verifier has been
 replaced by a read-only check that passed on GitHub for the published pair;
 the earlier promotion jobs remain red (`uibcdf/molsyssuite#48`).

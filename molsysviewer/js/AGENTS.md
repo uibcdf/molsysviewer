@@ -23,6 +23,14 @@ The TypeScript files define:
 
 Agents **may safely edit, refactor, or improve** these files.
 
+For Mol* operations that enqueue asynchronous writes, do not announce
+completion merely because a command was dispatched. Await the applied state
+before emitting a completion event, and drain or invalidate outstanding writes
+when stopping playback. Browser E2E checks should wait for the semantic event
+with a bound, not infer completion from a fixed sleep. The movie-camera race
+found by hosted CI on 2026-09-26 is guarded by
+`tests/unit/movie-handler.test.ts` and `tests/e2e/movie-playback.e2e.ts`.
+
 ---
 
 ## 2. Generated artifacts (DO NOT EDIT)

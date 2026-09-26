@@ -25,8 +25,13 @@ remote-portable lane, one-scenario server-GPU lane and full 37-scenario command
 remain available for diagnostic or later certification. No remote failure is
 relabelled as a pass, and `E2E_ALLOW_SKIP=1` is not release evidence.
 The core lane passed locally on 2026-09-26, 34/34, with Chrome 149 and real
-WebGL2/SwiftShader. Hosted exact-commit core evidence remains to be collected;
-the local pass does not certify hosted CI or any remote scenario.
+WebGL2/SwiftShader. It then passed on hosted Chrome, 34/34, at exact commit
+`6b519db0f771f5edbff3e21fb0cae203a38da036` in
+[run 36232475620](https://github.com/uibcdf/molsysviewer/actions/runs/36232475620).
+That result certifies neither the remote scenarios nor visible-window Qt.
+Two earlier hosted core attempts exposed independent asynchronous camera
+completion defects in `movie-playback`; they were fixed and guarded before
+the green rerun.
 `CI_e2e` runs core automatically. A manual dispatch may instead select the
 `remote-portable` diagnostic lane on hosted Chrome. The managed server-GPU
 scenario still requires a qualified host; it is not silently run on standard
@@ -82,7 +87,8 @@ archived report.
 
 ## Resolution
 
-Lane selection is implemented; exact-commit hosted remote validation and a
+Lane selection and exact-commit hosted core validation are implemented;
+hosted remote validation and a
 working server-GPU run remain for post-1.0. No existing E2E has been disabled
 or counted as passed by a skip. The 2026-09-26 scope decision supersedes the
 earlier assumption below that complete remote E2E must block 1.0.
@@ -123,5 +129,7 @@ passing E2E evidence. Hosted portable run `36038233512` failed at scenario
 source-pair portable run passed 36/36. The server-GPU lane is still not
 certified. This decision permits the pre-1.0 package candidate to proceed
 through its other exact-commit and installed-pair gates while #100 stays open.
-It does **not** waive the full E2E or real-window gates for 1.0, and must be
-visible in any pre-1.0 release decision rather than described as green CI.
+It must be visible in any pre-1.0 release decision rather than described as
+green CI. The later 2026-09-26 decision supersedes this paragraph's original
+assumption about the full E2E gate: 1.0 requires hosted core E2E and
+real-window Qt, while remote E2E certification is post-1.0.

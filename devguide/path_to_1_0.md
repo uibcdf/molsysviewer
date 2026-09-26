@@ -7,7 +7,10 @@ are published pre-1.0 Releases. The exact noarch/ABI3 pair passed 20/20
 staging and 20/20 public-channel installations on Python 3.11–3.14 across
 five platforms (public run `36129993869`); npm 0.23.4 and its CDN runtime
 are public. This closes the current package-availability dependency cycle,
-not the visible Qt, hosted core E2E, dogfooding or other 1.0 gates. Remote
+not the visible Qt, dogfooding or other 1.0 gates. The 34-case core E2E
+subsequently passed on hosted Chrome at exact commit `6b519db0` in
+[run 36232475620](https://github.com/uibcdf/molsysviewer/actions/runs/36232475620).
+Remote
 session support and its three E2E scenarios are post-1.0 preview work.
 Zenodo version records are now public and independently verified: Viewer
 `10.5281/zenodo.22959304` and MolSysMT `10.5281/zenodo.22959294`.

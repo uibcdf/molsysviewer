@@ -16,8 +16,15 @@ changes. Normative behavior remains in the contracts linked below.
   preview; the 1.0 gate now requires the 34-scenario core browser lane, not
   remote-client or server-GPU certification (`uibcdf/molsysviewer#100`). A core
   pass must not be reported as a full 37/37 or a remote pass. The new core
-  lane passed locally 34/34 on Chrome 149 with WebGL2/SwiftShader; hosted
-  exact-commit confirmation is still pending. `CI_e2e` can also be manually
+  lane passed locally 34/34 on Chrome 149 with WebGL2/SwiftShader and then
+  [passed on hosted Chrome](https://github.com/uibcdf/molsysviewer/actions/runs/36232475620)
+  at exact commit `6b519db0f771f5edbff3e21fb0cae203a38da036` (34/34,
+  2026-09-26). The first two hosted attempts reached case 34 but exposed
+  asynchronous movie-camera races: `stop_movie` returned before queued writes
+  settled, and `movie_playback_done` preceded the final camera write. Both are
+  now guarded by `js/tests/unit/movie-handler.test.ts` and
+  `js/tests/e2e/movie-playback.e2e.ts`; 294 JS unit tests and the targeted
+  browser case passed locally before the hosted rerun. `CI_e2e` can also be manually
   dispatched in a separate remote-portable diagnostic mode; that mode is not
   part of the automatic 1.0 gate.
 - Phases 5, 6, 8 and 9 and the Phase 10 persistence slice were independently
