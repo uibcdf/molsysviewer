@@ -127,35 +127,16 @@ jobs:
           retention-days: 30
 
       - name: Independently verify the public package record
-        shell: bash -l {0}
+        shell: bash
         env:
           RELEASE_VERSION: ${{ inputs.version }}
           BUILD_NUMBER: ${{ inputs.build_number }}
           EXPECTED_SHA256: ${{ inputs.sha256 }}
         run: |
           set -euo pipefail
-          for attempt in 1 2 3 4 5 6; do
-            if conda search --json --override-channels -c uibcdf \
-              "molsysviewer=$RELEASE_VERSION=py_$BUILD_NUMBER" > "$RUNNER_TEMP/public-conda.json" && \
-              python - "$RUNNER_TEMP/public-conda.json" <<'PY'
-          import json
-          import os
-          import pathlib
-          import sys
-
-          records = json.loads(pathlib.Path(sys.argv[1]).read_text())["molsysviewer"]
-          expected_name = f"molsysviewer-{os.environ['RELEASE_VERSION']}-py_{os.environ['BUILD_NUMBER']}.tar.bz2"
-          matches = [record for record in records if
-                     record.get("fn") == expected_name and
-                     record.get("sha256") == os.environ["EXPECTED_SHA256"] and
-                     record.get("channel") == "https://conda.anaconda.org/uibcdf/noarch"]
-          if len(matches) != 1:
-              raise SystemExit(f"expected one public noarch file with this SHA-256, got {len(matches)}")
-          print(matches[0]["url"])
-          PY
-            then
-              exit 0
-            fi
-            sleep 15
-          done
-          exit 1
+          python3 devtools/conda-build/verify_public_package.py \
+            --package molsysviewer \
+            --version "$RELEASE_VERSION" \
+            --subdir noarch \
+            --filename "molsysviewer-${RELEASE_VERSION}-py_${BUILD_NUMBER}.tar.bz2" \
+            --sha256 "$EXPECTED_SHA256"

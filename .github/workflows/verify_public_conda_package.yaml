@@ -1,0 +1,43 @@
+name: Verify one public conda package (read-only)
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Published three-part version
+        required: true
+        type: string
+      build_number:
+        description: Exact public noarch build number
+        required: true
+        type: number
+      sha256:
+        description: Expected immutable SHA-256 digest
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify public label and solver-visible index
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify exact public file without promotion
+        shell: bash
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+          BUILD_NUMBER: ${{ inputs.build_number }}
+          EXPECTED_SHA256: ${{ inputs.sha256 }}
+        run: |
+          set -euo pipefail
+          python3 devtools/conda-build/verify_public_package.py \
+            --package molsysviewer \
+            --version "$RELEASE_VERSION" \
+            --subdir noarch \
+            --filename "molsysviewer-${RELEASE_VERSION}-py_${BUILD_NUMBER}.tar.bz2" \
+            --sha256 "$EXPECTED_SHA256"

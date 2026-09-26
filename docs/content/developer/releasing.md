@@ -135,8 +135,13 @@ the exact-commit gates and Release are complete, dispatch
 `.github/workflows/promote_conda_package.yaml` from `main` with the tag commit,
 version, build number, independently observed SHA-256 and successful full
 installed-pair run. It adds `main` to the same noarch file and verifies the
-public record. A direct, unstaged release remains a separate route and is
-rejected when Anaconda already has any file for that version. The tag-driven
+public record. If that read-only verification fails after the action reports
+successful promotion, inspect the retained receipt and dispatch
+`.github/workflows/verify_public_conda_package.yaml` with the exact version,
+build number and SHA-256. The separate verifier needs no upload token and
+must not invoke the promotion action again. A direct, unstaged release remains
+a separate route and is rejected when Anaconda already has any file for that
+version. The tag-driven
 npm publication and Zenodo ingestion remain separate; neither is evidence that
 Conda promotion succeeded.
 

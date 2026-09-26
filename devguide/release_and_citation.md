@@ -136,9 +136,12 @@ The 0.23.4 promotion action uploaded the exact public noarch file, but its
 duplicated final verifier exited 1 after finding the right URL; independent
 public package queries and installations established availability. Do not
 rerun a mutating promotion merely to change a badge
-(`uibcdf/molsyssuite#48`). The release's bounded visible Qt and hosted E2E
-exception is pre-1.0 only; a future 1.0 candidate must pass its strict
-gate (`uibcdf/molsysviewer#100`).
+(`uibcdf/molsyssuite#48`). Instead, dispatch
+`.github/workflows/verify_public_conda_package.yaml` with the exact version,
+build number and SHA-256; it checks the public `main` label and solver-visible
+index without credentials or another promotion. The release's bounded visible
+Qt and hosted E2E exception is pre-1.0 only; a future 1.0 candidate must pass
+its strict gate (`uibcdf/molsysviewer#100`).
 
 Both Zenodo source records appeared after the initial 900-second verifier
 window. The Viewer verifier subsequently passed for
