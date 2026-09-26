@@ -22,6 +22,10 @@ build:
   # the staged pair has passed.
   # Never overwrite staged bytes under a coordinate that has already been inspected.
   number: "{{ environ.get('MOLSYSVIEWER_CONDA_BUILD_NUMBER', '1') }}"
+  entry_points:
+    - molsysviewer = molsysviewer.standalone:main
+    - molsysviewer-qt = molsysviewer.standalone_qt:main
+    - molsysviewer-server = molsysviewer.remote.server_cli:main
 
 requirements:
   host:
