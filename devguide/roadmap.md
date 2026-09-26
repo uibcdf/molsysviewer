@@ -1,11 +1,30 @@
 # Development roadmap
 
-**Updated:** 2026-09-02
+**Updated:** 2026-09-25
 
 This roadmap states current priorities. Release gating lives in
 [`path_to_1_0.md`](path_to_1_0.md), normative behavior in
 [`scene_contracts.md`](scene_contracts.md), and concrete open designs in
 [`pending_proposals/`](pending_proposals/).
+
+## Pre-1.0 distribution milestone completed — 2026-09-25
+
+Viewer 0.23.4 and MolSysMT 0.22.4 are published as a compatible pair. The
+exact public Conda pair passed 20/20 clean installations on five platforms
+and Python 3.11–3.14; the Viewer npm runtime and matching CDN bundle are
+also public. The hard-dependency channel cycle is no longer the next
+roadmap blocker. See [the current checkpoint](checkpoints.md) for exact
+evidence and the release issues.
+
+This milestone certifies core package installation, not every optional Qt
+host or scientific workflow. Visible-window Qt and complete hosted E2E
+remain explicit pre-1.0 exceptions (`uibcdf/molsysviewer#100`), and the
+strict 1.0 release gate remains open. Both Zenodo exact-version records are
+now published and independently verified. Next prioritize
+the remaining real-window observations, representative scientific
+dogfooding, first-contact onboarding, reproducible hosted E2E evidence and
+an exact-commit 1.0 candidate, while repairing the false-red promotion
+verifier for future releases (`uibcdf/molsyssuite#48`).
 
 ## Completed foundations
 
@@ -40,7 +59,9 @@ These are the release gates:
 3. Scientific dogfooding on representative laboratory workflows.
 4. Real-window Qt/WebGL validation of load, interaction, context menu, and the
    implemented live-replacement regression.
-5. End-user installation and dependency-channel synchronization.
+5. **Public core-pair distribution completed 2026-09-25; final end-user
+   first-contact validation remains.** Dependency-channel synchronization
+   is evidenced by the 20-cell public matrix, not by a source checkout.
 6. First-contact README/onboarding verification.
 7. Documentation and package-version consistency at the release commit.
 8. Close the decided `@digest` policy over the supported public callable

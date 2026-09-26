@@ -23,7 +23,7 @@ changes. Normative behavior remains in the contracts linked below.
   never use it as architectural evidence.
 - `molsysviewer/viewer.js` was regenerated with `npm run build:runtime`; it is a
   generated artifact, never a source file.
-- **Reports are coordinated with the issue board** (2026-08-14). All 29 documents in
+- **Reports are coordinated with the issue board** (2026-08-14). Documents in
   `pending_bugs/` and `pending_proposals/` carry front matter and a GitHub issue; the
   queue READMEs are generated; `devtools/release_gate.py` is gate 11's command. See
   [`reporting_protocol.md`](reporting_protocol.md).
@@ -84,14 +84,26 @@ The release explicitly excepts visible-window Qt and complete hosted E2E
 evidence for this pre-1.0 version; [#100](https://github.com/uibcdf/molsysviewer/issues/100)
 remains open and the strict 1.0 gate is not green. The stale unconditional
 Conda gate message is tracked by [#103](https://github.com/uibcdf/molsysviewer/issues/103)
-for correction on `main`, not by changing the tested tag. The two Zenodo
-verifiers have not yet found public version records. No exact-version DOI or
-complete citation lifecycle is claimed until independent verification passes.
+for correction on `main`, not by changing the tested tag. Both public Zenodo
+records have now been independently verified. Viewer 0.23.4 has
+[version DOI 10.5281/zenodo.22959304](https://doi.org/10.5281/zenodo.22959304)
+in concept family `10.5281/zenodo.18072956`, with the single archived file
+`uibcdf/molsysviewer-0.23.4.zip` (23,694,420 bytes,
+`md5:2cfe76a5ea9ec2894964926db81c2609`). MolSysMT 0.22.4 has
+[version DOI 10.5281/zenodo.22959294](https://doi.org/10.5281/zenodo.22959294)
+and the source archive `uibcdf/molsysmt-0.22.4.zip`. The initial 900-second
+verifiers timed out before ingestion; MT's stricter tree-tag predicate also
+caused a false red and was corrected in `uibcdf/molsysmt#247`. Neither
+Zenodo inventory contains the separately published Conda/npm packages.
 
 The older 0.22.0/0.23.1 and branch-candidate sections below are dated
 history, not the latest release coordinates.
 
-## Coordinated Conda release with MolSysMT 0.22.0 — in flight
+## Historical 0.22.0/0.23.1 coordination — superseded by the public pair
+
+This section records the earlier dependency-cycle diagnosis. It is not a
+current instruction to stage or publish those old coordinates; the
+0.22.4/0.23.4 pair above supersedes that release plan.
 
 MolSysViewer must keep `molsysmt>=0.22.0`: that is the first MolSysMT line providing
 `molsysmt.attribute.get_argument_aliases()`, which MolSysViewer imports without a
@@ -418,7 +430,7 @@ MolSysViewer does.** It is generated; regenerate with
 `guard` named at close. Adopted 2026-08-14 from MolSysMT; the 28 documents in the two
 queues all carry it.
 
-Resume in this order:
+Resume toward **1.0** in this order:
 
 1. **Widen `EXECUTABLE_PAGES`** in `tests/test_documentation_pages_run.py`. It executes
    three documentation pages today; the rest of the markdown is run by nothing, which is
@@ -441,14 +453,20 @@ Resume in this order:
 3. Complete scientific dogfooding and the remaining human decisions in
    [`pending_proposals/what_needs_a_human_2026_08.md`](what_needs_a_human_2026_08.md)
    — three items, all needing a screen or a judgement.
-4. Once sibling releases are ready, close dependency channels; build wheel and
-   conda artifacts; verify imports, resources and the one-line path from clean
-   installations.
-5. Run `python devtools/release_gate.py` and release only when it exits zero. It
-   refuses to be silent: anything it cannot run is `BLOCKED` with the reason, and
-   that is still a non-zero exit. Before tagging, `python devtools/prepare_release.py`
-   sets the release fields across every citation surface; after publishing the GitHub
-   Release, the Zenodo verification workflow confirms the archive.
+4. Use the published 0.22.4/0.23.4 pair as the dependency-channel baseline;
+   do not repeat staging merely to rediscover that it solves. Finish the
+   end-user one-line first-contact observation, and for the eventual 1.0
+   coordinates repeat the exact wheel, Conda, import, resource and public
+   installation gates. Repair the false-red promotion verifier before the
+   next promotion (`uibcdf/molsyssuite#48`); never re-upload an immutable
+   artifact to change a workflow conclusion.
+5. Run `python devtools/release_gate.py` on the new exact 1.0 candidate and
+   release 1.0 only when every required gate exits zero. The 0.23.4
+   pre-1.0 release carried an explicit, bounded Qt/E2E exception, which does
+   not roll forward automatically. Before tagging,
+   `python devtools/prepare_release.py` sets citation fields; after the
+   GitHub Release, verify Zenodo's **public** record rather than treating a
+   short ingestion timeout as permanent failure.
 
 Closed in Phase 10 so far: atomic overlay-state file helpers, notebook CI, opt-in hover
 telemetry, and public-callable digestion. Hover is runtime/session state rather than scene

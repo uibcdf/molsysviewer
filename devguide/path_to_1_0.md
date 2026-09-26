@@ -8,7 +8,10 @@ staging and 20/20 public-channel installations on Python 3.11–3.14 across
 five platforms (public run `36129993869`); npm 0.23.4 and its CDN runtime
 are public. This closes the current package-availability dependency cycle,
 not the visible Qt, complete hosted E2E, dogfooding or other 1.0 gates.
-Zenodo version records are not yet independently verified. See
+Zenodo version records are now public and independently verified: Viewer
+`10.5281/zenodo.22959304` and MolSysMT `10.5281/zenodo.22959294`.
+They arrived after the initial 900-second verifier timeout; this was delayed
+ingestion, not archival failure (`uibcdf/molsyssuite#49`). See
 [`checkpoints.md`](checkpoints.md) for the exact evidence and open defects.
 
 It consolidates the strategic milestones with the competitive quality gaps (previously tracked under the confusing `path_to_8_5.md` document) to ensure that the stable `1.0.0` release reaches a high-quality competitive score (**8.5/10**) in the scientific Python ecosystem.

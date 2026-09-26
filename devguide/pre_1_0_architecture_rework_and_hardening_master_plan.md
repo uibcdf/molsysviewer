@@ -42,7 +42,7 @@ audit.
 | 7 | Missing seam evidence | ⚠ | 90% | working tree from `ca3dd2e7` | Automated seam evidence complete; blocked on Qt real-window/GPU and human reload smoke observations |
 | 8 | Representative performance and memory gate | ✓ | 100% | `15d86a8a` | Matrix evidence and byte-budget guard independently audited; small worker remeasured coherently; closed 2026-08-09 |
 | 9 | Documentation and upstream closure | ✓ | 100% | `55839d23` | Closed-architecture phrase guard independently mutation-audited; closed 2026-08-09 |
-| 10 | Product and release gates | ◐ | 27% | `78b485f9`, `d048126d` plus the gate 9 slices | 3 of 11 gates closed: state-file persistence, hover policy and public-callable digestion — notebook CI was reopened on 2026-09-19, having been closed on a workflow that has never passed — 474 public callables, 442 digested, 0 undigested, 34 exempt with a stated reason, 0 missing digesters. Dependency/artifact, dogfooding and final gates remain |
+| 10 | Product and release gates | ◐ | 27% | `78b485f9`, `d048126d` plus the gate 9 slices | 3 of 11 strict 1.0 gates closed: state-file persistence, hover policy and public-callable digestion. The 0.22.4/0.23.4 public pair passed 20/20 installed-package cells on Python 3.11–3.14, removing the dependency-channel blocker for pre-1.0 work; exact 1.0 artifacts, visible Qt/hosted E2E, dogfooding and final gate remain |
 
 Status vocabulary:
 
@@ -1192,18 +1192,25 @@ not repeated for this documentation slice.
 
 ### Phase 10 — Product and release gates
 
-1. **Blocked by dependency release readiness.** Close and record compatible versions/channels for the UIBCDF dependency
-   stack (`argdigest`, `depdigest`, `smonitor`, MolSysMT and related packages).
-2. **Pending the final versions from item 1.** Build the release wheel and conda artifacts and test installation from
-   supported channels in fresh environments.
-3. **Pending the final artifacts from item 2.** Reverify the Phase 0 dependency-name and package-resource contract against
-   those release artifacts; this is where resolver/version compatibility becomes
-   a blocking assertion.
-4. **Guard exists; final-artifact rerun pending.** Verify runtime resources
-   (`viewer.js`, `runtime_actions.json`) from an installed artifact, not the
-   source checkout.
-5. **Source-tree path guarded; final-artifact rerun pending.** Verify the
-   one-line first-contact path.
+1. **Pre-1.0 dependency-channel milestone done; 1.0 exact floor pending.**
+   Viewer 0.23.4 and MolSysMT 0.22.4 resolve together from the public
+   `uibcdf` channel on all 20 supported platform/Python 3.11–3.14 cells.
+   The future 1.0 candidate must record its own compatible versions/channels.
+2. **Pre-1.0 Conda and wheel checks done; 1.0 artifacts pending.** The
+   0.23.4 ordinary wheel's packaged JS runtime was checked before tagging,
+   and the public noarch Conda package passed all 20 clean pair installs.
+   Repeat against the exact 1.0 release artifacts rather than crediting
+   this rehearsal as final certification.
+3. **Pre-1.0 installed-pair resolution done; 1.0 rerun pending.** Exact
+   public versions, provenance, Rust runtime and Viewer package resources
+   were checked in run `36129993869`. Reapply the dependency-name and
+   resource contract to the final 1.0 coordinates.
+4. **Pre-1.0 runtime-resource evidence done; 1.0 rerun pending.** The
+   installed Viewer package resources and 0.23.4 `viewer.js` version were
+   checked; preserve the final-artifact check for the future candidate.
+5. **First-contact human observation still pending.** The public matrix
+   covers bounded PDB-text-to-Viewer integration, not the complete
+   end-user one-line visual workflow.
 6. **Done.** Thin `save_state(path)` / `load_state(path)`
    helpers persist the existing version-2 overlay document as atomic UTF-8 JSON.
    They explicitly exclude the molecular system, camera and undo history and do
@@ -1213,13 +1220,12 @@ not repeated for this documentation slice.
 7. **Done.** Hover telemetry is off by
    default, callback subscriptions activate it, and query state distinguishes
    disabled/waiting/actual targets without inventing emptiness.
-8. **Reopened 2026-09-19 — the workflow exists and has never passed.** Notebook
-   execution is *described* by `.github/workflows/docs-notebooks.yaml` through
-   `docs/execute_notebooks.py`, and that workflow has failed every one of its 29 runs:
-   `docs_env.yaml` pins `python=3.13` and the channel's newest MolSysMT is `0.12.0`, with
-   no 3.13 build, so the environment never solves and no notebook is ever executed. The
-   gate was closed on the existence of the mechanism rather than on its result. It closes
-   with Phase 10 gate 1, when the environment can be built. See
+8. **Pre-1.0 notebook execution passed; exact 1.0 rerun pending.** The
+   earlier workflow had never passed because the public MolSysMT floor was
+   unavailable; the staging-enabled documentation-notebook run
+   `36016496850` passed on 2026-09-24. The public 0.22.4/0.23.4 pair now
+   resolves, but this does not substitute for notebook evidence on the
+   final 1.0 release candidate. See
    [`pending_bugs/hosted_ci_has_never_passed.md`](pending_bugs/hosted_ci_has_never_passed.md).
 9. **Done.** Every public callable is digested or deliberately exempt, and every
    argument name they introduce has a digester: **474 public callables, 442
@@ -1253,21 +1259,22 @@ not repeated for this documentation slice.
 11. **Pending all preceding gates; the command exists.**
     `python devtools/release_gate.py` runs the final smoke matrix and the
     release-version consistency checks in one place. It reports `BLOCKED` with a
-    reason for anything it cannot run and exits non-zero — a gate that skips what
-    it cannot do passes on an untested release. Today `qt` is blocked on a screen
-    and `conda` on gates 1-5; everything else runs. `--list` shows both.
+    reason for anything it cannot run and exits non-zero. The 0.23.4
+    pre-1.0 release used an explicit bounded Qt/hosted-E2E exception; the
+    strict 1.0 gate remains blocked until the required visible-window and
+    complete hosted evidence passes (`uibcdf/molsysviewer#100`). Its Conda
+    message also needs to distinguish a published pre-1.0 pair from final
+    1.0 certification (`uibcdf/molsysviewer#103`).
 
-**Intermediate distribution milestone, 2026-09-24:** the separate Python
-3.14 candidate pair passed 20/20 clean staging installations on five native
-platforms and Python 3.11–3.14, with exact package provenance and bounded
-MolSysMT/Viewer functional checks. See
-[`path_to_1_0.md`](path_to_1_0.md)
-and [`checkpoints.md`](checkpoints.md#separate-python-314-staging-slice).
-This removes the technical uncertainty that the core pair can be built and
-installed across that matrix. It does **not** satisfy gates 1–5 for the final
-public versions: their release commits, hosted product checks, Qt boundary,
-and public-channel installations remain unverified. The 3.11–3.13 older
-candidate remains a distinct release decision.
+**Public distribution milestone, 2026-09-25:** the exact 0.22.4/0.23.4
+pair passed 20/20 staging and 20/20 **public-channel** clean installations
+across five platforms and Python 3.11–3.14, with package provenance and
+bounded MolSysMT/Viewer integration. npm and the Zenodo source archives are
+also public and independently verified. See
+[`path_to_1_0.md`](path_to_1_0.md) and
+[`checkpoints.md`](checkpoints.md#published-pre-1-0-pair--2026-09-25).
+This closes the pre-1.0 distribution cycle, not the final 1.0 candidate's
+artifact, visible Qt, hosted E2E or human-workflow gates.
 
 **Exit:** no open pre-1.0 gate remains in `path_to_1_0.md`.
 

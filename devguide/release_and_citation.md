@@ -113,6 +113,42 @@ identifiers, so the contract does not assume that Zenodo adds a `/tree/<tag>`
 identifier. Delayed ingestion is not a reason to create a duplicate manual
 deposit; rerun the verifier first.
 
+## What the 0.23.4 paired release taught us
+
+The 2026-09-25 release paired Viewer 0.23.4 with MolSysMT 0.22.4. Its
+staging and public installed-pair matrices both passed 20/20 across five
+platforms and Python 3.11–3.14. These are separate pieces of evidence: a
+successful staging solve does not prove public-channel availability. The
+shared paired-release policy belongs in `uibcdf/molsyssuite#27`; the local
+operator procedure remains in
+[`docs/content/developer/releasing.md`](../docs/content/developer/releasing.md).
+
+For a future Viewer release, freeze the exact version and candidate commit
+before the expensive build. Validate the **ordinary Python wheel's**
+packaged `viewer.js` version before tagging; Conda and npm rebuild the bundle
+and can conceal a stale source-tree asset (`uibcdf/molsysviewer#102`). A
+correction to a staged package must use a new immutable build coordinate.
+After the tag, verify the tag-triggered npm publication and CDN separately
+from the GitHub-Release-triggered Conda route. A second npm publish on the
+Release is an error, not an extra release step (`uibcdf/molsysviewer#104`).
+
+The 0.23.4 promotion action uploaded the exact public noarch file, but its
+duplicated final verifier exited 1 after finding the right URL; independent
+public package queries and installations established availability. Do not
+rerun a mutating promotion merely to change a badge
+(`uibcdf/molsyssuite#48`). The release's bounded visible Qt and hosted E2E
+exception is pre-1.0 only; a future 1.0 candidate must pass its strict
+gate (`uibcdf/molsysviewer#100`).
+
+Both Zenodo source records appeared after the initial 900-second verifier
+window. The Viewer verifier subsequently passed for
+[0.23.4](https://doi.org/10.5281/zenodo.22959304); the sole archived file is
+`uibcdf/molsysviewer-0.23.4.zip` (23,694,420 bytes,
+`md5:2cfe76a5ea9ec2894964926db81c2609`). A timeout during asynchronous
+ingestion is a pending observation, not proof that a deposit failed. Confirm
+the public record and file inventory before any DOI claim or recovery action
+(`uibcdf/molsyssuite#49`). Zenodo did not archive the Conda/npm packages.
+
 ## Recovery
 
 - Correct metadata before tagging and rerun the exact candidate gates.

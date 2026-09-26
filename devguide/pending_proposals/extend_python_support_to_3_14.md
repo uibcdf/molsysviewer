@@ -16,27 +16,33 @@ supersedes: []
 
 **Reported:** 2026-09-22 during the MolSysSuite Python 3.14 transition
 (`uibcdf/molsyssuite#29`). This is paired with `uibcdf/molsysmt#237`.
-**Status:** Active feasibility work; no public Python 3.14 support is claimed.
+**Status (2026-09-25):** The core Viewer 0.23.4 / MolSysMT 0.22.4 pair is
+public and passed 20/20 clean Conda installations on Python 3.11–3.14
+across five platforms. This proposal stays active for broader optional Qt
+host evidence and the separate MolSysSuite admission decision. The
+source-only results below are earlier, narrower evidence.
 
-The source-pair workflow includes a Windows/Python 3.14 job and pins exact
+The following source-pair observations predate the public release. The
+source-pair workflow includes a Windows/Python 3.14 job and pins exact
 MolSysMT source commits. The first three-platform run (`35968412395`) passed
 Linux; Windows stopped during test collection on a POSIX-only benchmark
 import, and macOS had one WebSocket connection-loss failure. The benchmark
 import now uses platform-specific memory measurement. Later runs passed
 macOS, and the exact corrected pair in run `35975122014` passed the native
 MolSysMT path guard and the full Viewer Python suite on Linux, macOS, and
-Windows. This is a source-compatibility result, not evidence of staged
-Conda installation or optional Qt-host availability on Windows.
+Windows. This source result was subsequently complemented by the public
+20-cell Conda pair matrix; it still does not establish optional Qt-host
+availability on Windows.
 
 ## What
 
 Extend the tested Python interval to 3.11–3.14 for the core MolSysViewer
 package and its noarch Conda artifact, coordinated with MolSysMT's extension
-and hard dependency. Preserve the existing 0.22.0 MolSysMT / 0.23.1
-MolSysViewer staging campaign for 3.11–3.13 under
-`uibcdf/molsysmt#195` and `uibcdf/molsysviewer#82`.
+and hard dependency. The 0.23.4/0.22.4 public pair delivered this core
+installation milestone; the active remainder is optional host evidence,
+broader workflows and central admission under `uibcdf/molsyssuite#29`.
 
-## How
+## How — original plan, with core-pair publication completed
 
 1. Build and test the two source distributions in one isolated Python 3.14
    environment without treating bypassed current package metadata as a support
@@ -56,12 +62,14 @@ MolSysViewer staging campaign for 3.11–3.13 under
 ## Why
 
 MolSysMT requires MolSysViewer at runtime, while MolSysViewer requires
-`molsysmt>=0.22.0`. Its staged 0.23.1 noarch package currently declares
+`molsysmt>=0.22.0`. In the earlier 0.23.1 staging campaign, the noarch
+package declared
 `python>=3.11,<3.14`. A Conda dry run of `python=3.14
 molsysviewer=0.23.1` with staging, uibcdf, and conda-forge failed on that
 bound. MolSysMT's Linux Python 3.14 wheel feasibility under
-`uibcdf/molsysmt#237` cannot become a supported paired installation until
-MolSysViewer participates.
+`uibcdf/molsysmt#237` could not become a supported paired installation
+until MolSysViewer participated; the 0.23.4/0.22.4 public pair resolves
+that specific constraint.
 
 ## What was refuted
 
