@@ -42,7 +42,8 @@ documents, and historical audits.
 - [`pending_proposals/`](pending_proposals/): active proposals, with its own
   indexed status table.
 - [`pending_proposals/post_1.0/`](pending_proposals/post_1.0/): explicitly
-  deferred work.
+  deferred work, including remote-session support and E2E certification
+  (`uibcdf/molsysviewer#100`).
 
 An implemented design does not remain under `pending_proposals/`. Implementation
 plans are removed once their durable contracts and public documentation exist;

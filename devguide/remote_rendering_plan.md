@@ -1,8 +1,12 @@
 # Remote rendering and session-host plan
 
-**Status:** accepted pre-1.0 direction and explicitly experimental for the 1.0
-release; evaluation complete; RRS0–RRS3 completed; RRS2 server-rendered browser
-workflow validated end to end, including upload, export and reconnect.
+**Status:** implementation/prototype record; remote-session support and its E2E
+certification were deferred to post-1.0 on 2026-09-26. Earlier pre-1.0 RRS0–RRS3
+implementation and observations remain historical evidence, not a 1.0 release gate.
+Any later reference in this record to a required or supported "1.0" remote
+surface is the superseded 2026-09-01 plan, not the current release contract.
+Common package-integrity and security checks still apply to code retained in
+distributed packages.
 
 **Decision date:** 2026-09-01.
 
@@ -11,8 +15,10 @@ node while a browser or the native Qt shell provides the interactive client.
 This is rendering placement, not remote multi-user collaboration and not a
 second scene/state model.
 
-The complete remote surface ships as experimental in 1.0: its Python API, CLI,
-wire protocol and deployment configuration may evolve after release. The
+The existing remote entrypoints may remain in 1.0 distributions as an
+**unsupported preview**, not as part of the certified 1.0 feature or compatibility
+contract. Its Python API, CLI, wire protocol and deployment configuration may
+evolve after release. The
 authority, placement, credential and filesystem boundaries in this document
 remain invariants despite that stability label.
 
@@ -56,7 +62,7 @@ rendering-mode names.
 The existing local standalone remains valid. Its compatibility default is
 `render_on="client"`; absence of a flag does not mean automatic placement.
 
-## 2. Why this belongs in 1.0
+## 2. Why this was explored before 1.0
 
 Remote execution is already a real development and scientific workflow:
 MolSysViewer may run on spika while the user works from aleph. Requiring a
@@ -71,7 +77,7 @@ The server-rendered slice pays forward:
 - one server supports browser and preferred Qt shell;
 - worker lifecycle and diagnostics extend naturally to clusters.
 
-The 1.0 slice remains single-user and single-authority. It does not pull remote
+The prototype remains single-user and single-authority. It does not pull remote
 collaboration into 1.0.
 
 ## 3. Evaluated facts
@@ -720,8 +726,7 @@ not worked around with desktop streaming.
 
 ### RRS4 — hardening, packaging and deployment
 
-RRS4 is a publication-readiness pass for an experimental feature, not a demand
-to stabilize the complete remote subsystem before 1.0. Its release-blocking
+RRS4 is a post-1.0 publication-readiness pass for the remote feature. Its future
 scope is limited to a reproducible installation, the four basic interactive
 modes, honest failure diagnostics, bounded single-session resource use and the
 security checks needed for the documented loopback/SSH workflow. Protocol/API
@@ -988,8 +993,9 @@ The implementation is wrong if it:
 
 ## 17. Immediate next step
 
-The experimental remote-session slice has met its 1.0 exit. Do not continue
-polishing it on the 1.0 critical path: return to the repository-wide dogfooding,
-dependency-channel and release checks. Further remote compatibility, quality,
-deployment and parity work belongs to section 15 after 1.0. Any intervening bug
-fix must preserve the single authority and shared browser/Qt architecture.
+The experimental remote-session slice met the narrower implementation milestones
+recorded above, but is not a certified 1.0 feature. Its three E2E scenarios remain
+available outside the required core lane. Post-1.0 work must establish reproducible
+client and server-GPU evidence before claiming support; see `uibcdf/molsysviewer#100`.
+Any intervening bug fix must preserve the single authority and shared browser/Qt
+architecture.

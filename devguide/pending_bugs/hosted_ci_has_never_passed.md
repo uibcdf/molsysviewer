@@ -390,6 +390,13 @@ The managed server-GPU scenario remains outside that lane. Do not rerun
 the unchanged hosted test to seek a green result; #100 owns the evidence-lane
 decision after package publication.
 
+The 2026-09-26 scope decision defers remote-session certification to post-1.0
+and changes hosted `CI_e2e` to run the 34-scenario non-remote core lane. The
+earlier portable failure remains a real remote-test failure, not a pass or a
+waiver of the core gate. This issue remains open until the hosted core E2E,
+Python/Qt and notebook routes pass on current `main` against the declared
+MolSysMT version.
+
 - `CI`, `CI_e2e` and `Documentation notebooks` pass on `main` against the MolSysMT this
   package declares, not an older one the solver happens to find.
 - Gate 8 says what is enforced.

@@ -46,13 +46,18 @@ const SUITES = [
     "movie-playback",
 ] as const;
 const SERVER_GPU_SUITES = new Set<string>(["remote-session"]);
+const REMOTE_SUITES = new Set<string>(["remote-client-rendering", "remote-input", "remote-session"]);
 
 function suitesForLane(argument: string | undefined): readonly string[] {
     const lane = argument ?? "--lane=all";
     if (lane === "--lane=all") return SUITES;
+    if (lane === "--lane=core") return SUITES.filter(suite => !REMOTE_SUITES.has(suite));
     if (lane === "--lane=portable") return SUITES.filter(suite => !SERVER_GPU_SUITES.has(suite));
+    if (lane === "--lane=remote-portable") {
+        return SUITES.filter(suite => REMOTE_SUITES.has(suite) && !SERVER_GPU_SUITES.has(suite));
+    }
     if (lane === "--lane=server-gpu") return SUITES.filter(suite => SERVER_GPU_SUITES.has(suite));
-    throw new Error(`unknown E2E lane ${lane}; choose --lane=all, --lane=portable or --lane=server-gpu`);
+    throw new Error(`unknown E2E lane ${lane}; choose --lane=all, --lane=core, --lane=portable, --lane=remote-portable or --lane=server-gpu`);
 }
 
 function runSuite(name: string, endpoint: string): Promise<void> {

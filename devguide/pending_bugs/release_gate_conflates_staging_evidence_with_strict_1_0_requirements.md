@@ -30,15 +30,16 @@ different states cannot be read from one undifferentiated release-gate result.
 
 The Conda message is unconditional release-gate prose, not an assessment of
 candidate coordinates, immutable artifact digests, or the installed-pair run.
-The Qt observation is a separate Phase 7 requirement; complete hosted E2E
-certification remains tracked in #100. After the tested 0.23.4 tag, adjust the
+The Qt observation is a separate Phase 7 requirement. Hosted **core** browser
+E2E remains a 1.0 requirement; remote-only scenarios were moved to post-1.0
+under #100 on 2026-09-26. After the tested 0.23.4 tag, adjust the
 gate on `main` to distinguish staging evidence, public-channel publication,
 and strict 1.0 observations. A narrowly approved pre-1.0 exception must be
 reported as an exception, not converted to a pass.
 
 Add an addressable regression test that rejects missing or mismatched pair
 evidence and demonstrates that green staging does not satisfy Qt or hosted
-E2E. The reusable staging/promotion policy belongs to
+core E2E. The reusable staging/promotion policy belongs to
 `uibcdf/molsyssuite#27`.
 
 ## Why

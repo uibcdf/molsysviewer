@@ -513,14 +513,16 @@ live inside a real app window without forking viewer semantics.
 
 ### Experimental remote-session surface
 
-All remote-session entrypoints remain explicitly **experimental in 1.0**:
+Remote-session entrypoints remain in the distribution only as an **unsupported
+post-1.0 preview**; they are not certified by the 1.0 release gate:
 
 - `molsysviewer-server ...`
 - `molsysviewer-qt --connect SESSION_URL`
 - `molsysviewer.remote.RemoteSessionService` and the supporting remote module
 
-They are suitable for evaluation and single-user interactive workflows, but
-their Python signatures, CLI options, wire protocol and deployment model do not
+They are suitable for evaluation, but not a supported 1.0 workflow. In particular,
+hosted client-rendering and managed server-GPU E2E certification are deferred.
+Their Python signatures, CLI options, wire protocol and deployment model do not
 yet carry the compatibility guarantee of the stable public API above. The
 single Python mutation authority, explicit `client`/`server` rendering
 placement, credential handling and client/server filesystem boundary are

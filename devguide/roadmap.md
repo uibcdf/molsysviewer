@@ -17,8 +17,9 @@ roadmap blocker. See [the current checkpoint](checkpoints.md) for exact
 evidence and the release issues.
 
 This milestone certifies core package installation, not every optional Qt
-host or scientific workflow. Visible-window Qt and complete hosted E2E
-remain explicit pre-1.0 exceptions (`uibcdf/molsysviewer#100`), and the
+host or scientific workflow. Visible-window Qt and hosted core E2E
+remain unverified 1.0 gates. The remote-session feature and its three E2E
+scenarios are now post-1.0 preview work (`uibcdf/molsysviewer#100`), and the
 strict 1.0 release gate remains open. Both Zenodo exact-version records are
 now published and independently verified. Next prioritize
 the remaining real-window observations, representative scientific
@@ -68,37 +69,13 @@ These are the release gates:
 8. Close the decided `@digest` policy over the supported public callable
    surface, with argument digesters and catalogued diagnostics rather than
    decoration-only coverage.
-9. ✅ **Closed 2026-09-05.** Deliver a responsibly publishable
-   **experimental** single-user remote-session slice: explicit
-   `render_on="client" | "server"`, browser and Qt clients, managed real-GPU
-   render worker, VP8 WebRTC transport, authenticated session routing and the
-   documented spika-to-aleph acceptance path, shipped explicitly as an
-   experimental 1.0 feature. See
-   [`remote_rendering_plan.md`](remote_rendering_plan.md). RRS0 and RRS1 are
-   complete. RRS2 is complete: the server-rendered browser workflow covers the managed
-   worker, array-native loading, authenticated VP8 video/input, controller-free
-   workbench and trajectory controls, upload/export and reconnect. Browser
-   client rendering now uses the same gateway and exact full frontend entrypoint
-   and has portable WebGL/array-native, reconnect, direct canvas camera/picking,
-   authoritative Whole/selection/trajectory actions, local-PNG/canonical-HTML
-   export and authenticated replacement-upload E2E evidence. RRS3 now has the
-   shared Qt `--connect` shell, native menus/shortcuts, upload activation,
-   save-dialog-managed downloads, fullscreen bridging and visible aleph
-   acceptance. A wheel-installed server outside the checkout repeated the
-   spika-to-aleph smoke with 5000-frame pentalanine. Remote API/protocol
-   stabilization, production deployment and complete parity do not block 1.0.
-   Lifecycle work
-   already includes one bounded automatic render-worker recovery with canonical
-   scene retransmission and WebRTC renegotiation, plus a static-scene-safe video
-   watchdog. Shared visible connection states and the loopback
-   token/origin/rate/size/session-isolation baseline is guarded. Fresh-channel
-   dependency resolution remains under the repository-wide installation gate
-   rather than this experimental feature.
-   The 1.0 deployment
-   surface includes a public `molsysviewer-server` command limited to one
-   foreground session. Background services, durable/multi-session management,
-   institutional identity, managed TURN, scheduler integration, GPU pools and
-   MolSys-AI lifecycle remain post-1.0 and must compose the same session API.
+
+The remote-session implementation was demonstrated before 1.0, but its
+supported feature contract and E2E certification now belong to post-1.0.
+Existing entrypoints may remain in the distribution as an unsupported preview;
+their presence does not certify remote rendering, deployment or compatibility.
+See [`remote_rendering_plan.md`](remote_rendering_plan.md) and
+`uibcdf/molsysviewer#100`.
 
 ## Active pre-1.0 execution
 
@@ -109,7 +86,7 @@ fallback, canonical static/live projection, endpoint ownership, seam evidence
 and representative performance/memory gates. Phase 9 reconciled durable
 documentation; Phase 10 owns the remaining product/release gates. The canonical
 dashboard is
-[`pending_proposals/pre_1_0_architecture_rework_and_hardening_master_plan.md`](pre_1_0_architecture_rework_and_hardening_master_plan.md).
+[`pre_1_0_architecture_rework_and_hardening_master_plan.md`](pre_1_0_architecture_rework_and_hardening_master_plan.md).
 
 The durable contracts record what was built and why:
 

@@ -15,18 +15,27 @@ def test_default_e2e_command_runs_the_complete_suite():
     assert "e2e-runner.js" in package["scripts"]["test:e2e:all"]
 
 
-def test_portable_and_server_gpu_evidence_lanes_are_explicit():
+def test_core_and_remote_evidence_lanes_are_explicit():
     package = json.loads((JS_ROOT / "package.json").read_text())
     runner = (E2E_ROOT / "e2e-runner.ts").read_text()
     workflow = (ROOT / ".github" / "workflows" / "CI_e2e.yaml").read_text()
 
+    assert "--lane=core" in package["scripts"]["test:e2e:core"]
     assert "--lane=portable" in package["scripts"]["test:e2e:portable"]
+    assert "--lane=remote-portable" in package["scripts"]["test:e2e:remote-portable"]
     assert "--lane=server-gpu" in package["scripts"]["test:e2e:server-gpu"]
+    remote_block = runner.split("const REMOTE_SUITES = new Set<string>([", 1)[1].split("])", 1)[0]
+    assert set(re.findall(r'"([^"]+)"', remote_block)) == {"remote-client-rendering", "remote-input", "remote-session"}
     gpu_block = runner.split("const SERVER_GPU_SUITES = new Set<string>([", 1)[1].split("])", 1)[0]
     assert set(re.findall(r'"([^"]+)"', gpu_block)) == {"remote-session"}
+    assert "SUITES.filter(suite => !REMOTE_SUITES.has(suite))" in runner
+    assert "REMOTE_SUITES.has(suite) && !SERVER_GPU_SUITES.has(suite)" in runner
     assert "SUITES.filter(suite => !SERVER_GPU_SUITES.has(suite))" in runner
     assert "SUITES.filter(suite => SERVER_GPU_SUITES.has(suite))" in runner
-    assert "run: npm run test:e2e:portable" in workflow
+    assert "run: npm run test:e2e:core" in workflow
+    assert "run: npm run test:e2e:remote-portable" in workflow
+    assert "github.event_name != 'workflow_dispatch' || inputs.e2e_lane == 'core'" in workflow
+    assert "github.event_name == 'workflow_dispatch' && inputs.e2e_lane == 'remote-portable'" in workflow
     assert "E2E_ALLOW_SKIP" not in workflow
 
 

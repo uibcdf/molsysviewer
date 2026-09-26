@@ -24,6 +24,13 @@ sys.path.insert(0, str(ROOT / "devtools"))
 from release_gate import STEPS, _check_version_consistency  # noqa: E402
 
 
+def test_release_gate_requires_core_e2e_without_requiring_remote_preview():
+    e2e_step = next(step for step in STEPS if step.name == "e2e")
+
+    assert e2e_step.command == ["npm", "run", "test:e2e:core"]
+    assert "remote preview is post-1.0" in e2e_step.what
+
+
 def test_the_gate_lists_its_steps_without_running_them():
     completed = subprocess.run(
         [sys.executable, str(ROOT / "devtools" / "release_gate.py"), "--list"],

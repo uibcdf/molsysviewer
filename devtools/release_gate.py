@@ -85,7 +85,11 @@ STEPS = (
     Step("runtime", "the runtime builds", ["npm", "run", "build:runtime"], blocked_by=_node_available, cwd=JS_ROOT),
     Step("perf", "the performance gates hold", ["npm", "run", "test:perf"], blocked_by=_node_available, cwd=JS_ROOT),
     Step(
-        "e2e", "all E2E suites in one real browser", ["npm", "run", "test:e2e"], blocked_by=_node_available, cwd=JS_ROOT
+        "e2e",
+        "all core E2E suites in one real browser; remote preview is post-1.0",
+        ["npm", "run", "test:e2e:core"],
+        blocked_by=_node_available,
+        cwd=JS_ROOT,
     ),
     Step("qt", "Qt real-window and GPU render observation", None, blocked_by=_display_available),
     Step("conda", "the final-version Conda pair for 1.0", None, blocked_by=_sibling_releases_ready),

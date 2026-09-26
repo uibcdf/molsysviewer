@@ -16,6 +16,21 @@ supersedes: []
 
 **Reported:** 2026-09-24, after a hosted staging run and an exact-source local
 run reached different failures in the same 37-scenario suite.
+**Scope decision, 2026-09-26:** deferred to post-1.0 by the maintainers. The
+remote implementation remains in distributed packages as an unsupported preview,
+but remote-client and managed server-GPU E2E certification are not 1.0 gates.
+The mandatory 1.0 browser lane is the 34-scenario non-remote core lane; it must
+still pass on a real hosted browser. The 36-scenario portable lane, two-scenario
+remote-portable lane, one-scenario server-GPU lane and full 37-scenario command
+remain available for diagnostic or later certification. No remote failure is
+relabelled as a pass, and `E2E_ALLOW_SKIP=1` is not release evidence.
+The core lane passed locally on 2026-09-26, 34/34, with Chrome 149 and real
+WebGL2/SwiftShader. Hosted exact-commit core evidence remains to be collected;
+the local pass does not certify hosted CI or any remote scenario.
+`CI_e2e` runs core automatically. A manual dispatch may instead select the
+`remote-portable` diagnostic lane on hosted Chrome. The managed server-GPU
+scenario still requires a qualified host; it is not silently run on standard
+Ubuntu or counted as passing from the remote-portable result.
 
 ## What
 
@@ -67,9 +82,10 @@ archived report.
 
 ## Resolution
 
-Lane selection is implemented; exact-commit hosted validation, a working
-server-GPU run, and the final 1.0 gate decision remain. No existing E2E has
-been disabled or counted as passed by a skip.
+Lane selection is implemented; exact-commit hosted remote validation and a
+working server-GPU run remain for post-1.0. No existing E2E has been disabled
+or counted as passed by a skip. The 2026-09-26 scope decision supersedes the
+earlier assumption below that complete remote E2E must block 1.0.
 
 ## 2026-09-24 interim decision for coordinated package publication
 

@@ -42,7 +42,7 @@ audit.
 | 7 | Missing seam evidence | ⚠ | 90% | working tree from `ca3dd2e7` | Automated seam evidence complete; blocked on Qt real-window/GPU and human reload smoke observations |
 | 8 | Representative performance and memory gate | ✓ | 100% | `15d86a8a` | Matrix evidence and byte-budget guard independently audited; small worker remeasured coherently; closed 2026-08-09 |
 | 9 | Documentation and upstream closure | ✓ | 100% | `55839d23` | Closed-architecture phrase guard independently mutation-audited; closed 2026-08-09 |
-| 10 | Product and release gates | ◐ | 27% | `78b485f9`, `d048126d` plus the gate 9 slices | 3 of 11 strict 1.0 gates closed: state-file persistence, hover policy and public-callable digestion. The 0.22.4/0.23.4 public pair passed 20/20 installed-package cells on Python 3.11–3.14, removing the dependency-channel blocker for pre-1.0 work; exact 1.0 artifacts, visible Qt/hosted E2E, dogfooding and final gate remain |
+| 10 | Product and release gates | ◐ | 27% | `78b485f9`, `d048126d` plus the gate 9 slices | 3 of 11 strict 1.0 gates closed: state-file persistence, hover policy and public-callable digestion. The 0.22.4/0.23.4 public pair passed 20/20 installed-package cells on Python 3.11–3.14, removing the dependency-channel blocker for pre-1.0 work; exact 1.0 artifacts, visible Qt/hosted **core** E2E, dogfooding and final gate remain. Remote-session support and E2E are post-1.0 preview work (`uibcdf/molsysviewer#100`). |
 
 Status vocabulary:
 
@@ -1260,9 +1260,11 @@ not repeated for this documentation slice.
     `python devtools/release_gate.py` runs the final smoke matrix and the
     release-version consistency checks in one place. It reports `BLOCKED` with a
     reason for anything it cannot run and exits non-zero. The 0.23.4
-    pre-1.0 release used an explicit bounded Qt/hosted-E2E exception; the
-    strict 1.0 gate remains blocked until the required visible-window and
-    complete hosted evidence passes (`uibcdf/molsysviewer#100`). Its Conda
+    pre-1.0 release used an explicit bounded Qt/hosted-E2E exception. The
+    strict 1.0 gate remains blocked until visible-window Qt and hosted core
+    browser evidence pass. The three remote-only E2E scenarios and their
+    supported feature contract are post-1.0 (`uibcdf/molsysviewer#100`); their
+    exclusion is not a remote pass. Its Conda
     message also needs to distinguish a published pre-1.0 pair from final
     1.0 certification (`uibcdf/molsysviewer#103`).
 
@@ -1274,7 +1276,7 @@ also public and independently verified. See
 [`path_to_1_0.md`](path_to_1_0.md) and
 [`checkpoints.md`](checkpoints.md#published-pre-1-0-pair--2026-09-25).
 This closes the pre-1.0 distribution cycle, not the final 1.0 candidate's
-artifact, visible Qt, hosted E2E or human-workflow gates.
+artifact, visible Qt, hosted core E2E or human-workflow gates.
 
 **Exit:** no open pre-1.0 gate remains in `path_to_1_0.md`.
 
@@ -1400,11 +1402,13 @@ npm run test:js
 npx tsc --noEmit
 npm run build:runtime
 npm run test:perf
-npm run test:e2e
+npm run test:e2e:core
 ```
 
-E2E runs require a real browser and WebGL2. They do not pass by skipping browser
-launch. Qt real-window checks require the supported display/GPU environment.
+Core E2E runs require a real browser and WebGL2. They do not pass by skipping
+browser launch. Remote preview scenarios remain independently runnable with
+`test:e2e:remote-portable` and `test:e2e:server-gpu`, but are post-1.0 evidence.
+Qt real-window checks require the supported display/GPU environment.
 
 Never edit or inspect `molsysviewer/viewer.js` or its map manually. Rebuild the
 runtime only after the final TypeScript source edit.

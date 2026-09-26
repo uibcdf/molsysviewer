@@ -7,7 +7,8 @@ are published pre-1.0 Releases. The exact noarch/ABI3 pair passed 20/20
 staging and 20/20 public-channel installations on Python 3.11–3.14 across
 five platforms (public run `36129993869`); npm 0.23.4 and its CDN runtime
 are public. This closes the current package-availability dependency cycle,
-not the visible Qt, complete hosted E2E, dogfooding or other 1.0 gates.
+not the visible Qt, hosted core E2E, dogfooding or other 1.0 gates. Remote
+session support and its three E2E scenarios are post-1.0 preview work.
 Zenodo version records are now public and independently verified: Viewer
 `10.5281/zenodo.22959304` and MolSysMT `10.5281/zenodo.22959294`.
 They arrived after the initial 900-second verifier timeout; this was delayed
@@ -193,11 +194,13 @@ Item 16 (*E2E Playwright CI Automation*) was listed as `Planned`. `CI_e2e.yaml`
 already ran `npm run test:e2e` on every pull request to `main`. **Done.**
 Deciding release readiness against a stale plan is its own risk.
 
-As of 2026-09-24, hosted `CI_e2e` runs the 36-suite portable lane because
-`remote-session` additionally requires a managed hardware-GPU worker. The
-full 37-suite command remains available; the separate server-GPU lane and
-its deferred launch problem are tracked by uibcdf/molsysviewer#100. A green
-portable lane must not be described as 37/37 or server-rendering evidence.
+The 2026-09-24 hosted `CI_e2e` used the 36-suite portable lane, which still
+included two remote scenarios. On 2026-09-26 the maintainers deferred remote
+support and certification to post-1.0. The strict 1.0 gate now runs the
+34-suite core lane, excluding the three remote-only scenarios by explicit
+inventory. The 36-suite portable, two-suite remote-portable, one-suite
+server-GPU and full 37-suite commands remain available. A green core lane
+does not certify any remote scenario (`uibcdf/molsysviewer#100`).
 
 ---
 
@@ -234,7 +237,6 @@ pair installation does not promote standalone/product Windows support.
 | 23 | **Widget seam E2E** | ✅ done. `widget-seam.e2e.ts` drives the real `render()` in Chromium: raw `ready`, enveloped outbound, a valid projection reaching the controller, and a foreign session never reaching it. |
 | 24 | **R2 tail** | ✅ done. The journal is gone from the interactive path — kept only in `bootDocsView`, where a static export has no Python to ask — and `build_context_items` is the pure half that lets the panel snapshot carry add-on context items. |
 | 26 | **Architecture rework and hardening** | In progress. Phases 0a–6, 8 and 9 are audited; Phase 7 awaits two visible Qt observations. Phase 10 has closed state-file persistence, hover semantics and public-callable digestion. The technical 3.11–3.14 pair now passes 20/20 staging installations, but final public dependency-channel closure, hosted CI/notebooks, final-artifact reruns, dogfooding and the release matrix remain. Gates 1–5 and release publication in uibcdf/molsysviewer#82 are not closed by staging evidence. See [`pre_1_0_architecture_rework_and_hardening_master_plan.md`](pre_1_0_architecture_rework_and_hardening_master_plan.md). |
-| 27 | **Experimental single-user remote session and rendering placement** | ✅ experimental 1.0 slice closed 2026-09-05; stabilization is post-1.0. RRS0–RRS3 and visible spika-to-aleph browser/Qt acceptance are complete. Server rendering provides the managed GPU worker, authenticated VP8 video/input, projected workbench, trajectory, picking/context menus, upload/export, recovery, compact chrome and Qt fullscreen; client rendering reuses the same authority and full frontend. A wheel-installed server outside the checkout repeated the 5000-frame pentalanine smoke from aleph. The Python API, CLI options, wire protocol, production deployment model, full parity and video-quality policy remain explicitly unstable and may change after 1.0. Fresh-channel dependency resolution remains a repository-wide packaging gate, not remote stabilization. See [`remote_rendering_plan.md`](remote_rendering_plan.md). |
 | 14 | **Scientific dogfooding** | Unchanged: daily lab usage is what finds what audits cannot. |
 | 15 | **Bug resolution from dogfooding** | Unchanged. |
 
@@ -258,6 +260,7 @@ Tasks that extend the reach and automation of the project but do not block the i
 | 16 | **E2E Playwright CI Automation** | `CI_e2e.yaml` runs `npm run test:e2e` on every pull request to `main` | ✅ done (this entry was stale) |
 | 21 | **Qt render check on a GPU runner** | Moved out of the 1.0 gates: the render itself is already validated on real GPU, and Decision 1 classifies the CI job as level 2, non-blocking. See [`pending_proposals/post_1.0/qt_render_check_on_a_gpu_runner.md`](pending_proposals/post_1.0/qt_render_check_on_a_gpu_runner.md). Needs a machine with a GPU **and a graphical session**. | Post-1.0 |
 | 28 | **Remote-session stabilization** | Define compatibility policy and stabilize the Python API, CLI, wire protocol and production deployment surface only after 1.0 experience. Complete feature parity, adaptive video quality and general managed networking belong here rather than on the 1.0 critical path. | Post-1.0 |
+| 27 | **Remote-session support and E2E certification** | Earlier RRS0–RRS3 implementation and spika-to-aleph observations remain valuable prototype evidence, but the feature is not in the 1.0 support contract. Keep its shipped entrypoints as an unsupported preview. Establish reproducible remote-client and managed server-GPU E2E evidence before a later supported release (`uibcdf/molsysviewer#100`). | Post-1.0 |
 | 17 | **macOS & Windows Standalone Support** | Build and publish PySide6/QtWebEngine conda recipes for macOS and Windows | Planned |
 | 18 | Add Windows to CI matrix | Standard runner compatibility verification | Planned |
 | 19 | Add Python 3.13 to CI matrix | Upgrade testing environment; local development already uses Python 3.13, CI currently covers 3.11-3.12 because the conda `smonitor` build set no longer resolves for Python 3.10 | Planned |

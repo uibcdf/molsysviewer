@@ -11,6 +11,15 @@ changes. Normative behavior remains in the contracts linked below.
   MolSysMT 0.22.4 / Viewer 0.23.4 pair passed both staging and public
   20-cell installed-package matrices on 2026-09-25. This is a pre-1.0
   distribution milestone, not closure of the [1.0 release plan](path_to_1_0.md).
+- On 2026-09-26 the maintainers moved remote-session support and its three E2E
+  scenarios to post-1.0. The already distributed code remains an unsupported
+  preview; the 1.0 gate now requires the 34-scenario core browser lane, not
+  remote-client or server-GPU certification (`uibcdf/molsysviewer#100`). A core
+  pass must not be reported as a full 37/37 or a remote pass. The new core
+  lane passed locally 34/34 on Chrome 149 with WebGL2/SwiftShader; hosted
+  exact-commit confirmation is still pending. `CI_e2e` can also be manually
+  dispatched in a separate remote-portable diagnostic mode; that mode is not
+  part of the automatic 1.0 gate.
 - Phases 5, 6, 8 and 9 and the Phase 10 persistence slice were independently
   audited and closed on 2026-08-09. Phase 8 evidence remains in
   [`performance/representative_scale_gate_2026_08.md`](performance/representative_scale_gate_2026_08.md).
@@ -250,7 +259,10 @@ The maintainers accepted an explicit, limited pre-1.0 exception for this
 publication* if all other exact-candidate gates pass. Local portable E2E
 passed 36/36, but hosted portable E2E did not pass and full 37/37 has no
 certification. #100 remains open; the strict 1.0 E2E and visible-window gates
-are unchanged. The exception must accompany the release decision, not turn
+were unchanged for the 0.23.4 decision. The later 2026-09-26 scope decision
+requires hosted core E2E and visible-window Qt for 1.0 while deferring remote
+E2E to post-1.0. The original exception must accompany the 0.23.4 release
+decision, not turn
 the failed hosted run into a success.
 
 The `0.23.4` citation surfaces were first prepared for 2026-09-24 and
@@ -471,7 +483,8 @@ Resume toward **1.0** in this order:
 5. Run `python devtools/release_gate.py` on the new exact 1.0 candidate and
    release 1.0 only when every required gate exits zero. The 0.23.4
    pre-1.0 release carried an explicit, bounded Qt/E2E exception, which does
-   not roll forward automatically. Before tagging,
+   not roll forward automatically. The new strict 1.0 E2E scope is the core
+   non-remote browser lane; remote-only E2E remains post-1.0. Before tagging,
    `python devtools/prepare_release.py` sets citation fields; after the
    GitHub Release, verify Zenodo's **public** record rather than treating a
    short ingestion timeout as permanent failure.
