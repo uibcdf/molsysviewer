@@ -62,6 +62,7 @@ function computeT(kfA: MovieKeyframe, kfB: MovieKeyframe, time_ms: number): numb
 
 export class MovieHandlers {
     private rafId?: number;
+    private cameraWrites = new Set<Promise<void>>();
     private lastStructureIndex?: number;
     private lastMovieTime: number = 0;
     private lastVisibility: Record<string, boolean> = {};
@@ -70,8 +71,8 @@ export class MovieHandlers {
 
     // ── Browser playback ──────────────────────────────────────────────────
 
-    play(keyframes: MovieKeyframe[], loop: boolean = false, startTimeMs: number = 0.0): void {
-        this.stop();
+    async play(keyframes: MovieKeyframe[], loop: boolean = false, startTimeMs: number = 0.0): Promise<void> {
+        await this.stop();
         if (keyframes.length < 2) {
             console.warn("[MolSysViewer] play_movie: need at least 2 keyframes");
             return;
@@ -110,10 +111,18 @@ export class MovieHandlers {
         this.rafId = requestAnimationFrame(tick);
     }
 
-    stop(): void {
+    async stop(): Promise<void> {
         if (this.rafId !== undefined) {
             cancelAnimationFrame(this.rafId);
             this.rafId = undefined;
+        }
+        // Mol* camera commands are asynchronous. Cancelling rAF alone can leave
+        // already-submitted frames travelling after stop_movie has returned.
+        const atStop = this.context.getCameraSnapshot();
+        const inFlight = Array.from(this.cameraWrites);
+        if (inFlight.length) {
+            await Promise.allSettled(inFlight);
+            if (atStop) await this.context.setCameraSnapshot(atStop, 0);
         }
     }
 
@@ -162,12 +171,12 @@ export class MovieHandlers {
             const snap: any = baseSnapshot
                 ? { ...baseSnapshot, position: lerp3(camA.position, camB.position, t), target: lerp3(camA.target, camB.target, t), up: normalize3(lerp3(camA.up, camB.up, t)) }
                 : { position: lerp3(camA.position, camB.position, t), target: lerp3(camA.target, camB.target, t), up: normalize3(lerp3(camA.up, camB.up, t)) };
-            void this.context.setCameraSnapshot(snap, 0);
+            this.submitCameraSnapshot(snap);
         } else if (camA) {
             const snap: any = baseSnapshot
                 ? { ...baseSnapshot, position: camA.position, target: camA.target, up: camA.up }
                 : { position: camA.position, target: camA.target, up: camA.up };
-            void this.context.setCameraSnapshot(snap, 0);
+            this.submitCameraSnapshot(snap);
         }
 
         const idxA = kfA.structure_index, idxB = kfB.structure_index;
@@ -187,6 +196,15 @@ export class MovieHandlers {
                 else void this.context.hideLayer(tag);
             }
         }
+    }
+
+    private submitCameraSnapshot(snapshot: Camera.Snapshot): void {
+        const write = this.context.setCameraSnapshot(snapshot, 0);
+        this.cameraWrites.add(write);
+        void write.then(
+            () => { this.cameraWrites.delete(write); },
+            () => { this.cameraWrites.delete(write); },
+        );
     }
 
     private async applyStateForExport(

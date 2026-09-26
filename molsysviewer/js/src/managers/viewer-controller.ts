@@ -2695,7 +2695,7 @@ export class MolSysViewerController {
                             typeof (msg as any).height_px === "number" ? (msg as any).height_px : undefined,
                         );
                     } else {
-                        this.movie.play(
+                        await this.movie.play(
                             (msg as any).keyframes ?? [],
                             !!(msg as any).loop,
                             typeof (msg as any).start_time_ms === "number" ? (msg as any).start_time_ms : 0.0
@@ -2703,7 +2703,7 @@ export class MolSysViewerController {
                     }
                     break;
                 }
-                case "stop_movie": this.movie.stop(); break;
+                case "stop_movie": await this.movie.stop(); break;
                 case "set_addon_runtime_summary": {
                     const prevWorkspaceIds = this.addonRuntimeInitialized
                         ? new Set(this.getWorkspaceOptions().map((item) => item.id))
