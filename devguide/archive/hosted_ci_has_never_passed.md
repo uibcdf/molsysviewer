@@ -1,13 +1,13 @@
 ---
 summary: Hosted CI has never passed, for three causes that live in how CI builds its environment.
 issue: uibcdf/molsysviewer#88
-status: partial
+status: resolved
 opened: 2026-09-19
-closed:
+closed: 2026-09-26
 severity: high
 verification: measured
 area: [ci, packaging, testing]
-guard: tests/test_distribution_artifact.py::test_every_environment_installed_without_deps_carries_the_runtime_dependencies, tests/test_js_build_version_resolution.py, tests/test_release_gate.py
+guard: tests/test_distribution_artifact.py
 normative:
 blocked_by: []
 supersedes: []
@@ -402,3 +402,26 @@ MolSysMT version.
 - Gate 8 says what is enforced.
 - Causes 2 and 3 may close before cause 1. This entry closes with cause 1, and it may
   pass through `partial` on the way.
+
+## Resolution — 2026-09-26
+
+The public MolSysMT 0.22.4 / MolSysViewer 0.23.4 pair closed the missing
+dependency-channel boundary on Python 3.11–3.14. On source commit
+`2bcc86b7903ff91fd78d371a91ab56ff5ec25f78`, the hosted
+[CI run 36233310412](https://github.com/uibcdf/molsysviewer/actions/runs/36233310412)
+passed all seven jobs (six Python cells on Linux/macOS plus the Qt pipeline),
+and [documentation-notebook run 36233310586](https://github.com/uibcdf/molsysviewer/actions/runs/36233310586)
+passed against the public channel. The hosted
+[core E2E run 36232475620](https://github.com/uibcdf/molsysviewer/actions/runs/36232475620)
+passed 34/34 at exact code commit `6b519db0f771f5edbff3e21fb0cae203a38da036`;
+the only intervening commit changed documentation and agent guidance. Remote
+preview scenarios are outside the 1.0 core lane and remain open in #100.
+
+The addressable guard `tests/test_distribution_artifact.py` covers the
+dependency floors, the hosted environment's declared requirements, the
+workflow's candidate selection and browser provisioning. Additional focused
+guards in `tests/test_js_build_version_resolution.py` protect the release
+version fallback that repaired the missing `_version.py` path. These guards
+do not replace hosted execution: the three successful runs above are the
+independent evidence that the repaired workflows actually execute. The Qt
+pipeline under Xvfb is not the visible-window observation required by Phase 7.

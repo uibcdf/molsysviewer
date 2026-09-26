@@ -25,9 +25,8 @@ list.
 - [`python_pocket_blob_rejects_documented_multi_iso_options.md`](python_pocket_blob_rejects_documented_multi_iso_options.md) — [#99](https://github.com/uibcdf/molsysviewer/issues/99) — Python pocket blob API rejects its documented multi-iso options. *(medium, reproduced)*
 - [`release_gate_conflates_staging_evidence_with_strict_1_0_requirements.md`](release_gate_conflates_staging_evidence_with_strict_1_0_requirements.md) — [#103](https://github.com/uibcdf/molsysviewer/issues/103) — Release gate conflates exact staging evidence with strict 1.0 requirements *(medium, reproduced)*
 
-### Partially done (2)
+### Partially done (1)
 
-- [`hosted_ci_has_never_passed.md`](hosted_ci_has_never_passed.md) — [#88](https://github.com/uibcdf/molsysviewer/issues/88) — Hosted CI has never passed, for three causes that live in how CI builds its environment. *(high, measured)*
 - [`standalone_qt_live_demo_reload.md`](standalone_qt_live_demo_reload.md) — [#35](https://github.com/uibcdf/molsysviewer/issues/35) — In the standalone Qt host, replacing the loaded demo leaves the previous system on screen. *(high, reproduced)*
 
 ### Deferred until after 1.0 (1)

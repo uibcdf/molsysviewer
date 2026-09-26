@@ -42,7 +42,7 @@ audit.
 | 7 | Missing seam evidence | ⚠ | 90% | working tree from `ca3dd2e7` | Automated seam evidence complete; blocked on Qt real-window/GPU and human reload smoke observations |
 | 8 | Representative performance and memory gate | ✓ | 100% | `15d86a8a` | Matrix evidence and byte-budget guard independently audited; small worker remeasured coherently; closed 2026-08-09 |
 | 9 | Documentation and upstream closure | ✓ | 100% | `55839d23` | Closed-architecture phrase guard independently mutation-audited; closed 2026-08-09 |
-| 10 | Product and release gates | ◐ | 27% | `78b485f9`, `d048126d` plus the gate 9 slices | 3 of 11 strict 1.0 gates closed: state-file persistence, hover policy and public-callable digestion. The 0.22.4/0.23.4 public pair passed 20/20 installed-package cells on Python 3.11–3.14, removing the dependency-channel blocker for pre-1.0 work; exact 1.0 artifacts, visible Qt/hosted **core** E2E, dogfooding and final gate remain. Remote-session support and E2E are post-1.0 preview work (`uibcdf/molsysviewer#100`). |
+| 10 | Product and release gates | ◐ | 27% | `78b485f9`, `d048126d` plus the gate 9 slices | 3 of 11 strict 1.0 gates closed: state-file persistence, hover policy and public-callable digestion. The 0.22.4/0.23.4 public pair passed 20/20 installed-package cells on Python 3.11–3.14, removing the dependency-channel blocker for pre-1.0 work. The hosted 34-case **core** E2E also passed at exact commit `6b519db0` in run `36232475620`; this is evidence toward gate 11, not closure of that gate. Exact 1.0 artifacts, visible Qt, dogfooding and the final gate remain. Remote-session support and E2E are post-1.0 preview work (`uibcdf/molsysviewer#100`). |
 
 Status vocabulary:
 
@@ -1225,8 +1225,9 @@ not repeated for this documentation slice.
    unavailable; the staging-enabled documentation-notebook run
    `36016496850` passed on 2026-09-24. The public 0.22.4/0.23.4 pair now
    resolves, but this does not substitute for notebook evidence on the
-   final 1.0 release candidate. See
-   [`pending_bugs/hosted_ci_has_never_passed.md`](pending_bugs/hosted_ci_has_never_passed.md).
+   final 1.0 release candidate. A public-channel notebook run later passed
+   at source commit `2bcc86b7` in run `36233310586`; see
+   [`archive/hosted_ci_has_never_passed.md`](archive/hosted_ci_has_never_passed.md).
 9. **Done.** Every public callable is digested or deliberately exempt, and every
    argument name they introduce has a digester: **474 public callables, 442
    digested, 0 undigested, 34 exempt with a stated reason, 0 missing
@@ -1261,10 +1262,13 @@ not repeated for this documentation slice.
     release-version consistency checks in one place. It reports `BLOCKED` with a
     reason for anything it cannot run and exits non-zero. The 0.23.4
     pre-1.0 release used an explicit bounded Qt/hosted-E2E exception. The
-    strict 1.0 gate remains blocked until visible-window Qt and hosted core
-    browser evidence pass. The three remote-only E2E scenarios and their
+    hosted core browser evidence passed at exact commit `6b519db0` in run
+    `36232475620`; the strict 1.0 gate remains blocked by visible-window Qt
+    and other final-candidate requirements. The three remote-only E2E scenarios and their
     supported feature contract are post-1.0 (`uibcdf/molsysviewer#100`); their
-    exclusion is not a remote pass. Its Conda
+    exclusion is not a remote pass. Hosted CI 7/7 and public-channel notebooks
+    also passed on `main` in runs `36233310412` and `36233310586`, resolving
+    #88 without certifying visible Qt or final 1.0 artifacts. Its Conda
     message also needs to distinguish a published pre-1.0 pair from final
     1.0 certification (`uibcdf/molsysviewer#103`).
 
@@ -1276,7 +1280,8 @@ also public and independently verified. See
 [`path_to_1_0.md`](path_to_1_0.md) and
 [`checkpoints.md`](checkpoints.md#published-pre-1-0-pair--2026-09-25).
 This closes the pre-1.0 distribution cycle, not the final 1.0 candidate's
-artifact, visible Qt, hosted core E2E or human-workflow gates.
+artifact, visible Qt or human-workflow gates. Hosted core E2E passed later
+at `6b519db0`/`36232475620`, not at the 0.23.4 release commit.
 
 **Exit:** no open pre-1.0 gate remains in `path_to_1_0.md`.
 

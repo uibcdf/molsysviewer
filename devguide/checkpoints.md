@@ -27,6 +27,13 @@ changes. Normative behavior remains in the contracts linked below.
   browser case passed locally before the hosted rerun. `CI_e2e` can also be manually
   dispatched in a separate remote-portable diagnostic mode; that mode is not
   part of the automatic 1.0 gate.
+- The previously broken hosted routes now pass against public MolSysMT on
+  `main`: [CI run 36233310412](https://github.com/uibcdf/molsysviewer/actions/runs/36233310412)
+  passed 7/7 (six Python cells plus the Xvfb Qt pipeline), and
+  [notebook run 36233310586](https://github.com/uibcdf/molsysviewer/actions/runs/36233310586)
+  passed at exact commit `2bcc86b7903ff91fd78d371a91ab56ff5ec25f78`.
+  Together with the hosted core E2E above, these resolve #88; they do not
+  replace the visible-window Qt observation or final 1.0-candidate reruns.
 - Phases 5, 6, 8 and 9 and the Phase 10 persistence slice were independently
   audited and closed on 2026-08-09. Phase 8 evidence remains in
   [`performance/representative_scale_gate_2026_08.md`](performance/representative_scale_gate_2026_08.md).
@@ -226,9 +233,11 @@ at the same hosted PNG-download timeout in `remote-client-rendering` as the
 earlier full-suite run. This is not a portable E2E pass and cannot certify
 the separately deferred server-GPU lane. Stop rerunning this unchanged test;
 the reproducibility/evidence work is tracked by #100.
-The detailed diagnosis is in [`pending_bugs/hosted_ci_has_never_passed.md`](pending_bugs/hosted_ci_has_never_passed.md).
+The detailed diagnosis and later resolution are in
+[`archive/hosted_ci_has_never_passed.md`](archive/hosted_ci_has_never_passed.md).
 
-The remaining order is:
+The following was the remaining order at this historical selection checkpoint;
+the current state is at the top of this file:
 
 1. resolve or explicitly defer the reproducible hosted
    `remote-client-rendering` PNG-download timeout under #100 before claiming

@@ -31,6 +31,9 @@ user/developer documentation.
 
 Resolved defect reports, kept for their evidence:
 
+- [`hosted_ci_has_never_passed.md`](hosted_ci_has_never_passed.md)
+  — the public MolSysMT/Viewer pair removed the solver barrier; hosted CI 7/7,
+  core E2E 34/34 and documentation notebooks then passed on `main`.
 - [`public_noarch_promotion_succeeds_but_final_verifier_exits_one.md`](public_noarch_promotion_succeeds_but_final_verifier_exits_one.md)
   — an exact public file can now be checked through a rerunnable read-only workflow;
   verification never repeats a successful promotion.
