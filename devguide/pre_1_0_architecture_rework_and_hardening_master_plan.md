@@ -1231,7 +1231,9 @@ not repeated for this documentation slice.
 9. **Done.** Every public callable is digested or deliberately exempt, and every
    argument name they introduce has a digester: **474 public callables, 442
    digested, 0 undigested, 34 exempt with a stated reason, 0 missing
-   digesters**, pinned by `tests/test_public_api_inventory.py`.
+   digesters**, pinned by `tests/test_public_api_inventory.py`. These totals
+   are not disjoint: two exempt forwarders are also digested, so 32 public
+   callables are exempt without decoration.
 
    The counts moved on 2026-09-06 and the gate did not: `molsysviewer.remote`
    became an explicit root of the inventory walk, which is how four public
