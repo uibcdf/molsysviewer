@@ -77,9 +77,11 @@ These are the release gates:
    is evidenced by the 20-cell public matrix, not by a source checkout.
 6. First-contact README/onboarding verification.
 7. Documentation and package-version consistency at the release commit.
-8. Close the decided `@digest` policy over the supported public callable
-   surface, with argument digesters and catalogued diagnostics rather than
-   decoration-only coverage.
+8. ✅ **Closed 2026-08-12.** The supported public-callable inventory is
+   digested or deliberately exempt, and introduced argument names have
+   digesters. The behavioral and inventory guards are recorded in
+   [`pre_1_0_architecture_rework_and_hardening_master_plan.md`](pre_1_0_architecture_rework_and_hardening_master_plan.md)
+   (Phase 10, gate 9).
 
 The remote-session implementation was demonstrated before 1.0, but its
 supported feature contract and E2E certification now belong to post-1.0.
