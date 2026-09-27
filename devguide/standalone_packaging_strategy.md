@@ -8,7 +8,18 @@ It should be read together with:
 - `devguide/archive/standalone_qt_prototype_plan.md`
 - `devguide/standalone_supported_environment.md`
 
-## Decision Made (2026-04-04)
+## Current direction (2026-09-27)
+
+Canonical PySide6/Qt 6.11.2 is the preferred standalone-host stack. Clean
+Linux Conda environments passed the transport and payload probes across Python
+3.11–3.14; Windows and macOS ARM have solver-only evidence, while macOS Intel
+lacks conda-forge `qt6-webengine=6.11.2`. The host retains the UIBCDF namespace
+as a fallback when canonical PySide6 is absent. See
+[`standalone_supported_environment.md`](standalone_supported_environment.md)
+for the exact current recipe and evidence limits. The UIBCDF packages are
+retained; they are not scheduled for deletion.
+
+## Historical decision (2026-04-04)
 
 **Option A2 was chosen and is complete.** A curated, source-built, suffix-named
 conda family is now published in the `uibcdf` channel:
@@ -33,7 +44,8 @@ manifest and in the popup summaries.)*
 
 The Python import namespace is `PySide6_uibcdf` / `shiboken6_uibcdf`.
 `QFileDialog`, `QMessageBox`, `QWebEngineView` all work correctly.
-`molsysviewer.standalone_qt` imports from `PySide6_uibcdf` directly.
+At the time, `molsysviewer.standalone_qt` imported from `PySide6_uibcdf`
+directly. This changed with the canonical-stack migration above.
 
 The rest of this document is the **historical investigation record** that led
 to this decision. It is kept as context for future decisions (e.g. 6.10.x,

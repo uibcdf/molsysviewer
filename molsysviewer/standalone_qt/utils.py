@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib
 import json
 import logging
 import os
@@ -23,9 +24,12 @@ from ..standalone import _resolve_view, build_standalone0_html
 logger = logging.getLogger(__name__)
 
 QT_IMPORT_ERROR = (
-    "PySide6_uibcdf with Qt WebEngine is required for the standalone Qt prototype. "
-    "Install the UIBCDF conda stack from the uibcdf channel:\n"
-    "  conda install -c uibcdf -c conda-forge pyside6-addons-uibcdf"
+    "PySide6 with Qt WebEngine is required for the standalone Qt host. "
+    "Install the matching Qt stack, for example:\n"
+    "  conda install -c conda-forge pyside6=6.11.2 qt6-webengine=6.11.2 "
+    "qt6-positioning=6.11.2\n"
+    "For the retained UIBCDF fallback, set MOLSYSVIEWER_QT_BINDING=uibcdf "
+    "and install pyside6-addons-uibcdf."
 )
 
 QT_STATE_FILENAME = "standalone_qt0_state.json"
@@ -79,42 +83,47 @@ def _configure_qt_webengine_environment(prefix: str | os.PathLike[str] | None = 
 def _import_qt():
     _get_helper("_configure_qt_webengine_environment")()
     try:
-        from PySide6_uibcdf.QtCore import QBuffer, QByteArray, QTimer, QUrl
-        from PySide6_uibcdf.QtGui import QAction, QCursor
-        from PySide6_uibcdf.QtWebEngineCore import (
-            QWebEnginePage,
-            QWebEngineUrlScheme,
-            QWebEngineUrlSchemeHandler,
-        )
-        from PySide6_uibcdf.QtWebEngineWidgets import QWebEngineView
-        from PySide6_uibcdf.QtWidgets import (
-            QApplication,
-            QFileDialog,
-            QInputDialog,
-            QMainWindow,
-            QMenu,
-            QMessageBox,
-        )
+        binding = os.environ.get("MOLSYSVIEWER_QT_BINDING", "auto").lower()
+        if binding == "uibcdf":
+            package = "PySide6_uibcdf"
+        elif binding == "canonical":
+            package = "PySide6"
+        elif binding == "auto":
+            try:
+                importlib.import_module("PySide6")
+                package = "PySide6"
+            except ModuleNotFoundError as exc:
+                if exc.name != "PySide6":
+                    raise
+                package = "PySide6_uibcdf"
+        else:
+            raise ValueError("MOLSYSVIEWER_QT_BINDING must be auto, canonical, or uibcdf")
+
+        core = importlib.import_module(f"{package}.QtCore")
+        gui = importlib.import_module(f"{package}.QtGui")
+        web_core = importlib.import_module(f"{package}.QtWebEngineCore")
+        web_widgets = importlib.import_module(f"{package}.QtWebEngineWidgets")
+        widgets = importlib.import_module(f"{package}.QtWidgets")
     except Exception as exc:  # pragma: no cover
         raise ImportError(QT_IMPORT_ERROR) from exc
 
     return {
-        "QAction": QAction,
-        "QApplication": QApplication,
-        "QBuffer": QBuffer,
-        "QByteArray": QByteArray,
-        "QFileDialog": QFileDialog,
-        "QInputDialog": QInputDialog,
-        "QMainWindow": QMainWindow,
-        "QMessageBox": QMessageBox,
-        "QCursor": QCursor,
-        "QMenu": QMenu,
-        "QTimer": QTimer,
-        "QUrl": QUrl,
-        "QWebEnginePage": QWebEnginePage,
-        "QWebEngineUrlScheme": QWebEngineUrlScheme,
-        "QWebEngineUrlSchemeHandler": QWebEngineUrlSchemeHandler,
-        "QWebEngineView": QWebEngineView,
+        "QAction": gui.QAction,
+        "QApplication": widgets.QApplication,
+        "QBuffer": core.QBuffer,
+        "QByteArray": core.QByteArray,
+        "QFileDialog": widgets.QFileDialog,
+        "QInputDialog": widgets.QInputDialog,
+        "QMainWindow": widgets.QMainWindow,
+        "QMessageBox": widgets.QMessageBox,
+        "QCursor": gui.QCursor,
+        "QMenu": widgets.QMenu,
+        "QTimer": core.QTimer,
+        "QUrl": core.QUrl,
+        "QWebEnginePage": web_core.QWebEnginePage,
+        "QWebEngineUrlScheme": web_core.QWebEngineUrlScheme,
+        "QWebEngineUrlSchemeHandler": web_core.QWebEngineUrlSchemeHandler,
+        "QWebEngineView": web_widgets.QWebEngineView,
     }
 
 

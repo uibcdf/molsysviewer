@@ -11,16 +11,55 @@ The goal here is:
 - keep the recipe explicit
 - avoid rediscovering the same conda/pip boundary by trial and error
 
-## Current Position (2026-04-04)
+## Current candidate recipe (2026-09-27)
 
-The standalone Qt host is **technically complete and packaging-validated**.
+The standalone host now prefers canonical `PySide6`. It uses
+`PySide6_uibcdf` only when the canonical namespace is absent, retaining the
+existing UIBCDF packages as a fallback. Do not install both stacks into a
+new environment: Qt native libraries and WebEngine resource paths must remain
+coherent.
 
-The supported recipe is now **conda-native** from the `uibcdf` channel.
-The previous `pip install PySide6==6.9.2` recipe is **obsolete**.
+For a deliberate rollback in an existing UIBCDF environment, set
+`MOLSYSVIEWER_QT_BINDING=uibcdf`. The default `auto` selects canonical PySide6
+if present and selects UIBCDF only when the canonical namespace is absent.
+`MOLSYSVIEWER_QT_BINDING=canonical` forces the official binding. A broken
+canonical installation does not silently switch to the fallback.
+
+For Linux development and CI, use the matching conda-forge stack:
+
+```bash
+mamba install -c conda-forge \
+    "pyside6=6.11.2" "qt6-webengine=6.11.2" "qt6-positioning=6.11.2"
+```
+
+The coordinated public MolSysMT 0.22.4 / MolSysViewer 0.23.4 pair plus this
+stack resolved and passed real WebEngine transport and two-generation payload
+smokes in clean Linux Conda environments on Python 3.11, 3.12, 3.13 and 3.14.
+The real-window probe reached bridge readiness and completed payload delivery
+under Xvfb/SwiftShader; this is not a visible-window rendering certificate.
+
+| Platform | Conda resolution with canonical Qt 6.11.2 | Qt host runtime evidence |
+| --- | --- | --- |
+| `linux-64` | Solved and installed | Transport and payload smokes passed on Python 3.11–3.14; visible-window observation still pending |
+| `win-64` | Dry-run solved on Python 3.14 | Not run on Windows yet |
+| `osx-arm64` | Dry-run solved on Python 3.14 with macOS 14 override | Not run on macOS yet |
+| `osx-64` | Not solvable: conda-forge lacks `qt6-webengine=6.11.2` | No current runtime evidence; PyPI has a universal2 wheel, but that route is unvalidated |
+
+Solver success does not confer supported-platform status. The support boundary
+and user-facing wording remain tracked in `uibcdf/molsysviewer#97`. No decision
+has been taken to retire macOS Intel support.
+
+### Historical UIBCDF 6.9.2 recipe (superseded as the default)
+
+The standalone Qt host was **technically complete and packaging-validated**
+with the custom 6.9.2 stack.
+
+That recipe was **conda-native** from the `uibcdf` channel. It remains as a
+fallback reference, not the current recommendation.
 
 ## Supported Development Recipe
 
-### Conda-native recipe (current)
+### Conda-native recipe (historical fallback)
 
 The full conda family is **5 packages**:
 
@@ -76,13 +115,17 @@ Current package-level fixes also include:
 
 - A coherent `pip` Qt stack worked in practice as a prototype path.
 - Mixing conda `pyside6` + pip `PySide6-Addons` was not reliable.
-- The correct long-term path was a source-built, namespace-separated
-  (`PySide6_uibcdf`) family published to a UIBCDF conda channel.
+- The source-built, namespace-separated (`PySide6_uibcdf`) family was
+  published to a UIBCDF conda channel. The canonical 6.11.2 stack has since
+  passed the Linux clean-environment probes above, so this is no longer the
+  only viable path.
 - The pip recipe is retained here only as historical context.
 
 ## Why Not The Main Environment
 
-The main day-to-day development environment should stay conservative.
+The main day-to-day development environment may use the current canonical
+recipe once its full development solve is checked. A derived Qt environment
+remains useful for isolating native runtime problems.
 
 The Qt host spike has different constraints:
 
@@ -93,7 +136,7 @@ The Qt host spike has different constraints:
 So the supported practice is:
 
 - keep the normal development environment for general MolSysViewer work
-- use a derived Qt-spike environment for standalone-host work
+- use a clean derived Qt environment to reproduce native-runtime failures
 
 ## Linux Note
 
@@ -124,9 +167,9 @@ This recipe is not yet the final answer for:
 
 The remaining standalone environment questions are:
 
-- whether the final supported recipe is:
-  - conda-only
-  - or a supported conda+pip combination
+- whether the PyPI universal2 route can cover macOS Intel reliably
+- runtime certification of Windows and macOS ARM
+- whether the final supported recipe is conda-only or also includes pip
 - how that recipe should be distributed
 - whether final release packaging should remain environment-driven or become a
   more app-like distribution

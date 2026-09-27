@@ -63,9 +63,9 @@ dev = [
 yaml = ["pyyaml"]
 # Movie export (view.movie.export)
 movie = ["imageio"]
-# The standalone Qt prototype requires PySide6_uibcdf with QtWebEngineWidgets.
-# This is NOT installable via pip — use the UIBCDF conda channel:
-#   conda install -c uibcdf -c conda-forge pyside6-addons-uibcdf
+# The standalone Qt host prefers canonical PySide6 with Qt WebEngine. The
+# validated conda route uses matching pyside6, qt6-webengine and qt6-positioning
+# from conda-forge. Keep this extra empty until a pip-wheel route is validated.
 standalone = []
 
 [project.scripts]

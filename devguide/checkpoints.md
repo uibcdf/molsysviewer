@@ -5,6 +5,17 @@ changes. Normative behavior remains in the contracts linked below.
 
 ## Repository state
 
+- On 2026-09-27 the standalone Qt host began migration to canonical
+  PySide6/Qt 6.11.2, retaining the UIBCDF family as a fallback. Clean Linux
+  Conda probes for Python 3.11–3.14 passed real WebEngine transport and
+  two-generation payload delivery before the source change; targeted host
+  selection tests pass after it. Windows and macOS ARM currently have solver
+  evidence only. macOS Intel has no conda-forge Qt WebEngine 6.11.2 build,
+  while the official PyPI universal2 path remains unvalidated. Do not infer
+  a platform-support decision from these probes; `#97` owns that contract,
+  `#109` owns the Viewer migration, and `uibcdf/molsyssuite#57` remains open
+  for suite-wide observation before any fork retirement.
+
 - Branch: `main` contains the tagged 0.23.4 release candidate and its
   post-tag fixes; the immutable 0.23.4 tag is
   `cf427942d0b08a1c5c60f262c6a6b33f248d6f8b`. The coordinated

@@ -4,6 +4,7 @@ import os
 import sys
 from pathlib import Path
 from types import ModuleType
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -11,6 +12,7 @@ pytest.importorskip("anywidget")
 pytest.importorskip("traitlets")
 
 import molsysviewer.standalone_qt as standalone_qt
+import molsysviewer.standalone_qt.utils as qt_utils
 from molsysviewer.standalone import build_standalone0_html, launch_standalone0, main
 from molsysviewer.standalone_qt import QT_IMPORT_ERROR, QtViewChannel, create_standalone_qt0_window
 from molsysviewer.standalone_qt import main as qt_main
@@ -89,8 +91,76 @@ def test_create_standalone_qt0_window_raises_informative_import_error(monkeypatc
         raise ImportError(QT_IMPORT_ERROR)
 
     monkeypatch.setattr(standalone_qt, "_import_qt", _raise)
-    with pytest.raises(ImportError, match="PySide6_uibcdf with Qt WebEngine is required"):
+    with pytest.raises(ImportError, match="PySide6 with Qt WebEngine is required"):
         create_standalone_qt0_window(None)
+
+
+def test_import_qt_prefers_canonical_binding_and_keeps_uibcdf_fallback(monkeypatch):
+    monkeypatch.setattr(standalone_qt, "_configure_qt_webengine_environment", lambda: None)
+    monkeypatch.delenv("MOLSYSVIEWER_QT_BINDING", raising=False)
+    imported = []
+
+    def import_canonical(name):
+        imported.append(name)
+        return MagicMock()
+
+    monkeypatch.setattr(qt_utils.importlib, "import_module", import_canonical)
+    assert standalone_qt._import_qt()["QWebEngineView"] is not None
+    assert [name for name in imported if name.startswith("PySide6")] == [
+        "PySide6",
+        "PySide6.QtCore",
+        "PySide6.QtGui",
+        "PySide6.QtWebEngineCore",
+        "PySide6.QtWebEngineWidgets",
+        "PySide6.QtWidgets",
+    ]
+
+    imported.clear()
+
+    def import_fallback(name):
+        imported.append(name)
+        if name == "PySide6":
+            raise ModuleNotFoundError("No module named 'PySide6'", name="PySide6")
+        return MagicMock()
+
+    monkeypatch.setattr(qt_utils.importlib, "import_module", import_fallback)
+    assert standalone_qt._import_qt()["QWebEngineView"] is not None
+    assert [name for name in imported if name.startswith("PySide6")] == [
+        "PySide6",
+        "PySide6_uibcdf.QtCore",
+        "PySide6_uibcdf.QtGui",
+        "PySide6_uibcdf.QtWebEngineCore",
+        "PySide6_uibcdf.QtWebEngineWidgets",
+        "PySide6_uibcdf.QtWidgets",
+    ]
+
+    imported.clear()
+    monkeypatch.setenv("MOLSYSVIEWER_QT_BINDING", "uibcdf")
+    assert standalone_qt._import_qt()["QWebEngineView"] is not None
+    assert [name for name in imported if name.startswith("PySide6")] == [
+        "PySide6_uibcdf.QtCore",
+        "PySide6_uibcdf.QtGui",
+        "PySide6_uibcdf.QtWebEngineCore",
+        "PySide6_uibcdf.QtWebEngineWidgets",
+        "PySide6_uibcdf.QtWidgets",
+    ]
+
+
+def test_import_qt_does_not_mix_broken_canonical_binding_with_fallback(monkeypatch):
+    monkeypatch.setattr(standalone_qt, "_configure_qt_webengine_environment", lambda: None)
+    monkeypatch.delenv("MOLSYSVIEWER_QT_BINDING", raising=False)
+    imported = []
+
+    def import_broken_canonical(name):
+        imported.append(name)
+        if name == "PySide6.QtWebEngineCore":
+            raise ModuleNotFoundError("No module named 'PySide6.QtWebEngineCore'", name=name)
+        return MagicMock()
+
+    monkeypatch.setattr(qt_utils.importlib, "import_module", import_broken_canonical)
+    with pytest.raises(ImportError, match="PySide6 with Qt WebEngine is required"):
+        standalone_qt._import_qt()
+    assert not any(name.startswith("PySide6_uibcdf") for name in imported)
 
 
 def test_configure_qt_webengine_environment_uses_conda_split_layout(monkeypatch, tmp_path):
@@ -116,12 +186,12 @@ def test_configure_qt_webengine_environment_uses_conda_split_layout(monkeypatch,
 
 
 def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_path):
-    module_core = ModuleType("PySide6_uibcdf.QtCore")
-    module_gui = ModuleType("PySide6_uibcdf.QtGui")
-    module_widgets = ModuleType("PySide6_uibcdf.QtWidgets")
-    module_web_core = ModuleType("PySide6_uibcdf.QtWebEngineCore")
-    module_web = ModuleType("PySide6_uibcdf.QtWebEngineWidgets")
-    module_root = ModuleType("PySide6_uibcdf")
+    module_core = ModuleType("PySide6.QtCore")
+    module_gui = ModuleType("PySide6.QtGui")
+    module_widgets = ModuleType("PySide6.QtWidgets")
+    module_web_core = ModuleType("PySide6.QtWebEngineCore")
+    module_web = ModuleType("PySide6.QtWebEngineWidgets")
+    module_root = ModuleType("PySide6")
 
     class FakeSignal:
         def __init__(self):
@@ -375,12 +445,12 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     module_web_core.QWebEngineUrlSchemeHandler = FakeUrlSchemeHandlerBase
     module_web.QWebEngineView = FakeWebView
 
-    monkeypatch.setitem(sys.modules, "PySide6_uibcdf", module_root)
-    monkeypatch.setitem(sys.modules, "PySide6_uibcdf.QtCore", module_core)
-    monkeypatch.setitem(sys.modules, "PySide6_uibcdf.QtGui", module_gui)
-    monkeypatch.setitem(sys.modules, "PySide6_uibcdf.QtWidgets", module_widgets)
-    monkeypatch.setitem(sys.modules, "PySide6_uibcdf.QtWebEngineCore", module_web_core)
-    monkeypatch.setitem(sys.modules, "PySide6_uibcdf.QtWebEngineWidgets", module_web)
+    monkeypatch.setitem(sys.modules, "PySide6", module_root)
+    monkeypatch.setitem(sys.modules, "PySide6.QtCore", module_core)
+    monkeypatch.setitem(sys.modules, "PySide6.QtGui", module_gui)
+    monkeypatch.setitem(sys.modules, "PySide6.QtWidgets", module_widgets)
+    monkeypatch.setitem(sys.modules, "PySide6.QtWebEngineCore", module_web_core)
+    monkeypatch.setitem(sys.modules, "PySide6.QtWebEngineWidgets", module_web)
     monkeypatch.setattr(
         "molsysviewer.standalone_qt._qt_shell_state_path",
         lambda: tmp_path / "standalone_qt0_state.json",

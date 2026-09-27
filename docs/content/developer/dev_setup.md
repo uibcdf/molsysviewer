@@ -54,12 +54,17 @@ For current Qt-host development, use the working recipe recorded in:
 
 - `devguide/standalone_supported_environment.md`
 
-In short:
+The current candidate is the official, matching conda-forge stack:
 
-- keep the main development environment conservative
-- use a derived Qt-spike environment for `molsysviewer.standalone_qt`
-- use a coherent `pip` Qt stack there rather than rediscovering the conda/pip
-  boundary ad hoc
+```bash
+mamba install -c conda-forge \
+  "pyside6=6.11.2" "qt6-webengine=6.11.2" "qt6-positioning=6.11.2"
+```
+
+Keep a clean derived environment for native Qt diagnosis. The UIBCDF Qt
+family remains available for deliberate rollback with
+`MOLSYSVIEWER_QT_BINDING=uibcdf`; it is no longer the default. See the linked
+recipe for platform-specific evidence limits, especially macOS Intel.
 
 ## TypeScript environment
 

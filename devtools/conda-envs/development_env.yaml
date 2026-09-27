@@ -31,10 +31,11 @@ dependencies:
   # --- NodeJS for JS development and esbuild ---
   - nodejs>=18
 
-  # --- Qt standalone stack (UIBCDF channel) ---
-  # Provides PySide6_uibcdf with QtWebEngineWidgets for the standalone Qt prototype.
-  # Requires the uibcdf channel (listed above).
-  - pyside6-addons-uibcdf ==6.9.2
+  # --- Qt standalone stack (conda-forge) ---
+  # Keep the Python binding and Qt WebEngine runtime on the same version.
+  - pyside6 ==6.11.2
+  - qt6-webengine ==6.11.2
+  - qt6-positioning ==6.11.2
 
   # --- Documentation with Sphinx and MyST ---
   - jupyterlab

@@ -40,8 +40,9 @@ This proposal does **not** promise that the core Windows lane already passes;
    viewer; Qt desktop host; published packages; and validated candidate
    builds. Keep `noarch` from being read as a Qt-host platform promise.
 3. Explain the supported non-Qt route on Windows/macOS and the explicit
-   behavior when `PySide6_uibcdf` is unavailable. Do not silently substitute
-   canonical `PySide6`; the host imports `PySide6_uibcdf`.
+   Qt-host behavior. The host now prefers canonical `PySide6` and falls back
+   to `PySide6_uibcdf` only if the canonical namespace is absent. Keep
+   the runtime evidence distinct from solver-only evidence.
 4. Add a check that detects contradictory or unqualified platform-support
    claims on the maintained surfaces. Revisit the matrix as other-platform
    packages earn their own gates.
@@ -63,8 +64,8 @@ not be transcribed into a published Windows/macOS support claim.
 
 - A `noarch: python` MolSysViewer artifact does not carry or validate the
   native Qt/PySide family on each platform.
-- Canonical `PySide6` is not an automatic drop-in for the current host, which
-  imports the UIBCDF namespace.
+- Canonical `PySide6` was not an automatic drop-in for the former host, which
+  imported the UIBCDF namespace. The explicit migration is now under test.
 - The existing Linux package-path examples are not an adequate warning to
   readers who see an earlier unqualified "supported" recipe.
 

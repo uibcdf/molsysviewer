@@ -3116,9 +3116,9 @@ class MolSysView(
             "--use-gl=swiftshader --disable-gpu",
         )
 
-        # Try UIBCDF standalone package first, then standard PySide6.
+        # Prefer the canonical binding; retain the UIBCDF stack as a fallback.
         QApplication = QWebEngineView = QUrl = QTimer = QEventLoop = None
-        for _pkg in ("PySide6_uibcdf", "PySide6"):
+        for _pkg in ("PySide6", "PySide6_uibcdf"):
             try:
                 _w = __import__(f"{_pkg}.QtWidgets", fromlist=["QApplication"])
                 _e = __import__(f"{_pkg}.QtWebEngineWidgets", fromlist=["QWebEngineView"])

@@ -497,10 +497,13 @@ The first Qt-host prototype now also exists as an explicit experimental surface:
 - `molsysviewer-qt ...`
 - `python -m molsysviewer.standalone_qt ...`
 
-For development, this prototype requires `PySide6` and access to
-`PySide6.QtWebEngineWidgets`. If the conda-forge `pyside6` build in your
-environment does not expose that module, install the matching
-`PySide6-Addons` wheel as a temporary development fallback.
+For development, this prototype requires `PySide6` with Qt WebEngine. The
+current Linux Conda candidate uses matching `pyside6`, `qt6-webengine` and
+`qt6-positioning` 6.11.2 from conda-forge. The UIBCDF binding family remains
+an explicit rollback option through `MOLSYSVIEWER_QT_BINDING=uibcdf`. See
+`devguide/standalone_supported_environment.md` for the full recipe and the
+distinction between runtime-tested and solver-only platforms. The official
+PyPI wheel route on macOS Intel has not yet been validated.
 
 This should still be read as:
 
