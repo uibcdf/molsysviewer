@@ -10,9 +10,9 @@ changes. Normative behavior remains in the contracts linked below.
   Conda probes for Python 3.11–3.14 passed real WebEngine transport and
   two-generation payload delivery before the source change; targeted host
   selection tests pass after it. Windows and macOS ARM currently have solver
-  evidence only. macOS Intel has no conda-forge Qt WebEngine 6.11.2 build,
-  while the official PyPI universal2 path remains unvalidated. Do not infer
-  a platform-support decision from these probes; `#97` owns that contract,
+  evidence only. macOS Intel is now outside the supported matrix by the
+  decision tracked in `uibcdf/molsyssuite#59`; previous Intel package evidence
+  remains historical, not a current release gate. `#97` owns the local support contract,
   `#109` owns the Viewer migration, and `uibcdf/molsyssuite#57` remains open
   for suite-wide observation before any fork retirement.
   A manually dispatched [CI run

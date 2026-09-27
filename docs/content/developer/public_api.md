@@ -503,7 +503,8 @@ current Linux Conda candidate uses matching `pyside6`, `qt6-webengine` and
 an explicit rollback option through `MOLSYSVIEWER_QT_BINDING=uibcdf`. See
 `devguide/standalone_supported_environment.md` for the full recipe and the
 distinction between runtime-tested and solver-only platforms. The official
-PyPI wheel route on macOS Intel has not yet been validated.
+Intel-based macOS is outside the supported matrix (`uibcdf/molsyssuite#59`);
+the standalone Qt host has no certified macOS arm64 runtime yet.
 
 This should still be read as:
 

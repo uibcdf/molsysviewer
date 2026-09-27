@@ -36,7 +36,7 @@ jobs:
       matrix:
         cfg:
           - { os: ubuntu-latest, python-version: "3.14" }
-          - { os: macos-latest,  python-version: "3.14" }
+          - { os: macos-15,  python-version: "3.14" }
           - { os: windows-2025, python-version: "3.14" }
 
     steps:

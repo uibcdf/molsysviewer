@@ -197,6 +197,11 @@ Pip:
 pip install molsysviewer
 ```
 
+macOS support is currently limited to Apple Silicon (arm64). Intel-based macOS
+(x86_64) is not part of the supported platform matrix. Support may be
+reconsidered if there is demonstrated user demand. The optional standalone Qt
+host has a narrower, separately validated [environment recipe](devguide/standalone_supported_environment.md).
+
 ---
 
 ## Development

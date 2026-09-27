@@ -29,6 +29,10 @@ see the distinction before attempting `molsysviewer-qt` on Windows or macOS.
 This proposal does **not** promise that the core Windows lane already passes;
 `uibcdf/molsysviewer#93` owns that evidence.
 
+The 2026-09-27 suite policy decision (`uibcdf/molsyssuite#59`) excludes
+macOS Intel from future support claims and release gates. The core macOS
+claim is arm64 only; this does not itself certify the optional Qt host there.
+
 ## How
 
 1. Verify the exact public-channel subdirectories, versions, and coordinates

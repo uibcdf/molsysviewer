@@ -79,8 +79,9 @@ The host's older local Python 3.14 development environment still contains
 UIBCDF Qt 6.10.1 and failed the two real WebEngine subprocess tests headlessly;
 the clean canonical environment passed them. This is not evidence that the
 canonical route fails. Windows and macOS ARM have solver-only Conda evidence;
-macOS Intel lacks conda-forge Qt WebEngine 6.11.2. The official PyPI universal2
-wheel has not yet been runtime-tested on Intel.
+macOS Intel lacks conda-forge Qt WebEngine 6.11.2 and is now outside the
+supported matrix (`uibcdf/molsyssuite#59`); its PyPI wheel route is not a
+pre-1.0 gate.
 
 ## Alternatives and refuted paths
 

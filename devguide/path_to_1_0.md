@@ -2,6 +2,12 @@
 
 This document is the authoritative release plan for the **v1.0.0** release of MolSysViewer. 
 
+**Platform decision (2026-09-27):** Future release gates cover macOS arm64,
+not Intel `osx-64`. The coordinated Conda matrix is now four native platforms
+and 16 installed-pair cells for Python 3.11–3.14. Historical 20/20 runs below
+remain valid evidence for the published 0.23.4/0.22.4 pair; they are not the
+future support contract (`uibcdf/molsyssuite#59`, `uibcdf/moli#31`).
+
 **Distribution checkpoint (2026-09-25):** Viewer 0.23.4 and MolSysMT 0.22.4
 are published pre-1.0 Releases. The exact noarch/ABI3 pair passed 20/20
 staging and 20/20 public-channel installations on Python 3.11–3.14 across

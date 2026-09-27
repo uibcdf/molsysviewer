@@ -19,7 +19,7 @@ You need these installed at the system level:
 
 ## Recommended Node installation (NVM)
 
-### Linux / macOS
+### Linux / macOS arm64
 
 ```bash
 # Install NVM
@@ -64,7 +64,8 @@ mamba install -c conda-forge \
 Keep a clean derived environment for native Qt diagnosis. The UIBCDF Qt
 family remains available for deliberate rollback with
 `MOLSYSVIEWER_QT_BINDING=uibcdf`; it is no longer the default. See the linked
-recipe for platform-specific evidence limits, especially macOS Intel.
+recipe for platform-specific evidence limits. macOS Intel is outside the
+supported matrix (`uibcdf/molsyssuite#59`).
 
 ## TypeScript environment
 

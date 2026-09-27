@@ -12,8 +12,8 @@ It should be read together with:
 
 Canonical PySide6/Qt 6.11.2 is the preferred standalone-host stack. Clean
 Linux Conda environments passed the transport and payload probes across Python
-3.11–3.14; Windows and macOS ARM have solver-only evidence, while macOS Intel
-lacks conda-forge `qt6-webengine=6.11.2`. The host retains the UIBCDF namespace
+3.11–3.14; Windows and macOS ARM have solver-only evidence. macOS Intel is
+outside the supported matrix (`uibcdf/molsyssuite#59`). The host retains the UIBCDF namespace
 as a fallback when canonical PySide6 is absent. See
 [`standalone_supported_environment.md`](standalone_supported_environment.md)
 for the exact current recipe and evidence limits. The UIBCDF packages are

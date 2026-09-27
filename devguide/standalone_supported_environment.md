@@ -43,11 +43,17 @@ under Xvfb/SwiftShader; this is not a visible-window rendering certificate.
 | `linux-64` | Solved and installed | Transport and payload smokes passed on Python 3.11–3.14; visible-window observation still pending |
 | `win-64` | Dry-run solved on Python 3.14 | Not run on Windows yet |
 | `osx-arm64` | Dry-run solved on Python 3.14 with macOS 14 override | Not run on macOS yet |
-| `osx-64` | Not solvable: conda-forge lacks `qt6-webengine=6.11.2` | No current runtime evidence; PyPI has a universal2 wheel, but that route is unvalidated |
+| `osx-64` | Outside the supported platform matrix | No support claim or required runtime gate |
 
-Solver success does not confer supported-platform status. The support boundary
-and user-facing wording remain tracked in `uibcdf/molsysviewer#97`. No decision
-has been taken to retire macOS Intel support.
+Solver success does not confer supported-platform status. The standalone Qt
+host is currently runtime-tested on Linux only; Windows and macOS arm64
+have solver-only evidence. The support boundary and user-facing wording remain
+tracked in `uibcdf/molsysviewer#97`. The suite-wide macOS architecture decision
+is tracked in `uibcdf/molsyssuite#59`.
+
+macOS support is currently limited to Apple Silicon (arm64). Intel-based macOS
+(x86_64) is not part of the supported platform matrix. Support may be
+reconsidered if there is demonstrated user demand.
 
 ### Historical UIBCDF 6.9.2 recipe (superseded as the default)
 
@@ -167,7 +173,6 @@ This recipe is not yet the final answer for:
 
 The remaining standalone environment questions are:
 
-- whether the PyPI universal2 route can cover macOS Intel reliably
 - runtime certification of Windows and macOS ARM
 - whether the final supported recipe is conda-only or also includes pip
 - how that recipe should be distributed
