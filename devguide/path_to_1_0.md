@@ -249,6 +249,11 @@ pair installation does not promote standalone/product Windows support.
 | 14 | **Scientific dogfooding** | Unchanged: daily lab usage is what finds what audits cannot. |
 | 15 | **Bug resolution from dogfooding** | Unchanged. |
 
+Before the 1.0 candidate is frozen, evaluate the latest aligned PySide6/Qt
+family available from conda-forge through standalone-host dogfooding
+(`uibcdf/molsysviewer#112`). The decision may retain the proven 6.11.2
+baseline if a newer family does not pass; version recency is not itself a gate.
+
 ---
 
 ## → Tag 1.0.0
