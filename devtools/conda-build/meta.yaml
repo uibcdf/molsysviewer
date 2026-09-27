@@ -17,6 +17,10 @@ build:
   # linux-64 only today), and when it leaves Linux it becomes a second, per-platform
   # output that depends on this one -- not a reason to make this one per-platform.
   noarch: python
+  entry_points:
+    - molsysviewer = molsysviewer.standalone:main
+    - molsysviewer-qt = molsysviewer.standalone_qt:main
+    - molsysviewer-server = molsysviewer.remote.server_cli:main
   # Staging and release builds use distinct coordinates. Build 0 is historical; the
   # corrected manual staging path sets build 1, and a GitHub Release uses build 2 after
   # the staged pair has passed.
