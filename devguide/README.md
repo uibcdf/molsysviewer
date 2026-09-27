@@ -6,6 +6,17 @@ Git and `docs/content/developer/changes_notes.md` already preserve chronology.
 
 ## Read first
 
+For a new session aimed at 1.0, begin with the
+[current handoff](checkpoints.md#resume-in-one-page), then its
+[ordered next actions](checkpoints.md#what-is-next) and the
+[1.0 release plan](path_to_1_0.md). The middle of the checkpoint
+retains dated evidence: do not interpret earlier candidate coordinates
+as current instructions. Read the active report for the chosen work item;
+the current Qt migration is `uibcdf/molsysviewer#109`, and the
+pre-1.0 version/dogfooding decision is `uibcdf/molsysviewer#112`.
+The shared Linux Python 3.14 development recipe is maintained by
+`uibcdf/molsyssuite#52`.
+
 Use these documents in this order:
 
 1. [`scene_contracts.md`](scene_contracts.md) is normative for scene state,
@@ -17,8 +28,9 @@ Use these documents in this order:
 4. [`architecture.md`](architecture.md) and
    [`digestion_and_dependencies.md`](digestion_and_dependencies.md) describe the
    Python/TypeScript boundary and the supporting UIBCDF tooling.
-5. [`checkpoints.md`](checkpoints.md) is the current handoff. It must stay short
-   and must not accumulate history.
+5. [`checkpoints.md`](checkpoints.md) starts with the current handoff and
+   links to the ordered next actions. Its dated evidence is context,
+   not a new release gate.
 6. [`release_and_citation.md`](release_and_citation.md) defines the DOI, Zenodo,
    `CITATION.cff`, and post-release verification lifecycle.
 

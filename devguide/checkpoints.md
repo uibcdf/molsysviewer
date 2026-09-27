@@ -3,6 +3,35 @@
 This is the current handoff, not a changelog. Replace it when the project state
 changes. Normative behavior remains in the contracts linked below.
 
+## Resume in one page
+
+The public MolSysMT 0.22.4 / MolSysViewer 0.23.4 pair is installed and
+verified across Python 3.11–3.14. It is a pre-1.0 distribution
+baseline, not an exact 1.0 candidate. Future native Conda candidates
+exclude macOS Intel; the four supported platforms and final release
+gates need fresh candidate evidence.
+
+On Linux, the shared `molsyssuite@uibcdf_3.14` development environment
+now uses official conda-forge PySide6/Qt 6.11.2. Qt-host and
+MolSysMT–Viewer targeted tests pass. The UIBCDF family remains a
+separate fallback, not a dependency of that environment.
+Visible-window Qt and native macOS/Windows standalone validation
+remain unproven. The recent full Viewer suite was not green: three
+test-environment/assertion failures were corrected and their affected
+files passed, but the complete suite was not rerun.
+
+The immediate code-only task remains widening executable
+documentation-page coverage. Then complete scientific dogfooding,
+first-contact onboarding and the human visible-window Qt
+observations. Before the 1.0 candidate freeze, compare the newest
+compatible conda-forge Qt family with 6.11.2
+(`uibcdf/molsysviewer#112`); a newer release is not an automatic
+upgrade. Run exact-candidate 1.0 gates before tagging.
+The strict E2E scope is the hosted core non-remote lane; remote-session
+certification is post-1.0 (`uibcdf/molsysviewer#100`).
+Follow [the ordered actions below](#what-is-next), not the historical
+candidate sequence in this file.
+
 ## Repository state
 
 - On 2026-09-27 the shared Linux `molsyssuite@uibcdf_3.14` development
@@ -78,14 +107,14 @@ changes. Normative behavior remains in the contracts linked below.
   `pending_bugs/` and `pending_proposals/` carry front matter and a GitHub issue; the
   queue READMEs are generated; `devtools/release_gate.py` is gate 11's command. See
   [`reporting_protocol.md`](reporting_protocol.md).
-- Two commands need the network and live outside the suite:
-  `python devtools/devguide_issue.py sync --check` compares the board with the front
-  matter, and `python devtools/devguide_index.py --check` (which does run in the suite)
-  keeps the queue READMEs honest. Run the first before a release and after any session
-  that closed or restatused an entry.
-- Whether the reporting vocabularies become an ecosystem-wide shared source of truth is
-  asked at [uibcdf/molsysmt#156](https://github.com/uibcdf/molsysmt/issues/156). Their
-  answer changes what is worth investing in the local tooling.
+- `python devtools/devguide_issue.py sync --check` needs the network to compare
+  the issue board with front matter. Run it before a release and after closing
+  or restatusing an entry. `python devtools/devguide_index.py --check` is an
+  offline queue-index check and runs in the local suite.
+- The shared reporting vocabulary question raised at
+  [uibcdf/molsysmt#156](https://github.com/uibcdf/molsysmt/issues/156)
+  is closed; consult the current MolSysSuite reporting policy rather than
+  treating it as a pending decision.
 - **Citation and Zenodo metadata are a checked contract** (2026-08-14).
   [`release_and_citation.md`](release_and_citation.md) is normative;
   `devtools/validate_citation.py` holds `CITATION.cff`, `.zenodo.json` and the five
@@ -169,7 +198,7 @@ MolSysViewer must keep `molsysmt>=0.22.0`: that is the first MolSysMT line provi
 fallback. Lowering the floor would make the environment solve and the package fail at
 import time.
 
-The current boundary was remeasured on 2026-09-19:
+That boundary was remeasured on 2026-09-19:
 
 - MolSysMT workflow run `33849332945`, commit
   `e5820d4794f8ce31a1f64e345c5edf9073ade975`, published build-2 ABI3 artefacts for
@@ -282,8 +311,8 @@ the current state is at the top of this file:
    public build. The deferred server-GPU lane remains visible in #100 and must
    not be represented as a passing hosted or local test.
 
-The next candidate decision is now recorded: `python-3.14-support` includes
-current `main` in both repositories, and fresh unoccupied versions
+The then-next candidate decision was recorded: `python-3.14-support` included
+the two repositories' `main` revisions at that time, and fresh unoccupied versions
 MolSysMT `0.22.4` ABI3 build 0 / MolSysViewer `0.23.4` noarch build 0 are
 planned. Anaconda returned HTTP 404 for each version across labels. The
 committed route plans require staging; a Release event cannot rebuild a
@@ -425,9 +454,9 @@ the noarch shape and recipe tests, but it is not a substitute for these exact ho
 candidate gates. Neither repository may publish unilaterally merely to turn the other's
 CI green.
 
-## Validation observed
+## Historical validation observed — 2026-08 to 2026-09-19
 
-- Current full run, 2026-09-19: **2,067 Python passed, 13 accepted skips, exit 0** in
+- Full run on 2026-09-19: **2,067 Python passed, 13 accepted skips, exit 0** in
   63.09 seconds with 12 workers
   (`python -m pytest --receptor=llm -n 12 tests/`). The focused distribution and
   staging-contract slice passes 16 tests; Ruff and the generated devguide indexes pass;
@@ -450,9 +479,10 @@ CI green.
   correct examples. It found one survivor the running gate could not see:
   `showcase/pharmacophore.ipynb` still called `add_pharmacophore_features()`, now
   `add_interaction_sites()`. Running a page is not what makes its example wrong.
-- The latest frontend validation remains the Phase 8/9 result: **273 JS**, `tsc` clean,
-  **30/30 E2E**, `build:runtime` and `test:perf` green. **No TypeScript changed since**,
-  so it was not re-run.
+- The Phase 8/9 frontend baseline at that time was **273 JS**, `tsc` clean,
+  **30/30 E2E**, `build:runtime` and `test:perf` green. The later 294-JS
+  and hosted 34-case core E2E evidence near the top of this checkpoint
+  supersedes this as a current release reading.
 - Every guard added in this round is mutation-verified; each test says which mutation
   kills it.
 
@@ -491,8 +521,8 @@ MolSysViewer does.** It is generated; regenerate with
 
 **A defect or a proposal is filed under
 [`reporting_protocol.md`](reporting_protocol.md)** — front matter, a GitHub issue, and a
-`guard` named at close. Adopted 2026-08-14 from MolSysMT; the 28 documents in the two
-queues all carry it.
+`guard` named at close. Adopted 2026-08-14 from MolSysMT; the queue
+documents carry it.
 
 Resume toward **1.0** in this order:
 
@@ -508,19 +538,22 @@ Resume toward **1.0** in this order:
    `save_session`/`load_session`, units. Three are `experimental` and say so; the other
    two are `stable`. See the *Nothing has watched these draw* section of
    [`capability_audit.md`](capability_audit.md), and
-   [`pending_proposals/evidence_a_stable_capability_has_not_earned.md`](archive/evidence_a_stable_capability_has_not_earned.md)
+   [`archive/evidence_a_stable_capability_has_not_earned.md`](archive/evidence_a_stable_capability_has_not_earned.md)
    (uibcdf/molsysviewer#65), which is the entry that asks for the decision rather than the
    suites.
 2. In parallel when the required workstation is available, close Phase 7's two
    observations: Qt real-window/GPU and ten human live-demo replacements. Never
    report the existing offscreen/browser evidence as those observations.
 3. Complete scientific dogfooding and the remaining human decisions in
-   [`pending_proposals/what_needs_a_human_2026_08.md`](what_needs_a_human_2026_08.md)
+   [`what_needs_a_human_2026_08.md`](what_needs_a_human_2026_08.md)
    — three items, all needing a screen or a judgement.
 4. Use the published 0.22.4/0.23.4 pair as the dependency-channel baseline;
    do not repeat staging merely to rediscover that it solves. Finish the
    end-user one-line first-contact observation, and for the eventual 1.0
-   coordinates repeat the exact wheel, Conda, import, resource and public
+   coordinates first evaluate the newest aligned conda-forge PySide6/Qt
+   family in standalone dogfooding (`uibcdf/molsysviewer#112`). It may
+   be 6.11.3 or later; retain 6.11.2 if newer builds do not pass.
+   Then repeat the exact wheel, Conda, import, resource and public
    installation gates. Use the read-only public-file verifier now shared by
    both promotion workflows (`uibcdf/molsyssuite#48`); never re-upload an
    immutable artifact to change a workflow conclusion.

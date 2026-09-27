@@ -1,6 +1,6 @@
 # Development roadmap
 
-**Updated:** 2026-09-26
+**Updated:** 2026-09-27
 
 This roadmap states current priorities. Release gating lives in
 [`path_to_1_0.md`](path_to_1_0.md), normative behavior in
@@ -29,6 +29,15 @@ dogfooding, first-contact onboarding, continued hosted E2E reliability and
 an exact-commit 1.0 candidate. The false-red promotion verifier has been
 replaced by a read-only check that passed on GitHub for the published pair;
 the earlier promotion jobs remain red (`uibcdf/molsyssuite#48`).
+
+The shared Linux Python 3.14 development environment now uses official
+conda-forge PySide6/Qt 6.11.2; the UIBCDF Qt family is kept separately
+for rollback (`uibcdf/molsyssuite#52`). This is a development baseline,
+not the final 1.0 Qt decision. Before freezing the candidate, evaluate
+the newest compatible conda-forge family through standalone
+dogfooding (`uibcdf/molsysviewer#112`) and retain 6.11.2 if a newer
+version does not pass. Canonical-host migration and its remaining
+platform observations stay in `uibcdf/molsysviewer#109`.
 
 ## Completed foundations
 

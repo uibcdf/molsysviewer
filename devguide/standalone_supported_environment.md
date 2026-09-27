@@ -60,8 +60,10 @@ reconsidered if there is demonstrated user demand.
 The standalone Qt host was **technically complete and packaging-validated**
 with the custom 6.9.2 stack.
 
-That recipe was **conda-native** from the `uibcdf` channel. It remains as a
-fallback reference, not the current recommendation.
+That recipe was **conda-native** from the `uibcdf` channel. It is a
+historical reference, not the current recommendation or the current
+6.10.1 local rollback recipe. The latter is documented in
+`uibcdf/molsyssuite#52`.
 
 ## Supported Development Recipe
 
@@ -127,11 +129,14 @@ Current package-level fixes also include:
   only viable path.
 - The pip recipe is retained here only as historical context.
 
-## Why Not The Main Environment
+## Main Development Environment And Isolated Qt Probes
 
-The main day-to-day development environment may use the current canonical
-recipe once its full development solve is checked. A derived Qt environment
-remains useful for isolating native runtime problems.
+The shared Linux `molsyssuite@uibcdf_3.14` development environment now
+uses the official conda-forge 6.11.2 family after a clean Qt-pinned
+solve and targeted runtime tests (`uibcdf/molsyssuite#52`). A separate
+clean Qt environment remains useful for isolating native-runtime
+problems or comparing a newer candidate before changing the shared
+environment.
 
 The Qt host spike has different constraints:
 
