@@ -15,6 +15,11 @@ changes. Normative behavior remains in the contracts linked below.
   a platform-support decision from these probes; `#97` owns that contract,
   `#109` owns the Viewer migration, and `uibcdf/molsyssuite#57` remains open
   for suite-wide observation before any fork retirement.
+  A manually dispatched [CI run
+  36338541516](https://github.com/uibcdf/molsysviewer/actions/runs/36338541516)
+  passed 7/7 at `19dadc1a0adb1ff7477fe9e7866e807b015c8f36`, including
+  the Linux Xvfb Qt pipeline on canonical 6.11.2. It does not certify a
+  visible-window render or a native Windows/macOS Qt host.
 
 - Branch: `main` contains the tagged 0.23.4 release candidate and its
   post-tag fixes; the immutable 0.23.4 tag is

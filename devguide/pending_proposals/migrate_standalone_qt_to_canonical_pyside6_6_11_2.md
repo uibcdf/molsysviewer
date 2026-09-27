@@ -16,12 +16,13 @@ supersedes: []
 
 **Reported:** 2026-09-27 during the Qt dependency simplification study.
 **Status:** Active; source, tests and development/CI recipes have been updated,
-but hosted and graphical gates have not yet completed.
+and the hosted Linux Qt pipeline passed. Native Windows/macOS and visible-window
+observations have not completed.
 
 ## What
 
 The standalone Qt host should prefer official PySide6 6.11.2 and retain the
-UIBCDF namespaced family as a fallback only while the suite-wide observation
+UIBCDF namespaced family as a fallback during the suite-wide observation
 in `uibcdf/molsyssuite#57` is open. The platform-support contract remains in
 `uibcdf/molsysviewer#97`; changing the loader does not itself certify a
 platform.
@@ -66,6 +67,14 @@ after installing its declared build frontend and backend. The full suite was
 not rerun a second time, per repository test-run discipline. Do not describe
 this as a green full-suite run.
 
+The manually dispatched [hosted CI run
+36338541516](https://github.com/uibcdf/molsysviewer/actions/runs/36338541516)
+passed 7/7 jobs at exact commit
+`19dadc1a0adb1ff7477fe9e7866e807b015c8f36`: six ordinary Python cells
+and the Linux Xvfb/software-WebGL Qt pipeline using canonical 6.11.2. The
+pipeline checks completion and payload delivery, not visible framebuffer
+correctness or a native macOS/Windows Qt window.
+
 The host's older local Python 3.14 development environment still contains
 UIBCDF Qt 6.10.1 and failed the two real WebEngine subprocess tests headlessly;
 the clean canonical environment passed them. This is not evidence that the
@@ -78,14 +87,15 @@ wheel has not yet been runtime-tested on Intel.
 Removing the fork family now would discard rollback capacity before hosted and
 platform gates. Falling back from a partially broken canonical installation
 would mix or hide incompatible native libraries; only absence of the canonical
-namespace triggers fallback. Treating a successful solver as a platform
+namespace or an explicit rollback selection triggers fallback. Treating a
+successful solver as a platform
 certificate was rejected.
 
 ## Scope and acceptance
 
 This report owns Viewer code, tests, recipes and CI changes. It does not own
 suite-wide retirement policy, platform-support wording or package deletion.
-Before closure, run the hosted Qt lane with the canonical recipe, confirm the
-source package tests and exact candidate, and verify the maintained installation
-guide and support matrix. `tests/test_standalone.py` is the prospective guard;
+Before closure, confirm the remaining native-platform policy and tests, the
+source package candidate, and the maintained installation/support matrix.
+`tests/test_standalone.py` is the prospective guard;
 record its final relevance and exact hosted evidence at closure.
