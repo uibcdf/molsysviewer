@@ -415,7 +415,7 @@ def test_every_supported_version_is_tested_on_linux_and_macos_with_windows_314()
 
     expected = {
         (operating_system, version)
-        for operating_system in ("ubuntu-latest", "macos-latest")
+        for operating_system in ("ubuntu-latest", "macos-15")
         for version in SUPPORTED_PYTHON_VERSIONS
     }
     expected.add(("windows-2025", "3.14"))

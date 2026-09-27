@@ -75,13 +75,25 @@ and the Linux Xvfb/software-WebGL Qt pipeline using canonical 6.11.2. The
 pipeline checks completion and payload delivery, not visible framebuffer
 correctness or a native macOS/Windows Qt window.
 
-The host's older local Python 3.14 development environment still contains
-UIBCDF Qt 6.10.1 and failed the two real WebEngine subprocess tests headlessly;
-the clean canonical environment passed them. This is not evidence that the
-canonical route fails. Windows and macOS ARM have solver-only Conda evidence;
+The host's former local Python 3.14 development environment used UIBCDF Qt
+6.10.1 and failed two real WebEngine subprocess tests headlessly. On
+2026-09-27 the shared environment was migrated to official Qt 6.11.2, with
+all five UIBCDF packages removed. The migrated environment passed 54
+standalone/transport tests (two expected skips), 63 distribution/movie tests
+(one expected skip), 116 MolSysMT–Viewer integration tests, an Xvfb real-window
+smoke, and an Xvfb/SwiftShader full-render smoke. Its fresh sibling prefix
+also passed the same targeted checks. This supersedes the old host-local
+observation, but does not certify visible-window rendering or native
+Windows/macOS operation. Windows and macOS ARM have solver-only Conda evidence;
 macOS Intel lacks conda-forge Qt WebEngine 6.11.2 and is now outside the
 supported matrix (`uibcdf/molsyssuite#59`); its PyPI wheel route is not a
 pre-1.0 gate.
+
+A full Viewer suite was run once in the fresh shared-recipe prefix before
+adding `python-build` and `imageio` to that recipe and updating a test that
+still expected the former `macos-latest` runner. It yielded 2,132 passed,
+17 skipped, three failed. The affected test files then passed, but the full
+suite was not rerun. This is not a green full-suite result.
 
 ## Alternatives and refuted paths
 

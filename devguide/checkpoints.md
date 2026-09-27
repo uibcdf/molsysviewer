@@ -5,6 +5,18 @@ changes. Normative behavior remains in the contracts linked below.
 
 ## Repository state
 
+- On 2026-09-27 the shared Linux `molsyssuite@uibcdf_3.14` development
+  environment switched from the five UIBCDF Qt/PySide 6.10.1 packages to
+  official conda-forge 6.11.2. A fresh prefix created from the central
+  MolSysSuite YAML and the migrated shared prefix both passed Viewer
+  standalone/transport and MolSysMT–Viewer integration selections; the shared
+  prefix also passed Xvfb window and SwiftShader render smokes. The recipe
+  now includes `python-build` and `imageio`, and a stale macOS runner assertion
+  was corrected. One full Viewer-suite run before those fixes yielded 2,132
+  passed, 17 skipped, three failed; the affected files passed afterward,
+  but the full suite was not repeated. Do not count this as a green full-suite
+  or native macOS/Windows gate (`uibcdf/molsyssuite#52`, `#109`).
+
 - On 2026-09-27 the standalone Qt host began migration to canonical
   PySide6/Qt 6.11.2, retaining the UIBCDF family as a fallback. Clean Linux
   Conda probes for Python 3.11–3.14 passed real WebEngine transport and
