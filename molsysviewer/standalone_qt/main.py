@@ -17,9 +17,7 @@ def _get_helper(name: str) -> Any:
 
 
 def _build_arg_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        description="Launch the experimental MolSysViewer Qt standalone prototype."
-    )
+    parser = argparse.ArgumentParser(description="Launch the experimental MolSysViewer Qt standalone prototype.")
     parser.add_argument(
         "source",
         nargs="?",
