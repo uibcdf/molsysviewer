@@ -79,11 +79,12 @@ def last_full_success(repository: str, head: str, token: str, lane: str) -> str 
     workflow = WORKFLOWS[lane]
     for page in range(1, 4):
         runs = api_json(
-            f"/repos/{repository}/actions/workflows/{workflow}/runs"
-            f"?branch=main&status=success&per_page=100&page={page}",
+            f"/repos/{repository}/actions/workflows/{workflow}/runs?branch=main&per_page=100&page={page}",
             token,
         )["workflow_runs"]
         for run in runs:
+            if run["conclusion"] != "success":
+                continue
             if run["event"] not in {"push", "schedule", "workflow_dispatch"}:
                 continue
             commit = run["head_sha"]

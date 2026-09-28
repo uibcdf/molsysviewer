@@ -91,6 +91,13 @@ remaining failures show that the isolated local environment lacks the JS
 matrix installs JS dependencies and provides the authoritative result for
 this implementation commit.
 
+The first hosted probes (`36476458223` and `36476470801`) exposed a detector
+query mistake: the API request combining `branch=main` with `status=success`
+returned no runs, although the same workflow endpoint without that status
+filter returned the green scheduled run. The detector now reads branch runs
+and checks each run's `conclusion` plus the required executed job steps itself.
+The probes were diagnostic, so they did not launch a duplicate heavy suite.
+
 ## Resolution
 
 Open until the hosted implementation, required checks and review evidence

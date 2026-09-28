@@ -36,10 +36,12 @@ def test_skipped_commit_remains_due_until_a_full_run(tmp_path, monkeypatch):
 def test_only_executed_complete_lanes_clear_backlog(monkeypatch):
     def fake_api(path, _token):
         if "/runs?" in path:
+            assert "status=success" not in path
             return {
                 "workflow_runs": [
-                    {"id": 2, "event": "schedule", "head_sha": "probe"},
-                    {"id": 1, "event": "push", "head_sha": "green"},
+                    {"id": 3, "event": "push", "head_sha": "failed", "conclusion": "failure"},
+                    {"id": 2, "event": "schedule", "head_sha": "probe", "conclusion": "success"},
+                    {"id": 1, "event": "push", "head_sha": "green", "conclusion": "success"},
                 ]
             }
         run_id = 2 if "/runs/2/" in path else 1
