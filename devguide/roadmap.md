@@ -35,7 +35,7 @@ The shared Linux Python 3.14 development environment now uses official
 conda-forge PySide6/Qt 6.11.2; the UIBCDF Qt family is kept separately
 for rollback (`uibcdf/molsyssuite#52`). This is a development baseline,
 not a 1.0 host certification. Comparing newer conda-forge Qt families through
-standalone dogfooding (`uibcdf/molsysviewer#112`) is an experimental-host
+standalone dogfooding (`uibcdf/molsysviewer#113`) is an experimental-host
 follow-up, not a condition for freezing the 1.0 candidate. Canonical-host
 migration and its remaining platform observations stay in
 `uibcdf/molsysviewer#109`.

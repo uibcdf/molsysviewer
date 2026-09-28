@@ -3,6 +3,9 @@
 Everything in this directory is deliberately outside the 1.0 release gate.
 Documents may be approved designs, benchmark-gated architecture work, or
 upstream-dependent ideas.
+The standalone Qt version comparison in
+`recheck_latest_conda_forge_qt_for_standalone.md` also belongs here: it is
+required before claiming a supported host, not before tagging core 1.0.
 
 ## Suggested order after 1.0
 

@@ -63,6 +63,11 @@ Resolved defect reports, kept for their evidence:
 
 Completed work, kept for the reasoning:
 
+- [`recheck_latest_conda_forge_qt_before_1_0.md`](recheck_latest_conda_forge_qt_before_1_0.md)
+  — superseded by the 2026-09-28 scope decision: Qt-host certification is
+  deferred to [#113](https://github.com/uibcdf/molsysviewer/issues/113), outside
+  the core 1.0 gate.
+
 - [`first_read_comprehension_gaps_2026_08.md`](first_read_comprehension_gaps_2026_08.md)
   — the README quick start now leads with an executable reproducibility loop;
   the first-read findings and positioning decision closed in #40.

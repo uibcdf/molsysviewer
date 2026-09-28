@@ -37,7 +37,7 @@ The immediate code-only task remains widening executable
 documentation-page coverage. Then complete scientific dogfooding and
 first-contact onboarding. The local standalone host and launchers are
 experimental for 1.0: visible-window Qt observations and the newer
-conda-forge Qt comparison (`uibcdf/molsysviewer#112`) remain host follow-ups,
+conda-forge Qt comparison (`uibcdf/molsysviewer#113`) remain host follow-ups,
 not candidate-freeze conditions. Run exact-candidate core 1.0 gates before
 tagging.
 The strict E2E scope is the hosted core non-remote lane; remote-session
@@ -566,7 +566,7 @@ Resume toward **1.0** in this order:
    do not repeat staging merely to rediscover that it solves. Finish the
    end-user one-line first-contact observation. Evaluate newer aligned
    conda-forge PySide6/Qt through experimental standalone dogfooding
-   (`uibcdf/molsysviewer#112`) on its own schedule. For 1.0, repeat the exact
+   (`uibcdf/molsysviewer#113`) on its own schedule. For 1.0, repeat the exact
    wheel, Conda, import, resource and public
    installation gates. Use the read-only public-file verifier now shared by
    both promotion workflows (`uibcdf/molsyssuite#48`); never re-upload an

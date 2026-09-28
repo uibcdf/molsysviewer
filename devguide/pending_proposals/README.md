@@ -31,15 +31,14 @@ list. Deferred entries also carry the `post-1.0` milestone on the issue board.
 
 - [`molsysmt_known_source_form_and_large_string_detection.md`](molsysmt_known_source_form_and_large_string_detection.md) — [#42](https://github.com/uibcdf/molsysviewer/issues/42) — A large in-memory molecular string enters unbounded filename extension detection. *(measured)* — waiting on uibcdf/molsysmt#151
 
-### Open (5)
+### Open (4)
 
 - [`clarify_linux_only_standalone_qt_support.md`](clarify_linux_only_standalone_qt_support.md) — [#97](https://github.com/uibcdf/molsysviewer/issues/97) — Clarify the Linux-only support boundary of the Qt standalone host. *(inspected)*
 - [`classic_script_runtime_for_offline_bundles.md`](classic_script_runtime_for_offline_bundles.md) — [#39](https://github.com/uibcdf/molsysviewer/issues/39) — Build the runtime as a classic script so many shared views open from a disk with no server. *(measured)*
 - [`molsysmt_docs_pipeline_analysis.md`](molsysmt_docs_pipeline_analysis.md) — [#41](https://github.com/uibcdf/molsysviewer/issues/41) — MolSysMT's documentation pipeline read at the scale it is about to reach. *(measured)*
 - [`quarantined_digesters_await_a_decision.md`](quarantined_digesters_await_a_decision.md) — [#78](https://github.com/uibcdf/molsysviewer/issues/78) — 219 quarantined digesters are outside the package and undecided; deleting them is the open question. *(measured)*
-- [`recheck_latest_conda_forge_qt_before_1_0.md`](recheck_latest_conda_forge_qt_before_1_0.md) — [#112](https://github.com/uibcdf/molsysviewer/issues/112) — Evaluate the latest conda-forge PySide6/Qt in standalone dogfooding before 1.0. *(inspected)*
 
-### Deferred until after 1.0 (18)
+### Deferred until after 1.0 (19)
 
 - [`agent_token_cost_of_non_pytest_tests.md`](post_1.0/agent_token_cost_of_non_pytest_tests.md) — [#43](https://github.com/uibcdf/molsysviewer/issues/43) — Study the token cost of non-pytest test output for agent consumers.
 - [`annotations_mvs_machinery.md`](post_1.0/annotations_mvs_machinery.md) — [#44](https://github.com/uibcdf/molsysviewer/issues/44) — Advanced annotations on Mol*'s MVS machinery.
@@ -52,6 +51,7 @@ list. Deferred entries also carry the `post-1.0` milestone on the issue board.
 - [`qt_popout_parity.md`](post_1.0/qt_popout_parity.md) — [#51](https://github.com/uibcdf/molsysviewer/issues/51) — Popout parity in the Qt standalone host.
 - [`qt_render_check_on_a_gpu_runner.md`](post_1.0/qt_render_check_on_a_gpu_runner.md) — [#52](https://github.com/uibcdf/molsysviewer/issues/52) — Automate the Qt render check on a GPU runner.
 - [`receiver_side_structure_barrier.md`](post_1.0/receiver_side_structure_barrier.md) — [#53](https://github.com/uibcdf/molsysviewer/issues/53) — Move the structure barrier to the receiver.
+- [`recheck_latest_conda_forge_qt_for_standalone.md`](post_1.0/recheck_latest_conda_forge_qt_for_standalone.md) — [#113](https://github.com/uibcdf/molsysviewer/issues/113) — Evaluate the latest conda-forge PySide6/Qt for a future supported standalone host.
 - [`representative_scale_followups.md`](post_1.0/representative_scale_followups.md) — [#54](https://github.com/uibcdf/molsysviewer/issues/54) — Post-1.0 performance architecture.
 - [`reproducible_browser_and_render_worker_e2e_evidence.md`](post_1.0/reproducible_browser_and_render_worker_e2e_evidence.md) — [#100](https://github.com/uibcdf/molsysviewer/issues/100) — Define reproducible browser and render-worker E2E evidence lanes.
 - [`structure_windowing_and_lazy_materialization.md`](post_1.0/structure_windowing_and_lazy_materialization.md) — [#55](https://github.com/uibcdf/molsysviewer/issues/55) — Structure windowing and lazy materialization.
@@ -80,9 +80,10 @@ inventories, and **one theme, one issue** cannot apply to them.
 - **Done:** the router inventory/AnyWidget seam and the array-native serializer,
   negotiated buffer delivery, chunking, acknowledgement, cancellation, JSON
   fallback, and embedded-canvas E2E are implemented.
-- **Now:** finish Phase 10 of the staged pre-1.0 rework and hardening master
-  plan, plus Phase 7's two visible Qt observations. R2, D3, D4 and Phases 0a-6,
-  8 and 9 remain closed and audited.
+- **Now:** finish the core 1.0 gates in Phase 10 of the staged rework and
+  hardening plan. Phase 7's two visible Qt observations remain for a future
+  supported standalone host. R2, D3, D4 and Phases 0a-6, 8 and 9 remain
+  closed and audited.
 - **Preserve 1.0 semantics:** all selected structures remain materialized in
   `view.molsys`; binary is a transport choice, not a new scientific model.
 - **Session lifecycle:** kernel restart or widget reconstruction creates a new

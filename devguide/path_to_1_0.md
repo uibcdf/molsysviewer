@@ -262,7 +262,7 @@ pair installation does not promote standalone/product Windows support.
 | 15 | **Bug resolution from dogfooding** | Unchanged. |
 
 The latest aligned PySide6/Qt family can be evaluated through experimental
-standalone-host dogfooding (`uibcdf/molsysviewer#112`). This is no longer a
+standalone-host dogfooding (`uibcdf/molsysviewer#113`). This is no longer a
 condition for freezing or tagging the core 1.0 candidate.
 
 ---
