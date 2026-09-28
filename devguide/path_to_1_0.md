@@ -215,7 +215,11 @@ does not certify any remote scenario (`uibcdf/molsysviewer#100`).
 
 ## Remaining `1.0.0` gates
 
-### Coordinated Conda distribution milestone — 2026-09-24
+### Historical staging slice — superseded by the public 0.22.4/0.23.4 pair
+
+The coordinates in this subsection record the 2026-09-24 staging rehearsal.
+The later 0.22.4/0.23.4 pair is public and passed its separate 20-cell public
+installation matrix; see the current checkpoint for that evidence.
 
 The separate `python-3.14-support` branches now have exact technical staging
 candidates: MolSysMT `0.22.3` ABI3 build 0 on five native platforms and
