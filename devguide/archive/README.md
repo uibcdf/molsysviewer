@@ -63,6 +63,9 @@ Resolved defect reports, kept for their evidence:
 
 Completed work, kept for the reasoning:
 
+- [`first_read_comprehension_gaps_2026_08.md`](first_read_comprehension_gaps_2026_08.md)
+  — the README quick start now leads with an executable reproducibility loop;
+  the first-read findings and positioning decision closed in #40.
 - [`embedding_views_in_external_documentation.md`](embedding_views_in_external_documentation.md)
   — how a third party publishes views on their own website. Every step closed;
   the port to MolSysMT was done by MolSysMT.

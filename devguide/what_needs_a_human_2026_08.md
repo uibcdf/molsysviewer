@@ -1,8 +1,8 @@
 # What needs a human
 
-**Written 2026-08-06, reconciled 2026-08-13.** **Three items remain**, and none is
+**Written 2026-08-06, reconciled 2026-09-28.** **Two items remain**, and neither is
 blocked on implementation effort in this repository: they need a screen or a judgement.
-Items 3, 5 and 7 are closed and struck below rather than deleted, so a reader can tell
+Items 3, 4, 5 and 7 are closed and struck below rather than deleted, so a reader can tell
 "done" from "never existed".
 
 Each entry says what is needed, from whom, and what it unblocks. When one is
@@ -113,15 +113,11 @@ plausible empty target, and callback registration activates transport without a
 reload. The completed design record is
 [`../archive/opt_in_hover_telemetry.md`](archive/opt_in_hover_telemetry.md).
 
-## 4. Decide what the README leads with — *positioning, not work*
+## 4. ~~Decide what the README leads with~~ — **closed 2026-09-04**
 
-`first_read_comprehension_gaps_2026_08.md` closed five of its six findings; the
-sixth is a recommendation it explicitly refused to own: whether the sixty-bullet
-feature inventory should stay **above** the quick start or move below it. The
-quick start now runs end to end and closes with the reproducibility loop, so the
-question is only what a newcomer meets first.
-
-Deciding it archives that document.
+The quick start leads, and the feature inventory follows. The decision and its
+executed quick-start evidence are in
+[`archive/first_read_comprehension_gaps_2026_08.md`](archive/first_read_comprehension_gaps_2026_08.md).
 
 ## 5. ~~Hand MolSysMT what is waiting in their tree~~ — **closed**
 

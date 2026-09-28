@@ -1213,8 +1213,11 @@ not repeated for this documentation slice.
    end-user one-line visual workflow.
 6. **Done.** Thin `save_state(path)` / `load_state(path)`
    helpers persist the existing version-2 overlay document as atomic UTF-8 JSON.
-   They explicitly exclude the molecular system, camera and undo history and do
-   not define or imply a portable `.msv` session bundle. The same change makes
+   They exclude the molecular system and undo history; the document's `view`
+   key carries the camera, current structure index and playback settings.
+   `save_state` refreshes the camera from a live frontend before writing.
+   These helpers do not define or imply a portable `.msv` session bundle.
+   The same change makes
    `export_state -> import_state -> export_state` stable for order high-water
    marks and implicit scene-object layer provenance.
 7. **Done.** Hover telemetry is off by
