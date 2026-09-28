@@ -19,8 +19,9 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Being worked on (1)
+### Being worked on (2)
 
+- [`full_pr_ci_can_be_skipped_and_direct_push_debt_is_unchecked.md`](full_pr_ci_can_be_skipped_and_direct_push_debt_is_unchecked.md) — [#116](https://github.com/uibcdf/molsysviewer/issues/116) — Full PR CI can be skipped and direct-push CI debt is unchecked. *(high, measured)*
 - [`release_gate_conflates_staging_evidence_with_strict_1_0_requirements.md`](release_gate_conflates_staging_evidence_with_strict_1_0_requirements.md) — [#103](https://github.com/uibcdf/molsysviewer/issues/103) — Release gate conflates exact staging evidence with strict 1.0 requirements *(medium, reproduced)*
 
 ### Partially done (2)

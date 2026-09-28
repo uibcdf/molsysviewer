@@ -20,21 +20,10 @@ on:
   pull_request:
     branches:
       - "main"
-    paths-ignore:
-      - '**/*.md'
-      - '**/*.rst'
-      - '**/*.ipynb'
-      - '**/*.yml'
-      - '**/*.yaml'
-      - 'docs/**'
-      - 'paper/**'
-      - 'examples/**'
-      - 'logos/**'
   schedule:
-    # Nightly tests run on master by default:
-    #   Scheduled workflows run on the latest commit on the default or base branch.
-    #   (from https://help.github.com/en/actions/reference/events-that-trigger-workflows#scheduled-events-schedule)
     - cron: "0 9 * * MON"
+    - cron: "17 0 * * *"
+      timezone: "America/Mexico_City"
   workflow_dispatch:
     inputs:
       use_staging:
@@ -52,8 +41,34 @@ on:
         required: true
         default: 0.23.4
         type: string
+      probe_backlog:
+        description: Check skipped-commit debt without running the suite
+        required: false
+        default: false
+        type: boolean
 
 jobs:
+  nightly-decision:
+    name: Check skipped-commit backlog
+    if: >-
+      (github.event_name == 'schedule' && github.event.schedule == '17 0 * * *')
+      || (github.event_name == 'workflow_dispatch' && inputs.probe_backlog == true)
+    permissions:
+      actions: read
+      contents: read
+    runs-on: ubuntu-latest
+    outputs:
+      run_full: ${{ steps.decide.outputs.run_full }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Decide whether to run the full matrix
+        id: decide
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python devtools/ci_backlog.py --lane ci
+
   qt-pipeline:
     # Runs the two Qt observations that had been reported as impossible without a screen.
     # They are not: under Xvfb with software WebGL both complete, which nobody had tried
@@ -70,12 +85,11 @@ jobs:
     # and must never be recorded as the human observation. It catches a Qt host that is
     # broken outright, which until now nothing did.
     name: Qt pipeline completes (Xvfb, software WebGL)
-    if: >
-      !(
-        (github.event_name == 'push' && contains(github.event.head_commit.message, '[skip ci]'))
-        ||
-        (github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[skip ci]'))
-      )
+    needs: nightly-decision
+    if: >-
+      always() && inputs.probe_backlog != true
+      && (needs.nightly-decision.result != 'success' || needs.nightly-decision.outputs.run_full == 'true')
+      && !(github.event_name == 'push' && contains(github.event.head_commit.message, '[skip ci]'))
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -143,14 +157,11 @@ jobs:
 
   test:
     name: Test on ${{ matrix.cfg.os }}, Python ${{ matrix.cfg.python-version }}
-    if: >
-      !(
-        (github.event_name == 'push' && contains(github.event.head_commit.message, '[skip ci]'))
-        ||
-        (github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[skip ci]'))
-        ||
-        (github.event_name == 'pull_request' && contains(github.event.pull_request.head.ref, 'skip-ci'))
-      )
+    needs: nightly-decision
+    if: >-
+      always() && inputs.probe_backlog != true
+      && (needs.nightly-decision.result != 'success' || needs.nightly-decision.outputs.run_full == 'true')
+      && !(github.event_name == 'push' && contains(github.event.head_commit.message, '[skip ci]'))
     runs-on: ${{ matrix.cfg.os }}
     strategy:
       fail-fast: false  # do not cancel all in-progress jobs if any job variation fails
@@ -283,3 +294,17 @@ jobs:
       uses: codecov/test-results-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
+
+  pr-gate:
+    name: PR full suite
+    needs: [test, qt-pipeline]
+    if: always() && github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require all Python, JS and Qt jobs
+        env:
+          TEST_RESULT: ${{ needs.test.result }}
+          QT_RESULT: ${{ needs.qt-pipeline.result }}
+        run: |
+          test "$TEST_RESULT" = success
+          test "$QT_RESULT" = success

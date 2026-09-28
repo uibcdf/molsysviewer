@@ -5,6 +5,9 @@ on:
     branches: ["main"]
   pull_request:
     branches: ["main"]
+  schedule:
+    - cron: "27 0 * * *"
+      timezone: "America/Mexico_City"
   workflow_dispatch:
     inputs:
       use_staging:
@@ -25,18 +28,42 @@ on:
         options:
           - core
           - remote-portable
+      probe_backlog:
+        description: Check skipped-commit debt without running core E2E
+        required: false
+        default: false
+        type: boolean
 
 jobs:
-  e2e:
+  nightly-decision:
+    name: Check skipped-commit backlog
+    if: >-
+      (github.event_name == 'schedule' && github.event.schedule == '27 0 * * *')
+      || (github.event_name == 'workflow_dispatch' && inputs.probe_backlog == true)
+    permissions:
+      actions: read
+      contents: read
     runs-on: ubuntu-latest
-    if: >
-      !(
-        (github.event_name == 'push' && contains(github.event.head_commit.message, '[skip ci]'))
-        ||
-        (github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[skip ci]'))
-        ||
-        (github.event_name == 'pull_request' && contains(github.event.pull_request.head.ref, 'skip-ci'))
-      )
+    outputs:
+      run_full: ${{ steps.decide.outputs.run_full }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Decide whether to run core E2E
+        id: decide
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python devtools/ci_backlog.py --lane e2e
+
+  e2e:
+    name: Core E2E
+    needs: nightly-decision
+    runs-on: ubuntu-latest
+    if: >-
+      always() && inputs.probe_backlog != true
+      && (needs.nightly-decision.result != 'success' || needs.nightly-decision.outputs.run_full == 'true')
+      && !(github.event_name == 'push' && contains(github.event.head_commit.message, '[skip ci]'))
     steps:
       - uses: actions/checkout@v4
         with:
