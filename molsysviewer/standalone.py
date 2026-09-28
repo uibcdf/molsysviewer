@@ -342,7 +342,9 @@ def launch_standalone0(
 
 
 def _build_arg_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Launch a minimal MolSysViewer standalone 0 HTML host.")
+    parser = argparse.ArgumentParser(
+        description="Launch the experimental MolSysViewer standalone 0 HTML host."
+    )
     parser.add_argument(
         "source",
         nargs="?",

@@ -1,5 +1,10 @@
 # Standalone surfaces and the Qt live model
 
+The local browser and Qt standalone hosts are **experimental for 1.0**. Their
+launchers and host APIs are outside the 1.0 support promise. Interactive HTML
+export remains a supported output format. Remote sessions are an unsupported
+preview whose supported workflow is planned after 1.0.
+
 MolSysViewer renders the same viewer bundle through **four distinct surfaces**.
 They differ in *transport* (how Python and the JS runtime exchange messages) and
 in *lifecycle*. Do not conflate them — especially, do not use the exported HTML

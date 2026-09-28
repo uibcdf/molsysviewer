@@ -2,6 +2,8 @@
 
 **Status:** active master execution plan. Phases 0a through 6, 8 and 9 are
 audited and closed; Phase 7 awaits two human observations; Phase 10 is active.
+The 2026-09-28 scope decision keeps Phase 7's Qt observations open for a
+future supported standalone host, outside the core 1.0 release gate.
 
 **Purpose:** turn the current, functionally strong viewer into a pre-1.0 base
 that is robust under real connector lifecycles, efficient for scientifically
@@ -39,10 +41,10 @@ audit.
 | 4b | Live `ready`/reconnect closure | ✓ | 100% | working tree from `2b504d77` | canonical ready projection, bounded compatibility path and real widget-seam E2E; audited and closed |
 | 5 | Endpoint isolation and lifecycle | ✓ | 100% | `6904aea8` plus working tree from `1a9b59b1` | Endpoint matrix and fallback lifecycle independently mutation-audited; closed 2026-08-09 |
 | 6 | Ownership audit and limited consolidation | ✓ | 100% | working tree from `0f907ccd` | Ownership table and endpoint-close isolation independently mutation-audited; closed 2026-08-09 |
-| 7 | Missing seam evidence | ⚠ | 90% | working tree from `ca3dd2e7` | Automated seam evidence complete; blocked on Qt real-window/GPU and human reload smoke observations |
+| 7 | Missing seam evidence | ⚠ | 90% | working tree from `ca3dd2e7` | Automated seam evidence complete; Qt real-window/GPU and human reload observations remain for future host support, outside the core 1.0 gate |
 | 8 | Representative performance and memory gate | ✓ | 100% | `15d86a8a` | Matrix evidence and byte-budget guard independently audited; small worker remeasured coherently; closed 2026-08-09 |
 | 9 | Documentation and upstream closure | ✓ | 100% | `55839d23` | Closed-architecture phrase guard independently mutation-audited; closed 2026-08-09 |
-| 10 | Product and release gates | ◐ | 27% | `78b485f9`, `d048126d` plus the gate 9 slices | 3 of 11 strict 1.0 gates closed: state-file persistence, hover policy and public-callable digestion. The 0.22.4/0.23.4 public pair passed 20/20 installed-package cells on Python 3.11–3.14, removing the dependency-channel blocker for pre-1.0 work. The hosted 34-case **core** E2E also passed at exact commit `6b519db0` in run `36232475620`; this is evidence toward gate 11, not closure of that gate. Exact 1.0 artifacts, visible Qt, dogfooding and the final gate remain. Remote-session support and E2E are post-1.0 preview work (`uibcdf/molsysviewer#100`). |
+| 10 | Product and release gates | ◐ | 27% | `78b485f9`, `d048126d` plus the gate 9 slices | 3 of 11 strict 1.0 gates closed: state-file persistence, hover policy and public-callable digestion. The 0.22.4/0.23.4 public pair passed 20/20 installed-package cells on Python 3.11–3.14, removing the dependency-channel blocker for pre-1.0 work. The hosted 34-case **core** E2E also passed at exact commit `6b519db0` in run `36232475620`; this is evidence toward gate 11, not closure of that gate. Exact 1.0 artifacts, dogfooding and the final gate remain. Qt host validation is outside the core 1.0 gate; remote-session support and E2E are post-1.0 preview work (`uibcdf/molsysviewer#100`). |
 
 Status vocabulary:
 
@@ -1268,8 +1270,9 @@ not repeated for this documentation slice.
     reason for anything it cannot run and exits non-zero. The 0.23.4
     pre-1.0 release used an explicit bounded Qt/hosted-E2E exception. The
     hosted core browser evidence passed at exact commit `6b519db0` in run
-    `36232475620`; the strict 1.0 gate remains blocked by visible-window Qt
-    and other final-candidate requirements. The three remote-only E2E scenarios and their
+    `36232475620`; the strict 1.0 gate remains open for core final-candidate
+    requirements. The local standalone host is experimental, so visible-window
+    Qt is outside this gate. The three remote-only E2E scenarios and their
     supported feature contract are post-1.0 (`uibcdf/molsysviewer#100`); their
     exclusion is not a remote pass. Hosted CI 7/7 and public-channel notebooks
     also passed on `main` in runs `36233310412` and `36233310586`, resolving
@@ -1285,7 +1288,7 @@ also public and independently verified. See
 [`path_to_1_0.md`](path_to_1_0.md) and
 [`checkpoints.md`](checkpoints.md#published-pre-1-0-pair--2026-09-25).
 This closes the pre-1.0 distribution cycle, not the final 1.0 candidate's
-artifact, visible Qt or human-workflow gates. Hosted core E2E passed later
+artifact or human-workflow gates. Hosted core E2E passed later
 at `6b519db0`/`36232475620`, not at the 0.23.4 release commit.
 
 **Exit:** no open pre-1.0 gate remains in `path_to_1_0.md`.

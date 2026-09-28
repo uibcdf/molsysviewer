@@ -893,6 +893,20 @@ def test_qt_cli_help_marks_remote_connect_experimental():
     assert "experimental in MolSysViewer 1.0" in help_text
 
 
+def test_documented_qt_module_entrypoint_shows_experimental_help():
+    import subprocess
+
+    result = subprocess.run(
+        [sys.executable, "-m", "molsysviewer.standalone_qt", "--help"],
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "experimental MolSysViewer Qt standalone prototype" in result.stdout
+
+
 def test_create_remote_qt_window_reuses_authenticated_session_page(monkeypatch):
     class FakeSignal:
         def __init__(self):

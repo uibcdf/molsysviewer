@@ -2,6 +2,12 @@
 
 This document is the authoritative release plan for the **v1.0.0** release of MolSysViewer. 
 
+**Support boundary (2026-09-28):** The Python/Jupyter viewer, reproducible
+scene state and interactive HTML export form the 1.0 contract. Local standalone
+launchers and the Qt host remain experimental, with no 1.0 support promise or
+real-window release gate. Remote sessions remain an unsupported preview;
+supported remote workflows and their E2E certification are post-1.0.
+
 **Platform decision (2026-09-27):** Future release gates cover macOS arm64,
 not Intel `osx-64`. The coordinated Conda matrix is now four native platforms
 and 16 installed-pair cells for Python 3.11–3.14. Historical 20/20 runs below
@@ -13,7 +19,7 @@ are published pre-1.0 Releases. The exact noarch/ABI3 pair passed 20/20
 staging and 20/20 public-channel installations on Python 3.11–3.14 across
 five platforms (public run `36129993869`); npm 0.23.4 and its CDN runtime
 are public. This closes the current package-availability dependency cycle,
-not the visible Qt, dogfooding or other 1.0 gates. The 34-case core E2E
+not dogfooding or the other core 1.0 gates. The 34-case core E2E
 subsequently passed on hosted Chrome at exact commit `6b519db0` in
 [run 36232475620](https://github.com/uibcdf/molsysviewer/actions/runs/36232475620).
 Remote
@@ -129,7 +135,8 @@ found it was **not** true and closed the five gaps:
 Q1 swallowed view-event exceptions, Q2 a bridge that could stall or retry forever, Q3 unvalidated
 malformed events, Q4 a delivery guarantee the docs promised but the code did not keep, Q5 silent
 persistence failures. **That ✓ is now genuinely true.** The only Fase E item still open is the
-real-window Qt/WebGL validation, which requires a real display/GPU.
+real-window Qt/WebGL validation, which requires a real display/GPU and remains
+an experimental-host follow-up outside the 1.0 gate.
 
 ### Ecosystem
 The **ElasNetMT add-on was renamed to ElastNetMT** across both repositories.
@@ -148,7 +155,8 @@ post-1.0.
 Scientific dogfooding (#14), end-user distribution, and onboarding README
 verification remain release gates as well. Qt was validated on a real GPU, but
 the current camera-authority and live-reload paths still need the visible-window
-revalidation recorded in Phase 7. GPU-runner CI remains post-1.0.
+revalidation recorded in Phase 7 for a supported standalone host. Neither it
+nor GPU-runner CI is a 1.0 release gate.
 
 ---
 
@@ -253,10 +261,9 @@ pair installation does not promote standalone/product Windows support.
 | 14 | **Scientific dogfooding** | Unchanged: daily lab usage is what finds what audits cannot. |
 | 15 | **Bug resolution from dogfooding** | Unchanged. |
 
-Before the 1.0 candidate is frozen, evaluate the latest aligned PySide6/Qt
-family available from conda-forge through standalone-host dogfooding
-(`uibcdf/molsysviewer#112`). The decision may retain the proven 6.11.2
-baseline if a newer family does not pass; version recency is not itself a gate.
+The latest aligned PySide6/Qt family can be evaluated through experimental
+standalone-host dogfooding (`uibcdf/molsysviewer#112`). This is no longer a
+condition for freezing or tagging the core 1.0 candidate.
 
 ---
 

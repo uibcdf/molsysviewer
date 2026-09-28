@@ -20,9 +20,9 @@ tracked in:
 
 - [`remote_rendering_plan.md`](remote_rendering_plan.md)
 
-It also now carries an explicit sequencing decision:
-
-- **standalone should be the last major implementation step before `1.0.0`**
+The 2026-09-28 release-scope decision keeps the local standalone launchers and
+Qt host experimental in 1.0. A supported standalone host is a later product
+decision, after real-window validation; HTML export remains a supported output.
 
 ## Core Idea
 
@@ -188,7 +188,7 @@ The order should stay:
 1. strengthen the workbench
 2. strengthen the UX model
 3. strengthen the first serious image-export story
-4. add a standalone host as the final pre-`1.0.0` host step
+4. develop and certify a standalone host after the core 1.0 release
 
 Not the reverse.
 
@@ -217,8 +217,8 @@ So the direction is now:
 
 - not immediate,
 - but not vague either,
-- and explicitly reserved for the final pre-`1.0.0` stage once the workbench
-  and export model are already mature.
+- and reserved for a later supported release once the workbench and export
+  model are mature and the host has real-window evidence.
 
 ## Open Questions
 

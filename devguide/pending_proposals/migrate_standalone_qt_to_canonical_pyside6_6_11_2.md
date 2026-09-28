@@ -18,6 +18,8 @@ supersedes: []
 **Status:** Active; source, tests and development/CI recipes have been updated,
 and the hosted Linux Qt pipeline passed. Native Windows/macOS and visible-window
 observations have not completed.
+The 2026-09-28 scope decision keeps the host experimental for 1.0, so those
+remaining observations are outside the core release gate.
 
 ## What
 

@@ -26,14 +26,20 @@ with UIBCDF WebEngine/Qt 6.9.2 packages. It is not a green suite or a
 product regression verdict; the #99, #101 and reporting-protocol selections
 passed separately. The canonical 6.11.2 environment remains the relevant Qt
 development baseline.
+On 2026-09-28 a complete Viewer suite in that canonical Python 3.14
+environment reached 100% with two Qt subprocess failures under this executor's
+sandbox: Chromium aborted in `sandbox_host_linux.cc` with `Operation not
+permitted`. Both exact Qt tests passed when rerun outside the sandbox with
+`CONDA_PREFIX` set to the Python 3.14 environment. This is not a green
+full-suite run or visible-window host certification.
 
 The immediate code-only task remains widening executable
-documentation-page coverage. Then complete scientific dogfooding,
-first-contact onboarding and the human visible-window Qt
-observations. Before the 1.0 candidate freeze, compare the newest
-compatible conda-forge Qt family with 6.11.2
-(`uibcdf/molsysviewer#112`); a newer release is not an automatic
-upgrade. Run exact-candidate 1.0 gates before tagging.
+documentation-page coverage. Then complete scientific dogfooding and
+first-contact onboarding. The local standalone host and launchers are
+experimental for 1.0: visible-window Qt observations and the newer
+conda-forge Qt comparison (`uibcdf/molsysviewer#112`) remain host follow-ups,
+not candidate-freeze conditions. Run exact-candidate core 1.0 gates before
+tagging.
 The strict E2E scope is the hosted core non-remote lane; remote-session
 certification is post-1.0 (`uibcdf/molsysviewer#100`).
 Follow [the ordered actions below](#what-is-next), not the historical
@@ -105,7 +111,8 @@ candidate sequence in this file.
   deliberately exempt, and every argument name they introduce has a digester. Phase 10 is
   4 of 11.
 - Phase 7 stays `⚠ 90%`: its automated seams are complete and its two visible-window Qt
-  observations are not, and cannot be done here.
+  observations are not, and cannot be done here. Phase 7's Qt remainder is
+  outside the core 1.0 gate under the experimental standalone scope decision.
 - `sandbox/Smoke_Test.ipynb` is developer-owned scratch state. Never stage it and
   never use it as architectural evidence.
 - `molsysviewer/viewer.js` was regenerated with `npm run build:runtime`; it is a
@@ -548,27 +555,27 @@ Resume toward **1.0** in this order:
    [`archive/evidence_a_stable_capability_has_not_earned.md`](archive/evidence_a_stable_capability_has_not_earned.md)
    (uibcdf/molsysviewer#65), which is the entry that asks for the decision rather than the
    suites.
-2. In parallel when the required workstation is available, close Phase 7's two
-   observations: Qt real-window/GPU and ten human live-demo replacements. Never
-   report the existing offscreen/browser evidence as those observations.
+2. For the later supported standalone-host decision, close Phase 7's two
+   observations when the required workstation is available: Qt real-window/GPU
+   and ten human live-demo replacements. They are outside the core 1.0 gate.
+   Never report existing offscreen/browser evidence as those observations.
 3. Complete scientific dogfooding and the remaining human decisions in
    [`what_needs_a_human_2026_08.md`](what_needs_a_human_2026_08.md)
    — three items, all needing a screen or a judgement.
 4. Use the published 0.22.4/0.23.4 pair as the dependency-channel baseline;
    do not repeat staging merely to rediscover that it solves. Finish the
-   end-user one-line first-contact observation, and for the eventual 1.0
-   coordinates first evaluate the newest aligned conda-forge PySide6/Qt
-   family in standalone dogfooding (`uibcdf/molsysviewer#112`). It may
-   be 6.11.3 or later; retain 6.11.2 if newer builds do not pass.
-   Then repeat the exact wheel, Conda, import, resource and public
+   end-user one-line first-contact observation. Evaluate newer aligned
+   conda-forge PySide6/Qt through experimental standalone dogfooding
+   (`uibcdf/molsysviewer#112`) on its own schedule. For 1.0, repeat the exact
+   wheel, Conda, import, resource and public
    installation gates. Use the read-only public-file verifier now shared by
    both promotion workflows (`uibcdf/molsyssuite#48`); never re-upload an
    immutable artifact to change a workflow conclusion.
 5. Run `python devtools/release_gate.py` on the new exact 1.0 candidate and
    release 1.0 only when every required gate exits zero. The 0.23.4
-   pre-1.0 release carried an explicit, bounded Qt/E2E exception, which does
-   not roll forward automatically. The new strict 1.0 E2E scope is the core
-   non-remote browser lane; remote-only E2E remains post-1.0. Before tagging,
+   pre-1.0 release carried an explicit, bounded Qt/E2E exception. The strict
+   1.0 scope now excludes the experimental standalone host; its E2E scope is
+   the core non-remote browser lane. Remote-only E2E remains post-1.0. Before tagging,
    `python devtools/prepare_release.py` sets citation fields; after the
    GitHub Release, verify Zenodo's **public** record rather than treating a
    short ingestion timeout as permanent failure.

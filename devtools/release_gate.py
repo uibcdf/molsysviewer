@@ -10,10 +10,10 @@ gate that passes on an untested release.
     python devtools/release_gate.py --list      # what it would run, and what is blocked
     python devtools/release_gate.py --only python,version
 
-Most of these also run in the suite, which is deliberate: the suite catches them during
-development and the gate catches them in the order and on the artefacts a release needs.
-Two things the suite structurally cannot do are here and only here — building the wheel
-and checking the runtime from an *installed* artefact rather than the checkout.
+Most checks also run in the suite: the suite catches regressions during development,
+while this command reports the candidate's runnable and blocked checks together.
+The final installed Conda pair still needs exact-candidate evidence; the `conda` step
+remains blocked until it can assess that evidence mechanically (issue #103).
 """
 
 from __future__ import annotations
@@ -49,17 +49,6 @@ def _node_available() -> str | None:
     return None
 
 
-def _display_available() -> str | None:
-    import os
-
-    if not os.environ.get("DISPLAY"):
-        return (
-            "no DISPLAY. Phase 7's Qt observations need a real screen and cannot be "
-            "substituted by an offscreen run (devguide/what_needs_a_human_2026_08.md)"
-        )
-    return None
-
-
 def _sibling_releases_ready() -> str | None:
     return (
         "the strict 1.0 gate requires a separately verified final-version Conda pair. "
@@ -91,7 +80,6 @@ STEPS = (
         blocked_by=_node_available,
         cwd=JS_ROOT,
     ),
-    Step("qt", "Qt real-window and GPU render observation", None, blocked_by=_display_available),
     Step("conda", "the final-version Conda pair for 1.0", None, blocked_by=_sibling_releases_ready),
 )
 

@@ -5,6 +5,10 @@ blocked on implementation effort in this repository: they need a screen or a jud
 Items 3, 4, 5 and 7 are closed and struck below rather than deleted, so a reader can tell
 "done" from "never existed".
 
+**Release scope, 2026-09-28:** Item 1 remains required before claiming a
+supported standalone host, but it does not block the core 1.0 release. The
+local standalone host is experimental in 1.0. Remote sessions are post-1.0.
+
 Each entry says what is needed, from whom, and what it unblocks. When one is
 done, close it **in its home document** — the entries below point there — and
 strike it here.
@@ -93,7 +97,7 @@ visually distinguishable demos at least ten times, confirm each replacement show
 only the requested system, confirm the status reaches `Ready.` with no failed
 deliveries, and record the environment in that file.
 
-*Unblocks:* the last unverified surface of the standalone host before 1.0.
+*Unblocks:* a future supported standalone-host claim; it is outside the 1.0 gate.
 
 ## 2. Look at `34755fb9` — *needs a person, not a test*
 
@@ -145,7 +149,8 @@ re-framing. The four steps are in
 ## 7. ~~Open Phase 5, or decide not to~~ — **closed**
 
 Phases 5, 6, 8 and 9 are independently audited and closed. Phase 7 still awaits
-the visible Qt observations above; Phase 10 owns the remaining release gates.
+the visible Qt observations above for experimental-host certification; Phase 10
+owns the remaining core 1.0 release gates.
 
 ---
 

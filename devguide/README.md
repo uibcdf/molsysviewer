@@ -12,8 +12,8 @@ For a new session aimed at 1.0, begin with the
 [1.0 release plan](path_to_1_0.md). The middle of the checkpoint
 retains dated evidence: do not interpret earlier candidate coordinates
 as current instructions. Read the active report for the chosen work item;
-the current Qt migration is `uibcdf/molsysviewer#109`, and the
-pre-1.0 version/dogfooding decision is `uibcdf/molsysviewer#112`.
+the experimental Qt-host migration is `uibcdf/molsysviewer#109`, and
+the deferred version/dogfooding decision is `uibcdf/molsysviewer#112`.
 The shared Linux Python 3.14 development recipe is maintained by
 `uibcdf/molsyssuite#52`.
 

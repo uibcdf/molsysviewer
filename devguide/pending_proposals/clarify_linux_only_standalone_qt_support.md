@@ -32,6 +32,9 @@ This proposal does **not** promise that the core Windows lane already passes;
 The 2026-09-27 suite policy decision (`uibcdf/molsyssuite#59`) excludes
 macOS Intel from future support claims and release gates. The core macOS
 claim is arm64 only; this does not itself certify the optional Qt host there.
+The 2026-09-28 Viewer scope decision keeps the entire local standalone host
+experimental for 1.0, including Linux. This proposal now refines development
+evidence and future host support claims; it does not block the core 1.0 tag.
 
 ## How
 

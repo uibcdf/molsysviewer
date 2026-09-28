@@ -1,9 +1,10 @@
-# Standalone Supported Environment
+# Standalone Development Environment
 
-This document records the currently supported development-time environment
-recipe for the standalone Qt host.
+This document records the currently reproducible development-time environment
+recipe for the experimental standalone Qt host. The host is outside the 1.0
+support promise and its visible-window observations do not block the 1.0 tag.
 
-It is intentionally narrower than the final `1.0.0` packaging story.
+It is intentionally narrower than a future supported-host packaging story.
 
 The goal here is:
 
@@ -45,8 +46,8 @@ under Xvfb/SwiftShader; this is not a visible-window rendering certificate.
 | `osx-arm64` | Dry-run solved on Python 3.14 with macOS 14 override | Not run on macOS yet |
 | `osx-64` | Outside the supported platform matrix | No support claim or required runtime gate |
 
-Solver success does not confer supported-platform status. The standalone Qt
-host is currently runtime-tested on Linux only; Windows and macOS arm64
+Solver success does not confer supported-platform status. The experimental
+standalone Qt host is currently runtime-tested on Linux only; Windows and macOS arm64
 have solver-only evidence. The support boundary and user-facing wording remain
 tracked in `uibcdf/molsysviewer#97`. The suite-wide macOS architecture decision
 is tracked in `uibcdf/molsyssuite#59`.

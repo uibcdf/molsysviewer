@@ -480,7 +480,12 @@ It must remain reproducible.
 
 ## Standalone 0 bridge
 
-The current pre-`1.0` standalone bridge is intentionally small:
+The local standalone bridge remains **experimental in 1.0**. Its launchers and
+host APIs are distributed for evaluation, without a 1.0 support or compatibility
+promise. `view.export.html(...)` remains a supported export format; producing
+an HTML artifact is distinct from supporting an interactive standalone host.
+
+The current bridge is intentionally small:
 
 - `molsysviewer.build_standalone0_html(...)`
 - `molsysviewer.launch_standalone0(...)`

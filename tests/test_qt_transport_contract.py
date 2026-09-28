@@ -1,9 +1,9 @@
 """Qt keeps control messages JSON and refuses AnyWidget-style buffers.
 
-Qt is in scope for 1.0, but a green AnyWidget transport does not imply Qt: the
-control bridge carries JSON while structural binary payloads use a separate Qt
-payload-scheme path. What must hold is that passing AnyWidget-style ``buffers``
-to the control channel fails loudly instead of dropping them.
+Qt remains an experimental host for 1.0. Its control bridge carries JSON while
+structural binary payloads use a separate Qt payload-scheme path. Passing
+AnyWidget-style ``buffers`` to the control channel must fail loudly instead of
+dropping them.
 """
 
 from pathlib import Path

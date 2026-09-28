@@ -1,5 +1,9 @@
 # Qt standalone transport baseline — July 2026
 
+**Scope update, 2026-09-28:** The sentence below placing Qt in 1.0 records
+the July scope. The local standalone host is now experimental for 1.0; this
+measurement remains valid transport evidence, not a release gate.
+
 ## Decision
 
 Binary transport is worth it on Qt, by a wide margin, and it does **not** need a

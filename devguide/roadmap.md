@@ -1,6 +1,6 @@
 # Development roadmap
 
-**Updated:** 2026-09-27
+**Updated:** 2026-09-28
 
 This roadmap states current priorities. Release gating lives in
 [`path_to_1_0.md`](path_to_1_0.md), normative behavior in
@@ -20,12 +20,13 @@ This milestone certifies core package installation, not every optional Qt
 host or scientific workflow. The 34-case core E2E passed on hosted Chrome
 at exact commit `6b519db0` in
 [run 36232475620](https://github.com/uibcdf/molsysviewer/actions/runs/36232475620);
-visible-window Qt remains unverified. The remote-session feature and its three E2E
-scenarios are now post-1.0 preview work (`uibcdf/molsysviewer#100`), and the
-strict 1.0 release gate remains open. Both Zenodo exact-version records are
-now published and independently verified. Next prioritize
-the remaining real-window observations, representative scientific
-dogfooding, first-contact onboarding, continued hosted E2E reliability and
+visible-window Qt remains unverified. The local standalone host and launchers
+remain experimental in 1.0, so those observations are outside the strict
+release gate. The remote-session feature and its three E2E scenarios are
+post-1.0 preview work (`uibcdf/molsysviewer#100`). The strict 1.0 gate remains
+open. Both Zenodo exact-version records are now published and independently
+verified. Next prioritize representative scientific dogfooding,
+first-contact onboarding, continued hosted core E2E reliability and
 an exact-commit 1.0 candidate. The false-red promotion verifier has been
 replaced by a read-only check that passed on GitHub for the published pair;
 the earlier promotion jobs remain red (`uibcdf/molsyssuite#48`).
@@ -33,11 +34,11 @@ the earlier promotion jobs remain red (`uibcdf/molsyssuite#48`).
 The shared Linux Python 3.14 development environment now uses official
 conda-forge PySide6/Qt 6.11.2; the UIBCDF Qt family is kept separately
 for rollback (`uibcdf/molsyssuite#52`). This is a development baseline,
-not the final 1.0 Qt decision. Before freezing the candidate, evaluate
-the newest compatible conda-forge family through standalone
-dogfooding (`uibcdf/molsysviewer#112`) and retain 6.11.2 if a newer
-version does not pass. Canonical-host migration and its remaining
-platform observations stay in `uibcdf/molsysviewer#109`.
+not a 1.0 host certification. Comparing newer conda-forge Qt families through
+standalone dogfooding (`uibcdf/molsysviewer#112`) is an experimental-host
+follow-up, not a condition for freezing the 1.0 candidate. Canonical-host
+migration and its remaining platform observations stay in
+`uibcdf/molsysviewer#109`.
 
 ## Completed foundations
 
@@ -70,8 +71,9 @@ These are the release gates:
    validate against; `WidgetRuntimeRouter` owns identity, direction and command
    deduplication.
 3. Scientific dogfooding on representative laboratory workflows.
-4. Real-window Qt/WebGL validation of load, interaction, context menu, and the
-   implemented live-replacement regression.
+4. ✅ **Scope decision 2026-09-28.** The local standalone host is experimental
+   for 1.0. Real-window Qt/WebGL and live-replacement observations remain open
+   for that host, but do not block the core 1.0 release.
 5. **Public core-pair distribution completed 2026-09-25; final end-user
    first-contact validation remains.** Dependency-channel synchronization
    is evidenced by the 20-cell public matrix, not by a source checkout.
@@ -83,7 +85,10 @@ These are the release gates:
    [`pre_1_0_architecture_rework_and_hardening_master_plan.md`](pre_1_0_architecture_rework_and_hardening_master_plan.md)
    (Phase 10, gate 9).
 
-The remote-session implementation was demonstrated before 1.0, but its
+The local standalone launchers and Qt host may remain distributed for
+evaluation; they carry no supported 1.0 host contract. Interactive HTML export
+remains a supported output format. The remote-session implementation was
+demonstrated before 1.0, but its
 supported feature contract and E2E certification now belong to post-1.0.
 Existing entrypoints may remain in the distribution as an unsupported preview;
 their presence does not certify remote rendering, deployment or compatibility.
@@ -118,10 +123,12 @@ post-1.0 research.
 
 Startup/message-cost work is closed: message replay is no longer synchronized
 per queued message, the public package is lazy, and the relevant ecosystem
-overhead was addressed upstream. The server render worker is now an accepted
-pre-1.0 standalone placement and does not change scientific residency.
+overhead was addressed upstream. The server render worker was accepted as a
+prototype placement and does not change scientific residency.
 Configurable picking, Interactions, multiview, general computation/serialization
-worker offload, compression and shared-memory transport remain post-1.0. See
+worker offload, compression and shared-memory transport remain post-1.0. The
+server render worker's prior placement is prototype evidence, not a supported
+1.0 remote workflow. See
 [`remote_rendering_plan.md`](remote_rendering_plan.md) and
 [`pending_proposals/README.md`](pending_proposals/README.md).
 
@@ -134,6 +141,9 @@ worker offload, compression and shared-memory transport remain post-1.0. See
 - Lazy structure sources and partial materialization.
 - Large-system rendering tiers that require Mol* upstream work.
 - Cross-platform standalone packaging.
+- Standalone host certification after experimental use and real-window
+  observations.
+- Supported remote sessions after portable-client and server-GPU certification.
 - Managed TURN, multi-user remote collaboration, GPU worker pools and cluster
   scheduling beyond the single-session remote-rendering contract.
 - Advanced rendering and cinematic/VR directions.

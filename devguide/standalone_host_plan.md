@@ -1,7 +1,9 @@
 # Standalone Host Plan
 
-This document turns the standalone direction into an operational pre-`1.0.0`
-plan. Whether MolSysViewer should have a standalone mode is already decided; the
+This document turns the standalone direction into an operational host plan.
+The local standalone launchers and Qt host remain experimental in 1.0; this
+plan does not impose a 1.0 release gate. Whether MolSysViewer should have a
+standalone mode is already decided; the
 open questions are what host shape carries the final experience, what stays
 shared with the notebook and popup hosts, and how to get there without forking
 the product.
@@ -28,8 +30,8 @@ the same export/state logic survive the move. It is the first host proof, not
 throwaway work.
 
 What it does **not** prove is the final feel: today it is still generated HTML
-opened in a browser tab. Enough for `standalone 0`, not enough for the final
-pre-`1.0.0` host.
+opened in a browser tab. Enough for `standalone 0`, not enough for a future
+supported host.
 
 ## What The Final Standalone Must Feel Like
 

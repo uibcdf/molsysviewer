@@ -24,11 +24,13 @@ sys.path.insert(0, str(ROOT / "devtools"))
 from release_gate import STEPS, _check_version_consistency  # noqa: E402
 
 
-def test_release_gate_requires_core_e2e_without_requiring_remote_preview():
+def test_release_gate_requires_core_e2e_without_experimental_hosts():
     e2e_step = next(step for step in STEPS if step.name == "e2e")
 
     assert e2e_step.command == ["npm", "run", "test:e2e:core"]
     assert "remote preview is post-1.0" in e2e_step.what
+    assert "qt" not in {step.name for step in STEPS}
+    assert "remote" not in {step.name for step in STEPS}
 
 
 def test_the_gate_lists_its_steps_without_running_them():
@@ -52,20 +54,14 @@ def test_every_step_can_either_run_or_say_why_not():
 
 
 def test_the_blocked_steps_name_what_they_are_waiting_for():
-    """The two that cannot run here are Phase 7's screen and the final 1.0 pair.
-
-    Their reasons are the load-bearing part: this repository's remaining pre-1.0 work is
-    almost entirely those two, and a gate that said only "skipped" would hide it.
-    """
+    """The final 1.0 pair remains blocked until candidate evidence can be checked."""
     reasons = {step.name: step.blocked_by() for step in STEPS if step.blocked_by}
 
     assert reasons.get("conda"), "the conda step must always state why it cannot run"
     assert "final-version Conda pair" in reasons["conda"]
     assert "pre-1.0 pair" in reasons["conda"]
     assert "gates 1-5 of Phase 10 are open" not in reasons["conda"]
-    # `qt` is blocked here and not on a machine with a screen, which is the point.
-    if reasons.get("qt"):
-        assert "DISPLAY" in reasons["qt"]
+    assert "qt" not in reasons
 
 
 def _checkout(tmp_path, runtime_version, manifest_version="4.5.6"):

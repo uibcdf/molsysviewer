@@ -147,7 +147,7 @@ before calling `load_state()`.
 - Active selection bridge: canvas selection → named region/selection/label
 
 ### Export and embedding
-- `view.export.html(...)` — self-contained interactive HTML (standalone or CDN-lite)
+- `view.export.html(...)` — portable interactive HTML (self-contained or CDN-lite)
 - `view.export.figure(...)` — publication-quality PNG/SVG snapshots
 - `view.export.figure_publication_set(...)` — full light/dark/transparent bundle
 - `view.movie.export(...)` — animated GIF or MP4 from trajectory frames
@@ -207,7 +207,11 @@ claimed there.
 macOS support is currently limited to Apple Silicon (arm64). Intel-based macOS
 (x86_64) is not part of the supported platform matrix. Support may be
 reconsidered if there is demonstrated user demand. The optional standalone Qt
-host has a narrower, separately validated [environment recipe](devguide/standalone_supported_environment.md).
+host has a narrower [environment recipe](devguide/standalone_supported_environment.md)
+and remains **experimental for 1.0**. The local standalone launchers are also
+experimental; they are not part of the 1.0 support promise. Interactive HTML
+export remains a supported output. Remote sessions are an unsupported preview;
+supported remote workflows are planned after 1.0.
 
 ---
 
