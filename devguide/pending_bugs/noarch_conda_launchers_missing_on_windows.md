@@ -1,7 +1,7 @@
 ---
 summary: The noarch Conda package omits three MolSysViewer launchers on Windows.
 issue: uibcdf/molsysviewer#101
-status: active
+status: partial
 opened: 2026-09-24
 closed:
 severity: medium
@@ -16,7 +16,8 @@ supersedes: []
 # Noarch Conda package omits three Windows launchers
 
 **Reported:** 2026-09-24 by the suite noarch recipe survey.
-**Status:** Active; the component implementation is deferred pending owner approval.
+**Status:** Partial; source and verification routes exist, but no repaired
+artifact has been staged or published.
 
 ## What
 
@@ -52,6 +53,16 @@ Running the normal source CI on Windows would not attest the staged Conda artifa
 
 ## Current state
 
-The issue records the component work. No recipe correction, installed-package Windows
-gate, new staged artifact, or public repair claim has been merged. A source patch was
-prepared in `uibcdf/molsysviewer#108` but is not part of `main`.
+The exact `entry_points` correction reached `main` through the
+`policy-v1.5.2` adoption commit `c35ce1b2`; the earlier dedicated PR
+`uibcdf/molsysviewer#108` was closed without a merge. The source now has
+Windows jobs for exact staged and public noarch installations. They check the
+installed Conda record's version, build, channel URL and SHA-256, find all three
+`.exe` launchers inside the environment, and execute each with `--help` outside
+the checkout. `tests/test_noarch_conda_launchers.py` checks recipe parity and
+the release routes.
+
+The public `0.23.4` tag predates the recipe correction, so its Conda file still
+has the defect. Closing requires a new staged artifact, a passing hosted Windows
+launcher job, promotion of that exact file, and a passing public Windows job.
+Until then, the source fix is not a public repair claim.

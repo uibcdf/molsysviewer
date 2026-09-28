@@ -19,6 +19,13 @@ Visible-window Qt and native macOS/Windows standalone validation
 remain unproven. The recent full Viewer suite was not green: three
 test-environment/assertion failures were corrected and their affected
 files passed, but the complete suite was not rerun.
+On 2026-09-28 another full local run, launched from the older shared Python
+3.13 environment, reached 83% before a native crash while importing
+`PySide6.QtWebEngineCore`. That prefix mixes conda-forge Qt/PySide 6.9.3
+with UIBCDF WebEngine/Qt 6.9.2 packages. It is not a green suite or a
+product regression verdict; the #99, #101 and reporting-protocol selections
+passed separately. The canonical 6.11.2 environment remains the relevant Qt
+development baseline.
 
 The immediate code-only task remains widening executable
 documentation-page coverage. Then complete scientific dogfooding,

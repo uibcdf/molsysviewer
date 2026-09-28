@@ -197,6 +197,13 @@ Pip:
 pip install molsysviewer
 ```
 
+In the published Conda `0.23.4` package on Windows, the Python library installs
+but the `molsysviewer`, `molsysviewer-qt` and `molsysviewer-server` commands are
+missing. This packaging defect is tracked in
+[#101](https://github.com/uibcdf/molsysviewer/issues/101); a corrected Conda
+build needs Windows installed-package verification before the commands can be
+claimed there.
+
 macOS support is currently limited to Apple Silicon (arm64). Intel-based macOS
 (x86_64) is not part of the supported platform matrix. Support may be
 reconsidered if there is demonstrated user demand. The optional standalone Qt

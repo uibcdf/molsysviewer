@@ -19,14 +19,13 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Being worked on (3)
+### Being worked on (1)
 
-- [`noarch_conda_launchers_missing_on_windows.md`](noarch_conda_launchers_missing_on_windows.md) — [#101](https://github.com/uibcdf/molsysviewer/issues/101) — The noarch Conda package omits three MolSysViewer launchers on Windows. *(medium, inspected)*
-- [`python_pocket_blob_rejects_documented_multi_iso_options.md`](python_pocket_blob_rejects_documented_multi_iso_options.md) — [#99](https://github.com/uibcdf/molsysviewer/issues/99) — Python pocket blob API rejects its documented multi-iso options. *(medium, reproduced)*
 - [`release_gate_conflates_staging_evidence_with_strict_1_0_requirements.md`](release_gate_conflates_staging_evidence_with_strict_1_0_requirements.md) — [#103](https://github.com/uibcdf/molsysviewer/issues/103) — Release gate conflates exact staging evidence with strict 1.0 requirements *(medium, reproduced)*
 
-### Partially done (1)
+### Partially done (2)
 
+- [`noarch_conda_launchers_missing_on_windows.md`](noarch_conda_launchers_missing_on_windows.md) — [#101](https://github.com/uibcdf/molsysviewer/issues/101) — The noarch Conda package omits three MolSysViewer launchers on Windows. *(medium, inspected)*
 - [`standalone_qt_live_demo_reload.md`](standalone_qt_live_demo_reload.md) — [#35](https://github.com/uibcdf/molsysviewer/issues/35) — In the standalone Qt host, replacing the loaded demo leaves the previous system on screen. *(high, reproduced)*
 
 ### Deferred until after 1.0 (1)
@@ -66,7 +65,7 @@ present.
 
 ## Recommended execution
 
-The active Qt report is one real-window validation block:
+The partially done Qt report is one real-window validation block:
 
 1. Reproduce each defect separately in the supported Qt/WebGL environment.
 2. Add temporary, runtime-only diagnostics at both sides of the bridge. Record

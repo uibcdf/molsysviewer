@@ -1,13 +1,13 @@
 ---
 summary: Python pocket blob API rejects its documented multi-iso options.
 issue: uibcdf/molsysviewer#99
-status: active
+status: resolved
 opened: 2026-09-24
-closed:
+closed: 2026-09-28
 severity: medium
 verification: reproduced
 area: [shapes, documentation, testing]
-guard:
+guard: tests/shapes/test_pocket_blob.py::test_public_shapes_manager_accepts_pocket_blob_multi_iso_options
 normative:
 blocked_by: []
 supersedes: []
@@ -49,7 +49,7 @@ staging-based workflow installed successfully and reached the failing cell.
 Silently replacing the example with one scalar surface would hide the
 existing multi-iso contract rather than connect it.
 
-## Resolution in progress
+## Resolution
 
 The Python pocket-blob and generic scalar-isosurface APIs now accept the three
 plural options and reject empty levels, conflicting scalar/plural levels, and
@@ -63,5 +63,9 @@ regenerated; the focused source/API/distribution/reporting slice then passed
 135 tests with 12 workers, and Ruff passed. Hosted Documentation notebooks
 run `36016496850` passed on exact branch commit
 `7c4e0cd968e9530033e35221683ca085fe1d37cd`, including every documented
-notebook. The defect remains open until the fix reaches the release branch or
-`main`; success on this source branch is not public-channel admission.
+notebook. The fix then reached `main` and the public `0.23.4` tag. On
+2026-09-28 the addressable public-manager guard passed on `main` as part of all
+11 tests in `tests/shapes/test_pocket_blob.py`. Documentation notebooks run
+`36233310586` also passed after publication. The public-manager guard protects
+the original `UnknownArgumentError` at the callable boundary; the adjacent
+message test protects serialization of all three plural options.

@@ -31,6 +31,9 @@ user/developer documentation.
 
 Resolved defect reports, kept for their evidence:
 
+- [`python_pocket_blob_rejects_documented_multi_iso_options.md`](python_pocket_blob_rejects_documented_multi_iso_options.md)
+  — the public Python multi-iso call reached `main` and the 0.23.4 release;
+  its public-manager guard and notebook execution passed.
 - [`hosted_ci_has_never_passed.md`](hosted_ci_has_never_passed.md)
   — the public MolSysMT/Viewer pair removed the solver barrier; hosted CI 7/7,
   core E2E 34/34 and documentation notebooks then passed on `main`.

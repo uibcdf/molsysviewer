@@ -1,18 +1,22 @@
-name: Verify one public conda package (read-only)
+name: Verify staged noarch launchers on Windows
 
 on:
   workflow_dispatch:
     inputs:
+      candidate_sha:
+        description: Full commit SHA of the staged candidate
+        required: true
+        type: string
       version:
-        description: Published three-part version
+        description: Exact staged version
         required: true
         type: string
       build_number:
-        description: Exact public noarch build number
+        description: Exact staged build number
         required: true
         type: number
       sha256:
-        description: Expected immutable SHA-256 digest
+        description: SHA-256 from the staging producer receipt
         required: true
         type: string
 
@@ -20,50 +24,28 @@ permissions:
   contents: read
 
 jobs:
-  verify:
-    name: Verify public label and solver-visible index
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - name: Verify exact public file without promotion
-        shell: bash
-        env:
-          RELEASE_VERSION: ${{ inputs.version }}
-          BUILD_NUMBER: ${{ inputs.build_number }}
-          EXPECTED_SHA256: ${{ inputs.sha256 }}
-        run: |
-          set -euo pipefail
-          python3 devtools/conda-build/verify_public_package.py \
-            --package molsysviewer \
-            --version "$RELEASE_VERSION" \
-            --subdir noarch \
-            --filename "molsysviewer-${RELEASE_VERSION}-py_${BUILD_NUMBER}.tar.bz2" \
-            --sha256 "$EXPECTED_SHA256"
-
   windows-launchers:
-    name: Verify public Windows launchers from the installed package
-    needs: verify
     runs-on: windows-2025
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.candidate_sha }}
           persist-credentials: false
-      - name: Install the exact public Conda package
+      - name: Install the exact staged Conda package
         uses: mamba-org/setup-micromamba@v3.2.1
         with:
           environment-name: candidate
           condarc: |
             channels:
+              - uibcdf/label/staging
               - uibcdf
               - conda-forge
               - ambermd
             channel_priority: flexible
           create-args: >-
             python=3.13
-            uibcdf::molsysviewer=${{ inputs.version }}=py_${{ inputs.build_number }}
+            uibcdf/label/staging::molsysviewer=${{ inputs.version }}=py_${{ inputs.build_number }}
       - name: Verify installed record and commands outside the checkout
         shell: bash -l {0}
         env:
@@ -76,4 +58,4 @@ jobs:
           cd "$(cygpath -u "$RUNNER_TEMP")"
           python "$checker" --prefix "$CONDA_PREFIX" \
             --version "$EXPECTED_VERSION" --build-number "$BUILD_NUMBER" \
-            --sha256 "$EXPECTED_SHA256" --label main
+            --sha256 "$EXPECTED_SHA256" --label staging

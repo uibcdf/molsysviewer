@@ -487,6 +487,11 @@ The current pre-`1.0` standalone bridge is intentionally small:
 - `molsysviewer ...`
 - `python -m molsysviewer.standalone ...`
 
+The public Conda `0.23.4` package omits the three `molsysviewer*` console
+launchers on Windows. The Python modules remain installable there; see
+[`#101`](https://github.com/uibcdf/molsysviewer/issues/101) for the exact
+installed-package verification required before claiming repaired launchers.
+
 These surfaces should be treated as a host-facing bridge built on top of the
 existing standalone HTML export path, not as the final standalone product.
 
