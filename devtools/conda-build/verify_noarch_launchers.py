@@ -55,9 +55,7 @@ def verify(prefix: Path, *, version: str, build_number: int, sha256: str, label:
         path = Path(launcher).resolve()
         _require(path.is_relative_to(prefix.resolve()), f"Launcher outside installed environment: {name}")
         _require(path.suffix.lower() == ".exe", f"Windows executable missing: {name}")
-        completed = subprocess.run(
-            [str(path), "--help"], capture_output=True, check=False, text=True, timeout=30
-        )
+        completed = subprocess.run([str(path), "--help"], capture_output=True, check=False, text=True, timeout=30)
         _require(completed.returncode == 0, f"{name} --help failed: {completed.stderr}")
 
 

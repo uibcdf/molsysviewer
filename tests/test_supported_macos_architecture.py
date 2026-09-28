@@ -19,8 +19,6 @@ def test_macos_ci_uses_the_explicit_apple_silicon_runner():
 
 
 def test_noarch_publication_does_not_request_an_intel_build():
-    text = (WORKFLOWS / "build_and_upload_conda_packages.yaml").read_text(
-        encoding="utf-8"
-    )
+    text = (WORKFLOWS / "build_and_upload_conda_packages.yaml").read_text(encoding="utf-8")
     assert text.count("platform_osx-64: false") == 2
     assert "platform_osx-64: true" not in text
