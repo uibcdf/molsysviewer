@@ -69,3 +69,16 @@ depends on the work at hand, not on a blanket rule.
 `README.md` §Maintenance rules is normative for anything added here: say "done" where a
 scan will hit it, keep a closed item to one line, and write the sentence rather than the
 bullet list when the bullets carry one idea each.
+
+## Durable working instructions
+
+Read [../AGENTS.md](../AGENTS.md), [reporting_protocol.md](reporting_protocol.md)
+and [the common policy](../MOLSYSSUITE_GUIDE.md#durable-working-instructions).
+Keep technical findings in owning issues, tests and maintained documents. Place
+only accepted lasting actions specific to this directory here; repository-wide
+actions belong at root. Read current guidance and relevant active queues first;
+use archive indexes for orientation and open historical records for a stated
+question. Follow the local reporting protocol for actual queue/archive layouts,
+index regeneration, offline gates and synchronization with owning GitHub issues.
+Archive and index resolved records in the same change; append dated corrections
+to archived claims instead of rewriting history.
