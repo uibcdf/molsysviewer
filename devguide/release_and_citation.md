@@ -102,7 +102,7 @@ After the exact candidate passes its gates:
 4. verify the Zenodo record:
 
    ```bash
-   python devtools/verify_zenodo_release.py X.Y.Z
+   gh workflow run verify-zenodo-release.yaml --repo uibcdf/molsysviewer -f version=X.Y.Z
    ```
 
 The `verify-zenodo-release.yaml` workflow performs the fourth step after a
@@ -162,3 +162,33 @@ the public record and file inventory before any DOI claim or recovery action
   metadata before considering manual recovery.
 - Preserve an incorrect published record and use Zenodo's supported controls or
   support channel. Never repoint a DOI.
+
+
+## Resumable ingestion verification
+
+Adopted under uibcdf/molsysviewer#132 and uibcdf/molsyssuite#49.
+The workflow calls the common provider pinned to `b78fa9d30d46ce5607999cdecae85cf6c03f5fcd`.
+Its publication probe runs once, then scheduled read-only scans run nominally
+every six hours. Manual dispatch accepts an exact public tag or an empty version
+to scan. No component runtime or scientific suite is installed or executed.
+
+The fixed coverage cutoff is `2026-09-25T00:00:00Z`, including the paired release.
+It is not advanced as time passes or later releases appear. Public prereleases
+are included; drafts and unpublished tags are excluded. Reruns preserve the
+original GitHub publication timestamp and its 72-hour intervention deadline.
+
+Inspect the sanitized `zenodo-public-evidence` artifact and job summary:
+`ingestion_pending` before the deadline is an operationally successful probe,
+not completed archival. Only `verified` with distinct DOI and exact source file
+inventory supports citation sign-off. `invalid` and conclusive overdue `absent`
+fail; incomplete/network/service queries remain `temporarily_unavailable` and
+fail separately. Scheduled runs can be delayed or dropped; maintainers inspect
+overdue evidence and dispatch manually if needed. Late records remain recoverable.
+
+The component maintainer owns overdue investigation and its local issue; an
+authorized Zenodo maintainer checks account-side status before any replay or
+manual deposit. The common normative policy, bounds and exceptions are routed
+through MOLSYSSUITE_GUIDE.md. No release, webhook, deposit, metadata or package
+promotion is mutated by verification. Existing one-off verifier helpers are
+historical diagnostics; workflow evidence from the common provider owns current
+archival sign-off and recovery. These checks do not establish Conda/npm archival.
