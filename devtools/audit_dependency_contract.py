@@ -133,6 +133,11 @@ def _project(root):
     return requirements, Requirement(f"python{data['requires-python']}")
 
 
+def _inventory_path(root, path):
+    """Serialize repository-relative paths using the inventory's portable syntax."""
+    return path.relative_to(root).as_posix()
+
+
 def audit(root):
     """Return diagnostic strings; malformed or unclassified routes fail closed."""
     root = root.resolve()
@@ -173,7 +178,7 @@ def audit(root):
 
     recipe = contract["recipe"]
     recipes = {
-        str(path.relative_to(root))
+        _inventory_path(root, path)
         for path in (root / "devtools").rglob("*.yaml")
         if path.name in {"recipe.yaml", "meta.yaml"}
     }
@@ -200,7 +205,7 @@ def audit(root):
         if not allowed <= set(expected) or names & ((set(expected) | {"molsysviewer"}) - allowed):
             findings.append(f"{path}: excluded environment now installs runtime packages")
         classified.add(path)
-    discovered = {str(path.relative_to(root)) for path in (root / "devtools/conda-envs").glob("*.y*ml")}
+    discovered = {_inventory_path(root, path) for path in (root / "devtools/conda-envs").glob("*.y*ml")}
     if classified != discovered:
         findings.append(f"environment inventory differs: {sorted(classified ^ discovered)}")
 
@@ -209,7 +214,7 @@ def audit(root):
         findings.append("duplicate source workflow inventory entry")
     audited_sources = set()
     for path in (root / ".github/workflows").glob("*.y*ml"):
-        relative = str(path.relative_to(root))
+        relative = _inventory_path(root, path)
         data = yaml.safe_load(path.read_text(encoding="utf-8"))
         for job_name, job in data.get("jobs", {}).items():
             steps = job.get("steps", [])

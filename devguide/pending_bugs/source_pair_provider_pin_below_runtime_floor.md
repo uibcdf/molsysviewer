@@ -59,4 +59,7 @@ dependency, distribution, ecosystem and reporting qualification passes
 tools. An initial attempt in the minimal installed environment stopped because
 the wheel-build guard requires the absent `build` module; using the established
 build-capable development environment corrects that setup. Hosted qualification
-remains pending.
+remains pending. Run `36924331859` completes the audit, native/integration
+checks and full Viewer suite successfully on Linux and macOS. Windows rejects
+native separators in metadata inventory keys; that independent defect is #139.
+The overall run remains failure until the Windows route is corrected.

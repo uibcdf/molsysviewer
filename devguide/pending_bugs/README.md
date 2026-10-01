@@ -19,8 +19,9 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Being worked on (2)
+### Being worked on (3)
 
+- [`dependency_inventory_paths_are_not_portable.md`](dependency_inventory_paths_are_not_portable.md) — [#139](https://github.com/uibcdf/molsysviewer/issues/139) — Dependency inventory audit rejects valid paths on Windows. *(medium, reproduced)*
 - [`full_pr_ci_can_be_skipped_and_direct_push_debt_is_unchecked.md`](full_pr_ci_can_be_skipped_and_direct_push_debt_is_unchecked.md) — [#116](https://github.com/uibcdf/molsysviewer/issues/116) — Full PR CI can be skipped and direct-push CI debt is unchecked. *(high, measured)*
 - [`source_pair_provider_pin_below_runtime_floor.md`](source_pair_provider_pin_below_runtime_floor.md) — [#138](https://github.com/uibcdf/molsysviewer/issues/138) — Python 3.14 source-pair default provider violates the runtime version floor. *(medium, reproduced)*
 

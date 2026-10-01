@@ -5,10 +5,11 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import runpy
 import shutil
 import subprocess
 import sys
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 
 import pytest
 import yaml
@@ -62,6 +63,21 @@ def test_current_repository_contract_passes_without_importing_the_viewer():
     result = _run(ROOT)
     assert result.returncode == 0, result.stdout + result.stderr
     assert "API compatibility remains a separate gate" in result.stdout
+
+
+@pytest.mark.parametrize("flavour,base", [(PurePosixPath, "/checkout"), (PureWindowsPath, "D:/checkout")])
+@pytest.mark.parametrize(
+    "relative",
+    [
+        "devtools/conda-build/meta.yaml",
+        "devtools/conda-envs/test_source_pair_py314.yaml",
+        ".github/workflows/ci-python-314-source-pair.yaml",
+    ],
+)
+def test_dependency_inventory_paths_use_portable_separators(flavour, base, relative):
+    serializer = runpy.run_path(str(AUDITOR))["_inventory_path"]
+    root = flavour(base)
+    assert serializer(root, root / relative) == relative
 
 
 def test_repository_argument_on_an_evidence_action_is_not_a_source_checkout(tree):

@@ -13,6 +13,8 @@ input. Recipes preserve all canonical constraints exactly. Environments may
 strengthen simple version intervals; missing or weaker constraints fail. Empty,
 duplicate, conditional, URL and unsupported dependency declarations fail closed.
 New managed environments, recipes or sibling checkouts require classification.
+Discovered inventory keys use repository-relative paths with `/` on every host;
+native file access and installed-source paths retain their platform semantics.
 Only `actions/checkout@...` steps declare workflow source checkouts. A
 verification action's `repository` argument identifies external evidence and
 must not be interpreted as a local installation route (`uibcdf/molsysviewer#136`).

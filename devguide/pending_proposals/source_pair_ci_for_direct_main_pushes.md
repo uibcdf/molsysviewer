@@ -50,4 +50,6 @@ Focused qualification passes 165 tests. Push run `36922358875` executes the
 installed-source audit on all three platforms and correctly rejects the stale
 default provider below the runtime floor; remediation is tracked in #138.
 Normal CI `36922358871` and core E2E `36922358989` pass. Complete source-pair
-scientific qualification remains pending the corrected provider run.
+scientific qualification remains pending the corrected provider run. Run
+`36924331859` passes Linux and macOS but exposes the Windows inventory-path
+defect #139; no three-platform success is claimed from that partial result.
