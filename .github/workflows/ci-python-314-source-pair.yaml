@@ -98,11 +98,6 @@ jobs:
             git tag "$EXPECTED_VERSION" HEAD
           fi
 
-      - name: Record published pytest tool versions
-        shell: bash -l {0}
-        run: |
-          python -c "import sys; from importlib.metadata import version; print(sys.version); print('pytest', version('pytest')); print('pytest-receptor', version('pytest-receptor')); assert version('pytest-receptor') == '1.2.0'"
-
       - name: Install both exact source candidates
         shell: bash -l {0}
         run: |
@@ -117,15 +112,20 @@ jobs:
           python molsysmt-source/devtools/scripts/validate_installed_rust_extension.py
           python -c "from importlib.resources import files; assert files('molsysviewer').joinpath('viewer.js').is_file(); assert files('molsysviewer').joinpath('runtime_actions.json').is_file()"
 
+      - name: Record published pytest tool versions
+        shell: bash -l {0}
+        run: |
+          python -c "import sys; from importlib.metadata import version; print(sys.version); print('pytest', version('pytest')); print('pytest-receptor', version('pytest-receptor')); assert version('pytest-receptor') == '1.2.0'"
+
       - name: Guard native MolSysMT paths in the installed pair
         shell: bash -l {0}
-        run: python -m pytest --receptor=ci -o receptor_rerun_command="python -m pytest" molsysmt-source/tests/basic/test_get_form.py::test_bundled_path_is_detected_and_converted_on_native_platform
+        run: python -m pytest -o receptor_rerun_command="python -m pytest" --receptor=ci molsysmt-source/tests/basic/test_get_form.py::test_bundled_path_is_detected_and_converted_on_native_platform
 
       - name: Test MolSysMT integration against the installed pair
         shell: bash -l {0}
         env:
           MOLSYSVIEWER_TEST_INSTALLED: "1"
-        run: python -m pytest --receptor=ci -o receptor_rerun_command="python -m pytest" --import-mode=importlib molsysviewer-source/tests/integration/test_molsysmt_integration.py
+        run: python -m pytest -o receptor_rerun_command="python -m pytest" --receptor=ci --import-mode=importlib molsysviewer-source/tests/integration/test_molsysmt_integration.py
 
       - name: Install JavaScript test dependencies
         shell: bash -l {0}
@@ -135,4 +135,4 @@ jobs:
       - name: Run MolSysViewer Python tests
         shell: bash -l {0}
         working-directory: molsysviewer-source
-        run: python -m pytest --receptor=ci -o receptor_rerun_command="python -m pytest" tests/
+        run: python -m pytest -o receptor_rerun_command="python -m pytest" --receptor=ci tests/

@@ -150,7 +150,7 @@ jobs:
     - name: Qt transport round-trip in a real Qt process
       shell: bash -l {0}
       run: |
-        xvfb-run -a python -m pytest --receptor=ci -o receptor_rerun_command="python -m pytest" -k qt_live_model_smoke_real_window -v --no-header
+        xvfb-run -a python -m pytest -o receptor_rerun_command="python -m pytest" --receptor=ci -k qt_live_model_smoke_real_window -v --no-header
 
     - name: The structure finishes loading through WebGL
       shell: bash -l {0}
@@ -158,7 +158,7 @@ jobs:
         MOLSYSVIEWER_QT_GPU_TEST: "1"
         QTWEBENGINE_CHROMIUM_FLAGS: "--use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader"
       run: |
-        xvfb-run -a python -m pytest --receptor=ci -o receptor_rerun_command="python -m pytest" -k full_render_gpu -v --no-header
+        xvfb-run -a python -m pytest -o receptor_rerun_command="python -m pytest" --receptor=ci -k full_render_gpu -v --no-header
 
   test:
     name: Test on ${{ matrix.cfg.os }}, Python ${{ matrix.cfg.python-version }}
@@ -268,7 +268,7 @@ jobs:
       shell: bash -l {0}
       run: |
         # pytest -n logical -v --cov-config=.coveragerc --cov=molsysviewer --cov-report=xml --junitxml=junit.xml --color=yes
-        python -m pytest --receptor=ci -o receptor_rerun_command="python -m pytest" -v --cov-config=.coveragerc --cov=molsysviewer --cov-report=xml --junitxml=junit.xml --color=yes
+        python -m pytest -o receptor_rerun_command="python -m pytest" --receptor=ci -v --cov-config=.coveragerc --cov=molsysviewer --cov-report=xml --junitxml=junit.xml --color=yes
 
     - name: JS unit tests (Node)
       if: matrix.cfg.os == 'ubuntu-latest' && matrix.cfg.python-version == '3.13'
