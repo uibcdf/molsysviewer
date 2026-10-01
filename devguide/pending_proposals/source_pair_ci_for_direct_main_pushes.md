@@ -45,5 +45,9 @@ recorded in `uibcdf/gh-run-receptor#56`.
 
 ## Resolution
 
-Push routing and its configuration guard are implemented. Focused checks and
-actual push-triggered hosted qualification remain pending.
+Push routing and its configuration guard are implemented at `78bb4565`.
+Focused qualification passes 165 tests. Push run `36922358875` executes the
+installed-source audit on all three platforms and correctly rejects the stale
+default provider below the runtime floor; remediation is tracked in #138.
+Normal CI `36922358871` and core E2E `36922358989` pass. Complete source-pair
+scientific qualification remains pending the corrected provider run.

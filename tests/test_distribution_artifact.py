@@ -428,7 +428,8 @@ def test_python_314_source_pair_uses_exact_provider_commit_without_metadata_bypa
     workflow = (ROOT / ".github" / "workflows" / "ci-python-314-source-pair.yaml").read_text(encoding="utf-8")
     assert "repository: uibcdf/molsysmt" in workflow
     assert "inputs.molsysmt_sha" in workflow
-    assert "8ab42b58520892d54a05222b91c116b9e9114314" in workflow
+    # Exact released source baseline; the installed audit enforces its version floor.
+    assert workflow.count("${{ inputs.molsysmt_sha || 'e28ceb9ea0de0cc86bc370e5aff1e96c4cc71c69' }}") == 3
     assert "^[0-9a-f]{40}$" in workflow
     assert "git -C molsysmt-source rev-parse HEAD" in workflow
     assert "--ignore-requires-python" not in workflow

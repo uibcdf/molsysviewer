@@ -126,7 +126,7 @@ def test_real_undeclared_or_duplicate_source_checkouts_remain_rejected(tree, fau
         ),
         (
             ".github/workflows/ci-python-314-source-pair.yaml",
-            "ref: ${{ inputs.molsysmt_sha || '8ab42b58520892d54a05222b91c116b9e9114314' }}",
+            "ref: ${{ inputs.molsysmt_sha || 'e28ceb9ea0de0cc86bc370e5aff1e96c4cc71c69' }}",
             "ref: main",
             "exact SHA",
         ),

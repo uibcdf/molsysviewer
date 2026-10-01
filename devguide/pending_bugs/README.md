@@ -19,9 +19,10 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Being worked on (1)
+### Being worked on (2)
 
 - [`full_pr_ci_can_be_skipped_and_direct_push_debt_is_unchecked.md`](full_pr_ci_can_be_skipped_and_direct_push_debt_is_unchecked.md) — [#116](https://github.com/uibcdf/molsysviewer/issues/116) — Full PR CI can be skipped and direct-push CI debt is unchecked. *(high, measured)*
+- [`source_pair_provider_pin_below_runtime_floor.md`](source_pair_provider_pin_below_runtime_floor.md) — [#138](https://github.com/uibcdf/molsysviewer/issues/138) — Python 3.14 source-pair default provider violates the runtime version floor. *(medium, reproduced)*
 
 ### Partially done (2)
 
