@@ -157,3 +157,6 @@ Completed work, kept for the reasoning:
   filing one leak found: `"250"` was parsing as 250 **radians** and `True` as one
   millisecond, and the fix was a shared boundary taking a dimensionality rather than a
   patch on one digester.
+
+- [`adopt_resumable_zenodo_verification.md`](adopt_resumable_zenodo_verification.md)
+  — the pinned common provider now supplies exact-tag and scheduled complete discovery, with truthful delayed states and a publication-anchored deadline.
