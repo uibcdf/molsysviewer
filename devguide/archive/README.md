@@ -1,5 +1,9 @@
 # Archived implementation plans
 
+- [`source_pair_ci_for_direct_main_pushes.md`](source_pair_ci_for_direct_main_pushes.md) — #137: direct-main Python 3.14 validation, preserving manual frozen-candidate identity checks; three native source-pair jobs pass.
+- [`source_pair_provider_pin_below_runtime_floor.md`](source_pair_provider_pin_below_runtime_floor.md) — #138: exact released MolSysMT 0.22.4 replaces the obsolete provider below the runtime floor; installed audits and native/scientific suites pass.
+- [`dependency_inventory_paths_are_not_portable.md`](dependency_inventory_paths_are_not_portable.md) — #139: portable relative inventory keys prevent false Windows drift; native Windows full-suite qualification passes.
+
 These documents describe completed implementation work whose rationale may still
 be useful. They are historical records, not current instructions or API
 references. Current behavior is defined by code, tests, durable contracts, and

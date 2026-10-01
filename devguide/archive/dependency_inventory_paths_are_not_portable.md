@@ -1,9 +1,9 @@
 ---
 summary: Dependency inventory audit rejects valid paths on Windows.
 issue: uibcdf/molsysviewer#139
-status: active
+status: resolved
 opened: 2026-10-01
-closed:
+closed: 2026-10-01
 severity: medium
 verification: reproduced
 area: [ci, dependencies, windows]
@@ -51,6 +51,22 @@ paths would hide the defect or damage installed-origin checks.
 
 The three discovery sites share the portable serializer. Six real path-object
 cases cover Windows and POSIX recipe/environment/workflow keys; the real-tree
-audit and invalid/duplicate-route rejection remain required. Focused and
-native hosted qualification are pending. Focused qualification passes
+audit and invalid/duplicate-route rejection remain required. Focused qualification passes
 **173 tests**, exit 0; Ruff check/format and the read-only metadata audit pass.
+
+Final run `36926313726` at `ca6a3cda9eefcbd878775bcced8e21e7cb9bc069`
+passes all three source-pair jobs. Native metadata confirms the audit,
+Rust/resource checks, native-path guard, installed-pair integration and complete
+Viewer suite all executed successfully on each platform. Native logs record:
+
+| Host | Complete Viewer suite | Native-path guard | Installed integration |
+| --- | --- | --- | --- |
+| Linux | 2,297 passed, 17 skipped | 3 passed | 2 passed |
+| macOS | 2,290 passed, 24 skipped | 3 passed | 2 passed |
+| Windows | 2,291 passed, 23 skipped | 3 passed | 2 passed |
+
+Normal CI `36926313560` and core E2E `36926313665` pass at the same commit.
+The invalid-input guards continue to enforce inventory equality and source
+identity. Native file access and installed-origin validation retain their
+platform semantics. This is source-subset evidence, not qualification of the
+larger uncommitted product changes or a newly published package.

@@ -1,12 +1,12 @@
 ---
 summary: Run Python 3.14 source-pair CI on direct main pushes.
 issue: uibcdf/molsysviewer#137
-status: active
+status: resolved
 opened: 2026-10-01
-closed:
+closed: 2026-10-01
 verification: reproduced
 area: [ci, tooling, dependencies]
-guard: tests/test_python_ecosystem_contract.py
+guard: tests/test_python_ecosystem_contract.py::test_source_pair_main_pushes_validate_development_without_retagging_releases
 normative: devguide/dependency_contract.md
 blocked_by: []
 supersedes: []
@@ -53,3 +53,12 @@ Normal CI `36922358871` and core E2E `36922358989` pass. Complete source-pair
 scientific qualification remains pending the corrected provider run. Run
 `36924331859` passes Linux and macOS but exposes the Windows inventory-path
 defect #139; no three-platform success is claimed from that partial result.
+
+Final source-pair run `36926313726`, push at
+`ca6a3cda9eefcbd878775bcced8e21e7cb9bc069`, completes successfully on Linux,
+macOS and Windows. Native step metadata confirms all three jobs executed the
+installed-source audit, Rust/resource checks, native-path guard, installed-pair
+integration and complete Viewer suite. Normal CI `36926313560` and core E2E
+`36926313665` also pass at that commit. The manual frozen-candidate contract
+remains intact. This qualifies the published source subset; the uncommitted
+Interactions implementation and public artifacts need separate evidence.

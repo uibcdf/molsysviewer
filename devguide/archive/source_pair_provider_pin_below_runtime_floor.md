@@ -1,9 +1,9 @@
 ---
 summary: Python 3.14 source-pair default provider violates the runtime version floor.
 issue: uibcdf/molsysviewer#138
-status: active
+status: resolved
 opened: 2026-10-01
-closed:
+closed: 2026-10-01
 severity: medium
 verification: reproduced
 area: [ci, dependencies]
@@ -62,4 +62,13 @@ build-capable development environment corrects that setup. Hosted qualification
 remains pending. Run `36924331859` completes the audit, native/integration
 checks and full Viewer suite successfully on Linux and macOS. Windows rejects
 native separators in metadata inventory keys; that independent defect is #139.
-The overall run remains failure until the Windows route is corrected.
+That overall run remains failure evidence for the independent Windows defect.
+
+Final source-pair run `36926313726`, push at
+`ca6a3cda9eefcbd878775bcced8e21e7cb9bc069`, passes all three native platforms.
+Logs confirm installed MolSysMT 0.22.4 and an executed successful source audit,
+followed by Rust/resources, native-path, installed-pair integration and full
+Viewer tests. Normal CI `36926313560` and core E2E `36926313665` also pass.
+The installed-floor guard rejects older distributions, while the distribution
+guard requires the same exact reviewed default in all three workflow fields.
+No public release or uncommitted Interactions qualification is claimed.
