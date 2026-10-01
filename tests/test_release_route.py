@@ -119,7 +119,10 @@ def test_promotion_requires_exact_release_and_installed_pair_evidence():
     matrix = next(step for step in steps if step.get("id") == "installed_matrix")
     assert matrix["with"]["workflow"] == ".github/workflows/validate_conda_staging.yaml"
     assert "--jq .total_count" not in identity["run"]
-    assert any("/.github/actions/verify-installed-matrix@" in step.get("uses", "") for step in workflow["jobs"]["promote"]["steps"])
+    assert any(
+        "/.github/actions/verify-installed-matrix@" in step.get("uses", "")
+        for step in workflow["jobs"]["promote"]["steps"]
+    )
     assert "Python 3.14 | all" in matrix["with"]["title"]
     assert promotion["uses"] == "uibcdf/action-build-and-upload-conda-packages/promote@v2.2.2"
     assert promotion["with"]["from-label"] == "staging"

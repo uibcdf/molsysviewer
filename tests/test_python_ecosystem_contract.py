@@ -37,7 +37,9 @@ def test_every_hosted_pytest_command_selects_ci_and_an_executable_rerun(filename
                     commands.append(tokens)
                     job_commands.append(tokens)
         if job_commands:
-            version_step = next(step for step in job["steps"] if step.get("name") == "Record published pytest tool versions")
+            version_step = next(
+                step for step in job["steps"] if step.get("name") == "Record published pytest tool versions"
+            )
             assert f"assert version('pytest-receptor') == '{RECEPTOR_VERSION}'" in version_step["run"]
     assert len(commands) == 3
     for tokens in commands:
@@ -50,13 +52,15 @@ def test_every_hosted_pytest_command_selects_ci_and_an_executable_rerun(filename
         assert {"--cov-config=.coveragerc", "--cov=molsysviewer", "--cov-report=xml"} <= set(main)
         assert "-k" not in main and "--ignore" not in main
         assert {tokens[tokens.index("-k") + 1] for tokens in commands if "-k" in tokens} == {
-            "qt_live_model_smoke_real_window", "full_render_gpu"
+            "qt_live_model_smoke_real_window",
+            "full_render_gpu",
         }
     else:
         assert any("tests/" in tokens for tokens in commands)
         installed = next(tokens for tokens in commands if "--import-mode=importlib" in tokens)
         assert "molsysviewer-source/tests/integration/test_molsysmt_integration.py" in installed
         assert any(
-            "molsysmt-source/tests/basic/test_get_form.py::test_bundled_path_is_detected_and_converted_on_native_platform" in tokens
+            "molsysmt-source/tests/basic/test_get_form.py::test_bundled_path_is_detected_and_converted_on_native_platform"
+            in tokens
             for tokens in commands
         )
