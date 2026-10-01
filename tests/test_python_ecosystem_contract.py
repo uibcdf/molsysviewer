@@ -12,6 +12,24 @@ ROOT = Path(__file__).resolve().parents[1]
 RECEPTOR_VERSION = "1.2.0"
 
 
+def test_source_pair_main_pushes_validate_development_without_retagging_releases():
+    workflow = yaml.load(
+        (ROOT / ".github/workflows/ci-python-314-source-pair.yaml").read_text(), Loader=yaml.BaseLoader
+    )
+    events = workflow["on"]
+    assert events["push"]["branches"] == ["main"]
+    assert events["push"]["paths"] == events["pull_request"]["paths"]
+    assert {"molsysviewer/**", "tests/**", "devtools/audit_dependency_contract.py"} <= set(events["push"]["paths"])
+    steps = workflow["jobs"]["source-pair"]["steps"]
+    candidate = next(
+        step for step in steps if step.get("name") == "Validate and locally tag the exact Viewer source candidate"
+    )
+    assert candidate["if"] == "github.event_name == 'workflow_dispatch'"
+    assert 'test "$(git rev-list -n 1 "$EXPECTED_VERSION")" = "$GITHUB_SHA"' in candidate["run"]
+    checkout = next(step for step in steps if step.get("with", {}).get("repository") == "uibcdf/molsysmt")
+    assert re.fullmatch(r"\$\{\{ inputs\.molsysmt_sha \|\| '[0-9a-f]{40}' \}\}", checkout["with"]["ref"])
+
+
 @pytest.mark.parametrize("name", ["test_env", "test_source_pair_py314", "development_env"])
 def test_test_environments_pin_the_reviewed_published_receptor(name):
     environment = yaml.safe_load((ROOT / "devtools/conda-envs" / f"{name}.yaml").read_text())

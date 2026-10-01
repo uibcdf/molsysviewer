@@ -3,6 +3,16 @@ name: Python 3.14 source pair
 # Feasibility gate for the coordinated source branches. It does not establish
 # resolver-consistent package installation or authorize a public Python badge.
 on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/ci-python-314-source-pair.yaml
+      - devtools/conda-envs/test_source_pair_py314.yaml
+      - devtools/audit_dependency_contract.py
+      - devtools/dependency_contract.toml
+      - pyproject.toml
+      - molsysviewer/**
+      - tests/**
   workflow_dispatch:
     inputs:
       molsysmt_sha:

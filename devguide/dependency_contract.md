@@ -40,3 +40,13 @@ published-provider gate for Interactions (`uibcdf/molsysviewer#114`). A controll
 source result neither changes public floors nor establishes a public installer
 route. This local adoption is tracked by `uibcdf/molsysviewer#106`; it does not
 declare platform-wide adoption of `uibcdf/moli#21`.
+
+## Development and frozen source candidates
+
+Python 3.14 source-pair CI runs on qualifying main pushes and PRs using the
+same path filters and exact provider pin. Both development events run the
+installed-source audit, native checks, installed-pair scientific tests and
+complete Viewer suite. The manual event additionally verifies and locally
+tags the declared frozen Viewer candidate, retaining its version/runtime/tag
+identity assertions. A development check never qualifies an installed public
+artifact or authorizes moving a published tag (`uibcdf/molsysviewer#137`).
