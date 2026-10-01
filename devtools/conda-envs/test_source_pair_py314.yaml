@@ -11,7 +11,7 @@ dependencies:
   - wheel
   - python-build
   - pytest
-  - pytest-receptor
+  - pytest-receptor ==1.2.0
   - pytest-cov
   - pyyaml
   - nodejs>=18
