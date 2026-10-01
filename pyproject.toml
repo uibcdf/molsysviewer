@@ -57,6 +57,7 @@ dev = [
   "pyyaml",
   "ruff==0.16.5",
   "pytest",
+  "pytest-receptor==1.2.0",
   "pytest-cov",
 ]
 # YAML support for user presets (msv.config.load_user_presets with .yaml files)

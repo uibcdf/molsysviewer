@@ -22,6 +22,7 @@ dependencies:
   # --- Dev tools: formatting, linting, testing ---
   - ruff=0.16.5
   - pytest
+  - pytest-receptor ==1.2.0
   - pytest-cov
 
   # --- Optional but helpful for interactive debugging ---

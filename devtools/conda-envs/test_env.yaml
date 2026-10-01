@@ -10,6 +10,7 @@ dependencies:
   - versioningit
   - wheel
   - pytest
+  - pytest-receptor ==1.2.0
   - pytest-cov
   # The distribution-contract tests parse the Conda YAML recipe during collection.
   - pyyaml
