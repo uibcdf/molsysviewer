@@ -160,3 +160,5 @@ Completed work, kept for the reasoning:
 
 - [`adopt_resumable_zenodo_verification.md`](adopt_resumable_zenodo_verification.md)
   — the pinned common provider now supplies exact-tag and scheduled complete discovery, with truthful delayed states and a publication-anchored deadline.
+
+- [`adopt_shared_public_conda_verifier.md`](adopt_shared_public_conda_verifier.md) — Adopted the pinned shared verifier; public proof passed, historical Windows-launcher failure remains #101.
