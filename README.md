@@ -5,10 +5,13 @@
 [![Python 3.11 | 3.12 | 3.13](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13-3776AB?logo=python&logoColor=white)](https://github.com/uibcdf/molsyssuite/blob/main/devguide/python_policy.md)
 [![License](https://img.shields.io/github/license/uibcdf/molsysviewer)](https://github.com/uibcdf/molsysviewer/blob/main/LICENSE)
 [![Tests](https://github.com/uibcdf/molsysviewer/actions/workflows/CI.yaml/badge.svg?branch=main)](https://github.com/uibcdf/molsysviewer/actions/workflows/CI.yaml)
+[![Codecov](https://codecov.io/gh/uibcdf/molsysviewer/branch/main/graph/badge.svg)](https://app.codecov.io/gh/uibcdf/molsysviewer)
 [![Documentation](https://github.com/uibcdf/molsysviewer/actions/workflows/sphinx_docs_to_gh_pages.yaml/badge.svg)](https://www.uibcdf.org/molsysviewer/)
 [![GitHub release](https://img.shields.io/github/v/release/uibcdf/molsysviewer)](https://github.com/uibcdf/molsysviewer/releases/latest)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18072956.svg)](https://doi.org/10.5281/zenodo.18072956)
 [![Conda](https://img.shields.io/conda/vn/uibcdf/molsysviewer)](https://anaconda.org/uibcdf/molsysviewer)
+
+Coverage: Python tests plus JavaScript unit tests, uploaded by the Linux/Python 3.13 CI lane on eligible full runs; weekly and conditional nightly recovery retain the existing cadence. This report does not cover all browser, GUI or GPU behavior. The badge reflects the last uploaded report, which may lag later direct or skip-CI commits; it does not certify a full matrix or scientific correctness.
 
 *A Mol\*-powered interactive molecular viewer for Jupyter, built around the idea that
 exploratory science should become reproducible science.*
