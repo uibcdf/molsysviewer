@@ -1,4 +1,5 @@
 name: Verify staged noarch launchers on Windows
+run-name: 'Viewer ${{ inputs.version }} build ${{ inputs.build_number }} | Windows launchers | sha256 ${{ inputs.sha256 }}'
 
 on:
   workflow_dispatch:
@@ -32,6 +33,15 @@ jobs:
         with:
           ref: ${{ inputs.candidate_sha }}
           persist-credentials: false
+      - name: Validate candidate checkout
+        shell: bash
+        env:
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$CANDIDATE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$CANDIDATE_SHA" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
       - name: Install the exact staged Conda package
         uses: mamba-org/setup-micromamba@v3.2.1
         with:

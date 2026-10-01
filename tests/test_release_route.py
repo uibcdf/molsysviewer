@@ -103,6 +103,7 @@ def test_promotion_requires_exact_release_and_installed_pair_evidence():
         "build_number",
         "sha256",
         "pair_run_id",
+        "windows_run_id",
         "molsysmt_candidate_sha",
         "molsysmt_version",
         "molsysmt_build_number",
@@ -124,6 +125,10 @@ def test_promotion_requires_exact_release_and_installed_pair_evidence():
         for step in workflow["jobs"]["promote"]["steps"]
     )
     assert "Python 3.14 | all" in matrix["with"]["title"]
+    assert "verify_promotion_gates.py" in identity["run"]
+    assert "--pair-run-id" in identity["run"]
+    assert "--windows-run-id" in identity["run"]
+    assert steps.index(identity) < steps.index(promotion)
     assert promotion["uses"] == "uibcdf/action-build-and-upload-conda-packages/promote@v2.2.2"
     assert promotion["with"]["from-label"] == "staging"
     assert promotion["with"]["to-label"] == "main"

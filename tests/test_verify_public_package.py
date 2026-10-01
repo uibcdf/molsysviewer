@@ -1,5 +1,7 @@
 """Protect actual adoption of the shared, read-only public Conda verifier."""
 
+import subprocess
+import sys
 from pathlib import Path
 
 import yaml
@@ -83,3 +85,18 @@ def test_promotion_checks_native_cells_and_steps_instead_of_a_job_count():
     recheck = yaml.safe_load((ROOT / ".github/workflows/verify_installed_conda_pair.yaml").read_text())
     assert any(step.get("uses") == source for step in recheck["jobs"]["verify"]["steps"])
     assert "ANACONDA_UIBCDF_TOKEN" not in str(recheck)
+
+
+def test_candidate_and_promotion_tools_import_after_local_verifier_removal():
+    listing = subprocess.run(
+        [sys.executable, str(ROOT / "devtools/release_gate.py"), "--list"], capture_output=True, text=True
+    )
+    assert listing.returncode == 0, listing.stderr
+    assert "public_conda" in listing.stdout
+    promotion = subprocess.run(
+        [sys.executable, str(ROOT / "devtools/conda-build/verify_promotion_gates.py"), "--help"],
+        capture_output=True,
+        text=True,
+    )
+    assert promotion.returncode == 0, promotion.stderr
+    assert "--windows-run-id" in promotion.stdout

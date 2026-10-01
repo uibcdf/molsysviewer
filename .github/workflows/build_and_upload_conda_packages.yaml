@@ -146,6 +146,7 @@ jobs:
           EXPECTED_VERSION: ${{ inputs.version || github.event.release.tag_name }}
         run: |
           set -euo pipefail
+          python devtools/audit_dependency_contract.py
           python devtools/validate_python_wheel_runtime.py --expected-version "$EXPECTED_VERSION"
           python -m build --wheel --no-isolation --outdir "$RUNNER_TEMP/python-wheel-contract"
           shopt -s nullglob

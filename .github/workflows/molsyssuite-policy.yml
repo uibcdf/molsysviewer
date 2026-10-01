@@ -11,5 +11,17 @@ permissions:
   contents: read
 
 jobs:
+  dependency-contract:
+    name: Dependency metadata audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install metadata readers
+        run: python -m pip install 'packaging>=23' pyyaml
+      - name: Audit dependency metadata without importing the viewer
+        run: python devtools/audit_dependency_contract.py
   policy:
     uses: uibcdf/molsyssuite/.github/workflows/check-python-repository.yaml@policy-v1.5.2

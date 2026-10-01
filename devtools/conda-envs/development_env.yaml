@@ -11,13 +11,20 @@ dependencies:
   # --- Jupyter / widget development ---
   - jupyterlab
   - ipywidgets
-  - anywidget
+  - aiohttp>=3.10
+  - anywidget>=0.9.15
+  - argdigest>=0.13.0
+  - depdigest
+  - packaging>=23
+  - smonitor>=0.13.0
+  - traitlets>=5
+  - pyyaml
 
   # --- Scientific stack (lightweight) ---
   - numpy
   - pandas
-  - molsysmt
-  - pyunitwizard
+  - molsysmt>=0.22.0
+  - pyunitwizard>=0.25.0
 
   # --- Dev tools: formatting, linting, testing ---
   - ruff=0.16.5
@@ -39,7 +46,6 @@ dependencies:
   - qt6-positioning ==6.11.2
 
   # --- Documentation with Sphinx and MyST ---
-  - jupyterlab
   - sphinx
   - sphinxcontrib-bibtex
   - sphinx-remove-toctrees

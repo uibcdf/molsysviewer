@@ -1,0 +1,32 @@
+# Package names and versions belong to pyproject.toml, not this route inventory.
+schema = 1
+recipe = "devtools/conda-build/meta.yaml"
+
+[[environments]]
+path = "devtools/conda-envs/development_env.yaml"
+source_supplied = []
+
+[[environments]]
+path = "devtools/conda-envs/test_env.yaml"
+source_supplied = []
+
+[[environments]]
+path = "devtools/conda-envs/docs_env.yaml"
+source_supplied = []
+
+[[environments]]
+path = "devtools/conda-envs/test_source_pair_py314.yaml"
+source_supplied = ["molsysmt"]
+
+[[excluded_environments]]
+path = "devtools/conda-envs/build_env.yaml"
+reason = "Packaging tools only; the recipe supplies the host and runtime requirements."
+runtime_tools = ["packaging"]
+
+[[source_workflows]]
+path = ".github/workflows/ci-python-314-source-pair.yaml"
+job = "source-pair"
+package = "molsysmt"
+checkout_path = "molsysmt-source"
+environment = "devtools/conda-envs/test_source_pair_py314.yaml"
+input = "molsysmt_sha"

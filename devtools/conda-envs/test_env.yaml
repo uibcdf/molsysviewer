@@ -4,6 +4,7 @@ channels:
   - ambermd
 
 dependencies:
+  - python>=3.11,<3.15
   - pip
   - python-build
   - setuptools>=64

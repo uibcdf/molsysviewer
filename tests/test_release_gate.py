@@ -21,7 +21,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "devtools"))
 
-from release_gate import STEPS, _check_version_consistency  # noqa: E402
+from release_gate import STEPS, _check_version_consistency, _run  # noqa: E402
+
+
+def test_dependency_audit_runs_before_costly_release_checks():
+    assert STEPS[0].name == "dependencies"
+    assert STEPS[0].command == [sys.executable, "devtools/audit_dependency_contract.py"]
 
 
 def test_release_gate_requires_core_e2e_without_experimental_hosts():
@@ -48,20 +53,22 @@ def test_the_gate_lists_its_steps_without_running_them():
 
 def test_every_step_can_either_run_or_say_why_not():
     """A step with no command and no reason is a hole the gate would pass through."""
-    holes = [step.name for step in STEPS if step.command is None and step.blocked_by is None and step.name != "version"]
+    holes = [
+        step.name
+        for step in STEPS
+        if step.command is None and step.blocked_by is None and not step.evidence and step.name != "version"
+    ]
 
     assert holes == [], f"steps that neither run nor explain themselves: {holes}"
 
 
 def test_the_blocked_steps_name_what_they_are_waiting_for():
     """The final 1.0 pair remains blocked until candidate evidence can be checked."""
-    reasons = {step.name: step.blocked_by() for step in STEPS if step.blocked_by}
-
-    assert reasons.get("conda"), "the conda step must always state why it cannot run"
-    assert "final-version Conda pair" in reasons["conda"]
-    assert "pre-1.0 pair" in reasons["conda"]
-    assert "gates 1-5 of Phase 10 are open" not in reasons["conda"]
-    assert "qt" not in reasons
+    for step in (item for item in STEPS if item.evidence):
+        state, reason, _ = _run(step)
+        assert state == "BLOCKED"
+        assert "exact-candidate evidence" in reason
+        assert "gates 1-5 of Phase 10 are open" not in reason
 
 
 def _checkout(tmp_path, runtime_version, manifest_version="4.5.6"):

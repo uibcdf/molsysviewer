@@ -19,6 +19,8 @@ on:
     paths:
       - .github/workflows/ci-python-314-source-pair.yaml
       - devtools/conda-envs/test_source_pair_py314.yaml
+      - devtools/audit_dependency_contract.py
+      - devtools/dependency_contract.toml
       - pyproject.toml
       - molsysviewer/**
       - tests/**
@@ -104,6 +106,15 @@ jobs:
           set -euo pipefail
           python -m pip install --no-deps --no-build-isolation ./molsysmt-source
           python -m pip install --no-deps --no-build-isolation ./molsysviewer-source
+
+      - name: Audit dependency routes and the installed exact source provider
+        shell: bash -l {0}
+        working-directory: molsysviewer-source
+        env:
+          MOLSYSMT_SHA: ${{ inputs.molsysmt_sha || '8ab42b58520892d54a05222b91c116b9e9114314' }}
+        run: |
+          python devtools/audit_dependency_contract.py \
+            --installed-source "molsysmt=../molsysmt-source@$MOLSYSMT_SHA"
 
       - name: Check installed Rust and viewer resources
         shell: bash -l {0}

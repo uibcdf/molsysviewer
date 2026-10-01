@@ -162,3 +162,11 @@ Completed work, kept for the reasoning:
   — the pinned common provider now supplies exact-tag and scheduled complete discovery, with truthful delayed states and a publication-anchored deadline.
 
 - [`adopt_shared_public_conda_verifier.md`](adopt_shared_public_conda_verifier.md) — Adopted the pinned shared verifier; public proof passed, historical Windows-launcher failure remains #101.
+
+## Release and dependency closure — 2026-10-01
+
+- [audit_dependency_floors_and_source_pins.md](audit_dependency_floors_and_source_pins.md) — #106: canonical runtime requirements and exact source-provider routes are audited before packaging.
+- [conda_promotion_gate_omits_current_matrix_and_windows.md](conda_promotion_gate_omits_current_matrix_and_windows.md) — #134: promotion requires current installed-pair coverage and exact Windows launcher evidence.
+- [release_gate_conflates_staging_evidence_with_strict_1_0_requirements.md](release_gate_conflates_staging_evidence_with_strict_1_0_requirements.md) — #103: exact-candidate evidence and explicit pre-1.0 exceptions cannot certify a strict 1.0 release.
+
+- [dependency_audit_mistakes_evidence_actions_for_source_checkouts.md](dependency_audit_mistakes_evidence_actions_for_source_checkouts.md) — #136: evidence-action repository inputs no longer become source checkouts; undeclared and duplicate actual checkouts remain rejected.

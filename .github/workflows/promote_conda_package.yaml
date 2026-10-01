@@ -23,6 +23,10 @@ on:
         description: Successful MolSysMT installed-pair validation run ID
         required: true
         type: string
+      windows_run_id:
+        description: Successful exact-candidate staged Windows launcher run ID
+        required: true
+        type: string
       molsysmt_candidate_sha:
         description: Full MolSysMT commit SHA of that validation run
         required: true
@@ -65,6 +69,7 @@ jobs:
           BUILD_NUMBER: ${{ inputs.build_number }}
           EXPECTED_SHA256: ${{ inputs.sha256 }}
           PAIR_RUN_ID: ${{ inputs.pair_run_id }}
+          WINDOWS_RUN_ID: ${{ inputs.windows_run_id }}
           MOLSYSMT_VERSION: ${{ inputs.molsysmt_version }}
           MOLSYSMT_BUILD: ${{ inputs.molsysmt_build_number }}
         run: |
@@ -76,6 +81,7 @@ jobs:
           [[ "$BUILD_NUMBER" =~ ^[0-9]+$ ]]
           [[ "$EXPECTED_SHA256" =~ ^[0-9a-f]{64}$ ]]
           [[ "$PAIR_RUN_ID" =~ ^[0-9]+$ ]]
+          [[ "$WINDOWS_RUN_ID" =~ ^[0-9]+$ ]]
           [[ "$MOLSYSMT_VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]
           [[ "$MOLSYSMT_BUILD" =~ ^[0-9]+$ ]]
           test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
@@ -85,6 +91,12 @@ jobs:
           python devtools/conda-build/release_route.py \
             --version "$RELEASE_VERSION" --event release \
             --github-output "$RUNNER_TEMP/conda-route-output"
+          python3 devtools/conda-build/verify_promotion_gates.py \
+            --viewer-commit "$CANDIDATE_SHA" --version "$RELEASE_VERSION" \
+            --build-number "$BUILD_NUMBER" --sha256 "$EXPECTED_SHA256" \
+            --pair-run-id "$PAIR_RUN_ID" --windows-run-id "$WINDOWS_RUN_ID" \
+            --molsysmt-commit "$MOLSYSMT_CANDIDATE_SHA" \
+            --molsysmt-version "$MOLSYSMT_VERSION" --molsysmt-build-number "$MOLSYSMT_BUILD"
 
       - name: Verify every declared installed-pair cell and evidence step
         id: installed_matrix

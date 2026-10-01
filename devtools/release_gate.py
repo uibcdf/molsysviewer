@@ -12,8 +12,10 @@ gate that passes on an untested release.
 
 Most checks also run in the suite: the suite catches regressions during development,
 while this command reports the candidate's runnable and blocked checks together.
-The final installed Conda pair still needs exact-candidate evidence; the `conda` step
-remains blocked until it can assess that evidence mechanically (issue #103).
+Use --candidate-evidence PLAN.json for the exact staging/public installed pair
+and hosted core E2E evidence. Missing evidence blocks; contradictory evidence
+fails. --pre-release only assesses a 0.x candidate, and declared exceptions
+never become passing checks or strict 1.0 clearance (issue #103).
 """
 
 from __future__ import annotations
@@ -27,6 +29,8 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
+from release_evidence import CandidateEvidence
+
 ROOT = Path(__file__).resolve().parents[1]
 JS_ROOT = ROOT / "molsysviewer" / "js"
 
@@ -39,6 +43,7 @@ class Step:
     #: Returns a reason when the step cannot run, or None when it can.
     blocked_by: object = None
     cwd: Path = ROOT
+    evidence: bool = False
 
 
 def _node_available() -> str | None:
@@ -49,16 +54,12 @@ def _node_available() -> str | None:
     return None
 
 
-def _sibling_releases_ready() -> str | None:
-    return (
-        "the strict 1.0 gate requires a separately verified final-version Conda pair. "
-        "A published pre-1.0 pair is a distribution milestone, not proof of the final "
-        "1.0 coordinates; this step does not assess current pre-1.0 channel availability "
-        "(uibcdf/molsysviewer#103)"
-    )
-
-
 STEPS = (
+    Step(
+        "dependencies",
+        "dependency metadata and source routes agree",
+        [sys.executable, "devtools/audit_dependency_contract.py"],
+    ),
     Step("python", "the full Python suite", [sys.executable, "-m", "pytest", "tests/", "-q", "-x"]),
     Step("devguide", "generated indexes are current", [sys.executable, "devtools/devguide_index.py", "--check"]),
     Step("citation", "citation and Zenodo metadata agree", [sys.executable, "devtools/validate_citation.py"]),
@@ -80,7 +81,9 @@ STEPS = (
         blocked_by=_node_available,
         cwd=JS_ROOT,
     ),
-    Step("conda", "the final-version Conda pair for 1.0", None, blocked_by=_sibling_releases_ready),
+    Step("conda", "the exact installed Conda pair from staging", None, evidence=True),
+    Step("public_conda", "the exact installed pair and solver-visible public files", None, evidence=True),
+    Step("hosted_e2e", "hosted core E2E at the exact Viewer candidate commit", None, evidence=True),
 )
 
 
@@ -140,7 +143,7 @@ def _check_version_consistency(
     return True, f"viewer.js carries {reported}{note}"
 
 
-def _run(step: Step) -> tuple[str, str, float]:
+def _run(step: Step, evidence: CandidateEvidence | None = None) -> tuple[str, str, float]:
     started = time.monotonic()
 
     if step.blocked_by is not None:
@@ -151,6 +154,10 @@ def _run(step: Step) -> tuple[str, str, float]:
     if step.name == "version":
         passed, detail = _check_version_consistency()
         return ("PASS" if passed else "FAIL"), detail, time.monotonic() - started
+
+    if step.evidence:
+        state, detail = (evidence or CandidateEvidence(None, ROOT)).evaluate(step.name)
+        return state, detail, time.monotonic() - started
 
     if step.command is None:
         return "BLOCKED", "no command and no reason declared — this is a bug in the gate", 0.0
@@ -164,24 +171,44 @@ def _run(step: Step) -> tuple[str, str, float]:
     return "FAIL", "\n".join(tail + error), elapsed
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--list", action="store_true", help="show the steps and exit")
     parser.add_argument("--only", default="", help="comma-separated step names")
-    arguments = parser.parse_args()
+    parser.add_argument("--candidate-evidence", type=Path, help="reviewed exact candidate and run identities")
+    parser.add_argument("--pre-release", action="store_true", help="assess a 0.x candidate; never clear strict 1.0")
+    arguments = parser.parse_args(argv)
 
-    selected = [s for s in STEPS if not arguments.only or s.name in arguments.only.split(",")]
+    names = arguments.only.split(",") if arguments.only else [step.name for step in STEPS]
+    if len(names) != len(set(names)) or any(name not in {step.name for step in STEPS} for name in names):
+        parser.error("--only must name distinct existing steps")
+
+    selected = [step for step in STEPS if step.name in names]
 
     if arguments.list:
         for step in selected:
             reason = step.blocked_by() if step.blocked_by else None
+            if step.evidence:
+                reason = (
+                    "exact-candidate evidence missing; supply --candidate-evidence"
+                    if arguments.candidate_evidence is None
+                    else None
+                )
             state = f"BLOCKED — {reason}" if reason else "runnable"
             print(f"  {step.name:<11} {step.what}\n              {state}")
         return 0
 
+    reported_version = None
+    if arguments.candidate_evidence is not None:
+        import importlib
+
+        reported_version = importlib.import_module("molsysviewer").__version__
+    evidence = CandidateEvidence(
+        arguments.candidate_evidence, ROOT, pre_release=arguments.pre_release, reported_version=reported_version
+    )
     results = []
     for step in selected:
-        state, detail, elapsed = _run(step)
+        state, detail, elapsed = _run(step, evidence)
         results.append((step, state, detail))
         stamp = f"{elapsed:5.1f}s" if elapsed else "     -"
         print(f"[{state:<7}] {stamp}  {step.name:<11} {step.what}")
@@ -189,11 +216,19 @@ def main() -> int:
             for line in detail.splitlines():
                 print(f"                        {line}")
 
+    return _summarize(results, partial=bool(arguments.only), pre_release=arguments.pre_release)
+
+
+def _summarize(results, *, partial=False, pre_release=False):
     failed = [s.name for s, state, _ in results if state == "FAIL"]
     blocked = [s.name for s, state, _ in results if state == "BLOCKED"]
+    exceptions = [s.name for s, state, _ in results if state == "EXCEPTION"]
 
     print()
-    print(f"{len(results) - len(failed) - len(blocked)} passed, {len(failed)} failed, {len(blocked)} blocked")
+    print(
+        f"{len(results) - len(failed) - len(blocked) - len(exceptions)} passed, "
+        f"{len(failed)} failed, {len(blocked)} blocked, {len(exceptions)} exceptions"
+    )
 
     if failed:
         print("\nRELEASE BLOCKED — failing: " + ", ".join(failed))
@@ -202,6 +237,16 @@ def main() -> int:
         print("\nRELEASE NOT CLEARED — these could not run: " + ", ".join(blocked))
         print("Each is reported above with its reason. A release needs every one of them run, not skipped.")
         return 2
+    if exceptions:
+        print("\nPRE-1.0 EXCEPTIONS — not passing checks: " + ", ".join(exceptions))
+        print("RELEASE NOT CLEARED — exceptions never satisfy strict 1.0.")
+        return 2
+    if pre_release:
+        print("\nSelected pre-1.0 checks passed; strict 1.0 release is not cleared.")
+        return 0
+    if partial:
+        print("\nSelected checks passed; the complete release gate was not run.")
+        return 0
     print("\nEvery gate step passed.")
     return 0
 

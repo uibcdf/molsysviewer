@@ -5,7 +5,7 @@ status: partial
 opened: 2026-09-24
 closed:
 severity: medium
-verification: inspected
+verification: reproduced
 area: [conda, cli]
 guard:
 normative:
@@ -66,3 +66,38 @@ The public `0.23.4` tag predates the recipe correction, so its Conda file still
 has the defect. Closing requires a new staged artifact, a passing hosted Windows
 launcher job, promotion of that exact file, and a passing public Windows job.
 Until then, the source fix is not a public repair claim.
+
+Follow-up on 2026-10-01 found a separate promotion-gate defect, recorded in
+`uibcdf/molsysviewer#134`: the workflow required the former 21-job pair matrix
+and did not require this Windows gate before promotion. The local correction
+uses the current four-platform coverage checks and requires a successful
+Windows run matching the candidate commit, version, build and SHA-256. Windows
+dispatch must use a branch/tag at the same commit as `candidate_sha`; its
+checkout validation rejects a different dispatch revision. See
+[`../release_gate_evidence.md`](../release_gate_evidence.md#exact-file-promotion-and-windows-launchers).
+No new artifact or hosted/public Windows observation has been produced by this
+follow-up. #101 therefore remains partial.
+
+## Public artifact reproduction — 2026-10-01
+
+Existing public recheck run `36860171883`, attempt 1, at Viewer commit
+`a8aa669c9e3b712f4433511bdf990c5e8df54e30` independently confirms the defect
+on `molsysviewer-0.23.4-py_5.tar.bz2`, SHA-256
+`85e701449a7310a05d0ab43bdafe98b313d784fd48240f2b6ed53a627a323aeb`.
+The shared public registry/index job succeeds and retains verified evidence;
+the separate Windows installation succeeds, including the exact installed
+record check, then rejects the missing launcher:
+
+```text
+verify_noarch_launchers.py:54, verify
+    _require(launcher is not None, f"Missing installed launcher: {name}")
+verify_noarch_launchers.py:23, _require
+    raise ValueError(message)
+ValueError: Missing installed launcher: molsysviewer
+```
+
+The full workflow conclusion is failure. This is fresh evidence for the
+published defect, not repaired-candidate qualification. Native failure log:
+`/tmp/msv-shared-verifier-hosted-failure-20261001.log`. No new workflow or
+package mutation was requested during this inspection. The repair acceptance
+criteria above remain outstanding.
