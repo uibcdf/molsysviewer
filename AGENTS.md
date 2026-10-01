@@ -2,6 +2,13 @@
 
 This document provides critical instructions for all AI assistants or automation tools contributing to this repository.
 
+## Development with the principal maintainer
+
+For changes authorized by the principal maintainer, use reviewed commits and
+direct pushes to `main`. Do not open pull requests unless the user requests one.
+Keep the applicable validation and CI evidence, synchronize remote changes, and
+preserve unrelated local work before integrating or publishing commits.
+
 Read `MOLSYSSUITE_GUIDE.md` before development. It is the synchronized, read-only
 suite-governance guide owned by `uibcdf/molsyssuite` and routes shared policies,
 cross-component feedback, and issue ownership.
