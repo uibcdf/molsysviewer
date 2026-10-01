@@ -28,19 +28,23 @@ jobs:
         with:
           persist-credentials: false
       - name: Verify exact public file without promotion
-        shell: bash
-        env:
-          RELEASE_VERSION: ${{ inputs.version }}
-          BUILD_NUMBER: ${{ inputs.build_number }}
-          EXPECTED_SHA256: ${{ inputs.sha256 }}
-        run: |
-          set -euo pipefail
-          python3 devtools/conda-build/verify_public_package.py \
-            --package molsysviewer \
-            --version "$RELEASE_VERSION" \
-            --subdir noarch \
-            --filename "molsysviewer-${RELEASE_VERSION}-py_${BUILD_NUMBER}.tar.bz2" \
-            --sha256 "$EXPECTED_SHA256"
+        id: public_verification
+        uses: uibcdf/molsyssuite/.github/actions/verify-public-conda@399d33a4ee0da148571cba7cfc004e3f3a2e71e7
+        with:
+          package: molsysviewer
+          version: ${{ inputs.version }}
+          subdir: noarch
+          filename: molsysviewer-${{ inputs.version }}-py_${{ inputs.build_number }}.tar.bz2
+          sha256: ${{ inputs.sha256 }}
+
+      - name: Retain independent public verification evidence
+        if: ${{ always() && steps.public_verification.outputs.evidence-path != '' }}
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: molsysviewer-independent-public-conda-${{ inputs.version }}
+          path: ${{ steps.public_verification.outputs.evidence-path }}
+          if-no-files-found: error
+          retention-days: 30
 
   windows-launchers:
     name: Verify public Windows launchers from the installed package
