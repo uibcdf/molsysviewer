@@ -56,5 +56,25 @@
     "sandbox/interactions_panel_design.png",
     "sandbox/interactions_panel_design_stored.png"
   ],
-  "reviewed_path_count": 409
+  "reviewed_path_count": 409,
+  "integration": {
+    "commit": "0dea171db750c289e6b1f85c2407f91f3ce58f4a",
+    "pushed_to": "origin/main",
+    "result": "PASS",
+    "github_branch_bypass": "Authorized maintainer direct push; PR and required status rules bypassed, not passed"
+  },
+  "devguide_reconciliation": {
+    "current_summaries": "checkpoints, roadmap, path to 1.0, final design closure and relevant active reports",
+    "reporting_guards": {
+      "passed": 197,
+      "seconds": 2.33
+    },
+    "capability_and_public_inventory_guards": {
+      "passed": 222,
+      "seconds": 16.0
+    },
+    "issue_board_check": "45 queued records agree with board",
+    "proposed_version": "0.24.0",
+    "tag_created": false
+  }
 }

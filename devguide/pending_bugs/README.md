@@ -19,11 +19,10 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Partially done (12)
+### Partially done (11)
 
 - [`annotation_anchor_contract.md`](annotation_anchor_contract.md) — [#146](https://github.com/uibcdf/molsysviewer/issues/146) — Annotation coordinate anchors and callout options lack a coherent public lifecycle *(high, measured)*
 - [`box_edit_silent_provider_failure.md`](box_edit_silent_provider_failure.md) — [#155](https://github.com/uibcdf/molsysviewer/issues/155) — Box initialization reports success when the provider leaves the cell absent *(medium, reproduced)*
-- [`extracted_interaction_repeated_structures.md`](extracted_interaction_repeated_structures.md) — [#156](https://github.com/uibcdf/molsysviewer/issues/156) — Extraction drops interaction display coverage for repeated structures. *(medium, reproduced)*
 - [`installed_scientific_cli_fixture_namespace.md`](installed_scientific_cli_fixture_namespace.md) — [#153](https://github.com/uibcdf/molsysviewer/issues/153) — Installed scientific CLI cannot resolve its development fixtures *(medium, reproduced)*
 - [`interactions_e2e_repeated_python_startup.md`](interactions_e2e_repeated_python_startup.md) — [#154](https://github.com/uibcdf/molsysviewer/issues/154) — Repeated Python cold starts make Interactions core E2E exceed its deadline *(medium, reproduced)*
 - [`load_prevalidation_mutation.md`](load_prevalidation_mutation.md) — [#148](https://github.com/uibcdf/molsysviewer/issues/148) — Replacement loading and system edit validation can mutate the scene before failing *(high, measured)*

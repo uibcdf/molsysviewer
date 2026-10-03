@@ -1,36 +1,38 @@
 # Development roadmap
 
-**Updated:** 2026-10-01
+**Updated:** 2026-10-03
 
 This roadmap states current priorities. Release gating lives in
 [`path_to_1_0.md`](path_to_1_0.md), normative behavior in
 [`scene_contracts.md`](scene_contracts.md), and concrete open designs in
 [`pending_proposals/`](pending_proposals/).
 
-## Current execution order — 2026-10-01
+## Current execution order — 2026-10-03
 
-The library-design corrections, session/static-HTML defects and release-tool
-hardening are implemented. Diagnostic template coverage (#107) and the
-dependency contract audit (#106) are closed; the latest passing complete source suite
-records **2,464 tests, 23 skipped**. See [the handoff](checkpoints.md).
+The accumulated Interactions, composite loading, public API and scene corrections
+are reviewed and integrated in `main` at `0dea171d`. The latest complete source
+regression passes **2,805 tests, 23 skipped** in the required Python 3.14
+development environment. The integration review also corrected repeated-frame
+display transfer (#156). Ruff, TypeScript and runtime rebuild pass. Prior local
+core-browser evidence is **39/39** under the normal deadline; installed evidence
+retains its original artifact boundaries. See [the handoff](checkpoints.md).
 
-CI enforcement (#116) and ecosystem adoption (#110) are closed. The scalar
-unit contract (#98) is implemented; support libraries and developer tools
-are adopted for their reviewed boundaries. PR #135 merged at `12faa16b` after
-updated-commit hosted CI, core E2E and all three Python 3.14 cells passed.
-Authorized work with the principal maintainer uses commits and direct pushes;
-PRs are opened only on the user's request, following root `AGENTS.md`.
-The latest complete source attempt returned 2,480 passed, 23 skipped and
-one failed. The old B-factor fixture now supplies units and the final affected
-checks pass (24 tests); no new complete pass is claimed. All 296 JS tests and
-the runtime rebuild pass. See [the review evidence](python_ecosystem_policy_adoption.md).
-Next qualify Interactions with
-a compatible published MolSysMT provider (#114), and the repaired exact Conda
-artifact/Windows launchers (#101), using the current 16-cell pair and hosted
-core browser requirements. Public documentation follows functional closure.
-Finally freeze and qualify the release candidate with scientific dogfooding
-and first-contact evidence. Configured workflows and prior public artifacts
-do not certify that future candidate.
+CI enforcement (#116), ecosystem adoption (#110), scalar units (#98), diagnostics
+(#107) and dependency contracts (#106) are resolved. PR #135 merged after
+updated-commit hosted checks; its results remain tied to that commit. Work with
+the principal maintainer uses reviewed commits and direct pushes, without PRs.
+This source integration uses the existing internal deferred CI route: ordinary
+CI still selects public MolSysMT 0.22.4, which lacks Interactions. No exact
+hosted-candidate pass is claimed.
+
+Next reconcile devguide, assess a new minor version and review representative
+scientific use. Then qualify Interactions with a compatible published provider
+(#114/#140), repaired exact Conda/Windows artifacts (#101), the current 16-cell
+installed pair and hosted core browser requirements. Public documentation
+follows functional closure. Finally freeze the release candidate and retain
+scientific dogfooding, first-contact and exact-artifact evidence. Historical
+outcomes remain in their dated records; see
+[the integration review](integration_review_20261003.md).
 
 ## Pre-1.0 distribution milestone completed — 2026-09-25
 
@@ -104,14 +106,15 @@ These are the release gates:
    is evidenced by the 20-cell public matrix, not by a source checkout.
 6. First-contact README/onboarding verification.
 7. Documentation and package-version consistency at the release commit.
-8. ✅ **Updated 2026-09-30.** All 699 ordinary public callable routes,
+8. ✅ **Updated 2026-10-03.** All 715 ordinary public callable routes,
    including exported class methods and returned scene handles, have ArgDigest
    and explicit `skip_digestion=False`. There are no exemptions or missing
    named digesters (`uibcdf/molsysviewer#125`). The behavioral and inventory guards are recorded in
    [`pre_1_0_architecture_rework_and_hardening_master_plan.md`](pre_1_0_architecture_rework_and_hardening_master_plan.md)
    (Phase 10, gate 9).
-9. **Partial implementation 2026-09-30.** A bounded Interactions domain for hydrogen bonds
-   and disulfide candidates, with Python API first and a minimal Studio
+9. **Source implementation integrated 2026-10-03; published qualification pending.**
+   Interactions covers nine explicit families, grown from the initial hydrogen
+   bond/disulfide minimum, with Python API first and a minimal Studio
    subpanel after its contract is settled. Native calculation and declared
    H5MSM import store analyses in `view.molsys.interactions` without addon
    registration. Scientific queries, import, calculation and session persistence

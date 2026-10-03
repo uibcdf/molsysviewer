@@ -44,3 +44,14 @@ Implemented in the preserved working tree and locally qualified on 2026-10-03. I
 The owning loader separates preparation (conversion, selected source maps and scale checks) from commit. Replacement resets only after preparation succeeds. Conditional append accounting is validated before analysis invalidation, assignment and rebuild. These guards protect conversion/argument failures, not a rollback of every renderer or external-provider mutation.
 
 Evidence: `devguide/final_design_closure_20261003.json` and its named test/browser artifacts.
+
+## Reviewed source integration — 2026-10-03
+
+The accumulated source is reviewed, committed and pushed in `0dea171d`.
+The final source regression passes 2,805 tests with 23 explicit skips in
+`molsyssuite@uibcdf_3.14`; Ruff, TypeScript and runtime rebuild pass.
+Earlier installed/browser observations retain their original inputs. This
+internal integration used the existing deferred CI route and does not certify
+an exact hosted or published-provider candidate. The report remains partial
+for its existing supported-artifact/release qualification. See
+[`integration_review_20261003.md`](../integration_review_20261003.md).

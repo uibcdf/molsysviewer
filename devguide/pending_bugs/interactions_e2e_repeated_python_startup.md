@@ -76,3 +76,14 @@ worker guard proves fresh scenario state, error recovery and file cleanup. Real
 browser assertions retain all scientific/rendering cases. Product publication
 and exact committed-candidate CI remain, so the issue stays partial.
 Evidence: `devguide/integration_completion_20261003.json`.
+
+## Reviewed source integration — 2026-10-03
+
+The accumulated source is reviewed, committed and pushed in `0dea171d`.
+The final source regression passes 2,805 tests with 23 explicit skips in
+`molsyssuite@uibcdf_3.14`; Ruff, TypeScript and runtime rebuild pass.
+Earlier installed/browser observations retain their original inputs. This
+internal integration used the existing deferred CI route and does not certify
+an exact hosted or published-provider candidate. The report remains partial
+for its existing supported-artifact/release qualification. See
+[`integration_review_20261003.md`](../integration_review_20261003.md).

@@ -44,3 +44,14 @@ Implemented in the preserved working tree and locally qualified on 2026-10-03. I
 Fingerprint schema 2 uses available ordered chain/group/atom identities and atom IDs/types. Missing hierarchy is represented explicitly through public has_attribute/get, never synthesized. Atom identity caches use the same missing-field semantics and are invalidated on load/announced edits even when object and size are unchanged. Exported identity dictionaries are detached. Legacy fingerprint records take the conservative re-resolution path. The first full run exposed 38 RDKit cases that lacked optional hierarchy; all 38 pass in the subsequent 90-case correction selection.
 
 Evidence: `devguide/final_design_closure_20261003.json` and its named test/browser artifacts.
+
+## Reviewed source integration — 2026-10-03
+
+The accumulated source is reviewed, committed and pushed in `0dea171d`.
+The final source regression passes 2,805 tests with 23 explicit skips in
+`molsyssuite@uibcdf_3.14`; Ruff, TypeScript and runtime rebuild pass.
+Earlier installed/browser observations retain their original inputs. This
+internal integration used the existing deferred CI route and does not certify
+an exact hosted or published-provider candidate. The report remains partial
+for its existing supported-artifact/release qualification. See
+[`integration_review_20261003.md`](../integration_review_20261003.md).

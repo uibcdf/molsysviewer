@@ -5,7 +5,33 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-**Latest integration completion (2026-10-03): local gates pass.** The corrected
+**Reviewed source integration (2026-10-03): committed and pushed.** Commit
+`0dea171db750c289e6b1f85c2407f91f3ce58f4a` integrates the accumulated public
+API, Interactions, scene corrections and composite loading. The final once-run
+source regression passes **2,805 tests, 23 skipped**, in 510.35 s, explicitly in
+`molsyssuite@uibcdf_3.14` (Python 3.14.7). Ruff, TypeScript and the official
+runtime rebuild pass. All **715/715** public callables remain digested, with
+explicit `skip_digestion=False`; 441 named digesters have no missing entries.
+Review additionally corrected repeated-structure Interactions display transfer
+(#156), including current-frame, source-map and session guards. The pre-existing
+ACKREDIT stash and three sandbox mockups remain preserved.
+
+This was an internal `[skip ci]` integration using the existing deferred route.
+GitHub accepted the maintainer's direct push through its branch-rule bypass;
+required hosted checks are not certified by that operation. Published MolSysMT
+0.22.4 lacks Interactions. Compatible published dependencies, exact installed
+artifacts and hosted-candidate checks remain release gates. The prior 39/39
+core-browser and installed results below retain their original inputs; the new
+transfer fix has source qualification, not a newly built installed-artifact
+claim. See [the review](integration_review_20261003.md) and its
+[machine-readable receipt](integration_review_20261003.json).
+
+The next steps are developer-guide reconciliation, assessment of a new minor
+version, and representative scientific-use review. Do not tag as a development
+checkpoint or infer 1.0 readiness from this integration. Public documentation
+remains the last functional-closure block.
+
+**Earlier integration completion (2026-10-03, before reviewed commit): local gates pass.** The corrected
 source candidate passes **2,800 tests, 23 skipped** in 489.46 s. The prior installed
 wheel passes **2,791 tests, 25 skipped** in 579.31 s; that complete installed run
 precedes #155. The latest box-verified wheel passes **68 installed loading/cell
@@ -1067,41 +1093,36 @@ documents carry it.
 
 Resume toward **1.0** in this order:
 
-**Current session priority (2026-10-03):** independent-source loading, durable
-source transfer, controlled box assignment and Studio parity are implemented
-locally. The latest once-run source regression passes with **2,783 passed and
-23 skipped**. Qualify the integrated candidate/provider/artifacts; retain the
-published-provider qualification gate; #307 extraction and #309 composition are repaired in the editable provider. Public documentation remains
-last. Continue in this order:
+**Current session priority (2026-10-03):** the cumulative source has been reviewed,
+committed and pushed. Loading #151 has an accepted and implemented contract;
+it is no longer an undecided design. The latest source regression passes
+**2,805 tests, 23 skipped**. Provider #307/#309 repairs are verified in the
+editable provider, with published-artifact qualification still outstanding.
+Continue in the maintainer's order:
 
-1. Review/freeze the cumulative source candidate and qualify the core browser
-   lane and installed artifacts. Preserve the #151 Python/browser evidence and
-   explicitly resolve or bound its partial-H5MSM provider limitation.
-2. CI enforcement (#116), ecosystem adoption (#110) and its final unit boundary
-   (#98) are resolved. PR #135 merged at `12faa16b` after updated-commit hosted
-   CI, core E2E and all three Python 3.14 cells passed. Support libraries and
-   developer tools are adopted for the reviewed boundaries. The latest complete
-   source attempt returned 2,480 passed, 23 skipped and one failed; the old
-   B-factor fixture now supplies units and the final focused checks pass
-   (24 tests). All 296 JS tests and the runtime rebuild pass. No new complete
-   source pass is claimed. See
-   [the detailed evidence](python_ecosystem_policy_adoption.md).
-3. Repeat the now-passing real Interactions workflows against a compatible
-   published MolSysMT artifact, once available: calculation, named analyses,
-   H5MSM, nonconsecutive structures, current-frame visualization, units/PBC
-   and sessions. Keep `uibcdf/molsysviewer#114` experimental until that
-   installed-provider evidence exists; `uibcdf/molsysmt#250` owns the APIs.
-   Source qualification is complete for the bounded cases recorded above.
-4. Qualify a concrete artifact candidate for repaired Conda/Windows launchers
-   (#101), the current 16-cell installed pair and hosted core browser lane.
-   The shared public verifier and promotion preconditions are implemented
-   (#133/#134); their implementation does not supply new candidate evidence.
-5. After functional and dependency qualification, finish public documentation
-   and reconcile the visible support promises. Standalone remains experimental;
-   remote sessions and the Mol* dependency update remain post-1.0.
-5. Freeze the final release candidate and validate its installed artifacts,
-   scientific workflows, first-contact experience and all required evidence
-   before publication. Preserve separate human observations.
+1. Reconcile current devguide summaries and active reports with the reviewed
+   integration, keeping dated artifact and failure records intact.
+2. Assess a minor release for the accumulated API/features. Freeze no public tag
+   until its compatible dependency and exact-candidate gates pass.
+3. Review real scientific workflows: batch/progressive loading, nonconsecutive
+   structures, calculation/query/display, cells/units and scientific/session
+   round trips. Record friction and scientific correctness separately from
+   human visual and first-contact observations.
+4. Repeat the now-passing Interactions workflows against a compatible published
+   MolSysMT artifact once available. Keep #114 experimental until installed
+   evidence exists; uibcdf/molsysmt#250 owns scientific APIs. Existing source
+   qualification remains bounded by its recorded inputs.
+5. Qualify a concrete artifact for repaired Conda/Windows launchers (#101), the
+   current 16-cell installed pair and hosted core browser lane. CI enforcement
+   (#116), ecosystem adoption (#110), scalar units (#98), the shared verifier and
+   promotion preconditions (#133/#134) are implemented; their earlier hosted
+   results do not certify the new candidate.
+6. After functional and dependency qualification, finish public documentation
+   and reconcile support promises. Standalone remains experimental; remotes
+   and the Mol* dependency update remain post-1.0.
+7. Freeze the final candidate and validate installed artifacts, scientific
+   workflows, first-contact experience and publication evidence. Preserve
+   separate human observations.
 
 The older general growth checklist below is a follow-up inventory. It does
 not replace this session's ordered priorities.
@@ -1113,10 +1134,10 @@ not replace this session's ordered priorities.
    is the *static* half — every page parses and none calls a deprecated API — so what
    widening buys is the `NameError` class of defect, which only running finds.
 
-   The audit's second-sharpest gap is next to it: **five capabilities have no browser
-   observation at all** — trajectory plot, movie, `save_state`/`load_state`,
-   `save_session`/`load_session`, units. Three are `experimental` and say so; the other
-   two are `stable`. See the *Nothing has watched these draw* section of
+   The current audit lists **three surfaces without a direct browser observation**:
+   `save_state`/`load_state`, `save_session`/`load_session`, and units. These are
+   persistence/value-policy surfaces; trajectory plot and movie playback now have
+   browser evidence. Session remains experimental. See the *Nothing has watched these draw* section of
    [`capability_audit.md`](capability_audit.md), and
    [`archive/evidence_a_stable_capability_has_not_earned.md`](archive/evidence_a_stable_capability_has_not_earned.md)
    (uibcdf/molsysviewer#65), which is the entry that asks for the decision rather than the

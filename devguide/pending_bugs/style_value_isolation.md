@@ -44,3 +44,14 @@ Implemented in the preserved working tree and locally qualified on 2026-10-03. I
 Style copies nested input parameters; registry add/get and scene/focus builtin getters return detached values. Applying/focusing copies recipes at the ownership boundary. params remains an editable dictionary on the caller-owned value; changing a returned recipe does not modify another viewer or the stored registry.
 
 Evidence: `devguide/final_design_closure_20261003.json` and its named test/browser artifacts.
+
+## Reviewed source integration — 2026-10-03
+
+The accumulated source is reviewed, committed and pushed in `0dea171d`.
+The final source regression passes 2,805 tests with 23 explicit skips in
+`molsyssuite@uibcdf_3.14`; Ruff, TypeScript and runtime rebuild pass.
+Earlier installed/browser observations retain their original inputs. This
+internal integration used the existing deferred CI route and does not certify
+an exact hosted or published-provider candidate. The report remains partial
+for its existing supported-artifact/release qualification. See
+[`integration_review_20261003.md`](../integration_review_20261003.md).

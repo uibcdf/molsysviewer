@@ -44,3 +44,14 @@ Implemented in the preserved working tree and locally qualified on 2026-10-03. I
 The public coordinate and offset digesters now support finite physical triples and their declared legacy nm input. set_style has an annotation-specific dictionary seam. State stores typed coordinate anchors with units; editing, history, session, extraction and same-system copying preserve them. Mol* callouts use actual world coordinates and camera-basis offsets, distinct leader geometry and retained hidden-state editing. The trajectory owner awaits callout updates and drains outstanding frame writes before playback stops. Browser evidence uses a real three-structure pentalanine fixture. Full MVS remains deferred.
 
 Evidence: `devguide/final_design_closure_20261003.json` and its named test/browser artifacts.
+
+## Reviewed source integration — 2026-10-03
+
+The accumulated source is reviewed, committed and pushed in `0dea171d`.
+The final source regression passes 2,805 tests with 23 explicit skips in
+`molsyssuite@uibcdf_3.14`; Ruff, TypeScript and runtime rebuild pass.
+Earlier installed/browser observations retain their original inputs. This
+internal integration used the existing deferred CI route and does not certify
+an exact hosted or published-provider candidate. The report remains partial
+for its existing supported-artifact/release qualification. See
+[`integration_review_20261003.md`](../integration_review_20261003.md).

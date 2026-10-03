@@ -1,13 +1,13 @@
-# Final design closure — implemented locally; candidate qualification pending
+# Final design closure — source integrated; release qualification pending
 
 The principal maintainer accepted the final design review on 2026-10-03. Public
 documentation remains last. Issues #146–#150 own the five corrections; #151 owns
-the additional loading discussion. Existing unrelated working-tree changes were
+the accepted additional loading contract. Existing unrelated working-tree changes were
 preserved before implementation in `/tmp/msv-design-closure-before-20261003.tar.gz`.
 
 ## Current implementation
 
-| Issue | Surface | Outcome in the working tree |
+| Issue | Surface | Outcome in the integrated source |
 | --- | --- | --- |
 | #146 | Annotations | Coordinate/atom anchors, physical units, editing/history/state/session/transfer, real world/camera callouts and solid/dashed/dotted leaders |
 | #147 | System identity | Available chain/group/atom identities plus atom IDs/types; missing hierarchy is explicit; announced same-size edits invalidate caches |
@@ -15,8 +15,9 @@ preserved before implementation in `/tmp/msv-design-closure-before-20261003.tar.
 | #149 | Styles | Nested input recipes, registry values and scene/focus builtin values are detached at ownership boundaries |
 | #150 | Trajectory plots | Numeric x positions agree across series/events/playhead/seeking; repeated positions have deterministic ties; nonfinite data is refused before mutation |
 
-The reports remain partial until this source is integrated into a reviewed,
-committed candidate and qualified with its supported dependency artifacts. This
+The source is reviewed, committed and pushed at `0dea171d`. The reports remain
+partial until an exact candidate is qualified with its supported dependency
+artifacts. This
 does not change the compatible-published-provider gate on #114. The fixes do not
 authenticate independent scientific files or undo external molecular edits.
 
@@ -28,9 +29,9 @@ attempt, scoped recovery and browser time budget remain separate evidence;
 the original implementation record below is not replaced by a claim of a
 passing complete candidate.
 
-## Loading discussion required before freezing the API
+## Accepted loading contract — implemented in the integrated source
 
-[Issue #151](https://github.com/uibcdf/molsysviewer/issues/151) must decide the
+[Issue #151](https://github.com/uibcdf/molsysviewer/issues/151) records the accepted
 public contract for four PDB files, four PDB IDs, mixed compatible molecular
 forms, and one load followed by further loads. Batch and progressive loading
 must express the same intention. A list of complementary forms describing one
@@ -43,7 +44,7 @@ topology. `auto` is a heuristic, so it cannot decide whether two equal-topology
 inputs represent independent copies or successive conformations on the user's
 behalf in the new contract.
 
-Discuss three intentions separately: combine independent systems in one scene;
+The contract expresses three intentions separately: combine independent systems in one scene;
 append conformations after explicit atom correspondence; or construct one system
 from complementary topology/coordinate forms. The maintainer accepted one
 `view.load()` entry with `multiple=True` for independent sources and
@@ -77,28 +78,32 @@ including an explicit error on the real published provider's ignored cell
 initialization. Exact artifact and regression boundaries are in the checkpoint
 and dated integration-completion record.
 
-Acceptance must cover stable source/load identifiers, labels and provenance,
+The accepted bounded contract covers stable source/load identifiers, labels and provenance,
 local-to-global atom maps, independent selection/visibility, repeated chain and
 residue IDs, different atom order/topology, structure-count/time/cell compatibility,
-explicit coordinate alignment and broadcasting, analysis-name conflicts and
-intra/inter-system interaction scope. Define whether a failed batch is atomic or
-can return declared partial success. Consider acquisition errors for PDB IDs,
-selections per source, memory budgets and parity with Studio. Never silently
+analysis-name conflicts and intra/inter-system interaction scope. Preparation
+failure is atomic; implicit coordinate alignment and trajectory broadcasting are
+excluded from the minimum. Acquisition errors, source selectors, compact-map
+memory budgets and Studio parity are guarded. Never silently
 truncate, align, broadcast, concatenate trajectory axes or overwrite analyses.
 
 ## Next execution order
 
-1. Integrate and qualify #146–#150 with the preserved public workflow work.
-2. Discuss #151 and settle its minimum; record any larger architecture as post-1.0.
-3. Evaluate the bounded atom/group canvas picking slice of #45. It requires both
-   Mol* granularity and Viewer selection semantics; changing only Mol* props is
-   insufficient. Chain/entity picking remains conditional on separate evidence.
-4. Consider interaction count series from #48/#56 only after a public provider
-   reduction defines occurrence/relation counts and coverage for empty,
-   unevaluated and excluded structures. No Viewer-only scientific reduction is
-   introduced here.
-5. Freeze the agreed API, update public documentation, then qualify the exact
-   artifact candidate and publication routes.
+1. Source integration is complete. Reconcile developer-guide summaries and
+   reports with `integration_review_20261003.md`, without rewriting older evidence.
+2. Assess a minor version for the accumulated public features. Freeze no tag
+   until compatible dependencies and exact-candidate release gates pass.
+3. Review real scientific use of the accepted loading and Interactions contracts.
+   Preserve automated correctness evidence and human usability observations
+   separately. #151 is implemented, with artifact qualification still pending.
+4. Qualify the compatible published provider and exact installed/hosted candidate,
+   finish public documentation, then complete the release evidence.
+
+Atom/group canvas picking (#45) and interaction count series (#48/#56) remain
+optional follow-up discussions. Picking requires Viewer selection semantics as
+well as Mol* granularity. Scientific reductions require a public provider contract
+for occurrence/relation counts and empty/unevaluated/excluded coverage. Neither
+is newly admitted as a prerequisite for this integrated source or for 1.0.
 
 Full MVS annotations, structure/file windowing, large transport/performance
 refactors, multiple viewports, richer rendering, Mol* upgrade, supported remotes

@@ -16,6 +16,9 @@ for the normative metadata and recovery contract.
 
 ## Versioning
 
+- New public versions and tags use canonical `X.Y.Z`. MolSysSuite disallows
+  new public prerelease tags; qualify candidates with exact commits and staging
+  artifacts under its release-version policy.
 - The Python version is produced by `versioningit` from Git tags.
 - The JS package version is synchronized from Python during `npm run build`
   using `molsysviewer/js/scripts/sync-python-version.mjs`.
@@ -38,7 +41,7 @@ Package: `@uibcdf/molsysviewer` published from `molsysviewer/js/`.
 
 Flow
 1. Ensure `molsysviewer/js/package.json` version matches the intended tag.
-2. Create and push a tag `X.Y.Z` (or `X.Y.Z-rc.N`).
+2. After the exact candidate passes its gates, create and push a tag `X.Y.Z`.
 3. Pushing the tag runs `.github/workflows/npm-publish.yaml`, which publishes
    using Trusted Publisher (OIDC).
 
@@ -47,10 +50,10 @@ versions are immutable; a second automatic publish of the same version is a
 workflow failure, not another release step. Manual workflow dispatch requires
 an explicit tag and is reserved for recovery of a version not yet on npm.
 
-**Conda is different, on purpose.** It publishes from a GitHub *Release*, not
-from a tag. A tag is a checkpoint and there are many; a conda package is
-something people install, and the cadence is a decision. So a version can be on
-npm and not on conda, and that is not a defect.
+Conda publishes from a GitHub *Release*, while npm publishes from its tag.
+Historical versions may therefore exist on npm without a corresponding Conda
+package. New tags require candidate evidence because pushing one publishes the
+runtime; use commits and staging artifacts for development checkpoints.
 
 **A tag is what publishes to npm, and that is deliberate.** It used to trigger
 only on `release: published`. From `0.8.0` this project tagged without creating
@@ -151,14 +154,12 @@ Key points
 - Avoid committing `pythonVersion` changes produced from a dirty local
   `versioningit` value.
 
-## Pre-releases
+## Candidate evaluation
 
-If you publish a pre-release (`X.Y.Z-rc.N`), publish both:
-
-- the Python package (pip/conda) and
-- the npm runtime (`@uibcdf/molsysviewer@X.Y.Z-rc.N`)
-
-Then ensure docs-lite exports point at the same pre-release runtime URL.
+Use staging artifacts with an exact source commit, intended canonical version,
+dependency closure and artifact digest. Historical prerelease metadata support
+does not authorize a new public prerelease tag. Freeze and qualify the matching
+Python and npm runtime resources before the public `X.Y.Z` tag.
 
 ## Current Pre-`0.16.0` Practical Gate
 

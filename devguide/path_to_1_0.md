@@ -2,18 +2,26 @@
 
 This document is the authoritative release plan for the **v1.0.0** release of MolSysViewer. 
 
-**Current closure checkpoint (2026-10-01):** design/API, session and static-HTML
-corrections are implemented. Diagnostic templates (#107), dependency-route
-audit (#106), exact-candidate release evidence (#103), shared public verifier
-(#133) and promotion preconditions (#134) are closed. The latest passing complete source
-suite records **2,464 tests, 23 skipped**. This is development evidence, not
-clearance for an immutable 1.0 artifact. CI enforcement (#116) is verified
-and closed, as are ecosystem adoption (#110) and its scalar unit contract (#98).
-The latest complete source attempt returned 2,480 passed, 23 skipped and one
-failed; the outdated B-factor fixture is corrected and its focused checks pass.
-No new complete pass is claimed. A compatible published Interactions provider (#114), repaired exact Windows
-artifact verification (#101), public documentation and human release workflows
-remain. Follow [the current execution order](checkpoints.md#what-is-next).
+**Current closure checkpoint (2026-10-03):** the accumulated source is reviewed,
+committed and pushed to `main` at `0dea171d`. It includes nine explicit
+Interactions families, bounded observation pages/actions and H5MSM save;
+composite/progressive loading, durable sources, Whole-only base-region visibility
+and cell assignment; and the public scene/design corrections. The additional
+repeated-structure display defect (#156) is corrected. The final source regression
+passes **2,805 tests, 23 skipped** in `molsyssuite@uibcdf_3.14`. Ruff, TypeScript
+and runtime rebuild pass; all **715/715** public callables retain digestion and
+explicit bypasses. Prior local core-browser evidence is **39/39**, with its
+original inputs and installed-artifact boundaries retained.
+
+This internal integration used the existing deferred CI route. It is not an
+immutable release candidate or a new hosted/installed-pair certification.
+Published MolSysMT 0.22.4 lacks Interactions; compatible published dependencies
+(#114/#140), repaired exact Windows artifacts (#101), the 16-cell installed pair,
+public documentation and human release workflows remain. CI enforcement (#116),
+ecosystem adoption (#110) and earlier release-tool corrections are implemented.
+Reconcile devguide, assess a minor version and review scientific use before
+freezing a new candidate. Follow [the current execution order](checkpoints.md#what-is-next)
+and [the reviewed integration record](integration_review_20261003.md).
 
 **Support boundary (2026-09-28):** The Python/Jupyter viewer, reproducible
 scene state and interactive HTML export form the 1.0 contract. Local standalone
@@ -21,9 +29,10 @@ launchers and the Qt host remain experimental, with no 1.0 support promise or
 real-window release gate. Remote sessions remain an unsupported preview;
 supported remote workflows and their E2E certification are post-1.0.
 
-**Interactions partially implemented (2026-09-30):** `uibcdf/molsysviewer#114`
-tracks a bounded Python scene domain and minimal Studio subpanel for hydrogen
-bonds and disulfide candidates before 1.0, after agreeing result semantics
+**Interactions source integrated; published qualification pending (2026-10-03):** `uibcdf/molsysviewer#114`
+tracks a bounded Python scene domain and minimal Studio subpanel. The initial
+hydrogen-bond/disulfide minimum has grown to nine explicit families before 1.0,
+after agreeing result semantics
 with `uibcdf/molsysmt#250`. Existing-data display, native calculation and
 declared independent H5MSM import share `view.molsys.interactions`, without
 addon registration. The implementation sequence and acceptance gate
@@ -72,10 +81,10 @@ It consolidates the strategic milestones with the competitive quality gaps (prev
 **Final design-review update (2026-09-30):** `uibcdf/molsysviewer#118`–`#125`
 protect coordinate reconciliation, scene transfer, handle lifetimes, detached
 queries, manager lifecycle, redo and Interactions inspection. Annotation creation
-uses only `view.annotations.add`. The ordinary public callable inventory is
-699/699 digested, with explicit `skip_digestion=False` and no exemptions.
-The current core browser lane is 36 scenarios; portable adds the two remote
-client scenarios. Exact-candidate full-suite evidence is still required; see
+uses only `view.annotations.add`. The public callable inventory at that review was
+699/699 digested. The integrated 2026-10-03 inventory is 715/715, with explicit
+`skip_digestion=False` and no exemptions. The current core browser lane is 39
+scenarios; portable adds the two remote client scenarios. Exact-candidate full-suite evidence is still required; see
 [checkpoints.md](checkpoints.md) for the current validation limits.
 
 ## 0.18.x — Poner la casa en orden (Completed)
@@ -260,9 +269,9 @@ Deciding release readiness against a stale plan is its own risk.
 The 2026-09-24 hosted `CI_e2e` used the 36-suite portable lane, which still
 included two remote scenarios. On 2026-09-26 the maintainers deferred remote
 support and certification to post-1.0. The current strict 1.0 gate runs the
-36-suite core lane, excluding the three remote-only scenarios by explicit
-inventory. The 38-suite portable, two-suite remote-portable, one-suite
-server-GPU and full 39-suite commands remain available. A green core lane
+39-suite core lane, excluding the three remote-only scenarios by explicit
+inventory. The 41-suite portable, two-suite remote-portable, one-suite
+server-GPU and full 42-suite commands remain available. A green core lane
 does not certify any remote scenario (`uibcdf/molsysviewer#100`).
 
 ---

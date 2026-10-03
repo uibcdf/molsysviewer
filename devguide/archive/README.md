@@ -37,6 +37,8 @@ user/developer documentation.
 
 Resolved defect reports, kept for their evidence:
 
+- [`extracted_interaction_repeated_structures.md`](extracted_interaction_repeated_structures.md)
+  — #156, repeated-structure extraction retains every interaction display destination, the first current-frame copy, source maps and session restoration.
 - [`attribute_scalar_colors_unit_contract.md`](attribute_scalar_colors_unit_contract.md)
   — #98, scalar coloring retains physical units and requires compatible explicit ranges across Python and canvas paths.
 - [`review_python_ecosystem_policy_adoption.md`](review_python_ecosystem_policy_adoption.md)

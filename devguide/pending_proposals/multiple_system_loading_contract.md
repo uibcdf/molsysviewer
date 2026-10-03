@@ -573,3 +573,14 @@ published-provider preservation/error guard pass. The once-run source regression
 after that correction passes 2,800 tests, with 23 skipped, in 489.46 s. Exact hashes
 and boundaries are in `devguide/integration_completion_20261003.json`. #151 stays
 partial for compatible publication and committed-candidate qualification.
+
+## Reviewed source integration — 2026-10-03
+
+The accumulated source is reviewed, committed and pushed in `0dea171d`.
+The final source regression passes 2,805 tests with 23 explicit skips in
+`molsyssuite@uibcdf_3.14`; Ruff, TypeScript and runtime rebuild pass.
+Earlier installed/browser observations retain their original inputs. This
+internal integration used the existing deferred CI route and does not certify
+an exact hosted or published-provider candidate. The report remains partial
+for its existing supported-artifact/release qualification. See
+[`integration_review_20261003.md`](../integration_review_20261003.md).

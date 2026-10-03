@@ -39,6 +39,10 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- [`integration_review_20261003.md`](integration_review_20261003.md): reviewed
+  source integration, validation limits and deferred CI evidence.
+- [`version_assessment_20261003.md`](version_assessment_20261003.md): proposed
+  minor version and the remaining gates before a new tag.
 - [`checkpoints.md`](checkpoints.md): current repository handoff.
 - [`reporting_protocol.md`](reporting_protocol.md): **normative.** How a defect or a
   proposal enters `pending_bugs/` and `pending_proposals/`, how those stay in step with

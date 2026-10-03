@@ -71,12 +71,16 @@ for 0.22.0 — the first release since it was written. It reads the version from
 added here that hard-codes the current version will spring the same trap, and only during
 a release. It does not
 create a tag, GitHub Release, Zenodo record, Conda package, or npm package.
-The documented `X.Y.Z-rc.N` prerelease form is accepted as well.
+New public releases use canonical `X.Y.Z` versions and matching tags, under
+MolSysSuite's release-version policy linked in `MOLSYSSUITE_GUIDE.md`. Public
+prerelease tags are disallowed. Legacy metadata-tool parsing of prerelease
+strings is not permission to publish one; candidate evaluation uses exact
+commits and staging artifacts.
 
 Run the complete release gate described in the developer release guide. A
 candidate commit must not use `[skip ci]`.
 
-## A tag without a Release is a legitimate state
+## Historical tag without a Release — 0.22.0
 
 `0.22.0` is tagged and has no GitHub Release, on purpose. Publishing the Release starts
 Zenodo ingestion and the Conda route check. A direct route builds and uploads;
@@ -85,8 +89,9 @@ Conda is the gate deferred to 1.0 — the
 UIBCDF dependency channels are not frozen, so the artefacts would be built against
 versions nobody has closed, and Zenodo would mint a DOI that does not come back.
 
-The tag marks the code; the Release distributes it. They are separable, and separating
-them is the honest move when the gate reports `BLOCKED` rather than `FAIL`. Tracked in
+The tag and Release were separated for that historical checkpoint. It is not
+authority to create new development-checkpoint tags: current policy requires
+exact-candidate evidence before tagging or publication. Tracked in
 `uibcdf/molsysviewer#82`, so a tag with no Release is never a mystery someone has to
 reconstruct.
 

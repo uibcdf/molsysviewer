@@ -1,9 +1,9 @@
 ---
 summary: Extraction drops interaction display coverage for repeated structures.
 issue: uibcdf/molsysviewer#156
-status: partial
+status: resolved
 opened: 2026-10-03
-closed:
+closed: 2026-10-03
 severity: medium
 verification: reproduced
 area: [interactions, extraction, state]
@@ -46,7 +46,11 @@ It checks both projected copies, the excluded unrelated frame, scientific
 occurrence coverage, original-source correspondence, current frame and a complete
 MSV session round trip. All seven scene-transfer guards pass in
 `molsyssuite@uibcdf_3.14` (Python 3.14.7), with the editable provider.
-Complete integration qualification and publication are pending.
+The final once-run source regression passes 2,805 tests with 23 explicit skips
+in 510.35 s. The reviewed fix and guard are committed and pushed at
+`0dea171db750c289e6b1f85c2407f91f3ce58f4a`. This closes the source-transfer defect;
+compatible published-provider and exact release-artifact qualification remain
+separate under #114/#140. No new hosted or complete installed result is claimed.
 
 The first guard attempt assigned the read-only `player.index` property and
 stopped at its setup. The corrected guard uses `player.go_to_structure(2)`;
