@@ -33,7 +33,7 @@ import { Mesh } from "molstar/lib/mol-geo/geometry/mesh/mesh";
 import { Lines } from "molstar/lib/mol-geo/geometry/lines/lines";
 import { MeshBuilder } from "molstar/lib/mol-geo/geometry/mesh/mesh-builder";
 import { addSphere } from "molstar/lib/mol-geo/geometry/mesh/builder/sphere";
-import { addCylinder, BasicCylinderProps } from "molstar/lib/mol-geo/geometry/mesh/builder/cylinder";
+import { addCylinder, addFixedCountDashedCylinder, BasicCylinderProps } from "molstar/lib/mol-geo/geometry/mesh/builder/cylinder";
 import { addTube } from "molstar/lib/mol-geo/geometry/mesh/builder/tube";
 
 import { Shape, ShapeGroup } from "molstar/lib/mol-model/shape";
@@ -1832,6 +1832,9 @@ export interface NetworkLinkSpec {
 
 interface NetworkLinksData {
     links: NetworkLinkSpec[];
+    dashed?: boolean;
+    interaction?: NetworkLinkOptions["interaction"];
+    kind?: "interaction";
     alpha: number;
     radialSegments: number;
     name: string;
@@ -1861,7 +1864,8 @@ function buildNetworkLinkMesh(data: NetworkLinksData, _props: NetworkLinksProps,
             radialSegments: Math.max(3, Math.floor(data.radialSegments)),
         };
 
-        addCylinder(state, start, end, 1, cylinderProps);
+        if (data.dashed) addFixedCountDashedCylinder(state, start, end, 1, 9, true, cylinderProps);
+        else addCylinder(state, start, end, 1, cylinderProps);
     }
 
     return MeshBuilder.getMesh(state);
@@ -1953,6 +1957,9 @@ export const NetworkLinks3D = MSVTransform({
 type CoordinatePair = [number, number, number, number, number, number] | [[number, number, number], [number, number, number]];
 
 export interface NetworkLinkOptions {
+    dashed?: boolean;
+    labels?: string[];
+    interaction?: { analysis_name: string; analysis_revision: string; frame: number; observations: unknown[] };
     mode?: NetworkLinkMode;
     coordinate_pairs?: CoordinatePair[];
     atom_pairs?: [number, number][];
@@ -2072,6 +2079,7 @@ function buildLinksFromCoordinates(options: NetworkLinkOptions): NetworkLinkSpec
             end: pair.end,
             radius: radii[idx],
             color: linkColor,
+            label: options.labels?.[idx],
             pocketId: pocketIds[idx],
             chainId: chainIds[idx] || undefined,
         };
@@ -2192,6 +2200,9 @@ export async function addNetworkLinksFromPython(plugin: PluginContext, options: 
 
     const data: NetworkLinksData = {
         links,
+        dashed: options.dashed,
+        interaction: options.interaction,
+        kind: options.interaction ? "interaction" : undefined,
         alpha,
         radialSegments,
         name,

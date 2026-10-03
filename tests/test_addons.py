@@ -968,7 +968,7 @@ def test_view_addons_run_lifecycle_hooks_on_init_toggle_and_reset():
 
 
 def test_widget_teardown_deactivates_the_view_addon_runtime():
-    import conftest
+    from tests import conftest
 
     events: list[str] = []
     addons.register(

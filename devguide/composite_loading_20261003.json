@@ -1,0 +1,105 @@
+{
+  "date": "2026-10-03",
+  "issue": "uibcdf/molsysviewer#151",
+  "scope": "Independent-source batch/progressive loading with live compact source records",
+  "status": "implemented locally; durable source transfer, box assignment, Studio and artifact qualification pending",
+  "environment": {
+    "name": "molsyssuite@uibcdf_3.14",
+    "python": "3.14.7",
+    "interpreter": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "provider_head": "c19a47ada0c2279029abfa296cf915560610ad9a",
+    "provider": "editable local MolSysMT; source pin is not published-provider qualification",
+    "activation": "Explicit interpreter, PATH and Conda markers for Python tests/browser bridge",
+    "provider_head_observation": "HEAD recorded at final evidence capture; earlier design/probe used e8e4fff22d0df0d26a3b91d80ea5a85c04981aef. basic/native/form/interactions source owners are unchanged between that commit and the observed HEAD. Unrelated provider work is preserved."
+  },
+  "verification": {
+    "specific_final": {
+      "command": "python -m pytest --receptor=llm tests/test_composite_load.py -x",
+      "exit": 0,
+      "passed": 41,
+      "seconds": 14.01,
+      "log": "/tmp/msv-composite-load-specific-20261003.log"
+    },
+    "existing_scoped": {
+      "command": "python -m pytest --receptor=llm tests/test_live_edit_rebuild.py tests/test_trajectory_plot_lifecycle.py tests/test_public_api_inventory.py -x",
+      "exit": 0,
+      "passed": 49,
+      "seconds": 17.29,
+      "log": "/tmp/msv-composite-load-existing-20261003.log",
+      "boundary": "Before final selection digester hardening"
+    },
+    "full_python_once": {
+      "command": "python -m pytest --receptor=llm tests/",
+      "exit": 0,
+      "passed": 2696,
+      "skipped": 23,
+      "seconds": 433.94,
+      "log": "/tmp/msv-composite-load-full-20261003.log",
+      "boundary": "Outside sandbox. Collected the initial 37 new guards before final selection hardening/four additional malformed-selection guards; final scoped runs cover that change. Not a second full run or installed-wheel qualification."
+    },
+    "final_digestion_loading": {
+      "command": "python -m pytest --receptor=llm tests/test_digester_caller_contract.py tests/test_argdigest_public_api.py tests/test_boundary_digesters.py tests/test_digestion_helpers.py tests/test_public_entrypoint_contract.py tests/loaders/test_load_from_molsysmt.py tests/molsysviewer/test_molsysview_load.py -x",
+      "exit": 0,
+      "passed": 68,
+      "seconds": 12.1,
+      "log": "/tmp/msv-composite-load-final-scoped-20261003.log"
+    },
+    "browser": {
+      "command": "PYTHON=<3.14 interpreter> node tests/e2e/composite-load.e2e.js",
+      "exit": 0,
+      "log": "/tmp/msv-composite-load-browser-20261003.log",
+      "boundary": "Real Chrome/Mol* outside sandbox; four translated real demo copies, rendered coordinates, batch/progressive equivalence, base-region membership and whole-only visibility. Source harness, not standalone/installed-wheel qualification."
+    },
+    "typescript": {
+      "command": "npx tsc --noEmit",
+      "exit": 0,
+      "log": "/tmp/msv-composite-load-typescript-20261003.log"
+    },
+    "inventory": {
+      "command": "python devtools/public_api_inventory.py --write-baseline",
+      "exit": 0,
+      "log": "/tmp/msv-composite-load-inventory-20261003.log"
+    },
+    "ruff": {
+      "command": "python -m ruff check <changed loading sources and guards>",
+      "exit": 0,
+      "log": "/tmp/msv-composite-load-ruff-20261003.log"
+    },
+    "hygiene": {
+      "git_diff_check": 0,
+      "devguide_index_check": 0
+    }
+  },
+  "diagnoses": [
+    "Initial physical-time assertion used exact equality after ns-to-ps conversion; corrected the assertion to explicit numerical tolerance.",
+    "Reviewed alternative-syntax selection digester could coerce bool/fractional values into indices; load-specific strict validation added with four guards.",
+    "Legacy first-load test assumed the record had exactly six fields; retained those assertions and added compact-map/source-ID checks."
+  ],
+  "limits": [
+    "Atomicity covers source preparation/conversion/acquisition and pairing/analysis-policy failures; arbitrary frontend/unexpected commit failures are not general rollback promises.",
+    "Incoming named interaction analyses during composition need explicit embedding policy and are refused; destination analyses retain existing invalidation semantics.",
+    "No source-ledger persistence/remapping qualification for session, copy/extraction, appended frames, external edits or scene merge yet.",
+    "No hard peak-memory ceiling or remote PDB-ID acquisition qualification; provider structural-attribute and cell diagnostics remain visible.",
+    "Temporary source conversions/candidates use native provider operations and allocate no dense atom-pair provenance matrix."
+  ],
+  "source_sha256": {
+    "molsysviewer/viewer/load.py": "bbb28f8e2e08fe67b5822335a80dd4700220f35eba092e611299f00f0fd24335",
+    "molsysviewer/loaders/_composition.py": "c26886b3e12326ebc8891fb41e2a7874c64e0712120e150b278fbffddaff443b",
+    "molsysviewer/viewer/core.py": "0c70681eb4d1189fa5b45726cef8dbdb688e163b199bb5a31091ba209cda8cac",
+    "molsysviewer/viewer/molsysmt_interface.py": "06bb26b7c5b99358fef0237f74993ebbdecbaba239deb993b86780715ade0d7a",
+    "molsysviewer/_private/argdigest/argument/multiple.py": "3362892e3cfd89fe34a7a9ca94fb794ca4c176186d3686983ab2e2dc92ec9f99",
+    "molsysviewer/_private/argdigest/argument/structure_pairing.py": "145e6c928bf804bcdb17456876ec1dd92651febab903d655dbbf6ec9d950d5cb",
+    "molsysviewer/_private/argdigest/argument/molecular_system.py": "5d7c97d73023c5aa588c66937669ad057494079206989a57de388bb7a71620c8",
+    "molsysviewer/_private/argdigest/argument/selection.py": "fe42fc36d5d6bdb36b631d09db62b22defaa55764c5dc49b48f87e7bcc241de0",
+    "molsysviewer/_private/argdigest/argument/structure_indices.py": "c315e925c204e92f675ff7a6e0e2d2732fe65f116434e2b90265079e85e4b566",
+    "molsysviewer/_private/argdigest/argument/labels.py": "0d4c63a1130f6cf7c70486af8bb51bae0c53ca56f0694c4c004d2d7fdbc60673",
+    "tests/test_composite_load.py": "27f36d672e4e4cdfeac1837c3061d086e1c32115068199e245234060186daf82",
+    "tests/test_live_edit_rebuild.py": "eb182170770248d8e849c71f9fac7cbf907211298e0f2da65e9d4be5ddc07136",
+    "molsysviewer/js/tests/e2e/composite-load-bridge.py": "411017361dfc0addf28cfb9c5858bad0dcea5876f16218d3953af738dd29038f",
+    "molsysviewer/js/tests/e2e/composite-load.e2e.ts": "32946a95f57866fbe638bf2f5bceabb550b883e878ec51fe101136110c41e39a",
+    "molsysviewer/js/tests/e2e/e2e-runner.ts": "2bea2bc21ed9f2a4ffde7d98d9186a3ac89246e6b7a01833f06a7ee4fefeff17",
+    "molsysviewer/js/package.json": "c445509a551c53e3dc7ab59e0ebbca94cf8aa3a8b3c96e0cda464fdbf90173ba",
+    "devtools/public_api_inventory_baseline.json": "23474c6caa536d3e6199ad40811b3eb369f492067f3631a7cef326c159e14f32"
+  },
+  "publication": "No product commit, push, new wheel or release. Pre-existing unrelated work is preserved."
+}

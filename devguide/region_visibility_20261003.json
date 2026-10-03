@@ -1,0 +1,99 @@
+{
+  "date": "2026-10-03",
+  "issue": "uibcdf/molsysviewer#151",
+  "scope": "Region hide/show without representation: whole-only constraints",
+  "status": "implemented locally, tested; integrated candidate remains pending",
+  "environment": {
+    "name": "molsyssuite@uibcdf_3.14",
+    "python": "3.14.7",
+    "interpreter": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "provider": "editable local MolSysMT; HEAD e8e4fff22d0df0d26a3b91d80ea5a85c04981aef observed after full regression",
+    "runtime_version": "0.23.4+71.g3b475639.dirty"
+  },
+  "verification": {
+    "new_python_guards": {
+      "command": "python -m pytest --receptor=llm tests/test_unrepresented_region_visibility.py -x",
+      "exit": 0,
+      "passed": 4
+    },
+    "typescript": {
+      "command": "npx tsc --noEmit",
+      "exit": 0
+    },
+    "browser": {
+      "commands": [
+        "node tests/e2e/region-hide.e2e.js",
+        "node tests/e2e/region-subpanel.e2e.js"
+      ],
+      "exit": 0,
+      "suites": 2,
+      "boundary": "Real Chrome/WebGL2 outside executor sandbox, against source harness; not installed-wheel evidence or standalone visible-window certification"
+    },
+    "javascript": {
+      "command": "node --test tests/unit/dist-index.js",
+      "exit": 0,
+      "passed": 314,
+      "log": "/tmp/msv-base-region-js-unsandboxed-20261003.log",
+      "boundary": "Outside sandbox. Initial sandbox runner returned exit 0 but counted only one file; that run is not accepted as unit-suite evidence."
+    },
+    "full_python_once": {
+      "command": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python -m pytest --receptor=llm tests/",
+      "exit": 1,
+      "passed": 2627,
+      "failed": 23,
+      "skipped": 23,
+      "seconds": 390.79,
+      "log": "/tmp/msv-base-region-python-20261003.log",
+      "boundary": "Main interpreter 3.14; inherited shell PATH/Conda markers still named 3.13. Scoped recovery explicitly selects 3.14 for interpreter, PATH and Conda markers. Full run is not claimed as a passing or fully activated environment gate.",
+      "diagnosis": "One unused warning caused by new contract, removed. Other 22 failures: sandbox port binding, Chromium and Qt process restrictions."
+    },
+    "scoped_after_warning_removal": {
+      "exit": 0,
+      "passed": 175,
+      "skipped": 14,
+      "seconds": 15.66,
+      "skip_reason": "Catalog templates without placeholders",
+      "selection": [
+        "tests/test_catalog_warning_round_trip.py",
+        "tests/test_catalog_templates_render.py",
+        "tests/test_unrepresented_region_visibility.py",
+        "tests/regions/test_region_flow.py",
+        "tests/regions/test_region_layers.py"
+      ],
+      "log": "/tmp/msv-base-region-scoped-20261003.log"
+    },
+    "infrastructure_recovery": {
+      "exit": 0,
+      "passed": 22,
+      "seconds": 52.44,
+      "log": "/tmp/msv-base-region-recovery-20261003.log",
+      "selectors": "/tmp/msv-base-region-recovery-selectors-20261003.json",
+      "boundary": "Only diagnosed failed cases outside sandbox, explicitly activated 3.14 environment. No repeated full suite."
+    },
+    "runtime": {
+      "command": "npm run build:runtime",
+      "exit": 0,
+      "version_validation": "devtools.validate_python_wheel_runtime.validate_source: PASS",
+      "package_version_metadata_changed": false
+    }
+  },
+  "source_sha256": {
+    "molsysviewer/regions.py": "ffdd38a80ffd4ab564df33508224372f053dd4f0d3d28bd0fad38a4a25999ab2",
+    "molsysviewer/layers.py": "cc4640466496c55af1dbfac67fd0d247975317c82e9ebc39d3daeb96cffa5932",
+    "molsysviewer/_private/smonitor/warnings.py": "f2b985b2f1871ee93bf24a01996032c9dec8b3532e96e8573ea462bf934f1e51",
+    "molsysviewer/_private/smonitor/catalog.py": "c714d977b042a6b3b15e6cb35faa63d81da0bb63d22fce364f3892677f12c15c",
+    "molsysviewer/js/src/managers/handlers/state-handlers.ts": "661b57991768ed8e06680fd8970bbfd29d72fd57665451923cb1c075a96984eb",
+    "molsysviewer/js/src/ui/panels/regions-panel.ts": "c54f2e34a5129486d657c42d194b39ee745d822588a54708f249064729cfcae1",
+    "tests/test_unrepresented_region_visibility.py": "9c16733f2921db2ae880b661aaac7eecc86483053c8b01568f254c02df189801",
+    "tests/regions/test_region_flow.py": "9da2d29039ccd3d71f4d2b15a7d30a458735ea5e070169fa1ae70ca8f6267bae",
+    "molsysviewer/js/tests/e2e/harness.ts": "e512394bac574ab2fadcd2b574f68b294f05023491ab860bd1b08502152e9a1b",
+    "molsysviewer/js/tests/e2e/region-hide.e2e.ts": "a3423ddddb0ce2c9da0d142fb5b17e92bd4a197522219cc8fd1cbdfe66c40384",
+    "molsysviewer/js/tests/e2e/region-subpanel.e2e.ts": "e4fc3067c481c50469ccc2b37d95f30b9e53e438c2777479e4fe03e502fba153"
+  },
+  "remaining_151": [
+    "Useful show_only for a region without representation",
+    "Batch and progressive source identity contract",
+    "Controlled box assignment and scene/scientific synchronization"
+  ],
+  "publication": "No commit, push, new wheel or release claim in this slice; prior wheel evidence describes the earlier tree."
+}

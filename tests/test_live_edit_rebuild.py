@@ -8,8 +8,8 @@ from molsysmt.native import Structures
 from molsysviewer._pyunitwizard import puw
 from molsysviewer.demo import demo
 
-from _edit_helpers import apply_add, apply_append_structures, apply_remove, apply_set
 from molsysviewer import MolSysView
+from tests._edit_helpers import apply_add, apply_append_structures, apply_remove, apply_set
 
 
 def test_apply_system_edit_reconciles_external_molsysmt_edit():
@@ -341,8 +341,9 @@ def test_load_first_block_does_not_create_automatic_regions():
 
     assert list(view.regions) == []
     assert view._empty is False  # noqa: SLF001
-    assert view._load_blocks == [  # noqa: SLF001
-        {
+    assert len(view.load_blocks) == 1
+    record = view.load_blocks[0]
+    assert {key: record[key] for key in ("index", "label", "n_atoms", "start", "stop", "region_tag")} == {
             "index": 0,
             "label": "first",
             "n_atoms": 22,
@@ -350,7 +351,9 @@ def test_load_first_block_does_not_create_automatic_regions():
             "stop": 22,
             "region_tag": None,
         }
-    ]
+    assert record["source_id"]
+    assert record["atom_map"] == {"encoding": "runs", "runs": [[0, 0, 22]]}
+    assert record["structure_map"] == {"encoding": "runs", "runs": [[0, 0, 1]]}
 
 
 def test_second_additive_load_backfills_first_region_and_creates_second():
@@ -455,7 +458,7 @@ def test_remove_rebuild_drops_orphaned_regions_and_shapes_but_keeps_anchored_obj
 
     view.regions.add(atom_indices=[0], tag="orphan-region", skip_digestion=True)
     view.shapes.add_pocket_surface(atom_indices=[0], tag="orphan-shape", skip_digestion=True)
-    view.annotations.add_annotation(text="orphan", atom_indices=[0], tag="orphan-label", skip_digestion=True)
+    view.annotations.add(text="orphan", atom_indices=[0], tag="orphan-label", skip_digestion=True)
     view.measurements.add_distance([0], [1], tag="orphan-distance", skip_digestion=True)
 
     apply_remove(view, selection=[0])

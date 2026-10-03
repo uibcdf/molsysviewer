@@ -11,7 +11,7 @@ import pytest
 pytest.importorskip("molsysmt")
 from molsysviewer.demo import demo
 
-from _edit_helpers import apply_append_structures, apply_remove
+from tests._edit_helpers import apply_append_structures, apply_remove
 
 # ---------------------------------------------------------------------------
 # Hidden region survives a global show/hide cycle AFTER a rebuild
@@ -197,7 +197,7 @@ def test_annotation_retag_survives_rebuild():
     view = demo["dialanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
-    view.annotations.add_annotation(
+    view.annotations.add(
         text="Residue 0",
         selection="group_index==0",
         tag="res0",
@@ -293,7 +293,7 @@ def test_export_messages_ordered_after_remove_then_append():
 
     atom_indices = list(view.whole.select(selection="group_index==2"))
     view.regions.add(atom_indices=atom_indices, tag="site", skip_digestion=True)
-    view.annotations.add_annotation(
+    view.annotations.add(
         text="Site label",
         selection="group_index==2",
         tag="lbl",

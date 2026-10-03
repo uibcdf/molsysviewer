@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import Any
 
 import molsysmt as msm
@@ -16,7 +17,12 @@ class Selection:
         self.tag = tag
         self._active = True
 
+    def _assert_current(self):
+        if self._view._selections.get(self.tag) is not self or self._view.selections._record_for_tag(self.tag) is None:
+            raise ValueError(f"Selection handle {self.tag!r} is retired; reacquire it from its manager.")
+
     def _record(self) -> dict[str, Any]:
+        self._assert_current()
         record = self._view.selections._record_for_tag(self.tag)  # noqa: SLF001
         if record is None:
             raise ValueError(f"No selection record found for tag {self.tag!r}.")
@@ -26,6 +32,7 @@ class Selection:
     @digest()
     def info(self, skip_digestion: bool = False) -> dict[str, Any]:
         """Return compact metadata for this persistent selection."""
+        self._assert_current()
         return self._view.selections.info(self.tag, skip_digestion=True)  # noqa: SLF001
 
     @property
@@ -153,12 +160,14 @@ class Selection:
     @digest()
     def set_tag(self, new_tag: str, skip_digestion: bool = False):
         """Rename this persistent selection."""
+        self._assert_current()
         return self._view.selections.set_tag(self.tag, new_tag, skip_digestion=True)  # noqa: SLF001
 
     @signal(tags=["selection"])
     @digest()
     def delete(self, skip_digestion: bool = False) -> None:
         """Delete this persistent selection."""
+        self._assert_current()
         self._view.selections.delete(self.tag, skip_digestion=True)  # noqa: SLF001
 
 
@@ -220,7 +229,7 @@ class SelectionsManager:
     @digest()
     def records(self, skip_digestion: bool = False) -> list[dict[str, Any]]:
         """Return the replayable persistent-selection records."""
-        return [dict(record) for record in self._view._selection_history]  # noqa: SLF001
+        return deepcopy(self._view._selection_history)  # noqa: SLF001
 
     @signal(tags=["selection"])
     @digest()

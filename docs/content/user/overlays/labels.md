@@ -5,14 +5,14 @@ They belong to `annotations`, not `shapes`, and are controlled through `layers`.
 
 ## Add a label
 
-Use `add_annotation()` to attach a label to any set of atoms.
+Use `add()` to attach a label to any set of atoms.
 The anchor position is the geometric centroid of the selected atoms.
 
 ```python
 from molsysviewer import demo
 
 view = demo["dialanine"]
-view.annotations.add_annotation(
+view.annotations.add(
     text="N-terminus",
     selection="group_index==0",
     tag="n-term-label",
@@ -23,7 +23,7 @@ view
 You can also pass explicit atom indices:
 
 ```python
-view.annotations.add_annotation(
+view.annotations.add(
     text="Catalytic site",
     atom_indices=[4, 5, 6, 7, 8],
     tag="site-label",
@@ -35,7 +35,7 @@ view.annotations.add_annotation(
 Control color and size with `label_style`:
 
 ```python
-view.annotations.add_annotation(
+view.annotations.add(
     text="Active site",
     selection="group_index==3",
     tag="active-label",
@@ -51,7 +51,7 @@ Supported keys: `color` (CSS hex string), `size_em` (float, default 1.0).
 will be placed at their centroid:
 
 ```python
-view.annotations.add_annotation(
+view.annotations.add(
     text="Backbone",
     selection="group_index in [0, 1, 2]",
     tag="backbone-label",

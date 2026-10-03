@@ -84,6 +84,7 @@
     "camera_snapshot": "event",
     "widget_resize": "event",
     "trajectory_frame_changed": "event",
+    "trajectory_plot_hidden": "event",
     "shape_render_status": "event",
     "js_log": "event",
     "movie_frame": "event",
@@ -110,7 +111,8 @@
     "movie_export_done": "ack",
     "viewer_init_failed": "error",
     "camera_stranded_inside_scene": "error",
-    "runtime_contract_rejected": "error"
+    "runtime_contract_rejected": "error",
+    "request_interaction_frame": "request"
   },
   "outbound_requests": [
     "request_camera_snapshot",

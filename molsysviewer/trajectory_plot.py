@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+from copy import deepcopy
 from typing import Any
 
 import numpy as np
@@ -10,6 +11,7 @@ from molsysviewer.colors import colors as _color_registry
 from molsysviewer.colors import normalize_color
 
 from ._private.argdigest import digest
+from ._private.exceptions import ArgumentError
 
 
 def _is_sequence(value: Any) -> bool:
@@ -33,7 +35,93 @@ class TrajectoryPlotManager:
     def __init__(self, view: Any) -> None:
         self._view = view
 
+    def _cards(self):
+        message = self._view._scene_look.get("trajectory_plot", {})
+        options = message.get("options", {})
+        return deepcopy(options.get("cards", [options] if options.get("series") else []))
+
+    def _validate_cards(self, cards):
+        if not isinstance(cards, list):
+            raise ArgumentError("series", value=cards)
+        tags = set()
+        normalized = deepcopy(cards)
+        for card in normalized:
+            tag = card.get("tag") if isinstance(card, dict) else None
+            if not isinstance(tag, str) or not tag.strip() or tag in tags or not isinstance(card.get("visible"), bool):
+                raise ArgumentError("tag", value=tag)
+            tags.add(tag)
+            series = card.get("series")
+            if not isinstance(series, list) or not series:
+                raise ArgumentError("series", value=series)
+            length = None
+            for item in series:
+                if not isinstance(item, dict) or not isinstance(item.get("label"), str):
+                    raise ArgumentError("series", value=series)
+                values = item.get("values")
+                if not _is_sequence(values) or not len(values):
+                    raise ArgumentError("series", value=values)
+                item["values"] = self._finite_values(values, "series")
+                if length is not None and len(values) != length:
+                    raise ArgumentError("series", value=series)
+                length = len(values)
+                if "color" in item:
+                    item["color"] = normalize_color(item["color"])
+            if card.get("n_frames") != length:
+                raise ArgumentError("series", value=series)
+            structures = self._view.player.n_structures
+            if self._view.molsys is not None and length != structures:
+                raise ArgumentError("series", value=series, message="A trajectory plot requires one value per loaded structure.")
+            if "x" in card:
+                if not _is_sequence(card["x"]) or len(card["x"]) != length:
+                    raise ArgumentError("x", value=card["x"])
+                card["x"] = self._finite_values(card["x"], "x")
+            card["events"] = self._normalize_events(card.get("events"), length)
+        return normalized
+
+    def _replace(self, cards):
+        cards = self._validate_cards(cards)
+        self._view._send({"op": "set_trajectory_plot", "options": {"cards": cards}})
+
+    def _check_structure_axis(self, n_structures):
+        if any(card["n_frames"] != int(n_structures) for card in self._cards()):
+            raise ValueError("Clear trajectory plot cards before changing the number of loaded structures.")
+
+    def _prepare_import(self, cards, clear_first, on_conflict):
+        incoming = self._validate_cards(cards)
+        retained = [] if clear_first else self._cards()
+        tags = {card["tag"] for card in retained}
+        for card in incoming:
+            tag = card["tag"]
+            if tag in tags:
+                if on_conflict == "raise":
+                    raise ValueError(f"Cannot import trajectory plot tag {tag!r}: it already exists.")
+                if on_conflict == "skip":
+                    continue
+                suffix = 2
+                while f"{tag}_{suffix}" in tags:
+                    suffix += 1
+                card["tag"] = f"{tag}_{suffix}"
+            tags.add(card["tag"])
+            retained.append(card)
+        return retained
+
+    @signal(tags=["trajectory", "plot", "query"])
+    @digest()
+    def records(self, skip_digestion=False):
+        """Return detached retained cards, including hidden cards."""
+        return self._cards()
+
     # -- normalization helpers ------------------------------------------------
+
+    @staticmethod
+    def _finite_values(values, argument):
+        try:
+            result = [float(value) for value in values]
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ArgumentError(argument, value=values, message="Plot values must be finite numbers.") from exc
+        if not all(np.isfinite(value) for value in result):
+            raise ArgumentError(argument, value=values, message="Plot values must be finite numbers.")
+        return result
 
     @staticmethod
     def _normalize_series(series: Any) -> list[dict[str, Any]]:
@@ -56,7 +144,7 @@ class TrajectoryPlotManager:
         for label, values in items:
             if not _is_sequence(values):
                 raise ValueError(f"series {label!r} must be a sequence of numbers")
-            floats = [float(v) for v in values]
+            floats = TrajectoryPlotManager._finite_values(values, "series")
             if length is None:
                 length = len(floats)
             elif len(floats) != length:
@@ -118,7 +206,7 @@ class TrajectoryPlotManager:
     @digest()
     def show(
         self,
-        series: Any,
+        series: Any = None,
         *,
         x: Sequence[float] | None = None,
         colors: Any = None,
@@ -129,6 +217,7 @@ class TrajectoryPlotManager:
         tag: str = "default",
         width: int | None = None,
         height: int | None = None,
+        skip_digestion: bool = False,
     ) -> None:
         """Show (or replace) a synchronized 2D trajectory plot card.
 
@@ -137,7 +226,8 @@ class TrajectoryPlotManager:
         series
             Per-frame scalar data: a single sequence, a mapping
             ``{label: sequence}``, or a list of sequences. All series must have
-            the same length (one value per frame).
+            the same length (one value per loaded structure). ``None`` restores
+            the retained card identified by ``tag`` without replacing its data.
         x
             Optional x-axis values (defaults to frame indices ``0..n-1``).
         colors
@@ -154,6 +244,16 @@ class TrajectoryPlotManager:
         width, height
             Optional initial width and height in pixels.
         """
+        if not isinstance(tag, str) or not tag.strip():
+            raise ArgumentError("tag", value=tag)
+        cards = self._cards()
+        if series is None:
+            card = next((item for item in cards if item["tag"] == tag), None)
+            if card is None:
+                raise KeyError(tag)
+            card["visible"] = True
+            self._replace(cards)
+            return
         normalized = self._normalize_series(series)
         n_frames = len(normalized[0]["values"])
         self._resolve_series_colors(normalized, colors)
@@ -162,7 +262,7 @@ class TrajectoryPlotManager:
         if x is not None:
             if not _is_sequence(x):
                 raise ValueError("x must be a sequence of numbers")
-            x_values = [float(v) for v in x]
+            x_values = self._finite_values(x, "x")
             if len(x_values) != n_frames:
                 raise ValueError(f"x must have {n_frames} values, got {len(x_values)}")
 
@@ -186,27 +286,35 @@ class TrajectoryPlotManager:
         if height is not None:
             options["height"] = int(height)
 
-        self._view._send({"op": "set_trajectory_plot", "options": options})
+        cards = [card for card in cards if card["tag"] != tag]
+        cards.append(options)
+        self._replace(cards)
 
     # ``update`` is a semantic alias: pushing a new state replaces the old one.
     update = show
 
     @signal(tags=["trajectory", "plot"])
     @digest()
-    def clear(self, tag: str | None = None) -> None:
+    def clear(self, tag: str | None = None, *, skip_digestion: bool = False) -> None:
         """Hide and clear trajectory plot cards.
 
         If ``tag`` is provided, clears that specific card; if ``None``, clears all cards.
         """
-        options: dict[str, Any] = {"visible": False}
-        if tag is not None:
-            options["tag"] = str(tag)
-        self._view._send({"op": "set_trajectory_plot", "options": options})
+        if tag is not None and (not isinstance(tag, str) or not tag.strip()):
+            raise ArgumentError("tag", value=tag)
+        self._replace([] if tag is None else [card for card in self._cards() if card["tag"] != tag])
 
+    @signal()
     @digest()
-    def hide(self, tag: str | None = None) -> None:
-        """Alias for ``clear()``."""
-        self.clear(tag=tag)
+    def hide(self, tag: str | None = None, *, skip_digestion: bool = False) -> None:
+        """Hide one or all cards, retaining data for ``show(tag=...)``."""
+        if tag is not None and (not isinstance(tag, str) or not tag.strip()):
+            raise ArgumentError("tag", value=tag)
+        cards = self._cards()
+        for card in cards:
+            if tag is None or card["tag"] == tag:
+                card["visible"] = False
+        self._replace(cards)
 
 
 __all__ = ["TrajectoryPlotManager"]

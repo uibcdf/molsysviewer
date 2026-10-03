@@ -3,7 +3,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Iterable, Mapping, Sequence
 
+from smonitor import signal
+
 from ._private.argdigest import digest
+from ._private.exceptions import ArgumentError
+from ._pyunitwizard import puw
 
 MOLSTAR_COLOR_NAMES: dict[str, int] = {
     "aliceblue": 0xF0F8FF,
@@ -227,7 +231,7 @@ def _try_matplotlib_rgba(color: Any) -> tuple[float, float, float, float] | None
         return None
 
 
-def normalize_color(color: Any) -> int:
+def _normalize_color(color: Any) -> int:
     if isinstance(color, int) and not isinstance(color, bool):
         if 0 <= color <= 0xFFFFFF:
             return color
@@ -258,8 +262,20 @@ def normalize_color(color: Any) -> int:
     raise ValueError(f"Unsupported color value {color!r}.")
 
 
-def normalize_colors(colors: Iterable[Any]) -> list[int]:
-    return [normalize_color(color) for color in colors]
+def _normalize_colors(colors: Iterable[Any]) -> list[int]:
+    return [_normalize_color(color) for color in colors]
+
+
+@signal()
+@digest()
+def normalize_color(color: Any, *, skip_digestion: bool = False) -> int:
+    return _normalize_color(color)
+
+
+@signal()
+@digest()
+def normalize_colors(colors: Iterable[Any], *, skip_digestion: bool = False) -> list[int]:
+    return _normalize_colors(colors)
 
 
 class ColorRegistry:
@@ -270,52 +286,65 @@ class ColorRegistry:
         self._generated_scheme_palettes: dict[str, tuple[Any, int | None]] = {}
         self._cvd_safe: set[str] = set()
 
+    @signal()
     @digest()
-    def color_names(self) -> list[str]:
+    def color_names(self, *, skip_digestion: bool = False) -> list[str]:
         return sorted(self._named_colors.keys())
 
-    def normalize_color(self, color: Any) -> int:
+    @signal()
+    @digest()
+    def normalize_color(self, color: Any, *, skip_digestion: bool = False) -> int:
         return normalize_color(color)
 
-    def normalize_colors(self, values: Iterable[Any]) -> list[int]:
+    @signal()
+    @digest()
+    def normalize_colors(self, values: Iterable[Any], *, skip_digestion: bool = False) -> list[int]:
         return normalize_colors(values)
 
+    @signal()
     @digest()
-    def palette_names(self) -> list[str]:
+    def palette_names(self, *, skip_digestion: bool = False) -> list[str]:
         return sorted(self._palettes.keys())
 
+    @signal()
     @digest()
-    def scheme_names(self) -> list[str]:
+    def scheme_names(self, *, skip_digestion: bool = False) -> list[str]:
         return sorted(set(self._schemes.keys()) | set(self._generated_scheme_palettes.keys()))
 
+    @signal()
     @digest()
-    def mark_cvd_safe(self, *names: str) -> None:
+    def mark_cvd_safe(self, *names: str, skip_digestion: bool = False) -> None:
         """Tag one or more palette/scheme names as colour-vision-deficiency safe."""
         for name in names:
             key = str(name).strip()
             if key:
                 self._cvd_safe.add(key)
 
+    @signal()
     @digest()
-    def is_cvd_safe(self, name: str) -> bool:
+    def is_cvd_safe(self, name: str, *, skip_digestion: bool = False) -> bool:
         """Whether ``name`` is a registered colour-blind-safe palette or scheme."""
         return str(name).strip() in self._cvd_safe
 
+    @signal()
     @digest()
-    def cvd_safe_names(self) -> list[str]:
+    def cvd_safe_names(self, *, skip_digestion: bool = False) -> list[str]:
         """All palette/scheme names tagged as colour-blind safe (Okabe-Ito, Tol, perceptually-uniform continuous)."""
         return sorted(self._cvd_safe)
 
+    @signal()
     @digest()
-    def get_palette(self, name: str) -> ContinuousPalette:
+    def get_palette(self, name: str, *, skip_digestion: bool = False) -> ContinuousPalette:
         return self._palettes[name]
 
+    @signal()
     @digest()
     def get_scheme(
         self,
         name: str,
         *,
         categories: Sequence[Any] | None = None,
+        skip_digestion: bool = False,
     ) -> CategoricalColorScheme:
         if name in self._schemes:
             return self._schemes[name]
@@ -325,8 +354,9 @@ class ColorRegistry:
             return self.resolve_scheme(name, categories=categories)
         raise KeyError(name)
 
+    @signal()
     @digest()
-    def resolve_palette(self, palette: Any, *, samples: int = 256) -> ContinuousPalette:
+    def resolve_palette(self, palette: Any, *, samples: int = 256, skip_digestion: bool = False) -> ContinuousPalette:
         if isinstance(palette, ContinuousPalette):
             return palette
         if isinstance(palette, str):
@@ -335,9 +365,16 @@ class ColorRegistry:
             return self._palette_from_name_or_matplotlib(palette, samples=samples)
         return self._palette_from_matplotlib_or_sequence(palette, samples=samples)
 
+    @signal()
     @digest()
     def register_palette(
-        self, name: str, palette: Any, *, samples: int = 256, overwrite: bool = False
+        self,
+        name: str,
+        palette: Any,
+        *,
+        samples: int = 256,
+        overwrite: bool = False,
+        skip_digestion: bool = False,
     ) -> ContinuousPalette:
         key = str(name).strip()
         if key == "":
@@ -349,6 +386,7 @@ class ColorRegistry:
         self._palettes[key] = stored
         return stored
 
+    @signal()
     @digest()
     def resolve_scheme(
         self,
@@ -356,6 +394,7 @@ class ColorRegistry:
         *,
         categories: Sequence[Any] | None = None,
         fallback: Any | None = None,
+        skip_digestion: bool = False,
     ) -> CategoricalColorScheme:
         if isinstance(scheme, CategoricalColorScheme):
             return scheme
@@ -389,6 +428,7 @@ class ColorRegistry:
             return CategoricalColorScheme(name=None, mapping=mapping, fallback=fallback_color, source=palette.source)
         raise ValueError("Categorical schemes require either a mapping or explicit categories.")
 
+    @signal()
     @digest()
     def register_scheme(
         self,
@@ -398,6 +438,7 @@ class ColorRegistry:
         categories: Sequence[Any] | None = None,
         fallback: Any | None = None,
         overwrite: bool = False,
+        skip_digestion: bool = False,
     ) -> CategoricalColorScheme:
         key = str(name).strip()
         if key == "":
@@ -414,6 +455,7 @@ class ColorRegistry:
         self._schemes[key] = stored
         return stored
 
+    @signal()
     @digest()
     def register_generated_scheme(
         self,
@@ -422,6 +464,7 @@ class ColorRegistry:
         *,
         fallback: Any | None = None,
         overwrite: bool = False,
+        skip_digestion: bool = False,
     ) -> str:
         key = str(name).strip()
         if key == "":
@@ -620,14 +663,17 @@ for _cvd_cmap in ("viridis", "cividis", "magma", "inferno", "plasma"):
     colors.mark_cvd_safe(_cvd_cmap)
 
 
+@signal()
 @digest()
 def expand_values_to_atoms(
     molsys: "Any",
     values: "Any",
     element: str = "atom",
     palette: "Any" = "viridis",
-    value_range: "tuple[float, float] | list[float] | None" = None,
+    value_range: Any = None,
     scope_atom_indices: "list[int] | None" = None,
+    *,
+    skip_digestion: bool = False,
 ) -> "tuple[list[int], list[int]]":
     """Map element-level scalar values to a flat (atom_indices, colors) pair.
 
@@ -649,7 +695,8 @@ def expand_values_to_atoms(
     palette
         Palette name, matplotlib colormap, or list of colors.
     value_range
-        Normalization range ``[vmin, vmax]``.  Auto-computed when ``None``.
+        Normalization range ``[vmin, vmax]``. Physical values require compatible
+        explicit units on this range. Auto-computed when ``None``.
     scope_atom_indices
         If given, only atoms in this list are considered and only elements that
         have at least one atom here are included.
@@ -737,24 +784,30 @@ def expand_values_to_atoms(
     return out_atom_indices, out_colors
 
 
+@signal()
 @digest()
 def scalar_to_color_list(
     values: Any,
     palette: Any = "viridis",
-    value_range: "tuple[float, float] | list[float] | None" = None,
+    value_range: Any = None,
+    *,
+    skip_digestion: bool = False,
 ) -> list[int]:
     """Map an iterable of scalar values to a list of 0xRRGGBB color integers.
 
     Parameters
     ----------
     values
-        Iterable of numeric values.  One color is returned per value.
+        Iterable of unit-free numbers or a one-dimensional quantity array.
+        One color is returned per value. Quantities retain their units until
+        normalization against the range.
     palette
         Palette name (str), ``ContinuousPalette``, matplotlib ``Colormap``, or a
         list of colors.  Defaults to ``"viridis"``.
     value_range
-        ``(vmin, vmax)`` normalization range.  Auto-calculated from *values* when
-        ``None``.
+        ``(vmin, vmax)`` normalization range. For physical values, supply a
+        quantity vector or two compatible scalar quantities. Bare bounds are
+        accepted only for unit-free data. Auto-calculated when ``None``.
 
     Returns
     -------
@@ -763,12 +816,34 @@ def scalar_to_color_list(
     """
     import numpy as np  # lazy import — only needed when called
 
-    arr = np.asarray(list(values), dtype=float)
+    dimensioned = puw.is_quantity(values) and not puw.check(values, dimensionality={})
+    target_unit = puw.get_unit(values) if dimensioned else "dimensionless"
+    raw_values = puw.get_value(values, to_unit=target_unit) if puw.is_quantity(values) else values
+    arr = np.asarray(raw_values, dtype=float)
     if arr.ndim != 1:
         raise ValueError("values must be a 1-D sequence of scalars.")
+    if arr.size == 0 or not np.isfinite(arr).all():
+        raise ArgumentError("values", value=values, message=" Scalar colors require nonempty finite data.")
 
     if value_range is not None:
-        vmin, vmax = float(value_range[0]), float(value_range[1])
+        if puw.is_quantity(value_range):
+            try:
+                bounds = puw.get_value(value_range, to_unit=target_unit)
+            except Exception as exc:
+                raise ArgumentError(
+                    "value_range",
+                    value=value_range,
+                    message=" Range units must be compatible with the scalar values.",
+                ) from exc
+        elif dimensioned:
+            raise ArgumentError(
+                "value_range",
+                value=value_range,
+                message=" Physical scalar values require a range with explicit compatible units.",
+            )
+        else:
+            bounds = value_range
+        vmin, vmax = float(bounds[0]), float(bounds[1])
     else:
         vmin, vmax = float(arr.min()), float(arr.max())
 

@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [`compound_interaction_projection_dispatches_per_group.md`](compound_interaction_projection_dispatches_per_group.md) — #141: bounded public geometry batches preserve projection semantics and cut the measured 1,000-observation preparation to 281–291 ms; real-call guards and the complete Interactions browser suite pass.
+
 - [`source_pair_ci_for_direct_main_pushes.md`](source_pair_ci_for_direct_main_pushes.md) — #137: direct-main Python 3.14 validation, preserving manual frozen-candidate identity checks; three native source-pair jobs pass.
 - [`source_pair_provider_pin_below_runtime_floor.md`](source_pair_provider_pin_below_runtime_floor.md) — #138: exact released MolSysMT 0.22.4 replaces the obsolete provider below the runtime floor; installed audits and native/scientific suites pass.
 - [`dependency_inventory_paths_are_not_portable.md`](dependency_inventory_paths_are_not_portable.md) — #139: portable relative inventory keys prevent false Windows drift; native Windows full-suite qualification passes.
@@ -35,6 +37,15 @@ user/developer documentation.
 
 Resolved defect reports, kept for their evidence:
 
+- [`attribute_scalar_colors_unit_contract.md`](attribute_scalar_colors_unit_contract.md)
+  — #98, scalar coloring retains physical units and requires compatible explicit ranges across Python and canvas paths.
+- [`review_python_ecosystem_policy_adoption.md`](review_python_ecosystem_policy_adoption.md)
+  — #110, support-library boundaries and published developer-tool integration are adopted with scoped source and hosted evidence.
+
+- [`emitted_smonitor_codes_lack_templates.md`](emitted_smonitor_codes_lack_templates.md)
+  — #107, all 48 diagnostic codes have templates; real emission passes five profiles, and the guard now catches missing messages.
+- [`public_api_reference_stale_entries_and_cold_imports.md`](public_api_reference_stale_entries_and_cold_imports.md)
+  — #117, cold scene imports and the public reference resolve; strict Sphinx and the full canonical Python suite pass.
 - [`python_pocket_blob_rejects_documented_multi_iso_options.md`](python_pocket_blob_rejects_documented_multi_iso_options.md)
   — the public Python multi-iso call reached `main` and the 0.23.4 release;
   its public-manager guard and notebook execution passed.
@@ -67,6 +78,11 @@ Resolved defect reports, kept for their evidence:
 
 Completed work, kept for the reasoning:
 
+- [`full_pr_ci_can_be_skipped_and_direct_push_debt_is_unchecked.md`](full_pr_ci_can_be_skipped_and_direct_push_debt_is_unchecked.md)
+  — #116, full PR gates and administrator-preserving branch protection verified; actual nightly CI and core E2E recovery execute successfully.
+
+- [`audit_dependency_floors_and_source_pins.md`](audit_dependency_floors_and_source_pins.md)
+  — #106, read-only canonical dependency audit covers recipes, environments and controlled source installs before packaging and CI consumers.
 - [`recheck_latest_conda_forge_qt_before_1_0.md`](recheck_latest_conda_forge_qt_before_1_0.md)
   — superseded by the 2026-09-28 scope decision: Qt-host certification is
   deferred to [#113](https://github.com/uibcdf/molsysviewer/issues/113), outside
@@ -165,12 +181,35 @@ Completed work, kept for the reasoning:
 - [`adopt_resumable_zenodo_verification.md`](adopt_resumable_zenodo_verification.md)
   — the pinned common provider now supplies exact-tag and scheduled complete discovery, with truthful delayed states and a publication-anchored deadline.
 
-- [`adopt_shared_public_conda_verifier.md`](adopt_shared_public_conda_verifier.md) — Adopted the pinned shared verifier; public proof passed, historical Windows-launcher failure remains #101.
+## Final design review — 2026-09-30
 
-## Release and dependency closure — 2026-10-01
+- [partial_coordinate_edits_leave_derived_state_stale.md](partial_coordinate_edits_leave_derived_state_stale.md) — #118: Coordinate edits validate their complete atom/frame batch before mutation, invalidate named scientific interaction coverage only on edited structures, clear dependent caches/history and refresh the lazy molecular projection.
+- [view_transformations_lose_scene_state.md](view_transformations_lose_scene_state.md) — #119: Copy, extraction and merge now share canonical scene-state transfer.
+- [stale_scene_handles_mutate_replacements.md](stale_scene_handles_mutate_replacements.md) — #120: Handles are checked against the exact registered object lifetime before mutation and history staging.
+- [scene_queries_expose_mutable_records.md](scene_queries_expose_mutable_records.md) — #121: Scene records now detach nested data for Shapes, Annotations, Measurements and Selections.
+- [dict_mutations_bypass_scene_lifecycle.md](dict_mutations_bypass_scene_lifecycle.md) — #122: Region and layer managers retain dictionary reads but reject assignment, deletion, update, pop, popitem, setdefault and in-place union.
+- [rejected_scene_operations_erase_redo.md](rejected_scene_operations_erase_redo.md) — #123: History stages a pre-operation snapshot and commits it only after a successful scene mutation.
+- [global_scene_inspection_omits_interactions.md](global_scene_inspection_omits_interactions.md) — #124: Global scene summary and dictionary/dataframe/styler inspection now include typed Interactions rows, their named-analysis reference, layer and effective visibility.
+- [public_entrypoints_lack_uniform_digestion.md](public_entrypoints_lack_uniform_digestion.md) — #125: Annotation creation is implemented only as view.annotations.add with the full named signature; add_annotation is removed.
 
-- [audit_dependency_floors_and_source_pins.md](audit_dependency_floors_and_source_pins.md) — #106: canonical runtime requirements and exact source-provider routes are audited before packaging.
-- [conda_promotion_gate_omits_current_matrix_and_windows.md](conda_promotion_gate_omits_current_matrix_and_windows.md) — #134: promotion requires current installed-pair coverage and exact Windows launcher evidence.
-- [release_gate_conflates_staging_evidence_with_strict_1_0_requirements.md](release_gate_conflates_staging_evidence_with_strict_1_0_requirements.md) — #103: exact-candidate evidence and explicit pre-1.0 exceptions cannot certify a strict 1.0 release.
+## Public persistence — 2026-10-01
+
+- [session_scene_rejection_replaces_destination.md](session_scene_rejection_replaces_destination.md) — #127: Invalid session scenes are restored on an isolated view before replacing an existing destination; rejection preserves open work and closes temporary widgets without copying the incoming trajectory.
+
+## Public HTML export — 2026-10-01
+
+- [noninline_html_exports_omit_scene.md](noninline_html_exports_omit_scene.md) — #128: Shared non-inline HTML exports retain the canonical scene in a versioned sidecar with an escaped URL, ownership protection and validated browser loading.
+- [exported_html_reports_ready_before_scene_restoration.md](exported_html_reports_ready_before_scene_restoration.md) — #129: HTML readiness follows successful complete scene restoration and a new Mol* draw; failed restoration exposes an error.
+- [exported_html_omits_studio_summaries.md](exported_html_omits_studio_summaries.md) — #130: Static export includes the authoritative Studio summaries without duplicate scene operations, preserving valid controls and the running-session explanation.
+
+## Installed test imports — 2026-10-01
+
+- [installed_tests_cannot_import_edit_helpers.md](installed_tests_cannot_import_edit_helpers.md) — #131: Package-qualified edit helpers and conftest imports support isolated installed-wheel collection and ordinary development collection; the guard rejects restored bare imports.
+
+## Release gate evidence — 2026-10-01
+
+- [release_gate_conflates_staging_evidence_with_strict_1_0_requirements.md](release_gate_conflates_staging_evidence_with_strict_1_0_requirements.md) — #103: Candidate-bound staging, public installed-pair and hosted core E2E checks independently verify runs, immutable files and environment artifacts; pre-1.0 exceptions remain nonzero and cannot clear 1.0.
+- [conda_promotion_gate_omits_current_matrix_and_windows.md](conda_promotion_gate_omits_current_matrix_and_windows.md) — #134: Exact-file promotion requires current four-platform pair coverage and a successful Windows launcher run bound to the candidate commit, version, build and SHA-256.
+- [adopt_shared_public_conda_verifier.md](adopt_shared_public_conda_verifier.md) — #133: Both workflows call the pinned shared public verifier and retain independent evidence; its hosted call passes, local candidate/promotion tools remain compatible, and the Windows launcher defect stays tracked under #101.
 
 - [dependency_audit_mistakes_evidence_actions_for_source_checkouts.md](dependency_audit_mistakes_evidence_actions_for_source_checkouts.md) — #136: evidence-action repository inputs no longer become source checkouts; undeclared and duplicate actual checkouts remain rejected.

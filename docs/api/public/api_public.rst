@@ -53,8 +53,6 @@ MolSysView: query operations
    :toctree: autosummary
    :nosignatures:
 
-   molsysviewer.MolSysView.select
-   molsysviewer.MolSysView.get
    molsysviewer.MolSysView.info
 
 MolSysView: state management & callbacks
@@ -122,6 +120,8 @@ Scene management & objects
    molsysviewer.selections.Selection
    molsysviewer.annotations.AnnotationsManager
    molsysviewer.measurements.MeasurementsManager
+   molsysviewer.interactions.InteractionsManager
+   molsysviewer.interactions.InteractionSet
 
 Loaders
 -------

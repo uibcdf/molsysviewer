@@ -16,6 +16,8 @@ from pathlib import Path
 from typing import Any, Literal, Mapping
 from urllib.parse import urlparse
 
+from smonitor import signal
+
 from molsysviewer._private.argdigest.digest import digest
 
 GpuPolicy = Literal["require-hardware", "allow-software"]
@@ -78,8 +80,9 @@ class RenderWorkerDiagnostics:
     gpu_feature_status: Mapping[str, Any]
 
 
+@signal()
 @digest()
-def find_chromium_executable(explicit: str | Path | None = None) -> str:
+def find_chromium_executable(explicit: str | Path | None = None, *, skip_digestion: bool = False) -> str:
     """Resolve a Chromium-family executable without shell invocation."""
     if explicit:
         candidate = Path(explicit).expanduser()
@@ -93,8 +96,9 @@ def find_chromium_executable(explicit: str | Path | None = None) -> str:
     raise FileNotFoundError("No Chromium-family executable was found; configure RenderWorkerConfig.executable")
 
 
+@signal()
 @digest()
-def is_software_renderer(renderer: str) -> bool:
+def is_software_renderer(renderer: str, *, skip_digestion: bool = False) -> bool:
     normalized = renderer.casefold()
     return any(marker in normalized for marker in ("swiftshader", "llvmpipe", "softpipe", "software rasterizer"))
 
@@ -135,7 +139,9 @@ class ManagedRenderWorker:
     def is_running(self) -> bool:
         return self._process is not None and self._process.returncode is None
 
-    async def start(self, worker_url: str) -> RenderWorkerDiagnostics:
+    @signal()
+    @digest()
+    async def start(self, worker_url: str, *, skip_digestion: bool = False) -> RenderWorkerDiagnostics:
         if self.state not in {"new", "stopped"}:
             raise RuntimeError(f"worker cannot start from state {self.state}")
         _validate_worker_url(worker_url)
@@ -173,13 +179,17 @@ class ManagedRenderWorker:
             await self._terminate(preserve_state=True)
             raise
 
-    async def refresh_state(self) -> WorkerState:
+    @signal()
+    @digest()
+    async def refresh_state(self, *, skip_digestion: bool = False) -> WorkerState:
         if self.state == "ready" and not self.is_running:
             self.failure = f"Chromium exited unexpectedly with code {self._process.returncode}"
             self.state = "failed"
         return self.state
 
-    async def peer_diagnostics(self) -> Mapping[str, Any]:
+    @signal()
+    @digest()
+    async def peer_diagnostics(self, *, skip_digestion: bool = False) -> Mapping[str, Any]:
         """Read WebRTC sender diagnostics from the private worker page."""
         websocket_url = self._page_websocket_url
         if websocket_url is None or not self.is_running:
@@ -202,7 +212,9 @@ class ManagedRenderWorker:
         value = result.get("value")
         return dict(value) if isinstance(value, Mapping) else {"worker": "malformed"}
 
-    async def restart(self) -> RenderWorkerDiagnostics:
+    @signal()
+    @digest()
+    async def restart(self, *, skip_digestion: bool = False) -> RenderWorkerDiagnostics:
         if self._restart_count >= 1:
             raise RuntimeError("the bounded render-worker restart has already been used")
         if self._worker_url is None:
@@ -212,7 +224,9 @@ class ManagedRenderWorker:
         await self.close()
         return await self.start(worker_url)
 
-    async def close(self) -> None:
+    @signal()
+    @digest()
+    async def close(self, *, skip_digestion: bool = False) -> None:
         await self._terminate(preserve_state=False)
 
     def _build_command(self, executable: str, profile_path: Path, worker_url: str) -> tuple[str, ...]:

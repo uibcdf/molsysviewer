@@ -5,6 +5,8 @@ from contextlib import contextmanager
 from functools import wraps
 from typing import Any
 
+from smonitor import signal
+
 from ._private.argdigest import digest
 from ._private.smonitor.warnings import SceneHistoryOverBudgetWarning, warn
 
@@ -22,6 +24,7 @@ def _history_operation_key(
         kind = {
             "AnnotationsManager": "annotation",
             "MeasurementsManager": "measurement",
+            "InteractionsManager": "interaction",
             "RegionsManager": "region",
             "ShapesManager": "shape",
             "Whole": "whole",
@@ -53,11 +56,17 @@ def records_scene_history(fn):
         history = getattr(view, "history", None)
         if history is None:
             return fn(self, *args, **kwargs)
+        check = getattr(self, "_assert_current", None)
+        if check is not None:
+            check()
         history._begin_operation(_history_operation_key(self, fn.__name__, args, kwargs))  # noqa: SLF001
+        succeeded = False
         try:
-            return fn(self, *args, **kwargs)
+            result = fn(self, *args, **kwargs)
+            succeeded = True
+            return result
         finally:
-            history._end_operation()  # noqa: SLF001
+            history._end_operation(succeeded=succeeded)  # noqa: SLF001
 
     return wrapper
 
@@ -94,6 +103,8 @@ class SceneHistory:
         self._redo_bytes = 0
         self._budget_warning_emitted = False
         self._depth = 0
+        self._pending = None
+        self._pending_key = None
         self._suspended = False
         self._coalescing_depth = 0
         self._coalesced_keys: set[tuple[str, str, str]] = set()
@@ -105,29 +116,39 @@ class SceneHistory:
         if self._suspended:
             return
         if self._depth == 0:
-            already_coalesced = self._coalescing_depth > 0 and operation_key in self._coalesced_keys
-            if not already_coalesced:
-                snapshot = self._encode(self._scene_snapshot())
-                # Skip a redundant checkpoint when the previous operation left the
-                # scene unchanged (e.g. a validation that raised, or a no-op call),
-                # so undo never lands on an identical state.
-                if not self._undo or self._undo[-1] != snapshot:
-                    self._undo.append(snapshot)
-                    self._undo_bytes += len(snapshot)
-                    if len(self._undo) > self._limit:
-                        self._undo_bytes -= len(self._undo.pop(0))
-                self._redo_bytes = 0
-                self._redo.clear()
-                self._enforce_byte_limit()
-                if self._coalescing_depth > 0:
-                    self._coalesced_keys.add(operation_key)
+            self._pending = self._encode(self._scene_snapshot())
+            self._pending_key = operation_key
         self._depth += 1
 
-    def _end_operation(self) -> None:
+    @staticmethod
+    def _comparable(snapshot):
+        state = SceneHistory._decode(snapshot)
+        for key in ("order_high_water_mark", "uid_high_water_mark", "tag_high_water_marks"):
+            state.pop(key, None)
+        return state
+
+    def _end_operation(self, *, succeeded=True) -> None:
         if self._suspended:
             return
         self._depth = max(0, self._depth - 1)
         if self._depth == 0:
+            snapshot, key = self._pending, self._pending_key
+            self._pending = None
+            self._pending_key = None
+            if succeeded and snapshot is not None:
+                after = self._encode(self._scene_snapshot())
+                if self._comparable(snapshot) != self._comparable(after):
+                    coalesced = self._coalescing_depth > 0 and key in self._coalesced_keys
+                    if not coalesced and (not self._undo or self._undo[-1] != snapshot):
+                        self._undo.append(snapshot)
+                        self._undo_bytes += len(snapshot)
+                        if len(self._undo) > self._limit:
+                            self._undo_bytes -= len(self._undo.pop(0))
+                    self._redo.clear()
+                    self._redo_bytes = 0
+                    if self._coalescing_depth > 0:
+                        self._coalesced_keys.add(key)
+                    self._enforce_byte_limit()
             self._notify_state()
 
     def _notify_state(self) -> None:
@@ -146,16 +167,19 @@ class SceneHistory:
 
     # ── Public API ─────────────────────────────────────────────────────────
 
+    @signal()
     @digest()
-    def can_undo(self) -> bool:
+    def can_undo(self, *, skip_digestion: bool = False) -> bool:
         return bool(self._undo)
 
+    @signal()
     @digest()
-    def can_redo(self) -> bool:
+    def can_redo(self, *, skip_digestion: bool = False) -> bool:
         return bool(self._redo)
 
+    @signal()
     @digest()
-    def undo(self) -> bool:
+    def undo(self, *, skip_digestion: bool = False) -> bool:
         """Restore the scene to before the last mutating operation."""
         if not self._undo:
             return False
@@ -169,8 +193,9 @@ class SceneHistory:
         self._notify_state()
         return True
 
+    @signal()
     @digest()
-    def redo(self) -> bool:
+    def redo(self, *, skip_digestion: bool = False) -> bool:
         """Re-apply the operation most recently undone."""
         if not self._redo:
             return False
@@ -184,8 +209,9 @@ class SceneHistory:
         self._notify_state()
         return True
 
+    @signal()
     @digest()
-    def clear(self) -> None:
+    def clear(self, *, skip_digestion: bool = False) -> None:
         """Drop the whole history (called on load and on system edits)."""
         self._undo.clear()
         self._redo.clear()
@@ -193,19 +219,23 @@ class SceneHistory:
         self._redo_bytes = 0
         self._budget_warning_emitted = False
         self._depth = 0
+        self._pending = None
+        self._pending_key = None
         self._coalescing_depth = 0
         self._coalesced_keys.clear()
         self._notify_state()
 
+    @signal()
     @digest()
-    def begin_coalescing(self) -> None:
+    def begin_coalescing(self, *, skip_digestion: bool = False) -> None:
         """Open a window that records one checkpoint per object operation."""
         if self._coalescing_depth == 0:
             self._coalesced_keys.clear()
         self._coalescing_depth += 1
 
+    @signal()
     @digest()
-    def end_coalescing(self) -> None:
+    def end_coalescing(self, *, skip_digestion: bool = False) -> None:
         """Close a coalescing window opened by :meth:`begin_coalescing`."""
         if self._coalescing_depth == 0:
             return
@@ -215,7 +245,9 @@ class SceneHistory:
             self._notify_state()
 
     @contextmanager
-    def coalescing(self):
+    @signal()
+    @digest()
+    def coalescing(self, *, skip_digestion: bool = False):
         """Coalesce repeated mutations while preserving distinct operations."""
         self.begin_coalescing()
         try:
@@ -224,7 +256,9 @@ class SceneHistory:
             self.end_coalescing()
 
     @contextmanager
-    def suspended(self):
+    @signal()
+    @digest()
+    def suspended(self, *, skip_digestion: bool = False):
         """Suspend checkpoint creation while rebuilding a scene."""
         was_suspended = self._suspended
         self._suspended = True

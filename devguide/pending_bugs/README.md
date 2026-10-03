@@ -19,14 +19,20 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Being worked on (1)
+### Partially done (12)
 
-- [`full_pr_ci_can_be_skipped_and_direct_push_debt_is_unchecked.md`](full_pr_ci_can_be_skipped_and_direct_push_debt_is_unchecked.md) — [#116](https://github.com/uibcdf/molsysviewer/issues/116) — Full PR CI can be skipped and direct-push CI debt is unchecked. *(high, measured)*
-
-### Partially done (2)
-
+- [`annotation_anchor_contract.md`](annotation_anchor_contract.md) — [#146](https://github.com/uibcdf/molsysviewer/issues/146) — Annotation coordinate anchors and callout options lack a coherent public lifecycle *(high, measured)*
+- [`box_edit_silent_provider_failure.md`](box_edit_silent_provider_failure.md) — [#155](https://github.com/uibcdf/molsysviewer/issues/155) — Box initialization reports success when the provider leaves the cell absent *(medium, reproduced)*
+- [`extracted_interaction_repeated_structures.md`](extracted_interaction_repeated_structures.md) — [#156](https://github.com/uibcdf/molsysviewer/issues/156) — Extraction drops interaction display coverage for repeated structures. *(medium, reproduced)*
+- [`installed_scientific_cli_fixture_namespace.md`](installed_scientific_cli_fixture_namespace.md) — [#153](https://github.com/uibcdf/molsysviewer/issues/153) — Installed scientific CLI cannot resolve its development fixtures *(medium, reproduced)*
+- [`interactions_e2e_repeated_python_startup.md`](interactions_e2e_repeated_python_startup.md) — [#154](https://github.com/uibcdf/molsysviewer/issues/154) — Repeated Python cold starts make Interactions core E2E exceed its deadline *(medium, reproduced)*
+- [`load_prevalidation_mutation.md`](load_prevalidation_mutation.md) — [#148](https://github.com/uibcdf/molsysviewer/issues/148) — Replacement loading and system edit validation can mutate the scene before failing *(high, measured)*
 - [`noarch_conda_launchers_missing_on_windows.md`](noarch_conda_launchers_missing_on_windows.md) — [#101](https://github.com/uibcdf/molsysviewer/issues/101) — The noarch Conda package omits three MolSysViewer launchers on Windows. *(medium, reproduced)*
 - [`standalone_qt_live_demo_reload.md`](standalone_qt_live_demo_reload.md) — [#35](https://github.com/uibcdf/molsysviewer/issues/35) — In the standalone Qt host, replacing the loaded demo leaves the previous system on screen. *(high, reproduced)*
+- [`state_identity_topology_cache.md`](state_identity_topology_cache.md) — [#147](https://github.com/uibcdf/molsysviewer/issues/147) — State identity can trust different atom associations and stale topology caches *(high, measured)*
+- [`style_value_isolation.md`](style_value_isolation.md) — [#149](https://github.com/uibcdf/molsysviewer/issues/149) — Style parameter dictionaries alias inputs, registries and global builtins *(medium, measured)*
+- [`trajectory_plot_card_lifecycle.md`](trajectory_plot_card_lifecycle.md) — [#143](https://github.com/uibcdf/molsysviewer/issues/143) — Trajectory plot cards lose state and disagree on hide and clear semantics *(medium, measured)*
+- [`trajectory_plot_numeric_axis.md`](trajectory_plot_numeric_axis.md) — [#150](https://github.com/uibcdf/molsysviewer/issues/150) — Trajectory plot x coordinates and nonfinite values have inconsistent rendering semantics *(medium, measured)*
 
 ### Deferred until after 1.0 (1)
 

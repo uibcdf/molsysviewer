@@ -1,0 +1,89 @@
+{
+  "date": "2026-10-03",
+  "issue": "uibcdf/molsysviewer#151",
+  "scope": "Durable region show_only, including regions without representations and empty dynamic membership",
+  "status": "implemented locally and qualified by full regression followed by final-fix scoped verification; integrated artifact qualification pending",
+  "environment": {
+    "name": "molsyssuite@uibcdf_3.14",
+    "python": "3.14.7",
+    "interpreter": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "provider_head": "e8e4fff22d0df0d26a3b91d80ea5a85c04981aef",
+    "provider": "editable local MolSysMT",
+    "runtime_version": "0.23.4+71.g3b475639.dirty",
+    "activation": "Python commands explicitly select 3.14 in interpreter, PATH and Conda markers"
+  },
+  "verification": {
+    "specific": {
+      "command": "python -m pytest --receptor=llm tests/test_region_isolation.py -x",
+      "exit": 0,
+      "passed": 15,
+      "seconds": 13.12,
+      "log": "/tmp/msv-region-isolation-specific-20261003.log"
+    },
+    "full_python_once": {
+      "command": "python -m pytest --receptor=llm tests/",
+      "exit": 0,
+      "passed": 2658,
+      "skipped": 23,
+      "seconds": 420.97,
+      "log": "/tmp/msv-region-isolation-python-20261003.log",
+      "boundary": "Outside sandbox, explicitly activated 3.14. Before final empty-dynamic preservation changes to state.py/core.py and their fifteenth guard; scoped verification covers those changes. Not a second full run or installed-wheel qualification."
+    },
+    "final_fix_scoped": {
+      "command": "python -m pytest --receptor=llm tests/test_region_isolation.py tests/test_dynamic_regions.py tests/test_coordinate_edits.py tests/test_scene_transfer.py tests/test_state_v2.py tests/test_state_structure_identity.py tests/test_session_bundle.py tests/test_scene_history.py tests/test_unrepresented_region_visibility.py",
+      "exit": 0,
+      "passed": 99,
+      "seconds": 36.95,
+      "log": "/tmp/msv-region-isolation-scoped-20261003.log"
+    },
+    "typescript": {
+      "command": "npx tsc --noEmit",
+      "exit": 0
+    },
+    "browser": {
+      "command": "node tests/e2e/region-hide.e2e.js",
+      "exit": 0,
+      "log": "/tmp/msv-region-isolation-browser-20261003.log",
+      "boundary": "Real Chrome/WebGL2 outside sandbox, source harness; applied Mol* transparency, whole/region visibility, overlap, rename, empty dynamic membership, style changes, restore and release; not wheel-only or standalone certification"
+    },
+    "javascript": {
+      "command": "npm run test:js",
+      "exit": 0,
+      "passed": 314,
+      "log": "/tmp/msv-region-isolation-js-20261003.log",
+      "boundary": "Outside sandbox"
+    },
+    "runtime": {
+      "command": "npm run build:runtime",
+      "exit": 0,
+      "log": "/tmp/msv-region-isolation-runtime-20261003.log",
+      "version_validation": "validate_python_wheel_runtime.py --expected-version 0.23.4+71.g3b475639.dirty: PASS (source)",
+      "package_version_metadata_changed": false
+    },
+    "hygiene": {
+      "git_diff_check": 0,
+      "devguide_index_check": 0
+    }
+  },
+  "diagnoses": [
+    "Initial guard used nonexistent Shape.visible; corrected to existing visibility storage without adding a product API.",
+    "Undo/redo exposed whole restoration that handled False but not True; restore explicit True through whole.show.",
+    "Review found empty dynamic recipes were discarded during import and system rebuild; retain evaluable dynamic recipes, tested with real coordinate edits, session/copy and subsequent reappearance."
+  ],
+  "source_sha256": {
+    "molsysviewer/regions.py": "4af0456a5f6b452b7b97cc2bb6e0b7180c1891a5affa58739e7582278e626a4f",
+    "molsysviewer/viewer/regions.py": "f79dece7768822a26bfa06b01e8fc52c855e9329dabbd0cc499693e1c23ada93",
+    "molsysviewer/viewer/state.py": "1d435499400c463e828cfb6055313632a922c54a6e5e39527d55fad3d854a226",
+    "molsysviewer/viewer/core.py": "098b8520491da65e06d6e35bd0e844930099718af49c601601d71a30d162932a",
+    "molsysviewer/viewer/popup_snapshot.py": "259db2eb4a7d83ead613d89dc2d02f6510da1eb5de873aa155cce260acde1e56",
+    "molsysviewer/js/src/messages/viewer-messages.ts": "c7c2250f375b5d9b0ba275c9fd4882a267b3b54343a787a59aef65c3e414c6df",
+    "molsysviewer/js/src/managers/handlers/state-handlers.ts": "b77cdfd8c36f7f1e758edd752dceec3d5f71af6486c24a06448adce5ce10535c",
+    "molsysviewer/js/tests/e2e/region-hide.e2e.ts": "7dea27ef3f8a695e7c7b30630f0aa6851b700ee5171f32df0c9e75de8e2b48ca",
+    "tests/test_region_isolation.py": "178f7a1453ac10df3de98534e6ea334a2d082d8de9ebdf2c8e19c1c492e7c3e6"
+  },
+  "remaining_151": [
+    "Durable source identity and batch/progressive loading contract",
+    "Controlled box assignment and scientific/scene synchronization"
+  ],
+  "publication": "No commit, push, new wheel or release claim. Previous wheel predates these region changes."
+}

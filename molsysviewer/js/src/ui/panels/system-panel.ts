@@ -17,6 +17,7 @@ import type {
     OnSelect,
 } from "../group-panel";
 import { PanelContext, StudioPanel } from "./types";
+import { SystemLoadControls } from "./system-load-controls";
 
 /** Interaction callbacks the System strips need, threaded from the controller. */
 export interface SystemPanelCallbacks {
@@ -46,6 +47,7 @@ export class SystemPanel implements StudioPanel {
     readonly key = "system";
     private host: HTMLElement | null = null;
     private stripsRow: HTMLDivElement | null = null;
+    private loading: SystemLoadControls | null = null;
     /** Hierarchy relayed from a host, used only when this endpoint has none. */
     private relayedItems: GroupSelectionItem[] | null = null;
 
@@ -80,6 +82,7 @@ export class SystemPanel implements StudioPanel {
     constructor(
         private readonly ctx: PanelContext,
         private readonly callbacks: SystemPanelCallbacks,
+        private readonly hasAuthority = true,
     ) {}
 
     // System renders its strips on setStructure (not on visibility), so tab
@@ -104,6 +107,10 @@ export class SystemPanel implements StudioPanel {
             gap: "6px",
         });
         host.appendChild(this.makeSystemHeader());
+        if (this.hasAuthority) {
+            this.loading = new SystemLoadControls(this.ctx);
+            host.appendChild(this.loading.root);
+        }
         this.stripsRow = document.createElement("div");
         Object.assign(this.stripsRow.style, {
             display: "flex",
@@ -118,6 +125,14 @@ export class SystemPanel implements StudioPanel {
     }
 
     // ── Domain state pushed from the host ──────────────────────
+
+    openLoading(): void { this.loading?.open(); }
+
+    isLoading(): boolean { return this.loading?.isPending() ?? false; }
+
+    updateLoading(requestId: string, ok: boolean, atoms?: number, structures?: number, sources?: number, error?: string): void {
+        this.loading?.updateResult(requestId, ok, atoms, structures, sources, error);
+    }
 
     setStructure(structure: Structure | undefined): void {
         if (this.structure === structure) return;

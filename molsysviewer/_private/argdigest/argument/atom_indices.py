@@ -30,6 +30,12 @@ def digest_atom_indices(atom_indices, caller=None):
 
     caller = normalize_viewer_caller(caller)
 
+    if caller and caller.startswith("molsysviewer.interactions."):
+        if atom_indices is not None and not is_all(atom_indices):
+            from molsysviewer.interactions import _indices
+
+            return _indices(atom_indices, np.iinfo(np.int64).max, "atom_indices", unique=False)
+
     if atom_indices is None:
         return None
     elif is_all(atom_indices):

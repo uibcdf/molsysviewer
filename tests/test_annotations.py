@@ -9,7 +9,7 @@ def test_group_label_registers_annotation_layer_and_export_message():
     view = demo["dialanine"]
     expected_atom_indices = list(view.whole.select(selection="group_index==0"))
 
-    layer = view.annotations.add_annotation(text="Group 0", selection="group_index==0", tag="notes")
+    layer = view.annotations.add(text="Group 0", selection="group_index==0", tag="notes")
 
     assert layer.tag == "notes"
     assert layer.kind == "annotation"
@@ -35,7 +35,7 @@ def test_group_label_registers_annotation_layer_and_export_message():
 def test_group_label_uses_annotation_prefix_by_default():
     view = demo["dialanine"]
 
-    layer = view.annotations.add_annotation(text="Group 0", selection="group_index==0")
+    layer = view.annotations.add(text="Group 0", selection="group_index==0")
 
     assert layer.tag == "annotation1"
     assert layer.layer_tag == "annotation1"
@@ -47,7 +47,7 @@ def test_group_label_uses_annotation_prefix_by_default():
 
 def test_clear_decorations_labels_clears_annotation_history_only():
     view = demo["dialanine"]
-    view.annotations.add_annotation(text="Group 0", selection="group_index==0", tag="notes")
+    view.annotations.add(text="Group 0", selection="group_index==0", tag="notes")
     view.shapes.add_sphere(
         center=puw.quantity([0.0, 0.0, 0.0], "nm"), radius=puw.quantity(1.0, "nm"), tag="shape-notes"
     )
@@ -63,7 +63,7 @@ def test_clear_decorations_labels_clears_annotation_history_only():
 
 def test_annotation_manager_supports_query_and_layer_operations():
     view = demo["dialanine"]
-    view.annotations.add_annotation(text="Group 0", selection="group_index==0", tag="notes")
+    view.annotations.add(text="Group 0", selection="group_index==0", tag="notes")
 
     assert view.annotations.count() == 1
     assert view.annotations.tags() == ["notes"]
@@ -111,10 +111,10 @@ def test_annotation_manager_supports_query_and_layer_operations():
 
 def test_annotation_manager_rejects_duplicate_tags():
     view = demo["dialanine"]
-    view.annotations.add_annotation(text="Group 0", selection="group_index==0", tag="notes")
+    view.annotations.add(text="Group 0", selection="group_index==0", tag="notes")
 
     with pytest.raises(ValueError, match="already exists"):
-        view.annotations.add_annotation(text="Group 1", selection="group_index==1", tag="notes")
+        view.annotations.add(text="Group 1", selection="group_index==1", tag="notes")
 
     with pytest.raises(KeyError):
         _ = view.annotations["missing"]
@@ -122,10 +122,10 @@ def test_annotation_manager_rejects_duplicate_tags():
 
 def test_annotation_manager_supports_explicit_shared_layer_tag():
     view = demo["dialanine"]
-    first = view.annotations.add_annotation(
+    first = view.annotations.add(
         text="Group 0", selection="group_index==0", tag="notes-a", layer_tag="analysis"
     )
-    second = view.annotations.add_annotation(
+    second = view.annotations.add(
         text="Group 1", selection="group_index==1", tag="notes-b", layer_tag="analysis"
     )
 
@@ -138,7 +138,7 @@ def test_annotation_manager_supports_explicit_shared_layer_tag():
 
 def test_annotation_manager_can_move_annotation_between_layers():
     view = demo["dialanine"]
-    layer = view.annotations.add_annotation(text="Group 0", selection="group_index==0", tag="notes")
+    layer = view.annotations.add(text="Group 0", selection="group_index==0", tag="notes")
 
     moved = view.annotations.set_layer_tag("notes", "analysis")
 
@@ -155,8 +155,8 @@ def test_annotation_manager_can_move_annotation_between_layers():
 
 def test_annotation_manager_clear_tag_and_global_clear():
     view = demo["dialanine"]
-    view.annotations.add_annotation(text="Group 0", selection="group_index==0", tag="notes")
-    view.annotations.add_annotation(text="Group 1", selection="group_index==1", tag="notes-2")
+    view.annotations.add(text="Group 0", selection="group_index==0", tag="notes")
+    view.annotations.add(text="Group 1", selection="group_index==1", tag="notes-2")
 
     summaries = view.annotations.info()
     assert [item["tag"] for item in summaries] == ["notes", "notes-2"]
@@ -174,7 +174,7 @@ def test_annotation_manager_clear_tag_and_global_clear():
 
 def test_annotation_manager_can_update_label_text_in_canonical_export():
     view = demo["dialanine"]
-    view.annotations.add_annotation(text="Before", selection="group_index==0", tag="notes")
+    view.annotations.add(text="Before", selection="group_index==0", tag="notes")
 
     view.annotations.set_text("notes", "After")
 
@@ -187,7 +187,7 @@ def test_annotation_manager_can_update_label_text_in_canonical_export():
 
 def test_annotation_manager_set_style_preserves_identity_layer_and_replay():
     view = demo["dialanine"]
-    annotation = view.annotations.add_annotation(
+    annotation = view.annotations.add(
         text="Styled",
         selection="group_index==0",
         tag="notes",
@@ -213,7 +213,7 @@ def test_annotation_manager_set_style_preserves_identity_layer_and_replay():
 
 def test_annotation_manager_set_anchor_reanchors_in_canonical_export():
     view = demo["dialanine"]
-    view.annotations.add_annotation(text="Anchor", selection="group_index==0", tag="notes")
+    view.annotations.add(text="Anchor", selection="group_index==0", tag="notes")
 
     expected_atom_indices = list(view.whole.select(selection="group_index==1"))
     view.annotations.set_anchor("notes", selection="group_index==1")
@@ -227,7 +227,7 @@ def test_annotation_manager_set_anchor_reanchors_in_canonical_export():
 
 def test_annotation_manager_set_anchor_accepts_explicit_atom_indices():
     view = demo["dialanine"]
-    view.annotations.add_annotation(text="Anchor", selection="group_index==0", tag="notes")
+    view.annotations.add(text="Anchor", selection="group_index==0", tag="notes")
 
     explicit = list(view.whole.select(selection="group_index==1"))
     view.annotations.set_anchor("notes", atom_indices=explicit)
@@ -237,7 +237,7 @@ def test_annotation_manager_set_anchor_accepts_explicit_atom_indices():
 
 def test_annotation_manager_set_group_index_is_deprecated_wrapper():
     view = demo["dialanine"]
-    view.annotations.add_annotation(text="Anchor", selection="group_index==0", tag="notes")
+    view.annotations.add(text="Anchor", selection="group_index==0", tag="notes")
 
     expected_atom_indices = list(view.whole.select(selection="group_index==1"))
     with pytest.warns(DeprecationWarning, match="set_group_index"):
@@ -250,7 +250,7 @@ def test_add_annotation_with_style_stores_style_in_message():
     view = demo["dialanine"]
     expected_atom_indices = list(view.whole.select(selection="group_index==0"))
 
-    view.annotations.add_annotation(
+    view.annotations.add(
         text="Styled",
         selection="group_index==0",
         tag="styled",
@@ -270,7 +270,7 @@ def test_add_annotation_with_style_stores_style_in_message():
 def test_add_annotation_without_style_omits_style_from_message():
     view = demo["dialanine"]
 
-    view.annotations.add_annotation(text="Plain", selection="group_index==0", tag="plain")
+    view.annotations.add(text="Plain", selection="group_index==0", tag="plain")
 
     record = view._annotation_history[0]  # noqa: SLF001
     assert "style" not in record["options"]
@@ -279,7 +279,7 @@ def test_add_annotation_without_style_omits_style_from_message():
 def test_add_annotation_partial_style_only_includes_provided_keys():
     view = demo["dialanine"]
 
-    view.annotations.add_annotation(
+    view.annotations.add(
         text="Half",
         selection="group_index==0",
         tag="half",

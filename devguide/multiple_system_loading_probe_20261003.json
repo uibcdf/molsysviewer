@@ -1,0 +1,88 @@
+{
+  "provider_head": "e8e4fff22d0df0d26a3b91d80ea5a85c04981aef",
+  "environment": "molsyssuite@uibcdf_3.14",
+  "input_frames": [
+    [
+      0,
+      8,
+      3
+    ],
+    [
+      5,
+      1,
+      7
+    ]
+  ],
+  "boundary": "Provider probe on real demo-derived systems; no Viewer batch implementation or qualification.",
+  "absent_first_box": {
+    "box_remains_absent": true,
+    "n_atoms": 5,
+    "n_structures": 3,
+    "coordinates_retain_source_order": true,
+    "warnings": [
+      "IncompatibleBoxWarning"
+    ]
+  },
+  "first_box": {
+    "retained": true,
+    "warnings": [
+      "IncompatibleBoxWarning"
+    ]
+  },
+  "no_implicit_broadcast": {
+    "error": "ArgumentLengthError",
+    "message": "Length mismatch for argument 'structures'. Expected 3, got 1. Ensure the list/array length matches the target dimension. Docs: https://www.uibcdf.org/MolSysMT"
+  },
+  "time": {
+    "different_source_times_accepted_by_native_add": true,
+    "boundary": "Native atom addition retains its target structure axis; this is not an assertion of physical time correspondence.",
+    "retained_first_times": {
+      "values": [
+        0.0,
+        1.0,
+        2.0
+      ],
+      "unit": "ps"
+    }
+  },
+  "source_sha256": {
+    "../molsysmt/molsysmt/native/molsys.py": "050739f86bb9203c7787abcf9139714ac172b77ccd26b94fc1f6ddb7fb5148e2",
+    "../molsysmt/molsysmt/native/structures.py": "50f22b33050049a1912a4d4b88de920654129d42375cba67bbbb43ebb91afd23",
+    "molsysviewer/viewer/load.py": "e52f69c023609d5627299e341ea92358703d065df8a16d7ceb58325f21b4ffb5"
+  },
+  "log": "/tmp/msv-load-contract-probe-20261003.log",
+  "recipe": {
+    "demo": "pentalanine",
+    "source_atom_indices": [
+      [
+        0,
+        1,
+        2
+      ],
+      [
+        3,
+        4
+      ]
+    ],
+    "source_structure_indices": [
+      [
+        0,
+        8,
+        3
+      ],
+      [
+        5,
+        1,
+        7
+      ]
+    ],
+    "operations": [
+      "msm.extract(..., to_form=\"molsysmt.MolSys\")",
+      "msm.set(first, box=None); msm.set(second, box=10*identity repeated for three structures, unit=nm)",
+      "msm.add(first, second, in_place=False)",
+      "msm.set(first, box=2*identity repeated for three structures, unit=nm); msm.add(first, second, in_place=False)",
+      "msm.add(first, msm.extract(second, structure_indices=[0]), in_place=False) raises ArgumentLengthError",
+      "msm.set(first, time=[0,1,2] ps); msm.set(second, time=[20,21,22] ps); msm.add(first, second, in_place=False)"
+    ]
+  }
+}

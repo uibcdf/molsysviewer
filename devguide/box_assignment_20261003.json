@@ -1,0 +1,101 @@
+{
+  "date": "2026-10-03",
+  "issue": "uibcdf/molsysviewer#151",
+  "scope": "Controlled whole-system box assignment, selected-frame validity and real rendered cell refresh",
+  "status": "Implemented locally; specific/browser checks pass; full attempt has one corrected inventory guard, scoped recovery passes",
+  "environment": {
+    "name": "molsyssuite@uibcdf_3.14",
+    "python": "3.14.7",
+    "interpreter": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "provider_head_observed": "98ea9434875a710c148b5ee8bd433ed979cd3787",
+    "provider": "Editable MolSysMT checkout; unrelated work preserved; no published-provider qualification",
+    "temporary_space": {
+      "start_available": "29 GiB",
+      "observed_at_60_percent": "26 GiB",
+      "available_bytes_at_capture": 28139900928,
+      "full_run_completed": true,
+      "previous_ENOSPC": "Preserved separately in source_records_20261003.json"
+    }
+  },
+  "verification": {
+    "specific": {
+      "command": "python -m pytest --receptor=llm tests/test_box_assignment.py -x",
+      "exit": 0,
+      "passed": 43,
+      "seconds": 19.58,
+      "log": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/box-assignment-20261003/msv-box-specific-20261003.log"
+    },
+    "full_python_once": {
+      "command": "python -m pytest --receptor=llm tests/",
+      "exit": 1,
+      "collected": 2788,
+      "passed": 2764,
+      "failed": 1,
+      "skipped": 23,
+      "seconds": 464.3,
+      "log": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/box-assignment-20261003/msv-box-full-20261003.log",
+      "boundary": "Outside sandbox. Completed on recovered /tmp. The sole failed guard expected 39 E2E suites after composite-load had raised the registered/build inventory to 40. No second full run or all-green full claim."
+    },
+    "inventory_recovery": {
+      "command": "python -m pytest --receptor=llm tests/test_e2e_reliability.py -x",
+      "exit": 0,
+      "passed": 6,
+      "seconds": 1.89,
+      "log": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/box-assignment-20261003/msv-box-e2e-inventory-20261003.log",
+      "boundary": "Pins 40 suites; retains source/runner/build equality checks. Only affected file after the once-run full failure."
+    },
+    "browser": {
+      "command": "PYTHON=<3.14 interpreter> node tests/e2e/coordinate-edits.e2e.js",
+      "exit": 0,
+      "log": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/box-assignment-20261003/msv-box-browser-20261003.log",
+      "boundary": "Real Chromium/Mol* outside sandbox; all three model cells and angles, oblique basis, selected replacement, removal, visible-edge presence/removal and unchanged atom coordinates. Existing shared core suite; source harness, not wheel or standalone certification."
+    },
+    "typescript": {
+      "command": "npx tsc --noEmit",
+      "exit": 0
+    },
+    "ruff": {
+      "command": "python -m ruff check <changed Python owners, bridge and guards>",
+      "exit": 0,
+      "log": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/box-assignment-20261003/msv-box-ruff-20261003.log"
+    },
+    "hygiene": {
+      "git_diff_check": 0,
+      "devguide_index_check": 0
+    }
+  },
+  "api_inventory": {
+    "public_callables": 715,
+    "digested": 715,
+    "missing_digesters": 0,
+    "missing_explicit_bypass": 0
+  },
+  "source_hashes_sha256": {
+    "molsysviewer/viewer/scene.py": "670d7b4915896d844aaec017112843c5e710b14bf28e0fc7cd56f45ba617dd25",
+    "molsysviewer/viewer/core.py": "1ca0718a57f06ee69cb4dceb8243a5086c193f0f175378ab3015ee5ac7fc6548",
+    "molsysviewer/_private/argdigest/argument/box.py": "7bc91399beb79b4ca3665ab805e0f3895c5feaedfcdbb23b013e4b3a2f83c132",
+    "molsysviewer/_private/argdigest/argument/source_structure_indices.py": "cbdfe4cd9f0e1b5e2881d98f7d1fb0720838388287719a3e9bba9f117781e2e9",
+    "molsysviewer/_private/argdigest/argument/structure_indices.py": "fd782150a26afcc6cf5050475ac2541958300076c0fa963da721d273c7dbba00",
+    "molsysviewer/_private/argdigest/argument/molecular_system.py": "4532af2dadabb5d21dc460f21233ada4a68b1cca450dfe740f3ccb2b57692ae2",
+    "devtools/public_api_inventory_baseline.json": "e12cf236bbc4d23a92d7fc7624f36abd45c9c4525a31e7dd29aa909dc5e188e5",
+    "tests/test_box_assignment.py": "824fc7260d588844b8fa7a0cdfbd59c428e045ec8e5adf318cbe18506aff5ccb",
+    "tests/test_e2e_reliability.py": "53e3c5973224d9e1e0af5bbe15ecca8b1a096f387db69ce31364034ed43e19ac",
+    "molsysviewer/js/tests/e2e/coordinate-edits-bridge.py": "db0d467402e6c7fbaf3141399ee2a14be2cbbe4708ea30445ac519e12ac7288f",
+    "molsysviewer/js/tests/e2e/coordinate-edits.e2e.ts": "da033580db820b6d811eac2ff01ac367ea667c187b3b0b477e5588047762270f"
+  },
+  "candidate": {
+    "git_head": "3b475639fdfa2a359b830bdf3314b81b5f1f3830",
+    "working_tree": "Uncommitted cumulative candidate with unrelated work preserved; hashes identify inspected owners only, not a frozen complete artifact",
+    "new_product_commit": false,
+    "new_product_push": false,
+    "new_installed_artifact": false
+  },
+  "boundaries": [
+    "Prepares scientific input and interaction reconciliation before writing; unexpected runtime/render failures have no rollback guarantee.",
+    "Uses public MolSysMT get/set and existing system-edit rebuild. No new box transport, incremental streaming, RSS ceiling or I/O budget is certified.",
+    "Only selected frames lose evaluated interaction coverage; invalidation is conservative even for analyses whose original detector did not use PBC.",
+    "Coordinate/time/atom/frame order and source IDs/maps remain unchanged; assigning a box does not automatically display edges.",
+    "Scientific cells retain the current-box policy through source additions, copy/extraction and native H5MSM session reopening.",
+    "Studio parity, integrated frozen-candidate/artifact gates and compatible published provider remain open; issue #151 is not closed."
+  ]
+}

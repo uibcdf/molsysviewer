@@ -5,6 +5,8 @@ from __future__ import annotations
 from importlib import import_module
 from typing import TYPE_CHECKING
 
+from smonitor import signal
+
 from .._private.argdigest import digest
 
 if TYPE_CHECKING:
@@ -20,14 +22,16 @@ REFERENCE_ADDON_MODULES: dict[str, str] = {
 }
 
 
+@signal()
 @digest()
-def list_reference_addons() -> list[str]:
+def list_reference_addons(*, skip_digestion: bool = False) -> list[str]:
     """Return the stable short names of bundled reference add-ons."""
     return sorted(name for name in REFERENCE_ADDON_MODULES if not name.startswith("minimal_"))
 
 
+@signal()
 @digest()
-def resolve_reference_addon(name: str) -> str:
+def resolve_reference_addon(name: str, *, skip_digestion: bool = False) -> str:
     """Resolve a short reference name or module-like key to its importable module."""
     from molsysviewer.addons import _ensure_non_empty_text
 
@@ -39,11 +43,14 @@ def resolve_reference_addon(name: str) -> str:
     )
 
 
+@signal()
 @digest()
 def register_reference_addon(
     name: str,
     *,
     registry: "GlobalAddonsRegistry | None" = None,
+
+    skip_digestion: bool = False,
 ) -> "AddonSpec":
     """Register one bundled reference add-on into a registry."""
     from molsysviewer import addons as global_addons
@@ -52,10 +59,13 @@ def register_reference_addon(
     return target.register_module(resolve_reference_addon(name))
 
 
+@signal()
 @digest()
 def register_all_reference_addons(
     *,
     registry: "GlobalAddonsRegistry | None" = None,
+
+    skip_digestion: bool = False,
 ) -> list["AddonSpec"]:
     """Register all bundled reference add-ons into a registry."""
     target = registry
@@ -70,21 +80,26 @@ def register_all_reference_addons(
     return registered
 
 
+@signal()
 @digest()
-def import_reference_module(name: str):
+def import_reference_module(name: str, *, skip_digestion: bool = False):
     """Import the module behind a bundled reference add-on."""
     return import_module(resolve_reference_addon(name))
 
 
+@signal()
 @digest()
 def register_dummy_addon(
     *,
     registry: "GlobalAddonsRegistry | None" = None,
+
+    skip_digestion: bool = False,
 ) -> "AddonSpec":
     """Register the generic dummy/tester add-on into the registry."""
     return register_reference_addon("dummy", registry=registry)
 
 
+@signal()
 @digest()
 def build_reference_demo_view(
     name: str,
@@ -92,6 +107,8 @@ def build_reference_demo_view(
     demo_key: str = "dialanine",
     registry: "GlobalAddonsRegistry | None" = None,
     expand_workbench: bool = True,
+
+    skip_digestion: bool = False,
 ) -> "MolSysView":
     """Build a demo view with one bundled reference add-on already active.
 

@@ -9,6 +9,11 @@ direct pushes to `main`. Do not open pull requests unless the user requests one.
 Keep the applicable validation and CI evidence, synchronize remote changes, and
 preserve unrelated local work before integrating or publishing commits.
 
+For local development with the principal maintainer, use the Conda environment
+`molsyssuite@uibcdf_3.14`. Select its interpreter explicitly or activate it for
+each command; do not rely on the shell's default `python`. Separate installed
+artifact qualification environments retain their own recorded provenance.
+
 Read `MOLSYSSUITE_GUIDE.md` before development. It is the synchronized, read-only
 suite-governance guide owned by `uibcdf/molsyssuite` and routes shared policies,
 cross-component feedback, and issue ownership.

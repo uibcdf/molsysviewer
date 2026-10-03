@@ -1,11 +1,36 @@
 # Development roadmap
 
-**Updated:** 2026-09-28
+**Updated:** 2026-10-01
 
 This roadmap states current priorities. Release gating lives in
 [`path_to_1_0.md`](path_to_1_0.md), normative behavior in
 [`scene_contracts.md`](scene_contracts.md), and concrete open designs in
 [`pending_proposals/`](pending_proposals/).
+
+## Current execution order — 2026-10-01
+
+The library-design corrections, session/static-HTML defects and release-tool
+hardening are implemented. Diagnostic template coverage (#107) and the
+dependency contract audit (#106) are closed; the latest passing complete source suite
+records **2,464 tests, 23 skipped**. See [the handoff](checkpoints.md).
+
+CI enforcement (#116) and ecosystem adoption (#110) are closed. The scalar
+unit contract (#98) is implemented; support libraries and developer tools
+are adopted for their reviewed boundaries. PR #135 merged at `12faa16b` after
+updated-commit hosted CI, core E2E and all three Python 3.14 cells passed.
+Authorized work with the principal maintainer uses commits and direct pushes;
+PRs are opened only on the user's request, following root `AGENTS.md`.
+The latest complete source attempt returned 2,480 passed, 23 skipped and
+one failed. The old B-factor fixture now supplies units and the final affected
+checks pass (24 tests); no new complete pass is claimed. All 296 JS tests and
+the runtime rebuild pass. See [the review evidence](python_ecosystem_policy_adoption.md).
+Next qualify Interactions with
+a compatible published MolSysMT provider (#114), and the repaired exact Conda
+artifact/Windows launchers (#101), using the current 16-cell pair and hosted
+core browser requirements. Public documentation follows functional closure.
+Finally freeze and qualify the release candidate with scientific dogfooding
+and first-contact evidence. Configured workflows and prior public artifacts
+do not certify that future candidate.
 
 ## Pre-1.0 distribution milestone completed — 2026-09-25
 
@@ -25,9 +50,9 @@ remain experimental in 1.0, so those observations are outside the strict
 release gate. The remote-session feature and its three E2E scenarios are
 post-1.0 preview work (`uibcdf/molsysviewer#100`). The strict 1.0 gate remains
 open. Both Zenodo exact-version records are now published and independently
-verified. Next prioritize representative scientific dogfooding,
-first-contact onboarding, continued hosted core E2E reliability and
-an exact-commit 1.0 candidate. The false-red promotion verifier has been
+verified. The execution order above governs the current session; representative
+scientific dogfooding, first-contact onboarding and exact-candidate evidence
+remain release requirements. The false-red promotion verifier has been
 replaced by a read-only check that passed on GitHub for the published pair;
 the earlier promotion jobs remain red (`uibcdf/molsyssuite#48`).
 
@@ -79,11 +104,33 @@ These are the release gates:
    is evidenced by the 20-cell public matrix, not by a source checkout.
 6. First-contact README/onboarding verification.
 7. Documentation and package-version consistency at the release commit.
-8. ✅ **Closed 2026-08-12.** The supported public-callable inventory is
-   digested or deliberately exempt, and introduced argument names have
-   digesters. The behavioral and inventory guards are recorded in
+8. ✅ **Updated 2026-09-30.** All 699 ordinary public callable routes,
+   including exported class methods and returned scene handles, have ArgDigest
+   and explicit `skip_digestion=False`. There are no exemptions or missing
+   named digesters (`uibcdf/molsysviewer#125`). The behavioral and inventory guards are recorded in
    [`pre_1_0_architecture_rework_and_hardening_master_plan.md`](pre_1_0_architecture_rework_and_hardening_master_plan.md)
    (Phase 10, gate 9).
+9. **Partial implementation 2026-09-30.** A bounded Interactions domain for hydrogen bonds
+   and disulfide candidates, with Python API first and a minimal Studio
+   subpanel after its contract is settled. Native calculation and declared
+   H5MSM import store analyses in `view.molsys.interactions` without addon
+   registration. Scientific queries, import, calculation and session persistence
+   are implemented, including tagged displays, browser projection and Studio.
+   Review corrections and six synthetic joint memory/query measurements are
+   recorded. Bounded real scientific and calculated-link browser qualification
+   now pass, including a real 5,000-frame calculation; see
+   [`interactions_qualification.md`](interactions_qualification.md).
+   Published-provider, larger GPU and exact-candidate
+   qualification remain pending. The final design review is implemented under `uibcdf/molsysviewer#118`–`#125`; exact-candidate validation remains.
+   Public bounded pages are requested in `uibcdf/molsysmt#264`; public-reference
+   warnings and cold imports found during Sphinx validation were corrected in
+   `uibcdf/molsysviewer#117`; its strict Sphinx and full Python gates pass.
+   The Python API design is in the active proposal.
+   Coordinate result semantics with
+   `uibcdf/molsysmt#250`; follow
+   [`interactions_pre_1_0_plan.md`](interactions_pre_1_0_plan.md) and
+   `uibcdf/molsysviewer#114`. Complete MolSysMT addon retirement and Mol* dependency
+   upgrade are outside this gate.
 
 The local standalone launchers and Qt host may remain distributed for
 evaluation; they carry no supported 1.0 host contract. Interactive HTML export
@@ -125,7 +172,7 @@ Startup/message-cost work is closed: message replay is no longer synchronized
 per queued message, the public package is lazy, and the relevant ecosystem
 overhead was addressed upstream. The server render worker was accepted as a
 prototype placement and does not change scientific residency.
-Configurable picking, Interactions, multiview, general computation/serialization
+Configurable picking, advanced Interactions, multiview, general computation/serialization
 worker offload, compression and shared-memory transport remain post-1.0. The
 server render worker's prior placement is prototype evidence, not a supported
 1.0 remote workflow. See
@@ -135,7 +182,8 @@ server render worker's prior placement is prototype evidence, not a supported
 ## Post-1.0
 
 - Advanced MVS annotation machinery.
-- Interactions domain and Studio subpanel.
+- Additional Interactions families, analytics, imports, and advanced Studio UI.
+- Mol* dependency update (`uibcdf/molsysviewer#115`).
 - Configurable canvas picking level.
 - Multi-view/split-screen synchronization.
 - Lazy structure sources and partial materialization.

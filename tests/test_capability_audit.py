@@ -42,6 +42,7 @@ REQUIRED_CAPABILITIES = {
     "Annotations",
     "Measurements",
     "Shapes",
+    "Interactions",
     "Trajectories and frames",
     "Trajectory plot",
     "Movie",

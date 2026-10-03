@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
+from smonitor import signal
 
 from ._private.argdigest import digest
 from .colors import normalize_color
@@ -32,8 +33,9 @@ class SceneManager:
 
     # ── Background ────────────────────────────────────────────────────────
 
+    @signal()
     @digest()
-    def set_background(self, color: Any = "dark") -> None:
+    def set_background(self, color: Any = "dark", *, skip_digestion: bool = False) -> None:
         """Set the canvas background.
 
         Parameters
@@ -52,8 +54,9 @@ class SceneManager:
         color_int = normalize_color(color)
         self._view._send({"op": "set_background_color", "color": color_int})  # noqa: SLF001
 
+    @signal()
     @digest()
-    def spin(self, enabled: bool = True, speed: float | None = None) -> None:
+    def spin(self, enabled: bool = True, speed: float | None = None, *, skip_digestion: bool = False) -> None:
         """Enable or disable continuous rotation around the vertical axis.
 
         Parameters
@@ -68,8 +71,9 @@ class SceneManager:
             msg["speed"] = float(speed)
         self._view._send(msg)  # noqa: SLF001
 
+    @signal()
     @digest()
-    def swing(self, enabled: bool = True, speed: float | None = None) -> None:
+    def swing(self, enabled: bool = True, speed: float | None = None, *, skip_digestion: bool = False) -> None:
         """Enable or disable oscillating rock motion.
 
         Parameters
@@ -84,8 +88,9 @@ class SceneManager:
             msg["speed"] = float(speed)
         self._view._send(msg)  # noqa: SLF001
 
+    @signal()
     @digest()
-    def set_fog(self, enabled: bool = True, intensity: float = 0.15) -> None:
+    def set_fog(self, enabled: bool = True, intensity: float = 0.15, *, skip_digestion: bool = False) -> None:
         """Enable or disable depth fog.
 
         Parameters
@@ -100,12 +105,14 @@ class SceneManager:
 
     # ── Lighting ──────────────────────────────────────────────────────────
 
+    @signal()
     @digest()
     def set_lighting(
         self,
         ambient: float | None = None,
         diffuse: float | None = None,
         specular: float | None = None,
+        *, skip_digestion: bool = False,
     ) -> None:
         """Adjust scene lighting components.
 
@@ -133,8 +140,9 @@ class SceneManager:
 
     # ── Projection ────────────────────────────────────────────────────────
 
+    @signal()
     @digest()
-    def set_projection(self, mode: str) -> None:
+    def set_projection(self, mode: str, *, skip_digestion: bool = False) -> None:
         """Switch between perspective and orthographic projection.
 
         Parameters
@@ -148,6 +156,7 @@ class SceneManager:
 
     # ── Clipping ──────────────────────────────────────────────────────────
 
+    @signal()
     @digest()
     def set_clip_planes(
         self,
@@ -155,6 +164,7 @@ class SceneManager:
         far: float | None = None,
         min_near: float | None = None,
         thickness: float | None = None,
+        *, skip_digestion: bool = False,
     ) -> None:
         """Adjust camera Z-clipping planes.
 
@@ -192,8 +202,9 @@ class SceneManager:
 
     # ── Legend ────────────────────────────────────────────────────────────
 
+    @signal()
     @digest()
-    def set_legend(self, items: Any = None, *, position: str = "top-right") -> None:
+    def set_legend(self, items: Any = None, *, position: str = "top-right", skip_digestion: bool = False) -> None:
         """Show a colour legend overlay (a generic key for any colour scheme).
 
         Parameters
@@ -228,6 +239,7 @@ class SceneManager:
     # ── Sectioning ────────────────────────────────────────────────────────
 
     @records_scene_history
+    @signal()
     @digest()
     def add_section(
         self,
@@ -236,6 +248,7 @@ class SceneManager:
         *,
         invert: bool = False,
         tag: str | None = None,
+        skip_digestion: bool = False,
     ) -> "Section":
         """Add a world-space clipping plane to all structural representations.
 
@@ -338,8 +351,9 @@ class SceneManager:
         view._sync_section_summaries_runtime()  # noqa: SLF001
         return section
 
+    @signal()
     @digest()
-    def sections(self) -> list["Section"]:
+    def sections(self, *, skip_digestion: bool = False) -> list["Section"]:
         """Return active clipping planes as live handles in creation order."""
         view = self._view
         result = []
@@ -392,8 +406,9 @@ class SceneManager:
         raise ValueError(f'Unrecognised normal string {s!r}. Supported forms: "toward:<tag>", "mouth:<tag>".')
 
     @records_scene_history
+    @signal()
     @digest()
-    def remove_section(self, tag: str) -> None:
+    def remove_section(self, tag: str, *, skip_digestion: bool = False) -> None:
         """Remove a clipping plane by tag.
 
         Parameters
@@ -411,8 +426,9 @@ class SceneManager:
         view._sync_section_summaries_runtime()  # noqa: SLF001
 
     @records_scene_history
+    @signal()
     @digest()
-    def clear_sections(self) -> None:
+    def clear_sections(self, *, skip_digestion: bool = False) -> None:
         """Remove all active clipping planes."""
         view = self._view
         section_tags = [

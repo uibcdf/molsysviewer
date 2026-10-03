@@ -15,6 +15,10 @@ supersedes: []
 # Propuesta post-1.0: anotaciones avanzadas sobre la maquinaria MVS de Mol*
 
 **Estado:** post-1.0 (decisión tomada el 2026-07-12)
+**Revisión 2026-10-03:** #146 implementa localmente los anclajes por coordenadas
+y los callouts sobre geometría nativa de Mol*, con edición, estado/sesión y
+transferencia. Esa superficie ya expuesta no necesita MVS; el contrato MVS
+completo conserva su aplazamiento y sus preguntas de actualización incremental.
 **Contrato aplicable:** `../../scene_contracts.md` Part II, Contract V — un objeto de
 dominio *posee* su realización visual; no *es* esa realización.
 **Dependencia upstream:** ninguna. Es maquinaria que ya viene en Mol*

@@ -160,7 +160,7 @@ def test_shapes_manager_lifecycle_targets_only_namesake_shape():
         center=puw.quantity([0.0, 0.0, 0.0], "nm"),
         tag="site1",
     )
-    annotation = view.annotations.add_annotation("site", atom_indices=[0], tag="site1")
+    annotation = view.annotations.add("site", atom_indices=[0], tag="site1")
 
     view.shapes.hide("site1", skip_digestion=True)
     assert shape._hidden is True  # noqa: SLF001

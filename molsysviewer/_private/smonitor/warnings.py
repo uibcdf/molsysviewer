@@ -70,16 +70,6 @@ class StructureScaleWarning(MolSysViewerCatalogWarning, UserWarning):
     catalog_entry = "structure_scale_over_budget"
 
 
-class RegionWithoutOwnVisualWarning(MolSysViewerCatalogWarning, UserWarning):
-    """`show()` or `hide()` on a region that paints nothing of its own.
-
-    Contract A.3 requires this to be a no-op *that warns*: a region in state None is
-    painted by the whole, so there is nothing of its own to reveal or conceal.
-    """
-
-    catalog_entry = "region_without_own_visual"
-
-
 class RegionOverlapWarning(MolSysViewerCatalogWarning, UserWarning):
     """Two visible regions draw the same atoms, which z-fights."""
 

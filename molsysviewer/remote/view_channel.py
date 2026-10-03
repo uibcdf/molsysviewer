@@ -9,6 +9,9 @@ from __future__ import annotations
 
 from typing import Any, Callable, Mapping
 
+from smonitor import signal
+
+from .._private.argdigest import digest
 from ..runtime_contract import DATA_PLANE_ACTIONS, RAW_ACTIONS, action_of, is_envelope
 from .session_router import SessionRouteResult, SessionRuntimeRouter
 
@@ -76,7 +79,9 @@ class RemoteViewChannel:
             raise RuntimeError("remote channel has not been bound to a MolSysView")
         return self._router
 
-    def bind_runtime_identity(self, viewer_id: str, session_id: str) -> None:
+    @signal()
+    @digest()
+    def bind_runtime_identity(self, viewer_id: str, session_id: str, *, skip_digestion: bool = False) -> None:
         if self._router is not None:
             if self._router.viewer_id == viewer_id and self._router.session_id == session_id:
                 return
@@ -87,7 +92,9 @@ class RemoteViewChannel:
             render_on=self.render_on,
         )
 
-    def send(self, message: Mapping[str, Any], buffers: Any = None) -> None:
+    @signal()
+    @digest()
+    def send(self, message: Mapping[str, Any], buffers: Any = None, *, skip_digestion: bool = False) -> None:
         if self._closed:
             raise RuntimeError("remote channel is closed")
         if is_envelope(message):
@@ -106,14 +113,16 @@ class RemoteViewChannel:
             return
         self._send_control(self.router.wrap_outbound(message))
 
-    def receive_control(self, value: Any) -> SessionRouteResult:
+    @signal()
+    @digest()
+    def receive_control(self, packet: Any, *, skip_digestion: bool = False) -> SessionRouteResult:
         if self._closed:
             return SessionRouteResult(
                 "rejected",
                 reason="channel-closed",
                 detail="Remote channel is closed",
             )
-        result = self.router.route_inbound(value)
+        result = self.router.route_inbound(packet)
         if result.status == "accepted":
             if result.envelope is not None and result.envelope.action == "request_popup_scene_snapshot":
                 for callback in tuple(self._runtime_request_callbacks):
@@ -137,16 +146,19 @@ class RemoteViewChannel:
             self._send_control(self.router.duplicate_ack(result.envelope))
         return result
 
+    @signal()
+    @digest()
     def receive_data(
         self,
-        value: Any,
+        packet: Any,
         *,
         source_endpoint_id: str,
+        skip_digestion: bool = False,
     ) -> SessionRouteResult:
         """Accept one authenticated raw/data-plane message from a live endpoint."""
         if self._closed:
             return SessionRouteResult("rejected", reason="channel-closed", detail="Remote channel is closed")
-        if not isinstance(value, Mapping):
+        if not isinstance(packet, Mapping):
             return SessionRouteResult("rejected", reason="malformed-data", detail="Data-plane message is not a mapping")
         source = self.router.endpoint(source_endpoint_id)
         if source is None or source.role == "python":
@@ -155,15 +167,15 @@ class RemoteViewChannel:
                 reason="unknown-source",
                 detail=f"Unexpected source endpoint {source_endpoint_id}",
             )
-        action = action_of(value)
+        action = action_of(packet)
         if action not in RAW_ACTIONS and action not in DATA_PLANE_ACTIONS:
             return SessionRouteResult(
                 "rejected",
                 reason="unknown-data-action",
                 detail=f"Action {action!r} does not belong to the raw/data plane",
             )
-        viewer_id = value.get("viewer_id")
-        session_id = value.get("session_id")
+        viewer_id = packet.get("viewer_id")
+        session_id = packet.get("session_id")
         if viewer_id is not None and viewer_id != self.router.viewer_id:
             return SessionRouteResult(
                 "rejected",
@@ -177,31 +189,43 @@ class RemoteViewChannel:
                 detail=f"Message belongs to session {session_id}",
             )
         for callback in tuple(self._msg_callbacks):
-            callback(self, value, [])
+            callback(self, packet, [])
         return SessionRouteResult(
             "accepted",
-            message=value,
+            message=packet,
             recipient_endpoint_ids=(self.router.python_endpoint,),
         )
 
-    def on_msg(self, callback: Callable[..., Any]) -> None:
+    @signal()
+    @digest()
+    def on_msg(self, callback: Callable[..., Any], remove: bool = False, *, skip_digestion: bool = False) -> None:
         if not callable(callback):
             raise TypeError("message callback must be callable")
-        self._msg_callbacks.append(callback)
+        if remove:
+            if callback in self._msg_callbacks:
+                self._msg_callbacks.remove(callback)
+        elif callback not in self._msg_callbacks:
+            self._msg_callbacks.append(callback)
 
-    def on_runtime_request(self, callback: Callable[[Any], Any]) -> None:
+    @signal()
+    @digest()
+    def on_runtime_request(self, callback: Callable[[Any], Any], *, skip_digestion: bool = False) -> None:
         """Register a correlation-preserving transport-request consumer."""
         if not callable(callback):
             raise TypeError("runtime request callback must be callable")
         self._runtime_request_callbacks.append(callback)
 
-    def publish_download(self, filename: str, media_type: str, data: bytes) -> str:
+    @signal()
+    @digest()
+    def publish_download(self, filename: str, media_type: str, data: bytes, *, skip_digestion: bool = False) -> str:
         publisher = self.download_publisher
         if publisher is None:
             raise RuntimeError("remote channel has no download publisher")
         return publisher(filename, media_type, data)
 
-    def consume_upload(self, path: str, filename: str) -> Mapping[str, Any]:
+    @signal()
+    @digest()
+    def consume_upload(self, path: str, filename: str, *, skip_digestion: bool = False) -> Mapping[str, Any]:
         consumer = self.upload_consumer
         if consumer is None:
             raise RuntimeError("remote channel has no upload consumer")
@@ -219,10 +243,14 @@ class RemoteViewChannel:
         self._forwarded_initial = messages
         self._initial_messages = messages
 
-    def get_state(self, *args: Any, **kwargs: Any) -> dict:
+    @signal()
+    @digest()
+    def get_state(self, key=None, drop_defaults=False, *, skip_digestion: bool = False) -> dict:
         return {}
 
-    def close(self) -> None:
+    @signal()
+    @digest()
+    def close(self, *, skip_digestion: bool = False) -> None:
         self._closed = True
         self._msg_callbacks.clear()
         self._runtime_request_callbacks.clear()

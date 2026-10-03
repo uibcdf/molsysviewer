@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import Any
 
 import molsysmt as msm
@@ -39,7 +40,7 @@ class Whole:
     @property
     def params(self) -> dict[str, Any]:
         """Current representation parameters as a defensive copy."""
-        return dict(self._repr_params)
+        return deepcopy(self._repr_params)
 
     @property
     def visible(self) -> bool:
@@ -146,6 +147,7 @@ class Whole:
     # --- MolSysMT query helpers (delegated to MolSysView) ---
 
     @signal(tags=["selection", "whole"])
+    @digest()
     def select(
         self,
         selection: Any = "all",
@@ -176,19 +178,21 @@ class Whole:
             raise as_our_argument_error(exc, "molsysviewer.whole.select") from exc
 
     @signal(tags=["query", "whole"])
-    def get(self, *args: Any, skip_digestion: bool = False, **kwargs: Any):
-        """Retrieve values from the whole system.
-
-        The whole *is* the molecular system, so this is `msm.get` on it, digested by
-        MolSysMT. Only the caller named in an error is ours: someone who called
-        `whole.get` must not read a message about `msm.basic.get.get`.
-        """
+    @digest(digestion_source="molsysviewer._private.argdigest.molecular_attribute_flags",
+            digestion_style="registry", strictness="error")
+    def get(self, element="system", selection="all", structure_indices="all", mask=None,
+            syntax="MolSysMT", get_missing_bonds=True, output_type="values", skip_digestion=False, **kwargs):
+        """Retrieve molecular attributes from the whole system."""
         try:
-            return msm.get(self._view._molsys, *args, skip_digestion=skip_digestion, **kwargs)  # noqa: SLF001
+            return msm.get(self._view._molsys, element=element, selection=selection,
+                           structure_indices=structure_indices, mask=mask, syntax=syntax,
+                           get_missing_bonds=get_missing_bonds, output_type=output_type,
+                           skip_digestion=skip_digestion, **kwargs)
         except Exception as exc:
             raise as_our_argument_error(exc, "molsysviewer.whole.get") from exc
 
     @signal(tags=["query", "whole"])
+    @digest()
     def info(
         self,
         element: str = "system",
@@ -220,6 +224,7 @@ class Whole:
             raise as_our_argument_error(exc, "molsysviewer.whole.info") from exc
 
     @signal(tags=["convert", "whole"])
+    @digest()
     def convert(
         self,
         to_form: str = "molsysmt.MolSys",
@@ -394,7 +399,8 @@ class Whole:
 
         import numpy as np
 
-        raw_values = puw.get_value(values) if puw.is_quantity(values) else values
+        unit = puw.get_unit(values) if puw.is_quantity(values) else None
+        raw_values = puw.get_value(values, to_unit=unit) if unit is not None else values
         array = np.asarray(raw_values)
         array = np.squeeze(array)
         if array.ndim != 1:
@@ -407,7 +413,7 @@ class Whole:
             raise ValueError(f"Attribute {resolved!r} is not scalar numeric data.") from exc
 
         self.set_color_by_values(
-            scalar_values,
+            puw.quantity(scalar_values, unit) if unit is not None else scalar_values,
             element=element,
             palette=palette,
             value_range=value_range,
@@ -435,7 +441,7 @@ class Whole:
         Parameters
         ----------
         values
-            Iterable of numeric scalars, one per *element* in the whole system
+            Iterable of unit-free scalars or a quantity array, one per *element* in the whole system
             (e.g. one per atom when ``element="atom"``, one per residue when
             ``element="group"``).
         element
@@ -447,8 +453,9 @@ class Whole:
             Palette name (str), matplotlib colormap, or list of colors.
             Defaults to ``"viridis"``.
         value_range
-            ``[vmin, vmax]`` normalization range.  Auto-detected from *values*
-            when ``None``.
+            ``[vmin, vmax]`` normalization range. Physical values require a
+            quantity vector or two scalar bounds with compatible units.
+            Auto-detected from *values* when ``None``.
         """
         atom_indices, per_atom_colors = expand_values_to_atoms(
             self._view._molsys,  # noqa: SLF001

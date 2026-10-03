@@ -16,6 +16,7 @@ class MolSysMTInterfaceMixin:
         annotation_tags = sorted(self.annotations.tags())
         measurement_tags = sorted(self.measurements.tags(skip_digestion=True))
         selection_tags = sorted(self.selections.tags())
+        interaction_tags = sorted(self.interactions.tags(skip_digestion=True))
 
         return {
             "whole": {
@@ -28,12 +29,13 @@ class MolSysMTInterfaceMixin:
             "loads": [
                 {
                     "index": b.get("index"),
+                    "source_id": b.get("source_id"),
                     "label": b.get("label"),
                     "n_atoms": b.get("n_atoms"),
                     "atom_range": (b.get("start", 0), b.get("stop", 0)),
                     "region_tag": b.get("region_tag"),
                 }
-                for b in self._load_blocks
+                for b in self.load_blocks
             ],
             "current_structure_index": self._current_structure_index,
             "styles": {
@@ -66,6 +68,8 @@ class MolSysMTInterfaceMixin:
                 "count": len(selection_tags),
                 "tags": selection_tags,
             },
+            "interactions": {"count": len(interaction_tags), "tags": interaction_tags,
+                             "analysis_names": sorted(getattr(self._molsys, "interactions", {}) or {})},
             "active_selection": {
                 "is_empty": self.active_selection.is_empty(skip_digestion=True),
                 "info": self.active_selection.info(skip_digestion=True),
@@ -201,6 +205,7 @@ class MolSysMTInterfaceMixin:
             n_shapes = sum(1 for member in members.values() if getattr(member, "kind", None) == "shape")
             n_annotations = sum(1 for member in members.values() if getattr(member, "kind", None) == "annotation")
             n_measurements = sum(1 for member in members.values() if getattr(member, "kind", None) == "measurement")
+            n_interactions = sum(1 for member in members.values() if getattr(member, "kind", None) == "interaction")
             n_regions = sum(1 for member in members.values() if hasattr(member, "layer"))
             records.append(
                 {
@@ -215,7 +220,7 @@ class MolSysMTInterfaceMixin:
                     "n atoms": None,
                     "n members": len(members),
                     "n picks": None,
-                    "details": f"shapes={n_shapes}, annotations={n_annotations}, measurements={n_measurements}, regions={n_regions}",
+                    "details": f"shapes={n_shapes}, annotations={n_annotations}, measurements={n_measurements}, regions={n_regions}, interactions={n_interactions}",
                 }
             )
         for (kind, tag), item in sorted(self._scene_objects.items()):
@@ -237,6 +242,14 @@ class MolSysMTInterfaceMixin:
                     "details": f"layer={getattr(item, 'layer_tag', None)}",
                 }
             )
+
+        for item in self.interactions.info(skip_digestion=True):
+            records.append({"section": "interactions", "tag": item["tag"], "kind": "interaction",
+                            "visible": not item["hidden"] and not item.get("layer_hidden", False),
+                            "active": not item["broken"], "layer tag": item["layer_tag"],
+                            "representation": "links", "preset": None, "n atoms": None,
+                            "n members": None, "n picks": None,
+                            "details": f"analysis={item['analysis_name']}, status={item.get('status', 'broken' if item['broken'] else 'ready')}"})
 
         for item in self.selections.info(skip_digestion=True):
             records.append(

@@ -193,12 +193,6 @@ CATALOG = {
         "category": "payload",
         "level": "DEBUG",
     },
-    "region_without_own_visual": {
-        "code": "MOLSYSVIEWER-REGION-WITHOUT-OWN-VISUAL",
-        "source": "molsysviewer.regions",
-        "category": "scene",
-        "level": "WARNING",
-    },
     "region_overlaps_visible_regions": {
         "code": "MOLSYSVIEWER-REGION-OVERLAPS-VISIBLE-REGIONS",
         "source": "molsysviewer.regions",
@@ -247,6 +241,19 @@ CATALOG = {
         "category": "rendering",
         "level": "INFO",
     },
+    **{
+        f"interaction_{reason}": {
+            "code": f"MOLSYSVIEWER-INTERACTION-{reason.upper().replace('_', '-')}",
+            "source": "molsysviewer.interactions",
+            "category": "interaction",
+            "level": "ERROR",
+        }
+        for reason in (
+            "backend_required", "system_required", "alignment_required",
+            "name_conflict", "invalid_query", "pbc_box_required",
+            "stale_calculation", "referenced_analysis", "session_mismatch",
+        )
+    },
 }
 
 #: One message per catalog entry, keyed the way this file is authored: by the catalog
@@ -262,6 +269,36 @@ CATALOG = {
 #: `devguide/smonitor.md` rule 1 ("zero string hardcoding") was satisfied on paper and
 #: defeated in practice.
 MESSAGES = {
+    "interaction_backend_required": (
+        "This interaction workflow requires the experimental public MolSysMT "
+        "Interactions API and H5MSM 0.5 support. Install a compatible MolSysMT revision."
+    ),
+    "interaction_system_required": "Load a molecular system before using interaction analyses.",
+    "interaction_alignment_required": (
+        "Attaching independent interaction data requires assume_aligned=True. "
+        "Declare matching atom and structure order, coordinates and boxes explicitly."
+    ),
+    "interaction_name_conflict": "Interaction analysis {name!r} already exists; choose a new name.",
+    "interaction_invalid_query": (
+        "Interaction mode {mode!r} requires incident/internal/cross with one selection, "
+        "or between with two disjoint selections. exclusive=True applies only to between."
+    ),
+    "interaction_pbc_box_required": (
+        "Periodic interaction calculation requires finite, nonsingular boxes "
+        "for every requested structure."
+    ),
+    "interaction_stale_calculation": (
+        "The molecular system changed during interaction calculation/import. "
+        "The result was not attached."
+    ),
+    "interaction_referenced_analysis": (
+        "Interaction analysis {name!r} is still referenced by scene objects; "
+        "delete their representations before deleting its data."
+    ),
+    "interaction_session_mismatch": (
+        "The session's interaction analysis {name!r} is missing or differs from "
+        "its saved scientific data. The session was not restored."
+    ),
     "argument_error": "Error in {caller} due to the {argument} argument with value {value}.{detail}",
     "file_already_handled": "The file {filename} is already handled.",
     "iterator_error": "Error in iterator: {detail}.",
@@ -290,7 +327,6 @@ MESSAGES = {
         "{n_structures}. The frame was left where it is rather than moved somewhere the "
         "document did not ask for."
     ),
-    "region_without_own_visual": ("Region {tag} has no own representation to {action}."),
     "region_overlaps_visible_regions": (
         "Region {tag} overlaps visible represented region(s) {overlaps}. Overlapping "
         "region representations can produce z-fighting; use difference(), "
@@ -331,6 +367,18 @@ MESSAGES = {
     "runtime_contract_rejected": "Runtime contract rejected a message on {seam}: {reason} ({detail}).",
     "frontend_action_failed": "Frontend action {action} failed while processing {event}: {error_type}: {error_message}",
     "addon_load_failed": "Failed to load add-on module '{module}': {reason}.",
+    "addon_lifecycle_failed": "Add-on {addon!r} failed during {hook}: {reason}.",
+    "dynamic_region_evaluation_over_budget": (
+        "Dynamic region {tag!r} took {elapsed_ms:.2f} ms to evaluate structure {frame}, "
+        "exceeding its {budget_ms:.2f} ms budget. It was switched to static mode."
+    ),
+    "index_map_degraded": (
+        "The atom index map could not be applied reliably. "
+        "Check the loaded atom selection and its index mapping."
+    ),
+    "suppressed_exception": "Recovered from {exception_type} in {location}: {reason}.",
+    "webgl_context_lost": "The WebGL context was lost. Wait for the browser to restore it.",
+    "webgl_context_restored": "The WebGL context was restored.",
     "payload_invalid_coordinates": "Invalid coordinates in payload: {detail}",
     "payload_invalid_box_vectors": "Invalid box vectors in payload: {detail}",
     "payload_invalid_bond_pairs": "Invalid bond pairs in payload: {detail}",
@@ -346,10 +394,9 @@ PROFILES_FIELDS = ("user_message", "qa_message", "agent_message", "dev_message",
 def _code_entry(template: str) -> dict:
     """One template, every profile.
 
-    SMonitor picks the field by profile and does **not** fall back between them: under
-    `qa` it reads `qa_message` and gets an empty string when only `user_message` exists.
+    Publishing every field also supports SMonitor versions without profile fallback.
     These diagnostics say the same thing to everyone, so the entry is built from one
-    string rather than repeating it four times and letting the copies drift.
+    string rather than repeating it and letting the copies drift.
     """
 
     return {field: template for field in PROFILES_FIELDS}

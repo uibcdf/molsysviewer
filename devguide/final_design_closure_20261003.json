@@ -1,0 +1,208 @@
+{
+  "date": "2026-10-03",
+  "status": "implemented_locally_candidate_qualification_pending",
+  "issues": [
+    "uibcdf/molsysviewer#146",
+    "uibcdf/molsysviewer#147",
+    "uibcdf/molsysviewer#148",
+    "uibcdf/molsysviewer#149",
+    "uibcdf/molsysviewer#150",
+    "uibcdf/molsysviewer#151"
+  ],
+  "repository_head": "f2b148722e32e2f83bc690e51e6aa622b2e31294",
+  "product_commit_or_push": false,
+  "environment": {
+    "python": "3.14.7",
+    "molsysmt": "0.22.4+122.g396e6979f",
+    "provider_source_commit": "396e6979f3f686b110431f18bba0d41933ce71e2",
+    "provider_route": "installed controlled experimental provider; not published-artifact qualification",
+    "numpy": "2.4.6",
+    "pandas": "3.0.6",
+    "molstar_runtime": "5.4.1",
+    "node": "24.11.1",
+    "browser": "/usr/bin/google-chrome"
+  },
+  "python": {
+    "focused": {
+      "junit": "/tmp/msv-design-closure-focused-20261003.xml",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 13,
+      "seconds": 7.181
+    },
+    "full": {
+      "junit": "/tmp/msv-design-closure-full-20261003.xml",
+      "tests": 2662,
+      "failures": 38,
+      "errors": 0,
+      "skipped": 26,
+      "passed": 2598,
+      "seconds": 393.242
+    },
+    "identity-correction": {
+      "junit": "/tmp/msv-design-closure-identity-correction-20261003.xml",
+      "tests": 90,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 90,
+      "seconds": 31.843
+    },
+    "focused-final": {
+      "junit": "/tmp/msv-design-closure-focused-final-20261003.xml",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 13,
+      "seconds": 7.669
+    },
+    "reporting-api": {
+      "junit": "/tmp/msv-design-closure-reporting-api-20261003.xml",
+      "tests": 198,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 198,
+      "seconds": 6.136
+    }
+  },
+  "full_attempt_correction": {
+    "diagnosis": "Fingerprint construction requested absent optional hierarchy on RDKit systems, producing IndexError. Public has_attribute/get now records absence explicitly.",
+    "affected_modules": {
+      "tests.test_interaction_families": 19,
+      "tests.test_interactions_projection_batching": 16,
+      "tests.test_interactions_residency_benchmark": 3
+    },
+    "all_38_original_failures_pass_in_90_case_correction": true,
+    "full_suite_repeated": false,
+    "complete_final_candidate_pass_claimed": false
+  },
+  "javascript": {
+    "initial_complete": {
+      "passed": 313,
+      "failed": 0,
+      "skipped": 0,
+      "log": "/tmp/msv-design-closure-js-20261003.log"
+    },
+    "final_selected": {
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "log": "/tmp/msv-design-closure-js-selected-final-20261003.log",
+      "reason": "final callout/trajectory changes and finite-extreme numeric geometry"
+    },
+    "sandbox_file_only_results_not_counted_as_individual_tests": true
+  },
+  "browser": {
+    "annotations-browser-final": {
+      "exit_code": 0,
+      "log": "/tmp/msv-design-closure-annotations-browser-final-20261003.log"
+    },
+    "studio-browser": {
+      "exit_code": 0,
+      "log": "/tmp/msv-design-closure-studio-browser-20261003.log"
+    },
+    "plots-browser-final": {
+      "exit_code": 0,
+      "log": "/tmp/msv-design-closure-plots-browser-final-20261003.log"
+    }
+  },
+  "browser_assertions": [
+    "real public Python pentalanine creation and three structures",
+    "world position and world displacement",
+    "camera-basis displacement changes on camera rotation",
+    "distinct solid/dashed/dotted rendered leaders",
+    "absolute points stay fixed across camera and frames",
+    "atom callouts follow the visible frame",
+    "once playback settles after callout writes",
+    "coordinate-to-atom transition clears the old position",
+    "hide/show and edits while hidden",
+    "actual canvas drawing after applied state",
+    "existing Studio annotation workflow",
+    "irregular and repeated numeric plot x"
+  ],
+  "additional_corrections": [
+    "Annotation set_style dictionary digestion",
+    "Missing-hierarchy fingerprint regression",
+    "Callout hidden-state editing",
+    "Playback drains pending frame/callout writes",
+    "Scaled axis fractions for finite extremes"
+  ],
+  "fixture_corrections": [
+    "String-valued native group IDs",
+    "Canonical hide_layer/show_layer messages replace ignored set_visibility in the new scenario",
+    "Armed didDraw subscription handles immediate BehaviorSubject emission",
+    "Focus export uses canonical focus key"
+  ],
+  "public_api": {
+    "totals": {
+      "public_callables": 713,
+      "digested": 713,
+      "undigested": 0,
+      "exempt": 0,
+      "declared_digesters": 437,
+      "missing_digesters": 0
+    },
+    "missing_skip_digestion": [],
+    "inventory": "/tmp/msv-design-closure-public-api-final-20261003.json"
+  },
+  "builds": {
+    "runtime": {
+      "exit_code": 0,
+      "log": "/tmp/msv-design-closure-runtime-final-20261003.log"
+    },
+    "harness": {
+      "exit_code": 0,
+      "log": "/tmp/msv-design-closure-harness-final-20261003.log"
+    },
+    "typescript": {
+      "exit_code": 0,
+      "log": "/tmp/msv-design-closure-typescript-final-20261003.log"
+    }
+  },
+  "preservation": {
+    "before_snapshot": "/tmp/msv-design-closure-before-20261003.tar.gz",
+    "before_inventory": "/tmp/msv-design-closure-before-20261003.json",
+    "dirty_and_untracked_files_preserved_at_start": 345,
+    "js_package_metadata_unchanged": true,
+    "unrelated_ACKREDIT_GUIDE_update_observed_and_left_untouched": true
+  },
+  "limitations": [
+    "Changes remain in preserved product working tree; issues 146-150 partial pending integrated candidate",
+    "Compatible published scientific provider and exact artifact/hosted gates remain separate",
+    "No new batch loading facade accepted or implemented; issue 151 is required design discussion",
+    "No second full Python suite or complete final JS lane claimed",
+    "Picking/count series are candidates, not newly implemented promises",
+    "Full MVS, remotes, standalone certification and Molstar upgrade remain deferred"
+  ],
+  "source_sha256": {
+    "molsysviewer/_private/annotation_vectors.py": "51780a2821e6a2c1985d2fc71599f96cd437dd8f4049e7978280bea554382124",
+    "molsysviewer/_private/argdigest/argument/position.py": "047eb7941cd6fcfd208011b7338bebbbb5b475da8a99929d7eeaf8fc5bf5269d",
+    "molsysviewer/_private/argdigest/argument/offset.py": "bf69cf5e5b2be9aacc4d02bbd1cc0ff6ac6e9c2a7dfa0494828c0c69fd92bda3",
+    "molsysviewer/_private/argdigest/argument/style.py": "197a1d81f8b2968eec109600d506e9888f32970caa3c7a1f1c44e28a80100c03",
+    "molsysviewer/annotations.py": "90a4ea7e942492428b9d4fd8d2e8c99389a36adae1e5005d4ea02b758e619511",
+    "molsysviewer/layers.py": "d5cd3624b49415cdc5be3c547ef3bbe207cb965289d358ce45076147c665fe47",
+    "molsysviewer/loaders/load_molsysmt.py": "959f172ce1c47bccb6a1b54507f815201f5b5460100acddea92eac607918678a",
+    "molsysviewer/styles.py": "166a423f1f359c1f93961089725dd3c5f97c67876fdc2eb95ae8c9407084c5ab",
+    "molsysviewer/tools/basic/_scene_transfer.py": "a19fa294d1f91c10104e980ca6be9ebe66b8edab262f5aa80340530dfe25aef6",
+    "molsysviewer/trajectory_plot.py": "85ee7bb55d0261eff4c8dd051893623e689275ecab0e955ebc8acd3ea6ac6cb2",
+    "molsysviewer/viewer/state.py": "c7d070f180d7808aebd6305d26c64b862fb675fc95d285027ccd390d1d587cfa",
+    "molsysviewer/viewer/core.py": "66e1cc5677b72f0ec1df2b8c857d723b1a79a14329523ff3757441bf550bf150",
+    "molsysviewer/viewer/history.py": "4411977071025ce07c32e5642542e4e9d29819fe8a25d143433238d7e5042417",
+    "molsysviewer/viewer/load.py": "e52f69c023609d5627299e341ea92358703d065df8a16d7ceb58325f21b4ffb5",
+    "molsysviewer/js/src/managers/handlers/annotation-handlers.ts": "47a2bc8a4a1b7c54d92940f8550db39182a9b3ec0f566f6fdeaa57371cbcc9bd",
+    "molsysviewer/js/src/managers/handlers/trajectory-handlers.ts": "22887ea5dd0239049654eca602a56d75a5ad866689887312f3ae59b9fb816bb1",
+    "molsysviewer/js/src/managers/viewer-controller.ts": "37417e6c25fc93055c78b1f1d67a7d09de628a6613108ec34b7f553f01fbbcd8",
+    "molsysviewer/js/src/messages/viewer-messages.ts": "a0c4a06b163be1173f48519c50346915f7d6756f6bd20fcb8cb754b33cb0a2de",
+    "molsysviewer/js/src/ui/trajectory-plot-overlay.ts": "210b9fe1f075758204e89876f6379c15f680a97b30e850849e8cbd8d0450adb6",
+    "molsysviewer/js/src/shapes/annotation-callout.ts": "ff1ba751e4a1dfc006157a3a08b45778d043b1caf1b6a714db3bf1e3e35e558d",
+    "molsysviewer/js/tests/unit/trajectory-plot-overlay.test.ts": "757f737a0646b0064346b1b75f0b3935e1abf34fa96f0c0b6cb982039dbf0846",
+    "molsysviewer/js/tests/e2e/annotations-interaction.e2e.ts": "2200be31ec5da322ff1fe58f2b90e252858c5b3e716749e9e1c8db4fa98f8b94",
+    "molsysviewer/js/tests/e2e/trajectory-plot.e2e.ts": "8fc84213e963df77626f71de8b44a5f344ac3f7a6796a9a775ffde9f3348e610",
+    "molsysviewer/js/tests/e2e/annotation-callout-bridge.py": "d6353e2a236af8efa7fac5db9eba4fffe04eb098da71867c39ef862c0f7e9738",
+    "tests/test_design_review_closure.py": "ad08fe0269937aa899ad925ec4fa9b999b49e43994fe75f599b9726dfa6a3955"
+  }
+}

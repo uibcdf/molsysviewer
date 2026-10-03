@@ -11,50 +11,39 @@ We use ArgDigest in **package style**. Validation and normalization live outside
 - **Engine**: `molsysviewer/_private/argdigest/` contains the adapters and sub-packages.
 - **Digesters**: `molsysviewer/_private/argdigest/argument/` contains one `.py` file per argument name (e.g., `centers.py`, `radii.py`).
 
-### Current Status
+### Current contract (2026-09-30)
 
-- package-style digestion is active and broadly integrated across the public API;
-- core noisy wrappers have now been hardened with explicit digesters;
-- thin but real public query wrappers such as `contains(...)`,
-  `is_composed_of(...)`, and `extract(...)` are also part of the hardening
-  surface when they own a stable contract;
-- missing-digester warnings on stable public paths are treated as integration debt;
-- shape-overlay digestion is now active end to end, including strict length-unit
-  validation (see below and [units_and_quantities.md](units_and_quantities.md)).
+Every ordinary supported public function has `@digest()` and an explicit
+`skip_digestion=False` parameter, including queries, delegating constructors,
+scene-handle methods and experimental hosts. There are no inventory exemptions.
+The inventory covers 699 reachable routes and reports missing decorators,
+missing bypass parameters and missing named digesters separately. Exported class
+methods are included, as well as handles returned by managers.
 
-### Resolved: shape-overlay digestion is now active end to end
+Delegating constructors expose the complete named signature. They validate at
+the public boundary and pass `skip_digestion=True` to an already validated inner
+call. Do not introduce opaque `*args` wrappers or `args`/`kwargs` placeholder
+digesters. `view.annotations.add` is the single general annotation constructor.
 
-This was previously bypassed: the `ShapesManager.add_*` wrappers forced
-`skip_digestion=True` on delegation, and several shape digesters rejected the
-`Quantity` values that callers actually pass. Both have been fixed (see
-[units_and_quantities.md](units_and_quantities.md) for the full quantity policy):
+Public color normalization is decorated. Its digesters use private normalization
+primitives so validation does not recursively re-enter the public function.
+Whole and region molecular queries use a strict registry derived from public
+MolSysMT attribute metadata for boolean request flags, plus the local scope
+validators. MolSysMT remains responsible for the scientific query.
 
-- **Full-signature public methods** (e.g. `ShapesManager.add_sphere`) carry
-  `@digest()` and delegate to their submodule helper with `skip_digestion=True`
-  (the inner is an internal, already-validated call).
-- **Thin `*args/**kwargs` forwarders** delegate **without** forcing skip, so the
-  submodule helper (which owns the real named signature and `@digest()`)
-  validates on the public path. They are still not decorated themselves (Rule 1).
-- **Every length digester** now accepts the real input forms (unit strings,
-  `Quantity`, pint/…) and rejects bare numbers, via
-  `puw.ensure_quantity(..., dimensionality={'[L]': 1})` wrapped by
-  `_private/argdigest/_quantity.py::digest_length_quantity`.
-- Digesting the *whole* public argument set means non-length digesters must also
-  accept the shape forms: `color`, `alpha`, and `tag` are now batch-aware
-  (single **or** a per-object list).
-
-Lesson: turning on argdigest for a public method digests **all** its arguments —
-budget for making every argument's digester accept the real forms, not only the
-one you came for.
+Shape quantities accept real unit strings and Quantity objects. See
+[units_and_quantities.md](units_and_quantities.md). Activating digestion means
+checking every named argument, including tags, batches and optional values.
 
 ### Rules
 
-1. **Decorate real public entry points**
-   - use `@digest()` on public methods that own a stable argument contract.
-   - do not decorate thin variadic forwarders that only pass `*args/**kwargs` to a deeper method; that creates fake digestion surfaces and noisy warnings.
-   - public wrappers such as `contains(...)`, `is_composed_of(...)`, or `extract(...)` should still carry `@digest()` when they expose a real named contract, even if they delegate later.
-2. **Keep `skip_digestion=True` available**
-   - internal replay/rebuild flows depend on bypassing digestion once state is already normalized.
+1. **Decorate every ordinary public function**
+   - use `@digest()` even when the function delegates, reads state or has no inputs.
+   - expose full named parameters rather than a variadic-only public signature.
+   - properties, constructors and Python protocol methods are outside this callable inventory.
+2. **Declare `skip_digestion=False` explicitly**
+   - internal replay/rebuild flows bypass digestion once state is normalized.
+   - the bypass does not bypass lifecycle checks or scientific invariants.
 3. **Encode caller-aware semantics in digesters**
    - if `None` is valid only for specific callables, that belongs in the digester, not in ad hoc bypass code.
    - when MolSysViewer exposes both method-style and module/helper-style public routes, caller-aware digesters should accept both aliases; do not rely on one exact caller string if the API intentionally exposes more than one public entry path.
@@ -89,8 +78,8 @@ function accepts.
 
 #### Cross-package alias contract
 
-The query wrappers validate arguments in MolSysViewer and then delegate to MolSysMT with
-`skip_digestion=True`. They therefore build their caller-scoped `AliasTable` objects from
+The query wrappers validate request flags and scope in MolSysViewer and delegate
+the scientific operation to MolSysMT. They build their caller-scoped `AliasTable` objects from
 the versioned plain-data contract returned by
 `molsysmt.attribute.get_argument_aliases()`. No MolSysMT private alias module is a
 consumer interface.
@@ -104,6 +93,13 @@ silently filter malformed upstream aliases to accommodate an old release.
 Canonical and alias keywords are alternatives; simultaneous use raises
 `ArgumentConsistencyError`. The original dependency defect and migration history are
 recorded by `uibcdf/molsysviewer#62` and `uibcdf/molsysmt#157`.
+
+The read-only [dependency contract audit](dependency_contract.md) derives all
+runtime requirements and Python bounds from `pyproject.toml`. Its inventory
+classifies recipe, environments and controlled source workflows without
+duplicating versions. It checks metadata before release builds and installed
+source-provider floors/provenance before CI consumes them. Installed API
+compatibility remains a separate qualification.
 
 ### Interaction with PyUnitWizard
 
@@ -135,7 +131,8 @@ When auditing public API digestion:
 - prefer regression tests that assert warning-free use of core wrappers.
 - distinguish between:
   - public contract wrappers: digest and then delegate with `skip_digestion=True`;
-  - pure variadic forwarders: keep `@signal()`, but avoid fake `@digest()` layers.
+  - delegating public constructors: expose named signatures and validate them;
+  - private normalization primitives: keep them private to avoid validation cycles.
 
 ## Dependency Management (DepDigest)
 

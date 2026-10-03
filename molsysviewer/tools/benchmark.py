@@ -5,14 +5,15 @@ import time
 from typing import Any
 
 import numpy as np
-from smonitor import get_manager
+from smonitor import get_manager, signal
 
 from molsysviewer._private.argdigest import digest
 from molsysviewer.demo import demo
 
 
+@signal()
 @digest()
-def benchmark_loading(iterations: int = 5) -> dict[str, dict[str, float]]:
+def benchmark_loading(iterations: int = 5, *, skip_digestion: bool = False) -> dict[str, dict[str, float]]:
     """Measure structure and topology loading speed from demo systems."""
     results = {}
     keys = ["dialanine", "1TCD", "chicken_villin_HP35"]
@@ -36,8 +37,9 @@ def benchmark_loading(iterations: int = 5) -> dict[str, dict[str, float]]:
     return results
 
 
+@signal()
 @digest()
-def benchmark_coordinates(iterations: int = 50) -> dict[str, dict[str, float]]:
+def benchmark_coordinates(iterations: int = 50, *, skip_digestion: bool = False) -> dict[str, dict[str, float]]:
     """Measure coordinate serialization (get) and deserialization/update (set) performance."""
     view_small = demo["dialanine"]
     view_large = demo["chicken_villin_HP35"]
@@ -101,8 +103,9 @@ def benchmark_coordinates(iterations: int = 50) -> dict[str, dict[str, float]]:
     return results
 
 
+@signal()
 @digest()
-def benchmark_serialization(iterations: int = 100) -> dict[str, dict[str, float]]:
+def benchmark_serialization(iterations: int = 100, *, skip_digestion: bool = False) -> dict[str, dict[str, float]]:
     """Measure JSON serialization latency for typical high-frequency payloads."""
     # Camera snapshot payload
     camera_payload = {
@@ -120,7 +123,9 @@ def benchmark_serialization(iterations: int = 100) -> dict[str, dict[str, float]
     coords_list = [[1.234, -5.678, 12.345] for _ in range(500)]
     coords_payload = {
         "op": "partial_coordinates_update",
-        "coordinates": coords_list,
+        "coordinates": [coords_list],
+        "coordinate_unit": "angstrom",
+        "structure_indices": [0],
         "atom_indices": list(range(500)),
         "transaction_id": "benchmark-serialization",
     }
@@ -142,8 +147,9 @@ def benchmark_serialization(iterations: int = 100) -> dict[str, dict[str, float]
     return results
 
 
+@signal()
 @digest()
-def benchmark_telemetry_overhead(iterations: int = 50) -> dict[str, Any]:
+def benchmark_telemetry_overhead(iterations: int = 50, *, skip_digestion: bool = False) -> dict[str, Any]:
     """Measure CPU overhead introduced by SMonitor tracking and ArgDigest validation."""
     view = demo["dialanine"]
 
@@ -216,8 +222,9 @@ def benchmark_telemetry_overhead(iterations: int = 50) -> dict[str, Any]:
     return runs
 
 
+@signal()
 @digest()
-def run_benchmarks(iterations: int = 50, verbose: bool = True) -> str:
+def run_benchmarks(iterations: int = 50, verbose: bool = True, *, skip_digestion: bool = False) -> str:
     """Execute the full molecular performance benchmark suite and return a Markdown report."""
     if verbose:
         print(f"Starting MolSysViewer Performance Benchmarks ({iterations} iterations)...")

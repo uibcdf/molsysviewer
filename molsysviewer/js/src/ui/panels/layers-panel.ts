@@ -11,7 +11,7 @@ export type LayerSummary = {
 };
 
 export type LayerObjectSummary = {
-    kind: "annotation" | "measurement" | "shape";
+    kind: "annotation" | "measurement" | "shape" | "interaction";
     tag: string;
     owner?: string;
     title: string;

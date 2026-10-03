@@ -16,6 +16,7 @@ def digest_output_type(output_type, caller=None):
         "molsysviewer.viewer.info",
         "molsysviewer.regions.Region.info",
         "molsysviewer.regions.info",
+        "molsysviewer.whole.info",
     }:
         if isinstance(output_type, str):
             if output_type.lower() in ["styler", "dataframe", "dictionary"]:
@@ -25,6 +26,7 @@ def digest_output_type(output_type, caller=None):
         "molsysmt.basic.get.get",
         "molsysviewer.viewer.MolSysView.get",
         "molsysviewer.viewer.get",
+        "molsysviewer.whole.get",
         "molsysviewer.regions.Region.get",
         "molsysviewer.regions.get",
     ]:

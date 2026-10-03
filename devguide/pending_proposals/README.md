@@ -5,8 +5,9 @@ it carries front matter and is tracked by a GitHub issue. **Only single-theme pr
 live here** — plans and inventories are not queue entries and sit elsewhere in the
 devguide.
 
-Only unresolved designs belong here. Implemented plans are promoted to durable
-documentation or removed; Git retains their development history.
+Only unresolved designs belong here. Resolved reports move to the archive with
+a guard or normative contract; partially implemented reports retain their
+unfulfilled acceptance criteria.
 
 **Nothing in this directory is finished work.** `data_plane_architecture.md` and
 `runtime_message_router.md` used to sit here as the design record for the
@@ -21,11 +22,19 @@ list. Deferred entries also carry the `post-1.0` milestone on the issue board.
 
 <!-- generated: devguide_index -->
 
-### Being worked on (3)
+### Being worked on (2)
 
 - [`extend_python_support_to_3_14.md`](extend_python_support_to_3_14.md) — [#93](https://github.com/uibcdf/molsysviewer/issues/93) — Extend MolSysViewer Python support to 3.14 alongside MolSysMT. *(measured)*
 - [`migrate_standalone_qt_to_canonical_pyside6_6_11_2.md`](migrate_standalone_qt_to_canonical_pyside6_6_11_2.md) — [#109](https://github.com/uibcdf/molsysviewer/issues/109) — Migrate the optional standalone Qt host to canonical PySide6 6.11.2. *(measured)*
-- [`review_python_ecosystem_policy_adoption.md`](review_python_ecosystem_policy_adoption.md) — [#110](https://github.com/uibcdf/molsysviewer/issues/110) — Review MolSysViewer Python ecosystem policy adoption. *(inspected)*
+
+### Partially done (6)
+
+- [`align_interactions_with_molsysmt_families.md`](align_interactions_with_molsysmt_families.md) — [#140](https://github.com/uibcdf/molsysviewer/issues/140) — Align Viewer interactions with the nine implemented MolSysMT families *(measured)*
+- [`bounded_interaction_inspection_pages.md`](bounded_interaction_inspection_pages.md) — [#142](https://github.com/uibcdf/molsysviewer/issues/142) — Use bounded public occurrence pages in the Interactions inspector *(measured)*
+- [`interaction_observation_actions.md`](interaction_observation_actions.md) — [#145](https://github.com/uibcdf/molsysviewer/issues/145) — Select and focus observation participants from the Interactions inspector *(measured)*
+- [`interactions_minimum_before_1_0.md`](interactions_minimum_before_1_0.md) — [#114](https://github.com/uibcdf/molsysviewer/issues/114) — Introduce a minimal Interactions scene domain before 1.0. *(measured)*
+- [`multiple_system_loading_contract.md`](multiple_system_loading_contract.md) — [#151](https://github.com/uibcdf/molsysviewer/issues/151) — Define batch and progressive loading of multiple molecular systems *(measured)*
+- [`native_interaction_h5msm_save.md`](native_interaction_h5msm_save.md) — [#144](https://github.com/uibcdf/molsysviewer/issues/144) — Save named interaction analyses through the native Viewer API *(measured)*
 
 ### Blocked (1)
 
@@ -38,7 +47,7 @@ list. Deferred entries also carry the `post-1.0` milestone on the issue board.
 - [`molsysmt_docs_pipeline_analysis.md`](molsysmt_docs_pipeline_analysis.md) — [#41](https://github.com/uibcdf/molsysviewer/issues/41) — MolSysMT's documentation pipeline read at the scale it is about to reach. *(measured)*
 - [`quarantined_digesters_await_a_decision.md`](quarantined_digesters_await_a_decision.md) — [#78](https://github.com/uibcdf/molsysviewer/issues/78) — 219 quarantined digesters are outside the package and undecided; deleting them is the open question. *(measured)*
 
-### Deferred until after 1.0 (19)
+### Deferred until after 1.0 (20)
 
 - [`agent_token_cost_of_non_pytest_tests.md`](post_1.0/agent_token_cost_of_non_pytest_tests.md) — [#43](https://github.com/uibcdf/molsysviewer/issues/43) — Study the token cost of non-pytest test output for agent consumers.
 - [`annotations_mvs_machinery.md`](post_1.0/annotations_mvs_machinery.md) — [#44](https://github.com/uibcdf/molsysviewer/issues/44) — Advanced annotations on Mol*'s MVS machinery.
@@ -56,6 +65,7 @@ list. Deferred entries also carry the `post-1.0` milestone on the issue board.
 - [`reproducible_browser_and_render_worker_e2e_evidence.md`](post_1.0/reproducible_browser_and_render_worker_e2e_evidence.md) — [#100](https://github.com/uibcdf/molsysviewer/issues/100) — Define reproducible browser and render-worker E2E evidence lanes.
 - [`structure_windowing_and_lazy_materialization.md`](post_1.0/structure_windowing_and_lazy_materialization.md) — [#55](https://github.com/uibcdf/molsysviewer/issues/55) — Structure windowing and lazy materialization.
 - [`studio_interactions_subpanel_ui_design.md`](post_1.0/studio_interactions_subpanel_ui_design.md) — [#56](https://github.com/uibcdf/molsysviewer/issues/56) — Studio subpanel for Interactions.
+- [`update_molstar_dependency.md`](post_1.0/update_molstar_dependency.md) — [#115](https://github.com/uibcdf/molsysviewer/issues/115) — Update the Mol* dependency after 1.0.
 - [`viewer_mixin_contract_and_caller_resolution.md`](post_1.0/viewer_mixin_contract_and_caller_resolution.md) — [#57](https://github.com/uibcdf/molsysviewer/issues/57) — Generated typing contract for MolSysView mixins.
 - [`viewing_in_the_terminal.md`](post_1.0/viewing_in_the_terminal.md) — [#58](https://github.com/uibcdf/molsysviewer/issues/58) — View a scene as pixels in a terminal.
 - [`visualization_representations_roadmap.md`](post_1.0/visualization_representations_roadmap.md) — [#59](https://github.com/uibcdf/molsysviewer/issues/59) — Advanced representations for pockets, voids, channels and interfaces.
@@ -90,8 +100,9 @@ inventories, and **one theme, one issue** cannot apply to them.
   attachment. Old popups are closed or disconnected and never adopt a new
   `session_id` implicitly; a replacement popup authenticates and bootstraps
   from current state.
-- **First after 1.0:** implement the Interactions domain by vertical slices,
-  with state/history/API before Studio UI.
+- **Interactions:** the minimal Python/renderer/Studio implementation is tracked
+  before 1.0 in #114; compatible published-provider qualification remains open.
+  Additional families, analytics and advanced UI stay post-1.0.
 - **Opportunistic small work:** configurable canvas picking may be scheduled
   independently once the post-1.0 API freeze opens.
 - **Wait for dependencies:** chemical metadata waits for MolSysMT's schema;
@@ -107,7 +118,7 @@ inventories, and **one theme, one issue** cannot apply to them.
 - Performance reports separate both structural axes: atom count and structure
   count.
 - Overlapping proposals name one canonical owner for each concern.
-- Once implemented, remove the document from this directory.
+- On resolution, archive the report and name its guard or normative contract.
 - A UI companion cannot start before its Python domain, protocol, state, and
   history contracts exist.
 - Post-1.0 location is a scope decision, not an implicit commitment to

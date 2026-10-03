@@ -61,7 +61,7 @@ group.
 ```python
 view.selections.add_selection(tag="res10", selection="group_index==10")
 res10 = view.selections["res10"].info()
-view.annotations.add_annotation(text="catalytic", atom_indices=res10["atom_indices"])
+view.annotations.add(text="catalytic", atom_indices=res10["atom_indices"])
 ```
 
 The one that changes the picture is `new_region`, which turns the set into something drawn:

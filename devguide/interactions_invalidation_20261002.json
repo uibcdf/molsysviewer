@@ -1,0 +1,211 @@
+{
+  "date": "2026-10-02",
+  "issue": "uibcdf/molsysviewer#140",
+  "scope": "Periodic malformed-observation fixture and real provider coordinate invalidation; installed validation tool hardening",
+  "provider_commit": "396e6979f3f686b110431f18bba0d41933ce71e2",
+  "artifacts": {
+    "viewer_wheel": {
+      "path": "/tmp/msv-interactions-installed-wheels-20261002/molsysviewer-0.23.4+69.g1cf7826d.dirty-py3-none-any.whl",
+      "sha256": "3edc0b5e9e9504825007b3bc850c722694bdd10125d51828405e73e0e1f9a0d2"
+    },
+    "provider_wheel": {
+      "path": "/tmp/msv-provider-review-wheels-20261002/molsysmt-0.22.4+122.g396e6979f-cp311-abi3-linux_x86_64.whl",
+      "sha256": "a075950bfc96ff6b957c0a367a7fd684a2aedc54407d1f90769db46bd2a68666"
+    }
+  },
+  "source_hashes": {
+    "tests/test_interactions_projection_batching.py": "55185ca9280bb0bb557ed95f8e9e8fe9b49d163c37d02a67f143dbd010b0b1b2",
+    "tests/test_installed_test_imports.py": "c480a9aad4ee67ab623ae152e4c615f87c4d9dec9fb29696316cd9d4e894044e",
+    "devtools/qualify_installed_interactions.py": "abd84f23bfdff2f9f6ac42dab6363f7a046fbb5f0185f972239b68450d7d5fcd",
+    "devtools/public_api_inventory.py": "25679e6c12c8169f15915102fd6ba263543a6a8ee50bc9a499156b95bee6af88",
+    "devtools/qualify_interactions.py": "b33a51824878c19ffd220bbb49cda24a5ff5119301f49f773766d476dc76e515",
+    "devtools/qualify_interaction_families.py": "c621084e6bdc084034f407123263ae4483da7a9f1a3ca38e13b1151c58300c36",
+    "devtools/benchmarks/interactions_residency.py": "44650edb5548e80787ebb3ea5a4fcc77e20be2dd4f11995c5c6be24425117474",
+    "devtools/benchmarks/interactions_detector.py": "6db9b15874c27e7dd87b916cab21656753d276b87b20a350319e3319162fe5a2",
+    "tests/test_panel_action_dispatch.py": "56321135806a310a7815389a77128357a8e132f18290fc05b53b0f4676ce4ba5",
+    "tests/test_smonitor_integration.py": "717de1b130ef9024a906c89f5318b43465ccee119b05ef3661ad5fc259634f23",
+    "tests/test_support_integrations.py": "87cbd4c8bc9729bde3f25d9492ce94821f9434f2293478d2265ff7210e931c4f"
+  },
+  "library_source_comparison": {
+    "python_members": 603,
+    "different_members_except_generated_version": [],
+    "generated_version_exclusion": "molsysviewer/_version.py"
+  },
+  "scientific_environment": {
+    "python": "3.14.7 | packaged by conda-forge | (main, Sep  2 2026, 21:08:32) [GCC 15.3.0]",
+    "packages": {
+      "molsysviewer": "0.23.4+69.g1cf7826d.dirty",
+      "molsysmt": "0.22.4+122.g396e6979f",
+      "numpy": "2.5.3",
+      "pandas": "3.0.6",
+      "rdkit": "2026.3.6",
+      "h5py": "3.16.0",
+      "argdigest": "0.13.0",
+      "depdigest": "0.12.0",
+      "pyunitwizard": "0.27.0",
+      "smonitor": "0.18.0",
+      "pytest": "9.1.1",
+      "pytest-receptor": "1.2.0"
+    }
+  },
+  "development_environment": {
+    "python": "3.14.7 | packaged by conda-forge | (main, Sep  2 2026, 21:08:32) [GCC 15.3.0]",
+    "packages": {
+      "molsysviewer": "0.23.4+69.g1cf7826d.dirty",
+      "molsysmt": "0.22.4+122.g396e6979f",
+      "numpy": "2.4.6",
+      "pandas": "3.0.6",
+      "rdkit": "2026.3.6",
+      "h5py": "3.16.0",
+      "argdigest": "0.13.0",
+      "depdigest": "0.12.0",
+      "pyunitwizard": "0.27.0",
+      "smonitor": "0.18.0",
+      "pytest": "9.1.1",
+      "pytest-receptor": "1.2.0",
+      "build": "1.6.1",
+      "setuptools": "84.0.0",
+      "versioningit": "3.3.0",
+      "wheel": "0.48.0",
+      "mdtraj": "1.11.1.post2",
+      "tables": "3.11.1",
+      "imageio": "2.38.0",
+      "scipy": "1.18.1"
+    }
+  },
+  "environment_paths": {
+    "scientific": "/tmp/msv-provider-review-pandas3-env-20261002",
+    "development": "/tmp/msv-provider-invalidation-dev-env-20261002"
+  },
+  "checks": {
+    "initial_targeted": {
+      "junit": "/tmp/msv-provider-invalidation-targeted-20261002.xml",
+      "sha256": "d69c6f77a5f124adcf6bdfdd845684c2dc846ce2fbf56f4d7d47a3d3fdf2889d",
+      "tests": 16,
+      "passed": 15,
+      "failure": 1,
+      "error": 0,
+      "skipped": 0
+    },
+    "corrected_projection": {
+      "junit": "/tmp/msv-provider-invalidation-targeted-corrected-20261002.xml",
+      "sha256": "da0426a450d85cdaa2ea88792849035a70c88130a003bb0cb6ae6ce4857dbc6c",
+      "tests": 19,
+      "passed": 19,
+      "failure": 0,
+      "error": 0,
+      "skipped": 0
+    },
+    "hardened_imports": {
+      "junit": "/tmp/msv-provider-invalidation-imports-hardened-20261002.xml",
+      "sha256": "a1e415123d1df06d7a27e316fc09b49ad5256c53a3f50c775b653172776a7e70",
+      "tests": 3,
+      "passed": 3,
+      "failure": 0,
+      "error": 0,
+      "skipped": 0
+    },
+    "full_installed_attempt": {
+      "junit": "/tmp/msv-provider-invalidation-installed-full-20261002.xml",
+      "sha256": "58a13eb4010ddcb67adf486b4c859800ca88041114cf551e83491cbfc47a49f9",
+      "tests": 2596,
+      "passed": 2482,
+      "failure": 9,
+      "error": 78,
+      "skipped": 27
+    },
+    "correction_selection": {
+      "junit": "/tmp/msv-provider-invalidation-installed-corrections-20261002.xml",
+      "sha256": "067ff5ac80ecfa8e348cbfe739ea9d9c8bfd76ab0ec17f67e2f385e3817a9a2a",
+      "tests": 309,
+      "passed": 307,
+      "failure": 1,
+      "error": 0,
+      "skipped": 1
+    },
+    "readme_completed": {
+      "junit": "/tmp/msv-provider-invalidation-readme-corrected-20261002.xml",
+      "sha256": "5d088f213857666bcff03282d58ff1e38468af1ae9599ed770aac2903bd138e3",
+      "tests": 3,
+      "passed": 3,
+      "failure": 0,
+      "error": 0,
+      "skipped": 0
+    },
+    "final_interactions": {
+      "junit": "/tmp/msv-provider-invalidation-interactions-final-20261002.xml",
+      "sha256": "51d8639489557f1bac02f6918c15d8b079a917d23c257422b2118087b368da85",
+      "tests": 94,
+      "passed": 94,
+      "failure": 0,
+      "error": 0,
+      "skipped": 0
+    }
+  },
+  "latest_correction_union": {
+    "unique_cases": 310,
+    "outcomes": {
+      "passed": 309,
+      "failed": 0,
+      "error": 0,
+      "skipped": 1
+    }
+  },
+  "initial_targeted_diagnosis": [
+    "Surviving occurrence identifiers can be reassigned by the replacement analysis; assert new result identifiers and unchanged geometry/chemistry instead of old identifiers.",
+    "Benchmark helper prepended the checkout and shadowed distribution metadata; scientific fixture tools now respect installed mode."
+  ],
+  "full_attempt": {
+    "exit_code": 1,
+    "seconds": 380.1,
+    "log": "/tmp/msv-provider-invalidation-installed-full-20261002.log",
+    "diagnosis": [
+      "78 setup errors and one CLI failure: inventory assumed function source lived under the checkout.",
+      "Four relative-path source checks assumed checkout cwd.",
+      "Build, imageio and MDTraj unavailable in the bounded scientific environment.",
+      "Final ambient distribution discovery returned inherited public MolSysMT metadata before the post-test module scan. The verifier now resolves one distribution under its own installation and separately checks every loaded scientific module."
+    ],
+    "second_full_run": false
+  },
+  "corrections": [
+    "Inventory resolves source and digesters from the imported package, with stable package-relative paths.",
+    "Source audit tests anchor paths to their own checkout location.",
+    "A separate public development-dependency environment includes MDTraj/PyTables, build and imageio; its NumPy 2.4.6 satisfies MDTraj. Scientific qualification keeps NumPy 2.5.3.",
+    "The corrected 310-case selection has 309 unique passes and one absence-path skip; the README rerun repeats one already-passing case.",
+    "Three installed import guards pass, including real metadata shadowing and real source-module rejection.",
+    "The final five-module scientific selection passes all 94 cases with the same installed Viewer/provider artifacts."
+  ],
+  "skip_limits": [
+    "Full attempt: 27 skips; unavailable PySide6, imageio and external/GPU/platform/template cases are not qualification.",
+    "Correction selection: one skip of the imageio-absent branch because imageio is now installed."
+  ],
+  "repository_sync": {
+    "before_head": "1cf7826d4c343bb9f517f2244a4f7ca83f909c52",
+    "after_head": "f2b148722e32e2f83bc690e51e6aa622b2e31294",
+    "method": "fast-forward of remote suite-guide/README documentation commit",
+    "worktree_backup": "/tmp/msv-before-remote-sync-20261002.tar.gz",
+    "preserved_file_hashes": 326,
+    "worktree_status_preserved": true
+  },
+  "remaining": [
+    "Compatible published provider and proven feature floor",
+    "Committed candidate with exact installed/core/hosted qualification",
+    "Public documentation last"
+  ],
+  "limits": [
+    "Full attempted run remains failed; bounded corrections do not constitute a second green full run.",
+    "No new browser/core lane or cross-platform qualification in this task; previous six packaged Mol* cases remain separately recorded.",
+    "No production library change, product commit, push, provider checkout mutation or release."
+  ],
+  "maintained_evidence_validation": {
+    "reporting_protocol": {
+      "passed": 148,
+      "exit_code": 0,
+      "junit": "/tmp/msv-provider-invalidation-reporting-final-20261002.xml",
+      "sha256": "b6bbc27071d846a1f349c29710a84427f09485052d98a9c6e469639f01a9e683"
+    },
+    "ruff": "passed",
+    "source_hashes": "verified",
+    "generated_indexes": "current"
+  }
+}

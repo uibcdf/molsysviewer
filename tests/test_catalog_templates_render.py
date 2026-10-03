@@ -38,6 +38,13 @@ def _literals(template):
     return [text.strip() for text, _, _, _ in Formatter().parse(template) if text.strip()]
 
 
+def _example_context(template):
+    # Milliseconds are numbers at the dynamic-region emission site. String sentinels
+    # cannot exercise numeric format specifications such as :.2f.
+    numeric_context = {"elapsed_ms": 12.25, "budget_ms": 5.0}
+    return {name: numeric_context.get(name, f"<{name}>") for name in _placeholders(template)}
+
+
 def test_catalog_and_messages_are_not_empty():
     # Guards the guard: were MESSAGES or CATALOG ever emptied, every parametrised case
     # below would silently vanish and this file would assert nothing.
@@ -47,7 +54,7 @@ def test_catalog_and_messages_are_not_empty():
 @pytest.mark.parametrize("key", KEYS)
 def test_template_renders_its_own_words(key):
     template = MESSAGES[key]
-    extra = {name: f"<{name}>" for name in _placeholders(template)}
+    extra = _example_context(template)
     rendered = message_from_catalog(key, extra=extra)
 
     assert rendered, (
@@ -65,10 +72,15 @@ def test_template_substitutes_every_placeholder(key):
     names = _placeholders(template)
     if not names:
         pytest.skip("template has no placeholders")
-    extra = {name: f"<{name}>" for name in names}
+    extra = _example_context(template)
     rendered = message_from_catalog(key, extra=extra)
-    for name in names:
-        assert f"<{name}>" in rendered, (
+    formatter = Formatter()
+    for _, name, spec, conversion in formatter.parse(template):
+        if not name:
+            continue
+        value = formatter.convert_field(extra[name], conversion)
+        expected = formatter.format_field(value, spec)
+        assert expected in rendered, (
             f"catalog entry {key!r} did not substitute {{{name}}}; the detail the caller "
             f"passed in `extra` never reached the user"
         )

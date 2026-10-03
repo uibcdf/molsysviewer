@@ -19,7 +19,7 @@ import pytest
 from ipywidgets.widgets.widget import _instances
 
 import molsysviewer as msv
-from conftest import _close_registered_molsysviewer_widgets  # noqa: E402 - pytest puts tests/ on the path
+from tests.conftest import _close_registered_molsysviewer_widgets
 
 
 @pytest.fixture

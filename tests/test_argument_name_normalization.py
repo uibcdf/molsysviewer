@@ -115,38 +115,15 @@ def test_the_whole_gets_the_synonyms_too(view):
     )
 
 
-def test_a_pure_forwarder_needs_no_table_of_its_own(view):
-    """`Whole.get` passes `skip_digestion` through rather than forcing it.
-
-    So `view.get` digests on its behalf and the bare names work without `whole.get`
-    appearing in any table. Pinned because adding it would look like a fix and would
-    instead mean renaming twice.
-    """
+def test_a_named_query_preserves_provider_aliases(view):
+    """Both the local public boundary and scientific provider preserve aliases."""
     assert list(view.whole.get(element="group", index=True)) == list(view.whole.get(element="group", group_index=True))
 
 
 def test_every_method_that_forwards_undigested_kwargs_has_a_table(registry):
-    """The membership rule is structural, so it can be re-derived instead of trusted.
-
-    A method that digests here and forwards `**kwargs` onward with `skip_digestion=True`
-    is the last layer that can rename them. If one acquires that shape and nobody adds it
-    to a table, nothing renames its arguments and nothing says so — which is precisely how
-    the mechanism this replaced stayed broken. Two exemptions, both deliberate:
-    `convert` forwards conversion options rather than attribute names, and the shape
-    helpers forward representation parameters.
-    """
+    """Every digested molecular attribute-query wrapper declares scoped aliases."""
     import ast
     from pathlib import Path
-
-    # Forwarding undigested kwargs is only a problem when those kwargs are *attribute
-    # names*. These forward conversion options, representation parameters and shape
-    # parameters, none of which the synonym tables touch.
-    exempt = {
-        ("molsysviewer/viewer/molsysmt_interface.py", "convert"),
-        ("molsysviewer/shapes/__init__.py", "add_sphere"),
-        ("molsysviewer/shapes/__init__.py", "add_topomt_feature"),
-        ("molsysviewer/shapes/pharmacophore.py", "add_pharmacophore_features"),
-    }
 
     root = Path(__file__).resolve().parents[1]
     delegators = set()
@@ -158,15 +135,14 @@ def test_every_method_that_forwards_undigested_kwargs_has_a_table(registry):
                 continue
             if not any("digest" in ast.unparse(d) for d in node.decorator_list):
                 continue
-            source = ast.unparse(node)
-            if "**kwargs" in source and "skip_digestion=True" in source:
-                relative = path.relative_to(root).as_posix()
-                if (relative, node.name) not in exempt:
-                    delegators.add(
-                        f"molsysviewer.{path.stem}.{node.name}"
-                        if path.stem != "molsysmt_interface"
-                        else f"molsysviewer.viewer.{node.name}"
-                    )
+            delegates_attributes = any(
+                isinstance(call, ast.Call) and isinstance(call.func, ast.Attribute)
+                and isinstance(call.func.value, ast.Name) and call.func.value.id == "msm"
+                and call.func.attr == "get" and any(kw.arg is None for kw in call.keywords)
+                for call in ast.walk(node)
+            )
+            if delegates_attributes:
+                delegators.add(f"molsysviewer.{path.stem}.{node.name}")
 
     covered = {table["applies_to"] for table in describe_normalization(registry)}
 
@@ -198,26 +174,18 @@ def test_a_real_atom_indices_argument_survives_untouched(view):
     assert list(view.whole.select(selection="atom_index==[0,1]")) == [0, 1]
 
 
-def test_the_normalization_package_is_empty_and_says_why():
-    """The two tables are gone, and their absence is the claim being made.
-
-    They scoped MolSysMT's synonym and bare-name tables to eight callers, and existed
-    only because those callers digested here and forwarded with `skip_digestion=True` —
-    the last layer that could rename anything. `uibcdf/molsysviewer#71` removed that
-    shape, so MolSysMT renames what it is about to consume.
-
-    Pinned because a table reappearing is not a bug in itself: it means a method acquired
-    that shape again, and *that* is what needs looking at.
-    """
-    from argdigest.core.function_loader import load_normalization
-
-    registry = load_normalization("molsysviewer._private.argdigest.normalization")
-    tables = describe_normalization(registry) if registry is not None else []
-
-    assert tables == [], (
-        "normalization tables are back. A method somewhere digests its own arguments and "
-        f"forwards them with skip_digestion=True; find it before trusting the table: {tables}"
-    )
+def test_normalization_tables_are_scoped_to_molecular_queries(registry):
+    from molsysmt.attribute import get_argument_aliases
+    contract = get_argument_aliases()
+    assert contract["schema_version"] == 1
+    tables = describe_normalization(registry)
+    assert {table["applies_to"] for table in tables} == {
+        "molsysviewer.whole.get", "molsysviewer.regions.get",
+    }
+    for caller in ("molsysviewer.whole.get", "molsysviewer.regions.get"):
+        scoped = [table for table in tables if table["applies_to"] == caller]
+        assert next(table for table in scoped if table["when"] is None)["aliases"] == contract["attribute_synonyms"]
+        assert {table["when"]["element"]: table["aliases"] for table in scoped if table["when"]} == contract["element_attribute_aliases"]
 
 
 @pytest.mark.parametrize(

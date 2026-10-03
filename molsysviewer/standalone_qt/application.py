@@ -7,6 +7,9 @@ from pathlib import Path
 from typing import Any, Sequence
 from urllib.parse import urlsplit
 
+from smonitor import signal
+
+from .._private.argdigest import digest
 from ..standalone import build_standalone0_html
 from .menus import _install_menu_bar  # noqa: F401 - resolved by name, see above
 
@@ -224,6 +227,8 @@ def _get_helper(name: str) -> Any:
     return globals()[name]
 
 
+@signal()
+@digest()
 def create_standalone_qt0_window(
     molecular_system: Any,
     output_filename: str | None = None,
@@ -242,6 +247,8 @@ def create_standalone_qt0_window(
     app_argv: Sequence[str] | None = None,
     width: int = 1440,
     height: int = 960,
+
+    skip_digestion: bool = False,
 ) -> dict[str, Any]:
     qt = _get_helper("_import_qt")()
     QApplication = qt["QApplication"]
@@ -373,6 +380,8 @@ def create_standalone_qt0_window(
     }
 
 
+@signal()
+@digest()
 def launch_standalone_qt0(
     molecular_system: Any,
     output_filename: str | None = None,
@@ -392,6 +401,8 @@ def launch_standalone_qt0(
     width: int = 1440,
     height: int = 960,
     exec_app: bool = True,
+
+    skip_digestion: bool = False,
 ) -> dict[str, Any]:
     m = sys.modules.get("molsysviewer.standalone_qt")
     create_func = (

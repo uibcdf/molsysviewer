@@ -49,7 +49,23 @@ documents, and historical audits.
   **Generated**; regenerate with `python devtools/capability_audit.py --write`. Read it
   before writing any claim about what MolSysViewer does.
 - [`path_to_1_0.md`](path_to_1_0.md): release gate toward `1.0.0`.
+- [`release_gate_evidence.md`](release_gate_evidence.md): local exact-candidate
+  staging/public/hosted evidence checks and bounded pre-1.0 exception reporting.
+- [`dependency_contract.md`](dependency_contract.md): canonical requirements,
+  secondary packaging/environment routes and installed source-provider checks.
 - [`roadmap.md`](roadmap.md): current execution priorities.
+- [`interactions_pre_1_0_plan.md`](interactions_pre_1_0_plan.md): approved
+  bounded Interactions sequence; the active `uibcdf/molsysviewer#114`
+  proposal records the experimental Python, renderer and Studio implementation.
+- [`interactions_performance.md`](interactions_performance.md): measured combined
+  coordinate/analysis residency, real detector timing and sparse queries;
+  published-provider and larger GPU qualification remain open.
+- [`interactions_qualification.md`](interactions_qualification.md): real scientific
+  query/geometry, H5MSM/session and calculated-link browser evidence, with the
+  explicit published-provider boundary.
+- [`installed_artifact_qualification.md`](installed_artifact_qualification.md):
+  current wheel with public dependencies, isolated imports and offline HTML
+  rendering; compatible Interactions publication and final candidate remain pending.
 - [`pending_bugs/`](pending_bugs/): confirmed unresolved defects.
 - [`pending_proposals/`](pending_proposals/): active proposals, with its own
   indexed status table.
@@ -76,6 +92,7 @@ Git retains the plan.
 - [`js_runtime_build_and_version_sync.md`](js_runtime_build_and_version_sync.md)
 - [`load_modes_and_append_structures_status.md`](load_modes_and_append_structures_status.md)
 - [`python_js_boundary_audit_2026_07.md`](audits/python_js_boundary_audit_2026_07.md)
+- [`python_ecosystem_policy_adoption.md`](python_ecosystem_policy_adoption.md): independent support/tooling review states and their evidence.
 - [`pytest_receptor.md`](pytest_receptor.md)
 - [`smonitor.md`](smonitor.md)
 

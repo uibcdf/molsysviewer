@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 from typing import Any, Dict
 
+from smonitor import signal
+
 from .._private.argdigest import digest
 
 try:
@@ -22,6 +24,7 @@ See :func:`load_user_presets` for the expected file structure.
 """
 
 
+@signal()
 @digest()
 def load_user_presets(path: str | Path, skip_digestion: bool = False) -> Dict[str, Dict[str, Any]]:
     """Load user presets from a JSON or YAML file into ``user_presets``.

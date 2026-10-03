@@ -1,0 +1,233 @@
+{
+  "schema": "molsysviewer.public-workflow-evidence/1",
+  "date": "2026-10-02",
+  "issues": [
+    "uibcdf/molsysviewer#142",
+    "uibcdf/molsysviewer#143",
+    "uibcdf/molsysviewer#144",
+    "uibcdf/molsysviewer#145"
+  ],
+  "implementation_status": "working-tree implemented; partial pending integration and supported-candidate qualification",
+  "viewer_head": "f2b148722e32e2f83bc690e51e6aa622b2e31294",
+  "provider": {
+    "commit": "396e6979f3f686b110431f18bba0d41933ce71e2",
+    "version": "0.22.4+122.g396e6979f",
+    "kind": "clean experimental installed wheel, not public provider certification"
+  },
+  "environment": {
+    "interpreter": "/tmp/msv-provider-invalidation-dev-env-20261002/bin/python",
+    "python": "3.14.7",
+    "pandas": "3.0.6",
+    "numpy": "2.4.6",
+    "viewer": "source via PYTHONPATH",
+    "provider": "installed native site-packages",
+    "CONDA_PREFIX": "/tmp/msv-installed-gate-20261001",
+    "chromium": "/usr/bin/google-chrome",
+    "node": "24.11.1"
+  },
+  "python_runs": {
+    "focused_initial": {
+      "tests": 87,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 87,
+      "seconds": 27.911,
+      "started": "2026-10-02T17:01:22.637475-06:00",
+      "junit_path": "/tmp/msv-public-closure-targeted-page-action-fix-20261002.xml",
+      "junit_sha256": "112aa1e79877052003e94d961fd0f98fef7bd2188fb1366ce1735c406c71d2da"
+    },
+    "python_full_once": {
+      "tests": 2622,
+      "failures": 20,
+      "errors": 0,
+      "skipped": 26,
+      "passed": 2576,
+      "seconds": 323.385,
+      "started": "2026-10-02T17:03:19.204190-06:00",
+      "junit_path": "/tmp/msv-public-closure-full-20261002.xml",
+      "junit_sha256": "99e009d9ce7be783555e7323fa3cf569ec1ac47349023ec9508c0372349c6803",
+      "failed_cases": [
+        "tests.test_exported_page_opens_from_disk::test_a_self_contained_export_renders_with_no_server_and_no_network",
+        "tests.test_exported_page_opens_from_disk::test_the_exported_file_is_the_only_file_needed",
+        "tests.test_exported_page_opens_from_disk::test_a_scene_from_another_release_says_so",
+        "tests.test_exported_page_opens_from_disk::test_the_notice_names_both_versions",
+        "tests.test_exported_page_opens_from_disk::test_a_matching_pair_stays_quiet",
+        "tests.test_exported_page_opens_from_disk::test_the_studio_says_it_cannot_act_here",
+        "tests.test_exported_page_opens_from_disk::test_failed_scene_restoration_never_declares_the_export_rendered",
+        "tests.test_internal_render_worker_host::test_internal_host_authenticates_registration_and_preserves_binary_frames",
+        "tests.test_internal_render_worker_host::test_internal_host_rejects_a_worker_with_the_wrong_session_identity",
+        "tests.test_preview_server::test_preview_serves_the_directory",
+        "tests.test_preview_server::test_preview_moves_on_when_the_port_is_taken",
+        "tests.test_remote_cli::test_client_rendering_cli_runs_a_real_demo_session_and_emits_json",
+        "tests.test_remote_cli::test_foreground_server_process_reports_ready_and_stops",
+        "tests.test_remote_cli::test_load_worker_and_bind_failures_have_distinct_exit_codes",
+        "tests.test_remote_session_service::test_client_rendering_uses_the_same_authenticated_gateway_without_a_worker",
+        "tests.test_remote_session_service::test_session_auth_registration_signaling_input_and_command_share_one_identity",
+        "tests.test_remote_session_service::test_two_loopback_sessions_keep_cookies_and_artifacts_isolated",
+        "tests.test_remote_session_service::test_rejected_websocket_peers_do_not_poison_health_or_consume_the_client_slot",
+        "tests.test_remote_session_service::test_authentication_failures_are_bounded_without_locking_out_the_valid_token",
+        "tests.test_remote_session_service::test_auth_and_client_websocket_have_limits_separate_from_molecular_uploads"
+      ],
+      "failure_scope": "20 sandbox-denied socket/browser cases in five modules; all subsequently pass in the unsandboxed scoped run."
+    },
+    "sandbox_corrections": {
+      "tests": 54,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1,
+      "passed": 53,
+      "seconds": 51.383,
+      "started": "2026-10-02T17:13:06.281444-06:00",
+      "junit_path": "/tmp/msv-public-closure-environment-corrections-20261002.xml",
+      "junit_sha256": "885acd802c3cd02a50172413d1577faba7c0be3ddfba78a690e515f0ef7e6fa1"
+    },
+    "public_inventory_and_final_regressions": {
+      "tests": 236,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 236,
+      "seconds": 21.809,
+      "started": "2026-10-02T17:17:26.073451-06:00",
+      "junit_path": "/tmp/msv-public-closure-final-focused-20261002.xml",
+      "junit_sha256": "8407eadf1d05fce0fed5e8260b6811021277431cac4ba55421813f68c2ae5719"
+    },
+    "plot_axis_guards": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 6,
+      "seconds": 6.81,
+      "started": "2026-10-02T17:24:07.177783-06:00",
+      "junit_path": "/tmp/msv-public-closure-axis-check-20261002.xml",
+      "junit_sha256": "89eb1a9bcec29c7c396eb049780f400e74a40e9b688937ba69b7bf07d0a0ffc3"
+    },
+    "load_edit_axis_integration": {
+      "tests": 38,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 38,
+      "seconds": 14.937,
+      "started": "2026-10-02T17:27:54.140787-06:00",
+      "junit_path": "/tmp/msv-public-closure-load-axis-integration-20261002.xml",
+      "junit_sha256": "82ee88a0292cd0ad4cb799adbdb7b0d94fde436bb9ce2a52a17ce645db1d0990"
+    }
+  },
+  "javascript": {
+    "complete_attempt": {
+      "passed": 309,
+      "failed": 3,
+      "log": "/tmp/msv-public-closure-js-unsandboxed-20261002.log",
+      "sha256": "a0ed7cf08925adfdba93bbbf5695fb895fb3ed6ae81c61813761d7b1a60262c7"
+    },
+    "scoped_corrections": {
+      "passed": 6,
+      "failed": 0,
+      "changes": [
+        "two obsolete hide expectations",
+        "declared trajectory_plot_hidden event"
+      ],
+      "log": "/tmp/msv-public-closure-js-corrections-20261002.log",
+      "sha256": "fd498b53a6f647114d57b4dbe7b896eab795dd7e73804e9a16db36f3685421db"
+    },
+    "full_final_suite_claimed": false
+  },
+  "browser": {
+    "trajectory_plot": {
+      "exit_code": 0,
+      "result": "[E2E] passed",
+      "source": "molsysviewer/js/tests/e2e/trajectory-plot.e2e.ts"
+    },
+    "interactions_subpanel": {
+      "exit_code": 0,
+      "result": "[E2E interactions-subpanel] passed",
+      "log_sha256": "8ea62c1f71e6850a28cd0e9a77e12b662aac8fb4a602427a3578fd806419bbe5",
+      "source": "molsysviewer/js/tests/e2e/interactions-subpanel.e2e.ts",
+      "checks": [
+        "observation select/focus with real provider bridge",
+        "20 calculated/restored family scenes",
+        "17 typed calculation forms"
+      ]
+    },
+    "strict_browser_launch": true,
+    "explicit_skip": false,
+    "limit": "headless software WebGL correctness; no GPU-throughput or full native-platform qualification"
+  },
+  "checks": {
+    "runtime_build": "passed, build:runtime only",
+    "harness_build": "passed",
+    "typescript": "npx tsc --noEmit exit 0",
+    "ruff_reviewed_python_files": "passed",
+    "public_callables": 713,
+    "digested_callables": 713,
+    "declared_digesters": 437,
+    "missing_bypasses_or_digesters": 0,
+    "reporting_protocol": {
+      "passed": 161,
+      "failed": 0,
+      "seconds": 1.14,
+      "junit_path": "/tmp/msv-public-closure-reporting-20261002.xml",
+      "junit_sha256": "ae6a9cf985952cfad6543a13fb11dbaf6e7a1f82dc8bd87b1f5a7a1450a76fde"
+    },
+    "github_devguide_sync": {
+      "exit_code": 0,
+      "documents": 36,
+      "output": "36 documents agree with the board",
+      "new_issue_state": "partial",
+      "issue_body_comments": "none added after opening"
+    }
+  },
+  "source_sha256": {
+    "devtools/public_api_inventory_baseline.json": "a7f8d2b671a1dff5e5c63cca2f6406b2babea5ead8de798847443f077e61226e",
+    "molsysviewer/_private/argdigest/argument/analysis_names.py": "e99eee3d35e1d596dcc9e93a2dba2876a3ba890b3f348e82aaffa7d611934aba",
+    "molsysviewer/_private/argdigest/argument/analysis_revision.py": "ccfa7249b551b356cf0fa276e425cf27ae8d1d4e778726bf729e2feef5cd7c30",
+    "molsysviewer/_private/argdigest/argument/occurrence_index.py": "3717e949bd856628a2ad4b981a2433a1a99efb2d84e6445fa08638319c69af6a",
+    "molsysviewer/_private/argdigest/argument/query_revision.py": "01d87b122f7c4a127d1b019d178f48142c75c06fb825d20b2e75ad70a42607b9",
+    "molsysviewer/_private/argdigest/argument/series.py": "2d82d6c493358f213595a9b856d08823dc4dc8ed6141296d56841c9fcced028f",
+    "molsysviewer/interactions.py": "928fa7614ecd277ca417551a004e43159d75516dd8c9212671c33bfe7a3691a9",
+    "molsysviewer/js/src/managers/handlers/interaction-handlers.ts": "c3fbe7cb1e11de0e53dd2fcefc681891c8dda291f17575c86cf67248d85ab3c9",
+    "molsysviewer/js/src/managers/viewer-controller.ts": "0bcdccf6b28fbfb3a4ea58e90155900689addbc75707a081f3d6b6e8f412011e",
+    "molsysviewer/js/src/ui/panels/interactions-panel.ts": "221a2f32b3faf97fb20b07b82122882ba468affcd35b5a7cd31803d1d6915be5",
+    "molsysviewer/js/src/ui/panels/types.ts": "03001045964e700e4f38fb1dd276f74f51946ffb673c55f2fc3bf6a29f789346",
+    "molsysviewer/js/src/ui/trajectory-plot-overlay.ts": "8c5e79246b193388448e2c6fab711c246bd2b3f4fbe3808b7dfe2ce66cb56ce7",
+    "molsysviewer/js/tests/e2e/interactions-subpanel.e2e.ts": "f0785402a8417d9c816c0ad2ba118073abc7fd0069075c1df9f3ba37b0e52d02",
+    "molsysviewer/js/tests/e2e/trajectory-plot.e2e.ts": "9fef83c1d168ca9fd9d08293b0b78fd6bffa185d46330fd0a7a200aca8ee267b",
+    "molsysviewer/js/tests/unit/trajectory-plot-overlay.test.ts": "b9d88733409606e3b1da4d902798352a2f508646e1c4069987e27baa0f86bfc7",
+    "molsysviewer/loaders/load_molsysmt.py": "b30971f7bb6abf9839bb8fd6e3b35f2c0767121d40dd5f9695e30eae14567157",
+    "molsysviewer/runtime_actions.json": "d802fbd193ff34a76849e281ceaa1d22ed83227dfd99d2cc41f8d2c7026541d8",
+    "molsysviewer/tools/basic/_scene_transfer.py": "a499a46cf3c0358897c64f28be087ff8f8b20c5aefc225c90a7ffbd34245f899",
+    "molsysviewer/tools/basic/merge.py": "9aafc86229ee5b68c87bb9c7f545762d9b18c22b7a7a397fe337ea652991ef23",
+    "molsysviewer/trajectory_plot.py": "5a53cc64e64473197835145ee0669f5fff78979b258b26c211bdefb1fad3b09b",
+    "molsysviewer/viewer/core.py": "90cf76dfc9063c82f481e3b1c2974a7493e5994a80420b340c1a726e84e6a9f0",
+    "molsysviewer/viewer/load.py": "ca73aa15d1c7df73360da3e89a6880cd109a1b5fef74e3479ed3fba7994438a2",
+    "molsysviewer/viewer/panel_actions/interactions.py": "8571fc9c7e20cd54537a0d0feb235ba5d103aed62952a4e40564170e4b6d4a0f",
+    "molsysviewer/viewer/state.py": "4b6243cfe6b410eac2537880fc04df5aab9ea0395d3e5f4815007ee7a03ada89",
+    "tests/test_interactions_public_completion.py": "6ad697465298b383d28a68add8026b44ae9dc81585a1914fb22d098c7f25f29c",
+    "tests/test_interactions_scene.py": "ed37cb7e24f10f9fd32a0a4a61fd2f6b0b9eeb9e88afd91dee0a3227e2ae6a58",
+    "tests/test_trajectory_plot.py": "ff929281d346787bb6ea0be92653f06dae6ace8e8b0d28713171c6fa899b29d7",
+    "tests/test_trajectory_plot_lifecycle.py": "0b0b79a5ae5ca6718967fc4f29e332434e39e06814dd9881e7da884ac156a7cb",
+    "tests/test_trajectory_plot_series.py": "fcc3cabf9f8dccc7aeca0813c3b152349bca6ebd5c8dac252262eebe107dc451"
+  },
+  "preservation": {
+    "snapshot": "/tmp/msv-public-closure-before-20261002.tar.gz",
+    "manifest": "/tmp/msv-public-closure-before-20261002.json",
+    "preexisting_paths": 327,
+    "preexisting_paths_unchanged_at_record": 304,
+    "js_package_metadata_unchanged": true
+  },
+  "limitations": [
+    "No second full Python run; final axis guards and shared load/edit checks are later focused evidence.",
+    "Whole selected coordinate/analysis residency is not bounded by inspector paging.",
+    "Observation focus uses canonical positions, not observed periodic-image guides.",
+    "Save non-overwrite publication requires filesystem hard links; native platform qualification remains pending.",
+    "Compatible published provider, committed candidate, exact-candidate installed/core CI and final public documentation remain pending."
+  ],
+  "publication": {
+    "committed": false,
+    "pushed": false,
+    "released": false
+  }
+}

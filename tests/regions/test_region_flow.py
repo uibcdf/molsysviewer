@@ -149,18 +149,20 @@ def test_region_reset_representation_removes_own_visual_state():
     }
 
 
-def test_none_region_hide_and_show_warn_without_frontend_visibility_message():
-    view = _empty_view()
-    region = view.regions.add(atom_indices=[0, 1, 2], tag="logical", skip_digestion=True)
-    before = len(view._test_message_log)  # noqa: SLF001
-
-    with pytest.warns(UserWarning, match="no own representation to hide"):
-        region.hide(skip_digestion=True)
-    with pytest.warns(UserWarning, match="no own representation to show"):
-        region.show(skip_digestion=True)
-
-    assert len(view._test_message_log) == before  # noqa: SLF001
-    assert region._hidden is False  # noqa: SLF001
+def test_none_region_hide_and_show_emit_visibility_without_inventing_a_visual():
+    view = demo["dialanine"]
+    region = view.regions.add(atom_indices=[0, 1, 2], tag="logical")
+    with warnings.catch_warnings(record=True) as record:
+        warnings.simplefilter("always")
+        region.hide()
+        assert region.visible is False
+        region.show()
+    assert record == []
+    assert region.visible is True
+    assert region.representation is None and region.preset is None
+    visibility = [msg["op"] for msg in view._test_message_log  # noqa: SLF001
+                  if msg.get("tag") == "logical" and msg.get("op") in {"hide_region", "show_region"}]
+    assert visibility == ["hide_region", "show_region"]
 
 
 def test_new_region_with_visual_spec_preserves_representation_semantics():

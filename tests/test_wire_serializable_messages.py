@@ -107,7 +107,7 @@ def test_a_broad_sweep_of_the_public_api_stays_wire_safe():
     view.selections.add("sel", atom_indices=[0, 1, 2])
     view.selections.activate("sel")
     view.active_selection.set([3, 4])
-    view.annotations.add_annotation("note", atom_indices=[0], tag="ann", skip_digestion=True)
+    view.annotations.add("note", atom_indices=[0], tag="ann", skip_digestion=True)
     view.shapes.add_sphere(
         center=puw.quantity([0.0, 0.0, 0.0], "nm"),
         radius=puw.quantity(0.2, "nm"),
@@ -129,7 +129,7 @@ def test_the_popup_snapshot_is_wire_safe():
     view.regions.add("atom_index < 6", tag="reg")
     view.selections.add("sel", atom_indices=[0, 1])
     view.measurements.add_distance(selection_a=[0], selection_b=[10], tag="d1")
-    view.annotations.add_annotation("note", atom_indices=[0], tag="ann", skip_digestion=True)
+    view.annotations.add("note", atom_indices=[0], tag="ann", skip_digestion=True)
 
     for mode in ("canvas", "panel"):
         _assert_wire_safe(view.build_popup_scene_snapshot(mode), f"popup snapshot ({mode})")

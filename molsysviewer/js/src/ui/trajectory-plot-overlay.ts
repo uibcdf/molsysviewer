@@ -13,6 +13,7 @@ export interface TrajectoryPlotEvent {
 }
 
 export interface TrajectoryPlotOptions {
+    cards?: TrajectoryPlotOptions[];
     tag?: string;
     visible?: boolean;
     series?: TrajectoryPlotSeries[];
@@ -39,6 +40,12 @@ function formatValue(v: number): string {
     return v.toFixed(2);
 }
 
+function axisFraction(value: number, min: number, max: number): number {
+    if (min === max) return 0.5;
+    const scale = Math.max(Math.abs(min), Math.abs(max), 1);
+    return (value / scale - min / scale) / (max / scale - min / scale);
+}
+
 interface PlotCardEntry {
     tag: string;
     card: FloatingDataCard;
@@ -49,6 +56,7 @@ interface PlotCardEntry {
     nFrames: number;
     width: number;
     height: number;
+    xBounds?: [number, number];
 }
 
 /**
@@ -66,15 +74,21 @@ export class TrajectoryPlotOverlay {
         private readonly host: HTMLElement,
         private readonly onSeek: (frame: number) => void,
         private readonly onPopout?: (tag: string) => void,
+        private readonly onHide?: (tag: string) => void,
     ) {}
 
     set(options: TrajectoryPlotOptions | undefined): void {
-        const tag = options?.tag || "default";
-
-        if (!options || options.visible === false || !options.series || options.series.length === 0) {
-            this.hide(tag);
+        if (options?.cards) {
+            const retained = new Set(options.cards.map(card => card.tag || "default"));
+            for (const tag of this.entries.keys()) if (!retained.has(tag)) this.clear(tag);
+            for (const card of options.cards) this.set(card);
             return;
         }
+        if (!options || !options.series || options.series.length === 0) {
+            if (options?.visible === false) this.hide(options.tag); else this.clear(options?.tag);
+            return;
+        }
+        const tag = options?.tag || "default";
 
         let entry = this.entries.get(tag);
         const firstSeries = options.series[0];
@@ -98,7 +112,7 @@ export class TrajectoryPlotOverlay {
                 height,
                 left,
                 top,
-                onClose: () => this.hide(tag),
+                onClose: () => { this.hide(tag); this.onHide?.(tag); },
                 onPopout: this.onPopout ? () => this.onPopout!(tag) : undefined,
                 onResize: (w, h) => {
                     if (entry) {
@@ -124,7 +138,7 @@ export class TrajectoryPlotOverlay {
             entry.card.titleElement.textContent = resolvedTitle;
         }
 
-        entry.card.show();
+        if (options.visible === false) entry.card.hide(); else entry.card.show();
         this.renderEntry(entry);
         this.setFrame(this.currentFrame);
     }
@@ -137,6 +151,18 @@ export class TrajectoryPlotOverlay {
             return;
         }
 
+        const entry = this.entries.get(tag);
+        if (entry) {
+            entry.options = { ...entry.options, visible: false };
+            entry.card.hide();
+        }
+    }
+
+    private clear(tag?: string): void {
+        if (!tag) {
+            for (const key of Array.from(this.entries.keys())) this.clear(key);
+            return;
+        }
         const entry = this.entries.get(tag);
         if (entry) {
             entry.card.dispose();
@@ -176,24 +202,44 @@ export class TrajectoryPlotOverlay {
 
     private frameToX(frame: number, entry: PlotCardEntry): number {
         const leftMargin = 40;
-        const rightMargin = 12;
+        const rightMargin = 14;
         const plotW = Math.max(10, entry.width - leftMargin - rightMargin);
-        const denom = Math.max(entry.nFrames - 1, 1);
         const clamped = Math.max(0, Math.min(entry.nFrames - 1, frame));
-        return leftMargin + (clamped / denom) * plotW;
+        const [min, max] = this.xRange(entry);
+        const value = entry.options.x?.[clamped] ?? clamped;
+        return leftMargin + axisFraction(value, min, max) * plotW;
     }
 
     private xToFrame(px: number, entry: PlotCardEntry): number {
-        const leftMargin = 40;
-        const rightMargin = 12;
-        const plotW = Math.max(10, entry.width - leftMargin - rightMargin);
-        const denom = Math.max(entry.nFrames - 1, 1);
-        const ratio = (px - leftMargin) / plotW;
-        return Math.max(0, Math.min(entry.nFrames - 1, Math.round(ratio * denom)));
+        // Samples may be nonconsecutive, reversed or repeated. Nearest pixel
+        // position retains frame identity; ties keep the current frame if possible,
+        // otherwise choose the earliest frame in the card.
+        let chosen = 0;
+        let distance = Infinity;
+        for (let frame = 0; frame < entry.nFrames; frame++) {
+            const candidate = Math.abs(this.frameToX(frame, entry) - px);
+            if (candidate < distance - 1e-9 ||
+                (Math.abs(candidate - distance) <= 1e-9 && frame === this.currentFrame)) {
+                chosen = frame;
+                distance = candidate;
+            }
+        }
+        return chosen;
+    }
+
+    private xRange(entry: PlotCardEntry): [number, number] {
+        if (entry.xBounds) return entry.xBounds;
+        if (!entry.options.x?.length) return [0, Math.max(entry.nFrames - 1, 0)];
+        let min = Infinity;
+        let max = -Infinity;
+        for (const x of entry.options.x) { min = Math.min(min, x); max = Math.max(max, x); }
+        return [min, max];
     }
 
     private renderEntry(entry: PlotCardEntry): void {
         const opts = entry.options;
+        entry.xBounds = undefined;
+        entry.xBounds = this.xRange(entry);
         const body = entry.card.body;
         body.replaceChildren();
 
@@ -201,7 +247,6 @@ export class TrajectoryPlotOverlay {
         const height = Math.max(120, entry.height || body.clientHeight || 168);
 
         const M = { top: 24, right: 14, bottom: opts.x_label ? 28 : 20, left: 40 };
-        const plotWidth = Math.max(10, width - M.left - M.right);
         const plotHeight = Math.max(10, height - M.top - M.bottom);
 
         const svg = document.createElementNS(SVG_NS, "svg");
@@ -221,9 +266,7 @@ export class TrajectoryPlotOverlay {
             }
         }
         if (!isFinite(min) || !isFinite(max)) { min = 0; max = 1; }
-        if (min === max) { min -= 1; max += 1; }
-
-        const yOf = (v: number) => M.top + (1 - (v - min) / (max - min)) * plotHeight;
+        const yOf = (v: number) => M.top + (1 - axisFraction(v, min, max)) * plotHeight;
 
         // Axes frame path
         const axis = document.createElementNS(SVG_NS, "path");
@@ -241,7 +284,7 @@ export class TrajectoryPlotOverlay {
 
         // Event markers (vertical lines)
         for (const ev of opts.events ?? []) {
-            const x = M.left + (Math.max(0, Math.min(entry.nFrames - 1, ev.frame)) / Math.max(entry.nFrames - 1, 1)) * plotWidth;
+            const x = this.frameToX(ev.frame, entry);
             const line = document.createElementNS(SVG_NS, "line");
             line.setAttribute("x1", String(x));
             line.setAttribute("x2", String(x));
@@ -255,9 +298,8 @@ export class TrajectoryPlotOverlay {
 
         // Series polylines
         opts.series!.forEach((s, i) => {
-            const denom = Math.max(s.values.length - 1, 1);
             const pts = s.values
-                .map((v, idx) => `${M.left + (idx / denom) * plotWidth},${yOf(v)}`)
+                .map((v, idx) => `${this.frameToX(idx, entry)},${yOf(v)}`)
                 .join(" ");
             const poly = document.createElementNS(SVG_NS, "polyline");
             poly.setAttribute("points", pts);
@@ -286,8 +328,9 @@ export class TrajectoryPlotOverlay {
             t.setAttribute("transform", `rotate(-90 12 ${height / 2})`);
             svg.appendChild(t);
         }
-        svg.appendChild(this.text(M.left, height - M.bottom + 11, "0", "middle", "rgba(242,242,242,0.5)", 9));
-        svg.appendChild(this.text(width - M.right, height - M.bottom + 11, String(Math.max(entry.nFrames - 1, 0)), "middle", "rgba(242,242,242,0.5)", 9));
+        const [xMin, xMax] = this.xRange(entry);
+        svg.appendChild(this.text(M.left, height - M.bottom + 11, formatValue(xMin), "middle", "rgba(242,242,242,0.5)", 9));
+        svg.appendChild(this.text(width - M.right, height - M.bottom + 11, formatValue(xMax), "middle", "rgba(242,242,242,0.5)", 9));
 
         // Legend (multi-series only)
         if (opts.series!.length > 1) {
@@ -328,6 +371,6 @@ export class TrajectoryPlotOverlay {
     }
 
     dispose(): void {
-        this.hide();
+        this.clear();
     }
 }

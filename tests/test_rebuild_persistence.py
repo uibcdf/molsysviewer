@@ -6,7 +6,7 @@ pytest.importorskip("molsysmt")
 import molsysmt as msm
 from molsysviewer.demo import demo
 
-from _edit_helpers import apply_remove
+from tests._edit_helpers import apply_remove
 
 
 def test_rebuild_persistence_and_hierarchy():
@@ -21,7 +21,7 @@ def test_rebuild_persistence_and_hierarchy():
 
     # 2. Setup artifacts
     # Label on residue 2
-    view.annotations.add_annotation(text="LabelRes2", selection="group_index==2", tag="L2", skip_digestion=True)
+    view.annotations.add(text="LabelRes2", selection="group_index==2", tag="L2", skip_digestion=True)
     # Distance between atoms 10 and 11
     view.measurements.add_distance(selection_a=[10], selection_b=[11], tag="D10-11", skip_digestion=True)
     # Save selection for atoms 10, 11

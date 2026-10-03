@@ -22,7 +22,7 @@ with **no shims and no deprecation period**. (The one corpus still un-migrated i
 **Scope:** this document has two normative parts. The first governs how a
 **region** relates to the **whole**, to **colour**, and to **persisted state**.
 The second governs non-structural scene objects: shapes, annotations,
-measurements, and layers. Together they bind the public Python API, the
+measurements, interactions, and layers. Together they bind the public Python API, the
 JS↔Python protocol, Studio, session state, and every future surface.
 
 They exist because the codebase once had **two disagreeing sources of truth** about what is being
@@ -348,8 +348,8 @@ disagrees with them, **this table wins**. Read it before implementing §A or §B
 | Clause | Previous model | **In force under exclusive ownership** |
 |---|---|---|
 | §A.2 rule 2 (state **None**) | region has a component but no representation child; the whole paints its atoms | unchanged |
-| §A.3 (`hide()` on state-**None**) | no-op that warns | unchanged — a region that owns nothing has nothing to hide |
-| §A.4 (`show_only`) | delegates to `view.isolate`, reshapes the whole | hide every other region, and mask the whole **entirely**. No `isolate` call. *(A region cannot "own" atoms outside its own set; an earlier wording said so and was wrong.)* |
+| §A.3 (`hide()` on state-**None**) | no-op that warns | mask the region's atoms on **whole only**; `show()` releases its constraint (§A.3, amendment 2026-10-03) |
+| §A.4 (`show_only`) | delegates to `view.isolate`, reshapes the whole | hide other regions; mask whole entirely for Own/Inherit, or mask the complement for None (§A.4, amendment 2026-10-03). No `view.isolate` call. |
 | §B.2 (precedence) | region layer beats base layer | **subsumed**: an atom's colour is its owner's, full stop |
 | §B.4 (§ *what lies beneath*) | four-level resolution order | collapses to two: owner's layer, then owner's structural theme |
 | §B.5 (decorator theme) | required | still required, but only over the owner's own theme |
@@ -386,7 +386,8 @@ as this sentinel.
    `?? "cartoon"` fallbacks are removed.
 2. State **None** ⇒ the region has a Mol\* *component* (needed for `focus` and
    for index bookkeeping) but **no representation child**. Those atoms are
-   painted by the whole's representation, if the whole is visible.
+   painted by the whole's representation, if the whole is visible and no hidden
+   state-**None** region masks them (§A.3).
 3. State **Inherit** ⇒ the region gets its own representation whose *type* is
    the whole's current type (or preset), with the region's own `params`
    (`alpha`, `quality`, colour theme) applied on top.
@@ -401,26 +402,64 @@ Representation inheritance is **not** visibility inheritance. A region in state
 **Inherit** or **Own** has its own component and can be shown, hidden, isolated
 and focused independently of the whole.
 
-A region in state **None** has nothing of its own to hide. `Region.hide()` on it
-is a **no-op that must warn**, and the GUI disables the control with a tooltip.
-Hiding such a region "for real" would require subtracting its atoms from the
-whole's component — a larger redesign, explicitly **out of scope** (§Deferred).
+**Amended 2026-10-03, principal-maintainer decision within
+uibcdf/molsysviewer#151:** a region in state **None** can be hidden without
+creating a representation. `hide()` masks its atoms on **whole only**; `show()`
+releases that region's constraint. Neither changes another region's
+representations or any shape, annotation, measurement or interaction visual.
+The Studio visibility control is enabled and explains this scope.
+
+Whole's effective full-transparency mask is the union of visible opaque owners,
+the atoms of all hidden state-**None** regions, and any active `show_only()`
+whole mask. During explicit isolation, §A.4 replaces the hidden-base constraints
+with the isolation mask. Showing one base region cannot release an overlapping hidden base
+region's constraint or the opaque ownership mask. It cannot show a globally
+hidden whole. Focus fade is composed beneath full hiding, and its value is
+restored when the last full-hiding constraint is released.
+
+Python's existing region `hidden` field remains the only authority. The mask is
+derived, never a separately mutable/saved atom mask. Session/state/history,
+rebuild, layer visibility and dynamic membership reuse that field. Deleting a
+hidden base region releases its constraint. Regions keep their hidden flag when
+their representation changes: **None → Own/Inherit** releases the base mask and
+hides the new representations; **Own/Inherit → None** masks the current atoms on
+whole instead. The whole may become visible beneath a hidden represented region,
+as required by the existing fallback contract.
 
 ### A.4 Operations that assume an own visual
 
 > **Superseded in part by Decision 2.** `show_only()` becomes pure ownership and no longer
 > delegates to `view.isolate`. See the clause-replacement table above.
 
-`show()`, `hide()`, `show_only()` and the style composer all act on a region's own
-representation. On a state-**None** region:
+`show()` and `hide()` follow §A.3. The style composer still requires a region's
+own representation. On a state-**None** region:
 
-- `show()` / `hide()` are **no-ops that warn** (§A.3).
-- `show_only()` (isolate) delegates to `view.isolate(selection=atom_indices)`, which acts on
-  the whole rather than on the region's component. It therefore **still works** in state
-  **None** — it is the one visibility operation that does — because it reshapes what the whole
-  paints. This asymmetry must be documented in the GUI, not hidden: `Isolate` stays enabled,
-  `Hide` does not.
+- `show()` / `hide()` release/apply a constraint on whole only (§A.3).
+- **`show_only()` amended 2026-10-03, maintainer approval within #151:** hide
+  other regions, mark the selected region as isolated and show its current atom
+  set through whole by masking its complement. This explicit isolation operation
+  activates whole if necessary; ordinary `show()` still cannot activate whole.
+  Other hidden base regions cannot subtract overlapping selected atoms during
+  isolation. Shapes, annotations, measurements and interactions are unchanged.
+  Own/Inherit isolation continues to mask whole entirely and show the region's
+  independent representations.
 - `set_representation(alpha=…)` without a type is meaningless; the caller wants `"inherit"`.
+
+Isolation belongs to one region, identified by its existing UID and recipe.
+An optional `show_only: true` in its v2 record preserves that choice without
+duplicating atom lists. State with several isolated regions, a hidden isolated
+region or a non-boolean flag is rejected before mutation. Old documents without
+the field remain valid. State/session/history, copy/extract, rebuild and
+popup/static projection restore the isolation against current/remapped membership.
+The `show_only_region` wire operation's `restore_only` flag applies the mask
+without hiding regions added later or changing saved whole visibility.
+
+Rename retains isolation. Deleting/hiding the selected region, showing any
+region, or bulk show/hide releases it; other hidden flags are not reset by that
+release. Representation changes retain the selected region and switch the
+derived whole mask according to None versus Own/Inherit. Dynamic empty
+membership masks all of whole. Whole show/hide remains an independent setting
+after the initial explicit isolation operation.
 
 ### A.5 Transient regions
 
@@ -775,6 +814,14 @@ These are semantic changes to a **published** public API. Each is deliberate:
 
 | Change | Before | After |
 |---|---|---|
+| annotation creation (2026-09-30) | `add_annotation` plus alias `add` | only `view.annotations.add`, with the full named signature |
+| public digestion (2026-09-30) | exemptions and implicit bypass on some routes | every ordinary public function uses ArgDigest and explicit `skip_digestion=False` |
+| scene registries and handles (2026-09-30) | raw dictionary writes and reused handles could alter replacement objects | manager verbs own writes; retired handles raise; reacquire after restore |
+| coordinate edits (2026-09-30) | partial updates could retain stale geometry and analyses | edited structures invalidate derived analyses and refresh native geometry |
+| native interaction sets (2026-09-30) | no scene domain | `view.interactions`, separate named scientific data and tagged visual references |
+| Studio hydrogen-bond creation (2026-09-30) | Shapes claimed calculation while requiring explicit pair data | Calculate and create set in Interactions; explicit Python pair primitives remain |
+| interaction picks and detail replies (2026-09-30) | graphical primitive could be normalized as shape; replies used only analysis signature | typed interaction target, domain-specific context actions, filter/query revision and bounded preflight |
+| interaction state (2026-09-30) | absent | optional state-v2 `interaction_state_version: 1` and signed visual references |
 | `Region.reset_colors()` | wiped the canvas | clears the region's layer |
 | `Region.set_color_by_values(replace=True)` | replaced the canvas map | replaces within the region's layer |
 | `Whole.reset_colors()` | wiped the canvas | clears the base layer |
@@ -842,8 +889,8 @@ assert against the simulated plugin, not against the emitted message.
 
 ## Deferred (explicitly out of scope)
 
-- Hiding a state-**None** region by subtracting its atoms from the whole's
-  component.
+- Rebuilding whole's component to hide a state-**None** region. Whole-only
+  transparency masking is implemented by §A.3 without this geometry rebuild.
 - Per-representation parameters beyond the common set (`sizeFactor`,
   `ignoreHydrogens`, …).
 - Live/per-frame re-evaluated regions.
@@ -1044,7 +1091,7 @@ Two consequences, both structural:
    and annotation in the zombie state above.
 
 **The fix:** `import_state` must rebuild the model **through the managers**
-(`measurements.add_distance(...)`, `annotations.add_annotation(...)`, …) — the
+(`measurements.add_distance(...)`, `annotations.add(...)`, …) — the
 same public path a user takes — rather than replaying wire messages. That is
 Contract S2 applied to deserialisation: *the restore path is not allowed to reach
 past the public API either.*
@@ -1165,7 +1212,7 @@ API — it needs to be surfaced. (Verified against the modules on 2026-07-12.)
 - `set_tag`, `set_layer_tag`, `show`, `hide`, `delete`, `clear`.
 
 **Annotations** (`annotations.py`)
-- `add_annotation(text, kind=…)` — note `add_label()` is **deprecated**; the
+- `add(text, kind=…)` — note `add_label()` is **deprecated**; the
   panel must not grow on top of a deprecated entry point.
 - `set_text(tag, text)` — edit an annotation **in place**; the panel has no
   rename/edit affordance at all.
@@ -1402,7 +1449,7 @@ defect and the API gap are the same wound.
 `view.selections.tags`; `docs/` must be migrated in the same phase. Pre-1.0 is
 when this is cheap; after 1.0 it is not.
 
-`annotations.add_annotation()` stutters and `layers` has no verb at all; both
+`annotations.add()` stutters and `layers` has no verb at all; both
 are covered above.
 
 ### Contract S1 — Python is the source of truth for every scene object
@@ -1521,7 +1568,7 @@ it survives a save/reload.
 | regions | `view.regions` → `RegionsManager(dict)` | `.add(...)` |
 | selections | `view.selections` → `SelectionsManager` | `.add(...)`, `.add_from_active_selection(...)` |
 | shapes | `view.shapes` → `ShapesManager` | `.add_sphere(...)`, … |
-| annotations | `view.annotations` → `AnnotationsManager` | `.add_annotation(...)` |
+| annotations | `view.annotations` → `AnnotationsManager` | `.add(...)` |
 | measurements | `view.measurements` → `MeasurementsManager` | `.add_distance(...)`, … |
 | **layers** | `view.layers` → **`Mapping[str, Layer]`** | **`view.new_layer(...)`** — on the *view*, not the manager |
 
@@ -1690,11 +1737,10 @@ are different extensions, and the `CustomInteractions` plan stands unchanged.
 
 **One condition binds the pre-1.0 work**, and it is the only reason this contract
 mentions it at all: **an annotation's anchor must be an extensible concept from the
-start**, not "a list of atoms, forever". Today `Annotation.set_coordinates` raises
-`NotImplementedError` ("annotation anchors are tied to atom indices"). If the model
-and the serialisation treat the anchor as something *with a shape* — atoms today,
-free coordinates or a residue/chain level tomorrow — MVS later arrives as an
-additive extension. Close it as `atom_indices` and it arrives as a format migration.
+start**, not "a list of atoms, forever". The 2026-10-03 correction (#146)
+implements atom and absolute-coordinate anchors, including
+`Annotation.set_coordinates` and typed state serialization. More target kinds
+and MVS remain additive extensions; they are not a prerequisite for these anchors.
 
 #### Owned objects are not the user's objects
 
@@ -2250,3 +2296,208 @@ writers that remain are `setFocusFade` and the ownership mask, and
 
 `view.isolate()` is named above as something the transparency path backs. It no longer
 exists; `region.show_only()` does, and it is the surviving half of that sentence.
+
+
+## Interactions extension — 2026-09-30 (experimental provider contract)
+
+The `interaction` domain obeys T, S0–S7 and V. Scientific analyses live in
+`view.molsys.interactions`; `view.interactions.add(analysis_name, ...)` creates a
+separate tagged visual reference. Deleting a set keeps the scientific analysis;
+deleting referenced analyses is refused. Explicit scientific deletion clears
+visual history. Calculation is never initiated by trajectory playback.
+
+A visual reference records its named analysis content signature, sparse query
+filter, color, opacity, radius with explicit `radius_unit: "nm"`, layer and
+hidden/broken state. Wire geometry declares `coordinate_unit: "nm"`; the
+renderer validates both units and converts once to Mol* angstroms. State v2
+adds optional `interaction_state_version: 1` and `interactions` keys. Unknown
+interaction extension versions and different valid analysis signatures are
+rejected before scene clearing. Sessions store scientific results once in
+H5MSM and then restore those references. A damaged fixed selection survives
+structural extraction as broken; explicit `set_filter` repairs it.
+
+Native graphic support is H···A for single-atom donor/hydrogen/acceptor roles,
+and S···S disulfide candidates. Other kinds or compound participants remain
+inspectable and are counted as unsupported rendering. Periodic participant
+positions use `(image_p - image_0) @ box`, with row-vector boxes in nm. Graphics
+cannot invent periodic images or replace a missing required box with zero.
+Only the visible/requested frame is retained during live projection. The
+previous frame is hidden immediately, and stale frame/revision replies are
+rejected. Occurrence identity is retained in each Mol* geometry group and pick.
+Picks use kind `interaction`; their context actions cannot delete a shape or
+measurement with the same tag. Per-set lifetime tokens reject queued renders
+after deletion, including deletion during an asynchronous Mol* state write.
+Inspector replies require the current request, frame, analysis and query revision;
+query revision changes with a same-frame filter edit.
+
+Inspection pages are limited to 200 scientific observations (Studio uses 50).
+They have a 512 KiB reply budget and per-observation limits of 64 participants
+and 4,096 participant atoms. Calculation scope summaries contain counts rather
+than expanded atom axes. Excluded frames return no scientific observations.
+Inspection uses the public filtered `to_page(offset, limit, ...)` codec when
+available, independently of graphical projection. A frame too large to render
+can still supply a small scientific page. The older whole-selection fallback
+is bounded before materialization by occurrence count and a conservative
+numeric-copy estimate. A page exceeding its participant or byte limits returns
+`inspection-limit`, exact count and an explicit reason. `next_offset` is the
+actual next page position, or null when exhausted/refused. Public paging is the
+provider contract from `uibcdf/molsysmt#264`; private provider indexes are not a
+consumer API. These budgets do not bound resident
+trajectory/analysis memory. Oversized metadata is explicitly omitted from the
+reply while remaining available through the complete scientific result.
+Live geometry has explicit bounds of 50,000 observations and 8 MiB per set/frame;
+an exceeded bound produces `render-limit`, not evaluated-empty. Static HTML
+compiles the frame geometry with a 64 MiB aggregate interaction budget and
+raises when it is exceeded. Overlapping sets currently repeat compiled export
+geometry; shared analysis compilation is an optimization still to qualify.
+Scientific inspector pages require a live Python session; static exports
+contain compiled geometry rather than the complete observation table.
+
+Studio actions use the public Python workflow and one Apply checkpoint for
+visual edits. The file form addresses the Python filesystem and requires an
+explicit alignment declaration. The result/provider contract and representative
+large-system qualification remain experimental under uibcdf/molsysviewer#114
+and uibcdf/molsysmt#250.
+
+Guards: `tests/test_interactions_scene.py`; graphical and Studio outcomes:
+`js/tests/e2e/interactions-subpanel.e2e.ts` against real Mol* and the provider.
+
+### Observation actions and scientific save — 2026-10-02
+
+`view.interactions.select_observation` and `focus_observation` take the tagged
+visual set, complete-analysis occurrence index, local structure index and the
+analysis/query revisions returned by `inspect`. Only an occurrence in that
+set's latest inspected page of the currently visible frame may act. Changed
+analysis, filter, frame or object lifetime invalidates that identity before
+selection or camera mutation. One detached bounded page per set is retained;
+actions do not materialize whole-frame occurrence columns. Selection contains
+every atom of every participant, including compound participants. Focus uses
+the existing camera selection tool and canonical molecular coordinates; it
+does not unwrap groups or focus their shifted periodic images. Studio row
+buttons call these same public operations.
+
+`view.interactions.save(filename, analysis_names=None, overwrite=False)` writes
+complete named scientific analyses through public `molsysmt.h5msm.write_layers`
+into an interactions-only H5MSM file. None selects all names; a string selects
+one; a nonempty unique list selects those names. Missing/invalid names are
+rejected before writing. Scientific coverage, source mappings, parallel
+occurrences, units and periodic participant images are preserved. This saves
+neither a visual scene nor a query subset. Import still requires the existing
+explicit alignment declaration: provenance does not authenticate the source.
+Serialization finishes in a private sibling directory before atomic publication.
+An existing destination is refused unless overwrite is explicit; failure leaves
+the prior file and the attached analysis collection unchanged. Non-overwriting
+publication uses a filesystem hard link, whose availability remains a native
+platform qualification requirement rather than a fallback to partial writing.
+
+Guards: `tests/test_interactions_public_completion.py`; paging beyond graphical
+bounds: `tests/test_interactions_scene.py::test_oversized_frame_is_refused_before_occurrence_materialization`.
+
+## Trajectory plot cards — 2026-10-02
+
+`trajectory_plot` retains one canonical collection of cards keyed by tag in
+scene-look state. Its bulk runtime message reconstructs every retained card,
+including hidden cards. `show(series, tag=...)` creates/replaces that card;
+`show(tag=...)` restores retained data. `hide(tag)` hides and retains; `clear(tag)`
+removes. Omitting the tag from hide/clear applies to every card. Browser close
+mirrors hide through the declared `trajectory_plot_hidden` event. `records()`
+returns detached data, including hidden cards. No new undo promise is introduced.
+
+Every series and optional x axis has one sample per loaded local structure.
+Validation precedes plot/state mutation. State and sessions carry the optional
+`trajectory_plots` collection; copy preserves it; extraction slices values/x
+and remaps events, including repeated and nonconsecutive structure indices.
+Merge uses the existing conflict policy for card tags. Appending structures or
+applying a system with a different structure count requires clearing cards
+first and is refused before viewer-owned mutation. A first load likewise checks
+any prepared cards before assigning its system. Equal-length replacements
+declare correspondence to the new local structure order; cards are supplied
+data and are not recalculated after coordinate edits.
+
+Guards: `tests/test_trajectory_plot_lifecycle.py`; real Mol* card lifecycle:
+`js/tests/e2e/trajectory-plot.e2e.ts`.
+
+
+## Final design-review amendments — 2026-09-30
+
+These clauses supersede the earlier implementation descriptions where they differ.
+
+- `view.annotations.add` is the general constructor. `add_annotation` is removed.
+  Every ordinary public callable has ArgDigest and explicit `skip_digestion=False`.
+- Region and layer registries retain dictionary reads. Assignment, `pop`, `update`,
+  `setdefault` and other raw writes raise. Use the manager's lifecycle methods;
+  `clear()` removes members through that lifecycle and remains undoable.
+- A handle belongs to one registered object lifetime. Delete, undo, import and
+  tag reuse can retire it. Its operations raise instead of targeting a replacement;
+  reacquire the handle from its manager. Queries return detached nested data, including representation parameters and style summaries.
+- History commits only a successful operation that changes scene state. Rejected
+  operations and no-ops preserve undo and redo. History does not roll back arbitrary
+  partial mutations made before an exception; validate before mutating.
+- Coordinate edits validate the whole requested batch before writing it. They
+  invalidate named interaction results only on edited structures, refresh dynamic
+  derived visuals and replace stale molecular projections or pending native loads.
+  Partial transport identifies atom and structure indices explicitly; coordinates
+  have shape `(structures, atoms, 3)` and wire unit Å.
+  When Interactions is materialized after a public MolSysMT geometry setter,
+  it adopts the provider's replacement analysis and invalidated frame coverage.
+  Cached links from invalidated frames are discarded. An edit can reassign
+  occurrence identifiers in the new analysis; retained observations use that
+  result's identifiers while preserving their participants and geometry.
+  Guards: `tests/test_interactions_projection_batching.py`.
+- Copy and extraction transfer canonical scene records, colors, recipes and named
+  analyses. Extraction remaps atom and structure references, including focus styling;
+  repeated source structures remain separate destination structures. Interaction
+  filters include every retained copy; the current frame selects its first copy.
+  incomplete interaction filters remain visibly broken. Index-specific region
+  recipes retain their source and freeze when their index space changes. Merge
+  offsets typed records and colors, and rejects inputs with named analyses until
+  a scientific merge contract can preserve those analyses.
+- Global scene inspection includes tagged Interactions and their layer membership.
+  Named scientific analyses and tagged visual sets remain separate concepts.
+
+Guards: `tests/test_coordinate_edits.py`, `tests/test_scene_transfer.py`,
+`tests/test_scene_integrity.py`, `tests/test_public_entrypoint_contract.py` and
+`tests/test_public_api_inventory.py`.
+
+## Final public design corrections — 2026-10-03
+
+The following contracts are implemented locally under #146–#150. Candidate
+integration and supported-provider qualification remain separate release gates.
+
+- Annotations have either an atom anchor or an absolute position anchor. State
+  encodes the latter as `{type: "position", coordinates: [...], unit: "angstrom"}`.
+  Add/reanchor/move, text/style edits, hidden state, history, session, copy and
+  extraction preserve the anchor kind. Explicit length quantities are accepted;
+  legacy bare physical triples mean nm independent of session units. Wire
+  positions/world offsets carry angstrom units; camera offsets are dimensionless
+  renderer units along right/up/toward-viewer axes. World geometry stays fixed
+  when the camera rotates. Solid/dashed/dotted leaders are canvas geometry owned
+  by the annotation, not independent managed Shapes. Frame application and stop
+  await derived callout writes. Full MVS machinery remains post-1.0.
+- State fingerprint schema 2 hashes available ordered chain/group/atom identity,
+  atom IDs and atom types, without coordinates or current frame. Missing hierarchy
+  is explicit and uses public availability/get queries. Declared system edits
+  invalidate both identity caches even with unchanged object identity and atom
+  count. Older fingerprints conservatively trigger identity re-resolution.
+  This is an index-correspondence safeguard, not source authentication.
+- Replacement preparation converts the system and resolves source maps before
+  resetting the viewer. Required append accounting is validated before changing
+  systems, analyses or scene state. This does not undo prior external edits or
+  promise rollback of arbitrary rendering failures.
+- Styles own detached nested recipe inputs; registered and builtin Style queries
+  return detached values, including focus styles. A caller may edit its returned
+  recipe and explicitly register/apply it; editing that value does not alter the
+  registry or another viewer.
+- Optional plot x values define the numeric horizontal axis for samples, events,
+  playhead and nearest-sample seeking. Local frame order remains authoritative
+  for nonmonotonic/repeated x. Ties prefer the current nearest frame, otherwise
+  the earliest nearest frame. Constant/finite-extreme data has finite SVG
+  geometry. API/state import refuse NaN/infinity before mutation; there is no
+  implicit missing-data-to-zero conversion.
+
+Python guards: `tests/test_design_review_closure.py`. Browser guards:
+`js/tests/e2e/annotations-interaction.e2e.ts`,
+`js/tests/e2e/annotations-subpanel.e2e.ts` and
+`js/tests/e2e/trajectory-plot.e2e.ts`; numeric geometry/seeking also has a unit guard
+in `js/tests/unit/trajectory-plot-overlay.test.ts`. Design/loading follow-up is
+tracked in [the closure plan](final_design_closure_20261003.md).

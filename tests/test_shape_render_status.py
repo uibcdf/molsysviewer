@@ -1,4 +1,4 @@
-from molsysviewer import MolSysView
+from molsysviewer import MolSysView, demo
 
 
 def test_shape_render_status_is_runtime_only_and_queryable():
@@ -26,9 +26,9 @@ def test_shape_render_status_is_runtime_only_and_queryable():
 
 
 def test_shape_render_status_is_cleared_when_shape_is_unregistered():
-    view = MolSysView()
+    view = demo["dialanine"]
+    view.shapes.add_sphere(tag="site")
     view._shape_render_status["site"] = {"event": "shape_render_status", "tag": "site"}  # noqa: SLF001
-    view._scene_objects[("shape", "site")] = object()  # noqa: SLF001
 
     view._unregister_scene_object("shape", "site")  # noqa: SLF001
 

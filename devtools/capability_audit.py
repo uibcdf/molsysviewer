@@ -190,6 +190,23 @@ CAPABILITIES: tuple[Capability, ...] = (
         e2e=("shapes-subpanel", "shape-trajectory"),
     ),
     Capability(
+        name="Interactions",
+        api=("view.interactions.", "view.interactions[…]."),
+        anchor="molsysviewer/interactions.py",
+        provenance=MOLSYSMT,
+        docs="docs/content/user/overlays/interactions.md",
+        unit=("test_interactions_api.py", "test_interactions_scene.py", "test_interactions_qualification.py"),
+        e2e=("interactions-subpanel", "interactions-geometry", "interactions-calculation"),
+        status="experimental",
+        benchmark="interactions_performance.md",
+        note="Named scientific analyses, tagged visual sets and native Studio workflows are implemented "
+        "in the working tree. Synthetic residency and bounded real detector/query/geometry, "
+        "H5MSM/session and calculated-link browser qualification are recorded in "
+        "interactions_qualification.md. Published-provider, larger GPU and exact-candidate "
+        "qualification remain open under "
+        "uibcdf/molsysviewer#114. Public bounded occurrence pages are requested in uibcdf/molsysmt#264.",
+    ),
+    Capability(
         name="Trajectories and frames",
         api=("view.player.",),
         anchor="molsysviewer/player.py",

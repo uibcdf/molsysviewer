@@ -82,6 +82,51 @@ The file is a zip holding three members:
 | `state.json` | the `export_state` document, unchanged |
 | `structure.h5msm` | the molecular system, in MolSysMT's own form |
 
+### Preserving loaded source occurrences
+
+State v2 carries an additive `sources` extension (version 1): source occurrence
+IDs, labels/origin descriptions, compact atom/structure runs and generated-region
+UID links. A region rename or deletion does not redefine its scientific source.
+Copy and extraction retain surviving IDs and remap both axes, including repeated
+frame selections. Scene merge remaps links and records `parent_source_id` when a
+source occurrence repeats.
+
+A cached, chunked content fingerprint binds these records to the ordered
+topology, coordinates, time and box. Scene import keeps the destination inventory
+when the binding differs or the extension is absent; overlay-only import with
+`clear_first=False` also keeps it. A session binding mismatch raises before an
+existing destination is replaced. This verifies correspondence of saved content,
+not the claimed original file's authenticity. Original files are not required.
+The topological scene fingerprint is unchanged by this separate source check.
+
+Sessions use the public MolSysMT H5MSM 0.5 writer when available, preserving array
+precision and named analyses. The legacy route requests double precision so
+coordinate edits survive a source-binding round trip. That legacy route is
+inspected but is not separately installed-provider qualified in this slice.
+Guard: `tests/test_source_records.py`; local evidence and qualification limits:
+`source_records_20261003.json`.
+
+### Preserving scientific interaction analyses
+
+Named `view.molsys.interactions` results are saved in H5MSM 0.5 through the
+public MolSysMT writer. Their numeric arrays are not duplicated in `state.json`
+or visual undo. An optional `interaction_analyses` manifest section, version 1,
+records each analysis name and a content signature. Restoration checks the
+complete collection and every signature before touching a destination view.
+It then replaces that view's system and scene; it never merges the session
+system with one already loaded. Earlier sessions without this section retain
+their existing loading path.
+
+The signature covers roles, sparse occurrences, measures and units, coverage,
+images, source maps, method, parameters and calculation-time software versions.
+It verifies saved data, not the claimed molecular origin. Independent import
+still requires an explicit alignment declaration. Full native loading preserves
+immutable scientific snapshots, including evaluated coverage order. Tests live
+in `tests/test_interactions_api.py`. Visual references now round-trip independently,
+including filters, style, layers, visibility and a scientific content signature,
+guarded by `tests/test_interactions_scene.py`. State documents carry the additive
+`interaction_state_version: 1` extension; scientific data stay outside undo.
+
 **Why `.h5msm` and not `.bcif`.** MolSysMT writes `.pdb` and `.h5msm` from a
 `MolSys`, and not `.bcif` — the usual preference for binary CIF over PDB is about
 *reading* what a user supplies, and does not apply to what we write here. Of the

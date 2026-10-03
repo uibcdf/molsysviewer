@@ -34,9 +34,23 @@ def digest_molecular_system(molecular_system, caller=None):
     MolecularSystemNeededError
         If the given object is not a molecular system.
     """
+    if molecular_system is None and (caller and caller.endswith(".set_box") or caller in {
+        "molsysviewer.standalone.build_standalone0_html", "molsysviewer.standalone.launch_standalone0",
+        "molsysviewer.standalone_qt.application.create_standalone_qt0_window",
+        "molsysviewer.standalone_qt.application.launch_standalone_qt0",
+    }):
+        return None
+
     from molsysmt.basic import are_multiple_molecular_systems, is_a_molecular_system, merge
 
     molecular_system = _normalize_paths(molecular_system)
+
+    from ..helpers import normalize_viewer_caller
+
+    if normalize_viewer_caller(caller) == "molsysviewer.viewer.load":
+        # The load body interprets the outer container using `multiple`, then
+        # validates/converts each source before changing the active system.
+        return molecular_system
 
     if caller in ["molsysviewer.new_view.new_view", "molsysviewer.loaders.load_molsysmt.load_from_molsysmt"]:
         return molecular_system

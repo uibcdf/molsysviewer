@@ -24,6 +24,9 @@ def digest_mode(mode, caller=None):
         return None
 
     if isinstance(mode, str):
+        if caller and caller.startswith("molsysviewer.interactions."):
+            if mode in {"incident", "internal", "cross", "between"}:
+                return mode
         if caller.startswith("molsysmt.file"):
             if mode in ["auto", "read", "write"]:
                 return mode

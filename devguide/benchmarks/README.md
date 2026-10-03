@@ -1,5 +1,13 @@
 # 🚀 MolSysViewer Performance Benchmarks
 
+The current Interactions scale measurements are maintained in
+[`../interactions_performance.md`](../interactions_performance.md), with the
+[2026-10-02 scale record](interactions_scale_20261002.json) and
+[compound batching comparison](interactions_batching_20261002.json). The local
+projection defect #141 is resolved; provider query work #288 remains open.
+The records separate synthetic adapter loads and real detector probes and do not
+certify GPU throughput or maximum system size.
+
 This directory contains the developer documentation for the native molecular benchmarking suite of MolSysViewer.
 
 ## 🎯 Purpose and Philosophy

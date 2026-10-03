@@ -42,7 +42,7 @@ def create_annotation(view: Any, content: Mapping[str, Any]) -> None:
     atom_indices = content.get("atom_indices")
 
     if atom_indices is not None or position is not None:
-        view.annotations.add_annotation(
+        view.annotations.add(
             text=text.strip(),
             atom_indices=atom_indices,
             position=position,
@@ -488,10 +488,7 @@ def create_shape(view: Any, content: Mapping[str, Any]) -> None:
                 skip_digestion=True,
             )
     elif shape_type in ("add_hbonds", "hbonds"):
-        view.shapes.links.add_hbonds(
-            tag=tag,
-            skip_digestion=True,
-        )
+        raise ValueError("Use Interactions to calculate hydrogen bonds and create a visual set.")
     elif shape_type in ("add_rings", "rings"):
         view.shapes.rings.add_rings(
             tag=tag,

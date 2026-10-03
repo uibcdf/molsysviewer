@@ -7,6 +7,9 @@ import webbrowser
 from pathlib import Path
 from typing import Any, Sequence
 
+from smonitor import signal
+
+from ._private.argdigest import digest
 from .addons import addons as global_addons
 from .demo import demo
 from .new_view import new_view
@@ -228,6 +231,8 @@ def _prepare_addons(
         global_addons.register_module(module_name)
 
 
+@signal()
+@digest()
 def build_standalone0_html(
     molecular_system: Any,
     output_filename: str,
@@ -248,6 +253,8 @@ def build_standalone0_html(
     runtime_urls: Sequence[str] | None = None,
     host_event_transport: str | None = None,
     show_empty_host_overlay: bool = True,
+
+    skip_digestion: bool = False,
 ) -> str:
     """Build a first standalone-shaped HTML host using the current viewer runtime."""
 
@@ -298,6 +305,8 @@ def build_standalone0_html(
     return str(output_path)
 
 
+@signal()
+@digest()
 def launch_standalone0(
     molecular_system: Any,
     output_filename: str | None = None,
@@ -314,6 +323,8 @@ def launch_standalone0(
     addon_modules: Sequence[str] | None = None,
     apply_project_config: bool = True,
     debug_js: bool | None = None,
+
+    skip_digestion: bool = False,
 ) -> str:
     """Create a standalone-0 HTML file and optionally open it in the browser."""
 

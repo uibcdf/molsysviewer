@@ -13,7 +13,9 @@ from pathlib import Path
 from typing import Any
 
 from aiohttp import WSMsgType, web
+from smonitor import signal
 
+from .._private.argdigest import digest
 from .internal_worker_host import InternalRenderWorkerHost
 from .protocol import validate_signaling_packet
 from .render_worker import RenderWorkerConfig, RenderWorkerDiagnostics
@@ -174,7 +176,9 @@ class RemoteSessionService:
     def client_url(self) -> str:
         return f"{self.origin}/session/client#token={self._token}"
 
-    async def start(self) -> str:
+    @signal()
+    @digest()
+    async def start(self, *, skip_digestion: bool = False) -> str:
         if self._closed:
             raise RuntimeError("remote session service is closed")
         if self._runner is not None:
@@ -213,7 +217,9 @@ class RemoteSessionService:
         self._site = site
         return self.client_url
 
-    async def launch_worker(self) -> RenderWorkerDiagnostics:
+    @signal()
+    @digest()
+    async def launch_worker(self, *, skip_digestion: bool = False) -> RenderWorkerDiagnostics:
         if self._host is None:
             raise RuntimeError("render_on='client' does not launch a render worker")
         if self._runner is None:
@@ -281,7 +287,9 @@ class RemoteSessionService:
         except asyncio.CancelledError:
             raise
 
-    async def close(self) -> None:
+    @signal()
+    @digest()
+    async def close(self, *, skip_digestion: bool = False) -> None:
         if self._closed:
             return
         self._closed = True

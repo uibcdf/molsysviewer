@@ -24,6 +24,7 @@ High-value runtime recipes:
 - {doc}`panel_mode_notebook`
 - {doc}`workbench_scientific_workflow`
 - {doc}`movie_recipes`
+- {doc}`interactions_workbench` — calculate, inspect and import named interactions
 
 ```{toctree}
 :maxdepth: 2
@@ -41,4 +42,5 @@ panel_mode_notebook
 addon_development
 workbench_scientific_workflow
 movie_recipes
+interactions_workbench
 ```

@@ -1,7 +1,12 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from dataclasses import dataclass, replace
 from typing import Any
+
+from smonitor import signal
+
+from ._private.argdigest import digest
 
 
 @dataclass(frozen=True)
@@ -29,7 +34,9 @@ class FigureSpec:
         if self.camera_snapshot is not None and not isinstance(self.camera_snapshot, dict):
             raise ValueError("FigureSpec.camera_snapshot must be a dictionary or None.")
 
-    def info(self) -> dict[str, Any]:
+    @signal()
+    @digest()
+    def info(self, *, skip_digestion: bool = False) -> dict[str, Any]:
         """Return a JSON-friendly summary of the figure recipe."""
         return {
             "width_px": self.width_px,
@@ -37,10 +44,12 @@ class FigureSpec:
             "scale": float(self.scale),
             "background": self.background,
             "preset": self.preset,
-            "camera_snapshot": dict(self.camera_snapshot) if self.camera_snapshot is not None else None,
+            "camera_snapshot": deepcopy(self.camera_snapshot),
         }
 
     @classmethod
+    @signal()
+    @digest()
     def from_view(
         cls,
         view: Any,
@@ -51,6 +60,7 @@ class FigureSpec:
         background: str = "white",
         preset: str = "publication-light",
         include_camera: bool = True,
+        skip_digestion: bool = False,
     ) -> "FigureSpec":
         """Build a figure recipe from the current state of a view.
 
@@ -73,6 +83,8 @@ class FigureSpec:
             camera_snapshot=camera_snapshot,
         )
 
+    @signal()
+    @digest()
     def with_overrides(
         self,
         *,
@@ -83,6 +95,7 @@ class FigureSpec:
         preset: str | None = None,
         camera_snapshot: dict[str, Any] | None = None,
         include_camera_snapshot: bool = True,
+        skip_digestion: bool = False,
     ) -> "FigureSpec":
         """Return a new figure recipe with explicit overrides.
 
@@ -107,9 +120,12 @@ class FigureSpec:
             updates["camera_snapshot"] = None
         return replace(self, **updates)
 
+    @signal()
+    @digest()
     def build_variants(
         self,
         variants: dict[str, "FigureSpec | dict[str, Any]"],
+        *, skip_digestion: bool = False,
     ) -> dict[str, "FigureSpec"]:
         """Expand a mapping of named figure variants from this base recipe."""
         if not isinstance(variants, dict) or len(variants) == 0:
@@ -131,7 +147,9 @@ class FigureSpec:
             raise ValueError(f"Figure variant {name!r} must be a FigureSpec or a dictionary of explicit overrides.")
         return resolved
 
-    def build_publication_variants(self, *, include_current: bool = False) -> dict[str, "FigureSpec"]:
+    @signal()
+    @digest()
+    def build_publication_variants(self, *, include_current: bool = False, skip_digestion: bool = False) -> dict[str, "FigureSpec"]:
         """Return the standard small publication-oriented variant set."""
         variants: dict[str, FigureSpec | dict[str, Any]] = {
             "light": {"background": "white", "preset": "publication-light"},

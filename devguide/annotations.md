@@ -211,7 +211,12 @@ Examples:
 - a label at a specific 3D coordinate
 - a label for a pocket center or geometric feature
 
-This should also come later.
+Implemented locally on 2026-10-03 under #146: `annotations.add(position=...)`,
+`annotations.set_anchor(position=...)` and `Annotation.set_coordinates(...)`
+share editing, history, state/session and scene transfer with atom anchors.
+Physical quantities are supported; the existing bare coordinate/world-offset
+triples explicitly mean nm, independently of the session unit policy. Shape
+targets and the broader MVS machinery remain later work.
 
 ## First Implementation Scope
 
@@ -226,10 +231,10 @@ This should also come later.
 - integration with `GroupStrip` via badge overlays ("L") ✓
 - full management API (`set_anchor`, `set_text`, `set_tag`, `set_layer_tag`, `show`, `hide`, `delete`, `clear`) ✓
 - shared `layer_tag` support (multiple annotations in one layer) ✓
-- `add_annotation(selection=...)` as primary API; `add_label(group_index=...)` deprecated ✓
+- `add(selection=...)` as primary API; `add_label(group_index=...)` deprecated ✓
 
 - label visual knobs (`label_style` dict: `color`, `size_em`, `background`, `background_opacity`) — Objective A ✓
-  - `add_annotation(..., label_style={"color": "#RRGGBB", "size_em": 1.5, ...})`
+  - `add(..., label_style={"color": "#RRGGBB", "size_em": 1.5, ...})`
   - forwarded to Mol* `addLabel` as `visualParams` (`textColor`, `textSize`, `background`, `backgroundOpacity`)
   - `LabelStyle` type added to TS `viewer-messages.ts`; `styleToVisualParams` helper in `annotation-handlers.ts`
 - layer-level visibility propagation to 3D canvas — Objective B ✓
@@ -416,7 +421,7 @@ So the minimum management surface for v1 should effectively cover:
 
 Current API (implemented and stable):
 
-- `view.annotations.add_annotation(text, selection=..., atom_indices=..., tag=..., layer_tag=...)`
+- `view.annotations.add(text, selection=..., atom_indices=..., tag=..., layer_tag=...)`
   - **primary entry point** for persistent labels
   - anchor resolves via MolSysMT selection string or explicit `atom_indices`
 - `view.annotations.add_label_from_active_selection(text, tag=..., layer_tag=...)`
@@ -438,7 +443,7 @@ Current API (implemented and stable):
 
 Deprecated (kept with `DeprecationWarning`, do not use in new code):
 
-- `view.annotations.add_label(text, group_index=..., tag=...)` → use `add_annotation(selection=...)`
+- `view.annotations.add_label(text, group_index=..., tag=...)` → use `add(selection=...)`
 - `view.annotations.set_group_index(tag, group_index)` → use `set_anchor(tag, selection='group_index==N')`
 
 This is intentional.

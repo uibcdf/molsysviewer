@@ -81,11 +81,30 @@ def test_e2e_runner_inventory_matches_every_scientific_suite():
     # completes a navigation to http://127.0.0.1 here, so they had been skipping
     # permanently; Playwright loads the same URL in 0.2 s
     # (uibcdf/molsysviewer#81, #77).
-    assert len(expected) == 37
+    # 38 since 2026-09-30: native Interactions panel and real provider bridge.
+    # 39-40 since 2026-10-03: coordinate/cell edits and composite loading with
+    # source-preserving session/extraction; both exercise the real provider.
+    # 41-42: scientific geometry and all calculation forms keep separate default
+    # deadlines; all three Interactions scenarios remain mandatory in core.
+    assert len(expected) == 42
     assert declared == expected
     build_command = package["scripts"]["build:e2e:all"]
     compiled = set(re.findall(r"tests/e2e/([^ ]+)\.e2e\.ts", build_command))
     assert compiled == expected
+
+
+def test_all_interactions_scenarios_keep_default_deadlines_and_fresh_worker():
+    scenarios = (E2E_ROOT / "interactions-subpanel-scenarios.ts").read_text()
+    for suite, mode in (("interactions-subpanel", "lifecycle"), ("interactions-geometry", "geometry"),
+                        ("interactions-calculation", "calculation")):
+        source = (E2E_ROOT / f"{suite}.e2e.ts").read_text()
+        assert f'runInteractionsSuite(chromium, "{mode}")' in source
+    assert "new PythonFixtureBridge" in scenarios
+    assert "fixtureWorker.request(events, family)" in scenarios
+    assert "await fixtureWorker.close()" in scenarios
+    assert "__controller?.dispose()" in scenarios
+    assert 'page.goto("about:blank")' not in scenarios
+    assert 'process.env.E2E_SUITE_TIMEOUT_MS ?? 180_000' in (E2E_ROOT / "e2e-runner.ts").read_text()
 
 
 def test_e2e_suites_use_the_shared_browser_without_silent_success_paths():

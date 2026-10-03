@@ -43,93 +43,16 @@ from molsysviewer.demo import demo
 import molsysviewer
 
 ROOT = Path(__file__).resolve().parents[1]
-DIGESTER_DIRECTORY = ROOT / "molsysviewer" / "_private" / "argdigest" / "argument"
+PACKAGE_ROOT = Path(molsysviewer.__file__).resolve().parent
+DIGESTER_DIRECTORY = PACKAGE_ROOT / "_private" / "argdigest" / "argument"
 BASELINE_PATH = Path(__file__).resolve().parent / "public_api_inventory_baseline.json"
 
 #: Arguments that are never a user's to declare: the digestion escape hatch and the
 #: instance itself.
 NOT_USER_ARGUMENTS = frozenset({"self", "cls", "skip_digestion"})
 
-#: Public callables that must **not** carry `@digest`, and why.
-#:
-#: Gate 9's rule is that every public callable is digested. Reaching zero without this
-#: list would mean either decorating things where the decorator does nothing, or leaving
-#: the number permanently short of its target with no way to tell debt from design.
-#:
-#: A *pure variadic forwarder* takes `*args, **kwargs`, passes them straight to a callable
-#: that is itself digested, and names none of them. Decorating it digests nothing and adds
-#: a layer — `devguide/digestion_and_dependencies.md` says so explicitly. A context
-#: manager is not a call whose arguments can be judged at all.
-#:
-#: A *named delegating forwarder* is the same case with the parameters written out: every
-#: one of them belongs to the callee, and the callee digests them. `view.get`'s signature
-#: **is** `msm.get`'s, minus the system, so decorating it means digesting the same call
-#: twice with two copies of the same rules — and the copies had already drifted:
-#: `group_index` returned `True` for one caller and `[True]` for another, and
-#: `region.get` refused 77 of 118 attributes that `msm.get` answers.
-#:
-#: The test is checkable rather than a matter of taste: **compare the two signatures.** If
-#: a parameter is not the callee's, the forwarder is not pure and the exemption does not
-#: apply. See `uibcdf/molsysviewer#71`.
-#:
-#: Every entry needs a reason, and the reason has to survive being read by someone who
-#: suspects it is an excuse.
-DELIBERATELY_NOT_DIGESTED: dict[str, str] = {
-    "molsysviewer.build_standalone0_html": "lazy import wrapper; the imported callable is the one with a signature",
-    "molsysviewer.launch_standalone0": "lazy import wrapper; the imported callable is the one with a signature",
-    "molsysviewer.create_standalone_qt0_window": "lazy import wrapper; the imported callable is the one with a signature",
-    "molsysviewer.launch_standalone_qt0": "lazy import wrapper; the imported callable is the one with a signature",
-    "view.whole.get": "named delegating forwarder to msm.get; the whole *is* the system",
-    "view.whole.info": "named delegating forwarder to msm.info; the whole *is* the system",
-    "view.whole.select": "named delegating forwarder to msm.select; the whole *is* the system",
-    "view.regions[…].info": "named delegating forwarder to msm.info, masked to the region's atoms",
-    "view.regions[…].select": "named delegating forwarder to msm.select, with the region's elements as mask",
-    "view.regions[…].get": "named delegating forwarder to msm.get, scoped to the region's atoms",
-    "view.whole.convert": "named delegating forwarder to msm.convert; the whole *is* the system",
-    "view.regions[…].convert": "named delegating forwarder to msm.convert, scoped to the region's atoms",
-    "view.annotations.add": "alias forwarding to add_annotation, which digests",
-    "view.history.coalescing": "context manager, not a call with arguments to judge",
-    "view.history.suspended": "context manager, not a call with arguments to judge",
-    "view.attributed_to": "context manager, not a call with arguments to judge",
-    # The colour primitives the `color` digester is built on. Decorating them makes the
-    # digester call the function it is digesting: `normalize_color` -> `digest_color` ->
-    # `normalize_color`. Measured by doing it. A function a digester delegates to cannot
-    # itself be digested by that digester, and there is no third place to put the rule.
-    "molsysviewer.normalize_color": "the primitive `digest_color` delegates to; decorating it is a cycle",
-    "molsysviewer.normalize_colors": "the primitive `digest_color` delegates to; decorating it is a cycle",
-    "molsysviewer.colors.normalize_color": "the primitive `digest_color` delegates to; decorating it is a cycle",
-    "molsysviewer.colors.normalize_colors": "the primitive `digest_color` delegates to; decorating it is a cycle",
-    # The `shapes` forwarders, and the measurement most likely to be misread as debt.
-    #
-    # Each takes `*args, **kwargs` and hands them to a sub-manager method that has a
-    # closed keyword-only signature and its own `@digest`. Decorating the forwarder was
-    # tried and measured: **nothing is digested and every call warns.** ArgDigest digests
-    # `args` (the empty tuple, under the parameter's own name) and leaves the `**kwargs`
-    # keys inside the mapping, so `tag`, `centers` and the rest never reach their
-    # digesters — verified by instrumenting `digest_tag` and watching it never fire.
-    #
-    # This is why `args` shows up in the inventory as an argument name wanted by thirteen
-    # callables. **Writing a `digest_args` would be the wrong fix**: it would silence a
-    # warning that is correctly reporting that these functions should not be decorated.
-    #
-    # Two of them carried `@digest` already and had been emitting
-    # `DigestNotDigestedWarning` on every real call. Nobody saw it because the only test
-    # that reaches them passes `skip_digestion=True`.
-    "view.shapes.add_anisotropy_ellipsoids": "pure forwarder to a digested sub-manager method; see the note above",
-    "view.shapes.add_channel_tube": "pure forwarder to a digested sub-manager method; see the note above",
-    "view.shapes.add_displacement_vectors": "pure forwarder to a digested sub-manager method; see the note above",
-    "view.shapes.add_interaction_sites": "pure forwarder to a digested sub-manager method; see the note above",
-    "view.shapes.add_links": "pure forwarder to a digested sub-manager method; see the note above",
-    "view.shapes.add_pharmacophore_features": "pure forwarder to a digested sub-manager method; see the note above",
-    "view.shapes.add_pocket_blob": "pure forwarder to a digested sub-manager method; see the note above",
-    "view.shapes.add_pocket_surface": "pure forwarder to a digested sub-manager method; see the note above",
-    "view.shapes.add_rings": "pure forwarder to a digested sub-manager method; see the note above",
-    "view.shapes.add_scalar_isosurface": "pure forwarder to a digested sub-manager method; see the note above",
-    "view.shapes.add_set_alpha_spheres": "pure forwarder to a digested sub-manager method; see the note above",
-    "view.shapes.add_tetrahedra": "pure forwarder to a digested sub-manager method; see the note above",
-    "view.shapes.add_triangle_faces": "pure forwarder to a digested sub-manager method; see the note above",
-    "view.shapes.interaction_sites.add_pharmacophore_features": "pure forwarder to a digested sub-manager method; see the note above",
-}
+# All ordinary public functions must expose the same digestion contract.
+DELIBERATELY_NOT_DIGESTED: dict[str, str] = {}
 
 #: How deep the attribute walk goes. The public surface is a handful of managers hanging
 #: off the view and off the package; anything deeper is reached through one of them.
@@ -142,6 +65,8 @@ class PublicCallable(NamedTuple):
     module: str
     digested: bool
     arguments: tuple[str, ...]
+    explicit_skip: bool
+    source_file: str
 
     @property
     def caller(self) -> str:
@@ -161,6 +86,8 @@ class PublicCallable(NamedTuple):
             "caller": self.caller,
             "digested": self.digested,
             "arguments": list(self.arguments),
+            "explicit_skip": self.explicit_skip,
+            "source_file": self.source_file,
         }
 
 
@@ -275,6 +202,11 @@ def walk_public_surface(roots: dict[str, Any]) -> Iterator[PublicCallable]:
         seen_objects.add(id(owner))
 
         for name in _public_names(owner):
+            if isinstance(owner, type):
+                declared = inspect.getattr_static(owner, name)
+                if not (inspect.isfunction(declared) or isinstance(declared, (classmethod, staticmethod))
+                        or _owned_by_molsysviewer(declared)):
+                    continue
             try:
                 value = getattr(owner, name)
             except Exception:
@@ -296,8 +228,17 @@ def walk_public_surface(roots: dict[str, Any]) -> Iterator[PublicCallable]:
                     module=module,
                     digested=_is_digested(value),
                     arguments=_user_arguments(value),
+                    source_file=(
+                        Path("molsysviewer")
+                        / Path(inspect.getsourcefile(inspect.unwrap(value))).resolve().relative_to(PACKAGE_ROOT)
+                    ).as_posix(),
+                    explicit_skip=(
+                        (parameter := inspect.signature(value).parameters.get("skip_digestion")) is not None
+                        and parameter.default is False
+                        and parameter.kind in (inspect.Parameter.KEYWORD_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
+                    ),
                 )
-            elif _owned_by_molsysviewer(value) and not isinstance(value, type):
+            elif _owned_by_molsysviewer(value):
                 queue.append((child_path, value, depth + 1))
 
 
@@ -319,6 +260,14 @@ def build_inventory() -> dict[str, Any]:
     # capability audit that reads it -- which is how a feature can ship in a release the
     # project's own inventory does not know exists.
     import molsysviewer.remote as molsysviewer_remote
+    from molsysviewer.interactions import InteractionSet
+
+    shape_probe = view.shapes.add_sphere(tag="_shape_inventory")
+    annotation_probe = view.annotations.add("probe", atom_indices=[0], tag="_annotation_inventory")
+    measurement_probe = view.measurements.add_distance(selection_a=[0], selection_b=[1], tag="_measurement_inventory")
+    layer_probe = view.layers.add("_layer_inventory")
+    section_probe = view.scene.add_section(point=[0, 0, 0], normal=[1, 0, 0], tag="_section_inventory")
+    interaction_probe = InteractionSet(view, "_inventory_probe", analysis_name="_inventory_probe", filter={})
 
     roots = {
         "molsysviewer": molsysviewer,
@@ -326,6 +275,12 @@ def build_inventory() -> dict[str, Any]:
         "view": view,
         "view.regions[…]": view.regions["_inventory_probe"],
         "view.selections[…]": view.selections["_inventory_probe"],
+        "view.interactions[…]": interaction_probe,
+        "view.shapes[…]": shape_probe,
+        "view.annotations[…]": annotation_probe,
+        "view.measurements[…]": measurement_probe,
+        "view.layers[…]": layer_probe,
+        "view.sections[…]": section_probe,
     }
     callables = sorted(set(walk_public_surface(roots)), key=lambda item: item.path)
 
@@ -334,7 +289,7 @@ def build_inventory() -> dict[str, Any]:
     undigested = [item for item in callables if not item.digested and item.path not in DELIBERATELY_NOT_DIGESTED]
 
     missing: dict[str, list[str]] = {}
-    for item in undigested:
+    for item in callables:
         for argument in item.arguments:
             if argument not in digesters:
                 missing.setdefault(argument, []).append(item.path)
@@ -350,6 +305,7 @@ def build_inventory() -> dict[str, Any]:
             "missing_digesters": len(missing),
         },
         "undigested": sorted(item.path for item in undigested),
+        "missing_skip_digestion": sorted(item.path for item in callables if not item.explicit_skip),
         "exempt": sorted(item.path for item in exempt),
         "missing_digesters": {name: sorted(paths) for name, paths in sorted(missing.items())},
     }
@@ -365,6 +321,7 @@ def baseline_of(inventory: dict[str, Any]) -> dict[str, Any]:
     return {
         "totals": inventory["totals"],
         "undigested": inventory["undigested"],
+        "missing_skip_digestion": inventory["missing_skip_digestion"],
         "missing_digesters": sorted(inventory["missing_digesters"]),
     }
 
@@ -379,7 +336,7 @@ def _report(inventory: dict[str, Any]) -> str:
         f"  public callables      {totals['public_callables']:>5}",
         f"    digested            {totals['digested']:>5}",
         f"    undigested          {totals['undigested']:>5}",
-        f"    exempt by design    {totals['exempt']:>5}",
+        f"    missing explicit bypass {len(inventory['missing_skip_digestion']):>5}",
         f"  declared digesters    {totals['declared_digesters']:>5}",
         f"  MISSING digesters     {totals['missing_digesters']:>5}   <- the size of the job",
         "",

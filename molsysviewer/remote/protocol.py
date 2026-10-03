@@ -8,6 +8,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping
 
+from smonitor import signal
+
 from molsysviewer._private.argdigest.digest import digest
 
 REMOTE_PROTOCOL_VERSION = 1
@@ -93,6 +95,7 @@ def _common_identity(
     return value, None
 
 
+@signal()
 @digest()
 def validate_signaling_packet(
     packet: Any,
@@ -100,6 +103,8 @@ def validate_signaling_packet(
     expected_viewer_id: str | None = None,
     expected_session_id: str | None = None,
     expected_endpoint_id: str | None = None,
+
+    skip_digestion: bool = False,
 ) -> PacketValidation:
     packet, failure = _common_identity(
         packet,
@@ -139,6 +144,7 @@ def validate_signaling_packet(
     )
 
 
+@signal()
 @digest()
 def validate_input_packet(
     packet: Any,
@@ -146,6 +152,8 @@ def validate_input_packet(
     expected_viewer_id: str | None = None,
     expected_session_id: str | None = None,
     expected_endpoint_id: str | None = None,
+
+    skip_digestion: bool = False,
 ) -> PacketValidation:
     packet, failure = _common_identity(
         packet,

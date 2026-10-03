@@ -1,5 +1,5 @@
-from _edit_helpers import apply_remove
 from molsysviewer import demo
+from tests._edit_helpers import apply_remove
 
 
 def _seed_group_selection(view, group_index=1):

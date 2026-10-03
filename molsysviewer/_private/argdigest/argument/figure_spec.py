@@ -1,8 +1,8 @@
 from molsysviewer._private.exceptions import ArgumentError
-from molsysviewer.figures import FigureSpec
 
 
 def digest_figure_spec(figure_spec, caller=None):
+    from molsysviewer.figures import FigureSpec
     if figure_spec is None:
         return None
     if isinstance(figure_spec, FigureSpec):

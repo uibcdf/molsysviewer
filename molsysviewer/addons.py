@@ -73,11 +73,15 @@ class AddonPanelWidget(anywidget.AnyWidget):
             ctx["workspace"] = workspace
         return ctx
 
-    def push_state(self, state: dict[str, Any]) -> None:
+    @signal()
+    @digest()
+    def push_state(self, state: dict[str, Any], *, skip_digestion: bool = False) -> None:
         """Push a state dict to the JS panel."""
         self.send({"type": "state", "state": state})
 
-    def request_context(self) -> dict[str, Any]:
+    @signal()
+    @digest()
+    def request_context(self, *, skip_digestion: bool = False) -> dict[str, Any]:
         """Build and push the viewer context snapshot; also return it."""
         ctx = self._build_viewer_context()
         self.send({"type": "context", "context": ctx})
@@ -92,7 +96,9 @@ class AddonPanelWidget(anywidget.AnyWidget):
         states = self._view.widget.addon_states or {}
         return dict(states.get(addon_name, {}))
 
-    def set_state(self, updates: dict[str, Any]) -> None:
+    @signal()
+    @digest()
+    def set_state(self, updates: dict[str, Any], *, skip_digestion: bool = False) -> None:
         """Update this panel instance state dictionary."""
         addon_name = self._addon_name
         if addon_name is None or self._view is None or not hasattr(self._view.widget, "addon_states"):
@@ -103,13 +109,19 @@ class AddonPanelWidget(anywidget.AnyWidget):
         states[addon_name] = addon_state
         self._view.widget.addon_states = states
 
-    def handle_action(self, view: Any, action_id: str, payload: dict[str, Any]) -> None:
+    @signal()
+    @digest()
+    def handle_action(self, view: Any, action_id: str, payload: dict[str, Any], *, skip_digestion: bool = False) -> None:
         """Override to handle panel actions sent from JS."""
 
-    def on_mount(self, view: Any) -> None:
+    @signal()
+    @digest()
+    def on_mount(self, view: Any, *, skip_digestion: bool = False) -> None:
         """Called by MolSysViewer when this panel is displayed."""
 
-    def on_unmount(self, view: Any) -> None:
+    @signal()
+    @digest()
+    def on_unmount(self, view: Any, *, skip_digestion: bool = False) -> None:
         """Called by MolSysViewer when the user navigates away from this panel."""
 
 
@@ -166,7 +178,9 @@ class AddonWorkspaceSpec:
             object.__setattr__(self, "description", self.description.strip())
         object.__setattr__(self, "meta", _normalize_meta(self.meta))
 
-    def info(self) -> dict[str, Any]:
+    @signal()
+    @digest()
+    def info(self, *, skip_digestion: bool = False) -> dict[str, Any]:
         return {
             "id": self.id,
             "title": self.title,
@@ -202,7 +216,9 @@ class AddonPanelSpec:
         object.__setattr__(self, "target", _ensure_non_empty_text(self.target, "AddonPanelSpec.target"))
         object.__setattr__(self, "meta", _normalize_meta(self.meta))
 
-    def info(self) -> dict[str, Any]:
+    @signal()
+    @digest()
+    def info(self, *, skip_digestion: bool = False) -> dict[str, Any]:
         return {
             "id": self.id,
             "title": self.title,
@@ -236,7 +252,9 @@ class AddonContextActionSpec:
         )
         object.__setattr__(self, "meta", _normalize_meta(self.meta))
 
-    def info(self) -> dict[str, Any]:
+    @signal()
+    @digest()
+    def info(self, *, skip_digestion: bool = False) -> dict[str, Any]:
         return {
             "id": self.id,
             "title": self.title,
@@ -267,7 +285,9 @@ class AddonSectionSpec:
         object.__setattr__(self, "target_panel", _ensure_non_empty_text(target, "AddonSectionSpec.target_panel"))
         object.__setattr__(self, "meta", _normalize_meta(self.meta))
 
-    def info(self) -> dict[str, Any]:
+    @signal()
+    @digest()
+    def info(self, *, skip_digestion: bool = False) -> dict[str, Any]:
         return {
             "id": self.id,
             "title": self.title,
@@ -298,7 +318,9 @@ class AddonShapeProviderSpec:
         object.__setattr__(self, "kinds", _normalize_tuple(self.kinds, "AddonShapeProviderSpec.kinds"))
         object.__setattr__(self, "meta", _normalize_meta(self.meta))
 
-    def info(self) -> dict[str, Any]:
+    @signal()
+    @digest()
+    def info(self, *, skip_digestion: bool = False) -> dict[str, Any]:
         return {
             "id": self.id,
             "title": self.title,
@@ -325,7 +347,9 @@ class AddonStyleHelperSpec:
         object.__setattr__(self, "tags", _normalize_tuple(self.tags, "AddonStyleHelperSpec.tags"))
         object.__setattr__(self, "meta", _normalize_meta(self.meta))
 
-    def info(self) -> dict[str, Any]:
+    @signal()
+    @digest()
+    def info(self, *, skip_digestion: bool = False) -> dict[str, Any]:
         return {
             "id": self.id,
             "title": self.title,
@@ -352,7 +376,9 @@ class AddonExportHelperSpec:
         object.__setattr__(self, "formats", _normalize_tuple(self.formats, "AddonExportHelperSpec.formats"))
         object.__setattr__(self, "meta", _normalize_meta(self.meta))
 
-    def info(self) -> dict[str, Any]:
+    @signal()
+    @digest()
+    def info(self, *, skip_digestion: bool = False) -> dict[str, Any]:
         return {
             "id": self.id,
             "title": self.title,
@@ -377,7 +403,9 @@ class AddonToolModeSpec:
         object.__setattr__(self, "entry", _ensure_non_empty_text(self.entry, "AddonToolModeSpec.entry"))
         object.__setattr__(self, "meta", _normalize_meta(self.meta))
 
-    def info(self) -> dict[str, Any]:
+    @signal()
+    @digest()
+    def info(self, *, skip_digestion: bool = False) -> dict[str, Any]:
         return {
             "id": self.id,
             "title": self.title,
@@ -447,7 +475,9 @@ class AddonLifecycleSpec:
             ),
         )
 
-    def info(self) -> dict[str, bool]:
+    @signal()
+    @digest()
+    def info(self, *, skip_digestion: bool = False) -> dict[str, bool]:
         return {
             "has_on_enable": self.on_enable is not None,
             "has_on_disable": self.on_disable is not None,
@@ -645,7 +675,9 @@ class AddonSpec:
         _validate_unique_ids(self.export_helpers, "AddonSpec.export_helpers")
         _validate_unique_ids(self.tool_modes, "AddonSpec.tool_modes")
 
-    def info(self) -> dict[str, Any]:
+    @signal()
+    @digest()
+    def info(self, *, skip_digestion: bool = False) -> dict[str, Any]:
         return {
             "name": self.name,
             "package": self.package,
@@ -769,6 +801,7 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         addon: AddonSpec,
         *,
         lifecycle: AddonLifecycleSpec | None = None,
+        skip_digestion: bool = False,
     ) -> AddonSpec:
         if not isinstance(addon, AddonSpec):
             raise ValueError("addons.register(...) requires an AddonSpec instance.")
@@ -790,7 +823,7 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
 
     @signal(tags=["addon"])
     @digest()
-    def register_module(self, module: str | ModuleType) -> AddonSpec:
+    def register_module(self, module: str | ModuleType, *, skip_digestion: bool = False) -> AddonSpec:
         imported = import_module(module) if isinstance(module, str) else module
         addon = self.register(
             _load_addon_spec_from_module(imported),
@@ -819,6 +852,7 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         modules: tuple[str, ...] | list[str] | None = None,
         *,
         include_known_modules: bool = False,
+        skip_digestion: bool = False,
     ) -> list[AddonSpec]:
         discovered: list[AddonSpec] = []
         sources: list[tuple[str, str | None, Any | None]] = []
@@ -1124,8 +1158,9 @@ class ViewAddonsManager(_AddonAggregationMixin):
                 pass
         return sorted(names)
 
+    @signal()
     @digest()
-    def bind_runtime(self) -> None:
+    def bind_runtime(self, *, skip_digestion: bool = False) -> None:
         self._notify_view_runtime = True
         self._notify_runtime_summary()
 
@@ -1315,8 +1350,9 @@ class ViewAddonsManager(_AddonAggregationMixin):
         self._lifecycle_failures.pop(f"lifecycle:{addon}.on_context_action:{action_id}", None)
         return True
 
+    @signal()
     @digest()
-    def build_context_items(self, selection: dict[str, Any]) -> list[dict[str, Any]]:
+    def build_context_items(self, selection: dict[str, Any], *, skip_digestion: bool = False) -> list[dict[str, Any]]:
         """Compute selection-driven context-menu items without sending anything.
 
         Split out of :meth:`refresh_context_items` so the canonical popup
@@ -1356,8 +1392,9 @@ class ViewAddonsManager(_AddonAggregationMixin):
                 )
         return items
 
+    @signal()
     @digest()
-    def refresh_context_items(self, selection: dict[str, Any]) -> list[dict[str, Any]]:
+    def refresh_context_items(self, selection: dict[str, Any], *, skip_digestion: bool = False) -> list[dict[str, Any]]:
         """Recompute the items and push them to the frontend.
 
         The push model is unchanged: every active-selection change re-sends the
@@ -1369,8 +1406,9 @@ class ViewAddonsManager(_AddonAggregationMixin):
             send({"op": "set_addon_context_items", "items": items})
         return items
 
+    @signal()
     @digest()
-    def resolve_panel_widget(self, addon_name: str, panel_id: str) -> AddonPanelWidget | None:
+    def resolve_panel_widget(self, addon_name: str, panel_id: str, *, skip_digestion: bool = False) -> AddonPanelWidget | None:
         """Instantiate and return the AddonPanelWidget for a given panel, or None.
 
         Returns ``None`` when the add-on is not enabled, the panel does not

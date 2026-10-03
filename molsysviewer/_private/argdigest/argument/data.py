@@ -1,6 +1,6 @@
 """`data` is a serialised movie timeline handed to `from_dict`.
 
-A mapping only. What makes it a *valid* timeline — `molsysmovie_version`, keyframes in
+A mapping for movie timelines; binary bytes for remote downloads. What makes it a *valid* timeline — `molsysmovie_version`, keyframes in
 order — stays in `from_dict`, which owns the schema and already refuses a version it does
 not know.
 
@@ -15,6 +15,10 @@ from molsysviewer._private.exceptions import ArgumentError
 
 
 def digest_data(data, caller=None):
+    if caller == "molsysviewer.remote.view_channel.publish_download":
+        if isinstance(data, (bytes, bytearray, memoryview)):
+            return data
+        raise ArgumentError("data", value=data, caller=caller, message="expected binary download content")
     if isinstance(data, Mapping):
         return data
     raise ArgumentError(

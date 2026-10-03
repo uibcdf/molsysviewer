@@ -10,6 +10,7 @@ type BaseTarget =
         chain_name?: string;
     }
     | { event: "interaction_context_menu"; kind: "shape"; atom_indices: number[]; tag?: string; shape_name?: string }
+    | { event: "interaction_context_menu"; kind: "interaction"; atom_indices: number[]; tag?: string; shape_name?: string; entity_ref?: unknown }
     | { event: "interaction_context_menu"; kind: "measurement"; atom_indices: number[]; tag?: string; measurement_name?: string }
     | { event: "interaction_context_menu"; kind: "annotation"; atom_indices: number[]; tag?: string; text?: string };
 
@@ -27,6 +28,8 @@ export type ContextMenuAction =
     | "hide_measurement"
     | "delete_annotation"
     | "delete_shape"
+    | "delete_interaction"
+    | "focus_interaction"
     | "delete_measurement"
     | "focus_selection"
     | "activate_selection"
@@ -109,6 +112,7 @@ export type ContextMenuOptions = {
 function targetTitle(target: ContextMenuTarget): string {
     if (target.kind === "empty") return "Canvas";
     if (target.kind === "shape") return target.shape_name?.trim() || target.tag?.trim() || "Shape";
+    if (target.kind === "interaction") return target.shape_name?.trim() || target.tag?.trim() || "Interaction";
     if (target.kind === "measurement") return target.measurement_name?.trim() || target.tag?.trim() || "Measurement";
     if (target.kind === "annotation") return target.text?.trim() || target.tag?.trim() || "Annotation";
     if (target.group_name?.trim()) {
@@ -267,6 +271,11 @@ export class ViewerContextMenu {
             this.scrollEl.appendChild(this.makeActionButton("Angle (Representative Atom)", "angle", { endpoint_policy: "representative_atom" }));
             this.scrollEl.appendChild(this.makeActionButton("Dihedral", "dihedral"));
             this.scrollEl.appendChild(this.makeActionButton("Dihedral (Representative Atom)", "dihedral", { endpoint_policy: "representative_atom" }));
+        } else if (target.kind === "interaction") {
+            if (target.tag?.trim()) {
+                this.scrollEl.appendChild(this.makeActionButton("Focus Interaction Set", "focus_interaction"));
+                this.scrollEl.appendChild(this.makeActionButton("Delete Interaction Set", "delete_interaction"));
+            }
         } else if (target.kind === "shape") {
             this.scrollEl.appendChild(this.makeActionButton("Focus Target", "focus_target"));
             if (target.tag?.trim()) {
@@ -909,6 +918,10 @@ export class ViewerContextMenu {
     }
 
     private resolveActionDetails(action: ContextMenuAction): ContextActionDetails | null {
+        if (action === "delete_interaction" || action === "focus_interaction") {
+            if (this.currentTarget?.kind !== "interaction" || !this.currentTarget.tag?.trim()) return null;
+            return { tag: this.currentTarget.tag };
+        }
         if (action === "delete_annotation" || action === "delete_shape" || action === "delete_measurement" || action === "hide_measurement") {
             const tag =
                 this.currentTarget?.kind === "annotation" || this.currentTarget?.kind === "shape" || this.currentTarget?.kind === "measurement"

@@ -9,6 +9,7 @@ import { Color } from "molstar/lib/mol-util/color";
 import { Vec3 } from "molstar/lib/mol-math/linear-algebra";
 
 import { AddLabelMessage, LabelStyle, UpdateLabelMessage } from "../../messages/viewer-messages";
+import { AnnotationGeometry, cameraOffsetPosition, renderAnnotation } from "../../shapes/annotation-callout";
 
 function styleToVisualParams(style?: LabelStyle): Record<string, unknown> | undefined {
     if (!style) return undefined;
@@ -36,6 +37,11 @@ export interface AnnotationCallbacks {
 
 export class AnnotationHandlers {
     private readonly labelRefs = new Set<StateTransform.Ref>();
+    private readonly hiddenTags = new Set<string>();
+    private readonly callouts = new Map<string, { ref: string; signature: string }>();
+    private refreshQueue = Promise.resolve();
+    private cameraSignature = "";
+    private disposed = false;
     private readonly refsByTag = new Map<string, Set<StateTransform.Ref>>();
     private readonly specsByTag = new Map<string, {
         text: string;
@@ -59,7 +65,6 @@ export class AnnotationHandlers {
 
     async addLabel(msg: AddLabelMessage) {
         const structure = this.callbacks.getStructure();
-        if (!structure) return;
 
         const text = typeof msg.options?.text === "string" ? msg.options.text : "";
         const atomIndices = Array.isArray(msg.options?.atom_indices)
@@ -77,6 +82,17 @@ export class AnnotationHandlers {
             : [0.0, 0.0, 0.0];
         const leaderLine = !!msg.options?.leader_line;
         const leaderLineStyle = msg.options?.leader_line_style ?? "dashed";
+        if (position && msg.options?.position_unit !== undefined && msg.options.position_unit !== "angstrom") {
+            throw new Error("Annotation position must use angstrom units.");
+        }
+        const expectedOffsetUnit = offsetMode === "world" ? "angstrom" : "dimensionless";
+        if (msg.options?.offset_unit !== undefined && msg.options.offset_unit !== expectedOffsetUnit) {
+            throw new Error("Annotation offset has incompatible units.");
+        }
+        if ((position && (position.length !== 3 || position.some(v => !Number.isFinite(v)))) ||
+            offset.length !== 3 || offset.some(v => !Number.isFinite(v))) {
+            throw new Error("Annotation coordinates and offsets require finite triples.");
+        }
 
         if (!text.trim() && !position && atomIndices.length === 0) return;
 
@@ -101,22 +117,24 @@ export class AnnotationHandlers {
 
         // Notify UI overlay (strips)
         this.callbacks.addLabelOverlay?.(msg);
+        if (this.hiddenTags.has(tag)) return;
+
+        if (position || offsetMode === "world" || leaderLine) {
+            const geometry = this.geometryFor(tag);
+            if (!geometry) return;
+            const ref = await renderAnnotation(this.plugin, geometry);
+            this.callouts.set(tag, { ref, signature: JSON.stringify(geometry) });
+            this.labelRefs.add(ref);
+            this.refsByTag.set(tag, new Set([ref]));
+            this.callbacks.registerRef(ref, tag);
+            return;
+        }
 
         let loci: any;
         const finalOffset = [...offset];
 
-        if (position) {
-            const closest = this.findClosestAtom(structure, position);
-            if (!closest) return; // No atoms in structure
-            loci = this.buildLociForSingleAtom(structure, closest.unit, closest.elementIndex);
-
-            // Compute displacement vector to project the label to the absolute coordinates
-            finalOffset[0] = position[0] - closest.coords[0] + offset[0];
-            finalOffset[1] = position[1] - closest.coords[1] + offset[1];
-            finalOffset[2] = position[2] - closest.coords[2] + offset[2];
-        } else {
-            loci = this.buildLociFromAtomIndices(structure, atomIndices);
-        }
+        if (!structure) return;
+        loci = this.buildLociFromAtomIndices(structure, atomIndices);
 
         if (!loci) return;
 
@@ -175,7 +193,8 @@ export class AnnotationHandlers {
                 tag,
                 layer_tag: msg.options?.layer_tag ?? prevSpec?.layer_tag,
                 style: msg.options?.style ?? prevSpec?.style,
-                position: msg.options?.position ?? prevSpec?.position,
+                position: msg.options && Object.prototype.hasOwnProperty.call(msg.options, "position")
+                    ? msg.options.position ?? undefined : prevSpec?.position,
                 offset_mode: msg.options?.offset_mode ?? prevSpec?.offset_mode,
                 offset: msg.options?.offset ?? prevSpec?.offset,
                 leader_line: msg.options?.leader_line ?? prevSpec?.leader_line,
@@ -185,7 +204,11 @@ export class AnnotationHandlers {
     }
 
     async clearLabels() {
-        if (this.labelRefs.size === 0) return;
+        this.specsByTag.clear();
+        this.hiddenTags.clear();
+        this.layerTagIndex.clear();
+        this.callouts.clear();
+        await this.refreshQueue;
         const refs = Array.from(this.labelRefs);
         this.labelRefs.clear();
         this.refsByTag.clear();
@@ -199,6 +222,8 @@ export class AnnotationHandlers {
     }
 
     async clearLabelByTag(tag: string) {
+        this.callouts.delete(tag);
+        await this.refreshQueue;
         const refs = Array.from(this.refsByTag.get(tag) ?? []);
         if (refs.length === 0) return;
         this.refsByTag.delete(tag);
@@ -220,6 +245,7 @@ export class AnnotationHandlers {
 
     renameTag(oldTag: string, newTag: string) {
         if (!oldTag || !newTag || oldTag === newTag) return;
+        if (this.hiddenTags.delete(oldTag)) this.hiddenTags.add(newTag);
         const refs = this.refsByTag.get(oldTag);
         if (refs) {
             this.refsByTag.delete(oldTag);
@@ -234,6 +260,8 @@ export class AnnotationHandlers {
                 layer_tag: spec.layer_tag === oldTag ? newTag : spec.layer_tag,
             });
         }
+        const callout = this.callouts.get(oldTag);
+        if (callout) { this.callouts.delete(oldTag); this.callouts.set(newTag, callout); }
         for (const tags of this.layerTagIndex.values()) {
             if (tags.delete(oldTag)) tags.add(newTag);
         }
@@ -245,6 +273,8 @@ export class AnnotationHandlers {
     }
 
     dropTag(tag: string) {
+        this.hiddenTags.delete(tag);
+        this.callouts.delete(tag);
         const refs = Array.from(this.refsByTag.get(tag) ?? []);
         this.refsByTag.delete(tag);
         this.specsByTag.delete(tag);
@@ -261,9 +291,11 @@ export class AnnotationHandlers {
             return;
         }
         if (!visible) {
+            this.hiddenTags.add(tag);
             await this.clearLabelByTag(tag);
             return;
         }
+        this.hiddenTags.delete(tag);
         if ((this.refsByTag.get(tag)?.size ?? 0) > 0) return;
         const spec = this.specsByTag.get(tag);
         if (!spec) return;
@@ -289,6 +321,67 @@ export class AnnotationHandlers {
         const spec = this.specsByTag.get(tag);
         return spec ? { text: spec.text, atom_indices: spec.atom_indices } : undefined;
     }
+
+    private geometryFor(tag: string): AnnotationGeometry | undefined {
+        const spec = this.specsByTag.get(tag);
+        if (!spec) return;
+        let anchor = spec.position ? [...spec.position] : undefined;
+        if (!anchor) {
+            const structure = this.callbacks.getStructure();
+            if (!structure) return;
+            const wanted = new Set(spec.atom_indices);
+            const center = Vec3();
+            const point = Vec3();
+            let count = 0;
+            for (const unit of structure.units) {
+                if (!Unit.isAtomic(unit)) continue;
+                for (let ordinal = 0; ordinal < OrderedSet.size(unit.elements); ordinal++) {
+                    const atom = OrderedSet.getAt(unit.elements, ordinal);
+                    if (!wanted.has(atom)) continue;
+                    unit.conformation.position(atom, point);
+                    Vec3.add(center, center, point);
+                    count++;
+                }
+            }
+            if (!count) return;
+            anchor = Array.from(Vec3.scale(center, center, 1 / count));
+        }
+        const offset = spec.offset ?? [0, 0, 0];
+        const camera = this.plugin.canvas3d?.camera.state;
+        const position = spec.offset_mode === "world" || !camera
+            ? anchor.map((value, i) => value + offset[i]) : cameraOffsetPosition(anchor, offset, camera);
+        const style = styleToVisualParams(spec.style) ?? {};
+        return { tag, text: spec.text, anchor, position,
+            color: Number(style.textColor ?? 0), size: Number(style.textSize ?? 0.5),
+            background: Boolean(style.background ?? false), backgroundOpacity: Number(style.backgroundOpacity ?? 0.5),
+            leader: !!spec.leader_line, pattern: spec.leader_line_style ?? "dashed" };
+    }
+
+    refresh(): Promise<void> {
+        const update = this.refreshQueue.then(async () => {
+            if (this.disposed) return;
+            for (const [tag, callout] of this.callouts) {
+                const geometry = this.geometryFor(tag);
+                if (!geometry) continue;
+                const signature = JSON.stringify(geometry);
+                if (signature === callout.signature) continue;
+                await renderAnnotation(this.plugin, geometry, callout.ref);
+                if (this.callouts.get(tag) === callout) callout.signature = signature;
+            }
+        });
+        this.refreshQueue = update.catch(() => {});
+        return update;
+    }
+
+    onCamera(snapshot: unknown): void {
+        if (!this.callouts.size) return;
+        const signature = JSON.stringify(snapshot);
+        if (signature === this.cameraSignature) return;
+        this.cameraSignature = signature;
+        void this.refresh().catch(error => console.warn("[MolSysViewer] Annotation refresh failed", error));
+    }
+
+    dispose(): void { this.disposed = true; this.callouts.clear(); }
 
     private buildLociFromAtomIndices(structure: Structure, atomIndices: number[]) {
         const selectionBuilder = StructureSelection.LinearBuilder(structure);

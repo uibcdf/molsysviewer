@@ -17,6 +17,7 @@
  * dispatcher and the Python `core.py` handlers.
  */
 export type PanelAction =
+    | "load_systems"
     // Selection
     | "apply_selection_query"
     | "selection_query_preview_request"
@@ -99,6 +100,10 @@ export type PanelAction =
     | "request_measurement_series"
     | "focus_measurement"
     | "delete_shape"
+    | "create_interaction" | "edit_interaction" | "inspect_interaction"
+    | "select_interaction_observation" | "focus_interaction_observation"
+    | "toggle_interaction_visibility" | "delete_interaction" | "focus_interaction"
+    | "show_all_interactions" | "hide_all_interactions" | "delete_interaction_analysis"
     // Whole lifecycle & style
     | "set_whole_representation"
     | "reset_whole_representation"

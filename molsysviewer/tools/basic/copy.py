@@ -8,7 +8,7 @@ from smonitor import signal
 
 from ..._private.argdigest import digest
 from ...new_view import new_view
-from .merge import _import_view_state
+from ._scene_transfer import _copy_auxiliary, _transfer_state
 
 
 @dep_digest("molsysmt")
@@ -29,5 +29,6 @@ def copy(
         debug_js=view._debug_js if debug_js is None else debug_js,  # noqa: SLF001
         skip_digestion=True,
     )
-    _import_view_state(result, [view])
+    result.import_state(_transfer_state(view, result))
+    _copy_auxiliary(view, result)
     return result

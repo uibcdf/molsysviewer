@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import math
 import warnings
+from copy import deepcopy
 from typing import Any, Dict, Optional
 
 from smonitor import signal
 
 from . import pyunitwizard as puw
 from ._private.argdigest import digest
+from ._private.scene_registry import SceneRegistry
 from .scene_history import records_scene_history
 from .viewer.utils import quantity_value_in_unit
 
@@ -132,6 +134,14 @@ class LayerHandle:
         self.broken = False
         self.broken_reason: str | None = None
 
+    def _assert_current(self):
+        if isinstance(self, SceneObject):
+            current = self._view._scene_objects.get((self.kind, self.tag))
+        else:
+            current = self._view._layers.get(self.tag)
+        if current is not self or not self._active:
+            raise ValueError(f"Scene handle {self.tag!r} is retired; reacquire it from its manager.")
+
     @property
     def owner(self) -> str | None:
         """Creator attribution captured when this object was created."""
@@ -162,6 +172,11 @@ class LayerHandle:
         }
 
     @property
+    def interactions(self):
+        return {item.tag: item for item in self._view._scene_objects.values()
+                if item.kind == "interaction" and item.layer_tag == self.tag}
+
+    @property
     def regions(self) -> Dict[str, Any]:
         """Regions that belong to this layer (Contract B3, Phase 9)."""
         return {
@@ -174,6 +189,7 @@ class LayerHandle:
     def members(self) -> Dict[tuple[str, str], Any]:
         members: Dict[tuple[str, str], Any] = {}
         for kind, values in (
+            ("interaction", self.interactions),
             ("shape", self.shapes),
             ("annotation", self.annotations),
             ("measurement", self.measurements),
@@ -268,16 +284,22 @@ class SceneObject(LayerHandle):
         super()._send(op, **payload)
 
     @records_scene_history
+    @signal()
+    @digest()
     def show(self, skip_digestion: bool = False) -> None:
         super().show(skip_digestion=True)
         self._sync_group_layer_hidden_state()
 
     @records_scene_history
+    @signal()
+    @digest()
     def hide(self, skip_digestion: bool = False) -> None:
         super().hide(skip_digestion=True)
         self._sync_group_layer_hidden_state()
 
     @records_scene_history
+    @signal()
+    @digest()
     def set_tag(self, new_tag: str, skip_digestion: bool = False) -> None:
         if not self._active or new_tag == self.tag:
             return
@@ -294,6 +316,8 @@ class SceneObject(LayerHandle):
             self.layer_tag = new_tag
 
     @records_scene_history
+    @signal()
+    @digest()
     def set_layer_tag(self, new_layer_tag: str, skip_digestion: bool = False) -> None:
         if not self._active:
             return
@@ -301,6 +325,8 @@ class SceneObject(LayerHandle):
             self._view._set_scene_object_layer_tag(self, new_layer_tag)  # noqa: SLF001
 
     @records_scene_history
+    @signal()
+    @digest()
     def delete(self, skip_digestion: bool = False) -> None:
         if not self._active:
             return
@@ -340,6 +366,8 @@ class Layer(LayerHandle):
             sync()
 
     @records_scene_history
+    @signal()
+    @digest()
     def set_tag(self, new_tag: str, skip_digestion: bool = False) -> None:
         members = list(self.members.values())
         if len(members) == 1:
@@ -366,35 +394,27 @@ class Layer(LayerHandle):
         else:
             self._sync_summary_runtime()
 
-    @staticmethod
-    def _member_has_nothing_to_render(member: Any) -> bool:
-        # A region without its own representation (Contract A) has nothing to
-        # show or hide; toggling it directly would warn, so a bulk layer op
-        # tracks its state quietly instead.
-        has_own_visual = getattr(member, "_has_own_visual", None)
-        return callable(has_own_visual) and not has_own_visual()
-
     @records_scene_history
+    @signal()
+    @digest()
     def show(self, skip_digestion: bool = False) -> None:
         self._hidden = False
         for member in list(self.members.values()):
-            if self._member_has_nothing_to_render(member):
-                member._hidden = False  # noqa: SLF001
-                continue
             member.show(skip_digestion=True)
         self._sync_summary_runtime()
 
     @records_scene_history
+    @signal()
+    @digest()
     def hide(self, skip_digestion: bool = False) -> None:
         self._hidden = True
         for member in list(self.members.values()):
-            if self._member_has_nothing_to_render(member):
-                member._hidden = True  # noqa: SLF001
-                continue
             member.hide(skip_digestion=True)
         self._sync_summary_runtime()
 
     @records_scene_history
+    @signal()
+    @digest()
     def delete(self, skip_digestion: bool = False) -> None:
         if not self._active:
             return
@@ -405,6 +425,8 @@ class Layer(LayerHandle):
             self._view._unregister_layer(self.tag)  # noqa: SLF001
 
     @records_scene_history
+    @signal()
+    @digest()
     def ungroup(self, skip_digestion: bool = False) -> None:
         """Dissolve this user group without deleting any member."""
         if not self._active:
@@ -428,7 +450,9 @@ class Layer(LayerHandle):
         self._view._unregister_layer(self.tag)  # noqa: SLF001
 
     @records_scene_history
-    def attach(self, obj: "SceneObject") -> None:
+    @signal()
+    @digest()
+    def attach(self, obj: "SceneObject", *, skip_digestion: bool = False) -> None:
         """Move *obj* into this layer (top-down membership management).
 
         Equivalent to ``obj.set_layer_tag(self.tag)`` but expressed from the
@@ -448,7 +472,9 @@ class Layer(LayerHandle):
             raise ValueError(f"Layer {self.tag!r} is no longer active.")
         obj.set_layer_tag(self.tag)
 
-    def info(self) -> list[dict]:
+    @signal()
+    @digest()
+    def info(self, *, skip_digestion: bool = False) -> list[dict]:
         """Return a summary of all objects in this layer."""
         rows = []
         for (_kind, tag), obj in self.members.items():
@@ -464,7 +490,9 @@ class Layer(LayerHandle):
         return rows
 
     @records_scene_history
-    def detach(self, obj: "SceneObject") -> None:
+    @signal()
+    @digest()
+    def detach(self, obj: "SceneObject", *, skip_digestion: bool = False) -> None:
         """Detach *obj* from this layer, making it its own independent layer.
 
         Equivalent to ``obj.set_layer_tag(obj.tag)``.  A new layer group is
@@ -484,7 +512,7 @@ class Layer(LayerHandle):
         obj.set_layer_tag(obj.tag)
 
 
-class LayersManager(dict[str, Layer]):
+class LayersManager(SceneRegistry):
     """Live registry and public manager for scene grouping layers."""
 
     def __init__(self, view: Any) -> None:
@@ -510,7 +538,7 @@ class LayersManager(dict[str, Layer]):
             meta=dict(meta or {}),
             provenance="user",
         )
-        self[normalized] = layer
+        dict.__setitem__(self, normalized, layer)
         layer._send_create()  # noqa: SLF001
         return layer
 
@@ -547,7 +575,7 @@ class LayersManager(dict[str, Layer]):
             return {
                 "tag": layer.tag,
                 "owner": layer.owner,
-                "meta": dict(layer.meta),
+                "meta": deepcopy(layer.meta),
                 "provenance": layer.provenance,
                 "visible": not layer._hidden,  # noqa: SLF001
                 "n_members": len(layer.members),
@@ -641,6 +669,7 @@ class Shape(SceneObject):
         self._sync_summary_runtime()
 
     def _require_shape_message(self) -> dict:
+        self._assert_current()
         getter = getattr(self._view, "_get_shape_message", None)
         if not callable(getter):
             raise ValueError("Shape mutation requires a viewer with shape history support.")
@@ -826,7 +855,9 @@ class Shape(SceneObject):
         next_options["layer_tag"] = self.layer_tag
         self._replace_shape_and_refresh_runtime({"op": op, "options": next_options})
 
-    def get_center(self):
+    @signal()
+    @digest()
+    def get_center(self, *, skip_digestion: bool = False):
         msg = self._require_shape_message()
         options = msg.get("options")
         center = options.get("center") if isinstance(options, dict) else None
@@ -834,7 +865,9 @@ class Shape(SceneObject):
             raise ValueError(f"Shape {self.tag!r} does not expose a geometric center.")
         return puw.standardize(puw.quantity(list(center), "angstroms"))
 
-    def get_coordinates(self):
+    @signal()
+    @digest()
+    def get_coordinates(self, *, skip_digestion: bool = False):
         """Return the geometric coordinates in the configured standard length unit.
 
         The return value depends on the shape type:
@@ -899,7 +932,9 @@ class Shape(SceneObject):
         raise NotImplementedError(f"get_coordinates is not implemented for shape op {op!r}.")
 
     @records_scene_history
-    def set_coordinates(self, coordinates) -> None:
+    @signal()
+    @digest()
+    def set_coordinates(self, coordinates, *, skip_digestion: bool = False) -> None:
         """Replace the geometric coordinates of this shape.
 
         Accepts a ``puw`` quantity or a plain array in angstroms with the same layout
@@ -960,20 +995,28 @@ class Shape(SceneObject):
         raise NotImplementedError(f"set_coordinates is not implemented for shape op {op!r}.")
 
     @records_scene_history
+    @signal()
+    @digest()
     def set_center(self, center, skip_digestion: bool = False) -> None:
         self._apply_sphere_update(center=list(puw.get_value(center, to_unit="angstroms")))
 
     @records_scene_history
+    @signal()
+    @digest()
     def set_radius(self, radius, skip_digestion: bool = False) -> None:
         self._apply_sphere_update(radius=float(puw.get_value(radius, to_unit="angstroms")))
 
     @records_scene_history
+    @signal()
+    @digest()
     def set_color(self, color, skip_digestion: bool = False) -> None:
         from .colors import normalize_color
 
         self._apply_sphere_update(color=normalize_color(color))
 
     @records_scene_history
+    @signal()
+    @digest()
     def set_alpha(self, alpha: float, skip_digestion: bool = False) -> None:
         msg = self._require_shape_message()
         op = msg.get("op")
@@ -1009,6 +1052,8 @@ class Shape(SceneObject):
         raise NotImplementedError(f"set_alpha is not implemented for shape op {op!r}.")
 
     @records_scene_history
+    @signal()
+    @digest()
     def set_colors(self, colors, skip_digestion: bool = False) -> None:
         from .colors import normalize_color
 
@@ -1060,6 +1105,8 @@ class Shape(SceneObject):
         raise NotImplementedError(f"set_colors is not implemented for shape op {op!r}.")
 
     @records_scene_history
+    @signal()
+    @digest()
     def set_radii(self, radii, skip_digestion: bool = False) -> None:
         msg = self._require_shape_message()
         op = msg.get("op")
@@ -1104,6 +1151,8 @@ class Shape(SceneObject):
         raise NotImplementedError(f"set_radii is not implemented for shape op {op!r}.")
 
     @records_scene_history
+    @signal()
+    @digest()
     def set_radius_scale(self, radius_scale: float, skip_digestion: bool = False) -> None:
         msg = self._require_shape_message()
         op = msg.get("op")
@@ -1116,6 +1165,8 @@ class Shape(SceneObject):
         raise NotImplementedError(f"set_radius_scale is not implemented for shape op {op!r}.")
 
     @records_scene_history
+    @signal()
+    @digest()
     def set_length_scale(self, length_scale: float, skip_digestion: bool = False) -> None:
         msg = self._require_shape_message()
         op = msg.get("op")
@@ -1123,11 +1174,14 @@ class Shape(SceneObject):
             raise NotImplementedError(f"set_length_scale is not implemented for shape op {op!r}.")
         self._apply_displacement_update(length_scale=float(length_scale))
 
+    @signal()
+    @digest()
     def focus(
         self,
         duration: Any = "250 ms",
         duration_ms: Any | None = None,
         extra_radius: Any = "0.5 nanometers",
+        *, skip_digestion: bool = False,
     ) -> None:
         """Center the camera on this shape.
 
@@ -1176,13 +1230,16 @@ class Annotation(SceneObject):
         super().__init__(view, tag, kind="annotation", layer_tag=layer_tag, meta=meta)
 
     def _require_annotation_record(self) -> dict:
+        self._assert_current()
         history = getattr(self._view, "_annotation_history", [])
         record = next((r for r in history if r.get("tag") == self.tag), None)
         if record is None:
             raise ValueError(f"No annotation record found for tag {self.tag!r}.")
         return record
 
-    def get_coordinates(self):
+    @signal()
+    @digest()
+    def get_coordinates(self, *, skip_digestion: bool = False):
         """Return the anchor position in the configured standard length unit.
 
         The anchor is either the position stored in the annotation record,
@@ -1216,15 +1273,17 @@ class Annotation(SceneObject):
         centroid = arr[0].mean(axis=0).tolist()
         return puw.standardize(puw.quantity(centroid, "nm"))
 
-    def set_coordinates(self, new_pos) -> None:
-        """Not supported: annotation anchors are tied to atom indices.
-
-        Use ``view.annotations.set_group_index(tag, group_index)`` to reanchor
-        the label to a different atom group.
-        """
-        raise NotImplementedError(
-            f"Annotation {self.tag!r} is atom-anchored. "
-            "To move it, use view.annotations.set_group_index(tag, group_index)."
+    @signal()
+    @digest()
+    def set_coordinates(self, new_pos, *, skip_digestion: bool = False) -> None:
+        """Replace this annotation's anchor with one absolute physical position."""
+        import numpy as np
+        self._assert_current()
+        values = np.asarray(puw.get_value(new_pos, to_unit="angstrom"))
+        if values.size != 3:
+            raise ValueError("An annotation anchor requires exactly one position.")
+        self._view.annotations.set_anchor(
+            self.tag, position=puw.quantity(values.reshape(3), "angstrom"), skip_digestion=True,
         )
 
 
@@ -1234,7 +1293,9 @@ class Measurement(SceneObject):
     ) -> None:
         super().__init__(view, tag, kind="measurement", layer_tag=layer_tag, meta=meta)
 
-    def get_coordinates(self):
+    @signal()
+    @digest()
+    def get_coordinates(self, *, skip_digestion: bool = False):
         """Return the 3D positions of the endpoint atoms as a ``puw`` quantity.
 
         The shape is ``(n_endpoints, 3)`` in the configured standard length unit, where ``n_endpoints`` is 2
@@ -1246,6 +1307,7 @@ class Measurement(SceneObject):
         """
         import numpy as _np
 
+        self._assert_current()
         history = getattr(self._view, "_measurement_history", [])
         record = next((r for r in history if r.get("tag") == self.tag), None)
         if record is None:
@@ -1273,11 +1335,14 @@ class Measurement(SceneObject):
         arr = _np.asarray(puw.get_value(coords, to_unit="nm"))
         return puw.standardize(puw.quantity(arr[0].tolist(), "nm"))
 
+    @signal()
+    @digest()
     def focus(
         self,
         duration: Any = "250 ms",
         duration_ms: Any | None = None,
         extra_radius: Any = "0.5 nanometers",
+        *, skip_digestion: bool = False,
     ) -> None:
         """Center the camera on the atoms involved in this measurement.
 
@@ -1292,6 +1357,7 @@ class Measurement(SceneObject):
         extra_radius
             Extra padding added to the bounding radius (nm, default 0.5).
         """
+        self._assert_current()
         if duration_ms is not None:
             duration = duration_ms
         history = getattr(self._view, "_measurement_history", [])
@@ -1389,6 +1455,7 @@ class Section(SceneObject):
         super().__init__(view, tag, kind="section", layer_tag=None, meta=meta)
 
     def _require_record(self) -> dict:
+        self._assert_current()
         history = getattr(self._view, "_section_history", [])
         record = next((r for r in history if r.get("tag") == self.tag), None)
         if record is None:
@@ -1403,15 +1470,21 @@ class Section(SceneObject):
         if callable(sync):
             sync()
 
-    def get_point(self):
+    @signal()
+    @digest()
+    def get_point(self, *, skip_digestion: bool = False):
         """Return the plane's anchor point in the configured standard length unit."""
         return puw.standardize(puw.quantity(list(self._require_record()["point"]), "nm"))
 
-    def get_normal(self):
+    @signal()
+    @digest()
+    def get_normal(self, *, skip_digestion: bool = False):
         """Return the plane's normal vector as a plain list ``[nx, ny, nz]``."""
         return list(self._require_record()["normal"])
 
-    def is_inverted(self) -> bool:
+    @signal()
+    @digest()
+    def is_inverted(self, *, skip_digestion: bool = False) -> bool:
         """Return ``True`` if the clipping side is inverted."""
         return bool(self._require_record().get("invert", False))
 
@@ -1421,7 +1494,9 @@ class Section(SceneObject):
         return not bool(self._require_record().get("hidden", False))
 
     @records_scene_history
-    def set_point(self, point) -> None:
+    @signal()
+    @digest()
+    def set_point(self, point, *, skip_digestion: bool = False) -> None:
         """Move the plane anchor to *point* (puw quantity or plain ``[x,y,z]`` in nm)."""
         import numpy as _np
 
@@ -1434,7 +1509,9 @@ class Section(SceneObject):
         self._push_update()
 
     @records_scene_history
-    def set_normal(self, normal) -> None:
+    @signal()
+    @digest()
+    def set_normal(self, normal, *, skip_digestion: bool = False) -> None:
         """Set the plane normal direction (plain list or array, no units required)."""
         import numpy as _np
 
@@ -1447,6 +1524,8 @@ class Section(SceneObject):
         self._push_update()
 
     @records_scene_history
+    @signal()
+    @digest()
     def set_geometry(self, *, point=None, normal=None, skip_digestion: bool = False) -> None:
         """Update point and normal as one undoable geometry mutation."""
         import numpy as _np
@@ -1467,13 +1546,17 @@ class Section(SceneObject):
         self._push_update()
 
     @records_scene_history
-    def set_invert(self, invert: bool) -> None:
+    @signal()
+    @digest()
+    def set_invert(self, invert: bool, *, skip_digestion: bool = False) -> None:
         """Flip which side of the plane is clipped."""
         record = self._require_record()
         record["invert"] = bool(invert)
         self._push_update()
 
     @records_scene_history
+    @signal()
+    @digest()
     def show(self, skip_digestion: bool = False) -> None:
         """Enable this clipping plane."""
         record = self._require_record()
@@ -1484,6 +1567,8 @@ class Section(SceneObject):
         self._push_update()
 
     @records_scene_history
+    @signal()
+    @digest()
     def hide(self, skip_digestion: bool = False) -> None:
         """Disable this clipping plane without deleting it."""
         record = self._require_record()
@@ -1493,23 +1578,31 @@ class Section(SceneObject):
         self._hidden = True
         self._push_update()
 
-    def enable_drag(self) -> None:
+    @signal()
+    @digest()
+    def enable_drag(self, *, skip_digestion: bool = False) -> None:
         """Show the interactive gizmo handles (centre + rim) for this section.
 
         Both handles are visible by default.  Call this after a previous
         :meth:`disable_drag` to restore them.
         """
+        self._assert_current()
         self._view._send({"op": "set_section_drag", "tag": self.tag, "enabled": True})  # noqa: SLF001
 
-    def disable_drag(self) -> None:
+    @signal()
+    @digest()
+    def disable_drag(self, *, skip_digestion: bool = False) -> None:
         """Hide the interactive gizmo handles for this section.
 
         The clipping plane remains active; only the visual handles are hidden.
         Call :meth:`enable_drag` to restore them.
         """
+        self._assert_current()
         self._view._send({"op": "set_section_drag", "tag": self.tag, "enabled": False})  # noqa: SLF001
 
     @records_scene_history
+    @signal()
+    @digest()
     def delete(self, skip_digestion: bool = False) -> None:
         """Remove this clipping plane."""
         history = getattr(self._view, "_section_history", [])

@@ -10,6 +10,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Iterable, Mapping
 
+from smonitor import signal
+
+from .._private.argdigest import digest
 from ..runtime_contract import (
     ACTOR_KINDS,
     DATA_PLANE_ACTIONS,
@@ -97,6 +100,8 @@ class SessionRuntimeRouter:
     def endpoints(self) -> tuple[EndpointRegistration, ...]:
         return tuple(self._endpoints.values())
 
+    @signal()
+    @digest()
     def register_endpoint(
         self,
         endpoint_id: str,
@@ -105,6 +110,7 @@ class SessionRuntimeRouter:
         *,
         actor_id: str | None = None,
         actor_kind: str | None = None,
+        skip_digestion: bool = False,
     ) -> EndpointRegistration:
         if not _non_empty_str(endpoint_id):
             raise ValueError("endpoint_id must be a non-empty string")
@@ -196,16 +202,22 @@ class SessionRuntimeRouter:
                 f"role {role} may not activate capabilities {sorted(present_forbidden)} for this rendering placement"
             )
 
-    def unregister_endpoint(self, endpoint_id: str) -> bool:
+    @signal()
+    @digest()
+    def unregister_endpoint(self, endpoint_id: str, *, skip_digestion: bool = False) -> bool:
         if endpoint_id == self.python_endpoint:
             raise ValueError("the Python authority endpoint cannot be unregistered")
         return self._endpoints.pop(endpoint_id, None) is not None
 
-    def endpoint(self, endpoint_id: str) -> EndpointRegistration | None:
+    @signal()
+    @digest()
+    def endpoint(self, endpoint_id: str, *, skip_digestion: bool = False) -> EndpointRegistration | None:
         return self._endpoints.get(endpoint_id)
 
-    def route_inbound(self, value: Any) -> SessionRouteResult:
-        envelope = validate_envelope_shape(value)
+    @signal()
+    @digest()
+    def route_inbound(self, packet: Any, *, skip_digestion: bool = False) -> SessionRouteResult:
+        envelope = validate_envelope_shape(packet)
         if envelope is None:
             return self._rejected("malformed-envelope", "Runtime envelope is malformed")
         if envelope.protocol_version != RUNTIME_PROTOCOL_VERSION:
@@ -261,6 +273,8 @@ class SessionRuntimeRouter:
             recipient_endpoint_ids=(self.python_endpoint,),
         )
 
+    @signal()
+    @digest()
     def wrap_outbound(
         self,
         message: Mapping[str, Any],
@@ -270,6 +284,7 @@ class SessionRuntimeRouter:
         causation_id: str | None = None,
         operation_id: str | None = None,
         deadline_unix_ms: int | None = None,
+        skip_digestion: bool = False,
     ) -> dict[str, Any]:
         action = action_of(message)
         if action is None:
@@ -306,7 +321,9 @@ class SessionRuntimeRouter:
             raise ValueError("outbound envelope metadata is malformed")
         return envelope
 
-    def duplicate_ack(self, command: RuntimeEnvelope) -> dict[str, Any]:
+    @signal()
+    @digest()
+    def duplicate_ack(self, command: RuntimeEnvelope, *, skip_digestion: bool = False) -> dict[str, Any]:
         """Build the observable acknowledgement for a deduplicated command."""
         if command.endpoint_id not in self._endpoints:
             raise ValueError(f"unknown command endpoint: {command.endpoint_id}")
@@ -331,11 +348,14 @@ class SessionRuntimeRouter:
             "actorKind": "system",
         }
 
+    @signal()
+    @digest()
     def correlated_projection(
         self,
         request: RuntimeEnvelope,
         action: str,
         payload: Mapping[str, Any],
+        *, skip_digestion: bool = False,
     ) -> dict[str, Any]:
         """Answer an accepted client request on that client's exact endpoint."""
         if request.endpoint_id not in self._endpoints:
@@ -356,14 +376,18 @@ class SessionRuntimeRouter:
             "actorKind": "system",
         }
 
-    def projection_endpoint_ids(self) -> tuple[str, ...]:
+    @signal()
+    @digest()
+    def projection_endpoint_ids(self, *, skip_digestion: bool = False) -> tuple[str, ...]:
         return tuple(
             item.endpoint_id
             for item in self._endpoints.values()
             if item.role != "python" and item.capabilities & _PROJECTION_CAPABILITIES
         )
 
-    def rendering_endpoint_ids(self) -> tuple[str, ...]:
+    @signal()
+    @digest()
+    def rendering_endpoint_ids(self, *, skip_digestion: bool = False) -> tuple[str, ...]:
         return tuple(
             item.endpoint_id
             for item in self._endpoints.values()

@@ -6,6 +6,10 @@ def digest_labels(labels, caller=None):
     caller = normalize_viewer_caller(caller)
     if labels is None:
         return None
+    if caller == "molsysviewer.viewer.load":
+        if isinstance(labels, (list, tuple)) and all(item is None or isinstance(item, str) for item in labels):
+            return list(labels)
+        raise ArgumentError("labels", value=labels, caller=caller, message="expected one string/None per source")
     if caller == "molsysviewer.viewer.clear_decorations" and isinstance(labels, bool):
         return labels
     if isinstance(labels, str):

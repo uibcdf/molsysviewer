@@ -16,10 +16,32 @@ supersedes: []
 
 **Status:** approved post-1.0 design (finalized 2026-07-20).
 
-The design remains valid, but it introduces a new reproducible scene domain,
-serialization surface, dynamic evaluation path, and Studio workflow. The
-pre-1.0 runtime contracts are complete, so this feature expansion is deferred
-until after the release rather than widening the release gate.
+**Review 2026-10-03:** the working tree now contains nine native family wrappers
+and the minimal Studio workflow under #114/#140, with compatible published-provider
+qualification still pending. They are not missing future families merely because
+older sketches below place them here. A bounded per-structure count series is a
+conditional pre-1.0 candidate only after a public MolSysMT reduction specifies
+occurrences versus relations and empty/unevaluated/excluded coverage. Persistence,
+residence statistics and automatic playback calculation remain deferred.
+
+**Scope update (2026-09-28):** `uibcdf/molsysviewer#114` proposes a bounded
+pre-1.0 domain for hydrogen bonds and disulfide candidates, coordinated with
+`uibcdf/molsysmt#250`. This report retains the broader post-1.0 work:
+additional families, input modes, analytics, and dynamic evaluation. Its
+atom-pair examples are historical design sketches, not the shared result
+contract; participant roles and inferred-versus-declared evidence must be
+settled with MolSysMT first. The 2026-09-29
+[active minimum design](../interactions_minimum_before_1_0.md#python-api-design-for-implementation-2026-09-29)
+now defines separate named scientific analyses and tagged displays, native
+calculation, and declared H5MSM import. Its API and invalidation decisions
+take precedence over the older sketches below. Additional external formats,
+dynamic evaluation and analytics remain growth work. The optional Mol* calculation path below has
+not been validated as a faster GPU engine; calculation and rendering must
+be described separately before it is offered.
+
+The full design introduces multiple data sources, dynamic evaluation,
+analytics, and a Studio workflow beyond the bounded pre-1.0 slice. Those
+capabilities remain deferred until after the release.
 
 **Verdict: yes — a domain of its own, with its own Studio subpanel.** An interaction has a *shape* (graph edges over frames) that no existing domain has.
 
@@ -42,10 +64,9 @@ caller must **pre-compute the donor/acceptor pairs for every frame** and hand th
 over as a list indexed by structure. The API draws cylinders where it is told; it
 computes nothing. `add_interaction_sites(centers=…, kinds=…)` is the same.
 
-So today an interaction is **a drawing, not an object**. What is lost: the recipe,
-the criterion (§3), the per-frame re-evaluation, and the identity — it cannot be
-renamed, hidden, layered, serialised or undone as an interaction, only as the
-anonymous shape it degenerated into.
+So today an interaction is **a drawing, not a scientific interaction object**.
+The shape can have a tag, layer, visibility and scene history, but it does not
+own the recipe, criterion, participant roles, or per-frame scientific result.
 
 ---
 
@@ -71,9 +92,10 @@ and that record is exactly `provenance` (Contract R).
 
 ### 3.2 Optional Engine: `engine="molstar"`
 
-When interactive speed is paramount, the user can select `engine="molstar"`. Mol\* executes
-its GPU/JS contact computation engine (`ComputeContacts`) directly in the browser or Node.js runtime,
-sending the resulting edge list back to Python.
+An optional future `engine="molstar"` would run Mol\*'s JavaScript contact
+computation (`ComputeContacts`) in the browser or Node.js runtime and return
+the result to Python. Rendering uses the GPU; no speed advantage for the
+calculation is established by this proposal.
 
 ---
 
@@ -147,7 +169,11 @@ InteractionsShape  : InteractionData → Shape.Provider          // rendering
 ```
 
 ### 6.1 Vocabulary Projection
-Mol\* ships 10 native interaction kinds: `hydrogen-bond`, `weak-hydrogen-bond`, `ionic`, `pi-stacking`, `cation-pi`, `halogen-bond`, `hydrophobic`, `metal-coordination`, `covalent`, `unknown`.
+The currently installed Mol\* 5.4.1 runtime exposes 10 drawable interaction
+kinds: `hydrogen-bond`, `weak-hydrogen-bond`, `ionic`, `pi-stacking`,
+`cation-pi`, `halogen-bond`, `hydrophobic`, `metal-coordination`, `covalent`,
+and `unknown`. The separately checked newer source tree adds `water-bridge`;
+that kind is not available in the viewer's current dependency.
 - Scientific interaction types from MolSysMT, ProLIF, or PLIP are mapped to Mol\*'s nearest visual kind.
 - Unmapped or custom types default to `"unknown"` (which renders cleanly with custom colors).
 

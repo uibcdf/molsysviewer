@@ -24,6 +24,131 @@ _NM_TO_ANGSTROM = puw.conversion_factor("nm", "angstroms")
 class SceneMixin:
     _BOX_TAG = "__msv_box"
 
+    @signal(tags=["scene", "box", "edit"])
+    @digest()
+    def set_box(
+        self,
+        box=None,
+        *,
+        molecular_system=None,
+        structure_indices: Any = "all",
+        source_structure_indices: Any = "all",
+        structure_pairing: str | None = None,
+        skip_digestion: bool = False,
+    ) -> None:
+        """Assign the whole-system cell without moving coordinates.
+
+        ``box`` requires length units and three row vectors, with shape (3, 3)
+        or (selected structures, 3, 3). One submitted matrix applies uniformly
+        to the selected structures. ``None`` removes the complete cell series.
+        Initialization and removal require all destination structures; partial
+        replacement requires an existing series.
+
+        Alternatively, ``molecular_system`` declares a supported MolSysMT source
+        from which to read the cell. Selected source/destination counts must
+        agree, with ``structure_pairing='by_index'`` for more than one structure.
+        Their times must agree when both are present. Sources never broadcast.
+
+        This edit invalidates interactions only on affected structures, clears
+        scene undo/redo, retains source correspondence and refreshes the canvas.
+        Scientific data and input preparation are checked before mutation;
+        arbitrary runtime/render failures do not have a rollback guarantee.
+        """
+        from .._private.argdigest.argument.box import _box_values
+        from .._private.argdigest.argument.molecular_system import _normalize_paths
+        from ..interactions import _indices
+
+        if self._molsys is None:
+            raise ValueError("No molecular system loaded.")
+        if structure_pairing not in (None, "by_index"):
+            raise ValueError("structure_pairing must be None or 'by_index'.")
+        count = int(self._molsys.structures.n_structures)
+
+        def selected(value, total, name):
+            if value is None or isinstance(value, str) and value == "all":
+                return list(range(total))
+            result = _indices(value, total, name, unique=False).tolist()
+            if not result or len(set(result)) != len(result):
+                raise ValueError(f"{name} must contain nonempty, unique structure indices.")
+            return result
+
+        frames = selected(structure_indices, count, "structure_indices")
+        complete = len(frames) == count
+        source = molecular_system is not None
+        if source:
+            if box is not None:
+                raise ValueError("Provide either box or molecular_system, not both.")
+            molecular_system = _normalize_paths(molecular_system)
+            source_count = int(msm.get(molecular_system, n_structures=True))
+            source_frames = selected(source_structure_indices, source_count, "source_structure_indices")
+            if len(source_frames) != len(frames):
+                raise ValueError("Selected source and destination structure counts must agree; sources do not broadcast.")
+            if len(frames) > 1 and structure_pairing != "by_index":
+                raise ValueError("Reading multiple source cells requires structure_pairing='by_index'.")
+            box = msm.get(molecular_system, structure_indices=source_frames, box=True)
+            if box is None:
+                raise ValueError("The declared source has no box information.")
+            source_time = msm.get(molecular_system, structure_indices=source_frames, time=True)
+            target_time = self._molsys.structures.time
+            if source_time is not None and target_time is not None:
+                if not np.allclose(puw.get_value(source_time, to_unit="ps"),
+                                   puw.get_value(target_time, to_unit="ps")[frames], rtol=1e-9, atol=1e-9):
+                    raise ValueError("Selected source times do not match the destination time axis.")
+        elif not (source_structure_indices is None or isinstance(source_structure_indices, str)
+                  and source_structure_indices == "all") or structure_pairing is not None:
+            raise ValueError("Source selectors and pairing require molecular_system.")
+
+        existing = self._molsys.structures.box
+        if box is None:
+            if not complete:
+                raise ValueError("Box removal requires all destination structures.")
+            if existing is None:
+                return
+            quantity = None
+        else:
+            values = _box_values(box)
+            if len(values) != len(frames) and (source or len(values) != 1):
+                raise ValueError("Box count must match the selected destination structures.")
+            if existing is None and not complete:
+                raise ValueError("Initialize every structure's box before replacing a subset.")
+            updated = np.empty((count, 3, 3), dtype=float) if existing is None else np.array(
+                puw.get_value(existing, to_unit="nm"), dtype=float, copy=True,
+            )
+            updated[frames] = values
+            quantity = puw.quantity(updated, "nm")
+
+        analyses = getattr(self._molsys, "interactions", {})
+        reconciled = {name: result.invalidate_structures(frames) for name, result in analyses.items()}
+        previous_box = None if existing is None else puw.quantity(
+            np.array(puw.get_value(existing, to_unit="nm"), copy=True), "nm",
+        )
+        msm.set(self._molsys, box=quantity)
+        # Older compatible base providers can silently ignore cell initialization.
+        # Verify through the same public scientific route used by projections.
+        actual = msm.get(self._molsys, box=True)
+        applied = actual is None if quantity is None else (
+            actual is not None
+            and np.shape(puw.get_value(actual, to_unit="nm")) == np.shape(updated)
+            and np.allclose(puw.get_value(actual, to_unit="nm"), updated, rtol=1e-12, atol=1e-12)
+        )
+        if not applied:
+            msm.set(self._molsys, box=previous_box)
+            raise ValueError("MolSysMT did not apply the requested box. This edit requires a compatible provider.")
+        if analyses:
+            self._molsys.interactions = reconciled
+        self.apply_system_edit(self._molsys, interactions_policy="preserve", skip_digestion=True)
+
+    def _refresh_box_display(self):
+        """Regenerate visible box edges from the current scientific cell."""
+        if self._box_record is None:
+            return
+        if self._molsys.structures.box is None:
+            self.hide_box(skip_digestion=True)
+            return
+        style = self._box_record
+        self.show_box(color=style["color"], width=style["width"], alpha=style["alpha"],
+                      structure_indices=self.player.index, skip_digestion=True)
+
     @signal(tags=["scene", "box"])
     @digest()
     def show_box(
@@ -213,7 +338,7 @@ class SceneMixin:
             annotation_tags = [tag for (kind, tag) in self._scene_objects if kind == "annotation"]
             for tag in annotation_tags:
                 self._scene_objects.pop(("annotation", tag), None)
-                self._layers.pop(tag, None)
+                dict.pop(self._layers, tag, None)
         self._send(
             {
                 "op": "clear_scene",
@@ -327,19 +452,50 @@ class SceneMixin:
         """Replace atom coordinates in the loaded molecular system and update the canvas."""
         if self._molsys is None:
             raise ValueError("No molecular system loaded.")
-        atom_indices = msm.select(
-            self._molsys,
-            selection=selection,
-            syntax=syntax,
-            skip_digestion=True,
-        )
+        atoms, structures, _ = self._edit_coordinates(coordinates, selection, structure_indices, syntax)
+        if atoms and structures:
+            self.apply_system_edit(self._molsys, interactions_policy="preserve", skip_digestion=True)
+
+    def _edit_coordinates(self, coordinates, selection, structure_indices, syntax):
+        """Validate before writing and reconcile derived scientific state."""
+        from .._pyunitwizard import puw
+        from ..interactions import _indices
+
+        atoms = list(msm.select(self._molsys, selection=selection, syntax=syntax, skip_digestion=True))
+        count = int(self._molsys.structures.n_structures)
+        if structure_indices is None or isinstance(structure_indices, str) and structure_indices == "all":
+            structures = list(range(count))
+        else:
+            structures = _indices(structure_indices, count, "structure_indices", unique=False).tolist()
+        if len(set(structures)) != len(structures):
+            raise ValueError("Coordinate edits require unique structure indices.")
+        if not atoms or not structures:
+            return atoms, structures, []
+        if not puw.is_quantity(coordinates):
+            raise ValueError("Coordinates require an explicit length unit.")
+        values = np.asarray(puw.get_value(coordinates, to_unit="nm"), dtype=float)
+        if values.ndim == 1:
+            values = values[None, None, :]
+        elif values.ndim == 2:
+            values = values[None, :, :]
+        if values.ndim != 3 or values.shape[1:] != (len(atoms), 3):
+            raise ValueError("Coordinates must have shape (structures, selected atoms, 3).")
+        if values.shape[0] not in {1, len(structures)} or not np.isfinite(values).all():
+            raise ValueError("Coordinates must be finite and match the selected structures.")
+        values = np.broadcast_to(values, (len(structures), len(atoms), 3)).copy()
+        analyses = getattr(self._molsys, "interactions", {})
+        reconciled = {name: result.invalidate_structures(structures) for name, result in analyses.items()}
         self._molsys.structures.set_coordinates(
-            indices=atom_indices,
-            structure_indices=structure_indices,
-            value=coordinates,
-            skip_digestion=True,
+            indices=atoms, structure_indices=structures, value=puw.quantity(values, "nm"), skip_digestion=True,
         )
-        self.apply_system_edit(self._molsys)
+        if analyses:
+            self._molsys.interactions = reconciled
+        self.interactions._system_changed()
+        self._source_binding_memo = None
+        self.history.clear()
+        self._clear_dynamic_region_cache()
+        self._current_molecular_projection = self._new_lazy_molecular_projection(label=self._last_label)
+        return atoms, structures, (values * _NM_TO_ANGSTROM).tolist()
 
     @signal(tags=["viewer"])
     @digest()
@@ -352,49 +508,40 @@ class SceneMixin:
         skip_digestion: bool = False,
         transaction_id: str | int | None = None,
     ) -> None:
-        """Dynamically update coordinates in-place in both Python and the frontend WebGL buffers.
+        """Edit selected structures and reconcile their model and derived state.
 
-        This avoids expensive representation rebuilds.
+        Only edited coordinate arrays are copied in the browser. Mol* updates
+        dependent representations from the revised trajectory models.
         """
         if self._molsys is None:
             raise ValueError("No molecular system loaded.")
 
-        atom_indices = msm.select(
-            self._molsys,
-            selection=selection,
-            syntax=syntax,
-            skip_digestion=True,
+        pending_transfer = any(manager.active is not None for _, manager in self._iter_structure_transfer_managers())
+        atom_indices, structures, coordinates_a = self._edit_coordinates(
+            coordinates, selection, structure_indices, syntax,
         )
-        if len(atom_indices) == 0:
+        if not atom_indices or not structures:
             return
-
-        from .._pyunitwizard import puw
-
-        if puw.is_quantity(coordinates):
-            coords_nm = puw.get_value(coordinates, to_unit="nm")
-        else:
-            coords_nm = coordinates
-
-        self._molsys.structures.set_coordinates(
-            indices=atom_indices,
-            structure_indices=structure_indices,
-            value=coordinates,
-            skip_digestion=True,
-        )
-
-        coords_arr = np.atleast_2d(coords_nm)
-        if coords_arr.ndim == 3:
-            coords_arr = coords_arr[0]
-        coords_ang = (coords_arr * _NM_TO_ANGSTROM).tolist()
+        if pending_transfer:
+            # Supersede old native buffers and their lazy fallback before
+            # sending edits; transport defers the edit behind the new model.
+            self.apply_system_edit(self._molsys, interactions_policy="preserve", skip_digestion=True)
 
         self._send(
             {
                 "op": "partial_coordinates_update",
-                "coordinates": coords_ang,
+                "coordinates": coordinates_a,
+                "coordinate_unit": "angstrom",
                 "atom_indices": list(atom_indices),
+                "structure_indices": structures,
                 "transaction_id": transaction_id,
             }
         )
+        changed = self._evaluate_dynamic_regions_for_frame(self.player.index)
+        if changed:
+            self._send_runtime_only({"op": "set_dynamic_region_atoms", "frame": self.player.index, "regions": changed})
+        self._sync_measurement_summaries_runtime()
+        self.interactions._project()
 
     @signal(tags=["viewer"])
     @digest()
@@ -408,7 +555,9 @@ class SceneMixin:
         self.structure_indices = None
         self._molsys = None
         self.structure_mask = None
-        self._regions.clear()
+        for obj in [*self._regions.values(), *self._layers.values(), *self._scene_objects.values(), *self._selections.values()]:
+            obj._active = False
+        dict.clear(self._regions)
         dict.clear(self._layers)
         self._scene_objects.clear()
         self._selections.clear()

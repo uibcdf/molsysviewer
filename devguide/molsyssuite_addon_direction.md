@@ -5,6 +5,16 @@ functionality arrives through optional add-ons. The direction matters most for
 future integration with `TopoMT`, `PharmacophoreMT`, `ElastNetMT` and other
 MolSysSuite packages carrying their own scientific semantics.
 
+**Direction update (2026-09-30, partially implemented):** MolSysMT is already
+a mandatory scientific dependency. Interactions calculation and H5MSM analysis
+loading are native Python and Studio workflows under `uibcdf/molsysviewer#114`,
+with provider-release qualification still open. They require no addon registration.
+Retire the separate MolSysMT addon progressively after its useful workflows
+have native replacements; do not reproduce the entire MolSysMT API in the
+viewer. The MolSysMT workspace example below describes the older extension
+direction. Optional domain packages retain the addon model. See the
+[bounded implementation plan](interactions_pre_1_0_plan.md).
+
 ## Core Position
 
 The core does not absorb every downstream domain concept. It provides a clean

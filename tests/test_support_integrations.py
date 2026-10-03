@@ -13,9 +13,11 @@ from molsysviewer._pyunitwizard import puw
 from molsysviewer import _depdigest as depdigest_config
 from molsysviewer import config
 
+ROOT = Path(__file__).resolve().parents[1]
+
 
 def test_package_checks_dependencies_before_importing_heavy_modules():
-    init_text = Path("molsysviewer/__init__.py").read_text(encoding="utf-8")
+    init_text = (ROOT / "molsysviewer/__init__.py").read_text(encoding="utf-8")
 
     check_pos = init_text.index("_check_dependency(__name__)")
     lazy_registry_pos = init_text.index("_LAZY_ATTRIBUTES = {")
@@ -148,7 +150,7 @@ def test_skipping_digestion_also_skips_the_renaming():
 
 
 def test_thin_variadic_forwarders_do_not_carry_digest_decorators():
-    path = Path("molsysviewer/whole.py")
+    path = ROOT / "molsysviewer/whole.py"
     tree = ast.parse(path.read_text(encoding="utf-8"))
 
     offenders: list[str] = []

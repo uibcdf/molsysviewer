@@ -42,7 +42,7 @@ from .signals import (
 class PanelModeMixin:
     @signal(tags=["viewer", "query"], extra_factory=_panel_mode_state_query_extra)
     @digest()
-    def get_panel_mode_state(self, *, pretty: bool = False) -> dict | str | None:
+    def get_panel_mode_state(self, *, pretty: bool = False, skip_digestion: bool = False) -> dict | str | None:
         """Return the last known frontend panel/workspace runtime state.
 
         Parameters

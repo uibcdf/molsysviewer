@@ -100,6 +100,36 @@ that "assumes nm".
   forcing skip, so the deeper helper (which owns the real signature + `@digest()`)
   validates on the public path.
 
+## Scalar colors and attribute ranges
+
+`whole` and region scalar coloring accept either unit-free numeric arrays or
+PyUnitWizard quantity arrays. Argument digestion and attribute extraction retain
+physical units until normalization; do not strip a quantity into a bare list.
+
+- An automatic range comes from the data itself, including physical attributes.
+- An explicit range for physical data must carry compatible units: a two-value
+  quantity, a quantity string such as `"[0,100] angstrom**2"`, or two compatible
+  scalar quantities. Convert the bounds explicitly to the data's unit.
+- Bare numeric data are unit-free. Numeric ranges are supported for them;
+  physical ranges cannot assign units to bare data. Bare bounds cannot borrow
+  units from physical data or from the application's active unit policy.
+- Dimensionless quantities, including percentages, convert explicitly to
+  dimensionless magnitudes. Numeric and dimensionless quantity ranges are
+  compatible with these data.
+- Ranges contain two finite, ordered bounds; incompatible dimensions, mixed
+  physical/bare bounds and malformed values raise the viewer's `ArgumentError`
+  before scene or history mutation.
+
+The Whole and Regions canvas inputs preserve quantity strings for the Python
+boundary and PyUnitWizard. Plain numeric pairs remain numeric. Invalid text must
+reach validation instead of silently becoming an automatic range. Scene state
+and history store the resolved RGB colors, which are unit-free.
+
+`tests/test_scalar_color_units.py` guards equivalent units, a non-default unit
+policy, whole/region native attributes, canvas handlers and scene replay.
+This contract closes `uibcdf/molsysviewer#98`; it does not introduce a region
+scoring or scientific threshold API.
+
 ## Hard-won lessons
 
 - **Turning on argdigest digests *all* arguments, not just the one you care

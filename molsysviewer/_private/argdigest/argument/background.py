@@ -17,6 +17,8 @@ _IMAGE_VALUES = {"white", "dark", "transparent", "current"}
 
 
 def digest_background(background, caller=None):
+    if caller == "molsysviewer.figures.with_overrides" and background is None:
+        return None
     caller = normalize_viewer_caller(caller)
     allowed = _HTML_VALUES if caller in _HTML_EXPORT_CALLERS else _IMAGE_VALUES
 

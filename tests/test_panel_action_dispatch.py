@@ -15,9 +15,11 @@ from molsysviewer.viewer.panel_actions import (
 
 from molsysviewer import pyunitwizard as puw
 
+ROOT = Path(__file__).resolve().parents[1]
+
 
 def _typescript_panel_actions() -> set[str]:
-    source = Path("molsysviewer/js/src/ui/panels/types.ts").read_text()
+    source = (ROOT / "molsysviewer/js/src/ui/panels/types.ts").read_text()
     declaration = source.split("export type PanelAction =", 1)[1].split("export interface PanelContext", 1)[0]
     return set(re.findall(r'"([^"]+)"', declaration))
 

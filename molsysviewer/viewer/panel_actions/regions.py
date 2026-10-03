@@ -175,7 +175,7 @@ def rename_layer(view: Any, content: Mapping[str, Any]) -> None:
 def _layer_member(view: Any, content: Mapping[str, Any], action: str):
     kind = content.get("member_kind")
     tag = content.get("member_tag")
-    if kind not in {"region", "annotation", "measurement", "shape"}:
+    if kind not in {"region", "annotation", "measurement", "shape", "interaction"}:
         raise ValueError(f"{action} requires a valid member_kind.")
     if not isinstance(tag, str) or not tag.strip():
         raise ValueError(f"{action} requires a non-empty member_tag.")
@@ -187,6 +187,7 @@ def _layer_member(view: Any, content: Mapping[str, Any], action: str):
             "annotation": view.annotations,
             "measurement": view.measurements,
             "shape": view.shapes,
+            "interaction": view.interactions,
         }[kind]
         member = manager.get(tag, skip_digestion=True)
     if member is None:

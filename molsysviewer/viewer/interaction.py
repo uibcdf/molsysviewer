@@ -28,7 +28,7 @@ class InteractionMixin:
 
     @signal(tags=["interaction", "query"])
     @digest()
-    def get_last_hover_event(self) -> dict | None:
+    def get_last_hover_event(self, *, skip_digestion: bool = False) -> dict | None:
         if not self._hover_telemetry_active:
             return {
                 "event": "interaction_hover",
@@ -47,49 +47,49 @@ class InteractionMixin:
 
     @signal(tags=["interaction", "query"])
     @digest()
-    def get_last_click_event(self) -> dict | None:
+    def get_last_click_event(self, *, skip_digestion: bool = False) -> dict | None:
         if self._last_click_event is None:
             return None
         return dict(self._last_click_event)
 
     @signal(tags=["interaction", "query"])
     @digest()
-    def get_last_context_event(self) -> dict | None:
+    def get_last_context_event(self, *, skip_digestion: bool = False) -> dict | None:
         if self._last_context_event is None:
             return None
         return dict(self._last_context_event)
 
     @signal(tags=["interaction", "query"])
     @digest()
-    def get_last_context_action_event(self) -> dict | None:
+    def get_last_context_action_event(self, *, skip_digestion: bool = False) -> dict | None:
         if self._last_context_action_event is None:
             return None
         return dict(self._last_context_action_event)
 
     @signal(tags=["interaction", "query"])
     @digest()
-    def get_last_active_selection_event(self) -> dict | None:
+    def get_last_active_selection_event(self, *, skip_digestion: bool = False) -> dict | None:
         if self._last_active_selection_event is None:
             return None
         return dict(self._last_active_selection_event)
 
     @signal(tags=["interaction", "query"])
     @digest()
-    def get_last_tool_state_event(self) -> dict | None:
+    def get_last_tool_state_event(self, *, skip_digestion: bool = False) -> dict | None:
         if self._last_tool_state_event is None:
             return None
         return dict(self._last_tool_state_event)
 
     @signal(tags=["interaction", "query"])
     @digest()
-    def get_last_measurement_created_event(self) -> dict | None:
+    def get_last_measurement_created_event(self, *, skip_digestion: bool = False) -> dict | None:
         if self._last_measurement_created_event is None:
             return None
         return dict(self._last_measurement_created_event)
 
     @signal(tags=["interaction", "callback"])
     @digest()
-    def on_hover(self, callback) -> None:
+    def on_hover(self, callback, *, skip_digestion: bool = False) -> None:
         """Register a callback invoked on every ``interaction_hover`` event.
 
         The callback receives the event dict as its only argument.  The dict
@@ -105,7 +105,7 @@ class InteractionMixin:
 
     @signal(tags=["interaction", "callback"])
     @digest()
-    def off_hover(self, callback) -> None:
+    def off_hover(self, callback, *, skip_digestion: bool = False) -> None:
         """Remove a previously registered hover callback."""
         try:
             self._hover_callbacks.remove(callback)
@@ -116,7 +116,7 @@ class InteractionMixin:
 
     @signal(tags=["interaction", "callback"])
     @digest()
-    def on_click(self, callback) -> None:
+    def on_click(self, callback, *, skip_digestion: bool = False) -> None:
         """Register a callback invoked on every ``interaction_click`` event.
 
         The callback receives the event dict as its only argument.
@@ -128,7 +128,7 @@ class InteractionMixin:
 
     @signal(tags=["interaction", "callback"])
     @digest()
-    def off_click(self, callback) -> None:
+    def off_click(self, callback, *, skip_digestion: bool = False) -> None:
         """Remove a previously registered click callback."""
         try:
             self._click_callbacks.remove(callback)
@@ -137,7 +137,7 @@ class InteractionMixin:
 
     @signal(tags=["interaction", "callback"])
     @digest()
-    def on_context(self, callback) -> None:
+    def on_context(self, callback, *, skip_digestion: bool = False) -> None:
         """Register a callback invoked on every ``interaction_context_menu`` event.
 
         The callback receives the event dict as its only argument.
@@ -149,7 +149,7 @@ class InteractionMixin:
 
     @signal(tags=["interaction", "callback"])
     @digest()
-    def off_context(self, callback) -> None:
+    def off_context(self, callback, *, skip_digestion: bool = False) -> None:
         """Remove a previously registered context-menu callback."""
         try:
             self._context_callbacks.remove(callback)
@@ -158,7 +158,7 @@ class InteractionMixin:
 
     @signal(tags=["interaction", "callback"])
     @digest()
-    def on_frame_change(self, callback) -> None:
+    def on_frame_change(self, callback, *, skip_digestion: bool = False) -> None:
         """Register a callback invoked whenever the trajectory frame changes.
 
         The callback receives an event dict with ``event`` (``"frame_changed"``),
@@ -172,7 +172,7 @@ class InteractionMixin:
 
     @signal(tags=["interaction", "callback"])
     @digest()
-    def off_frame_change(self, callback) -> None:
+    def off_frame_change(self, callback, *, skip_digestion: bool = False) -> None:
         """Remove a previously registered frame-change callback."""
         try:
             self._frame_change_callbacks.remove(callback)

@@ -4,9 +4,12 @@ from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 from typing import Any
 
+from smonitor import signal
+
 from .._private.argdigest import digest
 
 
+@signal()
 @digest()
 def load_project_config(path: str | Path, skip_digestion: bool = False) -> dict[str, Any]:
     """Load an explicit ``_molsysviewer.py``-style project config file.

@@ -1,7 +1,6 @@
 import pytest
-from molsysviewer.regions import Region
 
-from molsysviewer import MolSysView
+from molsysviewer import MolSysView, demo
 
 
 def test_frontend_interaction_events_are_stored_on_view():
@@ -303,12 +302,10 @@ def test_on_hover_ignores_duplicate_registration():
 
 
 def test_region_tags_added_to_structure_payload():
-    view = MolSysView()
+    view = demo["dialanine"]
     view.hover_telemetry_enabled = True
-
-    # Inject two regions directly into the internal registry
-    view._regions["active-site"] = Region(view, "active-site", "all", atom_indices=[10, 11, 12])  # noqa: SLF001
-    view._regions["loop-1"] = Region(view, "loop-1", "all", atom_indices=[20, 21])  # noqa: SLF001
+    view.regions.add(tag="active-site", atom_indices=[10, 11, 12])
+    view.regions.add(tag="loop-1", atom_indices=[20, 21])
 
     # Pick that overlaps active-site only
     hover = {"event": "interaction_hover", "kind": "structure", "atom_indices": [11, 12]}
@@ -387,9 +384,8 @@ def test_trajectory_frame_changed_syncs_player_index_and_play_state():
 
 
 def test_set_region_representation_context_action():
-    view = MolSysView()
-    region = Region(view, "ligand", "all", atom_indices=[1, 2, 3])
-    view._regions["ligand"] = region  # noqa: SLF001
+    view = demo["dialanine"]
+    view.regions.add(tag="ligand", atom_indices=[1, 2, 3])
 
     event = {
         "event": "interaction_context_action",

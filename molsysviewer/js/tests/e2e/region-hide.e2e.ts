@@ -84,6 +84,156 @@ async function run() {
     assert.ok(menuTitle && menuTitle !== "Canvas", `Expected a group context menu title, got: ${menuTitle}`);
     assert.ok(!String(menuTitle).includes("No target under cursor"), `Unexpected empty-target menu title: ${menuTitle}`);
 
+    // Check Mol*'s applied transparency, not only region bookkeeping.
+    const visibility = await page.evaluate(async pdb => {
+        const w = window as any;
+        const controller = w.__controller;
+        const send = (message: Record<string, unknown>) => controller.handleMessage(message);
+        await send({ op: "clear_all" });
+        await send({ op: "load_structure_from_string", data: pdb, format: "pdb" });
+        await send({ op: "set_whole_representation", representation: "ball-and-stick" });
+        await send({ op: "create_region", tag: "base-a", atom_indices: [0, 1] });
+        await send({ op: "create_region", tag: "base-b", atom_indices: [1, 2] });
+        await send({ op: "create_region", tag: "other", atom_indices: [0, 1],
+                     representation: "line", params: { alpha: 0.5 } });
+        const snapshots: Record<string, any> = {};
+        const snapshot = (name: string) => {
+            snapshots[name] = {
+                transparency: w.Harness.inspectSceneTransparency(controller, [0, 1, 2, 3]),
+                scene: w.Harness.inspectScene(controller),
+            };
+        };
+        snapshot("initial");
+        await send({ op: "hide_region", tag: "base-a" }); snapshot("hideA");
+        await send({ op: "hide_region", tag: "base-b" }); snapshot("hideBoth");
+        await send({ op: "show_region", tag: "base-a" }); snapshot("showA");
+        await send({ op: "show_region", tag: "base-b" }); snapshot("showBoth");
+        await send({ op: "hide_region", tag: "base-a" });
+        await send({ op: "set_whole_representation", representation: "spacefill" }); snapshot("wholeStyle");
+        await send({ op: "hide_whole" });
+        await send({ op: "show_region", tag: "base-a" }); snapshot("wholeStaysHidden");
+        await send({ op: "show_whole" });
+        await send({ op: "hide_region", tag: "base-a" });
+        await send({ op: "set_region_representation", tag: "base-a", representation: "line" }); snapshot("hiddenOwn");
+        await send({ op: "set_region_representation", tag: "base-a", representation: null }); snapshot("resetOwn");
+        await send({ op: "set_region_representation", tag: "base-a", representation: "inherit" }); snapshot("hiddenInherit");
+        await send({ op: "set_region_representation", tag: "base-a", representation: null });
+        await send({ op: "set_focus_fade", options: { focus_atom_indices: [0], fade: 0.4 } }); snapshot("focusHidden");
+        await send({ op: "show_region", tag: "base-a" }); snapshot("focusReleased");
+        await send({ op: "set_focus_fade", options: { fade: 0 } });
+        await send({ op: "hide_region", tag: "base-a" });
+        await send({ op: "set_dynamic_region_atoms", regions: [{ tag: "base-a", atom_indices: [2, 3] }] }); snapshot("dynamic");
+        await send({ op: "delete_region", tag: "base-a" }); snapshot("deleted");
+        await send({ op: "set_regions_visibility", tags: ["base-b", "other"], hidden: true }); snapshot("bulkHidden");
+        await send({ op: "set_regions_visibility", tags: ["base-b", "other"], hidden: false }); snapshot("bulkShown");
+        await send({ op: "hide_region", tag: "base-b" });
+        await send({ op: "clear_all" });
+        await send({ op: "load_structure_from_string", data: pdb, format: "pdb" });
+        await send({ op: "set_whole_representation", representation: "spacefill" }); snapshot("cleared");
+        return snapshots;
+    }, PDB_TEXT);
+
+    const expectWhole = (name: string, values: number[], hidden = false) => {
+        const whole = visibility[name].transparency.whole;
+        assert.ok(whole.length > 0, `${name}: no whole representation`);
+        for (const repr of whole) {
+            assert.deepStrictEqual(repr.values, values, `${name}: whole mask`);
+            assert.strictEqual(repr.hidden, hidden, `${name}: whole visibility`);
+        }
+    };
+    expectWhole("initial", [0, 0, 0, 0]);
+    expectWhole("hideA", [1, 1, 0, 0]);
+    expectWhole("hideBoth", [1, 1, 1, 0]);
+    expectWhole("showA", [0, 1, 1, 0]);
+    expectWhole("showBoth", [0, 0, 0, 0]);
+    expectWhole("wholeStyle", [1, 1, 0, 0]);
+    expectWhole("wholeStaysHidden", [0, 0, 0, 0], true);
+    expectWhole("hiddenOwn", [0, 0, 0, 0]);
+    expectWhole("hiddenInherit", [0, 0, 0, 0]);
+    for (const name of ["hiddenOwn", "hiddenInherit"]) {
+        const reprs = visibility[name].transparency.regions["base-a"];
+        assert.ok(reprs.length > 0, `${name}: no region representation`);
+        assert.ok(reprs.every((repr: any) => repr.hidden), `${name}: new representation became visible`);
+        assert.strictEqual(visibility[name].scene.regions["base-a"].hidden, true);
+    }
+    expectWhole("resetOwn", [1, 1, 0, 0]);
+    expectWhole("focusHidden", [1, 1, 0.4, 0.4]);
+    expectWhole("focusReleased", [0, 0.4, 0.4, 0.4]);
+    expectWhole("dynamic", [0, 0, 1, 1]);
+    expectWhole("deleted", [0, 0, 0, 0]);
+    expectWhole("bulkHidden", [0, 1, 1, 0]);
+    expectWhole("bulkShown", [0, 0, 0, 0]);
+    expectWhole("cleared", [0, 0, 0, 0]);
+    for (const [name, snapshot] of Object.entries(visibility)) {
+        if (name === "bulkHidden" || name === "cleared") continue;
+        const other = snapshot.transparency.regions.other;
+        assert.ok(other.length > 0, `${name}: independent representation disappeared`);
+        for (const repr of other) {
+            assert.strictEqual(repr.hidden, false, `${name}: another representation was hidden`);
+            assert.deepStrictEqual(repr.values, [0, 0, 0, 0], `${name}: mask leaked to another region`);
+        }
+    }
+    console.log("[E2E] Whole-only base-region visibility, overlap, style transitions, fade and dynamic membership passed");
+
+    const isolation = await page.evaluate(async () => {
+        const w = window as any;
+        const controller = w.__controller;
+        const send = (message: Record<string, unknown>) => controller.handleMessage(message);
+        const snapshots: Record<string, any> = {};
+        const snapshot = (name: string) => {
+            snapshots[name] = { transparency: w.Harness.inspectSceneTransparency(controller, [0, 1, 2, 3]),
+                                scene: w.Harness.inspectScene(controller) };
+        };
+        await send({ op: "create_region", tag: "base", atom_indices: [0, 1] });
+        await send({ op: "create_region", tag: "overlap", atom_indices: [1, 2] });
+        await send({ op: "create_region", tag: "own", atom_indices: [0, 1], representation: "line" });
+        await send({ op: "hide_whole" });
+        await send({ op: "show_only_region", tag: "base" }); snapshot("base");
+        await send({ op: "rename_region", tag: "base", new_tag: "source" }); snapshot("renamed");
+        await send({ op: "set_dynamic_region_atoms", regions: [{ tag: "source", atom_indices: [2, 3] }] }); snapshot("dynamic");
+        await send({ op: "set_dynamic_region_atoms", regions: [{ tag: "source", atom_indices: [] }] }); snapshot("empty");
+        await send({ op: "set_dynamic_region_atoms", regions: [{ tag: "source", atom_indices: [0, 1] }] });
+        await send({ op: "set_region_representation", tag: "source", representation: "line" }); snapshot("ownStyle");
+        await send({ op: "set_region_representation", tag: "source", representation: "inherit" }); snapshot("inheritStyle");
+        await send({ op: "set_region_representation", tag: "source", representation: null }); snapshot("baseStyle");
+        await send({ op: "create_region", tag: "later", atom_indices: [0], representation: "spacefill" });
+        await send({ op: "hide_whole" });
+        await send({ op: "show_only_region", tag: "source", restore_only: true }); snapshot("restore");
+        await send({ op: "show_whole" });
+        await send({ op: "delete_region", tag: "later" });
+        await send({ op: "show_region", tag: "source" }); snapshot("released");
+        await send({ op: "show_only_region", tag: "source" });
+        await send({ op: "show_region", tag: "own" }); snapshot("showOther");
+        await send({ op: "show_only_region", tag: "source" });
+        await send({ op: "delete_region", tag: "source" }); snapshot("deleted");
+        return snapshots;
+    });
+    const expectIsolationWhole = (name: string, values: number[], hidden = false) => {
+        const reprs = isolation[name].transparency.whole;
+        assert.ok(reprs.length > 0, `${name}: missing baseline`);
+        for (const repr of reprs) {
+            assert.deepStrictEqual(repr.values, values, `${name}: isolation mask`);
+            assert.strictEqual(repr.hidden, hidden, `${name}: whole visibility`);
+        }
+    };
+    expectIsolationWhole("base", [0, 0, 1, 1]);
+    expectIsolationWhole("renamed", [0, 0, 1, 1]);
+    expectIsolationWhole("dynamic", [1, 1, 0, 0]);
+    expectIsolationWhole("empty", [1, 1, 1, 1]);
+    expectIsolationWhole("ownStyle", [1, 1, 1, 1]);
+    expectIsolationWhole("inheritStyle", [1, 1, 1, 1]);
+    expectIsolationWhole("baseStyle", [0, 0, 1, 1]);
+    expectIsolationWhole("restore", [1, 0, 1, 1], true);
+    assert.strictEqual(isolation.restore.scene.regions.later.hidden, false, "Restoration hid a later visible region");
+    expectIsolationWhole("released", [0, 1, 1, 0]);
+    expectIsolationWhole("showOther", [1, 1, 1, 0]);
+    expectIsolationWhole("deleted", [0, 1, 1, 0]);
+    for (const name of ["base", "renamed", "dynamic", "empty", "ownStyle", "inheritStyle", "baseStyle"]) {
+        assert.strictEqual(isolation[name].scene.regions.overlap.hidden, true);
+        assert.strictEqual(isolation[name].scene.regions.own.hidden, true);
+    }
+    console.log("[E2E] Base-region isolation, empty dynamic selection, rename, style, restore and release passed");
+
     await page.evaluate(async pdb => {
         const controller = (window as BrowserWindow).__controller;
         if (!controller) throw new Error("Controller not available for second scenario");

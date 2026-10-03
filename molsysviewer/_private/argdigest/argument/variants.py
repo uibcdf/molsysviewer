@@ -1,8 +1,8 @@
 from molsysviewer._private.exceptions import ArgumentError
-from molsysviewer.figures import FigureSpec
 
 
 def digest_variants(variants, caller=None):
+    from molsysviewer.figures import FigureSpec
     if not isinstance(variants, dict) or len(variants) == 0:
         raise ArgumentError("variants", value=variants, caller=caller, message="Expected a non-empty dictionary.")
 
@@ -16,6 +16,9 @@ def digest_variants(variants, caller=None):
             digested[key.strip()] = value
             continue
         if isinstance(value, dict):
+            if caller == "molsysviewer.figures.build_variants":
+                digested[key.strip()] = dict(value)
+                continue
             try:
                 digested[key.strip()] = FigureSpec(**value)
             except Exception as exc:  # pragma: no cover - defensive normalization surface

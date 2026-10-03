@@ -19,6 +19,7 @@ import { LoadedStructure } from "../plugin/structure";
 import { LoaderHandlers } from "./handlers/loader-handlers";
 import { AnnotationHandlers } from "./handlers/annotation-handlers";
 import { MeasurementHandlers } from "./handlers/measurement-handlers";
+import { InteractionHandlers, type InteractionSummary } from "./handlers/interaction-handlers";
 import { ShapeHandlers, type TrajectoryShapeRenderStatus } from "./handlers/shape-handlers";
 import { SceneHandlers } from "./handlers/scene-handlers";
 import { StateHandlers } from "./handlers/state-handlers";
@@ -170,6 +171,7 @@ type InteractionPayload =
         };
     }
     | { event: "interaction_hover" | "interaction_click"; kind: "shape"; atom_indices: number[]; tag?: string; shape_name?: string; entity_ref?: unknown }
+    | { event: "interaction_hover" | "interaction_click"; kind: "interaction"; atom_indices: number[]; tag?: string; shape_name?: string; entity_ref?: unknown }
     | { event: "interaction_hover" | "interaction_click"; kind: "measurement"; atom_indices: number[]; tag?: string; measurement_name?: string }
     | { event: "interaction_hover" | "interaction_click"; kind: "annotation"; atom_indices: number[]; tag: string; text?: string };
 
@@ -199,6 +201,7 @@ type ContextInteractionPayload =
         };
     }
     | { event: "interaction_context_menu"; kind: "shape"; atom_indices: number[]; tag?: string; shape_name?: string; entity_ref?: unknown; page_x?: number; page_y?: number }
+    | { event: "interaction_context_menu"; kind: "interaction"; atom_indices: number[]; tag?: string; shape_name?: string; entity_ref?: unknown; page_x?: number; page_y?: number }
     | { event: "interaction_context_menu"; kind: "measurement"; atom_indices: number[]; tag?: string; measurement_name?: string; page_x?: number; page_y?: number }
     | {
         event: "interaction_context_menu";
@@ -238,7 +241,7 @@ function lociToAtomIndices(loci: any): number[] {
     return atomIndices;
 }
 
-function shapeTargetFromLoci(loci: any): { atom_indices: number[]; tag?: string; shape_name?: string; entity_ref?: unknown } | null {
+function shapeTargetFromLoci(loci: any): { kind: "shape" | "interaction"; atom_indices: number[]; tag?: string; shape_name?: string; entity_ref?: unknown } | null {
     const shape = ShapeGroup.isLoci(loci) ? loci.shape : Shape.isLoci(loci) ? loci.shape : null;
     if (!shape) return null;
     const sourceData = (shape.sourceData ?? {}) as Record<string, unknown>;
@@ -257,6 +260,12 @@ function shapeTargetFromLoci(loci: any): { atom_indices: number[]; tag?: string;
             }
             // Prefer the picked group's own atoms (face/edge/tetra) when the shape
             // exposes them, so a pick selects only that simplex, not the whole shape.
+            const interaction = (sourceData as any).interaction;
+            const observation = interaction?.observations?.[groupIdx];
+            if (observation) {
+                groupAtoms = [...new Set<number>(observation.participants.flatMap((p: {atom_indices: number[]}) => p.atom_indices))];
+                entityRef = { kind: "interaction", analysis_name: interaction.analysis_name, analysis_revision: interaction.analysis_revision, frame: interaction.frame, occurrence_index: observation.occurrence_index };
+            }
             const perGroup = (sourceData as any).__groupAtoms;
             if (Array.isArray(perGroup) && Array.isArray(perGroup[groupIdx])) {
                 groupAtoms = perGroup[groupIdx].map((i: any) => Math.trunc(Number(i))).filter((i: number) => Number.isFinite(i));
@@ -273,6 +282,7 @@ function shapeTargetFromLoci(loci: any): { atom_indices: number[]; tag?: string;
     }
 
     return {
+        kind: sourceData.kind === "interaction" ? "interaction" : "shape",
         atom_indices: groupAtoms ?? atomIndices,
         tag: typeof sourceData.tag === "string" ? sourceData.tag : undefined,
         shape_name: shapeName,
@@ -333,7 +343,7 @@ function normalizeContextPayloadFromLoci(loci: any, page_x?: number, page_y?: nu
             return { event: "interaction_context_menu", kind: "structure", atom_indices: atomIndices, page_x, page_y, ...(meta || {}) };
         }
         const shapeTarget = shapeTargetFromLoci(loci);
-        if (shapeTarget) return { event: "interaction_context_menu", kind: "shape", ...shapeTarget, page_x, page_y };
+        if (shapeTarget) return { event: "interaction_context_menu", ...shapeTarget, page_x, page_y };
         return { event: "interaction_context_menu", kind: "empty", page_x, page_y };
     }
     const item = groupItems[0];
@@ -366,7 +376,7 @@ export function normalizeInteractionEvent(kind: InteractionKind, ev: any): Inter
             return { event, kind: "structure", atom_indices: atomIndices, ...(meta || {}) };
         }
         const shapeTarget = shapeTargetFromLoci(ev?.current?.loci);
-        if (shapeTarget) return { event, kind: "shape", ...shapeTarget };
+        if (shapeTarget) return { event, ...shapeTarget };
         return { event, kind: "empty" };
     }
     const item = groupItems[0];
@@ -817,6 +827,8 @@ export class MolSysViewerController {
     public readonly loader: LoaderHandlers;
     public readonly annotations: AnnotationHandlers;
     public readonly measurements: MeasurementHandlers;
+    public readonly interactions: InteractionHandlers;
+    private interactionSummaries: InteractionSummary[] = [];
     public readonly shapes: ShapeHandlers;
     public readonly scene: SceneHandlers;
     public readonly state: StateHandlers;
@@ -1034,7 +1046,7 @@ export class MolSysViewerController {
         this.legendOverlay = new LegendOverlay(host);
         this.trajectoryPlotOverlay = new TrajectoryPlotOverlay(host, (frame) => {
             void this.trajectory.setTrajectoryFrame(frame);
-        });
+        }, undefined, tag => this.notify?.({ event: "trajectory_plot_hidden", tag }));
         this.webglStatusOverlay = new WebGLStatusOverlay(host);
         new HoverTooltip(host, plugin);
         this.measurementTools = new MeasurementToolController(plugin, emitInteractionEvent, async ({ action, picks_atom_indices, endpoint_policy }) => {
@@ -1341,6 +1353,8 @@ export class MolSysViewerController {
             if (
                 action === "delete_annotation"
                 || action === "delete_shape"
+                || action === "delete_interaction"
+                || action === "focus_interaction"
                 || action === "save_selection"
                 || action === "remove_selection"
                 || action === "create_region_from_selection"
@@ -1599,10 +1613,18 @@ export class MolSysViewerController {
         });
 
         this.trajectory = new TrajectoryHandlers(plugin, {
+            afterFrameApplied: () => this.annotations.refresh(),
             getLoadedStructure: () => this.loadedStructure,
             notifyTrajectoryState: () => this.notifyTrajectoryState(),
             onPlaybackStopped: (frame) => this.notify?.({ event: "trajectory_frame_changed", frame }),
             notify: (msg) => this.notify?.(msg),
+        });
+        this.interactions = new InteractionHandlers(plugin, {
+            register: (ref, tag) => this.state.registerTaggedRef(ref, tag, "interaction"),
+            unregister: (ref, tag) => this.state.unregisterTaggedRef(ref, tag, "interaction"),
+            notify: message => this.notify?.(message),
+            summaries: (items, frame) => { this.interactionSummaries = items; this.groupPanel.setInteractionFrame(items, frame); },
+            layerHidden: tag => this.layerSummaries.some(item => item.tag === tag && item.hidden),
         });
         this.movie = new MovieHandlers({
             setTrajectoryFrame: (index) => this.trajectory.setTrajectoryFrame(index),
@@ -1621,6 +1643,8 @@ export class MolSysViewerController {
             (state) => {
                 this.triggerLocalAddonEvent("frame-changed", state.currentFrame);
                 this.trajectoryPlotOverlay.setFrame(state.currentFrame);
+                this.interactions.onFrame(state.currentFrame);
+                void this.annotations.refresh().catch(error => console.warn("[MolSysViewer] Annotation refresh failed", error));
                 this.requestDynamicRegionEvaluationForFrame(state.currentFrame);
             },
             { immediate: false },
@@ -1629,6 +1653,7 @@ export class MolSysViewerController {
         if (plugin.canvas3d?.didDraw) {
             plugin.canvas3d.didDraw.subscribe(() => {
                 const cameraState = plugin.canvas3d!.camera.getSnapshot();
+                this.annotations.onCamera(cameraState);
                 this.triggerLocalAddonEvent("camera-moved", cameraState);
             });
         }
@@ -1678,6 +1703,8 @@ export class MolSysViewerController {
     }
 
     dispose(): void {
+        this.annotations.dispose();
+        this.interactions.clear();
         this.measurementTools.dispose();
         this.toolStatusOverlay.dispose();
         this.legendOverlay.dispose();
@@ -2250,7 +2277,7 @@ export class MolSysViewerController {
         return Math.hypot(x - anchor.x, y - anchor.y) > CONTEXT_MENU_DRAG_THRESHOLD_PX;
     }
 
-    async handleMessage(msg: ViewerMessage) {
+    async handleMessage(msg: ViewerMessage, options: { throwOnError?: boolean } = {}) {
         if (!msg || typeof msg !== "object") return;
         if (!("op" in msg)) {
             console.warn("[MolSysViewer] message missing 'op'", msg);
@@ -2321,6 +2348,18 @@ export class MolSysViewerController {
                 case "add_rings": await this.shapes.addRings(msg); break;
                 case "add_anisotropy_ellipsoids": await this.shapes.addAnisotropyEllipsoids(msg); break;
                 case "add_pharmacophore_features": await this.shapes.addPharmacophore(msg); break;
+                case "set_interaction_frame": await this.interactions.apply(msg); break;
+                case "interaction_frame_complete": this.interactions.finishResponse(msg.request_id); break;
+                case "set_interaction_series": await this.interactions.setSeries(msg); break;
+                case "set_interaction_summaries":
+                    if (!this.interactions.setSummaries(msg.interactions, msg.projection_revision)) break;
+                    this.interactionSummaries = msg.interactions;
+                    this.groupPanel.setInteractions({ ...msg, frame: this.interactions.currentFrame, interactions: msg.interactions.map(item => item.frame === this.interactions.currentFrame ? item : { ...item, frame: this.interactions.currentFrame, status: "pending", n_observations: 0, n_supported: 0, n_skipped: 0 }) });
+                    this.refreshAddonsPanel(false);
+                    break;
+                case "interaction_action_result": this.groupPanel.updateInteractionCreation(msg.request_id, msg.ok, msg.analysis_name, msg.error_message); break;
+                case "system_load_result": this.groupPanel.updateSystemLoading(msg.request_id, msg.ok, msg.n_atoms, msg.n_structures, msg.n_sources, msg.error_message); break;
+                case "interaction_inspection": this.groupPanel.updateInteractionInspection(msg.request_id, msg.result); break;
                 case "add_network_links": await this.shapes.addNetworkLinks(msg); break;
                 case "add_hbonds": await this.shapes.addHbonds(msg); break;
                 case "add_displacement_vectors": await this.shapes.addDisplacementVectors(msg); break;
@@ -2392,10 +2431,11 @@ export class MolSysViewerController {
                     break;
                 }
                 case "clear_scene":
+                        if ((msg.options?.shapes ?? true)) this.interactions.clear();
                         await this.scene.clearScene(msg);
                         this.checkCameraAfterSceneMutation("clear_scene");
                     break;
-                case "clear_all": await this.scene.clearAll(); break;
+                case "clear_all": this.interactions.clear(); await this.scene.clearAll(); break;
                 case "clear_shapes_by_tag": await this.scene.clearShapesByTag(msg); break;
 
                 // State/Region Ops
@@ -2600,6 +2640,7 @@ export class MolSysViewerController {
                 case "show_layer": await this.state.showLayer(msg); break;
                 case "hide_layer": await this.state.hideLayer(msg); break;
                 case "delete_layer":
+                    if (msg.kind === "interaction" && msg.tag) this.interactions.drop(msg.tag);
                     if ((msg as any).kind === "annotation" && typeof (msg as any).tag === "string" && this.annotations.hasTag((msg as any).tag)) {
                         this.annotations.dropTag((msg as any).tag);
                     }
@@ -2679,7 +2720,9 @@ export class MolSysViewerController {
 
                 // Trajectory Ops
                 case "step_trajectory": await this.trajectory.stepTrajectory(msg); break;
-                case "set_trajectory_frame": await this.trajectory.setTrajectoryFrame(msg); break;
+                case "set_trajectory_frame":
+                    await this.trajectory.setTrajectoryFrame(msg);
+                    break;
                 case "set_trajectory_playback": await this.trajectory.setTrajectoryPlayback(msg); break;
                 case "partial_coordinates_update": await this.trajectory.partialCoordinatesUpdate(msg as any); break;
 
@@ -2938,6 +2981,7 @@ export class MolSysViewerController {
             this.syncStripOverlaysForMessage(msg);
         } catch (error) {
             console.error("[MolSysViewer] Error handling message:", msg, error);
+            if (options.throwOnError) throw error;
         }
     }
 
@@ -3271,6 +3315,7 @@ export class MolSysViewerController {
             this.shapeRenderStatuses,
         );
         this.groupPanel.setLayerObjects([
+            ...this.interactionSummaries.map(item => ({ kind: "interaction" as const, tag: item.tag, title: item.analysis_name, layerTag: item.layer_tag, hidden: item.hidden })),
             ...this.annotationSummaries.map((item) => ({
                 kind: "annotation" as const,
                 tag: item.tag,
@@ -4007,7 +4052,8 @@ export class MolSysViewerController {
             boxShadow: "0 4px 12px rgba(206, 80, 39, 0.25)",
             fontFamily: "system-ui, -apple-system, sans-serif",
         });
-        btn.textContent = "Load Trial Structure (1CRN)";
+        btn.textContent = this.initOptions?.hasAuthority !== false ? "Load systems…" : "Load Trial Structure (1CRN)";
+        btn.setAttribute("data-molsysviewer-welcome-load", "true");
 
         btn.onmouseover = () => {
             btn.style.transform = "scale(1.02)";
@@ -4018,6 +4064,11 @@ export class MolSysViewerController {
             btn.style.boxShadow = "0 4px 12px rgba(206, 80, 39, 0.25)";
         };
         btn.onclick = () => {
+            if (this.initOptions?.hasAuthority !== false) {
+                this.hideWelcomeCard();
+                this.groupPanel.openSystemLoading();
+                return;
+            }
             btn.style.opacity = "0.7";
             btn.textContent = "Loading Crambin...";
             void this.handleMessage({ op: "load_pdb_id", pdb_id: "1CRN" });

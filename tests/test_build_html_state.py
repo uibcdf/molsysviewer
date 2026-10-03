@@ -165,7 +165,7 @@ def test_export_messages_after_post_load_region_and_label():
 
     atom_indices = list(view.whole.select(selection="group_index==0"))
     view.regions.add(atom_indices=atom_indices, tag="r0", skip_digestion=True)
-    view.annotations.add_annotation(
+    view.annotations.add(
         text="Anchor",
         selection="group_index==0",
         tag="anchor",

@@ -20,6 +20,10 @@ if not getattr(sys.modules.get(__name__), "_checked_dep", False):
 
 
 _LAZY_ATTRIBUTES = {
+    "build_standalone0_html": (".standalone", "build_standalone0_html"),
+    "launch_standalone0": (".standalone", "launch_standalone0"),
+    "create_standalone_qt0_window": (".standalone_qt", "create_standalone_qt0_window"),
+    "launch_standalone_qt0": (".standalone_qt", "launch_standalone_qt0"),
     "pyunitwizard": ("._pyunitwizard", "puw"),
     "config": ".config",
     "demo": (".demo", "demo"),
@@ -122,30 +126,6 @@ def __dir__():
 
 def __print_version__():
     print("MolSysViewer version " + __version__)
-
-
-def build_standalone0_html(*args, **kwargs):
-    from .standalone import build_standalone0_html as _build_standalone0_html
-
-    return _build_standalone0_html(*args, **kwargs)
-
-
-def launch_standalone0(*args, **kwargs):
-    from .standalone import launch_standalone0 as _launch_standalone0
-
-    return _launch_standalone0(*args, **kwargs)
-
-
-def create_standalone_qt0_window(*args, **kwargs):
-    from .standalone_qt import create_standalone_qt0_window as _create_standalone_qt0_window
-
-    return _create_standalone_qt0_window(*args, **kwargs)
-
-
-def launch_standalone_qt0(*args, **kwargs):
-    from .standalone_qt import launch_standalone_qt0 as _launch_standalone_qt0
-
-    return _launch_standalone_qt0(*args, **kwargs)
 
 
 __all__ = [

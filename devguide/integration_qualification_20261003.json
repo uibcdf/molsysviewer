@@ -1,0 +1,312 @@
+{
+  "date": "2026-10-03",
+  "status": "local integration; exact supported candidate pending",
+  "repository_head": "3b475639fdfa2a359b830bdf3314b81b5f1f3830",
+  "product_commit_or_push": false,
+  "environment": {
+    "name": "molsyssuite@uibcdf_3.14",
+    "python": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "python_version": "3.14.7",
+    "packages": {
+      "molsysviewer": {
+        "origin": "/home/diego/repos@uibcdf/molsysviewer/molsysviewer/__init__.py",
+        "metadata_version": "0.23.4+27.gfed1c4b8.dirty",
+        "runtime_version": "0.23.4+71.g3b475639.dirty"
+      },
+      "molsysmt": {
+        "origin": "/home/diego/repos@uibcdf/molsysmt/molsysmt/__init__.py",
+        "metadata_version": "0.22.4+24.g42b487869",
+        "runtime_version": "0.22.4+24.g42b487869"
+      },
+      "argdigest": {
+        "origin": "/home/diego/repos@uibcdf/argdigest/argdigest/__init__.py",
+        "metadata_version": "0.13.0+16.g68a506e",
+        "runtime_version": "0.13.0+16.g68a506e"
+      },
+      "depdigest": {
+        "origin": "/home/diego/repos@uibcdf/depdigest/depdigest/__init__.py",
+        "metadata_version": "0.12.0+13.g104661a",
+        "runtime_version": "0.12.0+13.g104661a"
+      },
+      "smonitor": {
+        "origin": "/home/diego/repos@uibcdf/smonitor/smonitor/__init__.py",
+        "metadata_version": "0.18.0+1.gb308ee0",
+        "runtime_version": "0.18.0+1.gb308ee0"
+      },
+      "pyunitwizard": {
+        "origin": "/home/diego/repos@uibcdf/pyunitwizard/pyunitwizard/__init__.py",
+        "metadata_version": "0.27.0",
+        "runtime_version": "0.27.0"
+      },
+      "numpy": {
+        "origin": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/lib/python3.14/site-packages/numpy/__init__.py",
+        "metadata_version": "2.4.6",
+        "runtime_version": "2.4.6"
+      },
+      "pandas": {
+        "origin": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/lib/python3.14/site-packages/pandas/__init__.py",
+        "metadata_version": "2.3.3",
+        "runtime_version": "2.3.3"
+      },
+      "pytest": {
+        "origin": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/lib/python3.14/site-packages/pytest/__init__.py",
+        "metadata_version": "9.1.1",
+        "runtime_version": "9.1.1"
+      },
+      "pytest_receptor": {
+        "origin": "/home/diego/repos@uibcdf/pytest-receptor/pytest_receptor/__init__.py",
+        "metadata_version": "1.1.0+19.g6d87a24",
+        "runtime_version": "1.1.0+19.g6d87a24"
+      },
+      "rdkit": {
+        "origin": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/lib/python3.14/site-packages/rdkit/__init__.py",
+        "metadata_version": "2025.9.5",
+        "runtime_version": "2025.09.5"
+      }
+    },
+    "provider_head": "3edbf8ad0a13b9a56a009c0bd3f707e54b807351",
+    "provider_dirty_files": [
+      "M ACKREDIT_GUIDE.md",
+      " M devguide/pending_proposals/README.md",
+      " M devguide/pending_proposals/report_receptor_residue_chemistry_and_preparation_coverage.md",
+      " M molsysmt/_private/chemical_readiness.py",
+      " M molsysmt/build/__init__.py",
+      "?? devguide/pending_proposals/add_ligand_hydrogens_for_a_fixed_chemical_state.md",
+      "?? devguide/pending_proposals/apply_explicit_chemical_templates_with_atom_correspondence.md",
+      "?? molsysmt/_private/residue_chemical_coverage.py",
+      "?? molsysmt/build/get_residue_chemical_coverage.py"
+    ],
+    "provider_preserved": true
+  },
+  "artifact": {
+    "wheel": "/tmp/msv-integrated-wheels-20261003/molsysviewer-0.23.4+71.g3b475639.dirty-py3-none-any.whl",
+    "version": "0.23.4+71.g3b475639.dirty",
+    "sha256": "9ac697dbabaa840ca1a3fc37d927fa03631822dab63dfa90ac44998897edd4ae",
+    "source_copy": "/tmp/msv-integrated-candidate-20261003",
+    "python_member_count": 608,
+    "python_member_mismatches": [],
+    "runtime_sha256": "f23475f2184a64de0c0bcfe63e4458a765bc9cc5fbd89649e740a0e42ada14f0",
+    "working_tree_runtime_matches_wheel": false,
+    "runtime_contract": "source and wheel pass maintained validator",
+    "release_candidate": false
+  },
+  "python": {
+    "official_design_guards": {
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 13,
+      "seconds": 9.864,
+      "junit": "/tmp/msv-official-design-closure-20261003.xml",
+      "sha256": "8249ea07d0a14810a5be35fe02a29eb094981ebea3ee8a46e62cd7dc21b1ec03"
+    },
+    "official_disk_failure_recovery": {
+      "tests": 182,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 3,
+      "passed": 179,
+      "seconds": 81.243,
+      "junit": "/tmp/msv-official-recovery-20261003.xml",
+      "sha256": "b2fae3a804b4ad63ce126648ea97c00a8ab58597cb17eec866c8b4a9c491942d"
+    },
+    "official_reporting": {
+      "tests": 188,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 188,
+      "seconds": 2.686,
+      "junit": "/tmp/msv-official-reporting-20261003.xml",
+      "sha256": "bdd067be541267c428233a065ca827221522236316a016d97d94155d85e2e239"
+    },
+    "official_links_and_imports": {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 2,
+      "passed": 5,
+      "seconds": 7.299,
+      "junit": "/tmp/msv-official-links-imports-20261003.xml",
+      "sha256": "3d82a46a220a03dd68928e3e416a2ed0867bdf00338ea3ae9b107f8c656ba804"
+    },
+    "public_installed_design_guards": {
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 13,
+      "seconds": 7.029,
+      "junit": "/tmp/msv-integration-public-focused-20261003.xml",
+      "sha256": "1c4b7eb5c93dda6c590cbac5254fd9ae4fb39fa8d8d53f6e7e2b9134bfe29992"
+    },
+    "public_installed_workflows": {
+      "tests": 114,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 114,
+      "seconds": 35.459,
+      "junit": "/tmp/msv-integration-public-workflows-20261003.xml",
+      "sha256": "db0245ee1b65afa99ef2024458260d3715d699a3b4f7e91dc4a2e32cb1b56608"
+    },
+    "experimental_installed_design_and_interactions": {
+      "tests": 23,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 23,
+      "seconds": 10.591,
+      "junit": "/tmp/msv-integration-scientific-focused-20261003.xml",
+      "sha256": "8172810852c6ce80d84460343e9f6862a732b46d309bed2a1712c97e7b5e2a93"
+    },
+    "experimental_installed_collection_correction": {
+      "tests": 68,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 68,
+      "seconds": 27.056,
+      "junit": "/tmp/msv-integration-collection-correction-20261003.xml",
+      "sha256": "1e6be99cbae7ce615d2b219e352059b6a2de44aadac7071107b47391ee3b6c5b"
+    },
+    "experimental_installed_cli_guards": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 4,
+      "seconds": 34.568,
+      "junit": "/tmp/msv-integration-cli-guard-20261003.xml",
+      "sha256": "c0c4dc285f97ceff88c2389e4e96ed11971bbfeb6db2e9d178287785d3f4a9b4"
+    },
+    "experimental_installed_once_full_attempt": {
+      "tests": 2667,
+      "failures": 15,
+      "errors": 44,
+      "skipped": 25,
+      "passed": 2583,
+      "seconds": 389.706,
+      "junit": "/tmp/msv-integration-cli-fix-full-20261003.xml",
+      "sha256": "d98265ffcfa9f859aa932a3da3bbfdd80fc9da69b3fd6b79537720de63c802c8"
+    },
+    "experimental_installed_static_and_cli_recovery": {
+      "tests": 195,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 195,
+      "seconds": 34.121,
+      "junit": "/tmp/msv-integration-static-recovery-20261003.xml",
+      "sha256": "fa2a238ddcc2a0e370eb8a162565f66b5cb94222e67c52227de328076eac8605"
+    }
+  },
+  "full_attempt_diagnosis": {
+    "disk_exhaustion": "errno 28 in sidecar/H5MSM/residency writes and subsequent tmp_path setup errors",
+    "missing_copy_asset": "sandbox/interactions_panel_design.html restored in qualification copy",
+    "stale_copy_index": "pending_bugs/README.md regenerated in qualification copy",
+    "native_cli_exit_minus_11": "observed during failing full attempt; cause unproven; same four installed guards subsequently pass",
+    "second_full_attempt": false
+  },
+  "javascript": {
+    "complete_unit_result": {
+      "passed": 314,
+      "failed": 0,
+      "skipped": 0,
+      "log": "/tmp/msv-integration-js-20261003.log"
+    },
+    "typescript": {
+      "passed": true,
+      "log": "/tmp/msv-integration-typescript-20261003.log"
+    },
+    "official_runtime": "/tmp/msv-official-runtime-20261003.log",
+    "official_typescript": {
+      "passed": true,
+      "log": "/tmp/msv-official-typescript-20261003.log"
+    }
+  },
+  "browser": {
+    "qualification_mode": "source bridges; not strictly installed artifact isolation",
+    "original_core_attempt": {
+      "passed_suites_before_failure": 19,
+      "suite_count": 36,
+      "failed_at": "interactions-subpanel fixture namespace",
+      "log": "/tmp/msv-integration-core-e2e-20261003.log"
+    },
+    "subsequent_interactions_attempt": {
+      "passed": false,
+      "failure": "page/context/browser closed",
+      "cause": "unproven",
+      "log": "/tmp/msv-integration-interactions-browser-correction-20261003.log"
+    },
+    "sandbox_stdin": {
+      "reproduced": true,
+      "mechanism": "Python child blocked on read(0) after consuming Node input; EOF not delivered",
+      "bounded_node_versions": [
+        "24.11.1",
+        "24.21.0"
+      ],
+      "minimal_reproduction": "spawnSync(PYTHON, [\"-c\", \"import sys; print(repr(sys.stdin.read()))\"], {input: \"[]\", encoding: \"utf8\", timeout: 5000})",
+      "sandbox_result": "ETIMEDOUT; SIGTERM",
+      "outside_sandbox_result": "exit 0; stdin read returned '[]'",
+      "sandbox_attempt_interrupted": true
+    },
+    "official_forms": {
+      "passed": true,
+      "real_calculations": 17,
+      "chrome_seconds": 362.447,
+      "exit_code": 0,
+      "log": "/tmp/msv-official-interactions-forms-unsandboxed-20261003.log"
+    },
+    "official_core": {
+      "status": "interrupted at principal maintainer request to pause for design discussion",
+      "suite_count": 36,
+      "timeout_ms_per_suite": 600000,
+      "default_timeout_certified": false,
+      "skip_opt_out": false,
+      "log": "/tmp/msv-official-core-e2e-20261003.log",
+      "passed": false,
+      "passed_suites_before_interruption": 19,
+      "interrupted_at": "interactions-subpanel"
+    }
+  },
+  "public_api": {
+    "public_callables": 713,
+    "digested": 713,
+    "undigested": 0,
+    "exempt": 0,
+    "declared_digesters": 437,
+    "missing_digesters": 0
+  },
+  "board": {
+    "matching_queued_documents": 43,
+    "log": "/tmp/msv-integration-board-20261003.log"
+  },
+  "preservation": {
+    "manifest": "/tmp/msv-integration-preserved-20261003.json",
+    "backup": "/tmp/msv-integration-preserved-20261003.tar.gz",
+    "recorded_paths": 366,
+    "changed_preserved_paths": [
+      "devguide/checkpoints.md",
+      "devguide/final_design_closure_20261003.md",
+      "devguide/installed_artifact_qualification.md",
+      "devguide/pending_bugs/README.md",
+      "devguide/pending_proposals/multiple_system_loading_contract.md",
+      "devtools/benchmarks/interactions_detector.py",
+      "devtools/qualify_installed_interactions.py",
+      "devtools/qualify_interaction_families.py",
+      "molsysviewer/js/tests/e2e/interactions-subpanel.e2e.ts",
+      "molsysviewer/viewer.js",
+      "tests/test_installed_test_imports.py"
+    ],
+    "unrelated_ackredit_unchanged": true
+  },
+  "limitations": [
+    "Compatible published MolSysMT Interactions dependency and committed exact candidate remain pending under #114.",
+    "The full installed Python attempt failed; focused recovery in another environment does not make it a pass.",
+    "Official development provider has preserved unrelated local work and stale editable metadata; actual source HEAD/origins are recorded.",
+    "Standalone certification, remotes, GPU throughput and native platform matrix are not qualified here.",
+    "#151 load_many spelling and batch semantics remain proposed, not implemented or accepted."
+  ]
+}

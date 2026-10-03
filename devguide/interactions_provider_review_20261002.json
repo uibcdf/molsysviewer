@@ -1,0 +1,364 @@
+{
+  "date": "2026-10-02",
+  "scope": "Consumer review of uibcdf/molsysmt#288 and #289; experimental installed pair, not a release gate",
+  "provider_fix_commit": "78981d6c100ef5dfdb839229c751d9898074882e",
+  "provider_tested_commit": "396e6979f3f686b110431f18bba0d41933ce71e2",
+  "environment": {
+    "python": "3.14.7 | packaged by conda-forge | (main, Sep  2 2026, 21:08:32) [GCC 15.3.0]",
+    "platform": "Linux-7.0.0-28-generic-x86_64-with-glibc2.39",
+    "distributions": {
+      "molsysmt": "0.22.4+122.g396e6979f",
+      "molsysviewer": "0.23.4+69.g1cf7826d.dirty",
+      "numpy": "2.5.3",
+      "pandas": "3.0.6",
+      "rdkit": "2026.3.6",
+      "h5py": "3.16.0",
+      "pytest": "9.1.1",
+      "pytest-receptor": "1.2.0",
+      "argdigest": "0.13.0",
+      "depdigest": "0.12.0",
+      "pyunitwizard": "0.27.0",
+      "smonitor": "0.18.0"
+    }
+  },
+  "environment_path": "/tmp/msv-provider-review-pandas3-env-20261002",
+  "artifacts": {
+    "provider_wheel": {
+      "path": "/tmp/msv-provider-review-wheels-20261002/molsysmt-0.22.4+122.g396e6979f-cp311-abi3-linux_x86_64.whl",
+      "sha256": "a075950bfc96ff6b957c0a367a7fd684a2aedc54407d1f90769db46bd2a68666"
+    },
+    "viewer_wheel": {
+      "path": "/tmp/msv-interactions-installed-wheels-20261002/molsysviewer-0.23.4+69.g1cf7826d.dirty-py3-none-any.whl",
+      "sha256": "3edc0b5e9e9504825007b3bc850c722694bdd10125d51828405e73e0e1f9a0d2"
+    },
+    "installed_runner": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/devtools/qualify_installed_interactions.py",
+      "sha256": "cb46aa3fbf409f668ba49caf497cd98e71ebeafee368137225229fbc28f0f8ad"
+    },
+    "query_probe": {
+      "path": "/tmp/msv-provider-query-probe.py",
+      "sha256": "7ae3902aea080ab5d7521d3c0a403563a27b3c48ee3a38a27e7dca25edd2ba61"
+    },
+    "probe_bootstrap": {
+      "path": "/tmp/msv-provider-review-probe-20261002.py",
+      "sha256": "18525121e302c1526efed3343723e69b091d38ab52c5445ba7721836b1dfc688"
+    },
+    "browser_driver": {
+      "path": "/tmp/msv-provider-review-html-20261002.mjs",
+      "sha256": "a98f06b3f213b9552f5c9ba8d93a748e7e7c4ca2694375a132aa3587c6838453"
+    }
+  },
+  "checks": {
+    "batching": {
+      "junit": "/tmp/msv-provider-review-batching-20261002.xml",
+      "sha256": "1d0f28e67236284a21d192aabe6ede6849e7b731090b875b2d3b6de335a32843",
+      "tests": 15,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0
+    },
+    "remaining-batching": {
+      "junit": "/tmp/msv-provider-review-remaining-batching-20261002.xml",
+      "sha256": "24748d051729005e34f3cd77994d4f3a4672f5621b82fe7c3975d16203528f57",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "public": {
+      "junit": "/tmp/msv-provider-review-public-20261002.xml",
+      "sha256": "eec5025af597d3c8382b0ccab47a652ed3b7b109c193bbcc09d59b25db07e4ab",
+      "tests": 75,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "upstream-guards": {
+      "junit": "/tmp/msv-provider-review-upstream-guards-20261002.xml",
+      "sha256": "6310c2b45bf1e8d889fa2e4391fecc686694a69d2086b6e48fca32c63f6a672b",
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    }
+  },
+  "viewer_unique_results": {
+    "passed": 90,
+    "failed": 1,
+    "skipped": 0,
+    "unexecuted": 0
+  },
+  "provider_guard_results": {
+    "passed": 15,
+    "failed": 0,
+    "skipped": 0
+  },
+  "known_test_mismatch": {
+    "node": "tests/test_interactions_projection_batching.py::test_split_periodic_group_is_refused_before_its_center_is_calculated",
+    "diagnosis": "New provider public coordinate setters invalidate stored observations. The test calculates before translating and therefore has no current evaluated observation or geometry calls.",
+    "independent_probe": "/tmp/msv-provider-review-invalidation-corrected-20261002.log",
+    "results": [
+      {
+        "before": {
+          "occurrences": 1,
+          "evaluated": [
+            0
+          ]
+        },
+        "after": {
+          "occurrences": 0,
+          "evaluated": []
+        },
+        "display": {
+          "op": "set_interaction_frame",
+          "tag": "groups",
+          "analysis_name": "contacts",
+          "analysis_revision": "sha256:e03639bb6f774197407bbcc1b749134ef736cdf1ac14b471f3905fc90ee0aa13",
+          "query_revision": "sha256:ac95a270606a683952d7c8c90ad6affcc2ce13878327482091efe51d5df02727",
+          "filter": {
+            "selection": "all",
+            "selection_2": null,
+            "mode": "incident",
+            "exclusive": false,
+            "structure_indices": "all",
+            "interaction_types": null
+          },
+          "style": {
+            "color": 3462041,
+            "alpha": 0.85,
+            "radius_nm": 0.025,
+            "radius_unit": "nm"
+          },
+          "layer_tag": "groups",
+          "hidden": false,
+          "owner": null,
+          "broken": false,
+          "layer_hidden": false,
+          "frame": 0,
+          "status": "unevaluated",
+          "n_observations": 0,
+          "n_supported": 0,
+          "n_segments": 0,
+          "n_skipped": 0,
+          "links": [],
+          "coordinate_unit": "nm",
+          "projection_revision": 3
+        }
+      },
+      {
+        "malformed_reimport": {
+          "op": "set_interaction_frame",
+          "tag": "malformed",
+          "analysis_name": "stale",
+          "analysis_revision": "sha256:2e8d655f7eb1c5c6ba9b6e759dadf3fa0ed3219a52ff6b762760bdf3aa5002af",
+          "query_revision": "sha256:23118aa4e843cf01fc3731ababa1b5e462aa7f947ee1a8cdcff302975afea0a2",
+          "filter": {
+            "selection": "all",
+            "selection_2": null,
+            "mode": "incident",
+            "exclusive": false,
+            "structure_indices": "all",
+            "interaction_types": null
+          },
+          "style": {
+            "color": 3462041,
+            "alpha": 0.85,
+            "radius_nm": 0.025,
+            "radius_unit": "nm"
+          },
+          "layer_tag": "malformed",
+          "hidden": false,
+          "owner": null,
+          "broken": false,
+          "layer_hidden": false,
+          "frame": 0,
+          "status": "unsupported",
+          "n_observations": 1,
+          "n_supported": 0,
+          "n_segments": 0,
+          "n_skipped": 1,
+          "links": [],
+          "coordinate_unit": "nm",
+          "projection_revision": 5
+        }
+      }
+    ],
+    "next_action": "Adapt this guard to deliberately reattach a malformed stored-image observation after the coordinate edit; separately assert setter invalidation. No test or library source changed in this review."
+  },
+  "pandas3_direct_reproduction": {
+    "exit_code": 0,
+    "log": "/tmp/msv-provider-review-pandas3-repro-20261002.log",
+    "old_failure_preserved": "/tmp/msv-installed-pandas3-repro-20261002.log"
+  },
+  "query_before": {
+    "occurrences": 22495,
+    "provider_version": "0.22.4+76.gdf1a298e7",
+    "queries": {
+      "between_frame": {
+        "matches": 0,
+        "median_ms": 3.4511033445596695
+      },
+      "between_trajectory": {
+        "matches": 7030,
+        "median_ms": 636.4954905584455
+      },
+      "cross_frame": {
+        "matches": 0,
+        "median_ms": 330.2418664097786
+      },
+      "cross_trajectory": {
+        "matches": 7030,
+        "median_ms": 336.94924507290125
+      },
+      "incident_frame": {
+        "matches": 5,
+        "median_ms": 3.58477421104908
+      },
+      "incident_trajectory": {
+        "matches": 11248,
+        "median_ms": 13.9643969014287
+      },
+      "internal_frame": {
+        "matches": 5,
+        "median_ms": 667.5081709399819
+      },
+      "internal_trajectory": {
+        "matches": 22495,
+        "median_ms": 688.241339288652
+      }
+    }
+  },
+  "query_after": {
+    "occurrences": 22495,
+    "provider_version": "0.22.4+122.g396e6979f",
+    "queries": {
+      "between_frame": {
+        "matches": 0,
+        "median_ms": 0.6777914240956306
+      },
+      "between_trajectory": {
+        "matches": 7030,
+        "median_ms": 753.8299234583974
+      },
+      "cross_frame": {
+        "matches": 0,
+        "median_ms": 0.40741637349128723
+      },
+      "cross_trajectory": {
+        "matches": 7030,
+        "median_ms": 389.7471483796835
+      },
+      "incident_frame": {
+        "matches": 5,
+        "median_ms": 0.45567192137241364
+      },
+      "incident_trajectory": {
+        "matches": 11248,
+        "median_ms": 16.45546592772007
+      },
+      "internal_frame": {
+        "matches": 5,
+        "median_ms": 0.5077207460999489
+      },
+      "internal_trajectory": {
+        "matches": 22495,
+        "median_ms": 789.2784932628274
+      }
+    }
+  },
+  "query_method": "22,495 occurrences, 62 atoms, 5,000 structures, changing relations. Warm medians of three calls; each of eight query patterns checked against independent participant-membership reference. One host, indicative timings; no throughput threshold or RSS guarantee.",
+  "browser": [
+    {
+      "kind": "hbond",
+      "state": "initial",
+      "expected_observations": 20,
+      "expected_segments": 20,
+      "actual_segments": 20,
+      "geometry_checked": true,
+      "summary": "family \u00b7 contacts\n20 drawn / 20 observations \u00b7 20 segments\nEnabled \u00b7 layer family\nFocus\nHide\nDelete\nEdit\nInspect",
+      "rendered": true,
+      "page_errors": []
+    },
+    {
+      "kind": "hbond",
+      "state": "restored",
+      "expected_observations": 20,
+      "expected_segments": 20,
+      "actual_segments": 20,
+      "geometry_checked": true,
+      "summary": "family \u00b7 contacts\n20 drawn / 20 observations \u00b7 20 segments\nEnabled \u00b7 layer family\nFocus\nHide\nDelete\nEdit\nInspect",
+      "rendered": true,
+      "page_errors": []
+    },
+    {
+      "kind": "pi_pi",
+      "state": "initial",
+      "expected_observations": 1,
+      "expected_segments": 1,
+      "actual_segments": 1,
+      "geometry_checked": true,
+      "summary": "family \u00b7 contacts\n1 drawn / 1 observations \u00b7 1 segments\nEnabled \u00b7 layer family\nFocus\nHide\nDelete\nEdit\nInspect",
+      "rendered": true,
+      "page_errors": []
+    },
+    {
+      "kind": "pi_pi",
+      "state": "restored",
+      "expected_observations": 1,
+      "expected_segments": 1,
+      "actual_segments": 1,
+      "geometry_checked": true,
+      "summary": "family \u00b7 contacts\n1 drawn / 1 observations \u00b7 1 segments\nEnabled \u00b7 layer family\nFocus\nHide\nDelete\nEdit\nInspect",
+      "rendered": true,
+      "page_errors": []
+    },
+    {
+      "kind": "water_bridge_2",
+      "state": "initial",
+      "expected_observations": 1,
+      "expected_segments": 3,
+      "actual_segments": 3,
+      "geometry_checked": true,
+      "summary": "family \u00b7 contacts\n1 drawn / 1 observations \u00b7 3 segments\nEnabled \u00b7 layer family\nFocus\nHide\nDelete\nEdit\nInspect",
+      "rendered": true,
+      "page_errors": []
+    },
+    {
+      "kind": "water_bridge_2",
+      "state": "restored",
+      "expected_observations": 1,
+      "expected_segments": 3,
+      "actual_segments": 3,
+      "geometry_checked": true,
+      "summary": "family \u00b7 contacts\n1 drawn / 1 observations \u00b7 3 segments\nEnabled \u00b7 layer family\nFocus\nHide\nDelete\nEdit\nInspect",
+      "rendered": true,
+      "page_errors": []
+    }
+  ],
+  "remaining": [
+    "Viewer guard adaptation for provider coordinate invalidation",
+    "Compatible published MolSysMT release",
+    "Committed candidate and exact installed/core CI qualification",
+    "Public documentation last"
+  ],
+  "limits": [
+    "No full Python suite rerun in this provider-review task",
+    "No hosted or cross-platform qualification",
+    "Whole-trajectory atom queries retain their global cost",
+    "In-memory analysis materialization and selective H5MSM remain separate decisions",
+    "No product commit, push, or sibling checkout mutation"
+  ],
+  "maintained_evidence_validation": {
+    "reporting_protocol": {
+      "passed": 148,
+      "exit_code": 0,
+      "junit": "/tmp/msv-provider-review-reporting-20261002.xml",
+      "sha256": "8f4022591c868593c7891e3ae4d333d6092e0afa43fcec5755d7758bdc41c2a8"
+    },
+    "artifact_hashes": "verified",
+    "source_hashes_unchanged": {
+      "molsysviewer/interactions.py": "a15d41826a77192e1f700ebc180ad3fb18e05ea67ce887dcfe9a0bf470a2692c",
+      "tests/test_interactions_projection_batching.py": "75e25813e2c86cc9e6419ba16dc1fb9f5461d5d7cebc1522d68753f9b3c13fb6"
+    }
+  }
+}

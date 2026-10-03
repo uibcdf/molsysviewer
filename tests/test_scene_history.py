@@ -252,8 +252,9 @@ def test_coalescing_keeps_distinct_operations_as_distinct_undo_steps():
 
 def test_coalescing_keeps_same_tag_shape_and_layer_in_distinct_domains():
     view = _mute(demo["dialanine"])
-    shape = view.shapes.add_sphere(tag="shared", skip_digestion=True)
-    layer = view.layers["shared"]
+    layer = view.layers.add("shared", skip_digestion=True)
+    shape = view.shapes.add_sphere(tag="shared", layer_tag="shared", skip_digestion=True)
+    view.shapes.add_sphere(tag="other", layer_tag="shared", skip_digestion=True)
     view.history.clear()
 
     with view.history.coalescing():
@@ -265,7 +266,7 @@ def test_coalescing_keeps_same_tag_shape_and_layer_in_distinct_domains():
 
 def test_scene_object_domains_are_restored_by_undo():
     view = _mute(demo["dialanine"])
-    view.annotations.add_annotation(text="site", atom_indices=[0], tag="note", skip_digestion=True)
+    view.annotations.add(text="site", atom_indices=[0], tag="note", skip_digestion=True)
     view.measurements.add_distance([0], [1], tag="distance", skip_digestion=True)
     view.shapes.add_sphere(tag="sphere", skip_digestion=True)
     view.layers.add("analysis", skip_digestion=True)

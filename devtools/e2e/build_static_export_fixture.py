@@ -33,7 +33,7 @@ def main() -> None:
         skip_digestion=True,
     )
     region.hide(skip_digestion=True)
-    view.annotations.add_annotation(
+    view.annotations.add(
         "Exported label",
         atom_indices=[0],
         tag="exported-label",

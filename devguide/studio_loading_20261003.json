@@ -1,0 +1,138 @@
+{
+  "date": "2026-10-03",
+  "issue": "uibcdf/molsysviewer#151",
+  "scope": "Studio loading parity through the public load owner; scientific inputs, completion and retry",
+  "status": "Implemented locally and verified; cumulative integration and installed/published-provider qualification pending",
+  "environment": {
+    "name": "molsyssuite@uibcdf_3.14",
+    "python": "3.14.7",
+    "interpreter": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "provider_head_observed": "98ea9434875a710c148b5ee8bd433ed979cd3787",
+    "provider": "Editable checkout; no provider edits or published-provider qualification",
+    "provider_head_observed_at_end": "d04299cc4deb73810aeacc747a59ba18c2530262",
+    "provider_concurrency_boundary": "Provider advanced independently during qualification. Inspected 98ea943..d04299c diff changes fixed-state hydrogen building and guidance; native/basic/h5msm/form loading owners have no committed changes. This is not a frozen-provider artifact qualification."
+  },
+  "verification": {
+    "specific_python": {
+      "command": "python -m pytest tests/test_studio_loading.py -x -q",
+      "exit": 0,
+      "passed": 18,
+      "log": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/studio-loading-20261003/msv-studio-loading-specific-20261003.log"
+    },
+    "full_python_once": {
+      "command": "python -m pytest --receptor=llm tests/",
+      "exit": 0,
+      "collected": 2806,
+      "passed": 2783,
+      "skipped": 23,
+      "seconds": 470.79,
+      "log": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/studio-loading-20261003/msv-studio-loading-full-20261003.log",
+      "boundary": "Outside sandbox. Final TS loading-visibility correction is supplemented by final affected JS and real browser checks; no second full run. Installed scientific and explicitly selected Chromium/GPU absence skips are not passing qualification of those lanes."
+    },
+    "full_js": {
+      "command": "npm run test:js",
+      "exit": 0,
+      "passed": 320,
+      "duration_ms": 8103.718972,
+      "log": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/studio-loading-20261003/msv-studio-loading-js-20261003.log",
+      "boundary": "Outside sandbox, before the final pending-load visibility correction."
+    },
+    "final_affected_js": {
+      "command": "node --test /tmp/msv-studio-units/group-panel.test.js /tmp/msv-studio-units/system-load-controls.test.js",
+      "exit": 0,
+      "passed": 39,
+      "duration_ms": 721.975693,
+      "log": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/studio-loading-20261003/msv-studio-loading-units-final-20261003.log",
+      "boundary": "Compiled from the two owning test modules with esbuild; outside sandbox."
+    },
+    "browser": {
+      "command": "PYTHON=<3.14 interpreter> node tests/e2e/composite-load.e2e.js",
+      "exit": 0,
+      "log": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/studio-loading-20261003/msv-studio-loading-browser-20261003.log",
+      "boundary": "Real Chrome/Mol* outside sandbox, source harness and persistent real Python authority. Mixed four-file batch, progressive retry/add/replace, complementary Amber selection/append, explicit nonconsecutive multi-frame pairing and unchanged rendered coordinates; stale acknowledgments and exported no-authority absence. Existing session/extraction/source-mask guards retained. Not complete core or wheel/standalone qualification."
+    },
+    "typescript": {
+      "command": "npx tsc --noEmit",
+      "exit": 0
+    },
+    "runtime_build": {
+      "command": "npm run build:runtime",
+      "exit": 0
+    },
+    "ruff": {
+      "command": "python -m ruff check tests/test_studio_loading.py molsysviewer/viewer/panel_actions/loading.py molsysviewer/viewer/panel_actions/__init__.py molsysviewer/js/tests/e2e/composite-load-bridge.py",
+      "exit": 0
+    },
+    "pdb_acquisition": {
+      "command": "python <retained provider-probe.py> pdb",
+      "exit": 0,
+      "probe": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/studio-loading-20261003/provider-probe.py",
+      "log": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/studio-loading-20261003/msv-studio-pdb-acquisition-20261003.log",
+      "ids": [
+        "1CRN",
+        "1UBQ",
+        "1VII",
+        "1BTA"
+      ],
+      "batch": {
+        "atoms": 3017,
+        "structures": 1,
+        "sources": 4,
+        "regions": 4
+      },
+      "mixed_progressive": {
+        "added": "native dialanine",
+        "atoms": 3039,
+        "sources": 5,
+        "regions": 5
+      },
+      "boundary": "Separate network-backed public loading probe; no scientific mocks or automatic alignment. Provider box/bioassembly/attribute diagnostics remain visible."
+    },
+    "hygiene": {
+      "git_diff_check": 0,
+      "devguide_index_check": 0
+    },
+    "reporting_after_guidance": {
+      "command": "python -m pytest tests/test_reporting_protocol.py -x -q",
+      "exit": 0,
+      "passed": 188,
+      "log": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/studio-loading-20261003/msv-studio-loading-reporting-20261003.log"
+    }
+  },
+  "provider_boundary": {
+    "issue": "uibcdf/molsysmt#307",
+    "command": "python <retained provider-probe.py> partial",
+    "exit": 1,
+    "log": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/studio-loading-20261003/msv-partial-extract-reproduction-20261003.log",
+    "diagnosis": "Public H5MSM 0.5 topology/chemistry partial system has structures=None; native MolSys.extract atom selection dereferences self.structures.extract at native/molsys.py:874.",
+    "boundary": "Declared chemical-state/topology atom association included. No consumer fork/workaround. Provider repair and public partial composition qualification remain required."
+  },
+  "source_hashes_sha256": {
+    "molsysviewer/js/src/ui/panels/system-load-controls.ts": "6816e29223888005c10f37af3e69ea5ebe3c1b40d88795716200e6bb4c7bfbaf",
+    "molsysviewer/js/src/ui/panels/system-panel.ts": "8ecd6a6079d3b82c6ec7f609a75840ac3fb934f6c983ab7a33f62b4c6a44149d",
+    "molsysviewer/js/src/ui/group-panel.ts": "bbd6d7251e24fc1ebd447c1cee12730abd609c9fc1009424a343a644bccc6d1d",
+    "molsysviewer/js/src/ui/panels/types.ts": "10a6cd57ecee7b812ac6ebf2caec7ba3692260478bd1fd59db892bc775176e5b",
+    "molsysviewer/js/src/managers/viewer-controller.ts": "e10df7f047876e2bc800e5197f1cfac1008cda7c5d9dfa771323b8956f4a8e39",
+    "molsysviewer/js/src/messages/viewer-messages.ts": "7eba4ed8066f090d2289f728c7321eba903f8ea14d82464e2eb2fc139a56cf78",
+    "molsysviewer/viewer/panel_actions/loading.py": "bf0b9d1b7d461d145e534ab6f9a00264259d8e4c7890baf82027acfbcb20620c",
+    "molsysviewer/viewer/panel_actions/__init__.py": "49e613808418a657c3502e4a27a0c51ee2494ae789dadf24e1b72b5e1c4f5720",
+    "tests/test_studio_loading.py": "d4d5934e3fb6f181d647d32b2330ec78693241f465bb167a7dc44ebd65eee6a4",
+    "molsysviewer/js/tests/unit/system-load-controls.test.ts": "7ee2ab92f14cf9d31ad983cd034452b47d6e899e1937cfa626f2037eafc9d62a",
+    "molsysviewer/js/tests/e2e/composite-load-bridge.py": "1e4f73f8d5b579316ce9b091dc8c3c1f6b71615c9ab0d44ee0dbaa692ba8f3e3",
+    "molsysviewer/js/tests/e2e/composite-load.e2e.ts": "7921a0021ee1eace07bda7188c11b0675cba513854f34dd176f92907b5099acd",
+    "molsysviewer/js/tests/e2e/harness.ts": "6b9c32de5aae6f900d2f5fb3ea819864f62b92f0e356149e722ec070a102222b"
+  },
+  "candidate": {
+    "git_head": "3b475639fdfa2a359b830bdf3314b81b5f1f3830",
+    "working_tree": "Uncommitted cumulative candidate; unrelated work preserved. Hashes identify reviewed owners, not a frozen artifact.",
+    "new_product_commit": false,
+    "new_product_push": false,
+    "new_installed_artifact": false
+  },
+  "boundaries": [
+    "Studio sources are paths available to the running Python session or PDB IDs; no browser file-upload transport.",
+    "Preparation-failure atomicity delegates to public load, with digestion enabled. Unexpected runtime/render failures have no rollback guarantee.",
+    "No new public Python callable: no public digestion/bypass inventory change.",
+    "No hard RSS ceiling, full core pass, exact committed-candidate CI, installed-artifact or compatible published-provider certification. Issue #151 remains open."
+  ]
+}

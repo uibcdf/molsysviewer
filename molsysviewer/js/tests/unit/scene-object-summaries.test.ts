@@ -18,6 +18,7 @@ test("scene-object summaries drive panels and visibility goes through Python", a
     controller.annotationSummaries = [];
     controller.measurementSummaries = [];
     controller.shapeSummaries = [];
+    controller.interactionSummaries = [];
     controller.layerSummaries = [];
     controller.shapeRenderStatuses = new Map();
     controller.addonsAnnotations = new Map();

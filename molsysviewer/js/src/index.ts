@@ -240,9 +240,19 @@ export async function bootDocsView(opts: {
         console.log("[MolSysViewer docs]", level, ...args);
     };
 
-    const initialMessages = Array.isArray(opts.initialMessages) ? opts.initialMessages : [];
-    const popupReplay = new PopupReplayLog(initialMessages);
     const ui = opts.ui || {};
+    let initialMessages = Array.isArray(opts.initialMessages) ? opts.initialMessages : [];
+    if (typeof ui.messages_url === "string" && ui.messages_url) {
+        const url = new URL(ui.messages_url, window.location.href);
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`Could not load exported scene: HTTP ${response.status}.`);
+        const data = await response.json();
+        if (data?.format !== "molsysviewer-messages" || data?.version !== 1 || !Array.isArray(data?.messages)) {
+            throw new Error("Unsupported exported scene document.");
+        }
+        initialMessages = data.messages;
+    }
+    const popupReplay = new PopupReplayLog(initialMessages);
     const notifyHost = (event: Record<string, any>) => {
         if (!event || typeof event !== "object") return;
         if (ui.host_event_transport !== "url-scheme") return;
@@ -276,7 +286,7 @@ export async function bootDocsView(opts: {
         const meta = messageMeta(msg);
         try {
             const controller = await controllerPromise;
-            await controller.handleMessage(msg);
+            await controller.handleMessage(msg, { throwOnError: true });
             popupReplay.record(msg);
             notifyHost({ event: "message_ack", phase: "handled", ...meta });
             if ((msg as any)?.op === "load_molsys_payload" || (msg as any)?.op === "load_molsys_payload_ref") {
@@ -458,20 +468,37 @@ export async function bootDocsView(opts: {
     window.addEventListener("message", messageHandler);
 
     // Replay initial messages
-    (async () => {
-        try {
-            const controller = await controllerPromise;
-            const initial = Array.isArray(opts.initialMessages) ? opts.initialMessages : [];
-            for (const msg of initial) {
-                if (msg) await controller.handleMessage(msg);
-            }
-            notifyHost({ event: "ready" });
-        } catch (err) {
-            console.error("[MolSysViewer docs] Init error:", err);
-            const message = err instanceof Error ? err.message : String(err);
-            notifyHost({ event: "frontend_error", phase: "init", error: message });
+    try {
+        const controller = await controllerPromise;
+        for (const msg of initialMessages) {
+            if (msg) await controller.handleMessage(msg, { throwOnError: true });
         }
-    })();
+        const canvas = controller.plugin.canvas3d;
+        if (!canvas) throw new Error("Exported scene has no WebGL canvas.");
+        await new Promise<void>((resolve, reject) => {
+            let requested = false;
+            const timer = setTimeout(() => {
+                subscription.unsubscribe();
+                reject(new Error("Exported scene did not finish drawing."));
+            }, 30000);
+            const subscription = canvas.didDraw.subscribe(() => {
+                // BehaviorSubject replays the preceding draw synchronously.
+                if (!requested) return;
+                clearTimeout(timer);
+                subscription.unsubscribe();
+                resolve();
+            });
+            requested = true;
+            canvas.requestDraw();
+        });
+        notifyHost({ event: "ready" });
+    } catch (err) {
+        console.error("[MolSysViewer docs] Init error:", err);
+        const message = err instanceof Error ? err.message : String(err);
+        notifyHost({ event: "frontend_error", phase: "init", error: message });
+        (await controllerPromise).dispose();
+        throw err;
+    }
 }
 
 /**

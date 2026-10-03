@@ -1,0 +1,116 @@
+{
+  "date": "2026-10-03",
+  "issue": "uibcdf/molsysviewer#151",
+  "scope": "Durable loaded-source occurrences and sparse atom/frame correspondence",
+  "status": "implemented locally; scoped qualification passes; full regression interrupted, integrated qualification pending",
+  "environment": {
+    "name": "molsyssuite@uibcdf_3.14",
+    "python": "3.14.7",
+    "interpreter": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "provider_head_observed_at_capture": "98ea9434875a710c148b5ee8bd433ed979cd3787",
+    "provider": "editable MolSysMT checkout; unrelated work preserved; this is not published-provider qualification",
+    "temporary_files": "Original attempt used /tmp; recovery/benchmark explicitly use repository .pytest_cache/source-records-20261003/tmp after diagnosed ENOSPC. No global environment changes or Numba workaround."
+  },
+  "verification": {
+    "specific": {
+      "command": "python -m pytest --receptor=llm tests/test_source_records.py -x",
+      "exit": 0,
+      "passed": 22,
+      "seconds": 14.88,
+      "log": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/source-records-20261003/msv-source-records-specific-20261003.log"
+    },
+    "existing_scoped": {
+      "command": "python -m pytest --receptor=llm tests/test_composite_load.py tests/test_live_edit_rebuild.py tests/test_scene_transfer.py tests/test_state_serialization.py tests/test_state_v2.py tests/test_session_bundle.py tests/test_session_rejection.py tests/test_state_structure_identity.py tests/test_region_isolation.py tests/test_public_api_inventory.py -x",
+      "exit": 0,
+      "passed": 169,
+      "seconds": 50.28,
+      "log": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/source-records-20261003/msv-source-records-existing-20261003.log"
+    },
+    "full_python_once": {
+      "command": "python -m pytest --receptor=llm tests/",
+      "exit": 139,
+      "conclusive": false,
+      "collected": 2745,
+      "last_reported_processed": 1098,
+      "passed": null,
+      "log": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/source-records-20261003/msv-source-records-full-20261003.log",
+      "boundary": "Outside sandbox. Native segmentation fault during h5py close in test_interaction_families.py:115. Root filesystem at 100%, 0 bytes available; executor concurrently failed with ENOSPC creating its /tmp mount marker. No complete result or repeat full run is claimed. Failed-run data preserved without deletion in failed-pytest-2766."
+    },
+    "infrastructure_recovery": {
+      "command": "TMPDIR=<repository temporary directory> python -m pytest --receptor=llm tests/test_interaction_families.py -x --basetemp=.pytest_cache/source-records-20261003/recovery",
+      "exit": 0,
+      "passed": 30,
+      "seconds": 24.28,
+      "log": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/source-records-20261003/recovery.log",
+      "boundary": "Only the crash file on a healthy temporary filesystem; not a complete regression."
+    },
+    "browser": {
+      "command": "PYTHON=<3.14 interpreter> node tests/e2e/composite-load.e2e.js",
+      "exit": 0,
+      "log": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/source-records-20261003/msv-source-records-browser-20261003.log",
+      "boundary": "Real Chrome/Mol* outside sandbox. Reopened session and extracted source regions retain rendered coordinates and whole-only visibility. Source harness, not wheel/standalone or full core-lane qualification."
+    },
+    "typescript": {
+      "command": "npx tsc --noEmit",
+      "exit": 0,
+      "log": "/tmp/msv-source-records-typescript-20261003.log"
+    },
+    "ruff": {
+      "command": "python -m ruff check <changed source-record owners, bridge and benchmark>",
+      "exit": 0,
+      "log": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/source-records-20261003/ruff.log"
+    },
+    "hygiene": {
+      "git_diff_check": 0,
+      "devguide_index_check": 0
+    }
+  },
+  "benchmark": {
+    "command": "python devtools/benchmarks/source_records.py",
+    "exit": 0,
+    "result": {
+      "n_atoms": 124,
+      "n_structures": 5000,
+      "n_sources": 2,
+      "metadata_bytes": 855,
+      "cold_seconds_with_allocation_tracing": 0.07716756407171488,
+      "additional_python_peak_bytes": 1079165,
+      "cached_median_seconds": 3.486638888716698e-05,
+      "cached_max_seconds": 0.00010040402412414551,
+      "cached_samples": 20,
+      "cache_reused": true,
+      "boundary": "Resident demo coordinates; no RSS, hard ceiling, session-I/O or installed-provider claim."
+    },
+    "log": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/source-records-20261003/benchmark.log"
+  },
+  "diagnoses": [
+    "Initial guard used nonexistent view.copy; corrected to the existing public msv.tools.basic.copy route.",
+    "Current H5MSM 0.5 conversion explicitly rejects float_precision; use its public precision-preserving writer. Legacy 0.4 fallback requests double and remains inspected, not installed-qualified.",
+    "Quantity properties return fresh wrapper objects; wrapper identity caused repeated cold hashing. Cache is now keyed by stable system/domain identity/counts, with explicit invalidation after announced edits.",
+    "Full-run HDF5 close crashed while /tmp filesystem was exhausted. Relocated only this attempt's generated data; scoped recovery on repository filesystem passes."
+  ],
+  "contract_limits": [
+    "Source SHA-256 binds saved ordered content; it does not authenticate declared original file origins.",
+    "Ordinary scene import keeps destination inventory on mismatched/absent binding or clear_first=False. Sessions refuse mismatch before replacing an existing destination.",
+    "Equal-count announced edits declare unchanged index order; explicit extraction remaps frame subsets/reorders.",
+    "Changed frame counts without correspondence mark frame maps unverified. Explicit append keeps old prefix correspondence; no original indices are invented for added frames.",
+    "Coordinate hashing has one cold O(atoms*structures) cost per system/announced edit and bounded chunk allocations. No additional long-lived trajectory or dense pair matrix is stored.",
+    "Benchmark traces additional Python allocations after coordinates are resident; no RSS, hard ceiling, H5MSM I/O throughput or published-provider claim.",
+    "Controlled box assignment and Studio parity remain open under #151."
+  ],
+  "source_sha256": {
+    "molsysviewer/loaders/_source_records.py": "ec9d6e9e8be07209fe4dedadadc8053f7e148809bfbef4cf8ed7b749a65dbe95",
+    "molsysviewer/viewer/load.py": "95ca1f6f8dc5615a1cdf07383a28bf2b284dab1ac15b90a598c9ed5b5171b15b",
+    "molsysviewer/viewer/core.py": "0de1bf0ff3bd3703bcfdc02501a4dde42e4b638f302e0dd964f48b08f2cbc440",
+    "molsysviewer/viewer/state.py": "1d7740cc932f862653084be99e4de81339547e4a883c61f2e0cc4a12adebc81b",
+    "molsysviewer/viewer/scene.py": "bc803c22e67adf7f361a4a9663f2872cf430f05583b7652919a7c8f179bdb2e0",
+    "molsysviewer/session.py": "852c175d0240420a68e4d1b4f0f8213c605fe20eafc4082ef1580d1011bb882d",
+    "molsysviewer/tools/basic/_scene_transfer.py": "7e527f07fc47387acf8e3a036db123f1477efb04e21b3971cf631702653786bf",
+    "molsysviewer/tools/basic/merge.py": "f3448c4512548b6c56732bc2599f2c183dde7454e1e1077e3ea3f6377a2b7180",
+    "tests/test_source_records.py": "8a84c7dc8e23a3d23f58f4ee675f3681bcd6e28d288842ea80d5c5e07ff34c05",
+    "molsysviewer/js/tests/e2e/composite-load-bridge.py": "b649244d3d9454da51c5a9c87eaf84b797b7d12aa5a1a07e7b567c90ff42ff73",
+    "molsysviewer/js/tests/e2e/composite-load.e2e.ts": "9d10b20f78421760b9879119bbddc8c7dcb1fd9a844dd8dabf8551171db15551",
+    "devtools/benchmarks/source_records.py": "d19f10a05c7658ef3832999166e07e5d8dd6ba4b800fac2f58a9b683a5f7ea30"
+  },
+  "publication": "No product commit, push, new wheel or release. Pre-existing unrelated work is preserved."
+}

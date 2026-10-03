@@ -46,7 +46,8 @@ _THEME_ACCEPTING_CALLERS = frozenset(
 
 def digest_color(color, caller=None):
     """Normalize a single colour, or a batch (sequence) of colours, to int(s)."""
-    from molsysviewer.colors import normalize_color, normalize_colors  # deferred: see module note
+    from molsysviewer.colors import _normalize_color as normalize_color  # deferred: see module note
+    from molsysviewer.colors import _normalize_colors as normalize_colors
 
     if color is None:
         return None

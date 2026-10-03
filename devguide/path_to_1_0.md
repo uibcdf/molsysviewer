@@ -2,11 +2,45 @@
 
 This document is the authoritative release plan for the **v1.0.0** release of MolSysViewer. 
 
+**Current closure checkpoint (2026-10-01):** design/API, session and static-HTML
+corrections are implemented. Diagnostic templates (#107), dependency-route
+audit (#106), exact-candidate release evidence (#103), shared public verifier
+(#133) and promotion preconditions (#134) are closed. The latest passing complete source
+suite records **2,464 tests, 23 skipped**. This is development evidence, not
+clearance for an immutable 1.0 artifact. CI enforcement (#116) is verified
+and closed, as are ecosystem adoption (#110) and its scalar unit contract (#98).
+The latest complete source attempt returned 2,480 passed, 23 skipped and one
+failed; the outdated B-factor fixture is corrected and its focused checks pass.
+No new complete pass is claimed. A compatible published Interactions provider (#114), repaired exact Windows
+artifact verification (#101), public documentation and human release workflows
+remain. Follow [the current execution order](checkpoints.md#what-is-next).
+
 **Support boundary (2026-09-28):** The Python/Jupyter viewer, reproducible
 scene state and interactive HTML export form the 1.0 contract. Local standalone
 launchers and the Qt host remain experimental, with no 1.0 support promise or
 real-window release gate. Remote sessions remain an unsupported preview;
 supported remote workflows and their E2E certification are post-1.0.
+
+**Interactions partially implemented (2026-09-30):** `uibcdf/molsysviewer#114`
+tracks a bounded Python scene domain and minimal Studio subpanel for hydrogen
+bonds and disulfide candidates before 1.0, after agreeing result semantics
+with `uibcdf/molsysmt#250`. Existing-data display, native calculation and
+declared independent H5MSM import share `view.molsys.interactions`, without
+addon registration. The implementation sequence and acceptance gate
+are in [`interactions_pre_1_0_plan.md`](interactions_pre_1_0_plan.md). The
+complete MolSysMT addon retirement and Mol* dependency update are later work.
+Scientific Python queries, import, calculation and session persistence are
+implemented, including tagged displays, browser projection and Studio.
+Review corrections and six synthetic joint residency/query measurements are
+recorded in [`interactions_performance.md`](interactions_performance.md).
+Bounded real scientific and calculated-link browser qualification now pass,
+including a complete 5,000-frame detector calculation; see
+[`interactions_qualification.md`](interactions_qualification.md).
+Published-provider, larger GPU and exact-candidate qualification remain pending;
+public occurrence paging is requested in `uibcdf/molsysmt#264`.
+This checkpoint does not certify the feature or alter the existing
+release evidence; the final candidate requires a supported provider release
+and new integration evidence.
 
 **Platform decision (2026-09-27):** Future release gates cover macOS arm64,
 not Intel `osx-64`. The coordinated Conda matrix is now four native platforms
@@ -33,6 +67,16 @@ ingestion, not archival failure (`uibcdf/molsyssuite#49`). See
 It consolidates the strategic milestones with the competitive quality gaps (previously tracked under the confusing `path_to_8_5.md` document) to ensure that the stable `1.0.0` release reaches a high-quality competitive score (**8.5/10**) in the scientific Python ecosystem.
 
 ---
+
+
+**Final design-review update (2026-09-30):** `uibcdf/molsysviewer#118`–`#125`
+protect coordinate reconciliation, scene transfer, handle lifetimes, detached
+queries, manager lifecycle, redo and Interactions inspection. Annotation creation
+uses only `view.annotations.add`. The ordinary public callable inventory is
+699/699 digested, with explicit `skip_digestion=False` and no exemptions.
+The current core browser lane is 36 scenarios; portable adds the two remote
+client scenarios. Exact-candidate full-suite evidence is still required; see
+[checkpoints.md](checkpoints.md) for the current validation limits.
 
 ## 0.18.x — Poner la casa en orden (Completed)
 
@@ -80,7 +124,8 @@ published.
 | 14 | **Scientific Dogfooding**: Daily lab usage | Collect real-world friction and identify edge cases or bugs | Pending after `0.19.0` |
 | 15 | **Bug Resolution**: Fix findings from dogfooding | Address any stability or usability bugs raised by researchers | Pending after `0.19.0` |
 
-Current CI note:
+Historical CI note for the 0.19.0 checkpoint (superseded by the public-pair
+and current closure checkpoints above):
 
 - `CI_e2e` is green at the `0.19.0` checkpoint.
 - The main GitHub CI workflow has been repaired structurally, but its final
@@ -204,7 +249,8 @@ notebook host, and Mol\* reorders coordinate arrays in place.
   every test green. Fixed and guarded.
 - **Documentation execution.** Sphinx does not execute notebooks, so a previous
   API hardening broke ten documented notebooks unnoticed. All are green again;
-  putting `docs/execute_notebooks.py` in CI is still open (see gates below).
+  execution through `docs/execute_notebooks.py` is now wired in CI and recorded
+  as done in gate 22 below. Final candidate notebook evidence is still required.
 
 ### Correction to this document
 Item 16 (*E2E Playwright CI Automation*) was listed as `Planned`. `CI_e2e.yaml`
@@ -213,10 +259,10 @@ Deciding release readiness against a stale plan is its own risk.
 
 The 2026-09-24 hosted `CI_e2e` used the 36-suite portable lane, which still
 included two remote scenarios. On 2026-09-26 the maintainers deferred remote
-support and certification to post-1.0. The strict 1.0 gate now runs the
-34-suite core lane, excluding the three remote-only scenarios by explicit
-inventory. The 36-suite portable, two-suite remote-portable, one-suite
-server-GPU and full 37-suite commands remain available. A green core lane
+support and certification to post-1.0. The current strict 1.0 gate runs the
+36-suite core lane, excluding the three remote-only scenarios by explicit
+inventory. The 38-suite portable, two-suite remote-portable, one-suite
+server-GPU and full 39-suite commands remain available. A green core lane
 does not certify any remote scenario (`uibcdf/molsysviewer#100`).
 
 ---
@@ -282,7 +328,7 @@ Tasks that extend the reach and automation of the project but do not block the i
 | # | Task | Notes | Status |
 |---|---|---|---|
 | 11 | **Scientific Tutorials**: 3-5 case-driven notebooks | Focus on real problems (Pocket Contact Analysis, Conformational Comparison, Pharmacophore Model). Postponed to post-1.0 to wait until sibling tools (`elastnetmt`, `pharmacophoremt`, `molsysmt`, `topomt`) and their respective addons are fully mature and polished. | Postponed |
-| 16 | **E2E Playwright CI Automation** | `CI_e2e.yaml` runs `npm run test:e2e` on every pull request to `main` | ✅ done (this entry was stale) |
+| 16 | **E2E Playwright CI Automation** | `CI_e2e.yaml` runs `npm run test:e2e:core` on every pull request to `main`; remote preview remains outside that lane. | ✅ done |
 | 21 | **Qt render check on a GPU runner** | Moved out of the 1.0 gates: the render itself is already validated on real GPU, and Decision 1 classifies the CI job as level 2, non-blocking. See [`pending_proposals/post_1.0/qt_render_check_on_a_gpu_runner.md`](pending_proposals/post_1.0/qt_render_check_on_a_gpu_runner.md). Needs a machine with a GPU **and a graphical session**. | Post-1.0 |
 | 28 | **Remote-session stabilization** | Define compatibility policy and stabilize the Python API, CLI, wire protocol and production deployment surface only after 1.0 experience. Complete feature parity, adaptive video quality and general managed networking belong here rather than on the 1.0 critical path. | Post-1.0 |
 | 27 | **Remote-session support and E2E certification** | Earlier RRS0–RRS3 implementation and spika-to-aleph observations remain valuable prototype evidence, but the feature is not in the 1.0 support contract. Keep its shipped entrypoints as an unsupported preview. Establish reproducible remote-client and managed server-GPU E2E evidence before a later supported release (`uibcdf/molsysviewer#100`). | Post-1.0 |

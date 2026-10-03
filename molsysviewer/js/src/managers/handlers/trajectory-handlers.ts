@@ -9,11 +9,16 @@ import {
     StepTrajectoryMessage,
     PartialCoordinatesUpdateMessage,
 } from "../../messages/viewer-messages";
-import { LoadedStructure } from "../../plugin/structure";
+import { LoadedStructure, replaceMolSysTrajectory } from "../../plugin/structure";
+import { ArrayTrajectory, Model } from "molstar/lib/mol-model/structure";
+import { Task } from "molstar/lib/mol-task";
+import { UUID } from "molstar/lib/mol-util/uuid";
+import { CustomProperties } from "molstar/lib/mol-model/custom-property";
 
 export interface TrajectoryContext {
     getLoadedStructure: () => LoadedStructure | undefined;
     notifyTrajectoryState: () => void;
+    afterFrameApplied?: () => Promise<void>;
     /** Called when playback stops; receives the final frame index. */
     onPlaybackStopped?: (frame: number) => void;
     notify?: (msg: any) => void;
@@ -67,6 +72,7 @@ export function nextPlaybackStep(
 }
 
 export class TrajectoryHandlers {
+    private readonly pendingFrames = new Set<Promise<void>>();
     private playbackTimer?: ReturnType<typeof setInterval>;
     private trajectoryPoll?: ReturnType<typeof setInterval>;
     private trajectoryListeners = new Set<(state: TrajectoryState) => void>();
@@ -76,57 +82,52 @@ export class TrajectoryHandlers {
 
     async partialCoordinatesUpdate(msg: PartialCoordinatesUpdateMessage) {
         const loaded = this.context.getLoadedStructure();
-        if (!loaded || !loaded.structure) {
-            console.warn("[TrajectoryHandlers] partialCoordinatesUpdate ignored: no structure loaded");
-            return;
+        const ref = loaded ? StateObjectRef.resolveRef(loaded.trajectory) : undefined;
+        const trajectory = ref ? this.plugin.state.data.cells.get(ref)?.obj?.data : undefined;
+        if (!loaded || !trajectory) throw new Error("No trajectory loaded for coordinate edit.");
+        if (msg.coordinate_unit !== "angstrom") throw new Error("Coordinate edits require explicit angstrom units.");
+        const count = trajectory.frameCount;
+        if (!Array.isArray(msg.structure_indices) || new Set(msg.structure_indices).size !== msg.structure_indices.length
+            || msg.structure_indices.some(i => !Number.isInteger(i) || i < 0 || i >= count)
+            || msg.coordinates.length !== msg.structure_indices.length
+            || msg.coordinates.some(frame => frame.length !== msg.atom_indices.length
+                || frame.some(xyz => xyz.length !== 3 || xyz.some(value => !Number.isFinite(value))))) {
+            throw new Error("Invalid coordinate edit structures or dimensions.");
         }
-        const structureRef = StateObjectRef.resolveRef(loaded.structure);
-        const cell = structureRef ? this.plugin.state.data.cells.get(structureRef) : undefined;
-        if (!cell || !cell.obj) {
-            console.warn("[TrajectoryHandlers] partialCoordinatesUpdate ignored: structure node not found");
-            return;
-        }
-        const structure = cell.obj.data;
-        if (!structure || !structure.models) {
-            console.warn("[TrajectoryHandlers] partialCoordinatesUpdate ignored: structure data not found");
-            return;
-        }
-
-        let updated = false;
-        for (const model of structure.models) {
-            const atomicConformation = model.atomicConformation;
-            if (!atomicConformation) continue;
-            const { x, y, z } = atomicConformation;
-            for (let i = 0; i < msg.atom_indices.length; i++) {
-                const atomIdx = msg.atom_indices[i];
-                const coords = msg.coordinates[i];
-                if (coords && atomIdx >= 0 && atomIdx < x.length) {
-                    x[atomIdx] = coords[0];
-                    y[atomIdx] = coords[1];
-                    z[atomIdx] = coords[2];
-                    updated = true;
+        const replacements = new Map(msg.structure_indices.map((frame, index) => [frame, msg.coordinates[index]]));
+        const models = await this.plugin.runTask(Task.create("Revise trajectory coordinates", async ctx => {
+            const frames: Model[] = [];
+            for (let index = 0; index < count; index++) {
+                const original = await Task.resolveInContext(trajectory.getFrameAtIndex(index), ctx) as Model;
+                const coordinates = replacements.get(index);
+                if (!coordinates) { frames.push(original); continue; }
+                const inverse = Model.getInvertedAtomSourceIndex(original).invertedIndex;
+                if (msg.atom_indices.some(atom => !Number.isInteger(atom) || atom < 0 || atom >= inverse.length)) {
+                    throw new Error("Invalid coordinate edit atom indices.");
                 }
+                const atomic = original.atomicConformation;
+                const x = Float32Array.from(atomic.x), y = Float32Array.from(atomic.y), z = Float32Array.from(atomic.z);
+                msg.atom_indices.forEach((source, offset) => {
+                    const atom = inverse[source], xyz = coordinates[offset];
+                    x[atom] = xyz[0]; y[atom] = xyz[1]; z[atom] = xyz[2];
+                });
+                // Fresh model/conformation identities make Mol* rebuild dependent
+                // units and their spatial caches. Other frames retain their arrays.
+                const revised: Model = { ...original, id: UUID.create22(),
+                    atomicConformation: { ...atomic, id: UUID.create22(), x, y, z },
+                    customProperties: new CustomProperties(),
+                    _staticPropertyData: { ...original._staticPropertyData },
+                    _dynamicPropertyData: Object.create(null) };
+                Model.TrajectoryInfo.set(revised, { index, size: count });
+                frames.push(revised);
             }
-        }
-
-        if (updated) {
-            const currentId = (structure as any).conformation?.id ?? "0";
-            const newId = typeof currentId === "number" ? currentId + 1 : `${currentId}_upd`;
-            if (structure.conformation) {
-                (structure as any).conformation.id = newId;
-            }
-            
-            const update = this.plugin.state.data.build();
-            update.to(loaded.structure);
-            await this.plugin.runTask(this.plugin.state.data.updateTree(update));
-        }
-
-        if (msg.transaction_id !== undefined && this.context.notify) {
-            this.context.notify({
-                event: "trajectory_frame_rendered",
-                transaction_id: msg.transaction_id,
-            });
-        }
+            return frames;
+        }));
+        await replaceMolSysTrajectory(this.plugin, loaded, new ArrayTrajectory(models));
+        this.updateTrajectoryState();
+        if (msg.transaction_id !== undefined) this.context.notify?.({
+            event: "trajectory_frame_rendered", transaction_id: msg.transaction_id,
+        });
     }
 
     async stepTrajectory(msg: StepTrajectoryMessage | number) {
@@ -141,6 +142,12 @@ export class TrajectoryHandlers {
     }
 
     async setTrajectoryFrame(msg: SetTrajectoryFrameMessage | number) {
+        const pending = this.applyTrajectoryFrame(msg);
+        this.pendingFrames.add(pending);
+        try { await pending; } finally { this.pendingFrames.delete(pending); }
+    }
+
+    private async applyTrajectoryFrame(msg: SetTrajectoryFrameMessage | number) {
         const index = typeof msg === 'number' ? msg : (msg.index ?? 0);
         const frameCount = this.getFrameCount();
         if (frameCount < 1) return;
@@ -154,6 +161,7 @@ export class TrajectoryHandlers {
             update.to(m).update({ modelIndex: clamped });
         }
         await this.plugin.runTask(this.plugin.state.data.updateTree(update));
+        await this.context.afterFrameApplied?.();
         this.updateTrajectoryState();
     }
 
@@ -217,6 +225,8 @@ export class TrajectoryHandlers {
             clearInterval(this.trajectoryPoll);
             this.trajectoryPoll = void 0;
         }
+        await Promise.all(Array.from(this.pendingFrames));
+        await this.context.afterFrameApplied?.();
         this.updateTrajectoryState();
         if (wasPlaying) {
             this.context.onPlaybackStopped?.(this.getCurrentFrameIndex());

@@ -21,7 +21,7 @@ REPRESENTATION_ALIASES = {
 # Molecular-system representations exposed in the public Python API.
 # These map 1:1 to Mol* built-in structure representation types.
 # Not included:
-#   "label"       → use view.annotations.add_annotation() instead
+#   "label"       → use view.annotations.add() instead
 #   "orientation" → structural axes helper; use molstar_repr_type escape hatch if needed
 #   "plane"       → best-fit plane helper; use molstar_repr_type escape hatch if needed
 ALLOWED_REPRESENTATIONS = {

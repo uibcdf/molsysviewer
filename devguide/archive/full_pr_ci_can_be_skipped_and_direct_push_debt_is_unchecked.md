@@ -1,9 +1,9 @@
 ---
 summary: Full PR CI can be skipped and direct-push CI debt is unchecked.
 issue: uibcdf/molsysviewer#116
-status: active
+status: resolved
 opened: 2026-09-28
-closed:
+closed: 2026-10-01
 severity: high
 verification: measured
 area: [ci, governance]
@@ -79,8 +79,9 @@ heavy jobs are intentionally skipped.
   commit. A manual backlog probe exercises each detector on GitHub.
 - The branch protection API requires `PR full suite` and `Core E2E`, while
   direct administrator pushes remain available.
-- The first actual nightly schedule and an external PR check remain distinct
-  hosted evidence; neither is claimed from a manual probe or a direct push.
+- The actual 2026-10-01 nightly CI and core E2E schedules executed their
+  required test steps successfully. The first external contributor PR remains
+  an observation to collect; it is not inferred from an administrator PR.
 
 The local focused tests for this guard, the existing staging-workflow
 contract, and the reporting protocol pass; Ruff also passes. One local full
@@ -98,8 +99,45 @@ filter returned the green scheduled run. The detector now reads branch runs
 and checks each run's `conclusion` plus the required executed job steps itself.
 The probes were diagnostic, so they did not launch a duplicate heavy suite.
 
-## Resolution
+## Resolution — 2026-10-01
 
-Open until the hosted implementation, required checks and review evidence
-are recorded. The first actual nightly event and first external PR remain
-follow-up evidence if they cannot occur during this implementation window.
+Resolved. The implementation at `500c556297748457f968f2ea0391e82d8645affd`
+passed [CI 36476235643](https://github.com/uibcdf/molsysviewer/actions/runs/36476235643),
+[core E2E 36476235487](https://github.com/uibcdf/molsysviewer/actions/runs/36476235487)
+and [policy 36476236673](https://github.com/uibcdf/molsysviewer/actions/runs/36476236673).
+Native job steps confirm six executed Python matrix cells, the Ubuntu 3.13 JS
+unit step, both Qt pipeline observations, and the core browser test step.
+A skipped decision or PR-only aggregate on a push is not a missing test lane.
+
+Corrected detector probes at `ad4357176720a18f1937fe6ef504e8a08339b3e6`
+([CI 36477025996](https://github.com/uibcdf/molsysviewer/actions/runs/36477025996),
+[E2E 36477036433](https://github.com/uibcdf/molsysviewer/actions/runs/36477036433))
+found one skipped commit due in each independently anchored lane. They did not
+execute the heavy suites and are not full-run watermarks.
+
+The actual 2026-10-01 schedules at
+`1a7f20e66a5f2aeef1979c5c96f23e70fb241830` passed
+[CI 36868653948](https://github.com/uibcdf/molsysviewer/actions/runs/36868653948)
+and [E2E 36869441160](https://github.com/uibcdf/molsysviewer/actions/runs/36869441160).
+Native steps show the matrix, JS, Qt and core E2E tests really ran. The current
+branch-protection API requires `PR full suite` and `Core E2E`, with strict checks
+and administrator enforcement disabled; force pushes and deletion remain disabled.
+
+The four tests in `tests/test_ci_backlog.py` pass locally on 2026-10-01.
+Their assertions protect skip detection, executed-lane watermarks, conservative
+API failure behavior, unfiltered PR triggers, required aggregate dependencies,
+and nightly/probe wiring. GH Run Receptor 1.1.1 was used for first inspection;
+native GitHub job records verified the executed steps and branch settings.
+The implementation and actual nightly/protection evidence close this defect.
+The first external contributor PR is still an observation to collect, not a
+remaining implementation dependency or a claim made from these runs.
+
+## Additional PR evidence — 2026-10-01
+
+Administrator draft PR #135 at `4ef65a8e5403ace672e571bd0123aab7becfae71`
+passes CI `36885559251` and core E2E `36885559507`. Native steps confirm
+all six Python cells, JS, both Qt pipeline observations, the successful
+`PR full suite` aggregate and executed `Core E2E`. This is actual PR-event
+evidence in addition to the previously recorded push and nightly results;
+it is not an external contributor/fork observation or real-window standalone
+certification.

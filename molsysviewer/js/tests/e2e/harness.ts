@@ -1,4 +1,5 @@
-import { MolSysViewerController } from "../../src/managers/viewer-controller";
+import { MolSysViewerController, normalizeContextInteractionEvent, normalizeInteractionEvent } from "../../src/managers/viewer-controller";
+import { ShapeGroup } from "molstar/lib/mol-model/shape";
 import { Structure, StructureElement, Unit } from "molstar/lib/mol-model/structure";
 import { StructureSelection } from "molstar/lib/mol-model/structure/query";
 import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
@@ -26,6 +27,17 @@ import { RemoteInputAdapter } from "../../src/messages/remote-input-adapter";
 
 export { RemoteInputAdapter };
 
+/** Resolve a real rendered mesh group through the production picking path. */
+export function openInteractionContext(controller: MolSysViewerController, tag: string) {
+    const ref = inspectTaggedRefs(controller, "interaction", tag)[0].ref;
+    const shape = controller.plugin.state.data.cells.get(ref)!.obj!.data.repr.getAllLoci()[0].shape;
+    const loci = ShapeGroup.Loci(shape, [{ ids: OrderedSet.ofSingleton(0), instance: 0 }]);
+    const context = (controller as any).normalizeManagedContextPayload(normalizeContextInteractionEvent({ current: { loci } }));
+    const click = (controller as any).normalizeManagedInteractionPayload(normalizeInteractionEvent("click", { current: { loci } }));
+    (controller as any).contextMenu.open(context, 80, 80);
+    return { context, click };
+}
+
 declare global {
     // eslint-disable-next-line no-var
     var Harness: {
@@ -38,6 +50,7 @@ declare global {
         probePerAtomColorDecorator: typeof probePerAtomColorDecorator;
         probeRegionOrderOwnership: typeof probeRegionOrderOwnership;
         inspectScene: typeof inspectScene;
+        inspectSceneTransparency: typeof inspectSceneTransparency;
         inspectMolstarRepresentationCells: typeof inspectMolstarRepresentationCells;
         inspectWholeRepresentationCells: typeof inspectWholeRepresentationCells;
         probeAtomColors: typeof probeAtomColors;
@@ -684,6 +697,36 @@ export function inspectScene(controller: MolSysViewerController): SceneSnapshot 
     };
 }
 
+/** Read effective per-atom transparency from Mol*'s applied transforms. */
+export function inspectSceneTransparency(controller: MolSysViewerController, atomIndices: number[]) {
+    const profiled = controller as ProfileController;
+    const state = profiled.state as any;
+    const cells = profiled.plugin.state.data;
+    const read = (refs: Iterable<string>) => Array.from(refs).map(ref => {
+        const cell = cells.cells.get(ref);
+        const structure = cell?.obj?.data?.sourceData;
+        const values = atomIndices.map(() => 0);
+        if (!structure) throw new Error(`Missing representation structure for ${ref}`);
+        const transforms = cells.select(StateSelection.Generators.ofTransformer(
+            StateTransforms.Representation.TransparencyStructureRepresentation3DFromBundle, ref,
+        ).withTag("transparency-controls"));
+        for (const transform of transforms) {
+            for (const layer of transform.params?.values.layers ?? []) {
+                const members = new Set(bundleAtomIndices(layer.bundle, structure.root));
+                atomIndices.forEach((index, ordinal) => {
+                    if (members.has(index)) values[ordinal] = Number(layer.value);
+                });
+            }
+        }
+        return { hidden: cell.state.isHidden === true, values };
+    });
+    const regions: Record<string, ReturnType<typeof read>> = {};
+    (state.regionIndex as Map<string, any>).forEach((entry, tag) => {
+        regions[tag] = read(entry.representations);
+    });
+    return { whole: read(state.globalReprs), regions };
+}
+
 /**
  * The colour Mol* would paint at each requested atom, evaluated through the real
  * per-atom decorator theme rather than read back from the message we sent.
@@ -1279,7 +1322,7 @@ async function setRegionVisibility(controller: ProfileController, tag: string, v
 
 export async function createController(
     targetId = "root",
-    options?: { isPanelOnly?: boolean; panelModeStyle?: string },
+    options?: { isPanelOnly?: boolean; panelModeStyle?: string; hasAuthority?: boolean },
 ) {
     const target = document.getElementById(targetId) ?? document.body;
     (window as any).__messages = [];
@@ -1790,6 +1833,7 @@ if (typeof window !== "undefined") {
         probePerAtomColorDecorator,
         probeRegionOrderOwnership,
         inspectScene,
+        inspectSceneTransparency,
         inspectMolstarRepresentationCells,
         inspectWholeRepresentationCells,
         probeAtomColors,

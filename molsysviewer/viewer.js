@@ -3133,12 +3133,12 @@ function isPlainObject(value) {
 function isDataStructure(value) {
   return typeof value === "object" && (isImmutable(value) || Array.isArray(value) || isPlainObject(value));
 }
-function arrCopy(arr, offset3) {
-  offset3 = offset3 || 0;
-  var len = Math.max(0, arr.length - offset3);
+function arrCopy(arr, offset4) {
+  offset4 = offset4 || 0;
+  var len = Math.max(0, arr.length - offset4);
   var newArr = new Array(len);
   for (var ii = 0; ii < len; ii++) {
-    newArr[ii] = arr[ii + offset3];
+    newArr[ii] = arr[ii + offset4];
   }
   return newArr;
 }
@@ -4290,13 +4290,13 @@ function iterateList(list3, reverse3) {
   var tailPos = getTailOffset(right);
   var tail = list3._tail;
   return iterateNodeOrLeaf(list3._root, list3._level, 0);
-  function iterateNodeOrLeaf(node, level, offset3) {
-    return level === 0 ? iterateLeaf(node, offset3) : iterateNode(node, level, offset3);
+  function iterateNodeOrLeaf(node, level, offset4) {
+    return level === 0 ? iterateLeaf(node, offset4) : iterateNode(node, level, offset4);
   }
-  function iterateLeaf(node, offset3) {
-    var array2 = offset3 === tailPos ? tail && tail.array : node && node.array;
-    var from2 = offset3 > left ? 0 : left - offset3;
-    var to = right - offset3;
+  function iterateLeaf(node, offset4) {
+    var array2 = offset4 === tailPos ? tail && tail.array : node && node.array;
+    var from2 = offset4 > left ? 0 : left - offset4;
+    var to = right - offset4;
     if (to > SIZE) {
       to = SIZE;
     }
@@ -4308,11 +4308,11 @@ function iterateList(list3, reverse3) {
       return array2 && array2[idx];
     };
   }
-  function iterateNode(node, level, offset3) {
+  function iterateNode(node, level, offset4) {
     var values2;
     var array2 = node && node.array;
-    var from2 = offset3 > left ? 0 : left - offset3 >> level;
-    var to = (right - offset3 >> level) + 1;
+    var from2 = offset4 > left ? 0 : left - offset4 >> level;
+    var to = (right - offset4 >> level) + 1;
     if (to > SIZE) {
       to = SIZE;
     }
@@ -4332,7 +4332,7 @@ function iterateList(list3, reverse3) {
         values2 = iterateNodeOrLeaf(
           array2 && array2[idx],
           level - SHIFT,
-          offset3 + (idx << level)
+          offset4 + (idx << level)
         );
       }
     };
@@ -5954,13 +5954,13 @@ var Record = function Record2(defaultValues, name) {
     if (!hasInitialized) {
       hasInitialized = true;
       var keys2 = Object.keys(defaultValues);
-      var indices2 = RecordTypePrototype._indices = {};
+      var indices3 = RecordTypePrototype._indices = {};
       RecordTypePrototype._name = name;
       RecordTypePrototype._keys = keys2;
       RecordTypePrototype._defaultValues = defaultValues;
       for (var i = 0; i < keys2.length; i++) {
         var propName = keys2[i];
-        indices2[propName] = i;
+        indices3[propName] = i;
         if (RecordTypePrototype[propName]) {
           typeof console === "object" && console.warn && console.warn(
             "Cannot define " + recordName(this) + ' with property "' + propName + '" since that property name is part of the Record API.'
@@ -8154,17 +8154,17 @@ function Vec3() {
     return { x: v4[0], y: v4[1], z: v4[2] };
   }
   Vec32.toObj = toObj;
-  function fromArray(v4, array2, offset3) {
-    v4[0] = array2[offset3 + 0];
-    v4[1] = array2[offset3 + 1];
-    v4[2] = array2[offset3 + 2];
+  function fromArray(v4, array2, offset4) {
+    v4[0] = array2[offset4 + 0];
+    v4[1] = array2[offset4 + 1];
+    v4[2] = array2[offset4 + 2];
     return v4;
   }
   Vec32.fromArray = fromArray;
-  function toArray2(v4, out, offset3) {
-    out[offset3 + 0] = v4[0];
-    out[offset3 + 1] = v4[1];
-    out[offset3 + 2] = v4[2];
+  function toArray2(v4, out, offset4) {
+    out[offset4 + 0] = v4[0];
+    out[offset4 + 1] = v4[1];
+    out[offset4 + 2] = v4[2];
     return out;
   }
   Vec32.toArray = toArray2;
@@ -8317,11 +8317,11 @@ function Vec3() {
     return out;
   }
   Vec32.clamp = clamp2;
-  function distance(a8, b8) {
+  function distance2(a8, b8) {
     const x = b8[0] - a8[0], y = b8[1] - a8[1], z = b8[2] - a8[2];
     return Math.sqrt(x * x + y * y + z * z);
   }
-  Vec32.distance = distance;
+  Vec32.distance = distance2;
   function squaredDistance2(a8, b8) {
     const x = b8[0] - a8[0], y = b8[1] - a8[1], z = b8[2] - a8[2];
     return x * x + y * y + z * z;
@@ -8505,14 +8505,14 @@ function Vec3() {
     return out;
   }
   Vec32.transformQuat = transformQuat;
-  function angle(a8, b8) {
+  function angle2(a8, b8) {
     const denominator = Math.sqrt(squaredMagnitude(a8) * squaredMagnitude(b8));
     if (denominator === 0)
       return Math.PI / 2;
     const theta = dot(a8, b8) / denominator;
     return Math.acos(clamp(theta, -1, 1));
   }
-  Vec32.angle = angle;
+  Vec32.angle = angle2;
   const tmp_dh_ab = zero();
   const tmp_dh_cb = zero();
   const tmp_dh_bc = zero();
@@ -8527,7 +8527,7 @@ function Vec3() {
     sub(tmp_dh_dc, d5, c8);
     cross(tmp_dh_abc, tmp_dh_ab, tmp_dh_cb);
     cross(tmp_dh_bcd, tmp_dh_bc, tmp_dh_dc);
-    const _angle = angle(tmp_dh_abc, tmp_dh_bcd);
+    const _angle = angle2(tmp_dh_abc, tmp_dh_bcd);
     cross(tmp_dh_cross, tmp_dh_abc, tmp_dh_bcd);
     return dot(tmp_dh_cb, tmp_dh_cross) > 0 ? _angle : -_angle;
   }
@@ -8548,7 +8548,7 @@ function Vec3() {
   Vec32.equals = equals3;
   const rotTemp = zero();
   function makeRotation(mat, a8, b8) {
-    const by = angle(a8, b8);
+    const by = angle2(a8, b8);
     if (Math.abs(by) < 1e-4)
       return Mat4.setIdentity(mat);
     if (Math.abs(by - Math.PI) < EPSILON) {
@@ -8707,29 +8707,29 @@ function Mat3() {
     return mat;
   }
   Mat32.setIdentity = setIdentity;
-  function toArray2(a8, out, offset3) {
-    out[offset3 + 0] = a8[0];
-    out[offset3 + 1] = a8[1];
-    out[offset3 + 2] = a8[2];
-    out[offset3 + 3] = a8[3];
-    out[offset3 + 4] = a8[4];
-    out[offset3 + 5] = a8[5];
-    out[offset3 + 6] = a8[6];
-    out[offset3 + 7] = a8[7];
-    out[offset3 + 8] = a8[8];
+  function toArray2(a8, out, offset4) {
+    out[offset4 + 0] = a8[0];
+    out[offset4 + 1] = a8[1];
+    out[offset4 + 2] = a8[2];
+    out[offset4 + 3] = a8[3];
+    out[offset4 + 4] = a8[4];
+    out[offset4 + 5] = a8[5];
+    out[offset4 + 6] = a8[6];
+    out[offset4 + 7] = a8[7];
+    out[offset4 + 8] = a8[8];
     return out;
   }
   Mat32.toArray = toArray2;
-  function fromArray(a8, array2, offset3) {
-    a8[0] = array2[offset3 + 0];
-    a8[1] = array2[offset3 + 1];
-    a8[2] = array2[offset3 + 2];
-    a8[3] = array2[offset3 + 3];
-    a8[4] = array2[offset3 + 4];
-    a8[5] = array2[offset3 + 5];
-    a8[6] = array2[offset3 + 6];
-    a8[7] = array2[offset3 + 7];
-    a8[8] = array2[offset3 + 8];
+  function fromArray(a8, array2, offset4) {
+    a8[0] = array2[offset4 + 0];
+    a8[1] = array2[offset4 + 1];
+    a8[2] = array2[offset4 + 2];
+    a8[3] = array2[offset4 + 3];
+    a8[4] = array2[offset4 + 4];
+    a8[5] = array2[offset4 + 5];
+    a8[6] = array2[offset4 + 6];
+    a8[7] = array2[offset4 + 7];
+    a8[8] = array2[offset4 + 8];
     return a8;
   }
   Mat32.fromArray = fromArray;
@@ -9411,19 +9411,19 @@ function Quat() {
     return { x: a8[0], y: a8[1], z: a8[2], w: a8[3] };
   }
   Quat2.toObj = toObj;
-  function toArray2(a8, out, offset3) {
-    out[offset3 + 0] = a8[0];
-    out[offset3 + 1] = a8[1];
-    out[offset3 + 2] = a8[2];
-    out[offset3 + 3] = a8[3];
+  function toArray2(a8, out, offset4) {
+    out[offset4 + 0] = a8[0];
+    out[offset4 + 1] = a8[1];
+    out[offset4 + 2] = a8[2];
+    out[offset4 + 3] = a8[3];
     return out;
   }
   Quat2.toArray = toArray2;
-  function fromArray(a8, array2, offset3) {
-    a8[0] = array2[offset3 + 0];
-    a8[1] = array2[offset3 + 1];
-    a8[2] = array2[offset3 + 2];
-    a8[3] = array2[offset3 + 3];
+  function fromArray(a8, array2, offset4) {
+    a8[0] = array2[offset4 + 0];
+    a8[1] = array2[offset4 + 1];
+    a8[2] = array2[offset4 + 2];
+    a8[3] = array2[offset4 + 3];
     return a8;
   }
   Quat2.fromArray = fromArray;
@@ -9471,10 +9471,10 @@ function Quat() {
     return x * x + y * y + z * z + w * w;
   }
   Quat2.squaredMagnitude = squaredMagnitude;
-  function angle(a8, b8) {
+  function angle2(a8, b8) {
     return 2 * Math.acos(Math.abs(clamp(dot(a8, b8), -1, 1)));
   }
-  Quat2.angle = angle;
+  Quat2.angle = angle2;
   function normalize2(out, a8) {
     const x = a8[0];
     const y = a8[1];
@@ -9574,8 +9574,8 @@ function absMax(...values2) {
   }
   return max5;
 }
-function arcLength(angle, radius) {
-  return angle * radius;
+function arcLength(angle2, radius) {
+  return angle2 * radius;
 }
 function spiral2d(radius) {
   let x = 0;
@@ -9705,43 +9705,43 @@ function Mat4() {
     return a8[4 * j + i];
   }
   Mat42.getValue = getValue;
-  function toArray2(a8, out, offset3) {
-    out[offset3 + 0] = a8[0];
-    out[offset3 + 1] = a8[1];
-    out[offset3 + 2] = a8[2];
-    out[offset3 + 3] = a8[3];
-    out[offset3 + 4] = a8[4];
-    out[offset3 + 5] = a8[5];
-    out[offset3 + 6] = a8[6];
-    out[offset3 + 7] = a8[7];
-    out[offset3 + 8] = a8[8];
-    out[offset3 + 9] = a8[9];
-    out[offset3 + 10] = a8[10];
-    out[offset3 + 11] = a8[11];
-    out[offset3 + 12] = a8[12];
-    out[offset3 + 13] = a8[13];
-    out[offset3 + 14] = a8[14];
-    out[offset3 + 15] = a8[15];
+  function toArray2(a8, out, offset4) {
+    out[offset4 + 0] = a8[0];
+    out[offset4 + 1] = a8[1];
+    out[offset4 + 2] = a8[2];
+    out[offset4 + 3] = a8[3];
+    out[offset4 + 4] = a8[4];
+    out[offset4 + 5] = a8[5];
+    out[offset4 + 6] = a8[6];
+    out[offset4 + 7] = a8[7];
+    out[offset4 + 8] = a8[8];
+    out[offset4 + 9] = a8[9];
+    out[offset4 + 10] = a8[10];
+    out[offset4 + 11] = a8[11];
+    out[offset4 + 12] = a8[12];
+    out[offset4 + 13] = a8[13];
+    out[offset4 + 14] = a8[14];
+    out[offset4 + 15] = a8[15];
     return out;
   }
   Mat42.toArray = toArray2;
-  function fromArray(a8, array2, offset3) {
-    a8[0] = array2[offset3 + 0];
-    a8[1] = array2[offset3 + 1];
-    a8[2] = array2[offset3 + 2];
-    a8[3] = array2[offset3 + 3];
-    a8[4] = array2[offset3 + 4];
-    a8[5] = array2[offset3 + 5];
-    a8[6] = array2[offset3 + 6];
-    a8[7] = array2[offset3 + 7];
-    a8[8] = array2[offset3 + 8];
-    a8[9] = array2[offset3 + 9];
-    a8[10] = array2[offset3 + 10];
-    a8[11] = array2[offset3 + 11];
-    a8[12] = array2[offset3 + 12];
-    a8[13] = array2[offset3 + 13];
-    a8[14] = array2[offset3 + 14];
-    a8[15] = array2[offset3 + 15];
+  function fromArray(a8, array2, offset4) {
+    a8[0] = array2[offset4 + 0];
+    a8[1] = array2[offset4 + 1];
+    a8[2] = array2[offset4 + 2];
+    a8[3] = array2[offset4 + 3];
+    a8[4] = array2[offset4 + 4];
+    a8[5] = array2[offset4 + 5];
+    a8[6] = array2[offset4 + 6];
+    a8[7] = array2[offset4 + 7];
+    a8[8] = array2[offset4 + 8];
+    a8[9] = array2[offset4 + 9];
+    a8[10] = array2[offset4 + 10];
+    a8[11] = array2[offset4 + 11];
+    a8[12] = array2[offset4 + 12];
+    a8[13] = array2[offset4 + 13];
+    a8[14] = array2[offset4 + 14];
+    a8[15] = array2[offset4 + 15];
     return a8;
   }
   Mat42.fromArray = fromArray;
@@ -10732,15 +10732,15 @@ function Vec2() {
     return Number.isNaN(a8[0]) || Number.isNaN(a8[1]);
   }
   Vec22.hasNaN = hasNaN;
-  function toArray2(a8, out, offset3) {
-    out[offset3 + 0] = a8[0];
-    out[offset3 + 1] = a8[1];
+  function toArray2(a8, out, offset4) {
+    out[offset4 + 0] = a8[0];
+    out[offset4 + 1] = a8[1];
     return out;
   }
   Vec22.toArray = toArray2;
-  function fromArray(a8, array2, offset3) {
-    a8[0] = array2[offset3 + 0];
-    a8[1] = array2[offset3 + 1];
+  function fromArray(a8, array2, offset4) {
+    a8[0] = array2[offset4 + 0];
+    a8[1] = array2[offset4 + 1];
     return a8;
   }
   Vec22.fromArray = fromArray;
@@ -10804,11 +10804,11 @@ function Vec2() {
     return out;
   }
   Vec22.floor = floor;
-  function distance(a8, b8) {
+  function distance2(a8, b8) {
     const x = b8[0] - a8[0], y = b8[1] - a8[1];
     return Math.sqrt(x * x + y * y);
   }
-  Vec22.distance = distance;
+  Vec22.distance = distance2;
   function squaredDistance2(a8, b8) {
     const x = b8[0] - a8[0], y = b8[1] - a8[1];
     return x * x + y * y;
@@ -10900,32 +10900,32 @@ function Vec4() {
     return Number.isNaN(a8[0]) || Number.isNaN(a8[1]) || Number.isNaN(a8[2]) || Number.isNaN(a8[3]);
   }
   Vec42.hasNaN = hasNaN;
-  function toArray2(a8, out, offset3) {
-    out[offset3 + 0] = a8[0];
-    out[offset3 + 1] = a8[1];
-    out[offset3 + 2] = a8[2];
-    out[offset3 + 3] = a8[3];
+  function toArray2(a8, out, offset4) {
+    out[offset4 + 0] = a8[0];
+    out[offset4 + 1] = a8[1];
+    out[offset4 + 2] = a8[2];
+    out[offset4 + 3] = a8[3];
     return out;
   }
   Vec42.toArray = toArray2;
-  function fromArray(a8, array2, offset3) {
-    a8[0] = array2[offset3 + 0];
-    a8[1] = array2[offset3 + 1];
-    a8[2] = array2[offset3 + 2];
-    a8[3] = array2[offset3 + 3];
+  function fromArray(a8, array2, offset4) {
+    a8[0] = array2[offset4 + 0];
+    a8[1] = array2[offset4 + 1];
+    a8[2] = array2[offset4 + 2];
+    a8[3] = array2[offset4 + 3];
     return a8;
   }
   Vec42.fromArray = fromArray;
-  function toVec3Array(a8, out, offset3) {
-    out[offset3 + 0] = a8[0];
-    out[offset3 + 1] = a8[1];
-    out[offset3 + 2] = a8[2];
+  function toVec3Array(a8, out, offset4) {
+    out[offset4 + 0] = a8[0];
+    out[offset4 + 1] = a8[1];
+    out[offset4 + 2] = a8[2];
   }
   Vec42.toVec3Array = toVec3Array;
-  function fromVec3Array(a8, array2, offset3) {
-    a8[0] = array2[offset3 + 0];
-    a8[1] = array2[offset3 + 1];
-    a8[2] = array2[offset3 + 2];
+  function fromVec3Array(a8, array2, offset4) {
+    a8[0] = array2[offset4 + 0];
+    a8[1] = array2[offset4 + 1];
+    a8[2] = array2[offset4 + 2];
     a8[3] = 0;
     return a8;
   }
@@ -10954,11 +10954,11 @@ function Vec4() {
     return out;
   }
   Vec42.add = add;
-  function distance(a8, b8) {
+  function distance2(a8, b8) {
     const x = b8[0] - a8[0], y = b8[1] - a8[1], z = b8[2] - a8[2], w = b8[3] - a8[3];
     return Math.sqrt(x * x + y * y + z * z + w * w);
   }
-  Vec42.distance = distance;
+  Vec42.distance = distance2;
   function scale(out, a8, b8) {
     out[0] = a8[0] * b8;
     out[1] = a8[1] * b8;
@@ -11321,24 +11321,24 @@ var Tensor;
     return ret;
   }
   Tensor2.invertAxisOrder = invertAxisOrder;
-  function reorder(xs, indices2) {
+  function reorder(xs, indices3) {
     const ret = [];
     for (let i = 0; i < xs.length; i++)
-      ret[i] = xs[indices2[i]];
+      ret[i] = xs[indices3[i]];
     return ret;
   }
   function convertToCanonicalAxisIndicesFastToSlow(order) {
-    const indices2 = new Int32Array(order.length);
+    const indices3 = new Int32Array(order.length);
     for (let i = 0; i < order.length; i++)
-      indices2[order[i]] = i;
-    return (xs) => reorder(xs, indices2);
+      indices3[order[i]] = i;
+    return (xs) => reorder(xs, indices3);
   }
   Tensor2.convertToCanonicalAxisIndicesFastToSlow = convertToCanonicalAxisIndicesFastToSlow;
   function convertToCanonicalAxisIndicesSlowToFast(order) {
-    const indices2 = new Int32Array(order.length);
+    const indices3 = new Int32Array(order.length);
     for (let i = 0; i < order.length; i++)
-      indices2[order[order.length - i - 1]] = i;
-    return (xs) => reorder(xs, indices2);
+      indices3[order[order.length - i - 1]] = i;
+    return (xs) => reorder(xs, indices3);
   }
   Tensor2.convertToCanonicalAxisIndicesSlowToFast = convertToCanonicalAxisIndicesSlowToFast;
 })(Tensor || (Tensor = {}));
@@ -11692,11 +11692,11 @@ var Mask;
     flatten() {
       if (this._flat)
         return this._flat;
-      const indices2 = new Int32Array(this.size);
-      let offset3 = 0;
-      this.set.forEach((i) => indices2[offset3++] = i);
-      sortAsc(indices2);
-      this._flat = indices2;
+      const indices3 = new Int32Array(this.size);
+      let offset4 = 0;
+      this.set.forEach((i) => indices3[offset4++] = i);
+      sortAsc(indices3);
+      this._flat = indices3;
       return this._flat;
     }
     forEach(f, ctx) {
@@ -11722,14 +11722,14 @@ var Mask;
     return new SingletonMask(i);
   }
   Mask2.singleton = singleton;
-  function ofUniqueIndices(indices2) {
-    const len = indices2.length;
+  function ofUniqueIndices(indices3) {
+    const len = indices3.length;
     if (len === 0)
       return new EmptyMask();
     if (len === 1)
-      return new SingletonMask(indices2[0]);
+      return new SingletonMask(indices3[0]);
     let max5 = 0;
-    for (const i of indices2) {
+    for (const i of indices3) {
       if (i > max5)
         max5 = i;
     }
@@ -11738,15 +11738,15 @@ var Mask;
     const f = len / max5;
     if (f < 1 / 12) {
       const set4 = /* @__PURE__ */ new Set();
-      for (const i of indices2)
+      for (const i of indices3)
         set4.add(i);
       return new SetMask(set4);
     }
     const mask = new Int8Array(max5 + 1);
-    for (const i of indices2) {
+    for (const i of indices3) {
       mask[i] = 1;
     }
-    return new BitMask(mask, indices2.length);
+    return new BitMask(mask, indices3.length);
   }
   Mask2.ofUniqueIndices = ofUniqueIndices;
   function ofMask(mask, size4) {
@@ -11822,8 +11822,8 @@ var ValueBox;
     return { id: getNextId(), version: 0, value, metadata };
   }
   ValueBox2.create = create3;
-  function withValue(box4, value) {
-    return { id: box4.id, version: box4.version + 1, value, metadata: box4.metadata };
+  function withValue(box5, value) {
+    return { id: box5.id, version: box5.version + 1, value, metadata: box5.metadata };
   }
   ValueBox2.withValue = withValue;
 })(ValueBox || (ValueBox = {}));
@@ -11837,8 +11837,8 @@ var ValueCell;
     return ValueRef.set(cell, ValueBox.withValue(cell.ref, value));
   }
   ValueCell2.update = update10;
-  function set4(cell, box4) {
-    return ValueRef.set(cell, box4);
+  function set4(cell, box5) {
+    return ValueRef.set(cell, box5);
   }
   ValueCell2.set = set4;
   function updateIfChanged(cell, value) {
@@ -11851,10 +11851,10 @@ var ValueCell;
 var noop2 = function() {
 };
 function arrayEqual(arr1, arr2) {
-  const length = arr1.length;
-  if (length !== arr2.length)
+  const length2 = arr1.length;
+  if (length2 !== arr2.length)
     return false;
-  for (let i = 0; i < length; i++) {
+  for (let i = 0; i < length2; i++) {
     if (arr1[i] !== arr2[i]) {
       return false;
     }
@@ -12593,14 +12593,14 @@ var InputObserver;
         button2 = ButtonsType.Flag.Secondary;
         updateModifierKeys(ev);
         const { pageX: centerPageX, pageY: centerPageY } = getPagePosition(getCenterTouch(ev));
-        const distance = getTouchDistance(ev);
-        const delta2 = initialTouchDistance - distance;
-        const fraction = initialTouchDistance / distance;
+        const distance2 = getTouchDistance(ev);
+        const delta2 = initialTouchDistance - distance2;
+        const fraction = initialTouchDistance / distance2;
         const fractionDelta = fraction - lastTouchFraction;
         lastTouchFraction = fraction;
         pinch.next({
           isStart: false,
-          distance,
+          distance: distance2,
           delta: delta2,
           fraction,
           fractionDelta,
@@ -12964,11 +12964,11 @@ function Lab() {
     return out;
   }
   Lab2.set = set4;
-  function distance(a8, b8) {
+  function distance2(a8, b8) {
     const x = b8[0] - a8[0], y = b8[1] - a8[1], z = b8[2] - a8[2];
     return Math.sqrt(x * x + y * y + z * z);
   }
-  Lab2.distance = distance;
+  Lab2.distance = distance2;
   function fromColor(out, color) {
     const [r, g, b8] = Color.toRgb(color);
     const [x, y, z] = rgbToXyz(r, g, b8);
@@ -13351,12 +13351,12 @@ function Color(hex2) {
     return r * 255 << 16 | g * 255 << 8 | b8 * 255;
   }
   Color2.fromNormalizedRgb = fromNormalizedRgb;
-  function fromArray(array2, offset3) {
-    return fromRgb(array2[offset3], array2[offset3 + 1], array2[offset3 + 2]);
+  function fromArray(array2, offset4) {
+    return fromRgb(array2[offset4], array2[offset4 + 1], array2[offset4 + 2]);
   }
   Color2.fromArray = fromArray;
-  function fromNormalizedArray(array2, offset3) {
-    return fromNormalizedRgb(array2[offset3], array2[offset3 + 1], array2[offset3 + 2]);
+  function fromNormalizedArray(array2, offset4) {
+    return fromNormalizedRgb(array2[offset4], array2[offset4 + 1], array2[offset4 + 2]);
   }
   Color2.fromNormalizedArray = fromNormalizedArray;
   function fromColorListEntry(entry) {
@@ -13366,17 +13366,17 @@ function Color(hex2) {
       return entry[0];
   }
   Color2.fromColorListEntry = fromColorListEntry;
-  function toArray2(hexColor, array2, offset3) {
-    array2[offset3] = hexColor >> 16 & 255;
-    array2[offset3 + 1] = hexColor >> 8 & 255;
-    array2[offset3 + 2] = hexColor & 255;
+  function toArray2(hexColor, array2, offset4) {
+    array2[offset4] = hexColor >> 16 & 255;
+    array2[offset4 + 1] = hexColor >> 8 & 255;
+    array2[offset4 + 2] = hexColor & 255;
     return array2;
   }
   Color2.toArray = toArray2;
-  function toArrayNormalized(hexColor, array2, offset3) {
-    array2[offset3] = (hexColor >> 16 & 255) / 255;
-    array2[offset3 + 1] = (hexColor >> 8 & 255) / 255;
-    array2[offset3 + 2] = (hexColor & 255) / 255;
+  function toArrayNormalized(hexColor, array2, offset4) {
+    array2[offset4] = (hexColor >> 16 & 255) / 255;
+    array2[offset4 + 1] = (hexColor >> 8 & 255) / 255;
+    array2[offset4 + 2] = (hexColor & 255) / 255;
     return array2;
   }
   Color2.toArrayNormalized = toArrayNormalized;
@@ -13783,26 +13783,26 @@ var ChunkedArray;
       size4 += chunks[i].length;
     size4 += array2.currentIndex;
     const ret = new ctor(size4);
-    let offset3 = 0;
+    let offset4 = 0;
     if (ret.buffer) {
       for (let i = 0, _i = chunks.length - 1; i < _i; i++) {
-        ret.set(chunks[i], offset3);
-        offset3 += chunks[i].length;
+        ret.set(chunks[i], offset4);
+        offset4 += chunks[i].length;
       }
     } else {
       for (let i = 0, _i = chunks.length - 1; i < _i; i++) {
         const chunk = chunks[i];
         for (let j = 0, _j = chunk.length; j < _j; j++)
-          ret[offset3 + j] = chunk[j];
-        offset3 += chunk.length;
+          ret[offset4 + j] = chunk[j];
+        offset4 += chunk.length;
       }
     }
     const lastChunk = chunks[chunks.length - 1];
     if (ret.buffer && currentIndex >= array2.currentSize) {
-      ret.set(lastChunk, offset3);
+      ret.set(lastChunk, offset4);
     } else {
       for (let j = 0, _j = lastChunk.length; j < _j; j++)
-        ret[offset3 + j] = lastChunk[j];
+        ret[offset4 + j] = lastChunk[j];
     }
     return ret;
   }
@@ -13985,13 +13985,13 @@ function sort2(data, start4, end4, cmp, swap2) {
 function sortAsc2(bs, i, j) {
   return bs[i].key < bs[j].key ? -1 : 1;
 }
-function _makeBuckets(indices2, getKey2, sortBuckets, start4, end4) {
+function _makeBuckets(indices3, getKey2, sortBuckets, start4, end4) {
   const buckets = /* @__PURE__ */ new Map();
   const bucketList = [];
-  let prevKey = getKey2(indices2[0]);
+  let prevKey = getKey2(indices3[0]);
   let isBucketed = true;
   for (let i = start4; i < end4; i++) {
-    const key2 = getKey2(indices2[i]);
+    const key2 = getKey2(indices3[i]);
     if (buckets.has(key2)) {
       buckets.get(key2).count++;
       if (prevKey !== key2)
@@ -14022,32 +14022,32 @@ function _makeBuckets(indices2, getKey2, sortBuckets, start4, end4) {
   if (sortBuckets && !sorted) {
     sort2(bucketList, 0, bucketList.length, sortAsc2, arraySwap);
   }
-  let offset3 = 0;
+  let offset4 = 0;
   for (let i = 0; i < bucketList.length; i++) {
     const b8 = bucketList[i];
-    b8.offset = offset3;
-    offset3 += b8.count;
+    b8.offset = offset4;
+    offset4 += b8.count;
   }
   const reorderedIndices = new Int32Array(end4 - start4);
   for (let i = start4; i < end4; i++) {
-    const key2 = getKey2(indices2[i]);
+    const key2 = getKey2(indices3[i]);
     const bucket = buckets.get(key2);
-    reorderedIndices[bucket.offset++] = indices2[i];
+    reorderedIndices[bucket.offset++] = indices3[i];
   }
   for (let i = 0, _i = reorderedIndices.length; i < _i; i++) {
-    indices2[i + start4] = reorderedIndices[i];
+    indices3[i + start4] = reorderedIndices[i];
   }
   bucketOffsets[0] = start4;
   for (let i = 1; i < bucketList.length; i++)
     bucketOffsets[i] = bucketList[i - 1].offset + start4;
   return bucketOffsets;
 }
-function makeBuckets(indices2, getKey2, options) {
+function makeBuckets(indices3, getKey2, options) {
   const s = options && options.start || 0;
-  const e = options && options.end || indices2.length;
+  const e = options && options.end || indices3.length;
   if (e - s <= 0)
     throw new Error("Can only bucket non-empty collections.");
-  return _makeBuckets(indices2, getKey2, !!(options && options.sort), s, e);
+  return _makeBuckets(indices3, getKey2, !!(options && options.sort), s, e);
 }
 
 // node_modules/molstar/lib/mol-data/util/equivalence-classes.js
@@ -14497,11 +14497,11 @@ function isTypedArray(data) {
   return !!data.buffer && typeof data.byteLength === "number" && typeof data.BYTES_PER_ELEMENT === "number";
 }
 function typedArrayWindow(data, params) {
-  const { constructor, buffer, length, byteOffset, BYTES_PER_ELEMENT } = data;
-  const { start: start4, end: end4 } = getArrayBounds(length, params);
-  if (start4 === 0 && end4 === length)
+  const { constructor, buffer, length: length2, byteOffset, BYTES_PER_ELEMENT } = data;
+  const { start: start4, end: end4 } = getArrayBounds(length2, params);
+  if (start4 === 0 && end4 === length2)
     return data;
-  return new constructor(buffer, byteOffset + BYTES_PER_ELEMENT * start4, Math.min(length, end4 - start4));
+  return new constructor(buffer, byteOffset + BYTES_PER_ELEMENT * start4, Math.min(length2, end4 - start4));
 }
 
 // node_modules/molstar/lib/mol-io/reader/common/text/number-parser.js
@@ -14698,28 +14698,28 @@ var Column;
   }
   Column2.ofStringListArray = ofStringListArray;
   function ofIntTokens(tokens) {
-    const { count: count3, data, indices: indices2 } = tokens;
+    const { count: count3, data, indices: indices3 } = tokens;
     return lambdaColumn({
-      value: (row2) => parseInt2(data, indices2[2 * row2], indices2[2 * row2 + 1]) || 0,
+      value: (row3) => parseInt2(data, indices3[2 * row3], indices3[2 * row3 + 1]) || 0,
       rowCount: count3,
       schema: Schema9.int
     });
   }
   Column2.ofIntTokens = ofIntTokens;
   function ofFloatTokens(tokens) {
-    const { count: count3, data, indices: indices2 } = tokens;
+    const { count: count3, data, indices: indices3 } = tokens;
     return lambdaColumn({
-      value: (row2) => parseFloat2(data, indices2[2 * row2], indices2[2 * row2 + 1]) || 0,
+      value: (row3) => parseFloat2(data, indices3[2 * row3], indices3[2 * row3 + 1]) || 0,
       rowCount: count3,
       schema: Schema9.float
     });
   }
   Column2.ofFloatTokens = ofFloatTokens;
   function ofStringTokens(tokens) {
-    const { count: count3, data, indices: indices2 } = tokens;
+    const { count: count3, data, indices: indices3 } = tokens;
     return lambdaColumn({
-      value: (row2) => {
-        const ret = data.substring(indices2[2 * row2], indices2[2 * row2 + 1]);
+      value: (row3) => {
+        const ret = data.substring(indices3[2 * row3], indices3[2 * row3 + 1]);
         if (ret === "." || ret === "?")
           return "";
         return ret;
@@ -14733,8 +14733,8 @@ var Column;
     return windowColumn(column, start4, end4);
   }
   Column2.window = window2;
-  function view2(column, indices2, checkIndentity = true) {
-    return columnView(column, indices2, checkIndentity);
+  function view2(column, indices3, checkIndentity = true) {
+    return columnView(column, indices3, checkIndentity);
   }
   Column2.view = view2;
   function createFirstIndexMap(column) {
@@ -14765,16 +14765,16 @@ var Column;
     return arrayColumn({ array: c8.toArray({ array: array2 }), schema: c8.schema, valueKind: c8.valueKind });
   }
   Column2.asArrayColumn = asArrayColumn;
-  function copyToArray(c8, array2, offset3 = 0) {
+  function copyToArray(c8, array2, offset4 = 0) {
     if (!c8.isDefined)
       return;
     const cArray = c8.__array;
     if (cArray) {
       for (let i = 0, _i = cArray.length; i < _i; i++)
-        array2[offset3 + i] = cArray[i];
+        array2[offset4 + i] = cArray[i];
     } else {
       for (let i = 0, _i = c8.rowCount; i < _i; i++)
-        array2[offset3 + i] = c8.value(i);
+        array2[offset4 + i] = c8.value(i);
     }
   }
   Column2.copyToArray = copyToArray;
@@ -14806,14 +14806,14 @@ function createIndexerOfColumn(c8) {
   return (v4) => map4.has(v4) ? map4.get(v4) : -1;
 }
 function constColumn(v4, rowCount, schema, valueKind) {
-  const value = (row2) => v4;
+  const value = (row3) => v4;
   return {
     schema,
     __array: void 0,
     isDefined: valueKind === Column.ValueKinds.Present,
     rowCount,
     value,
-    valueKind: (row2) => valueKind,
+    valueKind: (row3) => valueKind,
     toArray: (params) => {
       const { array: array2 } = createArray(rowCount, params);
       for (let i = 0, _i = array2.length; i < _i; i++)
@@ -14830,7 +14830,7 @@ function lambdaColumn({ value, valueKind, areValuesEqual: areValuesEqual2, rowCo
     isDefined: true,
     rowCount,
     value,
-    valueKind: valueKind ? valueKind : (row2) => Column.ValueKinds.Present,
+    valueKind: valueKind ? valueKind : (row3) => Column.ValueKinds.Present,
     toArray: (params) => {
       const { array: array2, start: start4 } = createArray(rowCount, params);
       for (let i = 0, _i = array2.length; i < _i; i++)
@@ -14843,16 +14843,16 @@ function lambdaColumn({ value, valueKind, areValuesEqual: areValuesEqual2, rowCo
 function arrayColumn({ array: array2, schema, valueKind }) {
   const rowCount = array2.length;
   const defaultValue = schema.T;
-  const value = schema.valueType === "str" ? schema.transform === "lowercase" ? (row2) => {
-    const v4 = array2[row2];
+  const value = schema.valueType === "str" ? schema.transform === "lowercase" ? (row3) => {
+    const v4 = array2[row3];
     return typeof v4 === "string" ? v4.toLowerCase() : `${v4 !== null && v4 !== void 0 ? v4 : defaultValue}`.toLowerCase();
-  } : schema.transform === "uppercase" ? (row2) => {
-    const v4 = array2[row2];
+  } : schema.transform === "uppercase" ? (row3) => {
+    const v4 = array2[row3];
     return typeof v4 === "string" ? v4.toUpperCase() : `${v4 !== null && v4 !== void 0 ? v4 : defaultValue}`.toUpperCase();
-  } : (row2) => {
-    const v4 = array2[row2];
+  } : (row3) => {
+    const v4 = array2[row3];
     return typeof v4 === "string" ? v4 : `${v4 !== null && v4 !== void 0 ? v4 : defaultValue}`;
-  } : (row2) => array2[row2];
+  } : (row3) => array2[row3];
   const isTyped = isTypedArray(array2);
   return {
     schema,
@@ -14860,7 +14860,7 @@ function arrayColumn({ array: array2, schema, valueKind }) {
     isDefined: true,
     rowCount,
     value,
-    valueKind: valueKind ? valueKind : (row2) => Column.ValueKinds.Present,
+    valueKind: valueKind ? valueKind : (row3) => Column.ValueKinds.Present,
     toArray: schema.valueType === "str" ? schema.transform === "lowercase" ? (params) => {
       const { start: start4, end: end4 } = getArrayBounds(rowCount, params);
       const ret = new (params && typeof params.array !== "undefined" ? params.array : array2.constructor)(end4 - start4);
@@ -14909,11 +14909,11 @@ function windowColumn(column, start4, end4) {
 function windowTyped(c8, start4, end4) {
   const array2 = typedArrayWindow(c8.__array, { start: start4, end: end4 });
   const vk = c8.valueKind;
-  return arrayColumn({ array: array2, schema: c8.schema, valueKind: (row2) => vk(start4 + row2) });
+  return arrayColumn({ array: array2, schema: c8.schema, valueKind: (row3) => vk(start4 + row3) });
 }
 function windowFull(c8, start4, end4) {
   const v4 = c8.value, vk = c8.valueKind, ave = c8.areValuesEqual;
-  const value = start4 === 0 ? v4 : (row2) => v4(row2 + start4);
+  const value = start4 === 0 ? v4 : (row3) => v4(row3 + start4);
   const rowCount = end4 - start4;
   return {
     schema: c8.schema,
@@ -14921,7 +14921,7 @@ function windowFull(c8, start4, end4) {
     isDefined: c8.isDefined,
     rowCount,
     value,
-    valueKind: start4 === 0 ? vk : (row2) => vk(row2 + start4),
+    valueKind: start4 === 0 ? vk : (row3) => vk(row3 + start4),
     toArray: (params) => {
       const { array: array2 } = createArray(rowCount, params);
       for (let i = 0, _i = array2.length; i < _i; i++)
@@ -14955,11 +14955,11 @@ function arrayView(c8, map4) {
   for (let i = 0, _i = map4.length; i < _i; i++)
     ret[i] = array2[map4[i]];
   const vk = c8.valueKind;
-  return arrayColumn({ array: ret, schema: c8.schema, valueKind: (row2) => vk(map4[row2]) });
+  return arrayColumn({ array: ret, schema: c8.schema, valueKind: (row3) => vk(map4[row3]) });
 }
 function viewFull(c8, map4) {
   const v4 = c8.value, vk = c8.valueKind, ave = c8.areValuesEqual;
-  const value = (row2) => v4(map4[row2]);
+  const value = (row3) => v4(map4[row3]);
   const rowCount = map4.length;
   return {
     schema: c8.schema,
@@ -14967,7 +14967,7 @@ function viewFull(c8, map4) {
     isDefined: c8.isDefined,
     rowCount,
     value,
-    valueKind: (row2) => vk(map4[row2]),
+    valueKind: (row3) => vk(map4[row3]),
     toArray: (params) => {
       const { array: array2 } = createArray(rowCount, params);
       for (let i = 0, _i = array2.length; i < _i; i++)
@@ -15158,12 +15158,12 @@ var Table;
     }
     ret._columns = columns;
     ret._schema = schema;
-    let offset3 = 0;
+    let offset4 = 0;
     for (const table of tables) {
       for (const k of columns) {
-        Column.copyToArray(table[k], arrays[k], offset3);
+        Column.copyToArray(table[k], arrays[k], offset4);
       }
-      offset3 += table._rowCount;
+      offset4 += table._rowCount;
     }
     for (const k of columns) {
       ret[k] = Column.ofArray({ array: arrays[k], schema: schema[k] });
@@ -15176,13 +15176,13 @@ var Table;
   }
   Table2.columnToArray = columnToArray;
   function sort3(table, cmp) {
-    const indices2 = new Int32Array(table._rowCount);
-    for (let i = 0, _i = indices2.length; i < _i; i++)
-      indices2[i] = i;
-    sortArray(indices2, (_, i, j) => cmp(i, j));
+    const indices3 = new Int32Array(table._rowCount);
+    for (let i = 0, _i = indices3.length; i < _i; i++)
+      indices3[i] = i;
+    sortArray(indices3, (_, i, j) => cmp(i, j));
     let isIdentity2 = true;
-    for (let i = 0, _i = indices2.length; i < _i; i++) {
-      if (indices2[i] !== i) {
+    for (let i = 0, _i = indices3.length; i < _i; i++) {
+      if (indices3[i] !== i) {
         isIdentity2 = false;
         break;
       }
@@ -15194,7 +15194,7 @@ var Table;
     ret._columns = table._columns;
     ret._schema = table._schema;
     for (const c8 of table._columns) {
-      ret[c8] = Column.view(table[c8], indices2, false);
+      ret[c8] = Column.view(table[c8], indices3, false);
     }
     return ret;
   }
@@ -15216,13 +15216,13 @@ var Table;
   }
   Table2.areEqual = areEqual4;
   function getRow(table, index) {
-    const row2 = /* @__PURE__ */ Object.create(null);
+    const row3 = /* @__PURE__ */ Object.create(null);
     const { _columns: cols } = table;
     for (let i = 0; i < cols.length; i++) {
       const c8 = cols[i];
-      row2[c8] = table[c8].value(index);
+      row3[c8] = table[c8].value(index);
     }
-    return row2;
+    return row3;
   }
   Table2.getRow = getRow;
   function pickRow(table, test) {
@@ -15339,10 +15339,10 @@ function createRangeArray(start4, end4, ctor) {
   }
   return array2;
 }
-function arrayPickIndices(array2, indices2) {
-  const ret = new (arrayGetCtor(array2))(indices2.length);
-  for (let i = 0, _i = indices2.length; i < _i; i++) {
-    ret[i] = array2[indices2[i]];
+function arrayPickIndices(array2, indices3) {
+  const ret = new (arrayGetCtor(array2))(indices3.length);
+  for (let i = 0, _i = indices3.length; i < _i; i++) {
+    ret[i] = array2[indices3[i]];
   }
   return ret;
 }
@@ -15436,8 +15436,8 @@ function ofRange(min5, max5) {
 function ofBounds(start4, end4) {
   return end4 <= start4 ? IntTuple.create(start4, start4) : IntTuple.create(start4, end4);
 }
-function ofLength(length) {
-  return length < 0 ? IntTuple.create(0, 0) : IntTuple.create(0, length);
+function ofLength(length2) {
+  return length2 < 0 ? IntTuple.create(0, 0) : IntTuple.create(0, length2);
 }
 var is2 = IntTuple.is;
 var start = IntTuple.fst;
@@ -15503,8 +15503,8 @@ function intersect(a8, b8) {
 function intersectionSize(a8, b8) {
   return size(findRange(a8, min2(b8), max2(b8)));
 }
-function offset(int9, offset3) {
-  return IntTuple.create(start(int9) + offset3, end(int9) + offset3);
+function offset(int9, offset4) {
+  return IntTuple.create(start(int9) + offset4, end(int9) + offset4);
 }
 
 // node_modules/molstar/lib/mol-data/int/interval.js
@@ -15727,35 +15727,35 @@ function union(a8, b8) {
     return a8;
   if (commonCount === lenA)
     return b8;
-  const indices2 = new Int32Array(lenA + lenB - commonCount);
-  let i = 0, j = 0, offset3 = 0;
+  const indices3 = new Int32Array(lenA + lenB - commonCount);
+  let i = 0, j = 0, offset4 = 0;
   for (i = 0; i < startI; i++)
-    indices2[offset3++] = a8[i];
+    indices3[offset4++] = a8[i];
   while (j < endJ && a8[startI] > b8[j])
-    indices2[offset3++] = b8[j++];
+    indices3[offset4++] = b8[j++];
   while (i < endI && j < endJ) {
     const x = a8[i], y = b8[j];
     if (x < y) {
-      indices2[offset3++] = x;
+      indices3[offset4++] = x;
       i++;
     } else if (x > y) {
-      indices2[offset3++] = y;
+      indices3[offset4++] = y;
       j++;
     } else {
-      indices2[offset3++] = x;
+      indices3[offset4++] = x;
       i++;
       j++;
     }
   }
   for (; i < endI; i++)
-    indices2[offset3++] = a8[i];
+    indices3[offset4++] = a8[i];
   for (; j < endJ; j++)
-    indices2[offset3++] = b8[j];
+    indices3[offset4++] = b8[j];
   for (; i < lenA; i++)
-    indices2[offset3++] = a8[i];
+    indices3[offset4++] = a8[i];
   for (; j < lenB; j++)
-    indices2[offset3++] = b8[j];
-  return ofSortedArray(indices2);
+    indices3[offset4++] = b8[j];
+  return ofSortedArray(indices3);
 }
 function intersectionSize2(a8, b8) {
   if (a8 === b8)
@@ -15792,8 +15792,8 @@ function intersect2(a8, b8) {
     return b8;
   if (commonCount === lenA)
     return a8;
-  const indices2 = new Int32Array(commonCount);
-  let offset3 = 0;
+  const indices3 = new Int32Array(commonCount);
+  let offset4 = 0;
   let i = startI;
   let j = startJ;
   while (i < endI && j < endJ) {
@@ -15803,12 +15803,12 @@ function intersect2(a8, b8) {
     } else if (x > y) {
       j++;
     } else {
-      indices2[offset3++] = x;
+      indices3[offset4++] = x;
       i++;
       j++;
     }
   }
-  return ofSortedArray(indices2);
+  return ofSortedArray(indices3);
 }
 function subtract(a8, b8) {
   if (a8 === b8)
@@ -15833,16 +15833,16 @@ function subtract(a8, b8) {
     return a8;
   if (commonCount >= lenA)
     return Empty2;
-  const indices2 = new Int32Array(lenA - commonCount);
-  let offset3 = 0;
+  const indices3 = new Int32Array(lenA - commonCount);
+  let offset4 = 0;
   for (let k = 0; k < sI; k++)
-    indices2[offset3++] = a8[k];
+    indices3[offset4++] = a8[k];
   i = sI;
   j = sJ;
   while (i < endI && j < endJ) {
     const x = a8[i], y = b8[j];
     if (x < y) {
-      indices2[offset3++] = x;
+      indices3[offset4++] = x;
       i++;
     } else if (x > y) {
       j++;
@@ -15852,8 +15852,8 @@ function subtract(a8, b8) {
     }
   }
   for (; i < lenA; i++)
-    indices2[offset3++] = a8[i];
-  return ofSortedArray(indices2);
+    indices3[offset4++] = a8[i];
+  return ofSortedArray(indices3);
 }
 function deduplicate(xs) {
   if (xs.length < 2)
@@ -15897,8 +15897,8 @@ function indicesOf(a8, b8) {
     return Empty2;
   if (commonCount === lenA)
     return ofSortedArray(createRangeArray(0, a8.length - 1));
-  const indices2 = new Int32Array(commonCount);
-  let offset3 = 0;
+  const indices3 = new Int32Array(commonCount);
+  let offset4 = 0;
   i = sI;
   j = sJ;
   while (i < endI && j < endJ) {
@@ -15908,12 +15908,12 @@ function indicesOf(a8, b8) {
     } else if (x > y) {
       j++;
     } else {
-      indices2[offset3++] = i;
+      indices3[offset4++] = i;
       i++;
       j++;
     }
   }
-  return ofSortedArray(indices2);
+  return ofSortedArray(indices3);
 }
 var _maxIntRangeRet = { startI: 0, startJ: 0, endI: 0, endJ: 0 };
 function getSuitableIntersectionRange(a8, b8) {
@@ -16161,15 +16161,15 @@ function unionSI(a8, b8) {
   const min5 = Interval.min(b8), max5 = Interval.max(b8);
   const r = SortedArray.findRange(a8, min5, max5);
   const start4 = Interval.start(r), end4 = Interval.end(r);
-  const indices2 = new Int32Array(start4 + (a8.length - end4) + bSize);
-  let offset3 = 0;
+  const indices3 = new Int32Array(start4 + (a8.length - end4) + bSize);
+  let offset4 = 0;
   for (let i = 0; i < start4; i++)
-    indices2[offset3++] = a8[i];
+    indices3[offset4++] = a8[i];
   for (let i = min5; i <= max5; i++)
-    indices2[offset3++] = i;
+    indices3[offset4++] = i;
   for (let i = end4, _i = a8.length; i < _i; i++)
-    indices2[offset3++] = a8[i];
-  return ofSortedArray2(indices2);
+    indices3[offset4++] = a8[i];
+  return ofSortedArray2(indices3);
 }
 function intersectionSizeSI(a8, b8) {
   if (!Interval.size(b8))
@@ -16187,12 +16187,12 @@ function intersectSI(a8, b8) {
     return Empty3;
   if (resultSize === a8.length)
     return a8;
-  const indices2 = new Int32Array(resultSize);
-  let offset3 = 0;
+  const indices3 = new Int32Array(resultSize);
+  let offset4 = 0;
   for (let i = start4; i < end4; i++) {
-    indices2[offset3++] = a8[i];
+    indices3[offset4++] = a8[i];
   }
-  return ofSortedArray2(indices2);
+  return ofSortedArray2(indices3);
 }
 function subtractII(a8, b8) {
   if (Interval.areEqual(a8, b8))
@@ -16212,11 +16212,11 @@ function subtractII(a8, b8) {
     if (r <= 0)
       return Interval.ofRange(minA, minA + l - 1);
     const ret = new Int32Array(l + r);
-    let offset3 = 0;
+    let offset4 = 0;
     for (let i = 0; i < l; i++)
-      ret[offset3++] = minA + i;
+      ret[offset4++] = minA + i;
     for (let i = 1; i <= r; i++)
-      ret[offset3++] = maxB + i;
+      ret[offset4++] = maxB + i;
     return ofSortedArray2(ret);
   }
   if (minA < minB)
@@ -16235,11 +16235,11 @@ function subtractSI(a8, b8) {
   if (resultSize === a8.length)
     return a8;
   const ret = new Int32Array(resultSize);
-  let offset3 = 0;
+  let offset4 = 0;
   for (let i = 0; i < start4; i++)
-    ret[offset3++] = a8[i];
+    ret[offset4++] = a8[i];
   for (let i = end4, _i = a8.length; i < _i; i++)
-    ret[offset3++] = a8[i];
+    ret[offset4++] = a8[i];
   return ofSortedArray2(ret);
 }
 function subtractIS(a8, b8) {
@@ -16258,15 +16258,15 @@ function subtractIS(a8, b8) {
   const ret = new Int32Array(resultSize);
   const li = b8.length - 1;
   const fst = b8[Math.min(start4, li)], last4 = b8[Math.min(end4, li)];
-  let offset3 = 0;
+  let offset4 = 0;
   for (let i = min5; i < fst; i++)
-    ret[offset3++] = i;
+    ret[offset4++] = i;
   for (let i = fst; i <= last4; i++) {
     if (SortedArray.indexOfInInterval(b8, i, interval) < 0)
-      ret[offset3++] = i;
+      ret[offset4++] = i;
   }
   for (let i = last4 + 1; i <= max5; i++)
-    ret[offset3++] = i;
+    ret[offset4++] = i;
   return ofSortedArray2(ret);
 }
 function forEach2(set4, f, ctx) {
@@ -16317,7 +16317,7 @@ function indexedIntersect(idxA, a8, b8) {
   const startJ = SortedArray.findPredecessorIndex(b8, a8[min4(idxA)]);
   const endJ = SortedArray.findPredecessorIndex(b8, a8[max4(idxA)] + 1);
   let commonCount = 0;
-  let offset3 = 0;
+  let offset4 = 0;
   let O2 = 0;
   let j = startJ;
   while (O2 < lenI && j < endJ) {
@@ -16336,8 +16336,8 @@ function indexedIntersect(idxA, a8, b8) {
     return Empty3;
   if (commonCount === lenA && commonCount === lenB)
     return idxA;
-  const indices2 = new Int32Array(commonCount);
-  offset3 = 0;
+  const indices3 = new Int32Array(commonCount);
+  offset4 = 0;
   O2 = 0;
   j = startJ;
   while (O2 < lenI && j < endJ) {
@@ -16347,12 +16347,12 @@ function indexedIntersect(idxA, a8, b8) {
     } else if (x > y) {
       j++;
     } else {
-      indices2[offset3++] = j;
+      indices3[offset4++] = j;
       O2++;
       j++;
     }
   }
-  return ofSortedArray2(indices2);
+  return ofSortedArray2(indices3);
 }
 
 // node_modules/molstar/lib/mol-data/int/ordered-set.js
@@ -16758,11 +16758,11 @@ var ColorScale;
     }
     return {
       color,
-      colorToArray: (value, array2, offset3) => {
-        Color.toArray(color(value), array2, offset3);
+      colorToArray: (value, array2, offset4) => {
+        Color.toArray(color(value), array2, offset4);
       },
-      normalizedColorToArray: (value, array2, offset3) => {
-        Color.toArrayNormalized(color(value), array2, offset3);
+      normalizedColorToArray: (value, array2, offset4) => {
+        Color.toArrayNormalized(color(value), array2, offset4);
       },
       setDomain,
       get legend() {
@@ -17079,29 +17079,29 @@ var ChunkedBigString = class _ChunkedBigString {
 };
 
 // node_modules/molstar/lib/mol-io/common/utf8.js
-function utf8Write(data, offset3, str11) {
+function utf8Write(data, offset4, str11) {
   for (let i = 0, l = str11.length; i < l; i++) {
     const codePoint = str11.charCodeAt(i);
     if (codePoint < 128) {
-      data[offset3++] = codePoint >>> 0 & 127 | 0;
+      data[offset4++] = codePoint >>> 0 & 127 | 0;
       continue;
     }
     if (codePoint < 2048) {
-      data[offset3++] = codePoint >>> 6 & 31 | 192;
-      data[offset3++] = codePoint >>> 0 & 63 | 128;
+      data[offset4++] = codePoint >>> 6 & 31 | 192;
+      data[offset4++] = codePoint >>> 0 & 63 | 128;
       continue;
     }
     if (codePoint < 65536) {
-      data[offset3++] = codePoint >>> 12 & 15 | 224;
-      data[offset3++] = codePoint >>> 6 & 63 | 128;
-      data[offset3++] = codePoint >>> 0 & 63 | 128;
+      data[offset4++] = codePoint >>> 12 & 15 | 224;
+      data[offset4++] = codePoint >>> 6 & 63 | 128;
+      data[offset4++] = codePoint >>> 0 & 63 | 128;
       continue;
     }
     if (codePoint < 1114112) {
-      data[offset3++] = codePoint >>> 18 & 7 | 240;
-      data[offset3++] = codePoint >>> 12 & 63 | 128;
-      data[offset3++] = codePoint >>> 6 & 63 | 128;
-      data[offset3++] = codePoint >>> 0 & 63 | 128;
+      data[offset4++] = codePoint >>> 18 & 7 | 240;
+      data[offset4++] = codePoint >>> 12 & 63 | 128;
+      data[offset4++] = codePoint >>> 6 & 63 | 128;
+      data[offset4++] = codePoint >>> 0 & 63 | 128;
       continue;
     }
     throw new Error("bad codepoint " + codePoint);
@@ -17116,11 +17116,11 @@ var __chars = (function() {
 function throwError(err) {
   throw new Error(err);
 }
-function _utf8Read(data, offset3, length) {
+function _utf8Read(data, offset4, length2) {
   const chars = __chars;
   let str11 = void 0, chunkOffset = 0;
   const chunk = [], chunkSize = 512;
-  for (let i = offset3, end4 = offset3 + length; i < end4; i++) {
+  for (let i = offset4, end4 = offset4 + length2; i < end4; i++) {
     const byte = data[i];
     if ((byte & 128) === 0) {
       chunk[chunkOffset++] = chars[byte];
@@ -17146,19 +17146,19 @@ function _utf8Read(data, offset3, length) {
   return str11.join("");
 }
 var utf8Decoder = typeof TextDecoder !== "undefined" ? new TextDecoder() : void 0;
-function utf8Read(data, offset3 = 0, length = data.length) {
+function utf8Read(data, offset4 = 0, length2 = data.length) {
   if (utf8Decoder) {
-    const input = offset3 || length !== data.length ? data.subarray(offset3, offset3 + length) : data;
+    const input = offset4 || length2 !== data.length ? data.subarray(offset4, offset4 + length2) : data;
     return utf8Decoder.decode(input);
   } else {
-    return _utf8Read(data, offset3, length);
+    return _utf8Read(data, offset4, length2);
   }
 }
-function utf8ReadLong(data, offset3 = 0, length = data.length) {
-  if (length <= MAX_STRING_LENGTH) {
-    return utf8Read(data, offset3, length);
+function utf8ReadLong(data, offset4 = 0, length2 = data.length) {
+  if (length2 <= MAX_STRING_LENGTH) {
+    return utf8Read(data, offset4, length2);
   }
-  const out = ChunkedBigString.fromUtf8Data(data, offset3, offset3 + length);
+  const out = ChunkedBigString.fromUtf8Data(data, offset4, offset4 + length2);
   return out.length <= MAX_STRING_LENGTH ? out.toString() : out;
 }
 function utf8ByteCount(str11) {
@@ -18120,7 +18120,7 @@ async function _inflate(runtime, data, buf) {
     const ds = new DecompressionStream("deflate-raw");
     const blob = new Blob([data]);
     const decompressedStream = blob.stream().pipeThrough(ds);
-    let offset3 = 0;
+    let offset4 = 0;
     const chunks = [];
     const reader = decompressedStream.getReader();
     const readChunk = async () => {
@@ -18128,19 +18128,19 @@ async function _inflate(runtime, data, buf) {
       if (done)
         return;
       if (runtime.shouldUpdate) {
-        await runtime.update({ message: "Inflating blocks...", current: offset3, max: buf === null || buf === void 0 ? void 0 : buf.length });
+        await runtime.update({ message: "Inflating blocks...", current: offset4, max: buf === null || buf === void 0 ? void 0 : buf.length });
       }
       if (buf) {
-        buf.set(value, offset3);
+        buf.set(value, offset4);
       } else {
         chunks.push(value);
       }
-      offset3 += value.length;
+      offset4 += value.length;
       return readChunk();
     };
     await readChunk();
     if (!buf) {
-      buf = new Uint8Array(offset3);
+      buf = new Uint8Array(offset4);
       for (let i = 0, j = 0; i < chunks.length; i++) {
         buf.set(chunks[i], j);
         j += chunks[i].length;
@@ -18214,11 +18214,11 @@ function _copyOut(src, off, len, tree) {
   }
   return mx;
 }
-function _bitsE(dt, pos, length) {
-  return (dt[pos >>> 3] | dt[(pos >>> 3) + 1] << 8) >>> (pos & 7) & (1 << length) - 1;
+function _bitsE(dt, pos, length2) {
+  return (dt[pos >>> 3] | dt[(pos >>> 3) + 1] << 8) >>> (pos & 7) & (1 << length2) - 1;
 }
-function _bitsF(dt, pos, length) {
-  return (dt[pos >>> 3] | dt[(pos >>> 3) + 1] << 8 | dt[(pos >>> 3) + 2] << 16) >>> (pos & 7) & (1 << length) - 1;
+function _bitsF(dt, pos, length2) {
+  return (dt[pos >>> 3] | dt[(pos >>> 3) + 1] << 8 | dt[(pos >>> 3) + 2] << 16) >>> (pos & 7) & (1 << length2) - 1;
 }
 function _get17(dt, pos) {
   return (dt[pos >>> 3] | dt[(pos >>> 3) + 1] << 8 | dt[(pos >>> 3) + 2] << 16) >>> (pos & 7);
@@ -18435,20 +18435,20 @@ async function _deflateRaw(runtime, data, out, opos, lvl) {
     const blob = new Blob([data]);
     const compressedStream = blob.stream().pipeThrough(cs);
     const reader = compressedStream.getReader();
-    let offset3 = opos;
+    let offset4 = opos;
     const writeChunk = async () => {
       const { done, value } = await reader.read();
       if (done)
         return;
       if (runtime.shouldUpdate) {
-        await runtime.update({ message: "Deflating...", current: offset3, max: out.length });
+        await runtime.update({ message: "Deflating...", current: offset4, max: out.length });
       }
-      out.set(value, offset3);
-      offset3 += value.length;
+      out.set(value, offset4);
+      offset4 += value.length;
       return writeChunk();
     };
     await writeChunk();
-    return offset3;
+    return offset4;
   }
   const ctx = DeflateContext(data, out, opos, lvl);
   const { dlen } = ctx;
@@ -19962,16 +19962,16 @@ function arrayMinMax(array2) {
   }
   return [min5, max5];
 }
-function arraySum(array2, stride = 1, offset3 = 0) {
+function arraySum(array2, stride = 1, offset4 = 0) {
   const n = array2.length;
   let sum = 0;
-  for (let i = offset3; i < n; i += stride) {
+  for (let i = offset4; i < n; i += stride) {
     sum += array2[i];
   }
   return sum;
 }
-function arrayMean(array2, stride = 1, offset3 = 0) {
-  return arraySum(array2, stride, offset3) / (array2.length / stride);
+function arrayMean(array2, stride = 1, offset4 = 0) {
+  return arraySum(array2, stride, offset4) / (array2.length / stride);
 }
 function arrayRms(array2) {
   const n = array2.length;
@@ -20065,9 +20065,9 @@ function range(start4, end4) {
     end4 = start4;
     start4 = 0;
   }
-  const length = Math.max(end4 - start4, 0);
-  const result2 = Array(length);
-  for (let i = 0; i < length; i++) {
+  const length2 = Math.max(end4 - start4, 0);
+  const result2 = Array(length2);
+  for (let i = 0; i < length2; i++) {
     result2[i] = start4 + i;
   }
   return result2;
@@ -20105,15 +20105,15 @@ function Plane3D() {
     return out;
   }
   Plane3D2.negate = negate;
-  function toArray2(p6, out, offset3) {
-    Vec3.toArray(p6.normal, out, offset3);
-    out[offset3 + 3] = p6.constant;
+  function toArray2(p6, out, offset4) {
+    Vec3.toArray(p6.normal, out, offset4);
+    out[offset4 + 3] = p6.constant;
     return out;
   }
   Plane3D2.toArray = toArray2;
-  function fromArray(out, array2, offset3) {
-    Vec3.fromArray(out.normal, array2, offset3);
-    out.constant = array2[offset3 + 3];
+  function fromArray(out, array2, offset4) {
+    Vec3.fromArray(out.normal, array2, offset4);
+    out.constant = array2[offset4 + 3];
     return out;
   }
   Plane3D2.fromArray = fromArray;
@@ -20210,20 +20210,20 @@ function Frustum3D() {
     const center2 = sphere.center;
     const negRadius = -sphere.radius;
     for (let i = 0; i < 6; ++i) {
-      const distance = Plane3D.distanceToPoint(frustum[i], center2);
-      if (distance < negRadius)
+      const distance2 = Plane3D.distanceToPoint(frustum[i], center2);
+      if (distance2 < negRadius)
         return false;
     }
     return true;
   }
   Frustum3D2.intersectsSphere3D = intersectsSphere3D;
   const boxTmpV = Vec3();
-  function intersectsBox3D(frustum, box4) {
+  function intersectsBox3D(frustum, box5) {
     for (let i = 0; i < 6; ++i) {
       const plane2 = frustum[i];
-      boxTmpV[0] = plane2.normal[0] > 0 ? box4.max[0] : box4.min[0];
-      boxTmpV[1] = plane2.normal[1] > 0 ? box4.max[1] : box4.min[1];
-      boxTmpV[2] = plane2.normal[2] > 0 ? box4.max[2] : box4.min[2];
+      boxTmpV[0] = plane2.normal[0] > 0 ? box5.max[0] : box5.min[0];
+      boxTmpV[1] = plane2.normal[1] > 0 ? box5.max[1] : box5.min[1];
+      boxTmpV[2] = plane2.normal[2] > 0 ? box5.max[2] : box5.min[2];
       if (Plane3D.distanceToPoint(plane2, boxTmpV) < 0) {
         return false;
       }
@@ -20286,7 +20286,7 @@ function Axes3D() {
   }
   Axes3D2.normalize = normalize2;
   const tmpTransformMat3 = Mat3();
-  function transform(out, a8, m) {
+  function transform2(out, a8, m) {
     Vec3.transformMat4(out.origin, a8.origin, m);
     const n = Mat3.directionTransform(tmpTransformMat3, m);
     Vec3.transformMat3(out.dirA, a8.dirA, n);
@@ -20294,7 +20294,7 @@ function Axes3D() {
     Vec3.transformMat3(out.dirC, a8.dirC, n);
     return out;
   }
-  Axes3D2.transform = transform;
+  Axes3D2.transform = transform2;
   function scale(out, a8, scale2) {
     Vec3.scale(out.dirA, a8.dirA, scale2);
     Vec3.scale(out.dirB, a8.dirB, scale2);
@@ -20387,12 +20387,12 @@ var Matrix;
     return mean;
   }
   Matrix4.meanRows = meanRows;
-  function subRows(mat, row2) {
+  function subRows(mat, row3) {
     const nrows = mat.rows, ncols = mat.cols;
     const md = mat.data;
     for (let i = 0, p6 = 0; i < nrows; ++i) {
       for (let j = 0; j < ncols; ++j, ++p6)
-        md[p6] -= row2[j];
+        md[p6] -= row3[j];
     }
     return mat;
   }
@@ -20831,12 +20831,12 @@ function Sphere3D() {
   }
   Sphere3D2.setExtrema = setExtrema;
   function computeBounding(data) {
-    const { x, y, z, indices: indices2 } = data;
+    const { x, y, z, indices: indices3 } = data;
     let cx = 0, cy = 0, cz = 0;
     let radiusSq = 0;
-    const size4 = OrderedSet2.size(indices2);
+    const size4 = OrderedSet2.size(indices3);
     for (let t5 = 0; t5 < size4; t5++) {
-      const i = OrderedSet2.getAt(indices2, t5);
+      const i = OrderedSet2.getAt(indices3, t5);
       cx += x[i];
       cy += y[i];
       cz += z[i];
@@ -20847,7 +20847,7 @@ function Sphere3D() {
       cz /= size4;
     }
     for (let t5 = 0; t5 < size4; t5++) {
-      const i = OrderedSet2.getAt(indices2, t5);
+      const i = OrderedSet2.getAt(indices3, t5);
       const dx = x[i] - cx, dy = y[i] - cy, dz = z[i] - cz;
       const d5 = dx * dx + dy * dy + dz * dz;
       if (d5 > radiusSq)
@@ -20856,7 +20856,7 @@ function Sphere3D() {
     return { center: Vec3.create(cx, cy, cz), radius: Math.sqrt(radiusSq) };
   }
   Sphere3D2.computeBounding = computeBounding;
-  function transform(out, sphere, m) {
+  function transform2(out, sphere, m) {
     Vec3.transformMat4(out.center, sphere.center, m);
     out.radius = sphere.radius * Mat4.getMaxScaleOnAxis(m);
     if (hasExtrema(sphere)) {
@@ -20864,7 +20864,7 @@ function Sphere3D() {
     }
     return out;
   }
-  Sphere3D2.transform = transform;
+  Sphere3D2.transform = transform2;
   function translate(out, sphere, v4) {
     Vec3.add(out.center, sphere.center, v4);
     if (hasExtrema(sphere)) {
@@ -20888,30 +20888,30 @@ function Sphere3D() {
     return out;
   }
   Sphere3D2.scaleNX = scaleNX;
-  function toArray2(s, out, offset3) {
-    Vec3.toArray(s.center, out, offset3);
-    out[offset3 + 3] = s.radius;
+  function toArray2(s, out, offset4) {
+    Vec3.toArray(s.center, out, offset4);
+    out[offset4 + 3] = s.radius;
     return out;
   }
   Sphere3D2.toArray = toArray2;
-  function fromArray(out, array2, offset3) {
-    Vec3.fromArray(out.center, array2, offset3);
-    out.radius = array2[offset3 + 3];
+  function fromArray(out, array2, offset4) {
+    Vec3.fromArray(out.center, array2, offset4);
+    out.radius = array2[offset4 + 3];
     return out;
   }
   Sphere3D2.fromArray = fromArray;
-  function fromBox3D(out, box4) {
-    Vec3.scale(out.center, Vec3.add(out.center, box4.max, box4.min), 0.5);
-    out.radius = Vec3.distance(out.center, box4.max);
+  function fromBox3D(out, box5) {
+    Vec3.scale(out.center, Vec3.add(out.center, box5.max, box5.min), 0.5);
+    out.radius = Vec3.distance(out.center, box5.max);
     Sphere3D2.setExtrema(out, [
-      Vec3.create(box4.min[0], box4.min[1], box4.min[2]),
-      Vec3.create(box4.max[0], box4.max[1], box4.max[2]),
-      Vec3.create(box4.max[0], box4.min[1], box4.min[2]),
-      Vec3.create(box4.min[0], box4.max[1], box4.max[2]),
-      Vec3.create(box4.min[0], box4.min[1], box4.max[2]),
-      Vec3.create(box4.max[0], box4.min[1], box4.max[2]),
-      Vec3.create(box4.max[0], box4.max[1], box4.min[2]),
-      Vec3.create(box4.min[0], box4.max[1], box4.min[2])
+      Vec3.create(box5.min[0], box5.min[1], box5.min[2]),
+      Vec3.create(box5.max[0], box5.max[1], box5.max[2]),
+      Vec3.create(box5.max[0], box5.min[1], box5.min[2]),
+      Vec3.create(box5.min[0], box5.max[1], box5.max[2]),
+      Vec3.create(box5.min[0], box5.min[1], box5.max[2]),
+      Vec3.create(box5.max[0], box5.min[1], box5.max[2]),
+      Vec3.create(box5.max[0], box5.max[1], box5.min[2]),
+      Vec3.create(box5.min[0], box5.max[1], box5.min[2])
     ]);
     return out;
   }
@@ -20923,24 +20923,24 @@ function Sphere3D() {
   }
   Sphere3D2.fromAxes3D = fromAxes3D;
   const tmpCenter = Vec3();
-  function fromDimensionsAndTransform(out, dimensions, transform2) {
+  function fromDimensionsAndTransform(out, dimensions, transform3) {
     const [x, y, z] = dimensions;
     const cpA = Vec3.create(0, 0, 0);
-    Vec3.transformMat4(cpA, cpA, transform2);
+    Vec3.transformMat4(cpA, cpA, transform3);
     const cpB = Vec3.create(x, y, z);
-    Vec3.transformMat4(cpB, cpB, transform2);
+    Vec3.transformMat4(cpB, cpB, transform3);
     const cpC = Vec3.create(x, 0, 0);
-    Vec3.transformMat4(cpC, cpC, transform2);
+    Vec3.transformMat4(cpC, cpC, transform3);
     const cpD = Vec3.create(0, y, z);
-    Vec3.transformMat4(cpD, cpD, transform2);
+    Vec3.transformMat4(cpD, cpD, transform3);
     const cpE = Vec3.create(0, 0, z);
-    Vec3.transformMat4(cpE, cpE, transform2);
+    Vec3.transformMat4(cpE, cpE, transform3);
     const cpF = Vec3.create(x, 0, z);
-    Vec3.transformMat4(cpF, cpF, transform2);
+    Vec3.transformMat4(cpF, cpF, transform3);
     const cpG = Vec3.create(x, y, 0);
-    Vec3.transformMat4(cpG, cpG, transform2);
+    Vec3.transformMat4(cpG, cpG, transform3);
     const cpH = Vec3.create(0, y, 0);
-    Vec3.transformMat4(cpH, cpH, transform2);
+    Vec3.transformMat4(cpH, cpH, transform3);
     Vec3.add(tmpCenter, cpA, cpB);
     Vec3.scale(tmpCenter, tmpCenter, 0.5);
     const d5 = Math.max(Vec3.distance(cpA, cpB), Vec3.distance(cpC, cpD));
@@ -21037,10 +21037,10 @@ function Sphere3D() {
     return Vec3.distance(a8.center, b8.center) <= a8.radius + b8.radius;
   }
   Sphere3D2.overlaps = overlaps;
-  function distance(a8, b8) {
+  function distance2(a8, b8) {
     return Vec3.distance(a8.center, b8.center) - a8.radius + b8.radius;
   }
-  Sphere3D2.distance = distance;
+  Sphere3D2.distance = distance2;
   function distanceToVec(sphere, v4) {
     const { center: center2, radius } = sphere;
     return Vec3.distance(v4, center2) - radius;
@@ -21110,23 +21110,23 @@ function Box3D() {
     return out;
   }
   Box3D2.addSphere3D = addSphere3D;
-  function addBox3D(out, box4) {
-    add(out, box4.min);
-    add(out, box4.max);
+  function addBox3D(out, box5) {
+    add(out, box5.min);
+    add(out, box5.max);
     return out;
   }
   Box3D2.addBox3D = addBox3D;
-  function intersectsSphere3D(box4, sphere) {
-    Vec3.clamp(tmpV7, sphere.center, box4.min, box4.max);
+  function intersectsSphere3D(box5, sphere) {
+    Vec3.clamp(tmpV7, sphere.center, box5.min, box5.max);
     return Vec3.squaredDistance(tmpV7, sphere.center) <= sphere.radius * sphere.radius;
   }
   Box3D2.intersectsSphere3D = intersectsSphere3D;
   function computeBounding(data) {
     const min5 = Vec3.create(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
     const max5 = Vec3.create(-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE);
-    const { x, y, z, indices: indices2 } = data;
-    for (let t5 = 0, _t2 = OrderedSet2.size(indices2); t5 < _t2; t5++) {
-      const i = OrderedSet2.getAt(indices2, t5);
+    const { x, y, z, indices: indices3 } = data;
+    for (let t5 = 0, _t2 = OrderedSet2.size(indices3); t5 < _t2; t5++) {
+      const i = OrderedSet2.getAt(indices3, t5);
       min5[0] = Math.min(x[i], min5[0]);
       min5[1] = Math.min(y[i], min5[1]);
       min5[2] = Math.min(z[i], min5[2]);
@@ -21137,50 +21137,50 @@ function Box3D() {
     return { min: min5, max: max5 };
   }
   Box3D2.computeBounding = computeBounding;
-  function size4(size5, box4) {
-    return Vec3.sub(size5, box4.max, box4.min);
+  function size4(size5, box5) {
+    return Vec3.sub(size5, box5.max, box5.min);
   }
   Box3D2.size = size4;
   const tmpSizeV = Vec3();
-  function volume(box4) {
-    size4(tmpSizeV, box4);
+  function volume(box5) {
+    size4(tmpSizeV, box5);
     return tmpSizeV[0] * tmpSizeV[1] * tmpSizeV[2];
   }
   Box3D2.volume = volume;
-  function setEmpty(box4) {
-    Vec3.set(box4.min, Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
-    Vec3.set(box4.max, -Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE);
-    return box4;
+  function setEmpty(box5) {
+    Vec3.set(box5.min, Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
+    Vec3.set(box5.max, -Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE);
+    return box5;
   }
   Box3D2.setEmpty = setEmpty;
-  function add(box4, point) {
-    Vec3.min(box4.min, box4.min, point);
-    Vec3.max(box4.max, box4.max, point);
-    return box4;
+  function add(box5, point) {
+    Vec3.min(box5.min, box5.min, point);
+    Vec3.max(box5.max, box5.max, point);
+    return box5;
   }
   Box3D2.add = add;
-  function expand(out, box4, delta2) {
-    Vec3.sub(out.min, box4.min, delta2);
-    Vec3.add(out.max, box4.max, delta2);
+  function expand(out, box5, delta2) {
+    Vec3.sub(out.min, box5.min, delta2);
+    Vec3.add(out.max, box5.max, delta2);
     return out;
   }
   Box3D2.expand = expand;
-  function expandUniformly(out, box4, delta2) {
-    Vec3.subScalar(out.min, box4.min, delta2);
-    Vec3.addScalar(out.max, box4.max, delta2);
+  function expandUniformly(out, box5, delta2) {
+    Vec3.subScalar(out.min, box5.min, delta2);
+    Vec3.addScalar(out.max, box5.max, delta2);
     return out;
   }
   Box3D2.expandUniformly = expandUniformly;
-  function scale(out, box4, scale2) {
-    Vec3.scale(out.min, box4.min, scale2);
-    Vec3.scale(out.max, box4.max, scale2);
+  function scale(out, box5, scale2) {
+    Vec3.scale(out.min, box5.min, scale2);
+    Vec3.scale(out.max, box5.max, scale2);
     return out;
   }
   Box3D2.scale = scale;
   const tmpTransformV = Vec3();
-  function transform(out, box4, m) {
-    const [minX, minY, minZ] = box4.min;
-    const [maxX, maxY, maxZ] = box4.max;
+  function transform2(out, box5, m) {
+    const [minX, minY, minZ] = box5.min;
+    const [maxX, maxY, maxZ] = box5.max;
     setEmpty(out);
     add(out, Vec3.transformMat4(tmpTransformV, Vec3.set(tmpTransformV, minX, minY, minZ), m));
     add(out, Vec3.transformMat4(tmpTransformV, Vec3.set(tmpTransformV, minX, minY, maxZ), m));
@@ -21192,23 +21192,23 @@ function Box3D() {
     add(out, Vec3.transformMat4(tmpTransformV, Vec3.set(tmpTransformV, maxX, maxY, maxZ), m));
     return out;
   }
-  Box3D2.transform = transform;
-  function containsVec3(box4, v4) {
-    return !(v4[0] < box4.min[0] || v4[0] > box4.max[0] || v4[1] < box4.min[1] || v4[1] > box4.max[1] || v4[2] < box4.min[2] || v4[2] > box4.max[2]);
+  Box3D2.transform = transform2;
+  function containsVec3(box5, v4) {
+    return !(v4[0] < box5.min[0] || v4[0] > box5.max[0] || v4[1] < box5.min[1] || v4[1] > box5.max[1] || v4[2] < box5.min[2] || v4[2] > box5.max[2]);
   }
   Box3D2.containsVec3 = containsVec3;
   function overlaps(a8, b8) {
     return !(a8.max[0] < b8.min[0] || a8.min[0] > b8.max[0] || a8.max[1] < b8.min[1] || a8.min[1] > b8.max[1] || a8.max[2] < b8.min[2] || a8.min[2] > b8.max[2]);
   }
   Box3D2.overlaps = overlaps;
-  function containsSphere3D(box4, s) {
+  function containsSphere3D(box5, s) {
     const c8 = s.center;
     const r = s.radius;
-    return c8[0] - r < box4.min[0] || c8[0] + r > box4.max[0] || c8[1] - r < box4.min[1] || c8[1] + r > box4.max[1] || c8[2] - r < box4.min[2] || c8[2] + r > box4.max[2] ? false : true;
+    return c8[0] - r < box5.min[0] || c8[0] + r > box5.max[0] || c8[1] - r < box5.min[1] || c8[1] + r > box5.max[1] || c8[2] - r < box5.min[2] || c8[2] + r > box5.max[2] ? false : true;
   }
   Box3D2.containsSphere3D = containsSphere3D;
-  function center2(out, box4) {
-    return Vec3.center(out, box4.max, box4.min);
+  function center2(out, box5) {
+    return Vec3.center(out, box5.max, box5.min);
   }
   Box3D2.center = center2;
   function exactEquals(a8, b8) {
@@ -21222,8 +21222,8 @@ function Box3D() {
 })(Box3D || (Box3D = {}));
 
 // node_modules/molstar/lib/mol-math/geometry/common.js
-function fillGridDim(length, start4, step) {
-  const a8 = new Float32Array(length);
+function fillGridDim(length2, start4, step) {
+  const a8 = new Float32Array(length2);
   for (let i = 0; i < a8.length; i++) {
     a8[i] = start4 + step * i;
   }
@@ -21284,25 +21284,25 @@ var SymmetryOperator;
     return "";
   }
   const _m = Mat4();
-  function checkIfRotationAndTranslation(rot, offset3) {
+  function checkIfRotationAndTranslation(rot, offset4) {
     Mat4.setIdentity(_m);
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
         Mat4.setValue(_m, i, j, Mat3.getValue(rot, i, j));
       }
     }
-    Mat4.setTranslation(_m, offset3);
+    Mat4.setTranslation(_m, offset4);
     return Mat4.isRotationAndTranslation(_m, SymmetryOperator2.RotationTranslationEpsilon);
   }
   SymmetryOperator2.checkIfRotationAndTranslation = checkIfRotationAndTranslation;
-  function ofRotationAndOffset(name, rot, offset3, ncsId) {
+  function ofRotationAndOffset(name, rot, offset4, ncsId) {
     const t5 = Mat4.identity();
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
         Mat4.setValue(t5, i, j, Mat3.getValue(rot, i, j));
       }
     }
-    Mat4.setTranslation(t5, offset3);
+    Mat4.setTranslation(t5, offset4);
     return create3(name, t5, { ncsId });
   }
   SymmetryOperator2.ofRotationAndOffset = ofRotationAndOffset;
@@ -21314,8 +21314,8 @@ var SymmetryOperator;
     const _t2 = 1 - t5;
     Mat4.getRotation(_q2, m);
     Quat.slerp(_q2, _q1, _q2, _t2);
-    const angle = Quat.getAxisAngle(_axis3, _q2);
-    Mat4.fromRotation(out, angle, _axis3);
+    const angle2 = Quat.getAxisAngle(_axis3, _q2);
+    Mat4.fromRotation(out, angle2, _axis3);
     Mat4.setValue(out, 0, 3, _t2 * Mat4.getValue(m, 0, 3));
     Mat4.setValue(out, 1, 3, _t2 * Mat4.getValue(m, 1, 3));
     Mat4.setValue(out, 2, 3, _t2 * Mat4.getValue(m, 2, 3));
@@ -21330,8 +21330,8 @@ var SymmetryOperator;
     Mat4.getRotation(_q2, src);
     Mat4.getRotation(_q3, tar);
     Quat.slerp(_q3, _q2, _q3, t5);
-    const angle = Quat.getAxisAngle(_axis3, _q3);
-    Mat4.fromRotation(out, angle, _axis3);
+    const angle2 = Quat.getAxisAngle(_axis3, _q3);
+    Mat4.fromRotation(out, angle2, _axis3);
     Mat4.setValue(out, 0, 3, lerp(Mat4.getValue(src, 0, 3), Mat4.getValue(tar, 0, 3), t5));
     Mat4.setValue(out, 1, 3, lerp(Mat4.getValue(src, 1, 3), Mat4.getValue(tar, 1, 3), t5));
     Mat4.setValue(out, 2, 3, lerp(Mat4.getValue(src, 2, 3), Mat4.getValue(tar, 2, 3), t5));
@@ -22912,22 +22912,22 @@ function getSpacegroupIndexFromNumber(num) {
     case 1197:
       return 267;
   }
-  let offset3 = 0;
+  let offset4 = 0;
   if (num > 146)
-    ++offset3;
+    ++offset4;
   if (num > 148)
-    ++offset3;
+    ++offset4;
   if (num > 155)
-    ++offset3;
+    ++offset4;
   if (num > 160)
-    ++offset3;
+    ++offset4;
   if (num > 161)
-    ++offset3;
+    ++offset4;
   if (num > 166)
-    ++offset3;
+    ++offset4;
   if (num > 167)
-    ++offset3;
-  return num - 1 + offset3;
+    ++offset4;
+  return num - 1 + offset4;
 }
 function getSpacegroupNumberFromIndex(idx) {
   if (idx < 146)
@@ -23618,12 +23618,12 @@ function Ray3D() {
     return out;
   }
   Ray3D2.targetTo = targetTo;
-  function transform(out, ray, m) {
+  function transform2(out, ray, m) {
     Vec3.transformMat4(out.origin, ray.origin, m);
     Vec3.transformDirection(out.direction, ray.direction, m);
     return out;
   }
-  Ray3D2.transform = transform;
+  Ray3D2.transform = transform2;
   const tmpIR = Vec3();
   function _intersectSphere3D(ray, sphere) {
     const { center: center2, radius } = sphere;
@@ -23656,10 +23656,10 @@ function Ray3D() {
     return Vec3.distance(ray.origin, sphere.center) < sphere.radius;
   }
   Ray3D2.isInsideSphere3D = isInsideSphere3D;
-  function _intersectBox3D(ray, box4) {
+  function _intersectBox3D(ray, box5) {
     const { origin, direction } = ray;
-    const [minX, minY, minZ] = box4.min;
-    const [maxX, maxY, maxZ] = box4.max;
+    const [minX, minY, minZ] = box5.min;
+    const [maxX, maxY, maxZ] = box5.max;
     const [x, y, z] = origin;
     const invDirX = 1 / direction[0];
     const invDirY = 1 / direction[1];
@@ -23700,16 +23700,16 @@ function Ray3D() {
       tmax = tzmax;
     return tmin >= 0 ? tmin : -1;
   }
-  function intersectBox3D(out, ray, box4) {
-    const t5 = _intersectBox3D(ray, box4);
+  function intersectBox3D(out, ray, box5) {
+    const t5 = _intersectBox3D(ray, box5);
     if (t5 < 0)
       return false;
     Vec3.scaleAndAdd(out, ray.origin, ray.direction, t5);
     return true;
   }
   Ray3D2.intersectBox3D = intersectBox3D;
-  function isIntersectingBox3D(ray, box4) {
-    return _intersectBox3D(ray, box4) >= 0;
+  function isIntersectingBox3D(ray, box5) {
+    return _intersectBox3D(ray, box5) >= 0;
   }
   Ray3D2.isIntersectingBox3D = isIntersectingBox3D;
 })(Ray3D || (Ray3D = {}));
@@ -23766,7 +23766,7 @@ var GridLookup3DImpl = class {
   }
 };
 function _build(state) {
-  const { expandedBox, size: [sX, sY, sZ], data: { x: px, y: py, z: pz, radius, indices: indices2 }, elementCount, delta: delta2 } = state;
+  const { expandedBox, size: [sX, sY, sZ], data: { x: px, y: py, z: pz, radius, indices: indices3 }, elementCount, delta: delta2 } = state;
   const n = sX * sY * sZ;
   const { min: [minX, minY, minZ] } = expandedBox;
   let maxRadius = 0;
@@ -23774,7 +23774,7 @@ function _build(state) {
   const grid = new Uint32Array(n);
   const bucketIndex = new Int32Array(elementCount);
   for (let t5 = 0; t5 < elementCount; t5++) {
-    const i = OrderedSet2.getAt(indices2, t5);
+    const i = OrderedSet2.getAt(indices3, t5);
     const x = Math.floor((px[i] - minX) / delta2[0]);
     const y = Math.floor((py[i] - minY) / delta2[1]);
     const z = Math.floor((pz[i] - minZ) / delta2[2]);
@@ -23786,7 +23786,7 @@ function _build(state) {
   }
   if (radius) {
     for (let t5 = 0; t5 < elementCount; t5++) {
-      const i = OrderedSet2.getAt(indices2, t5);
+      const i = OrderedSet2.getAt(indices3, t5);
       if (radius[i] > maxRadius)
         maxRadius = radius[i];
     }
@@ -23832,10 +23832,10 @@ function _build(state) {
 var MaxVolume = 2 ** 24;
 function build(data, boundary, cellSizeOrCount) {
   const expandedBox = Box3D.expand(Box3D(), boundary.box, Vec3.create(0.5, 0.5, 0.5));
-  const { indices: indices2 } = data;
+  const { indices: indices3 } = data;
   const S = Box3D.size(Vec3(), expandedBox);
   let delta2, size4;
-  const elementCount = OrderedSet2.size(indices2);
+  const elementCount = OrderedSet2.size(indices3);
   const cellCount = typeof cellSizeOrCount === "number" ? cellSizeOrCount : 32;
   const cellSize = Array.isArray(cellSizeOrCount) && cellSizeOrCount;
   if (cellSize && !Vec3.isZero(cellSize)) {
@@ -23860,7 +23860,7 @@ function build(data, boundary, cellSizeOrCount) {
     x: data.x,
     y: data.y,
     z: data.z,
-    indices: indices2,
+    indices: indices3,
     radius: data.radius
   };
   const state = {
@@ -23878,7 +23878,7 @@ function createContext(grid) {
   return { grid, x: 0.1, y: 0.1, z: 0.1, k: 1, stopIf: void 0, radius: 0.1, isCheck: false };
 }
 function query(ctx, result2) {
-  const { min: min5, size: [sX, sY, sZ], bucketOffset, bucketCounts, bucketArray, grid, data: { x: px, y: py, z: pz, indices: indices2, radius }, delta: delta2, maxRadius } = ctx.grid;
+  const { min: min5, size: [sX, sY, sZ], bucketOffset, bucketCounts, bucketArray, grid, data: { x: px, y: py, z: pz, indices: indices3, radius }, delta: delta2, maxRadius } = ctx.grid;
   const { radius: inputRadius, isCheck, x, y, z } = ctx;
   const r = inputRadius + maxRadius;
   const rSq = r * r;
@@ -23898,11 +23898,11 @@ function query(ctx, result2) {
         if (bucketIdx === 0)
           continue;
         const k = bucketIdx - 1;
-        const offset3 = bucketOffset[k];
+        const offset4 = bucketOffset[k];
         const count3 = bucketCounts[k];
-        const end4 = offset3 + count3;
-        for (let i = offset3; i < end4; i++) {
-          const idx = OrderedSet2.getAt(indices2, bucketArray[i]);
+        const end4 = offset4 + count3;
+        for (let i = offset4; i < end4; i++) {
+          const idx = OrderedSet2.getAt(indices3, bucketArray[i]);
           const dx = px[idx] - x;
           const dy = py[idx] - y;
           const dz = pz[idx] - z;
@@ -23935,7 +23935,7 @@ function _insideOut(r) {
 }
 var insideOut = memoize1(_insideOut);
 function approxQueryNearest(ctx, result2) {
-  const { min: min5, size: [sX, sY, sZ], bucketOffset, bucketCounts, bucketArray, grid, data: { x: px, y: py, z: pz, indices: indices2 }, delta: delta2 } = ctx.grid;
+  const { min: min5, size: [sX, sY, sZ], bucketOffset, bucketCounts, bucketArray, grid, data: { x: px, y: py, z: pz, indices: indices3 }, delta: delta2 } = ctx.grid;
   const { radius, x, y, z } = ctx;
   const rSq = radius * radius;
   Result.reset(result2);
@@ -23961,12 +23961,12 @@ function approxQueryNearest(ctx, result2) {
     if (bucketIdx === 0)
       continue;
     const k = bucketIdx - 1;
-    const offset3 = bucketOffset[k];
+    const offset4 = bucketOffset[k];
     const count3 = bucketCounts[k];
-    const end4 = offset3 + count3;
+    const end4 = offset4 + count3;
     let minDistSq = Number.MAX_VALUE;
-    for (let i2 = offset3; i2 < end4; i2++) {
-      const idx = OrderedSet2.getAt(indices2, bucketArray[i2]);
+    for (let i2 = offset4; i2 < end4; i2++) {
+      const idx = OrderedSet2.getAt(indices3, bucketArray[i2]);
       const dx = px[idx] - x;
       const dy = py[idx] - y;
       const dz = pz[idx] - z;
@@ -23989,9 +23989,9 @@ var tmpArrG2 = [0.1];
 var tmpArrG3 = [0.1];
 var tmpHeapG = new FibonacciHeap();
 function queryNearest(ctx, result2) {
-  const { min: min5, expandedBox: box4, boundingSphere: { center: center2 }, size: [sX, sY, sZ], bucketOffset, bucketCounts, bucketArray, grid, data: { x: px, y: py, z: pz, indices: indices2, radius }, delta: delta2, maxRadius } = ctx.grid;
+  const { min: min5, expandedBox: box5, boundingSphere: { center: center2 }, size: [sX, sY, sZ], bucketOffset, bucketCounts, bucketArray, grid, data: { x: px, y: py, z: pz, indices: indices3, radius }, delta: delta2, maxRadius } = ctx.grid;
   const { x, y, z, k, stopIf } = ctx;
-  const indicesCount = OrderedSet2.size(indices2);
+  const indicesCount = OrderedSet2.size(indices3);
   Result.reset(result2);
   if (indicesCount === 0 || k <= 0)
     return false;
@@ -24002,9 +24002,9 @@ function queryNearest(ctx, result2) {
   tmpSetG.clear();
   tmpHeapG.clear();
   Vec3.set(tmpRay.origin, x, y, z);
-  if (!Box3D.containsVec3(box4, tmpRay.origin)) {
+  if (!Box3D.containsVec3(box5, tmpRay.origin)) {
     Ray3D.targetTo(tmpRay, tmpRay, center2);
-    Ray3D.intersectBox3D(tmpRay.origin, tmpRay, box4);
+    Ray3D.intersectBox3D(tmpRay.origin, tmpRay, box5);
     gX = Math.max(0, Math.min(sX - 1, Math.floor((tmpRay.origin[0] - min5[0]) / delta2[0])));
     gY = Math.max(0, Math.min(sY - 1, Math.floor((tmpRay.origin[1] - min5[1]) / delta2[1])));
     gZ = Math.max(0, Math.min(sZ - 1, Math.floor((tmpRay.origin[2] - min5[2]) / delta2[2])));
@@ -24028,12 +24028,12 @@ function queryNearest(ctx, result2) {
         if (bucketIdx !== 0) {
           const _maxRange = maxRange;
           const ki = bucketIdx - 1;
-          const offset3 = bucketOffset[ki];
+          const offset4 = bucketOffset[ki];
           const count3 = bucketCounts[ki];
-          const end4 = offset3 + count3;
-          for (let i = offset3; i < end4; i++) {
+          const end4 = offset4 + count3;
+          for (let i = offset4; i < end4; i++) {
             const bIdx = bucketArray[i];
-            const idx = OrderedSet2.getAt(indices2, bIdx);
+            const idx = OrderedSet2.getAt(indices3, bIdx);
             const dx = px[idx] - x;
             const dy = py[idx] - y;
             const dz = pz[idx] - z;
@@ -25191,8 +25191,8 @@ var TrackballControls;
       const dx = _rotCurr[0] - _rotPrev[0];
       const dy = _rotCurr[1] - _rotPrev[1];
       Vec3.set(rotMoveDir, dx, dy, 0);
-      const angle = Vec3.magnitude(rotMoveDir) * getRotateFactor();
-      if (angle) {
+      const angle2 = Vec3.magnitude(rotMoveDir) * getRotateFactor();
+      if (angle2) {
         Vec3.sub(_eye, camera.position, camera.target);
         Vec3.normalize(rotEyeDir, _eye);
         Vec3.normalize(rotObjUpDir, camera.up);
@@ -25201,11 +25201,11 @@ var TrackballControls;
         Vec3.setMagnitude(rotObjSideDir, rotObjSideDir, dx);
         Vec3.add(rotMoveDir, rotObjUpDir, rotObjSideDir);
         Vec3.normalize(rotAxis, Vec3.cross(rotAxis, rotMoveDir, _eye));
-        Quat.setAxisAngle(rotQuat, rotAxis, angle);
+        Quat.setAxisAngle(rotQuat, rotAxis, angle2);
         Vec3.transformQuat(_eye, _eye, rotQuat);
         Vec3.transformQuat(camera.up, camera.up, rotQuat);
         Vec3.copy(_rotLastAxis, rotAxis);
-        _rotLastAngle = angle;
+        _rotLastAngle = angle2;
       } else if (!p6.staticMoving && _rotLastAngle) {
         _rotLastAngle *= Math.sqrt(1 - p6.dynamicDampingFactor);
         Vec3.sub(_eye, camera.position, camera.target);
@@ -25221,12 +25221,12 @@ var TrackballControls;
       const k = (keyState.rollRight - keyState.rollLeft) / 45;
       const dx = (_rollCurr[0] - _rollPrev[0]) * -Math.sign(_rollCurr[1]);
       const dy = (_rollCurr[1] - _rollPrev[1]) * -Math.sign(_rollCurr[0]);
-      const angle = -p6.rotateSpeed * (-dx + dy) + k;
-      if (angle) {
+      const angle2 = -p6.rotateSpeed * (-dx + dy) + k;
+      if (angle2) {
         Vec3.normalize(rollDir, _eye);
-        Quat.setAxisAngle(rollQuat, rollDir, angle);
+        Quat.setAxisAngle(rollQuat, rollDir, angle2);
         Vec3.transformQuat(camera.up, camera.up, rollQuat);
-        _rollLastAngle = angle;
+        _rollLastAngle = angle2;
       } else if (!p6.staticMoving && _rollLastAngle) {
         _rollLastAngle *= Math.sqrt(1 - p6.dynamicDampingFactor);
         Vec3.normalize(rollDir, _eye);
@@ -25239,14 +25239,14 @@ var TrackballControls;
     const pitchDir = Vec3();
     function pitchCamera() {
       const m = (keyState.pitchUp - keyState.pitchDown) / (p6.flyMode ? 360 : 90);
-      const angle = -p6.rotateSpeed * m;
-      if (angle) {
+      const angle2 = -p6.rotateSpeed * m;
+      if (angle2) {
         Vec3.cross(pitchDir, _eye, camera.up);
         Vec3.normalize(pitchDir, pitchDir);
-        Quat.setAxisAngle(pitchQuat, pitchDir, angle);
+        Quat.setAxisAngle(pitchQuat, pitchDir, angle2);
         Vec3.transformQuat(_eye, _eye, pitchQuat);
         Vec3.transformQuat(camera.up, camera.up, pitchQuat);
-        _pitchLastAngle = angle;
+        _pitchLastAngle = angle2;
       } else if (!p6.staticMoving && _pitchLastAngle) {
         _pitchLastAngle *= Math.sqrt(1 - p6.dynamicDampingFactor);
         Vec3.cross(pitchDir, _eye, camera.up);
@@ -25260,13 +25260,13 @@ var TrackballControls;
     const yawDir = Vec3();
     function yawCamera() {
       const m = (keyState.yawRight - keyState.yawLeft) / (p6.flyMode ? 360 : 90);
-      const angle = -p6.rotateSpeed * m;
-      if (angle) {
+      const angle2 = -p6.rotateSpeed * m;
+      if (angle2) {
         Vec3.normalize(yawDir, camera.up);
-        Quat.setAxisAngle(yawQuat, yawDir, angle);
+        Quat.setAxisAngle(yawQuat, yawDir, angle2);
         Vec3.transformQuat(_eye, _eye, yawQuat);
         Vec3.transformQuat(camera.up, camera.up, yawQuat);
-        _yawLastAngle = angle;
+        _yawLastAngle = angle2;
       } else if (!p6.staticMoving && _yawLastAngle) {
         _yawLastAngle *= Math.sqrt(1 - p6.dynamicDampingFactor);
         Vec3.normalize(yawDir, camera.up);
@@ -30917,12 +30917,12 @@ function createBuffer(gl, array2, usageHint, bufferType) {
     },
     getBuffer: () => _buffer,
     updateData,
-    updateSubData: (array3, offset3, count3) => {
+    updateSubData: (array3, offset4, count3) => {
       gl.bindBuffer(_bufferType, _buffer);
-      if (count3 - offset3 === array3.length) {
+      if (count3 - offset4 === array3.length) {
         gl.bufferSubData(_bufferType, 0, array3);
       } else {
-        gl.bufferSubData(_bufferType, offset3 * _bpe, array3.subarray(offset3, offset3 + count3));
+        gl.bufferSubData(_bufferType, offset4 * _bpe, array3.subarray(offset4, offset4 + count3));
       }
     },
     reset: () => {
@@ -30977,8 +30977,8 @@ function createAttributeBuffer(gl, state, extensions, array2, itemSize, divisor,
         instancedArrays.vertexAttribDivisor(location2, divisor);
       }
     },
-    changeOffset: (location2, offset3) => {
-      const o = offset3 * _bpe * itemSize;
+    changeOffset: (location2, offset4) => {
+      const o = offset4 * _bpe * itemSize;
       gl.bindBuffer(_bufferType, buffer.getBuffer());
       if (itemSize === 16) {
         for (let i = 0; i < 4; ++i) {
@@ -31257,12 +31257,12 @@ function createProgram(gl, state, extensions, parameters, getShader2, props) {
       }
       state.disableUnusedVertexAttribs();
     },
-    offsetAttributes: (attributeBuffers, offset3) => {
+    offsetAttributes: (attributeBuffers, offset4) => {
       for (let i = 0, il = attributeBuffers.length; i < il; ++i) {
         const [k, buffer] = attributeBuffers[i];
         const l = locations[k];
         if (l !== -1)
-          buffer.changeOffset(l, offset3);
+          buffer.changeOffset(l, offset4);
       }
     },
     bindTextures: (textures, startingTargetUnit) => {
@@ -39660,18 +39660,18 @@ var IntAdjacencyGraph;
     getVertexEdgeCount(i) {
       return this.offset[i + 1] - this.offset[i];
     }
-    constructor(offset3, a8, b8, edgeCount, edgeProps, props) {
-      this.offset = offset3;
+    constructor(offset4, a8, b8, edgeCount, edgeProps, props) {
+      this.offset = offset4;
       this.a = a8;
       this.b = b8;
       this.edgeCount = edgeCount;
       this.props = props;
-      this.vertexCount = offset3.length - 1;
+      this.vertexCount = offset4.length - 1;
       this.edgeProps = edgeProps || {};
     }
   }
-  function create3(offset3, a8, b8, edgeCount, edgeProps, props) {
-    return new IntGraphImpl(offset3, a8, b8, edgeCount, edgeProps, props);
+  function create3(offset4, a8, b8, edgeCount, edgeProps, props) {
+    return new IntGraphImpl(offset4, a8, b8, edgeCount, edgeProps, props);
   }
   IntAdjacencyGraph2.create = create3;
   class EdgeBuilder {
@@ -39732,15 +39732,15 @@ var IntAdjacencyGraph;
         bucketSizes[this.xs[i]]++;
       for (let i = 0, _i = this.ys.length; i < _i; i++)
         bucketSizes[this.ys[i]]++;
-      let offset3 = 0;
+      let offset4 = 0;
       for (let i = 0; i < this.vertexCount; i++) {
-        this.offsets[i] = offset3;
-        offset3 += bucketSizes[i];
+        this.offsets[i] = offset4;
+        offset4 += bucketSizes[i];
       }
-      this.offsets[this.vertexCount] = offset3;
-      this.slotCount = offset3;
-      this.a = new Int32Array(offset3);
-      this.b = new Int32Array(offset3);
+      this.offsets[this.vertexCount] = offset4;
+      this.slotCount = offset4;
+      this.a = new Int32Array(offset4);
+      this.b = new Int32Array(offset4);
     }
   }
   IntAdjacencyGraph2.EdgeBuilder = EdgeBuilder;
@@ -39787,15 +39787,15 @@ var IntAdjacencyGraph;
       const bucketSizes = new Int32Array(this.vertexCount);
       for (let i = 0, _i = this.xs.length; i < _i; i++)
         bucketSizes[this.xs[i]]++;
-      let offset3 = 0;
+      let offset4 = 0;
       for (let i = 0; i < this.vertexCount; i++) {
-        this.offsets[i] = offset3;
-        offset3 += bucketSizes[i];
+        this.offsets[i] = offset4;
+        offset4 += bucketSizes[i];
       }
-      this.offsets[this.vertexCount] = offset3;
-      this.slotCount = offset3;
-      this.a = new Int32Array(offset3);
-      this.b = new Int32Array(offset3);
+      this.offsets[this.vertexCount] = offset4;
+      this.slotCount = offset4;
+      this.a = new Int32Array(offset4);
+      this.b = new Int32Array(offset4);
     }
   }
   IntAdjacencyGraph2.DirectedEdgeBuilder = DirectedEdgeBuilder;
@@ -39836,7 +39836,7 @@ var IntAdjacencyGraph;
   }
   IntAdjacencyGraph2.fromVertexPairs = fromVertexPairs;
   function induceByVertices(graph, vertexIndices, props) {
-    const { b: b8, offset: offset3, vertexCount, edgeProps } = graph;
+    const { b: b8, offset: offset4, vertexCount, edgeProps } = graph;
     const vertexMap = new Int32Array(vertexCount);
     for (let i = 0, _i = vertexIndices.length; i < _i; i++)
       vertexMap[vertexIndices[i]] = i + 1;
@@ -39844,7 +39844,7 @@ var IntAdjacencyGraph;
     for (let i = 0; i < vertexCount; i++) {
       if (vertexMap[i] === 0)
         continue;
-      for (let j = offset3[i], _j = offset3[i + 1]; j < _j; j++) {
+      for (let j = offset4[i], _j = offset4[i + 1]; j < _j; j++) {
         if (b8[j] > i && vertexMap[b8[j]] !== 0)
           newEdgeCount++;
       }
@@ -39858,7 +39858,7 @@ var IntAdjacencyGraph;
       if (vertexMap[i] === 0)
         continue;
       const aa = vertexMap[i] - 1;
-      for (let j = offset3[i], _j = offset3[i + 1]; j < _j; j++) {
+      for (let j = offset4[i], _j = offset4[i + 1]; j < _j; j++) {
         const bb = vertexMap[b8[j]];
         if (bb === 0)
           continue;
@@ -39892,14 +39892,14 @@ var IntAdjacencyGraph;
       componentIndex[i] = -1;
     let currentComponent = 0;
     componentIndex[0] = currentComponent;
-    const { offset: offset3, b: neighbor } = graph;
+    const { offset: offset4, b: neighbor } = graph;
     const stack = [0];
     const list3 = LinkedIndex(vCount);
     list3.remove(0);
     while (stack.length > 0) {
       const v4 = stack.pop();
       const cIdx = componentIndex[v4];
-      for (let eI = offset3[v4], _eI = offset3[v4 + 1]; eI < _eI; eI++) {
+      for (let eI = offset4[v4], _eI = offset4[v4 + 1]; eI < _eI; eI++) {
         const n = neighbor[eI];
         if (!list3.has(n))
           continue;
@@ -39929,12 +39929,12 @@ var IntAdjacencyGraph;
   }
   IntAdjacencyGraph2.areVertexSetsConnected = areVertexSetsConnected;
 })(IntAdjacencyGraph || (IntAdjacencyGraph = {}));
-function areVertexSetsConnectedImpl(graph, frontier, target, distance, visited) {
-  const { b: neighbor, offset: offset3 } = graph;
+function areVertexSetsConnectedImpl(graph, frontier, target, distance2, visited) {
+  const { b: neighbor, offset: offset4 } = graph;
   const newFrontier = [];
   for (let i = 0, il = frontier.length; i < il; ++i) {
     const src = frontier[i];
-    for (let j = offset3[src], jl = offset3[src + 1]; j < jl; ++j) {
+    for (let j = offset4[src], jl = offset4[src + 1]; j < jl; ++j) {
       const other = neighbor[j];
       if (visited.has(other))
         continue;
@@ -39944,7 +39944,7 @@ function areVertexSetsConnectedImpl(graph, frontier, target, distance, visited) 
       newFrontier[newFrontier.length] = other;
     }
   }
-  return distance > 1 ? areVertexSetsConnectedImpl(graph, newFrontier, target, distance - 1, visited) : false;
+  return distance2 > 1 ? areVertexSetsConnectedImpl(graph, newFrontier, target, distance2 - 1, visited) : false;
 }
 
 // node_modules/molstar/lib/mol-model-formats/structure/common/property.js
@@ -41397,17 +41397,17 @@ function getGraph(indexA, indexB, props, count3) {
   const operatorA = new Array(builder.slotCount);
   const operatorB = new Array(builder.slotCount);
   const order = new Int8Array(builder.slotCount);
-  const distance = new Array(builder.slotCount);
+  const distance2 = new Array(builder.slotCount);
   const flag = new Array(builder.slotCount);
   for (let i = 0, _i = builder.edgeCount; i < _i; i++) {
     builder.addNextEdge();
     builder.assignProperty(key2, props.key ? props.key[i] : -1);
     builder.assignDirectedProperty(operatorA, props.operatorA ? props.operatorA[i] : -1, operatorB, props.operatorB ? props.operatorB[i] : -1);
     builder.assignProperty(order, props.order ? props.order[i] : 1);
-    builder.assignProperty(distance, props.distance ? props.distance[i] : -1);
+    builder.assignProperty(distance2, props.distance ? props.distance[i] : -1);
     builder.assignProperty(flag, props.flag ? props.flag[i] : BondType.Flag.Covalent);
   }
-  return builder.createGraph({ key: key2, operatorA, operatorB, order, distance, flag });
+  return builder.createGraph({ key: key2, operatorA, operatorB, order, distance: distance2, flag });
 }
 var IndexPairBonds;
 (function(IndexPairBonds2) {
@@ -41438,7 +41438,7 @@ var IndexPairBonds;
     const operatorA = pairs.operatorA && pairs.operatorA.toArray();
     const operatorB = pairs.operatorB && pairs.operatorB.toArray();
     const order = pairs.order && pairs.order.toArray();
-    const distance = pairs.distance && pairs.distance.toArray();
+    const distance2 = pairs.distance && pairs.distance.toArray();
     const flag = pairs.flag && pairs.flag.toArray();
     let hasOperators = false;
     if (operatorA && operatorB) {
@@ -41450,7 +41450,7 @@ var IndexPairBonds;
         }
       }
     }
-    const bonds = getGraph(indexA, indexB, { key: key2, operatorA, operatorB, order, distance, flag }, count3);
+    const bonds = getGraph(indexA, indexB, { key: key2, operatorA, operatorB, order, distance: distance2, flag }, count3);
     const bySameOperator = /* @__PURE__ */ new Map();
     if (hasOperators) {
       const { operatorA: operatorA2, operatorB: operatorB2 } = bonds.edgeProps;
@@ -41502,26 +41502,26 @@ function TokenColumnProvider(tokens) {
   };
 }
 function TokenColumn(tokens, schema) {
-  const { data, indices: indices2, count: rowCount } = tokens;
+  const { data, indices: indices3, count: rowCount } = tokens;
   const { valueType: type3 } = schema;
-  const value = type3 === "str" ? (row2) => data.substring(indices2[2 * row2], indices2[2 * row2 + 1]) : type3 === "int" ? (row2) => parseInt2(data, indices2[2 * row2], indices2[2 * row2 + 1]) || 0 : (row2) => parseFloat2(data, indices2[2 * row2], indices2[2 * row2 + 1]) || 0;
+  const value = type3 === "str" ? (row3) => data.substring(indices3[2 * row3], indices3[2 * row3 + 1]) : type3 === "int" ? (row3) => parseInt2(data, indices3[2 * row3], indices3[2 * row3 + 1]) || 0 : (row3) => parseFloat2(data, indices3[2 * row3], indices3[2 * row3 + 1]) || 0;
   return {
     schema,
     __array: void 0,
     isDefined: true,
     rowCount,
     value,
-    valueKind: (row2) => Column.ValueKinds.Present,
+    valueKind: (row3) => Column.ValueKinds.Present,
     toArray: (params) => column_helpers_exports.createAndFillArray(rowCount, value, params),
     areValuesEqual: areValuesEqualProvider(tokens)
   };
 }
 function areValuesEqualProvider(tokens) {
-  const { data, indices: indices2 } = tokens;
+  const { data, indices: indices3 } = tokens;
   return function(rowA, rowB) {
-    const aS = indices2[2 * rowA], bS = indices2[2 * rowB];
-    const len = indices2[2 * rowA + 1] - aS;
-    if (len !== indices2[2 * rowB + 1] - bS)
+    const aS = indices3[2 * rowA], bS = indices3[2 * rowB];
+    const len = indices3[2 * rowA + 1] - aS;
+    if (len !== indices3[2 * rowB + 1] - bS)
       return false;
     for (let i = 0; i < len; i++) {
       if (data.charCodeAt(i + aS) !== data.charCodeAt(i + bS)) {
@@ -41532,9 +41532,9 @@ function areValuesEqualProvider(tokens) {
   };
 }
 function areTokensEmpty(tokens) {
-  const { count: count3, indices: indices2 } = tokens;
+  const { count: count3, indices: indices3 } = tokens;
   for (let i = 0; i < count3; ++i) {
-    if (indices2[2 * i] !== indices2[2 * i + 1])
+    if (indices3[2 * i] !== indices3[2 * i + 1])
       return false;
   }
   return true;
@@ -41551,8 +41551,8 @@ function CifBlock(categoryNames, categories, header2, saveFrames = []) {
     categories,
     saveFrames,
     getField(name) {
-      const [category, field] = name.split(".");
-      return categories[category].getField(field || "");
+      const [category, field2] = name.split(".");
+      return categories[category].getField(field2 || "");
     }
   };
 }
@@ -41601,22 +41601,22 @@ var CifField;
   CifField4.ofString = ofString;
   function ofStrings(values2) {
     const rowCount = values2.length;
-    const str11 = (row2) => {
-      const ret = values2[row2];
+    const str11 = (row3) => {
+      const ret = values2[row3];
       if (!ret || ret === "." || ret === "?")
         return "";
       return ret;
     };
-    const int9 = (row2) => {
-      const v4 = values2[row2];
+    const int9 = (row3) => {
+      const v4 = values2[row3];
       return parseInt2(v4, 0, v4.length) || 0;
     };
-    const float7 = (row2) => {
-      const v4 = values2[row2];
+    const float7 = (row3) => {
+      const v4 = values2[row3];
       return parseFloat2(v4, 0, v4.length) || 0;
     };
-    const valueKind = (row2) => {
-      const v4 = values2[row2], l = v4.length;
+    const valueKind = (row3) => {
+      const v4 = values2[row3], l = v4.length;
       if (l > 1)
         return Column.ValueKinds.Present;
       if (l === 0)
@@ -41646,11 +41646,11 @@ var CifField;
   CifField4.ofStrings = ofStrings;
   function ofNumbers(values2) {
     const rowCount = values2.length;
-    const str11 = (row2) => {
-      return "" + values2[row2];
+    const str11 = (row3) => {
+      return "" + values2[row3];
     };
-    const float7 = (row2) => values2[row2];
-    const valueKind = (row2) => Column.ValueKinds.Present;
+    const float7 = (row3) => values2[row3];
+    const valueKind = (row3) => Column.ValueKinds.Present;
     const toFloatArray = (params) => {
       if (!params || params.array && values2 instanceof params.array) {
         return values2;
@@ -41675,21 +41675,21 @@ var CifField;
   }
   CifField4.ofNumbers = ofNumbers;
   function ofTokens(tokens) {
-    const { data, indices: indices2, count: rowCount } = tokens;
-    const str11 = (row2) => {
-      const ret = data.substring(indices2[2 * row2], indices2[2 * row2 + 1]);
+    const { data, indices: indices3, count: rowCount } = tokens;
+    const str11 = (row3) => {
+      const ret = data.substring(indices3[2 * row3], indices3[2 * row3 + 1]);
       if (ret === "." || ret === "?")
         return "";
       return ret;
     };
-    const int9 = (row2) => {
-      return parseInt2(data, indices2[2 * row2], indices2[2 * row2 + 1]) || 0;
+    const int9 = (row3) => {
+      return parseInt2(data, indices3[2 * row3], indices3[2 * row3 + 1]) || 0;
     };
-    const float7 = (row2) => {
-      return parseFloat2(data, indices2[2 * row2], indices2[2 * row2 + 1]) || 0;
+    const float7 = (row3) => {
+      return parseFloat2(data, indices3[2 * row3], indices3[2 * row3 + 1]) || 0;
     };
-    const valueKind = (row2) => {
-      const s = indices2[2 * row2], l = indices2[2 * row2 + 1] - s;
+    const valueKind = (row3) => {
+      const s = indices3[2 * row3], l = indices3[2 * row3 + 1] - s;
       if (l > 1)
         return Column.ValueKinds.Present;
       if (l === 0)
@@ -41725,28 +41725,28 @@ var CifField;
     switch (column.schema.valueType) {
       case "float":
       case "int":
-        str11 = (row2) => {
-          return "" + column.value(row2);
+        str11 = (row3) => {
+          return "" + column.value(row3);
         };
         int9 = column.value;
         float7 = column.value;
         break;
       case "str":
         str11 = column.value;
-        int9 = (row2) => {
-          const v4 = column.value(row2);
+        int9 = (row3) => {
+          const v4 = column.value(row3);
           return parseInt2(v4, 0, v4.length) || 0;
         };
-        float7 = (row2) => {
-          const v4 = column.value(row2);
+        float7 = (row3) => {
+          const v4 = column.value(row3);
           return parseFloat2(v4, 0, v4.length) || 0;
         };
         break;
       case "list":
         const { separator } = column.schema;
-        str11 = (row2) => column.value(row2).join(separator);
-        int9 = (row2) => NaN;
-        float7 = (row2) => NaN;
+        str11 = (row3) => column.value(row3).join(separator);
+        int9 = (row3) => NaN;
+        float7 = (row3) => NaN;
         break;
       default:
         throw new Error(`unsupported valueType '${column.schema.valueType}'`);
@@ -41772,33 +41772,33 @@ var CifField;
   }
   CifField4.ofUndefined = ofUndefined;
 })(CifField || (CifField = {}));
-function tensorFieldNameGetter(field, rank, zeroIndexed, namingVariant) {
-  const offset3 = zeroIndexed ? 0 : 1;
+function tensorFieldNameGetter(field2, rank, zeroIndexed, namingVariant) {
+  const offset4 = zeroIndexed ? 0 : 1;
   switch (rank) {
     case 1:
-      return namingVariant === "brackets" ? (i) => `${field}[${i + offset3}]` : (i) => `${field}_${i + offset3}`;
+      return namingVariant === "brackets" ? (i) => `${field2}[${i + offset4}]` : (i) => `${field2}_${i + offset4}`;
     case 2:
-      return namingVariant === "brackets" ? (i, j) => `${field}[${i + offset3}][${j + offset3}]` : (i, j) => `${field}_${i + offset3}${j + offset3}`;
+      return namingVariant === "brackets" ? (i, j) => `${field2}[${i + offset4}][${j + offset4}]` : (i, j) => `${field2}_${i + offset4}${j + offset4}`;
     case 3:
-      return namingVariant === "brackets" ? (i, j, k) => `${field}[${i + offset3}][${j + offset3}][${k + offset3}]` : (i, j, k) => `${field}_${i + offset3}${j + offset3}${k + offset3}`;
+      return namingVariant === "brackets" ? (i, j, k) => `${field2}[${i + offset4}][${j + offset4}][${k + offset4}]` : (i, j, k) => `${field2}_${i + offset4}${j + offset4}${k + offset4}`;
     default:
       throw new Error("Tensors with rank > 3 or rank 0 are currently not supported.");
   }
 }
-function getTensor(category, space, row2, getName) {
+function getTensor(category, space, row3, getName) {
   const ret = space.create();
   if (space.rank === 1) {
     const rows = space.dimensions[0];
     for (let i = 0; i < rows; i++) {
       const f = category.getField(getName(i));
-      space.set(ret, i, !!f ? f.float(row2) : 0);
+      space.set(ret, i, !!f ? f.float(row3) : 0);
     }
   } else if (space.rank === 2) {
     const rows = space.dimensions[0], cols = space.dimensions[1];
     for (let i = 0; i < rows; i++) {
       for (let j = 0; j < cols; j++) {
         const f = category.getField(getName(i, j));
-        space.set(ret, i, j, !!f ? f.float(row2) : 0);
+        space.set(ret, i, j, !!f ? f.float(row3) : 0);
       }
     }
   } else if (space.rank === 3) {
@@ -41807,7 +41807,7 @@ function getTensor(category, space, row2, getName) {
       for (let j = 0; j < d1; j++) {
         for (let k = 0; k < d22; k++) {
           const f = category.getField(getName(i, j, k));
-          space.set(ret, i, j, k, !!f ? f.float(row2) : 0);
+          space.set(ret, i, j, k, !!f ? f.float(row3) : 0);
         }
       }
     }
@@ -41828,8 +41828,8 @@ var FieldPath;
     return canonical(pathA) === canonical(pathB);
   }
   FieldPath2.equal = equal;
-  function create3(category, field, asCanonical = false) {
-    const p6 = `${category}${field ? `.${field}` : ""}`;
+  function create3(category, field2, asCanonical = false) {
+    const p6 = `${category}${field2 ? `.${field2}` : ""}`;
     return asCanonical ? canonical(p6) : p6;
   }
   FieldPath2.create = create3;
@@ -41861,27 +41861,27 @@ function getColumnCtor(t5) {
       throw new Error("Use createTensorColumn instead.");
   }
 }
-function createStringColumn(schema, field, value, toArray2) {
+function createStringColumn(schema, field2, value, toArray2) {
   return {
     schema,
-    __array: field.__array,
-    isDefined: field.isDefined,
-    rowCount: field.rowCount,
-    value: schema.transform === "lowercase" ? (row2) => value(row2).toLowerCase() : schema.transform === "uppercase" ? (row2) => value(row2).toUpperCase() : value,
-    valueKind: field.valueKind,
-    areValuesEqual: field.areValuesEqual,
+    __array: field2.__array,
+    isDefined: field2.isDefined,
+    rowCount: field2.rowCount,
+    value: schema.transform === "lowercase" ? (row3) => value(row3).toLowerCase() : schema.transform === "uppercase" ? (row3) => value(row3).toUpperCase() : value,
+    valueKind: field2.valueKind,
+    areValuesEqual: field2.areValuesEqual,
     toArray: schema.transform === "lowercase" ? (p6) => Array.from(toArray2(p6)).map((x) => x.toLowerCase()) : schema.transform === "uppercase" ? (p6) => Array.from(toArray2(p6)).map((x) => x.toUpperCase()) : toArray2
   };
 }
-function createColumn(schema, field, value, toArray2) {
+function createColumn(schema, field2, value, toArray2) {
   return {
     schema,
-    __array: field.__array,
-    isDefined: field.isDefined,
-    rowCount: field.rowCount,
+    __array: field2.__array,
+    isDefined: field2.isDefined,
+    rowCount: field2.rowCount,
     value,
-    valueKind: field.valueKind,
-    areValuesEqual: field.areValuesEqual,
+    valueKind: field2.valueKind,
+    areValuesEqual: field2.areValuesEqual,
     toArray: toArray2
   };
 }
@@ -41889,7 +41889,7 @@ function createListColumn(schema, category, key2) {
   const separator = schema.separator;
   const itemParse = schema.itemParse;
   const f = category.getField(key2);
-  const value = f ? (row2) => f.str(row2).split(separator).map((x) => itemParse(x.trim())).filter((x) => !!x) : (row2) => [];
+  const value = f ? (row3) => f.str(row3).split(separator).map((x) => itemParse(x.trim())).filter((x) => !!x) : (row3) => [];
   const toArray2 = (params) => column_helpers_exports.createAndFillArray(category.rowCount, value, params);
   return {
     schema,
@@ -41909,7 +41909,7 @@ function createTensorColumn(schema, category, key2) {
   const namingVariant = category.fieldNames.includes(`${key2}_1`) || category.fieldNames.includes(`${key2}_11`) || category.fieldNames.includes(`${key2}_111`) ? "underscore" : "brackets";
   const getName = tensorFieldNameGetter(key2, space.rank, zeroOffset, namingVariant);
   const first4 = category.getField(getName(fst, fst, fst)) || Column.Undefined(category.rowCount, schema);
-  const value = (row2) => getTensor(category, space, row2, getName);
+  const value = (row3) => getTensor(category, space, row3, getName);
   const toArray2 = (params) => column_helpers_exports.createAndFillArray(category.rowCount, value, params);
   return {
     schema,
@@ -41942,8 +41942,8 @@ var CategoryTable = class {
             cache[k] = createTensorColumn(fType, category, k);
           } else {
             const ctor = getColumnCtor(fType);
-            const field = category.getField(k);
-            cache[k] = !!field ? ctor(field, category, k) : Column.Undefined(category.rowCount, fType);
+            const field2 = category.getField(k);
+            cache[k] = !!field2 ? ctor(field2, category, k) : Column.Undefined(category.rowCount, fType);
           }
           return cache[k];
         },
@@ -41970,8 +41970,8 @@ function flattenFrame(frame) {
   }
   return flatFrame;
 }
-function getField(field, category, flatFrame, aliases) {
-  const path = FieldPath.create(category, field);
+function getField(field2, category, flatFrame, aliases) {
+  const path = FieldPath.create(category, field2);
   const canonicalPath = FieldPath.canonical(path);
   if (canonicalPath in flatFrame)
     return flatFrame[canonicalPath];
@@ -41991,11 +41991,11 @@ function createTable(key2, schema, frame, aliases) {
     const fieldNames = [];
     let rowCount = 0;
     for (const k of Object.keys(schema)) {
-      const field = getField(k, key2, flatFrame, aliases);
-      if (field) {
-        fields[k] = field;
+      const field2 = getField(k, key2, flatFrame, aliases);
+      if (field2) {
+        fields[k] = field2;
         fieldNames.push(k);
-        rowCount = field.rowCount;
+        rowCount = field2.rowCount;
       }
     }
     cat = {
@@ -42067,12 +42067,12 @@ var Location;
   }
   Location2.areEqual = areEqual4;
   const pA = Vec3(), pB = Vec3();
-  function distance(a8, b8) {
+  function distance2(a8, b8) {
     a8.unit.conformation.position(a8.element, pA);
     b8.unit.conformation.position(b8.element, pB);
     return Vec3.distance(pA, pB);
   }
-  Location2.distance = distance;
+  Location2.distance = distance2;
   function position(out, l) {
     return l.unit.conformation.position(l.element, out);
   }
@@ -43049,10 +43049,10 @@ var InterUnitGraph = class _InterUnitGraph {
   }
   /** Index into this.edges */
   getEdgeIndex(indexA, unitA, indexB, unitB) {
-    const indices2 = this.edgeKeyIndex.get(_InterUnitGraph.getEdgeUnitKey(unitA, unitB));
-    if (indices2 === void 0)
+    const indices3 = this.edgeKeyIndex.get(_InterUnitGraph.getEdgeUnitKey(unitA, unitB));
+    if (indices3 === void 0)
       return -1;
-    const index = indices2.get(_InterUnitGraph.getEdgeIndexKey(indexA, indexB));
+    const index = indices3.get(_InterUnitGraph.getEdgeIndexKey(indexA, indexB));
     return index !== void 0 ? index : -1;
   }
   /** Check if edge exists */
@@ -43525,8 +43525,8 @@ function runLength(data, encoding) {
   let dataOffset = 0;
   for (let i = 0, il = data.length; i < il; i += 2) {
     const value = data[i];
-    const length = data[i + 1];
-    for (let j = 0; j < length; ++j) {
+    const length2 = data[i + 1];
+    for (let j = 0; j < length2; ++j) {
       output[dataOffset++] = value;
     }
   }
@@ -43591,17 +43591,17 @@ function integerPacking(data, encoding) {
 }
 function stringArray(data, encoding) {
   const offsets = decode({ encoding: encoding.offsetEncoding, data: encoding.offsets });
-  const indices2 = decode({ encoding: encoding.dataEncoding, data });
+  const indices3 = decode({ encoding: encoding.dataEncoding, data });
   const str11 = encoding.stringData;
   const strings2 = new Array(offsets.length);
   strings2[0] = "";
   for (let i = 1, _i = offsets.length; i < _i; i++) {
     strings2[i] = str11.substring(offsets[i - 1], offsets[i]);
   }
-  let offset3 = 0;
-  const result2 = new Array(indices2.length);
-  for (let i = 0, _i = indices2.length; i < _i; i++) {
-    result2[offset3++] = strings2[indices2[i] + 1];
+  let offset4 = 0;
+  const result2 = new Array(indices3.length);
+  for (let i = 0, _i = indices3.length; i < _i; i++) {
+    result2[offset4++] = strings2[indices3[i] + 1];
   }
   return result2;
 }
@@ -44022,20 +44022,20 @@ var ArrayEncoding;
       }
     }
     const output = new Int32Array(fullLength);
-    let offset3 = 0;
+    let offset4 = 0;
     let runLength3 = 1;
     for (let i = 1, il = data.length; i < il; i++) {
       if (data[i - 1] !== data[i]) {
-        output[offset3] = data[i - 1];
-        output[offset3 + 1] = runLength3;
+        output[offset4] = data[i - 1];
+        output[offset4 + 1] = runLength3;
         runLength3 = 1;
-        offset3 += 2;
+        offset4 += 2;
       } else {
         ++runLength3;
       }
     }
-    output[offset3] = data[data.length - 1];
-    output[offset3 + 1] = runLength3;
+    output[offset4] = data[data.length - 1];
+    output[offset4 + 1] = runLength3;
     return {
       encodings: [{ kind: "RunLength", srcType, srcSize: data.length }],
       data: output
@@ -44276,8 +44276,8 @@ var Field;
         this.fields.push(fields[i]);
       return this;
     }
-    add(field) {
-      this.fields.push(field);
+    add(field2) {
+      this.fields.push(field2);
       return this;
     }
     getFields() {
@@ -44306,10 +44306,10 @@ var Category;
       if (blacklist)
         d5 = d5.substr(1);
       const split = d5.split(/\./);
-      const field = split[1];
-      const list3 = blacklist ? field ? field_blacklist : cat_blacklist : field ? field_whitelist : cat_whitelist;
+      const field2 = split[1];
+      const list3 = blacklist ? field2 ? field_blacklist : cat_blacklist : field2 ? field_whitelist : cat_whitelist;
       list3[list3.length] = d5;
-      if (field && !cat_whitelist.includes(split[0])) {
+      if (field2 && !cat_whitelist.includes(split[0])) {
         cat_whitelist[cat_whitelist.length] = split[0];
       }
     }
@@ -44323,8 +44323,8 @@ var Category;
           cat_whitelist.indexOf(cat) !== -1;
         }
       },
-      includeField(cat, field) {
-        const full = cat + "." + field;
+      includeField(cat, field2) {
+        const full = cat + "." + field2;
         if (field_blacklist.includes(full)) {
           return false;
         } else {
@@ -44339,20 +44339,20 @@ var Category;
     includeCategory(cat) {
       return true;
     },
-    includeField(cat, field) {
+    includeField(cat, field2) {
       return true;
     }
   };
   Category3.DefaultFormatter = {
-    getFormat(cat, field) {
+    getFormat(cat, field2) {
       return void 0;
     }
   };
-  function ofTable(table, indices2) {
-    if (indices2) {
+  function ofTable(table, indices3) {
+    if (indices3) {
       return {
         fields: cifFieldsFromTableSchema(table._schema),
-        source: [{ data: table, rowCount: indices2.length, keys: () => Iterator4.Array(indices2) }]
+        source: [{ data: table, rowCount: indices3.length, keys: () => Iterator4.Array(indices3) }]
       };
     }
     return {
@@ -44390,22 +44390,22 @@ function columnTensorValue(k, ...coords) {
 function columnValueKind(k) {
   return (i, d5) => d5[k].valueKind(i);
 }
-function getTensorDefinitions(field, space) {
+function getTensorDefinitions(field2, space) {
   const fieldDefinitions = [];
   const type3 = Field.Type.Float;
-  const valueKind = columnValueKind(field);
+  const valueKind = columnValueKind(field2);
   if (space.rank === 1) {
     const rows = space.dimensions[0];
     for (let i = 0; i < rows; i++) {
-      const name = `${field}[${i + 1}]`;
-      fieldDefinitions.push({ name, type: type3, value: columnTensorValue(field, i), valueKind });
+      const name = `${field2}[${i + 1}]`;
+      fieldDefinitions.push({ name, type: type3, value: columnTensorValue(field2, i), valueKind });
     }
   } else if (space.rank === 2) {
     const rows = space.dimensions[0], cols = space.dimensions[1];
     for (let i = 0; i < rows; i++) {
       for (let j = 0; j < cols; j++) {
-        const name = `${field}[${i + 1}][${j + 1}]`;
-        fieldDefinitions.push({ name, type: type3, value: columnTensorValue(field, i, j), valueKind });
+        const name = `${field2}[${i + 1}][${j + 1}]`;
+        fieldDefinitions.push({ name, type: type3, value: columnTensorValue(field2, i, j), valueKind });
       }
     }
   } else if (space.rank === 3) {
@@ -44413,8 +44413,8 @@ function getTensorDefinitions(field, space) {
     for (let i = 0; i < d0; i++) {
       for (let j = 0; j < d1; j++) {
         for (let k = 0; k < d22; k++) {
-          const name = `${field}[${i + 1}][${j + 1}][${k + 1}]`;
-          fieldDefinitions.push({ name, type: type3, value: columnTensorValue(field, i, j, k), valueKind });
+          const name = `${field2}[${i + 1}][${j + 1}][${k + 1}]`;
+          fieldDefinitions.push({ name, type: type3, value: columnTensorValue(field2, i, j, k), valueKind });
         }
       }
     }
@@ -44445,9 +44445,9 @@ function cifFieldsFromTableSchema(schema) {
 }
 
 // node_modules/molstar/lib/mol-io/writer/cif/encoder/util.js
-function getFieldDigitCount(field) {
-  if (field.defaultFormat && typeof field.defaultFormat.digitCount !== "undefined")
-    return Math.max(0, Math.min(field.defaultFormat.digitCount, 16));
+function getFieldDigitCount(field2) {
+  if (field2.defaultFormat && typeof field2.defaultFormat.digitCount !== "undefined")
+    return Math.max(0, Math.min(field2.defaultFormat.digitCount, 16));
   return 6;
 }
 function getIncludedFields(category) {
@@ -44712,30 +44712,30 @@ function encodeMsgPack(value) {
 function encodedSize(value) {
   const type3 = typeof value;
   if (type3 === "string") {
-    const length = utf8ByteCount(value);
-    if (length < 32) {
-      return 1 + length;
+    const length2 = utf8ByteCount(value);
+    if (length2 < 32) {
+      return 1 + length2;
     }
-    if (length < 256) {
-      return 2 + length;
+    if (length2 < 256) {
+      return 2 + length2;
     }
-    if (length < 65536) {
-      return 3 + length;
+    if (length2 < 65536) {
+      return 3 + length2;
     }
-    if (length < 4294967296) {
-      return 5 + length;
+    if (length2 < 4294967296) {
+      return 5 + length2;
     }
   }
   if (value instanceof Uint8Array) {
-    const length = value.byteLength;
-    if (length < 256) {
-      return 2 + length;
+    const length2 = value.byteLength;
+    if (length2 < 256) {
+      return 2 + length2;
     }
-    if (length < 65536) {
-      return 3 + length;
+    if (length2 < 65536) {
+      return 3 + length2;
     }
-    if (length < 4294967296) {
-      return 5 + length;
+    if (length2 < 4294967296) {
+      return 5 + length2;
     }
   }
   if (type3 === "number") {
@@ -44765,81 +44765,81 @@ function encodedSize(value) {
   if (type3 === "boolean" || value === null || value === void 0)
     return 1;
   if (type3 === "object") {
-    let length, size4 = 0;
+    let length2, size4 = 0;
     if (Array.isArray(value)) {
-      length = value.length;
-      for (let i = 0; i < length; i++) {
+      length2 = value.length;
+      for (let i = 0; i < length2; i++) {
         size4 += encodedSize(value[i]);
       }
     } else {
       const keys2 = Object.keys(value);
-      length = keys2.length;
-      for (let i = 0; i < length; i++) {
+      length2 = keys2.length;
+      for (let i = 0; i < length2; i++) {
         const key2 = keys2[i];
         size4 += encodedSize(key2) + encodedSize(value[key2]);
       }
     }
-    if (length < 16) {
+    if (length2 < 16) {
       return 1 + size4;
     }
-    if (length < 65536) {
+    if (length2 < 65536) {
       return 3 + size4;
     }
-    if (length < 4294967296) {
+    if (length2 < 4294967296) {
       return 5 + size4;
     }
-    throw new Error("Array or object too long 0x" + length.toString(16));
+    throw new Error("Array or object too long 0x" + length2.toString(16));
   }
   throw new Error("Unknown type " + type3);
 }
-function encodeInternal(value, view2, bytes, offset3) {
+function encodeInternal(value, view2, bytes, offset4) {
   const type3 = typeof value;
   if (type3 === "string") {
-    const length = utf8ByteCount(value);
-    if (length < 32) {
-      view2.setUint8(offset3, length | 160);
-      utf8Write(bytes, offset3 + 1, value);
-      return 1 + length;
+    const length2 = utf8ByteCount(value);
+    if (length2 < 32) {
+      view2.setUint8(offset4, length2 | 160);
+      utf8Write(bytes, offset4 + 1, value);
+      return 1 + length2;
     }
-    if (length < 256) {
-      view2.setUint8(offset3, 217);
-      view2.setUint8(offset3 + 1, length);
-      utf8Write(bytes, offset3 + 2, value);
-      return 2 + length;
+    if (length2 < 256) {
+      view2.setUint8(offset4, 217);
+      view2.setUint8(offset4 + 1, length2);
+      utf8Write(bytes, offset4 + 2, value);
+      return 2 + length2;
     }
-    if (length < 65536) {
-      view2.setUint8(offset3, 218);
-      view2.setUint16(offset3 + 1, length);
-      utf8Write(bytes, offset3 + 3, value);
-      return 3 + length;
+    if (length2 < 65536) {
+      view2.setUint8(offset4, 218);
+      view2.setUint16(offset4 + 1, length2);
+      utf8Write(bytes, offset4 + 3, value);
+      return 3 + length2;
     }
-    if (length < 4294967296) {
-      view2.setUint8(offset3, 219);
-      view2.setUint32(offset3 + 1, length);
-      utf8Write(bytes, offset3 + 5, value);
-      return 5 + length;
+    if (length2 < 4294967296) {
+      view2.setUint8(offset4, 219);
+      view2.setUint32(offset4 + 1, length2);
+      utf8Write(bytes, offset4 + 5, value);
+      return 5 + length2;
     }
   }
   if (value instanceof Uint8Array) {
-    const length = value.byteLength;
+    const length2 = value.byteLength;
     const bytes2 = new Uint8Array(view2.buffer);
-    if (length < 256) {
-      view2.setUint8(offset3, 196);
-      view2.setUint8(offset3 + 1, length);
-      bytes2.set(value, offset3 + 2);
-      return 2 + length;
+    if (length2 < 256) {
+      view2.setUint8(offset4, 196);
+      view2.setUint8(offset4 + 1, length2);
+      bytes2.set(value, offset4 + 2);
+      return 2 + length2;
     }
-    if (length < 65536) {
-      view2.setUint8(offset3, 197);
-      view2.setUint16(offset3 + 1, length);
-      bytes2.set(value, offset3 + 3);
-      return 3 + length;
+    if (length2 < 65536) {
+      view2.setUint8(offset4, 197);
+      view2.setUint16(offset4 + 1, length2);
+      bytes2.set(value, offset4 + 3);
+      return 3 + length2;
     }
-    if (length < 4294967296) {
-      view2.setUint8(offset3, 198);
-      view2.setUint32(offset3 + 1, length);
-      bytes2.set(value, offset3 + 5);
-      return 5 + length;
+    if (length2 < 4294967296) {
+      view2.setUint8(offset4, 198);
+      view2.setUint32(offset4 + 1, length2);
+      bytes2.set(value, offset4 + 5);
+      return 5 + length2;
     }
   }
   if (type3 === "number") {
@@ -44847,92 +44847,92 @@ function encodeInternal(value, view2, bytes, offset3) {
       throw new Error("Number not finite: " + value);
     }
     if (Math.floor(value) !== value) {
-      view2.setUint8(offset3, 203);
-      view2.setFloat64(offset3 + 1, value);
+      view2.setUint8(offset4, 203);
+      view2.setFloat64(offset4 + 1, value);
       return 9;
     }
     if (value >= 0) {
       if (value < 128) {
-        view2.setUint8(offset3, value);
+        view2.setUint8(offset4, value);
         return 1;
       }
       if (value < 256) {
-        view2.setUint8(offset3, 204);
-        view2.setUint8(offset3 + 1, value);
+        view2.setUint8(offset4, 204);
+        view2.setUint8(offset4 + 1, value);
         return 2;
       }
       if (value < 65536) {
-        view2.setUint8(offset3, 205);
-        view2.setUint16(offset3 + 1, value);
+        view2.setUint8(offset4, 205);
+        view2.setUint16(offset4 + 1, value);
         return 3;
       }
       if (value < 4294967296) {
-        view2.setUint8(offset3, 206);
-        view2.setUint32(offset3 + 1, value);
+        view2.setUint8(offset4, 206);
+        view2.setUint32(offset4 + 1, value);
         return 5;
       }
       throw new Error("Number too big 0x" + value.toString(16));
     }
     if (value >= -32) {
-      view2.setInt8(offset3, value);
+      view2.setInt8(offset4, value);
       return 1;
     }
     if (value >= -128) {
-      view2.setUint8(offset3, 208);
-      view2.setInt8(offset3 + 1, value);
+      view2.setUint8(offset4, 208);
+      view2.setInt8(offset4 + 1, value);
       return 2;
     }
     if (value >= -32768) {
-      view2.setUint8(offset3, 209);
-      view2.setInt16(offset3 + 1, value);
+      view2.setUint8(offset4, 209);
+      view2.setInt16(offset4 + 1, value);
       return 3;
     }
     if (value >= -2147483648) {
-      view2.setUint8(offset3, 210);
-      view2.setInt32(offset3 + 1, value);
+      view2.setUint8(offset4, 210);
+      view2.setInt32(offset4 + 1, value);
       return 5;
     }
     throw new Error("Number too small -0x" + (-value).toString(16).substr(1));
   }
   if (value === null || value === void 0) {
-    view2.setUint8(offset3, 192);
+    view2.setUint8(offset4, 192);
     return 1;
   }
   if (type3 === "boolean") {
-    view2.setUint8(offset3, value ? 195 : 194);
+    view2.setUint8(offset4, value ? 195 : 194);
     return 1;
   }
   if (type3 === "object") {
-    let length, size4 = 0;
+    let length2, size4 = 0;
     const isArray = Array.isArray(value);
     let keys2;
     if (isArray) {
-      length = value.length;
+      length2 = value.length;
     } else {
       keys2 = Object.keys(value);
-      length = keys2.length;
+      length2 = keys2.length;
     }
-    if (length < 16) {
-      view2.setUint8(offset3, length | (isArray ? 144 : 128));
+    if (length2 < 16) {
+      view2.setUint8(offset4, length2 | (isArray ? 144 : 128));
       size4 = 1;
-    } else if (length < 65536) {
-      view2.setUint8(offset3, isArray ? 220 : 222);
-      view2.setUint16(offset3 + 1, length);
+    } else if (length2 < 65536) {
+      view2.setUint8(offset4, isArray ? 220 : 222);
+      view2.setUint16(offset4 + 1, length2);
       size4 = 3;
-    } else if (length < 4294967296) {
-      view2.setUint8(offset3, isArray ? 221 : 223);
-      view2.setUint32(offset3 + 1, length);
+    } else if (length2 < 4294967296) {
+      view2.setUint8(offset4, isArray ? 221 : 223);
+      view2.setUint32(offset4 + 1, length2);
       size4 = 5;
     }
     if (isArray) {
-      for (let i = 0; i < length; i++) {
-        size4 += encodeInternal(value[i], view2, bytes, offset3 + size4);
+      for (let i = 0; i < length2; i++) {
+        size4 += encodeInternal(value[i], view2, bytes, offset4 + size4);
       }
     } else {
       for (let i = 0, _i = keys2.length; i < _i; i++) {
         const key2 = keys2[i];
-        size4 += encodeInternal(key2, view2, bytes, offset3 + size4);
-        size4 += encodeInternal(value[key2], view2, bytes, offset3 + size4);
+        size4 += encodeInternal(key2, view2, bytes, offset4 + size4);
+        size4 += encodeInternal(value[key2], view2, bytes, offset4 + size4);
       }
     }
     return size4;
@@ -45013,14 +45013,14 @@ var BinaryEncoder = class {
     };
   }
 };
-function getArrayCtor(field, format) {
+function getArrayCtor(field2, format) {
   if (format && format.typedArray)
     return format.typedArray;
-  if (field.defaultFormat && field.defaultFormat.typedArray)
-    return field.defaultFormat.typedArray;
-  if (field.type === Field.Type.Str)
+  if (field2.defaultFormat && field2.defaultFormat.typedArray)
+    return field2.defaultFormat.typedArray;
+  if (field2.type === Field.Type.Str)
     return Array;
-  if (field.type === Field.Type.Int)
+  if (field2.type === Field.Type.Int)
     return Int32Array;
   return Float64Array;
 }
@@ -45029,13 +45029,13 @@ function getDefaultEncoder(type3) {
     return ArrayEncoder.by(ArrayEncoding.stringArray);
   return ArrayEncoder.by(ArrayEncoding.byteArray);
 }
-function tryGetEncoder(categoryName, field, format, provider) {
+function tryGetEncoder(categoryName, field2, format, provider) {
   if (format && format.encoder) {
     return format.encoder;
-  } else if (field.defaultFormat && field.defaultFormat.encoder) {
-    return field.defaultFormat.encoder;
+  } else if (field2.defaultFormat && field2.defaultFormat.encoder) {
+    return field2.defaultFormat.encoder;
   } else if (provider) {
-    return provider.get(categoryName, field.name);
+    return provider.get(categoryName, field2.name);
   } else {
     return void 0;
   }
@@ -45047,19 +45047,19 @@ function classify(type3, data) {
     return classifyIntArray(data);
   return classifyFloatArray(data);
 }
-function encodeField(categoryName, field, data, totalCount, format, encoderProvider, autoClassify) {
-  const { array: array2, allPresent, mask } = getFieldData(field, getArrayCtor(field, format), totalCount, data);
+function encodeField(categoryName, field2, data, totalCount, format, encoderProvider, autoClassify) {
+  const { array: array2, allPresent, mask } = getFieldData(field2, getArrayCtor(field2, format), totalCount, data);
   let encoder;
-  if (field.type === Field.Type.Str) {
+  if (field2.type === Field.Type.Str) {
     encoder = ArrayEncoder.by(ArrayEncoding.stringArray);
   } else {
-    encoder = tryGetEncoder(categoryName, field, format, encoderProvider);
+    encoder = tryGetEncoder(categoryName, field2, format, encoderProvider);
   }
   if (!encoder) {
     if (autoClassify)
-      encoder = classify(field.type, array2);
+      encoder = classify(field2.type, array2);
     else
-      encoder = getDefaultEncoder(field.type);
+      encoder = getDefaultEncoder(field2.type);
   }
   const encoded = encoder.encode(array2);
   let maskData = void 0;
@@ -45072,19 +45072,19 @@ function encodeField(categoryName, field, data, totalCount, format, encoderProvi
     }
   }
   return {
-    name: field.name,
+    name: field2.name,
     data: encoded,
     mask: maskData
   };
 }
-function getFieldData(field, arrayCtor, totalCount, data) {
-  const isStr = field.type === Field.Type.Str;
+function getFieldData(field2, arrayCtor, totalCount, data) {
+  const isStr = field2.type === Field.Type.Str;
   const array2 = new arrayCtor(totalCount);
   const mask = new Uint8Array(totalCount);
-  const valueKind = field.valueKind;
-  const getter = field.value;
+  const valueKind = field2.valueKind;
+  const getter = field2.value;
   let allPresent = true;
-  let offset3 = 0;
+  let offset4 = 0;
   for (let _d = 0; _d < data.length; _d++) {
     const d5 = data[_d].data;
     const keys2 = data[_d].keys();
@@ -45092,21 +45092,21 @@ function getFieldData(field, arrayCtor, totalCount, data) {
       const key2 = keys2.move();
       const p6 = valueKind ? valueKind(key2, d5) : Column.ValueKinds.Present;
       if (p6 !== Column.ValueKinds.Present) {
-        mask[offset3] = p6;
+        mask[offset4] = p6;
         if (isStr)
-          array2[offset3] = "";
+          array2[offset4] = "";
         allPresent = false;
       } else {
-        const value = getter(key2, d5, offset3);
+        const value = getter(key2, d5, offset4);
         if (typeof value === "string" && !value) {
-          mask[offset3] = Column.ValueKinds.NotPresent;
+          mask[offset4] = Column.ValueKinds.NotPresent;
           allPresent = false;
         } else {
-          mask[offset3] = Column.ValueKinds.Present;
+          mask[offset4] = Column.ValueKinds.Present;
         }
-        array2[offset3] = value;
+        array2[offset4] = value;
       }
-      offset3++;
+      offset4++;
     }
   }
   return { array: array2, allPresent, mask };
@@ -45214,12 +45214,12 @@ var ComponentBond;
             return CifWriter.Category.Empty;
           const comp_names = ctx.structures[0].uniqueResidueNames;
           const { comp_id, _rowCount } = chem_comp_bond;
-          const indices2 = [];
+          const indices3 = [];
           for (let i = 0; i < _rowCount; i++) {
             if (comp_names.has(comp_id.value(i)))
-              indices2[indices2.length] = i;
+              indices3[indices3.length] = i;
           }
-          return CifWriter.Category.ofTable(chem_comp_bond, indices2);
+          return CifWriter.Category.ofTable(chem_comp_bond, indices3);
         }
       }]
     }
@@ -45313,13 +45313,13 @@ var StructConn;
           if (!p6 || p6.entries.length === 0)
             return CifWriter.Category.Empty;
           const structure = ctx.structures[0];
-          const indices2 = [];
+          const indices3 = [];
           for (const e of p6.entries) {
             if (hasAtom(structure, e.partnerA.atomIndex) && hasAtom(structure, e.partnerB.atomIndex)) {
-              indices2[indices2.length] = e.rowIndex;
+              indices3[indices3.length] = e.rowIndex;
             }
           }
-          return CifWriter.Category.ofTable(p6.data, indices2);
+          return CifWriter.Category.ofTable(p6.data, indices3);
         }
       }]
     }
@@ -45374,16 +45374,16 @@ var StructConn;
       symmetry: struct_conn.ptnr2_symmetry
     };
     const entityIds = Array.from(model.entities.data.id.toArray());
-    const _p = (row2, ps) => {
-      if (ps.label_asym_id.valueKind(row2) !== Column.ValueKinds.Present)
+    const _p = (row3, ps) => {
+      if (ps.label_asym_id.valueKind(row3) !== Column.ValueKinds.Present)
         return void 0;
-      const asymId = ps.label_asym_id.value(row2);
-      const atomName = ps.label_atom_id.value(row2);
+      const asymId = ps.label_asym_id.value(row3);
+      const atomName = ps.label_atom_id.value(row3);
       if (!atomName)
         return void 0;
-      const resId = ps.auth_seq_id.valueKind(row2) === Column.ValueKind.Present ? ps.auth_seq_id.value(row2) : ps.label_seq_id.value(row2);
-      const resInsCode = ps.ins_code.value(row2);
-      const altId = ps.label_alt_id.value(row2);
+      const resId = ps.auth_seq_id.valueKind(row3) === Column.ValueKind.Present ? ps.auth_seq_id.value(row3) : ps.label_seq_id.value(row3);
+      const resInsCode = ps.ins_code.value(row3);
+      const altId = ps.label_alt_id.value(row3);
       for (const eId of entityIds) {
         const residueIndex2 = model.atomicHierarchy.index.findResidue(eId, asymId, resId, resInsCode);
         if (residueIndex2 < 0)
@@ -45391,7 +45391,7 @@ var StructConn;
         const atomIndex = model.atomicHierarchy.index.findAtomOnResidue(residueIndex2, atomName, altId);
         if (atomIndex < 0)
           continue;
-        return { residueIndex: residueIndex2, atomIndex, symmetry: ps.symmetry.value(row2) };
+        return { residueIndex: residueIndex2, atomIndex, symmetry: ps.symmetry.value(row3) };
       }
       return void 0;
     };
@@ -45481,7 +45481,7 @@ function findIndexPairBonds(unit2) {
   const { type_symbol } = unit2.model.atomicHierarchy.atoms;
   const atomCount2 = unit2.elements.length;
   const { maxDistance } = indexPairs;
-  const { offset: offset3, b: b8, edgeProps: { order, distance, flag, key: key2, operatorA, operatorB } } = indexPairs.bonds;
+  const { offset: offset4, b: b8, edgeProps: { order, distance: distance2, flag, key: key2, operatorA, operatorB } } = indexPairs.bonds;
   const { atomSourceIndex: sourceIndex } = unit2.model.atomicHierarchy;
   const { invertedIndex } = Model.getInvertedAtomSourceIndex(unit2.model);
   const atomA = [];
@@ -45495,7 +45495,7 @@ function findIndexPairBonds(unit2) {
     const aeI = getElementIdx(type_symbol.value(aI));
     const isHa = isHydrogen(aeI);
     const srcA = sourceIndex.value(aI);
-    for (let i = offset3[srcA], il = offset3[srcA + 1]; i < il; ++i) {
+    for (let i = offset4[srcA], il = offset4[srcA + 1]; i < il; ++i) {
       const bI = invertedIndex[b8[i]];
       if (aI >= bI)
         continue;
@@ -45507,7 +45507,7 @@ function findIndexPairBonds(unit2) {
       if (opA >= 0 && opA !== opKey || opB >= 0 && opB !== opKey)
         continue;
       const beI = getElementIdx(type_symbol.value(bI));
-      const d5 = distance[i];
+      const d5 = distance2[i];
       const dist = getDistance(unit2, aI, bI);
       let add = false;
       if (d5 >= 0) {
@@ -45608,13 +45608,13 @@ function findBonds(unit2, props) {
     const aeI = getElementIdx(elemA);
     const atomIdA = label_atom_id.value(aI);
     const componentPairs = componentMap ? componentMap.get(atomIdA) : void 0;
-    const { indices: indices2, count: count3, squaredDistances } = query3d.find(x[aI], y[aI], z[aI], maxRadius);
+    const { indices: indices3, count: count3, squaredDistances } = query3d.find(x[aI], y[aI], z[aI], maxRadius);
     const isHa = isHydrogen(aeI);
     const thresholdA = getElementThreshold(aeI);
     const altA = label_alt_id.value(aI);
     const metalA = MetalsSet.has(aeI);
     for (let ni = 0; ni < count3; ni++) {
-      const _bI = indices2[ni];
+      const _bI = indices3[ni];
       if (hasStructConn && structConnAdded.has(_bI))
         continue;
       const bI = atoms2[_bI];
@@ -45786,10 +45786,10 @@ function findPairBonds(unitA, unitB, props, builder) {
       continue;
     if (!props.forceCompute && indexPairs) {
       const { maxDistance } = indexPairs;
-      const { offset: offset3, b: b8, edgeProps: { order, distance, flag, key: key2, operatorA, operatorB } } = indexPairs.bonds;
+      const { offset: offset4, b: b8, edgeProps: { order, distance: distance2, flag, key: key2, operatorA, operatorB } } = indexPairs.bonds;
       const srcA = sourceIndex.value(aI);
       const aeI2 = getElementIdx(type_symbolA.value(aI));
-      for (let i = offset3[srcA], il = offset3[srcA + 1]; i < il; ++i) {
+      for (let i = offset4[srcA], il = offset4[srcA + 1]; i < il; ++i) {
         const bI = invertedIndex[b8[i]];
         const _bI = SortedArray.indexOf(unitB.elements, bI);
         if (_bI < 0)
@@ -45803,7 +45803,7 @@ function findPairBonds(unitA, unitB, props, builder) {
             continue;
         }
         const beI = getElementIdx(type_symbolA.value(bI));
-        const d5 = distance[i];
+        const d5 = distance2[i];
         const dist = getDistance2(unitA, aI, unitB, bI);
         let add = false;
         if (d5 >= 0) {
@@ -45844,7 +45844,7 @@ function findPairBonds(unitA, unitB, props, builder) {
       continue;
     const occA = occupancyA.value(aI);
     const { lookup3d } = unitB;
-    const { indices: indices2, count: count3, squaredDistances } = lookup3d.find(_imageA[0], _imageA[1], _imageA[2], maxRadius);
+    const { indices: indices3, count: count3, squaredDistances } = lookup3d.find(_imageA[0], _imageA[1], _imageA[2], maxRadius);
     if (count3 === 0)
       continue;
     const aeI = getElementIdx(type_symbolA.value(aI));
@@ -45855,7 +45855,7 @@ function findPairBonds(unitA, unitB, props, builder) {
     const atomIdA = label_atom_idA.value(aI);
     const compIdA = label_comp_idA.value(residueIndexA[aI]);
     for (let ni = 0; ni < count3; ni++) {
-      const _bI = indices2[ni];
+      const _bI = indices3[ni];
       const bI = atomsB[_bI];
       const altB = label_alt_idB.value(bI);
       if (altA && altB && altA !== altB)
@@ -45962,12 +45962,12 @@ function addIndexPairBonds(structure, builder) {
       }
     }
     const unitIds = [-1, -1];
-    pairs.forEach((indices2, h) => {
+    pairs.forEach((indices3, h) => {
       const [unitIdA, unitIdB] = invertCantorPairing(unitIds, h);
       const uA = structure.unitMap.get(unitIdA);
       const uB = structure.unitMap.get(unitIdB);
       builder.startUnitPair(unitIdA, unitIdB);
-      indices2.forEach((i) => {
+      indices3.forEach((i) => {
         const aI = invertedIndex[a8[i]];
         const _aI = SortedArray.indexOf(uA.elements, aI);
         if (_aI < 0)
@@ -46147,10 +46147,10 @@ var Bond;
           map4.set(bUnit.id, [bIndex]);
       }
     }
-    map4.forEach((indices2, id) => {
+    map4.forEach((indices3, id) => {
       elements.push({
         unit: loci.structure.unitMap.get(id),
-        indices: SortedArray.deduplicate(SortedArray.ofUnsortedArray(indices2))
+        indices: SortedArray.deduplicate(SortedArray.ofUnsortedArray(indices3))
       });
     });
     return element_exports.Loci(loci.structure, elements);
@@ -46443,7 +46443,7 @@ function addRing(state, a8, b8, isRingAtom) {
 function findRings(state, from2, mark) {
   const { bonds, startVertex, endVertex, isRingAtom, marked, queue, pred, depth } = state;
   const { elements } = state.unit;
-  const { b: neighbor, edgeProps: { flags: bondFlags }, offset: offset3 } = bonds;
+  const { b: neighbor, edgeProps: { flags: bondFlags }, offset: offset4 } = bonds;
   marked[from2] = mark;
   depth[from2] = 0;
   queue[0] = from2;
@@ -46452,7 +46452,7 @@ function findRings(state, from2, mark) {
     const top = queue[head++];
     const d5 = depth[top];
     const a8 = startVertex + top;
-    const start4 = offset3[a8], end4 = offset3[a8 + 1];
+    const start4 = offset4[a8], end4 = offset4[a8 + 1];
     for (let i = start4; i < end4; i++) {
       const b8 = neighbor[i];
       if (b8 < startVertex || b8 >= endVertex || !BondType.isCovalent(bondFlags[i]))
@@ -46533,15 +46533,15 @@ function getMinimalRotation(elements) {
   }
   return k;
 }
-function buildFinderprint(elements, offset3) {
+function buildFinderprint(elements, offset4) {
   const len = elements.length;
   const ret = [];
   let i;
   for (i = 0; i < len - 1; i++) {
-    ret.push(elements[(i + offset3) % len]);
+    ret.push(elements[(i + offset4) % len]);
     ret.push("-");
   }
-  ret.push(elements[(i + offset3) % len]);
+  ret.push(elements[(i + offset4) % len]);
   return ret.join("");
 }
 function createIndex(rings2, aromaticRings) {
@@ -46782,12 +46782,12 @@ function getAtomIdForAtomRole(polymerType, atomRole) {
   return EmptyAtomIds;
 }
 var tmpPositionsVec = Vec3.zero();
-function getPositions(unit2, indices2) {
+function getPositions(unit2, indices3) {
   const c8 = unit2.conformation;
-  const positions = new Float32Array(indices2.length * 3);
+  const positions = new Float32Array(indices3.length * 3);
   const { elements } = unit2;
-  for (let i = 0, il = indices2.length; i < il; ++i) {
-    c8.position(elements[indices2[i]], tmpPositionsVec);
+  for (let i = 0, il = indices3.length; i < il; ++i) {
+    c8.position(elements[indices3[i]], tmpPositionsVec);
     Vec3.toArray(tmpPositionsVec, positions, i * 3);
   }
   return positions;
@@ -46863,7 +46863,7 @@ var UnitRing;
   ]);
   const AromaticRingPlanarityThreshold = 0.05;
   function isAromatic(unit2, ring2) {
-    const { elements, bonds: { b: b8, offset: offset3, edgeProps: { flags: flags2 } } } = unit2;
+    const { elements, bonds: { b: b8, offset: offset4, edgeProps: { flags: flags2 } } } = unit2;
     const { type_symbol, label_comp_id } = unit2.model.atomicHierarchy.atoms;
     if (label_comp_id.value(unit2.elements[ring2[0]]) === "PRO")
       return false;
@@ -46874,7 +46874,7 @@ var UnitRing;
       if (!hasAromaticRingElement && AromaticRingElements.has(type_symbol.value(elements[aI]))) {
         hasAromaticRingElement = true;
       }
-      for (let j = offset3[aI], jl = offset3[aI + 1]; j < jl; ++j) {
+      for (let j = offset4[aI], jl = offset4[aI + 1]; j < jl; ++j) {
         if (BondType.is(BondType.Flag.Aromatic, flags2[j])) {
           if (SortedArray.has(ring2, b8[j]))
             aromaticBondCount += 1;
@@ -47100,7 +47100,7 @@ var SortedRanges;
 
 // node_modules/molstar/lib/mol-model/structure/structure/util/polymer.js
 function getAtomicPolymerElements(unit2) {
-  const indices2 = [];
+  const indices3 = [];
   const { elements, model } = unit2;
   const { residueAtomSegments } = unit2.model.atomicHierarchy;
   const { traceElementIndex } = model.atomicHierarchy.derived.residue;
@@ -47114,14 +47114,14 @@ function getAtomicPolymerElements(unit2) {
       const { start: start4, end: end4, index } = residueSegment;
       if (OrderedSet2.areIntersecting(Interval.ofRange(elements[start4], elements[end4 - 1]), elements)) {
         const elementIndex = traceElementIndex[index];
-        indices2.push(elementIndex === -1 ? residueAtomSegments.offsets[index] : elementIndex);
+        indices3.push(elementIndex === -1 ? residueAtomSegments.offsets[index] : elementIndex);
       }
     }
   }
-  return SortedArray.ofSortedArray(indices2);
+  return SortedArray.ofSortedArray(indices3);
 }
 function getCoarsePolymerElements(unit2) {
-  const indices2 = [];
+  const indices3 = [];
   const { elements, model } = unit2;
   const { spheres: spheres2, gaussians } = model.coarseHierarchy;
   const polymerRanges = Unit.isSpheres(unit2) ? spheres2.polymerRanges : gaussians.polymerRanges;
@@ -47129,13 +47129,13 @@ function getCoarsePolymerElements(unit2) {
   while (polymerIt.hasNext) {
     const { start: start4, end: end4 } = polymerIt.move();
     for (let i = start4; i < end4; ++i) {
-      indices2.push(elements[i]);
+      indices3.push(elements[i]);
     }
   }
-  return SortedArray.ofSortedArray(indices2);
+  return SortedArray.ofSortedArray(indices3);
 }
 function getAtomicGapElements(unit2) {
-  const indices2 = [];
+  const indices3 = [];
   const { elements, model, residueIndex: residueIndex2 } = unit2;
   const { residueAtomSegments } = unit2.model.atomicHierarchy;
   const { traceElementIndex } = model.atomicHierarchy.derived.residue;
@@ -47146,25 +47146,25 @@ function getAtomicGapElements(unit2) {
     const indexEnd = residueIndex2[elements[gapSegment.end - 1]];
     const elementIndexStart = traceElementIndex[indexStart];
     const elementIndexEnd = traceElementIndex[indexEnd];
-    indices2.push(elementIndexStart === -1 ? residueAtomSegments.offsets[indexStart] : elementIndexStart);
-    indices2.push(elementIndexEnd === -1 ? residueAtomSegments.offsets[indexEnd] : elementIndexEnd);
+    indices3.push(elementIndexStart === -1 ? residueAtomSegments.offsets[indexStart] : elementIndexStart);
+    indices3.push(elementIndexEnd === -1 ? residueAtomSegments.offsets[indexEnd] : elementIndexEnd);
   }
-  return SortedArray.ofSortedArray(indices2);
+  return SortedArray.ofSortedArray(indices3);
 }
 function getCoarseGapElements(unit2) {
-  const indices2 = [];
+  const indices3 = [];
   const { elements, model } = unit2;
   const { spheres: spheres2, gaussians } = model.coarseHierarchy;
   const gapRanges = Unit.isSpheres(unit2) ? spheres2.gapRanges : gaussians.gapRanges;
   const gapIt = SortedRanges.transientSegments(gapRanges, elements);
   while (gapIt.hasNext) {
     const { start: start4, end: end4 } = gapIt.move();
-    indices2.push(elements[start4], elements[end4 - 1]);
+    indices3.push(elements[start4], elements[end4 - 1]);
   }
-  return SortedArray.ofSortedArray(indices2);
+  return SortedArray.ofSortedArray(indices3);
 }
 function getNucleotideElements(unit2) {
-  const indices2 = [];
+  const indices3 = [];
   const { elements, model } = unit2;
   const { chainAtomSegments, residueAtomSegments } = model.atomicHierarchy;
   const { moleculeType, traceElementIndex } = model.atomicHierarchy.derived.residue;
@@ -47176,14 +47176,14 @@ function getNucleotideElements(unit2) {
       const { index } = residueIt.move();
       if (isNucleic(moleculeType[index])) {
         const elementIndex = traceElementIndex[index];
-        indices2.push(elementIndex === -1 ? residueAtomSegments.offsets[index] : elementIndex);
+        indices3.push(elementIndex === -1 ? residueAtomSegments.offsets[index] : elementIndex);
       }
     }
   }
-  return SortedArray.ofSortedArray(indices2);
+  return SortedArray.ofSortedArray(indices3);
 }
 function getProteinElements(unit2) {
-  const indices2 = [];
+  const indices3 = [];
   const { elements, model } = unit2;
   const { chainAtomSegments, residueAtomSegments } = model.atomicHierarchy;
   const { moleculeType, traceElementIndex } = model.atomicHierarchy.derived.residue;
@@ -47195,11 +47195,11 @@ function getProteinElements(unit2) {
       const { index } = residueIt.move();
       if (isProtein(moleculeType[index])) {
         const elementIndex = traceElementIndex[index];
-        indices2.push(elementIndex === -1 ? residueAtomSegments.offsets[index] : elementIndex);
+        indices3.push(elementIndex === -1 ? residueAtomSegments.offsets[index] : elementIndex);
       }
     }
   }
-  return SortedArray.ofSortedArray(indices2);
+  return SortedArray.ofSortedArray(indices3);
 }
 
 // node_modules/molstar/lib/mol-model/structure/structure/util/principal-axes.js
@@ -47290,8 +47290,8 @@ var BoundaryHelper = class {
   getSphere(sphere) {
     return Sphere3D.setExtrema(this.centroidHelper.getSphere(sphere), this.extrema.slice());
   }
-  getBox(box4) {
-    return Box3D.fromVec3Array(box4 || Box3D(), this.extrema);
+  getBox(box5) {
+    return Box3D.fromVec3Array(box5 || Box3D(), this.extrema);
   }
   reset() {
     for (let i = 0; i < this.dirLength; ++i) {
@@ -47403,26 +47403,26 @@ function getBoundaryHelper(count3) {
   return count3 > 1e4 ? boundaryHelperCoarse : boundaryHelperFine;
 }
 function getFastBoundary(data) {
-  const box4 = Box3D.computeBounding(data);
-  return { box: box4, sphere: Sphere3D.fromBox3D(Sphere3D(), box4) };
+  const box5 = Box3D.computeBounding(data);
+  return { box: box5, sphere: Sphere3D.fromBox3D(Sphere3D(), box5) };
 }
 var p = Vec3();
 function getBoundary(data) {
-  const { x, y, z, radius, indices: indices2 } = data;
-  const n = OrderedSet2.size(indices2);
+  const { x, y, z, radius, indices: indices3 } = data;
+  const n = OrderedSet2.size(indices3);
   if (n > 25e4) {
     return getFastBoundary(data);
   }
   const boundaryHelper5 = getBoundaryHelper(n);
   boundaryHelper5.reset();
   for (let t5 = 0; t5 < n; t5++) {
-    const i = OrderedSet2.getAt(indices2, t5);
+    const i = OrderedSet2.getAt(indices3, t5);
     v3set2(p, x[i], y[i], z[i]);
     boundaryHelper5.includePositionRadius(p, radius && radius[i] || 0);
   }
   boundaryHelper5.finishedIncludeStep();
   for (let t5 = 0; t5 < n; t5++) {
-    const i = OrderedSet2.getAt(indices2, t5);
+    const i = OrderedSet2.getAt(indices3, t5);
     v3set2(p, x[i], y[i], z[i]);
     boundaryHelper5.radiusPositionRadius(p, radius && radius[i] || 0);
   }
@@ -47430,7 +47430,7 @@ function getBoundary(data) {
   if (!radius && Sphere3D.hasExtrema(sphere) && n <= sphere.extrema.length) {
     const extrema = [];
     for (let t5 = 0; t5 < n; t5++) {
-      const i = OrderedSet2.getAt(indices2, t5);
+      const i = OrderedSet2.getAt(indices3, t5);
       extrema.push(Vec3.create(x[i], y[i], z[i]));
     }
     Sphere3D.setExtrema(sphere, extrema);
@@ -47725,7 +47725,7 @@ function getResonance(unit2) {
 }
 function getDelocalizedTriplets(unit2) {
   const bonds = unit2.bonds;
-  const { b: b8, edgeProps, offset: offset3 } = bonds;
+  const { b: b8, edgeProps, offset: offset4 } = bonds;
   const { order: _order, flags: _flags } = edgeProps;
   const { elementAromaticRingIndices } = unit2.rings;
   const triplets = [];
@@ -47743,11 +47743,11 @@ function getDelocalizedTriplets(unit2) {
   for (let i = 0; i < unit2.elements.length; i++) {
     if (elementAromaticRingIndices.has(i))
       continue;
-    const count3 = offset3[i + 1] - offset3[i] + 1;
+    const count3 = offset4[i + 1] - offset4[i] + 1;
     if (count3 < 2)
       continue;
     const deloBonds = [];
-    for (let t5 = offset3[i], _t2 = offset3[i + 1]; t5 < _t2; t5++) {
+    for (let t5 = offset4[i], _t2 = offset4[i + 1]; t5 < _t2; t5++) {
       const f = _flags[t5];
       if (!BondType.is(f, BondType.Flag.Aromatic))
         continue;
@@ -48923,31 +48923,31 @@ var Bundle;
   function fromLoci(loci) {
     const _elements = [];
     for (const e of loci.elements) {
-      const { unit: unit2, indices: indices2 } = e;
-      if (OrderedSet2.size(indices2) === 0)
+      const { unit: unit2, indices: indices3 } = e;
+      if (OrderedSet2.size(indices3) === 0)
         continue;
       const ranges = [];
       const set4 = [];
-      if (OrderedSet2.isInterval(indices2)) {
-        if (OrderedSet2.size(indices2) === 1) {
-          set4.push(Interval.min(indices2));
+      if (OrderedSet2.isInterval(indices3)) {
+        if (OrderedSet2.size(indices3) === 1) {
+          set4.push(Interval.min(indices3));
         } else {
-          ranges.push(Interval.min(indices2), Interval.max(indices2));
+          ranges.push(Interval.min(indices3), Interval.max(indices3));
         }
       } else {
         let i = 0;
-        const len = indices2.length;
+        const len = indices3.length;
         while (i < len) {
           const start4 = i;
           i++;
-          while (i < len && indices2[i - 1] + 1 === indices2[i])
+          while (i < len && indices3[i - 1] + 1 === indices3[i])
             i++;
           const end4 = i;
           if (end4 - start4 > 2) {
-            ranges.push(indices2[start4], indices2[end4 - 1]);
+            ranges.push(indices3[start4], indices3[end4 - 1]);
           } else {
             for (let j = start4; j < end4; j++) {
-              set4[set4.length] = indices2[j];
+              set4[set4.length] = indices3[j];
             }
           }
         }
@@ -49004,26 +49004,26 @@ var Bundle;
         const units = getUnitsFromIds(g, structure);
         if (units.length === 0)
           continue;
-        let indices2;
+        let indices3;
         if (e.ranges.length === 0) {
-          indices2 = e.set;
+          indices3 = e.set;
         } else if (e.set.length === 0) {
           if (e.ranges.length === 2) {
-            indices2 = Interval.ofRange(e.ranges[0], e.ranges[1]);
+            indices3 = Interval.ofRange(e.ranges[0], e.ranges[1]);
           } else {
             const _indices = new Int32Array(SortedRanges.size(e.ranges));
             SortedRanges.forEach(e.ranges, (v4, i) => _indices[i] = v4);
-            indices2 = SortedArray.ofSortedArray(_indices);
+            indices3 = SortedArray.ofSortedArray(_indices);
           }
         } else {
           const rangesSize = SortedRanges.size(e.ranges);
           const _indices = new Int32Array(e.set.length + rangesSize);
           SortedRanges.forEach(e.ranges, (v4, i) => _indices[i] = v4);
           _indices.set(e.set, rangesSize);
-          indices2 = SortedArray.ofUnsortedArray(_indices);
+          indices3 = SortedArray.ofUnsortedArray(_indices);
         }
         for (const unit2 of units) {
-          elements.push({ unit: unit2, indices: indices2 });
+          elements.push({ unit: unit2, indices: indices3 });
         }
       }
     }
@@ -49044,38 +49044,38 @@ var Bundle;
         const rangesSize = SortedRanges.size(e.ranges);
         const setSize = e.set.length;
         const _indices = new Int32Array(setSize + rangesSize);
-        let indices2;
+        let indices3;
         if (rangesSize === 0) {
           for (let i = 0, il = setSize; i < il; ++i) {
             _indices[i] = ue[e.set[i]];
           }
-          indices2 = SortedArray.ofSortedArray(_indices);
+          indices3 = SortedArray.ofSortedArray(_indices);
         } else if (setSize === 0) {
           SortedRanges.forEach(e.ranges, (v4, i) => _indices[i] = ue[v4]);
-          indices2 = SortedArray.ofSortedArray(_indices);
+          indices3 = SortedArray.ofSortedArray(_indices);
         } else {
           if (SortedArray.min(e.set) > SortedRanges.max(e.ranges)) {
             SortedRanges.forEach(e.ranges, (v4, i) => _indices[i] = ue[v4]);
             for (let i = 0, il = setSize; i < il; ++i) {
               _indices[i + rangesSize] = ue[e.set[i]];
             }
-            indices2 = SortedArray.ofSortedArray(_indices);
+            indices3 = SortedArray.ofSortedArray(_indices);
           } else if (SortedRanges.min(e.ranges) > SortedArray.max(e.set)) {
             for (let i = 0, il = setSize; i < il; ++i) {
               _indices[i] = ue[e.set[i]];
             }
             SortedRanges.forEach(e.ranges, (v4, i) => _indices[i + setSize] = ue[v4]);
-            indices2 = SortedArray.ofSortedArray(_indices);
+            indices3 = SortedArray.ofSortedArray(_indices);
           } else {
             SortedRanges.forEach(e.ranges, (v4, i) => _indices[i] = ue[v4]);
             for (let i = 0, il = setSize; i < il; ++i) {
               _indices[i + rangesSize] = ue[e.set[i]];
             }
-            indices2 = SortedArray.ofUnsortedArray(_indices);
+            indices3 = SortedArray.ofUnsortedArray(_indices);
           }
         }
         for (const unit2 of _units) {
-          units.push(unit2.getChild(indices2));
+          units.push(unit2.getChild(indices3));
         }
       }
     }
@@ -49901,8 +49901,8 @@ function assignBends(ctx) {
     p6(caAtomNext2, caPosNext2);
     Vec3.sub(caMinus2, caPosPrev2, caPos);
     Vec3.sub(caPlus2, caPos, caPosNext2);
-    const angle = radToDeg(Vec3.angle(caMinus2, caPlus2));
-    if (angle && angle > 70) {
+    const angle2 = radToDeg(Vec3.angle(caMinus2, caPlus2));
+    if (angle2 && angle2 > 70) {
       flags2[i] |= DSSPType.Flag.S;
     }
   }
@@ -49954,9 +49954,9 @@ function calcUnitBackboneHbonds(unit2, proteinInfo, lookup3d) {
     c8.invariantPosition(oAtom, oPos);
     c8.invariantPosition(cAtom, cPos);
     c8.invariantPosition(caAtom, caPos);
-    const { indices: indices2, count: count3 } = lookup3d.find(caPos[0], caPos[1], caPos[2], caMaxDist);
+    const { indices: indices3, count: count3 } = lookup3d.find(caPos[0], caPos[1], caPos[2], caMaxDist);
     for (let j = 0; j < count3; ++j) {
-      const nPI = indices2[j];
+      const nPI = indices3[j];
       if (nPI === oPI || nPI - 1 === oPI || nPI + 1 === oPI)
         continue;
       const nAtom = nIndices[nPI];
@@ -50135,10 +50135,10 @@ function assignLadders(ctx) {
 // node_modules/molstar/lib/mol-model-props/computed/secondary-structure/dssp/bridges.js
 function assignBridges(ctx) {
   const { proteinInfo, hbonds, flags: flags2, bridges } = ctx;
-  const { offset: offset3, b: b8 } = hbonds;
+  const { offset: offset4, b: b8 } = hbonds;
   let i, j;
   for (let k = 0, kl = proteinInfo.residueIndices.length; k < kl; ++k) {
-    for (let t5 = offset3[k], _t2 = offset3[k + 1]; t5 < _t2; t5++) {
+    for (let t5 = offset4[k], _t2 = offset4[k + 1]; t5 < _t2; t5++) {
       const l = b8[t5];
       if (k > l)
         continue;
@@ -50258,11 +50258,11 @@ function calculateUnitDihedralAngles(unit2, proteinInfo) {
 function calcUnitProteinTraceLookup3D(unit2, unitProteinResidues) {
   const { x, y, z } = unit2.model.atomicConformation;
   const { traceElementIndex } = unit2.model.atomicHierarchy.derived.residue;
-  const indices2 = new Uint32Array(unitProteinResidues.length);
+  const indices3 = new Uint32Array(unitProteinResidues.length);
   for (let i = 0, il = unitProteinResidues.length; i < il; ++i) {
-    indices2[i] = traceElementIndex[unitProteinResidues[i]];
+    indices3[i] = traceElementIndex[unitProteinResidues[i]];
   }
-  const position = { x, y, z, indices: SortedArray.ofSortedArray(indices2) };
+  const position = { x, y, z, indices: SortedArray.ofSortedArray(indices3) };
   return GridLookup3D(position, getBoundary(position));
 }
 
@@ -51375,9 +51375,9 @@ function expandProperty(query2, property2) {
         const p6 = property2(ctx);
         if (!propertyToStructureIndexMap.has(p6))
           continue;
-        const indices2 = propertyToStructureIndexMap.get(p6).array;
-        for (let _sI = 0, __sI = indices2.length; _sI < __sI; _sI++) {
-          builders[indices2[_sI]].addToUnit(unit2.id, elements[i]);
+        const indices3 = propertyToStructureIndexMap.get(p6).array;
+        for (let _sI = 0, __sI = indices3.length; _sI < __sI; _sI++) {
+          builders[indices3[_sI]].addToUnit(unit2.id, elements[i]);
         }
       }
     }
@@ -52008,7 +52008,7 @@ function checkConnected(ctx, structure) {
     if (!Unit.isAtomic(unit2))
       continue;
     const inputUnit = input.unitMap.get(unit2.id);
-    const { offset: offset3, b: b8, edgeProps: { flags: flags2, order, key: key2 } } = inputUnit.bonds;
+    const { offset: offset4, b: b8, edgeProps: { flags: flags2, order, key: key2 } } = inputUnit.bonds;
     const bondedUnits = interBonds.getConnectedUnits(unit2.id);
     const buCount = bondedUnits.length;
     const srcElements = unit2.elements;
@@ -52017,7 +52017,7 @@ function checkConnected(ctx, structure) {
       const inputIndex = SortedArray.indexOf(inputElements, srcElements[i]);
       atomicBond.a.unit = inputUnit;
       atomicBond.b.unit = inputUnit;
-      for (let l = offset3[inputIndex], _l = offset3[inputIndex + 1]; l < _l; l++) {
+      for (let l = offset4[inputIndex], _l = offset4[inputIndex + 1]; l < _l; l++) {
         atomicBond.b.element = inputUnit.elements[b8[l]];
         if (disjunct && SortedArray.has(unit2.elements, atomicBond.b.element))
           continue;
@@ -52734,14 +52734,14 @@ function getAnomericCarbon(unit2, ringAtoms) {
   let indexHasTwoOxygen = -1, indexHasOxygenAndCarbon = -1, indexHasC1Name = -1, indexIsCarbon = -1;
   const { elements } = unit2;
   const { type_symbol, label_atom_id } = unit2.model.atomicHierarchy.atoms;
-  const { b: neighbor, offset: offset3 } = unit2.bonds;
+  const { b: neighbor, offset: offset4 } = unit2.bonds;
   for (let i = 0, il = ringAtoms.length; i < il; ++i) {
     const ei = elements[ringAtoms[i]];
     if (type_symbol.value(ei) !== C2)
       continue;
     let linkedOxygenCount = 0;
     let linkedCarbonCount = 0;
-    for (let j = offset3[ringAtoms[i]], jl = offset3[ringAtoms[i] + 1]; j < jl; ++j) {
+    for (let j = offset4[ringAtoms[i]], jl = offset4[ringAtoms[i] + 1]; j < jl; ++j) {
       const ej = elements[neighbor[j]];
       const typeSymbol2 = type_symbol.value(ej);
       if (typeSymbol2 === O)
@@ -52982,13 +52982,13 @@ function buildLookups(elements, links, terminalLinks) {
     return cantorPairing(unit2.id, element);
   }
   function getIndices(map4, unit2, index) {
-    const indices2 = [];
+    const indices3 = [];
     const il = map4.get(key2(unit2, index));
     if (il !== void 0) {
       for (const i of il)
-        arraySetAdd(indices2, i);
+        arraySetAdd(indices3, i);
     }
-    return indices2;
+    return indices3;
   }
   const elementsMap = /* @__PURE__ */ new Map();
   for (let i = 0, il = elements.length; i < il; ++i) {
@@ -53835,22 +53835,22 @@ function getAtomicResidueCount(structure) {
       builder.addUnit(kind, model, SymmetryOperator.Default, elements2, Unit.Trait.None);
     }
   }
-  function transform(s, transform2) {
-    if (Mat4.isIdentity(transform2))
+  function transform2(s, transform3) {
+    if (Mat4.isIdentity(transform3))
       return s;
-    if (!Mat4.isRotationAndTranslation(transform2, SymmetryOperator.RotationTranslationEpsilon))
+    if (!Mat4.isRotationAndTranslation(transform3, SymmetryOperator.RotationTranslationEpsilon))
       throw new Error("Only rotation/translation combination can be applied.");
     const units = [];
     for (const u2 of s.units) {
       const old = u2.conformation.operator;
-      const op4 = SymmetryOperator.create(old.name, transform2, old);
+      const op4 = SymmetryOperator.create(old.name, transform3, old);
       units.push(u2.applyOperator(u2.id, op4));
     }
     const cs = s.coordinateSystem;
-    const newCS = SymmetryOperator.compose(SymmetryOperator.create(cs.name, transform2, cs), cs);
+    const newCS = SymmetryOperator.compose(SymmetryOperator.create(cs.name, transform3, cs), cs);
     return create3(units, { parent: s, coordinateSystem: newCS });
   }
-  Structure6.transform = transform;
+  Structure6.transform = transform2;
   function instances(s, transforms) {
     for (const t5 of transforms) {
       if (!Mat4.isRotationAndTranslation(t5, SymmetryOperator.RotationTranslationEpsilon)) {
@@ -53861,12 +53861,12 @@ function getAtomicResidueCount(structure) {
     let id = 0;
     for (const u2 of s.units) {
       const old = u2.conformation.operator;
-      for (const transform2 of transforms) {
-        if (Mat4.isIdentity(transform2)) {
+      for (const transform3 of transforms) {
+        if (Mat4.isIdentity(transform3)) {
           units.push(u2);
           continue;
         }
-        const op4 = SymmetryOperator.create(old.name, transform2, old);
+        const op4 = SymmetryOperator.create(old.name, transform3, old);
         units.push(u2.applyOperator(id++, op4));
       }
     }
@@ -54059,7 +54059,7 @@ function getAtomicResidueCount(structure) {
   }
   Structure6.minDistanceToPoint = minDistanceToPoint;
   const distPivot = Vec3();
-  function distance(a8, b8) {
+  function distance2(a8, b8) {
     if (a8.elementCount === 0 || b8.elementCount === 0)
       return 0;
     const { units } = a8;
@@ -54076,7 +54076,7 @@ function getAtomicResidueCount(structure) {
     }
     return minD;
   }
-  Structure6.distance = distance;
+  Structure6.distance = distance2;
   function elementDescription(s) {
     return s.elementCount === 1 ? "1 element" : `${s.elementCount} elements`;
   }
@@ -54408,11 +54408,11 @@ function Loci(structure, elements) {
   Loci3.isWholeStructure = isWholeStructure;
   function size4(loci) {
     let s = 0;
-    for (const { indices: indices2 } of loci.elements) {
-      if (typeof indices2 === "number") {
-        s += itDiff(indices2);
+    for (const { indices: indices3 } of loci.elements) {
+      if (typeof indices3 === "number") {
+        s += itDiff(indices3);
       } else {
-        s += indices2.length;
+        s += indices3.length;
       }
     }
     return s;
@@ -54487,9 +54487,9 @@ function Loci(structure, elements) {
   function toStructure(loci) {
     const units = [];
     for (const e of loci.elements) {
-      const { unit: unit2, indices: indices2 } = e;
-      const elements = new Int32Array(OrderedSet2.size(indices2));
-      OrderedSet2.forEach(indices2, (v4, i) => elements[i] = unit2.elements[v4]);
+      const { unit: unit2, indices: indices3 } = e;
+      const elements = new Int32Array(OrderedSet2.size(indices3));
+      OrderedSet2.forEach(indices3, (v4, i) => elements[i] = unit2.elements[v4]);
       units.push(unit2.getChild(SortedArray.ofSortedArray(elements)));
     }
     return Structure.create(units, { parent: loci.structure.parent });
@@ -54501,11 +54501,11 @@ function Loci(structure, elements) {
     const loc = location2 ? location2 : Location.create(loci.structure);
     loc.structure = loci.structure;
     for (const e of loci.elements) {
-      const { unit: unit2, indices: indices2 } = e;
+      const { unit: unit2, indices: indices3 } = e;
       loc.unit = unit2;
       const { elements } = e.unit;
-      for (let i = 0, _i = OrderedSet2.size(indices2); i < _i; i++) {
-        loc.element = elements[OrderedSet2.getAt(indices2, i)];
+      for (let i = 0, _i = OrderedSet2.size(indices3); i < _i; i++) {
+        loc.element = elements[OrderedSet2.getAt(indices3, i)];
         f(loc);
       }
     }
@@ -54519,9 +54519,9 @@ function Loci(structure, elements) {
       if (!structure.unitMap.has(e.unit.id))
         return;
       const unit2 = structure.unitMap.get(e.unit.id);
-      const indices2 = OrderedSet2.indexedIntersect(e.indices, e.unit.elements, unit2.elements);
-      if (OrderedSet2.size(indices2) > 0)
-        elements.push({ unit: unit2, indices: indices2 });
+      const indices3 = OrderedSet2.indexedIntersect(e.indices, e.unit.elements, unit2.elements);
+      if (OrderedSet2.size(indices3) > 0)
+        elements.push({ unit: unit2, indices: indices3 });
     });
     return Loci3(structure, elements);
   }
@@ -54543,8 +54543,8 @@ function Loci(structure, elements) {
         elements[elements.length] = e;
       }
     }
-    map4.forEach((indices2, id) => {
-      elements[elements.length] = { unit: xs.structure.unitMap.get(id), indices: indices2 };
+    map4.forEach((indices3, id) => {
+      elements[elements.length] = { unit: xs.structure.unitMap.get(id), indices: indices3 };
     });
     return Loci3(xs.structure, elements);
   }
@@ -54556,10 +54556,10 @@ function Loci(structure, elements) {
     const elements = [];
     for (const e of xs.elements) {
       if (map4.has(e.unit.id)) {
-        const indices2 = OrderedSet2.subtract(e.indices, map4.get(e.unit.id));
-        if (OrderedSet2.size(indices2) === 0)
+        const indices3 = OrderedSet2.subtract(e.indices, map4.get(e.unit.id));
+        if (OrderedSet2.size(indices3) === 0)
           continue;
-        elements[elements.length] = { unit: e.unit, indices: indices2 };
+        elements[elements.length] = { unit: e.unit, indices: indices3 };
       } else {
         elements[elements.length] = e;
       }
@@ -54575,10 +54575,10 @@ function Loci(structure, elements) {
     for (const e of ys.elements) {
       if (!map4.has(e.unit.id))
         continue;
-      const indices2 = OrderedSet2.intersect(map4.get(e.unit.id), e.indices);
-      if (OrderedSet2.size(indices2) === 0)
+      const indices3 = OrderedSet2.intersect(map4.get(e.unit.id), e.indices);
+      if (OrderedSet2.size(indices3) === 0)
         continue;
-      elements[elements.length] = { unit: e.unit, indices: indices2 };
+      elements[elements.length] = { unit: e.unit, indices: indices3 };
     }
     return Loci3(xs.structure, elements);
   }
@@ -54639,16 +54639,16 @@ function Loci(structure, elements) {
         const { label_alt_id } = lociElement.unit.model.atomicHierarchy.atoms;
         const { index: residueIndex2, offsets: residueOffsets } = h.residueAtomSegments;
         const newIndices = [];
-        const indices2 = lociElement.indices, len = OrderedSet2.size(indices2);
+        const indices3 = lociElement.indices, len = OrderedSet2.size(indices3);
         let i = 0;
         while (i < len) {
           residueAltIds.clear();
-          const eI = unitElements[OrderedSet2.getAt(indices2, i)];
+          const eI = unitElements[OrderedSet2.getAt(indices3, i)];
           const rI = residueIndex2[eI];
           residueAltIds.add(label_alt_id.value(eI));
           i++;
           while (i < len) {
-            const eI2 = unitElements[OrderedSet2.getAt(indices2, i)];
+            const eI2 = unitElements[OrderedSet2.getAt(indices3, i)];
             if (residueIndex2[eI2] !== rI)
               break;
             residueAltIds.add(label_alt_id.value(eI2));
@@ -54719,10 +54719,10 @@ function Loci(structure, elements) {
     const chainIndices = /* @__PURE__ */ new Set();
     for (let lI = start4; lI < end4; lI++) {
       const lociElement = loci.elements[lI];
-      const indices2 = lociElement.indices;
+      const indices3 = lociElement.indices;
       const unitElements = lociElement.unit.elements;
-      for (let i = 0, _i = OrderedSet2.size(indices2); i < _i; i++) {
-        chainIndices.add(chainIndex2[unitElements[OrderedSet2.getAt(indices2, i)]]);
+      for (let i = 0, _i = OrderedSet2.size(indices3); i < _i; i++) {
+        chainIndices.add(chainIndex2[unitElements[OrderedSet2.getAt(indices3, i)]]);
       }
     }
     if (isPartitioned) {
@@ -54780,8 +54780,8 @@ function Loci(structure, elements) {
       l.unit = unit2;
       l.element = unit2.elements[0];
       if (entities.has(entityModelKey(l))) {
-        const indices2 = OrderedSet2.ofBounds(0, unit2.elements.length);
-        elements[elements.length] = { unit: unit2, indices: indices2 };
+        const indices3 = OrderedSet2.ofBounds(0, unit2.elements.length);
+        elements[elements.length] = { unit: unit2, indices: indices3 };
       }
     }
     return Loci3(loci.structure, elements);
@@ -54798,25 +54798,25 @@ function Loci(structure, elements) {
     for (let i = 0, il = units.length; i < il; ++i) {
       const unit2 = units[i];
       if (models.has(unit2.model.id)) {
-        const indices2 = OrderedSet2.ofBounds(0, unit2.elements.length);
-        elements[elements.length] = { unit: unit2, indices: indices2 };
+        const indices3 = OrderedSet2.ofBounds(0, unit2.elements.length);
+        elements[elements.length] = { unit: unit2, indices: indices3 };
       }
     }
     return Loci3(loci.structure, elements);
   }
   Loci3.extendToWholeModels = extendToWholeModels;
-  function getElementIndices(elements, indices2) {
+  function getElementIndices(elements, indices3) {
     const elementIndices = [];
-    for (let i = 0, il = OrderedSet2.size(indices2); i < il; ++i) {
-      elementIndices.push(elements[OrderedSet2.getAt(indices2, i)]);
+    for (let i = 0, il = OrderedSet2.size(indices3); i < il; ++i) {
+      elementIndices.push(elements[OrderedSet2.getAt(indices3, i)]);
     }
     return SortedArray.ofSortedArray(elementIndices);
   }
-  function getUnitIndices(elements, indices2) {
-    if (SortedArray.isRange(elements) && SortedArray.areEqual(elements, indices2)) {
+  function getUnitIndices(elements, indices3) {
+    if (SortedArray.isRange(elements) && SortedArray.areEqual(elements, indices3)) {
       return Interval.ofLength(elements.length);
     }
-    return makeIndexSet(SortedArray.indicesOf(elements, indices2));
+    return makeIndexSet(SortedArray.indicesOf(elements, indices3));
   }
   function extendToAllInstances(loci) {
     const elements = [];
@@ -54836,9 +54836,9 @@ function Loci(structure, elements) {
       const elementIndices = byModel.get(unit2.model);
       if (!elementIndices)
         continue;
-      const indices2 = getUnitIndices(unit2.elements, elementIndices);
-      if (OrderedSet2.size(indices2)) {
-        elements[elements.length] = { unit: unit2, indices: indices2 };
+      const indices3 = getUnitIndices(unit2.elements, elementIndices);
+      if (OrderedSet2.size(indices3)) {
+        elements[elements.length] = { unit: unit2, indices: indices3 };
       }
     }
     return Loci3(loci.structure, elements);
@@ -54855,8 +54855,8 @@ function Loci(structure, elements) {
     for (let i = 0, il = units.length; i < il; ++i) {
       const unit2 = units[i];
       if (operators4.has(unit2.conformation.operator.name)) {
-        const indices2 = OrderedSet2.ofBounds(0, unit2.elements.length);
-        elements[elements.length] = { unit: unit2, indices: indices2 };
+        const indices3 = OrderedSet2.ofBounds(0, unit2.elements.length);
+        elements[elements.length] = { unit: unit2, indices: indices3 };
       }
     }
     return Loci3(loci.structure, elements);
@@ -54864,28 +54864,28 @@ function Loci(structure, elements) {
   Loci3.extendToWholeOperators = extendToWholeOperators;
   const boundaryHelper5 = new BoundaryHelper("98");
   const tempPosBoundary = Vec3();
-  function getBoundary2(loci, transform, result2) {
+  function getBoundary2(loci, transform2, result2) {
     boundaryHelper5.reset();
     for (const e of loci.elements) {
-      const { indices: indices2 } = e;
+      const { indices: indices3 } = e;
       const { elements, conformation } = e.unit;
-      for (let i = 0, _i = OrderedSet2.size(indices2); i < _i; i++) {
-        const eI = elements[OrderedSet2.getAt(indices2, i)];
+      for (let i = 0, _i = OrderedSet2.size(indices3); i < _i; i++) {
+        const eI = elements[OrderedSet2.getAt(indices3, i)];
         conformation.position(eI, tempPosBoundary);
-        if (transform)
-          Vec3.transformMat4(tempPosBoundary, tempPosBoundary, transform);
+        if (transform2)
+          Vec3.transformMat4(tempPosBoundary, tempPosBoundary, transform2);
         boundaryHelper5.includePositionRadius(tempPosBoundary, conformation.r(eI));
       }
     }
     boundaryHelper5.finishedIncludeStep();
     for (const e of loci.elements) {
-      const { indices: indices2 } = e;
+      const { indices: indices3 } = e;
       const { elements, conformation } = e.unit;
-      for (let i = 0, _i = OrderedSet2.size(indices2); i < _i; i++) {
-        const eI = elements[OrderedSet2.getAt(indices2, i)];
+      for (let i = 0, _i = OrderedSet2.size(indices3); i < _i; i++) {
+        const eI = elements[OrderedSet2.getAt(indices3, i)];
         conformation.position(eI, tempPosBoundary);
-        if (transform)
-          Vec3.transformMat4(tempPosBoundary, tempPosBoundary, transform);
+        if (transform2)
+          Vec3.transformMat4(tempPosBoundary, tempPosBoundary, transform2);
         boundaryHelper5.radiusPositionRadius(tempPosBoundary, conformation.r(eI));
       }
     }
@@ -54900,14 +54900,14 @@ function Loci(structure, elements) {
   }
   Loci3.getBoundary = getBoundary2;
   const tempPos2 = Vec3();
-  function toPositionsArray2(loci, positions, offset3 = 0) {
-    let m = offset3;
+  function toPositionsArray2(loci, positions, offset4 = 0) {
+    let m = offset4;
     for (const e of loci.elements) {
-      const { indices: indices2 } = e;
+      const { indices: indices3 } = e;
       const { elements, conformation } = e.unit;
-      const indexCount = OrderedSet2.size(indices2);
+      const indexCount = OrderedSet2.size(indices3);
       for (let i = 0; i < indexCount; i++) {
-        const eI = elements[OrderedSet2.getAt(indices2, i)];
+        const eI = elements[OrderedSet2.getAt(indices3, i)];
         conformation.position(eI, tempPos2);
         Vec3.toArray(tempPos2, positions, m + i * 3);
       }
@@ -54928,10 +54928,10 @@ function Loci(structure, elements) {
       elementCount += size4(l);
     });
     const positions = new Float32Array(3 * elementCount);
-    let offset3 = 0;
+    let offset4 = 0;
     locis.forEach((l) => {
-      toPositionsArray2(l, positions, offset3);
-      offset3 += size4(l) * 3;
+      toPositionsArray2(l, positions, offset4);
+      offset4 += size4(l) * 3;
     });
     return PrincipalAxes.ofPositions(positions);
   }
@@ -54945,7 +54945,7 @@ function Loci(structure, elements) {
     const models = loci.structure.models;
     const sourceIndexMap = /* @__PURE__ */ new Map();
     for (const e of loci.elements) {
-      const { indices: indices2 } = e;
+      const { indices: indices3 } = e;
       const { elements } = e.unit;
       const key2 = e.unit.conformation.operator.name;
       let sourceIndices;
@@ -54955,8 +54955,8 @@ function Loci(structure, elements) {
         sourceIndices = UniqueArray.create();
         sourceIndexMap.set(key2, { modelLabel: e.unit.model.label, modelIndex: e.unit.model.modelNum, xs: sourceIndices });
       }
-      for (let i = 0, _i = OrderedSet2.size(indices2); i < _i; i++) {
-        const idx = sourceIndex(e.unit, elements[OrderedSet2.getAt(indices2, i)]);
+      for (let i = 0, _i = OrderedSet2.size(indices3); i < _i; i++) {
+        const idx = sourceIndex(e.unit, elements[OrderedSet2.getAt(indices3, i)]);
         UniqueArray.add(sourceIndices, idx, idx);
       }
     }
@@ -55072,18 +55072,18 @@ var Stats;
     map4.set(key2, count3 + inc);
   }
   function handleElement(stats, structure, element) {
-    const { indices: indices2, unit: unit2 } = element;
+    const { indices: indices3, unit: unit2 } = element;
     const { elements } = unit2;
-    const size4 = OrderedSet2.size(indices2);
+    const size4 = OrderedSet2.size(indices3);
     const lociResidueAltIdCounts = /* @__PURE__ */ new Map();
     const residueAltIdCounts = /* @__PURE__ */ new Map();
     if (size4 > 0) {
-      Location.set(stats.firstElementLoc, structure, unit2, elements[OrderedSet2.start(indices2)]);
+      Location.set(stats.firstElementLoc, structure, unit2, elements[OrderedSet2.start(indices3)]);
     }
     if (size4 === elements.length) {
       stats.unitCount += 1;
       if (stats.unitCount === 1) {
-        Location.set(stats.firstUnitLoc, structure, unit2, elements[OrderedSet2.start(indices2)]);
+        Location.set(stats.firstUnitLoc, structure, unit2, elements[OrderedSet2.start(indices3)]);
       }
     } else if (size4 === 1) {
       if (Unit.Traits.is(unit2.traits, Unit.Trait.MultiChain)) {
@@ -55091,7 +55091,7 @@ var Stats;
       } else {
         stats.elementCount += 1;
         if (stats.elementCount === 1) {
-          Location.set(stats.firstElementLoc, structure, unit2, elements[OrderedSet2.start(indices2)]);
+          Location.set(stats.firstElementLoc, structure, unit2, elements[OrderedSet2.start(indices3)]);
         }
       }
     } else {
@@ -55102,13 +55102,13 @@ var Stats;
         while (i < size4) {
           lociResidueAltIdCounts.clear();
           let j = 0;
-          const eI = elements[OrderedSet2.getAt(indices2, i)];
+          const eI = elements[OrderedSet2.getAt(indices3, i)];
           const rI = index[eI];
           addCountHelper(lociResidueAltIdCounts, label_alt_id.value(eI), 1);
           ++i;
           ++j;
           while (i < size4) {
-            const eI2 = elements[OrderedSet2.getAt(indices2, i)];
+            const eI2 = elements[OrderedSet2.getAt(indices3, i)];
             if (index[eI2] !== rI)
               break;
             addCountHelper(lociResidueAltIdCounts, label_alt_id.value(eI2), 1);
@@ -55149,14 +55149,14 @@ var Stats;
       } else {
         stats.elementCount += size4;
         if (stats.elementCount === 1) {
-          Location.set(stats.firstElementLoc, structure, unit2, elements[OrderedSet2.start(indices2)]);
+          Location.set(stats.firstElementLoc, structure, unit2, elements[OrderedSet2.start(indices3)]);
         }
       }
     }
   }
   function handleUnitChainsSimple(stats, structure, element) {
-    const { indices: indices2, unit: unit2 } = element;
-    const size4 = OrderedSet2.size(indices2);
+    const { indices: indices3, unit: unit2 } = element;
+    const size4 = OrderedSet2.size(indices3);
     if (size4 === 0)
       return;
     const { elements } = unit2;
@@ -55164,7 +55164,7 @@ var Stats;
       if (size4 === elements.length) {
         stats.chainCount += 1;
         if (stats.chainCount === 1) {
-          Location.set(stats.firstChainLoc, structure, unit2, elements[OrderedSet2.start(indices2)]);
+          Location.set(stats.firstChainLoc, structure, unit2, elements[OrderedSet2.start(indices3)]);
         }
       }
       return;
@@ -55178,12 +55178,12 @@ var Stats;
     let i = 0;
     while (i < size4) {
       let j = 0;
-      const eI = elements[OrderedSet2.getAt(indices2, i)];
+      const eI = elements[OrderedSet2.getAt(indices3, i)];
       const cI = index[eI];
       ++i;
       ++j;
       while (i < size4) {
-        const eI2 = elements[OrderedSet2.getAt(indices2, i)];
+        const eI2 = elements[OrderedSet2.getAt(indices3, i)];
         if (index[eI2] !== cI)
           break;
         ++i;
@@ -55213,25 +55213,25 @@ var Stats;
     const chainCounts = /* @__PURE__ */ new Map();
     for (let elIndex = start4; elIndex < end4; elIndex++) {
       element = lociElements[elIndex];
-      const { indices: indices2, unit: unit2 } = element;
-      const size4 = OrderedSet2.size(indices2);
+      const { indices: indices3, unit: unit2 } = element;
+      const size4 = OrderedSet2.size(indices3);
       if (size4 === 0)
         continue;
       const { elements } = unit2;
       if (!Unit.Traits.is(unit2.traits, Unit.Trait.MultiChain)) {
-        const eI = elements[OrderedSet2.start(indices2)];
+        const eI = elements[OrderedSet2.start(indices3)];
         addCountHelper(chainCounts, index[eI], elements.length);
         continue;
       }
       let i = 0;
       while (i < size4) {
         let j = 0;
-        const eI = elements[OrderedSet2.getAt(indices2, i)];
+        const eI = elements[OrderedSet2.getAt(indices3, i)];
         const cI = index[eI];
         ++i;
         ++j;
         while (i < size4) {
-          const eI2 = elements[OrderedSet2.getAt(indices2, i)];
+          const eI2 = elements[OrderedSet2.getAt(indices3, i)];
           if (index[eI2] !== cI)
             break;
           ++i;
@@ -55253,14 +55253,14 @@ var Stats;
       return;
     for (let elIndex = start4; elIndex < end4; elIndex++) {
       element = lociElements[elIndex];
-      const { indices: indices2, unit: unit2 } = element;
-      const size4 = OrderedSet2.size(indices2);
+      const { indices: indices3, unit: unit2 } = element;
+      const size4 = OrderedSet2.size(indices3);
       if (size4 === 0)
         continue;
       const { elements } = unit2;
       const i = 0;
       while (i < size4) {
-        const eI = elements[OrderedSet2.getAt(indices2, i)];
+        const eI = elements[OrderedSet2.getAt(indices3, i)];
         const cI = index[eI];
         if (cI === firstCI) {
           Location.set(stats.firstChainLoc, structure, unit2, eI);
@@ -55277,8 +55277,8 @@ var Stats;
     if (Loci.isWholeStructure(loci)) {
       stats.structureCount += 1;
       if (stats.structureCount === 1) {
-        const { unit: unit2, indices: indices2 } = loci.elements[0];
-        Location.set(stats.firstStructureLoc, loci.structure, unit2, unit2.elements[OrderedSet2.min(indices2)]);
+        const { unit: unit2, indices: indices3 } = loci.elements[0];
+        Location.set(stats.firstStructureLoc, loci.structure, unit2, unit2.elements[OrderedSet2.min(indices3)]);
       }
     } else {
       for (const e of loci.elements) {
@@ -55940,17 +55940,17 @@ function isImportGet(state) {
 function isNamespace(state, start4, end4) {
   let i;
   const nsLen = end4 - start4;
-  const offset3 = state.tokenStart - start4;
+  const offset4 = state.tokenStart - start4;
   const tokenLen = state.tokenEnd - state.tokenStart;
   if (tokenLen < nsLen)
     return false;
   for (i = start4; i < end4; ++i) {
-    if (state.data.charCodeAt(i) !== state.data.charCodeAt(i + offset3))
+    if (state.data.charCodeAt(i) !== state.data.charCodeAt(i + offset4))
       return false;
   }
   if (nsLen === tokenLen)
     return true;
-  if (state.data.charCodeAt(i + offset3) === 46) {
+  if (state.data.charCodeAt(i + offset4) === 46) {
     return true;
   }
   return false;
@@ -56258,16 +56258,16 @@ function Field2(column) {
   const mask = column.mask ? decode(column.mask) : void 0;
   const data = decode(column.data);
   const isNumeric = column_helpers_exports.isTypedArray(data);
-  const str11 = isNumeric ? mask ? (row2) => mask[row2] === Column.ValueKinds.Present ? "" + data[row2] : "" : (row2) => "" + data[row2] : mask ? (row2) => mask[row2] === Column.ValueKinds.Present ? data[row2] : "" : (row2) => data[row2];
-  const int9 = isNumeric ? (row2) => data[row2] : (row2) => {
-    const v4 = data[row2];
+  const str11 = isNumeric ? mask ? (row3) => mask[row3] === Column.ValueKinds.Present ? "" + data[row3] : "" : (row3) => "" + data[row3] : mask ? (row3) => mask[row3] === Column.ValueKinds.Present ? data[row3] : "" : (row3) => data[row3];
+  const int9 = isNumeric ? (row3) => data[row3] : (row3) => {
+    const v4 = data[row3];
     return parseInt2(v4, 0, v4.length);
   };
-  const float7 = isNumeric ? (row2) => data[row2] : (row2) => {
-    const v4 = data[row2];
+  const float7 = isNumeric ? (row3) => data[row3] : (row3) => {
+    const v4 = data[row3];
     return parseFloat2(v4, 0, v4.length);
   };
-  const valueKind = mask ? (row2) => mask[row2] : (row2) => Column.ValueKinds.Present;
+  const valueKind = mask ? (row3) => mask[row3] : (row3) => Column.ValueKinds.Present;
   const rowCount = data.length;
   return {
     __array: data,
@@ -56289,55 +56289,55 @@ function Field2(column) {
 function decodeMsgPack(buffer) {
   return parse({ buffer, offset: 0, dataView: new DataView(buffer.buffer) });
 }
-function map3(state, length) {
+function map3(state, length2) {
   const value = {};
-  for (let i = 0; i < length; i++) {
+  for (let i = 0; i < length2; i++) {
     const key2 = parse(state);
     value[key2] = parse(state);
   }
   return value;
 }
-function bin(state, length) {
-  const value = new Uint8Array(length);
+function bin(state, length2) {
+  const value = new Uint8Array(length2);
   const o = state.offset;
-  for (let i = 0; i < length; i++)
+  for (let i = 0; i < length2; i++)
     value[i] = state.buffer[i + o];
-  state.offset += length;
+  state.offset += length2;
   return value;
 }
-function str3(state, length) {
-  const value = utf8Read(state.buffer, state.offset, length);
-  state.offset += length;
+function str3(state, length2) {
+  const value = utf8Read(state.buffer, state.offset, length2);
+  state.offset += length2;
   return value;
 }
-function array(state, length) {
-  const value = new Array(length);
-  for (let i = 0; i < length; i++) {
+function array(state, length2) {
+  const value = new Array(length2);
+  for (let i = 0; i < length2; i++) {
     value[i] = parse(state);
   }
   return value;
 }
 function parse(state) {
   const type3 = state.buffer[state.offset];
-  let value, length;
+  let value, length2;
   if ((type3 & 128) === 0) {
     state.offset++;
     return type3;
   }
   if ((type3 & 240) === 128) {
-    length = type3 & 15;
+    length2 = type3 & 15;
     state.offset++;
-    return map3(state, length);
+    return map3(state, length2);
   }
   if ((type3 & 240) === 144) {
-    length = type3 & 15;
+    length2 = type3 & 15;
     state.offset++;
-    return array(state, length);
+    return array(state, length2);
   }
   if ((type3 & 224) === 160) {
-    length = type3 & 31;
+    length2 = type3 & 31;
     state.offset++;
-    return str3(state, length);
+    return str3(state, length2);
   }
   if ((type3 & 224) === 224) {
     value = state.dataView.getInt8(state.offset);
@@ -56359,19 +56359,19 @@ function parse(state) {
       return true;
     // bin 8
     case 196:
-      length = state.dataView.getUint8(state.offset + 1);
+      length2 = state.dataView.getUint8(state.offset + 1);
       state.offset += 2;
-      return bin(state, length);
+      return bin(state, length2);
     // bin 16
     case 197:
-      length = state.dataView.getUint16(state.offset + 1);
+      length2 = state.dataView.getUint16(state.offset + 1);
       state.offset += 3;
-      return bin(state, length);
+      return bin(state, length2);
     // bin 32
     case 198:
-      length = state.dataView.getUint32(state.offset + 1);
+      length2 = state.dataView.getUint32(state.offset + 1);
       state.offset += 5;
-      return bin(state, length);
+      return bin(state, length2);
     // float 32
     case 202:
       value = state.dataView.getFloat32(state.offset + 1);
@@ -56414,39 +56414,39 @@ function parse(state) {
       return value;
     // str 8
     case 217:
-      length = state.dataView.getUint8(state.offset + 1);
+      length2 = state.dataView.getUint8(state.offset + 1);
       state.offset += 2;
-      return str3(state, length);
+      return str3(state, length2);
     // str 16
     case 218:
-      length = state.dataView.getUint16(state.offset + 1);
+      length2 = state.dataView.getUint16(state.offset + 1);
       state.offset += 3;
-      return str3(state, length);
+      return str3(state, length2);
     // str 32
     case 219:
-      length = state.dataView.getUint32(state.offset + 1);
+      length2 = state.dataView.getUint32(state.offset + 1);
       state.offset += 5;
-      return str3(state, length);
+      return str3(state, length2);
     // array 16
     case 220:
-      length = state.dataView.getUint16(state.offset + 1);
+      length2 = state.dataView.getUint16(state.offset + 1);
       state.offset += 3;
-      return array(state, length);
+      return array(state, length2);
     // array 32
     case 221:
-      length = state.dataView.getUint32(state.offset + 1);
+      length2 = state.dataView.getUint32(state.offset + 1);
       state.offset += 5;
-      return array(state, length);
+      return array(state, length2);
     // map 16:
     case 222:
-      length = state.dataView.getUint16(state.offset + 1);
+      length2 = state.dataView.getUint16(state.offset + 1);
       state.offset += 3;
-      return map3(state, length);
+      return map3(state, length2);
     // map 32
     case 223:
-      length = state.dataView.getUint32(state.offset + 1);
+      length2 = state.dataView.getUint32(state.offset + 1);
       state.offset += 5;
-      return map3(state, length);
+      return map3(state, length2);
   }
   throw new Error("Unknown type 0x" + type3.toString(16));
 }
@@ -59188,18 +59188,18 @@ var SIFTSMapping;
     const num = new Array(count3);
     const residue2 = new Array(count3);
     for (let i = 0; i < count3; i++) {
-      const row2 = atomSourceIndex.value(residueOffsets[i]);
-      if (db_name.valueKind(row2) !== Column.ValueKinds.Present) {
+      const row3 = atomSourceIndex.value(residueOffsets[i]);
+      if (db_name.valueKind(row3) !== Column.ValueKinds.Present) {
         dbName[i] = "";
         accession[i] = "";
         num[i] = "";
         residue2[i] = "";
         continue;
       }
-      dbName[i] = db_name.value(row2);
-      accession[i] = db_acc.value(row2);
-      num[i] = db_num.value(row2);
-      residue2[i] = db_res.value(row2);
+      dbName[i] = db_name.value(row3);
+      accession[i] = db_acc.value(row3);
+      num[i] = db_num.value(row3);
+      residue2[i] = db_res.value(row3);
     }
     return { dbName, accession, num, residue: residue2 };
   }
@@ -59261,8 +59261,8 @@ function getCategoryInstance(structures, categoryName, cache) {
     return CifCategory3.Empty;
   const { entity_id } = category;
   const names = cache.uniqueEntityIds || (cache.uniqueEntityIds = getUniqueEntityIdsFromStructures(structures));
-  const indices2 = Column.indicesOf(entity_id, (id) => names.has(id));
-  return CifCategory3.ofTable(category, indices2);
+  const indices3 = Column.indicesOf(entity_id, (id) => names.has(id));
+  return CifCategory3.ofTable(category, indices3);
 }
 
 // node_modules/molstar/lib/mol-model/structure/export/mmcif.js
@@ -60266,7 +60266,7 @@ var Sequence;
       this.code = Column.ofConst("X", count3, Column.Schema.str);
       this.label = Column.ofConst("", count3, Column.Schema.str);
       this.seqId = Column.ofLambda({
-        value: (row2) => row2 + minSeqId + 1,
+        value: (row3) => row3 + minSeqId + 1,
         rowCount: count3,
         schema: Column.Schema.int
       });
@@ -60402,30 +60402,30 @@ function getSequence(data, entities, atomicHierarchy, coarseHierarchy) {
 
 // node_modules/molstar/lib/mol-model-formats/structure/basic/sort.js
 async function sortAtomSite(ctx, atom_site, start4, end4) {
-  const indices2 = createRangeArray(start4, end4 - 1);
+  const indices3 = createRangeArray(start4, end4 - 1);
   const { label_entity_id, label_asym_id, label_seq_id } = atom_site;
-  const entityBuckets = makeBuckets(indices2, label_entity_id.value);
+  const entityBuckets = makeBuckets(indices3, label_entity_id.value);
   if (ctx.shouldUpdate)
     await ctx.update();
   for (let ei = 0, _eI = entityBuckets.length - 1; ei < _eI; ei++) {
-    const chainBuckets = makeBuckets(indices2, label_asym_id.value, { start: entityBuckets[ei], end: entityBuckets[ei + 1] });
+    const chainBuckets = makeBuckets(indices3, label_asym_id.value, { start: entityBuckets[ei], end: entityBuckets[ei + 1] });
     for (let cI = 0, _cI = chainBuckets.length - 1; cI < _cI; cI++) {
       const aI = chainBuckets[cI];
       if (label_seq_id.valueKind(aI) !== Column.ValueKinds.Present)
         continue;
-      makeBuckets(indices2, label_seq_id.value, { sort: true, start: aI, end: chainBuckets[cI + 1] });
+      makeBuckets(indices3, label_seq_id.value, { sort: true, start: aI, end: chainBuckets[cI + 1] });
       if (ctx.shouldUpdate)
         await ctx.update();
     }
     if (ctx.shouldUpdate)
       await ctx.update();
   }
-  if (arrayIsIdentity(indices2) && indices2.length === atom_site._rowCount) {
-    return { atom_site, sourceIndex: Column.ofIntArray(indices2) };
+  if (arrayIsIdentity(indices3) && indices3.length === atom_site._rowCount) {
+    return { atom_site, sourceIndex: Column.ofIntArray(indices3) };
   }
   return {
-    atom_site: Table.view(atom_site, atom_site._schema, indices2),
-    sourceIndex: Column.ofIntArray(indices2)
+    atom_site: Table.view(atom_site, atom_site._schema, indices3),
+    sourceIndex: Column.ofIntArray(indices3)
   };
 }
 
@@ -62008,13 +62008,13 @@ function getAsymIdSerialMap(structure, type3) {
   const map4 = /* @__PURE__ */ new Map();
   for (const m of structure.models) {
     const asymIdOffset = Model.AsymIdOffset.get(m).value;
-    const offset3 = (type3 === "auth" ? asymIdOffset === null || asymIdOffset === void 0 ? void 0 : asymIdOffset.auth : asymIdOffset === null || asymIdOffset === void 0 ? void 0 : asymIdOffset.label) || 0;
+    const offset4 = (type3 === "auth" ? asymIdOffset === null || asymIdOffset === void 0 ? void 0 : asymIdOffset.auth : asymIdOffset === null || asymIdOffset === void 0 ? void 0 : asymIdOffset.label) || 0;
     let count3 = 0;
     m.properties.structAsymMap.forEach(({ auth_id }, label_id) => {
       const asymId = type3 === "auth" ? auth_id : label_id;
       const k = structure.models.length > 1 ? getKey(m, asymId) : asymId;
       if (!map4.has(k)) {
-        map4.set(k, count3 + offset3);
+        map4.set(k, count3 + offset4);
         ++count3;
       }
     });
@@ -63492,18 +63492,18 @@ function normalizeVec3Array(a8, count3) {
   return a8;
 }
 var tmpV3 = Vec3();
-function transformPositionArray(t5, array2, offset3, count3) {
+function transformPositionArray(t5, array2, offset4, count3) {
   for (let i = 0, il = count3 * 3; i < il; i += 3) {
-    Vec3.fromArray(tmpV3, array2, offset3 + i);
+    Vec3.fromArray(tmpV3, array2, offset4 + i);
     Vec3.transformMat4(tmpV3, tmpV3, t5);
-    Vec3.toArray(tmpV3, array2, offset3 + i);
+    Vec3.toArray(tmpV3, array2, offset4 + i);
   }
 }
-function transformDirectionArray(n, array2, offset3, count3) {
+function transformDirectionArray(n, array2, offset4, count3) {
   for (let i = 0, il = count3 * 3; i < il; i += 3) {
-    Vec3.fromArray(tmpV3, array2, offset3 + i);
+    Vec3.fromArray(tmpV3, array2, offset4 + i);
     Vec3.transformMat3(tmpV3, tmpV3, n);
-    Vec3.toArray(tmpV3, array2, offset3 + i);
+    Vec3.toArray(tmpV3, array2, offset4 + i);
   }
 }
 function appplyRadius(vertices2, radius) {
@@ -63519,11 +63519,11 @@ var b = Vec3();
 var c = Vec3();
 var cb = Vec3();
 var ab = Vec3();
-function computeIndexedVertexNormals(vertices2, indices2, normals, vertexCount, triangleCount) {
+function computeIndexedVertexNormals(vertices2, indices3, normals, vertexCount, triangleCount) {
   for (let i = 0, il = triangleCount * 3; i < il; i += 3) {
-    const ai = indices2[i] * 3;
-    const bi = indices2[i + 1] * 3;
-    const ci = indices2[i + 2] * 3;
+    const ai = indices3[i] * 3;
+    const bi = indices3[i + 1] * 3;
+    const ci = indices3[i + 2] * 3;
     Vec3.fromArray(a, vertices2, ai);
     Vec3.fromArray(b, vertices2, bi);
     Vec3.fromArray(c, vertices2, ci);
@@ -63549,20 +63549,20 @@ function createGroupMapping(groups, dataCount, step = 1) {
   const bucketSizes = new Int32Array(dataCount);
   for (let i = 0, il = dataCount * step; i < il; i += step)
     ++bucketSizes[groups[i]];
-  let offset3 = 0;
+  let offset4 = 0;
   for (let i = 0; i < dataCount; i++) {
-    offsets[i] = offset3;
-    offset3 += bucketSizes[i];
+    offsets[i] = offset4;
+    offset4 += bucketSizes[i];
   }
-  offsets[dataCount] = offset3;
-  const indices2 = new Int32Array(offset3);
+  offsets[dataCount] = offset4;
+  const indices3 = new Int32Array(offset4);
   for (let i = 0, il = dataCount * step; i < il; i += step) {
     const g = groups[i];
     const og = offsets[g] + bucketFill[g];
-    indices2[og] = i;
+    indices3[og] = i;
     ++bucketFill[g];
   }
-  return { indices: indices2, offsets };
+  return { indices: indices3, offsets };
 }
 
 // node_modules/molstar/lib/mol-gl/renderable/util.js
@@ -63577,8 +63577,8 @@ function calculateTextureInfo(n, itemSize) {
   return { width, height, length: width * height * itemSize };
 }
 function createTextureImage(n, itemSize, arrayCtor, array2) {
-  const { length, width, height } = calculateTextureInfo(n, itemSize);
-  array2 = array2 && array2.length >= length ? array2 : new arrayCtor(length);
+  const { length: length2, width, height } = calculateTextureInfo(n, itemSize);
+  array2 = array2 && array2.length >= length2 ? array2 : new arrayCtor(length2);
   return { array: array2, width, height };
 }
 var v = Vec3();
@@ -63611,9 +63611,9 @@ function calculateInvariantBoundingSphere(position, positionCount, stepFactor) {
   return sphere;
 }
 var _mat4 = Mat4();
-function calculateTransformBoundingSphere(invariantBoundingSphere, transform, transformCount, transformOffset) {
+function calculateTransformBoundingSphere(invariantBoundingSphere, transform2, transformCount, transformOffset) {
   if (transformCount === 1) {
-    Mat4.fromArray(_mat4, transform, transformOffset);
+    Mat4.fromArray(_mat4, transform2, transformOffset);
     const s = Sphere3D.clone(invariantBoundingSphere);
     return Mat4.isIdentity(_mat4) ? s : Sphere3D.transform(s, s, _mat4);
   }
@@ -63623,25 +63623,25 @@ function calculateTransformBoundingSphere(invariantBoundingSphere, transform, tr
   if (extrema && transformCount <= 14) {
     for (let i = 0, _i = transformCount; i < _i; ++i) {
       for (const e of extrema) {
-        v3transformMat4Offset(v, e, transform, 0, 0, i * 16 + transformOffset);
+        v3transformMat4Offset(v, e, transform2, 0, 0, i * 16 + transformOffset);
         boundaryHelper5.includePosition(v);
       }
     }
     boundaryHelper5.finishedIncludeStep();
     for (let i = 0, _i = transformCount; i < _i; ++i) {
       for (const e of extrema) {
-        v3transformMat4Offset(v, e, transform, 0, 0, i * 16 + transformOffset);
+        v3transformMat4Offset(v, e, transform2, 0, 0, i * 16 + transformOffset);
         boundaryHelper5.radiusPosition(v);
       }
     }
   } else {
     for (let i = 0, _i = transformCount; i < _i; ++i) {
-      v3transformMat4Offset(v, center2, transform, 0, 0, i * 16 + transformOffset);
+      v3transformMat4Offset(v, center2, transform2, 0, 0, i * 16 + transformOffset);
       boundaryHelper5.includePositionRadius(v, radius);
     }
     boundaryHelper5.finishedIncludeStep();
     for (let i = 0, _i = transformCount; i < _i; ++i) {
-      v3transformMat4Offset(v, center2, transform, 0, 0, i * 16 + transformOffset);
+      v3transformMat4Offset(v, center2, transform2, 0, 0, i * 16 + transformOffset);
       boundaryHelper5.radiusPositionRadius(v, radius);
     }
   }
@@ -64018,14 +64018,14 @@ function createVertexInstanceColor(locationIt, color, colorData) {
   return createTextureColor(colors, "vertexInstance", colorData);
 }
 function createGridColor(grid, type3, colorData) {
-  const { colors, dimension, transform } = grid;
+  const { colors, dimension, transform: transform2 } = grid;
   const width = colors.getWidth();
   const height = colors.getHeight();
   if (colorData) {
     ValueCell.update(colorData.tColorGrid, colors);
     ValueCell.update(colorData.uColorTexDim, Vec2.create(width, height));
     ValueCell.update(colorData.uColorGridDim, Vec3.clone(dimension));
-    ValueCell.update(colorData.uColorGridTransform, Vec4.clone(transform));
+    ValueCell.update(colorData.uColorGridTransform, Vec4.clone(transform2));
     ValueCell.updateIfChanged(colorData.dColorType, type3);
     return colorData;
   } else {
@@ -64038,7 +64038,7 @@ function createGridColor(grid, type3, colorData) {
       tPalette: ValueCell.create({ array: new Uint8Array(3), width: 1, height: 1 }),
       uColorTexDim: ValueCell.create(Vec2.create(width, height)),
       uColorGridDim: ValueCell.create(Vec3.clone(dimension)),
-      uColorGridTransform: ValueCell.create(Vec4.clone(transform)),
+      uColorGridTransform: ValueCell.create(Vec4.clone(transform2)),
       dColorType: ValueCell.create(type3),
       dUsePalette: ValueCell.create(false)
     };
@@ -64090,7 +64090,7 @@ function calcInstanceGrid(instanceData, cellSize, batchSize) {
   const cellOffsets = new Uint32Array(bottomGrid.cellOffsets.length);
   const cellSpheres = new Float32Array(bottomGrid.cellSpheres.length);
   const cellInstance = new Float32Array(bottomGrid.cellInstance.length);
-  let offset3 = 0;
+  let offset4 = 0;
   for (let i = 0, il = topGrid.batchCell.length; i < il; ++i) {
     const cellIdx = topGrid.batchCell[i];
     const start4 = bottomGrid.cellOffsets[cellIdx];
@@ -64104,10 +64104,10 @@ function calcInstanceGrid(instanceData, cellSize, batchSize) {
       const idx = start4 + j;
       const id = bottomGrid.cellInstance[idx];
       for (let k = 0; k < 16; ++k) {
-        bottomGrid.cellTransform[offset3 * 16 + k] = instanceData.transform[id * 16 + k];
+        bottomGrid.cellTransform[offset4 * 16 + k] = instanceData.transform[id * 16 + k];
       }
-      cellInstance[offset3] = id;
-      offset3 += 1;
+      cellInstance[offset4] = id;
+      offset4 += 1;
     }
   }
   const instanceGrid = {
@@ -64126,28 +64126,28 @@ function calcInstanceGrid(instanceData, cellSize, batchSize) {
   return instanceGrid;
 }
 function calcBottomGrid(instanceData, cellSize) {
-  const { instanceCount, instance, transform, invariantBoundingSphere } = instanceData;
+  const { instanceCount, instance, transform: transform2, invariantBoundingSphere } = instanceData;
   const x = new Float32Array(instanceCount);
   const y = new Float32Array(instanceCount);
   const z = new Float32Array(instanceCount);
-  const indices2 = OrderedSet2.ofBounds(0, instanceCount);
-  const box4 = Box3D.setEmpty(Box3D());
+  const indices3 = OrderedSet2.ofBounds(0, instanceCount);
+  const box5 = Box3D.setEmpty(Box3D());
   const { center: center2, radius } = invariantBoundingSphere;
   const rv = Vec3.create(radius, radius, radius);
   const v4 = Vec3();
   for (let i = 0; i < instanceCount; ++i) {
-    v3transformMat4Offset2(v4, center2, transform, 0, 0, i * 16);
+    v3transformMat4Offset2(v4, center2, transform2, 0, 0, i * 16);
     x[i] = v4[0];
     y[i] = v4[1];
     z[i] = v4[2];
-    b3add(box4, v4);
+    b3add(box5, v4);
   }
-  Box3D.expand(box4, box4, rv);
-  const positionData = { x, y, z, indices: indices2 };
-  const boundary = { box: box4, sphere: Sphere3D.fromBox3D(Sphere3D(), box4) };
+  Box3D.expand(box5, box5, rv);
+  const positionData = { x, y, z, indices: indices3 };
+  const boundary = { box: box5, sphere: Sphere3D.fromBox3D(Sphere3D(), box5) };
   const lookup = GridLookup3D(positionData, boundary, Vec3.create(cellSize, cellSize, cellSize));
-  const { array: array2, offset: offset3, count: count3 } = lookup.buckets;
-  const cellCount = offset3.length;
+  const { array: array2, offset: offset4, count: count3 } = lookup.buckets;
+  const cellCount = offset4.length;
   const cellOffsets = new Uint32Array(cellCount + 1);
   const cellSpheres = new Float32Array(cellCount * 4);
   const cellTransform = new Float32Array(instanceCount * 16);
@@ -64156,7 +64156,7 @@ function calcBottomGrid(instanceData, cellSize) {
   const s = Sphere3D();
   let k = 0;
   for (let i = 0; i < cellCount; ++i) {
-    const start4 = offset3[i];
+    const start4 = offset4[i];
     const size4 = count3[i];
     cellOffsets[i] = start4;
     const kStart = k;
@@ -64164,7 +64164,7 @@ function calcBottomGrid(instanceData, cellSize) {
       const idx = array2[j];
       cellInstance[k] = instance[idx];
       for (let l = 0; l < 16; ++l) {
-        cellTransform[k * 16 + l] = transform[idx * 16 + l];
+        cellTransform[k * 16 + l] = transform2[idx * 16 + l];
       }
       k += 1;
     }
@@ -64183,7 +64183,7 @@ function calcBottomGrid(instanceData, cellSize) {
       Sphere3D.toArray(s, cellSpheres, i * 4);
     }
   }
-  cellOffsets[cellCount] = offset3[cellCount - 1] + count3[cellCount - 1];
+  cellOffsets[cellCount] = offset4[cellCount - 1] + count3[cellCount - 1];
   return {
     cellSize,
     cellCount,
@@ -64198,8 +64198,8 @@ function calcTopGrid(bottomGrid, batchSize) {
   const x = new Float32Array(cellCount);
   const y = new Float32Array(cellCount);
   const z = new Float32Array(cellCount);
-  const indices2 = OrderedSet2.ofBounds(0, cellCount);
-  const box4 = Box3D.setEmpty(Box3D());
+  const indices3 = OrderedSet2.ofBounds(0, cellCount);
+  const box5 = Box3D.setEmpty(Box3D());
   const v4 = Vec3();
   let maxRadius = 0;
   for (let i = 0; i < cellCount; ++i) {
@@ -64208,16 +64208,16 @@ function calcTopGrid(bottomGrid, batchSize) {
     x[i] = v4[0];
     y[i] = v4[1];
     z[i] = v4[2];
-    b3add(box4, v4);
+    b3add(box5, v4);
     maxRadius = Math.max(maxRadius, cellSpheres[i4 + 3]);
   }
   const rv = Vec3.create(maxRadius, maxRadius, maxRadius);
-  Box3D.expand(box4, box4, rv);
-  const positionData = { x, y, z, indices: indices2 };
-  const boundary = { box: box4, sphere: Sphere3D.fromBox3D(Sphere3D(), box4) };
+  Box3D.expand(box5, box5, rv);
+  const positionData = { x, y, z, indices: indices3 };
+  const boundary = { box: box5, sphere: Sphere3D.fromBox3D(Sphere3D(), box5) };
   const lookup = GridLookup3D(positionData, boundary, Vec3.create(batchSize, batchSize, batchSize));
-  const { array: array2, offset: offset3, count: count3 } = lookup.buckets;
-  const batchCount = offset3.length;
+  const { array: array2, offset: offset4, count: count3 } = lookup.buckets;
+  const batchCount = offset4.length;
   const batchOffsets = new Uint32Array(batchCount + 1);
   const batchSpheres = new Float32Array(batchCount * 4);
   const batchCell = new Uint32Array(cellCount);
@@ -64225,7 +64225,7 @@ function calcTopGrid(bottomGrid, batchSize) {
   const s = Sphere3D();
   let k = 0;
   for (let i = 0; i < batchCount; ++i) {
-    const start4 = offset3[i];
+    const start4 = offset4[i];
     const size4 = count3[i];
     batchOffsets[i] = start4;
     for (let j = start4, jl = start4 + size4; j < jl; ++j) {
@@ -64255,7 +64255,7 @@ function calcTopGrid(bottomGrid, batchSize) {
       Sphere3D.toArray(s, batchSpheres, i * 4);
     }
   }
-  batchOffsets[batchCount] = offset3[batchCount - 1] + count3[batchCount - 1];
+  batchOffsets[batchCount] = offset4[batchCount - 1] + count3[batchCount - 1];
   return {
     batchSize,
     batchCount,
@@ -64280,9 +64280,9 @@ function createTransform(transformArray, instanceCount, invariantBoundingSphere,
   const hasReflection = checkReflection(transformArray, instanceCount);
   if (transformData) {
     ValueCell.update(transformData.matrix, transformData.matrix.ref.value);
-    const transform = transformData.transform.ref.value.length >= instanceCount * 16 ? transformData.transform.ref.value : new Float32Array(instanceCount * 16);
-    transform.set(transformArray);
-    ValueCell.update(transformData.transform, transform);
+    const transform2 = transformData.transform.ref.value.length >= instanceCount * 16 ? transformData.transform.ref.value : new Float32Array(instanceCount * 16);
+    transform2.set(transformArray);
+    ValueCell.update(transformData.transform, transform2);
     ValueCell.updateIfChanged(transformData.uInstanceCount, instanceCount);
     ValueCell.updateIfChanged(transformData.instanceCount, instanceCount);
     const aTransform = transformData.aTransform.ref.value.length >= instanceCount * 16 ? transformData.aTransform.ref.value : new Float32Array(instanceCount * 16);
@@ -64313,22 +64313,22 @@ Mat4.toArray(Mat4.identity(), identityTransform, 0);
 function createIdentityTransform(transformData) {
   return createTransform(new Float32Array(identityTransform), 1, void 0, 0, 0, transformData);
 }
-function fillIdentityTransform(transform, count3) {
+function fillIdentityTransform(transform2, count3) {
   for (let i = 0; i < count3; i++) {
-    transform.set(identityTransform, i * 16);
+    transform2.set(identityTransform, i * 16);
   }
-  return transform;
+  return transform2;
 }
 function updateTransformData(transformData, invariantBoundingSphere, cellSize, batchSize) {
   const aTransform = transformData.aTransform.ref.value;
   const aInstance = transformData.aInstance.ref.value;
   const instanceCount = transformData.instanceCount.ref.value;
   const matrix = transformData.matrix.ref.value;
-  const transform = transformData.transform.ref.value;
+  const transform2 = transformData.transform.ref.value;
   const extraTransform = transformData.extraTransform.ref.value;
   for (let i = 0; i < instanceCount; i++) {
     const i16 = i * 16;
-    Mat4.mulOffset(aTransform, extraTransform, transform, i16, i16, i16);
+    Mat4.mulOffset(aTransform, extraTransform, transform2, i16, i16, i16);
     Mat4.mulOffset(aTransform, matrix, aTransform, i16, 0, i16);
     aInstance[i] = i;
   }
@@ -64382,10 +64382,10 @@ function Material(values2) {
 }
 (function(Material2) {
   Material2.Zero = { metalness: 0, roughness: 0, bumpiness: 0 };
-  function toArray2(material, array2, offset3) {
-    array2[offset3] = material.metalness * 255;
-    array2[offset3 + 1] = material.roughness * 255;
-    array2[offset3 + 2] = material.bumpiness * 255;
+  function toArray2(material, array2, offset4) {
+    array2[offset4] = material.metalness * 255;
+    array2[offset4 + 1] = material.roughness * 255;
+    array2[offset4 + 2] = material.bumpiness * 255;
     return array2;
   }
   Material2.toArray = toArray2;
@@ -64457,7 +64457,7 @@ function Clip() {
   const mB = Mat4();
   function getClip(props, clip) {
     const count3 = props.objects.length;
-    const { type: type3, invert, position, rotation, scale, transform } = (clip === null || clip === void 0 ? void 0 : clip.objects) || createClipObjects(count3);
+    const { type: type3, invert, position, rotation, scale, transform: transform2 } = (clip === null || clip === void 0 ? void 0 : clip.objects) || createClipObjects(count3);
     for (let i = 0; i < count3; ++i) {
       const p6 = props.objects[i];
       type3[i] = Clip2.Type[p6.type];
@@ -64465,11 +64465,11 @@ function Clip() {
       Vec3.toArray(p6.position, position, i * 3);
       Quat.toArray(Quat.setAxisAngle(qA, p6.rotation.axis, degToRad(p6.rotation.angle)), rotation, i * 4);
       Vec3.toArray(p6.scale, scale, i * 3);
-      Mat4.toArray(p6.transform, transform, i * 16);
+      Mat4.toArray(p6.transform, transform2, i * 16);
     }
     return {
       variant: props.variant,
-      objects: { count: count3, type: type3, invert, position, rotation, scale, transform }
+      objects: { count: count3, type: type3, invert, position, rotation, scale, transform: transform2 }
     };
   }
   Clip2.getClip = getClip;
@@ -64570,15 +64570,15 @@ var BaseGeometry;
     cellSize: ParamDefinition.Numeric(200, { min: 0, max: 5e3, step: 100 }, { ...BaseGeometry2.CullingLodCategory, description: "Instance grid cell size." }),
     batchSize: ParamDefinition.Numeric(2e3, { min: 0, max: 5e4, step: 500 }, { ...BaseGeometry2.CullingLodCategory, description: "Instance grid batch size." })
   };
-  function createSimple(colorValue = ColorNames.grey, sizeValue = 1, transform) {
-    if (!transform)
-      transform = createIdentityTransform();
-    const locationIterator = LocationIterator(1, transform.instanceCount.ref.value, 1, () => NullLocation, false, () => false);
+  function createSimple(colorValue = ColorNames.grey, sizeValue = 1, transform2) {
+    if (!transform2)
+      transform2 = createIdentityTransform();
+    const locationIterator = LocationIterator(1, transform2.instanceCount.ref.value, 1, () => NullLocation, false, () => false);
     const theme = {
       color: UniformColorTheme({}, { value: colorValue, lightness: 0, saturation: 0 }),
       size: UniformSizeTheme({}, { value: sizeValue })
     };
-    return { transform, locationIterator, theme };
+    return { transform: transform2, locationIterator, theme };
   }
   BaseGeometry2.createSimple = createSimple;
   function createValues(props, counts) {
@@ -64937,8 +64937,8 @@ function createEmptyEmissive(emissiveData) {
 // node_modules/molstar/lib/mol-geo/geometry/mesh/mesh.js
 var Mesh;
 (function(Mesh2) {
-  function create3(vertices2, indices2, normals, groups, vertexCount, triangleCount, mesh) {
-    return mesh ? update10(vertices2, indices2, normals, groups, vertexCount, triangleCount, mesh) : fromArrays(vertices2, indices2, normals, groups, vertexCount, triangleCount);
+  function create3(vertices2, indices3, normals, groups, vertexCount, triangleCount, mesh) {
+    return mesh ? update10(vertices2, indices3, normals, groups, vertexCount, triangleCount, mesh) : fromArrays(vertices2, indices3, normals, groups, vertexCount, triangleCount);
   }
   Mesh2.create = create3;
   function createEmpty(mesh) {
@@ -64959,7 +64959,7 @@ var Mesh;
       mesh.groupBuffer.ref.version
     ]);
   }
-  function fromArrays(vertices2, indices2, normals, groups, vertexCount, triangleCount) {
+  function fromArrays(vertices2, indices3, normals, groups, vertexCount, triangleCount) {
     const boundingSphere = Sphere3D();
     let groupMapping;
     let currentHash = -1;
@@ -64969,7 +64969,7 @@ var Mesh;
       vertexCount,
       triangleCount,
       vertexBuffer: ValueCell.create(vertices2),
-      indexBuffer: ValueCell.create(indices2),
+      indexBuffer: ValueCell.create(indices3),
       normalBuffer: ValueCell.create(normals),
       groupBuffer: ValueCell.create(groups),
       varyingGroup: ValueCell.create(false),
@@ -64997,11 +64997,11 @@ var Mesh;
     };
     return mesh;
   }
-  function update10(vertices2, indices2, normals, groups, vertexCount, triangleCount, mesh) {
+  function update10(vertices2, indices3, normals, groups, vertexCount, triangleCount, mesh) {
     mesh.vertexCount = vertexCount;
     mesh.triangleCount = triangleCount;
     ValueCell.update(mesh.vertexBuffer, vertices2);
-    ValueCell.update(mesh.indexBuffer, indices2);
+    ValueCell.update(mesh.indexBuffer, indices3);
     ValueCell.update(mesh.normalBuffer, normals);
     ValueCell.update(mesh.groupBuffer, groups);
     return mesh;
@@ -65009,12 +65009,12 @@ var Mesh;
   function computeNormals(mesh) {
     const { vertexCount, triangleCount } = mesh;
     const vertices2 = mesh.vertexBuffer.ref.value;
-    const indices2 = mesh.indexBuffer.ref.value;
+    const indices3 = mesh.indexBuffer.ref.value;
     const normals = mesh.normalBuffer.ref.value.length >= vertexCount * 3 ? mesh.normalBuffer.ref.value : new Float32Array(vertexCount * 3);
     if (normals === mesh.normalBuffer.ref.value) {
       normals.fill(0, 0, vertexCount * 3);
     }
-    computeIndexedVertexNormals(vertices2, indices2, normals, vertexCount, triangleCount);
+    computeIndexedVertexNormals(vertices2, indices3, normals, vertexCount, triangleCount);
     ValueCell.update(mesh.normalBuffer, normals);
   }
   Mesh2.computeNormals = computeNormals;
@@ -65039,7 +65039,7 @@ var Mesh;
   }
   Mesh2.checkForDuplicateVertices = checkForDuplicateVertices;
   const tmpMat33 = Mat3();
-  function transform(mesh, t5) {
+  function transform2(mesh, t5) {
     const v4 = mesh.vertexBuffer.ref.value;
     transformPositionArray(t5, v4, 0, mesh.vertexCount);
     if (!Mat4.isTranslationAndUniformScaling(t5)) {
@@ -65048,7 +65048,7 @@ var Mesh;
     }
     ValueCell.update(mesh.vertexBuffer, v4);
   }
-  Mesh2.transform = transform;
+  Mesh2.transform = transform2;
   function getOriginalData(x) {
     const { originalData } = "kind" in x ? x.meta : x.meta.ref.value;
     return originalData;
@@ -65318,7 +65318,7 @@ var Mesh;
     const vN = Vec3();
     const AngleThreshold = degToRad(120);
     const added = /* @__PURE__ */ new Set();
-    const indices2 = Array.from(borderNeighboursMap.keys()).filter((v4) => borderNeighboursMap.get(v4).length < 2).map((v4) => {
+    const indices3 = Array.from(borderNeighboursMap.keys()).filter((v4) => borderNeighboursMap.get(v4).length < 2).map((v4) => {
       const bnd = borderNeighboursMap.get(v4);
       Vec3.fromArray(vA, vb, v4 * 3);
       Vec3.fromArray(vB, vb, bnd[0] * 3);
@@ -65327,9 +65327,9 @@ var Mesh;
       Vec3.sub(vAC, vC2, vA);
       return [v4, Vec3.angle(vAB, vAC)];
     });
-    indices2.sort(([, a8], [, b8]) => a8 - b8);
-    for (const [v4, angle] of indices2) {
-      if (added.has(v4) || angle > AngleThreshold)
+    indices3.sort(([, a8], [, b8]) => a8 - b8);
+    for (const [v4, angle2] of indices3) {
+      if (added.has(v4) || angle2 > AngleThreshold)
         continue;
       const nbs = borderNeighboursMap.get(v4);
       if (neighboursMap[nbs[0]].includes(nbs[1]) && !((_a = borderNeighboursMap.get(nbs[0])) === null || _a === void 0 ? void 0 : _a.includes(nbs[1])))
@@ -65452,15 +65452,15 @@ var Mesh;
     updateRenderableState,
     createPositionIterator
   };
-  function createPositionIterator(mesh, transform2) {
+  function createPositionIterator(mesh, transform3) {
     const groupCount = mesh.vertexCount;
-    const instanceCount = transform2.instanceCount.ref.value;
+    const instanceCount = transform3.instanceCount.ref.value;
     const location2 = PositionLocation();
     const p6 = location2.position;
     const n = location2.normal;
     const vs = mesh.vertexBuffer.ref.value;
     const ns = mesh.normalBuffer.ref.value;
-    const m = transform2.aTransform.ref.value;
+    const m = transform3.aTransform.ref.value;
     const getLocation = (groupIndex, instanceIndex) => {
       if (instanceIndex < 0) {
         Vec3.fromArray(p6, vs, groupIndex * 3);
@@ -65473,9 +65473,9 @@ var Mesh;
     };
     return LocationIterator(groupCount, instanceCount, 1, getLocation);
   }
-  function createValues(mesh, transform2, locationIt, theme, props) {
+  function createValues(mesh, transform3, locationIt, theme, props) {
     const { instanceCount, groupCount } = locationIt;
-    const positionIt = createPositionIterator(mesh, transform2);
+    const positionIt = createPositionIterator(mesh, transform3);
     const color = createColors(locationIt, positionIt, theme.color);
     const marker = props.instanceGranularity ? createMarkers(instanceCount, "instance") : createMarkers(instanceCount * groupCount, "groupInstance");
     const overpaint = createEmptyOverpaint();
@@ -65485,7 +65485,7 @@ var Mesh;
     const clipping = createEmptyClipping();
     const counts = { drawCount: mesh.triangleCount * 3, vertexCount: mesh.vertexCount, groupCount, instanceCount };
     const invariantBoundingSphere = Sphere3D.clone(mesh.boundingSphere);
-    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform2.aTransform.ref.value, instanceCount, 0);
+    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform3.aTransform.ref.value, instanceCount, 0);
     return {
       dGeometryType: ValueCell.create("mesh"),
       aPosition: mesh.vertexBuffer,
@@ -65503,7 +65503,7 @@ var Mesh;
       ...emissive,
       ...material,
       ...clipping,
-      ...transform2,
+      ...transform3,
       ...BaseGeometry.createValues(props, counts),
       uDoubleSided: ValueCell.create(props.doubleSided),
       dFlatShaded: ValueCell.create(props.flatShaded),
@@ -65517,8 +65517,8 @@ var Mesh;
       meta: ValueCell.create(mesh.meta)
     };
   }
-  function createValuesSimple(mesh, props, colorValue, sizeValue, transform2) {
-    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform2);
+  function createValuesSimple(mesh, props, colorValue, sizeValue, transform3) {
+    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform3);
     const p6 = { ...ParamDefinition.getDefaultValues(Mesh2.Params), ...props };
     return createValues(mesh, s.transform, s.locationIterator, s.theme, p6);
   }
@@ -65558,13 +65558,13 @@ var Mesh;
 })(Mesh || (Mesh = {}));
 
 // node_modules/molstar/lib/mol-util/number-packing.js
-function packIntToRGBArray(value, array2, offset3) {
+function packIntToRGBArray(value, array2, offset4) {
   value = clamp(Math.round(value), 0, 16777216 - 1) + 1;
-  array2[offset3 + 2] = value % 256;
+  array2[offset4 + 2] = value % 256;
   value = Math.floor(value / 256);
-  array2[offset3 + 1] = value % 256;
+  array2[offset4 + 1] = value % 256;
   value = Math.floor(value / 256);
-  array2[offset3] = value % 256;
+  array2[offset4] = value % 256;
   return array2;
 }
 function unpackRGBToInt(r, g, b8) {
@@ -65752,12 +65752,12 @@ var Points;
     ValueCell.update(points3.groupBuffer, groups);
     return points3;
   }
-  function transform(points3, t5) {
+  function transform2(points3, t5) {
     const c8 = points3.centerBuffer.ref.value;
     transformPositionArray(t5, c8, 0, points3.pointCount);
     ValueCell.update(points3.centerBuffer, c8);
   }
-  Points2.transform = transform;
+  Points2.transform = transform2;
   Points2.StyleTypes = {
     "square": "Square",
     "circle": "Circle",
@@ -65781,13 +65781,13 @@ var Points;
     updateRenderableState,
     createPositionIterator
   };
-  function createPositionIterator(points3, transform2) {
+  function createPositionIterator(points3, transform3) {
     const groupCount = points3.pointCount;
-    const instanceCount = transform2.instanceCount.ref.value;
+    const instanceCount = transform3.instanceCount.ref.value;
     const location2 = PositionLocation();
     const p6 = location2.position;
     const v4 = points3.centerBuffer.ref.value;
-    const m = transform2.aTransform.ref.value;
+    const m = transform3.aTransform.ref.value;
     const getLocation = (groupIndex, instanceIndex) => {
       if (instanceIndex < 0) {
         Vec3.fromArray(p6, v4, groupIndex * 3);
@@ -65798,9 +65798,9 @@ var Points;
     };
     return LocationIterator(groupCount, instanceCount, 1, getLocation);
   }
-  function createValues(points3, transform2, locationIt, theme, props) {
+  function createValues(points3, transform3, locationIt, theme, props) {
     const { instanceCount, groupCount } = locationIt;
-    const positionIt = createPositionIterator(points3, transform2);
+    const positionIt = createPositionIterator(points3, transform3);
     const color = createColors(locationIt, positionIt, theme.color);
     const size4 = createSizes(locationIt, theme.size);
     const marker = props.instanceGranularity ? createMarkers(instanceCount, "instance") : createMarkers(instanceCount * groupCount, "groupInstance");
@@ -65811,7 +65811,7 @@ var Points;
     const clipping = createEmptyClipping();
     const counts = { drawCount: points3.pointCount, vertexCount: points3.pointCount, groupCount, instanceCount };
     const invariantBoundingSphere = Sphere3D.clone(points3.boundingSphere);
-    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform2.aTransform.ref.value, instanceCount, 0);
+    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform3.aTransform.ref.value, instanceCount, 0);
     return {
       dGeometryType: ValueCell.create("points"),
       aPosition: points3.centerBuffer,
@@ -65827,15 +65827,15 @@ var Points;
       ...emissive,
       ...material,
       ...clipping,
-      ...transform2,
+      ...transform3,
       ...BaseGeometry.createValues(props, counts),
       uSizeFactor: ValueCell.create(props.sizeFactor),
       dPointSizeAttenuation: ValueCell.create(props.pointSizeAttenuation),
       dPointStyle: ValueCell.create(props.pointStyle)
     };
   }
-  function createValuesSimple(points3, props, colorValue, sizeValue, transform2) {
-    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform2);
+  function createValuesSimple(points3, props, colorValue, sizeValue, transform3) {
+    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform3);
     const p6 = { ...ParamDefinition.getDefaultValues(Points2.Params), ...props };
     return createValues(points3, s.transform, s.locationIterator, s.theme, p6);
   }
@@ -66033,8 +66033,8 @@ function createCanvasContext(width, height, options) {
 // node_modules/molstar/lib/mol-geo/geometry/text/text.js
 var Text;
 (function(Text2) {
-  function create3(fontTexture, centers, mappings, depths, indices2, groups, tcoords, charCount, text) {
-    return text ? update10(fontTexture, centers, mappings, depths, indices2, groups, tcoords, charCount, text) : fromData(fontTexture, centers, mappings, depths, indices2, groups, tcoords, charCount);
+  function create3(fontTexture, centers, mappings, depths, indices3, groups, tcoords, charCount, text) {
+    return text ? update10(fontTexture, centers, mappings, depths, indices3, groups, tcoords, charCount, text) : fromData(fontTexture, centers, mappings, depths, indices3, groups, tcoords, charCount);
   }
   Text2.create = create3;
   function createEmpty(text) {
@@ -66060,7 +66060,7 @@ var Text;
       text.tcoordBuffer.ref.version
     ]);
   }
-  function fromData(fontTexture, centers, mappings, depths, indices2, groups, tcoords, charCount) {
+  function fromData(fontTexture, centers, mappings, depths, indices3, groups, tcoords, charCount) {
     const boundingSphere = Sphere3D();
     let groupMapping;
     let currentHash = -1;
@@ -66072,7 +66072,7 @@ var Text;
       centerBuffer: ValueCell.create(centers),
       mappingBuffer: ValueCell.create(mappings),
       depthBuffer: ValueCell.create(depths),
-      indexBuffer: ValueCell.create(indices2),
+      indexBuffer: ValueCell.create(indices3),
       groupBuffer: ValueCell.create(groups),
       tcoordBuffer: ValueCell.create(tcoords),
       get boundingSphere() {
@@ -66098,13 +66098,13 @@ var Text;
     };
     return text;
   }
-  function update10(fontTexture, centers, mappings, depths, indices2, groups, tcoords, charCount, text) {
+  function update10(fontTexture, centers, mappings, depths, indices3, groups, tcoords, charCount, text) {
     text.charCount = charCount;
     ValueCell.update(text.fontTexture, fontTexture);
     ValueCell.update(text.centerBuffer, centers);
     ValueCell.update(text.mappingBuffer, mappings);
     ValueCell.update(text.depthBuffer, depths);
-    ValueCell.update(text.indexBuffer, indices2);
+    ValueCell.update(text.indexBuffer, indices3);
     ValueCell.update(text.groupBuffer, groups);
     ValueCell.update(text.tcoordBuffer, tcoords);
     return text;
@@ -66148,13 +66148,13 @@ var Text;
     updateRenderableState,
     createPositionIterator
   };
-  function createPositionIterator(text, transform) {
+  function createPositionIterator(text, transform2) {
     const groupCount = text.charCount * 4;
-    const instanceCount = transform.instanceCount.ref.value;
+    const instanceCount = transform2.instanceCount.ref.value;
     const location2 = PositionLocation();
     const p6 = location2.position;
     const v4 = text.centerBuffer.ref.value;
-    const m = transform.aTransform.ref.value;
+    const m = transform2.aTransform.ref.value;
     const getLocation = (groupIndex, instanceIndex) => {
       if (instanceIndex < 0) {
         Vec3.fromArray(p6, v4, groupIndex * 3);
@@ -66165,9 +66165,9 @@ var Text;
     };
     return LocationIterator(groupCount, instanceCount, 4, getLocation);
   }
-  function createValues(text, transform, locationIt, theme, props) {
+  function createValues(text, transform2, locationIt, theme, props) {
     const { instanceCount, groupCount } = locationIt;
-    const positionIt = createPositionIterator(text, transform);
+    const positionIt = createPositionIterator(text, transform2);
     const color = createColors(locationIt, positionIt, theme.color);
     const size4 = createSizes(locationIt, theme.size);
     const marker = props.instanceGranularity ? createMarkers(instanceCount, "instance") : createMarkers(instanceCount * groupCount, "groupInstance");
@@ -66180,7 +66180,7 @@ var Text;
     const scale = getMaxSize(size4) * props.sizeFactor;
     const padding2 = getPadding(text.mappingBuffer.ref.value, text.depthBuffer.ref.value, text.charCount, scale);
     const invariantBoundingSphere = Sphere3D.expand(Sphere3D(), text.boundingSphere, padding2);
-    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform.aTransform.ref.value, instanceCount, 0);
+    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform2.aTransform.ref.value, instanceCount, 0);
     return {
       dGeometryType: ValueCell.create("text"),
       aPosition: text.centerBuffer,
@@ -66199,7 +66199,7 @@ var Text;
       ...emissive,
       ...substance,
       ...clipping,
-      ...transform,
+      ...transform2,
       aTexCoord: text.tcoordBuffer,
       tFont: text.fontTexture,
       padding: ValueCell.create(padding2),
@@ -66214,8 +66214,8 @@ var Text;
       uBackgroundOpacity: ValueCell.create(props.backgroundOpacity)
     };
   }
-  function createValuesSimple(text, props, colorValue, sizeValue, transform) {
-    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform);
+  function createValuesSimple(text, props, colorValue, sizeValue, transform2) {
+    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform2);
     const p6 = { ...ParamDefinition.getDefaultValues(Text2.Params), ...props };
     return createValues(text, s.transform, s.locationIterator, s.theme, p6);
   }
@@ -66384,8 +66384,8 @@ function fillMappingAndIndices(n, mb, ib) {
 // node_modules/molstar/lib/mol-geo/geometry/lines/lines.js
 var Lines;
 (function(Lines2) {
-  function create3(mappings, indices2, groups, starts, ends, lineCount, lines) {
-    return lines ? update10(mappings, indices2, groups, starts, ends, lineCount, lines) : fromArrays(mappings, indices2, groups, starts, ends, lineCount);
+  function create3(mappings, indices3, groups, starts, ends, lineCount, lines) {
+    return lines ? update10(mappings, indices3, groups, starts, ends, lineCount, lines) : fromArrays(mappings, indices3, groups, starts, ends, lineCount);
   }
   Lines2.create = create3;
   function createEmpty(lines) {
@@ -66424,7 +66424,7 @@ var Lines;
       lines.endBuffer.ref.version
     ]);
   }
-  function fromArrays(mappings, indices2, groups, starts, ends, lineCount) {
+  function fromArrays(mappings, indices3, groups, starts, ends, lineCount) {
     const boundingSphere = Sphere3D();
     let groupMapping;
     let currentHash = -1;
@@ -66433,7 +66433,7 @@ var Lines;
       kind: "lines",
       lineCount,
       mappingBuffer: ValueCell.create(mappings),
-      indexBuffer: ValueCell.create(indices2),
+      indexBuffer: ValueCell.create(indices3),
       groupBuffer: ValueCell.create(groups),
       startBuffer: ValueCell.create(starts),
       endBuffer: ValueCell.create(ends),
@@ -66461,10 +66461,10 @@ var Lines;
     };
     return lines;
   }
-  function update10(mappings, indices2, groups, starts, ends, lineCount, lines) {
+  function update10(mappings, indices3, groups, starts, ends, lineCount, lines) {
     if (lineCount > lines.lineCount) {
       ValueCell.update(lines.mappingBuffer, mappings);
-      ValueCell.update(lines.indexBuffer, indices2);
+      ValueCell.update(lines.indexBuffer, indices3);
     }
     lines.lineCount = lineCount;
     ValueCell.update(lines.groupBuffer, groups);
@@ -66472,7 +66472,7 @@ var Lines;
     ValueCell.update(lines.endBuffer, ends);
     return lines;
   }
-  function transform(lines, t5) {
+  function transform2(lines, t5) {
     const start4 = lines.startBuffer.ref.value;
     transformPositionArray(t5, start4, 0, lines.lineCount * 4);
     ValueCell.update(lines.startBuffer, start4);
@@ -66480,7 +66480,7 @@ var Lines;
     transformPositionArray(t5, end4, 0, lines.lineCount * 4);
     ValueCell.update(lines.endBuffer, end4);
   }
-  Lines2.transform = transform;
+  Lines2.transform = transform2;
   Lines2.Params = {
     ...BaseGeometry.Params,
     sizeFactor: ParamDefinition.Numeric(2, { min: 0, max: 10, step: 0.1 }),
@@ -66497,14 +66497,14 @@ var Lines;
     updateRenderableState: BaseGeometry.updateRenderableState,
     createPositionIterator
   };
-  function createPositionIterator(lines, transform2) {
+  function createPositionIterator(lines, transform3) {
     const groupCount = lines.lineCount * 4;
-    const instanceCount = transform2.instanceCount.ref.value;
+    const instanceCount = transform3.instanceCount.ref.value;
     const location2 = PositionLocation();
     const p6 = location2.position;
     const s = lines.startBuffer.ref.value;
     const e = lines.endBuffer.ref.value;
-    const m = transform2.aTransform.ref.value;
+    const m = transform3.aTransform.ref.value;
     const getLocation = (groupIndex, instanceIndex) => {
       const v4 = groupIndex % 4 === 0 ? s : e;
       if (instanceIndex < 0) {
@@ -66516,9 +66516,9 @@ var Lines;
     };
     return LocationIterator(groupCount, instanceCount, 2, getLocation);
   }
-  function createValues(lines, transform2, locationIt, theme, props) {
+  function createValues(lines, transform3, locationIt, theme, props) {
     const { instanceCount, groupCount } = locationIt;
-    const positionIt = createPositionIterator(lines, transform2);
+    const positionIt = createPositionIterator(lines, transform3);
     const color = createColors(locationIt, positionIt, theme.color);
     const size4 = createSizes(locationIt, theme.size);
     const marker = props.instanceGranularity ? createMarkers(instanceCount, "instance") : createMarkers(instanceCount * groupCount, "groupInstance");
@@ -66529,7 +66529,7 @@ var Lines;
     const clipping = createEmptyClipping();
     const counts = { drawCount: lines.lineCount * 2 * 3, vertexCount: lines.lineCount * 4, groupCount, instanceCount };
     const invariantBoundingSphere = Sphere3D.clone(lines.boundingSphere);
-    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform2.aTransform.ref.value, instanceCount, 0);
+    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform3.aTransform.ref.value, instanceCount, 0);
     return {
       dGeometryType: ValueCell.create("lines"),
       aMapping: lines.mappingBuffer,
@@ -66548,7 +66548,7 @@ var Lines;
       ...emissive,
       ...material,
       ...clipping,
-      ...transform2,
+      ...transform3,
       ...BaseGeometry.createValues(props, counts),
       uSizeFactor: ValueCell.create(props.sizeFactor),
       dLineSizeAttenuation: ValueCell.create(props.lineSizeAttenuation),
@@ -66556,8 +66556,8 @@ var Lines;
       dFlipSided: ValueCell.create(false)
     };
   }
-  function createValuesSimple(lines, props, colorValue, sizeValue, transform2) {
-    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform2);
+  function createValuesSimple(lines, props, colorValue, sizeValue, transform3) {
+    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform3);
     const p6 = { ...ParamDefinition.getDefaultValues(Lines2.Params), ...props };
     return createValues(lines, s.transform, s.locationIterator, s.theme, p6);
   }
@@ -66583,13 +66583,13 @@ var Lines;
 var a2 = Vec3();
 var b2 = Vec3();
 var c2 = Vec3();
-function createPrimitive(vertices2, indices2) {
-  const count3 = indices2.length;
+function createPrimitive(vertices2, indices3) {
+  const count3 = indices3.length;
   const builder = PrimitiveBuilder(count3 / 3);
   for (let i = 0; i < count3; i += 3) {
-    Vec3.fromArray(a2, vertices2, indices2[i] * 3);
-    Vec3.fromArray(b2, vertices2, indices2[i + 1] * 3);
-    Vec3.fromArray(c2, vertices2, indices2[i + 2] * 3);
+    Vec3.fromArray(a2, vertices2, indices3[i] * 3);
+    Vec3.fromArray(b2, vertices2, indices3[i + 1] * 3);
+    Vec3.fromArray(c2, vertices2, indices3[i + 2] * 3);
     builder.add(a2, b2, c2);
   }
   return builder.getPrimitive();
@@ -66600,7 +66600,7 @@ function PrimitiveBuilder(triangleCount, vertexCount) {
     vertexCount = triangleCount * 3;
   const vertices2 = new Float32Array(vertexCount * 3);
   const normals = new Float32Array(vertexCount * 3);
-  const indices2 = new Uint32Array(triangleCount * 3);
+  const indices3 = new Uint32Array(triangleCount * 3);
   let vOffset = 0;
   let iOffset = 0;
   return {
@@ -66611,7 +66611,7 @@ function PrimitiveBuilder(triangleCount, vertexCount) {
       Vec3.triangleNormal(vn, a8, b8, c8);
       for (let j = 0; j < 3; ++j) {
         Vec3.toArray(vn, normals, vOffset + 3 * j);
-        indices2[iOffset + j] = vOffset / 3 + j;
+        indices3[iOffset + j] = vOffset / 3 + j;
       }
       vOffset += 9;
       iOffset += 3;
@@ -66626,16 +66626,16 @@ function PrimitiveBuilder(triangleCount, vertexCount) {
         Vec3.toArray(vn, normals, vOffset + 3 * j);
       }
       const vOffset3 = vOffset / 3;
-      indices2[iOffset] = vOffset3;
-      indices2[iOffset + 1] = vOffset3 + 1;
-      indices2[iOffset + 2] = vOffset3 + 2;
-      indices2[iOffset + 3] = vOffset3 + 2;
-      indices2[iOffset + 4] = vOffset3 + 3;
-      indices2[iOffset + 5] = vOffset3;
+      indices3[iOffset] = vOffset3;
+      indices3[iOffset + 1] = vOffset3 + 1;
+      indices3[iOffset + 2] = vOffset3 + 2;
+      indices3[iOffset + 3] = vOffset3 + 2;
+      indices3[iOffset + 4] = vOffset3 + 3;
+      indices3[iOffset + 5] = vOffset3;
       vOffset += 12;
       iOffset += 6;
     },
-    getPrimitive: () => ({ vertices: vertices2, normals, indices: indices2 })
+    getPrimitive: () => ({ vertices: vertices2, normals, indices: indices3 })
   };
 }
 var tmpV = Vec3();
@@ -66656,9 +66656,9 @@ function transformPrimitive(primitive, t5) {
 function polygon(sideCount, shift2, radius = -1) {
   const points3 = new Float32Array(sideCount * 3);
   const r = radius === -1 ? sideCount <= 4 ? Math.sqrt(2) / 2 : 0.6 : radius;
-  const offset3 = shift2 ? 1 : 0;
+  const offset4 = shift2 ? 1 : 0;
   for (let i = 0, il = sideCount; i < il; ++i) {
-    const c8 = (i * 2 + offset3) / sideCount * Math.PI;
+    const c8 = (i * 2 + offset4) / sideCount * Math.PI;
     points3[i * 3] = Math.cos(c8) * r;
     points3[i * 3 + 1] = Math.sin(c8) * r;
     points3[i * 3 + 2] = 0;
@@ -66903,8 +66903,8 @@ var Grid;
     if (!boundingSphere)
       boundingSphere = Sphere3D();
     const dimensions = grid.cells.space.dimensions;
-    const transform = Grid2.getGridToCartesianTransform(grid);
-    return Sphere3D.fromDimensionsAndTransform(boundingSphere, dimensions, transform);
+    const transform2 = Grid2.getGridToCartesianTransform(grid);
+    return Sphere3D.fromDimensionsAndTransform(boundingSphere, dimensions, transform2);
   }
   Grid2.getBoundingSphere = getBoundingSphere3;
   function getHistogram(grid, binCount) {
@@ -66918,7 +66918,7 @@ var Grid;
     return histograms[binCount];
   }
   Grid2.getHistogram = getHistogram;
-  function makeGetTrilinearlyInterpolated(grid, transform) {
+  function makeGetTrilinearlyInterpolated(grid, transform2) {
     const cartnToGrid = Grid2.getGridToCartesianTransform(grid);
     Mat4.invert(cartnToGrid, cartnToGrid);
     const gridCoords = Vec3();
@@ -66952,7 +66952,7 @@ var Grid;
       d5 = get11(data, ii, jj, kk);
       const y = lerp(lerp(a8, b8, u2), lerp(c8, d5, u2), v4);
       const value = lerp(x, y, w);
-      if (transform === "relative") {
+      if (transform2 === "relative") {
         return (value - stats.mean) / stats.sigma;
       } else {
         return value;
@@ -67248,8 +67248,8 @@ var Volume;
       }
       Vec3.set(bbox.min, minx - 1, miny - 1, minz - 1);
       Vec3.set(bbox.max, maxx + 1, maxy + 1, maxz + 1);
-      const transform = Grid.getGridToCartesianTransform(volume.grid);
-      Box3D.transform(bbox, bbox, transform);
+      const transform2 = Grid.getGridToCartesianTransform(volume.grid);
+      Box3D.transform(bbox, bbox, transform2);
       return Sphere3D.fromBox3D(boundingSphere || Sphere3D(), bbox);
     }
     Isosurface2.getBoundingSphere = getBoundingSphere4;
@@ -67277,8 +67277,8 @@ var Volume;
     }
     Cell3.areLociEqual = areLociEqual2;
     function isLociEmpty2(loci) {
-      for (const { indices: indices2, instances } of loci.elements) {
-        if (!OrderedSet2.isEmpty(instances) || !OrderedSet2.isEmpty(indices2))
+      for (const { indices: indices3, instances } of loci.elements) {
+        if (!OrderedSet2.isEmpty(instances) || !OrderedSet2.isEmpty(indices3))
           return false;
       }
       return true;
@@ -67286,8 +67286,8 @@ var Volume;
     Cell3.isLociEmpty = isLociEmpty2;
     function getLociSize(loci) {
       let size4 = 0;
-      for (const { indices: indices2, instances } of loci.elements) {
-        size4 += OrderedSet2.size(indices2) * OrderedSet2.size(instances);
+      for (const { indices: indices3, instances } of loci.elements) {
+        size4 += OrderedSet2.size(indices3) * OrderedSet2.size(instances);
       }
       return size4;
     }
@@ -67310,13 +67310,13 @@ var Volume;
     const tmpBoundaryPos2 = Vec3();
     function getBoundingSphere4(volume, elements, boundingSphere) {
       boundaryHelper5.reset();
-      const transform = Grid.getGridToCartesianTransform(volume.grid);
+      const transform2 = Grid.getGridToCartesianTransform(volume.grid);
       const { getCoords } = volume.grid.cells.space;
-      for (const { indices: indices2, instances } of elements) {
-        for (let i = 0, _i = OrderedSet2.size(indices2); i < _i; i++) {
-          const o = OrderedSet2.getAt(indices2, i);
+      for (const { indices: indices3, instances } of elements) {
+        for (let i = 0, _i = OrderedSet2.size(indices3); i < _i; i++) {
+          const o = OrderedSet2.getAt(indices3, i);
           getCoords(o, tmpBoundaryPos);
-          Vec3.transformMat4(tmpBoundaryPos, tmpBoundaryPos, transform);
+          Vec3.transformMat4(tmpBoundaryPos, tmpBoundaryPos, transform2);
           for (let j = 0, _j = OrderedSet2.size(instances); j < _j; j++) {
             const instance = volume.instances[OrderedSet2.getAt(instances, j)];
             Vec3.transformMat4(tmpBoundaryPos2, tmpBoundaryPos, instance.transform);
@@ -67325,11 +67325,11 @@ var Volume;
         }
       }
       boundaryHelper5.finishedIncludeStep();
-      for (const { indices: indices2, instances } of elements) {
-        for (let i = 0, _i = OrderedSet2.size(indices2); i < _i; i++) {
-          const o = OrderedSet2.getAt(indices2, i);
+      for (const { indices: indices3, instances } of elements) {
+        for (let i = 0, _i = OrderedSet2.size(indices3); i < _i; i++) {
+          const o = OrderedSet2.getAt(indices3, i);
           getCoords(o, tmpBoundaryPos);
-          Vec3.transformMat4(tmpBoundaryPos, tmpBoundaryPos, transform);
+          Vec3.transformMat4(tmpBoundaryPos, tmpBoundaryPos, transform2);
           for (let j = 0, _j = OrderedSet2.size(instances); j < _j; j++) {
             const instance = volume.instances[OrderedSet2.getAt(instances, j)];
             Vec3.transformMat4(tmpBoundaryPos2, tmpBoundaryPos, instance.transform);
@@ -67338,7 +67338,7 @@ var Volume;
         }
       }
       const bs = boundaryHelper5.getSphere(boundingSphere);
-      return Sphere3D.expand(bs, bs, Mat4.getMaxScaleOnAxis(transform) * 10);
+      return Sphere3D.expand(bs, bs, Mat4.getMaxScaleOnAxis(transform2) * 10);
     }
     Cell3.getBoundingSphere = getBoundingSphere4;
   })(Cell2 = Volume2.Cell || (Volume2.Cell = {}));
@@ -67387,7 +67387,7 @@ var Volume;
       const segmentation = Volume2.Segmentation.get(volume);
       if (segmentation) {
         Box3D.setEmpty(bbox);
-        const transform = Grid.getGridToCartesianTransform(volume.grid);
+        const transform2 = Grid.getGridToCartesianTransform(volume.grid);
         for (const { segments: segments2, instances } of elements) {
           Box3D.setEmpty(bbox2);
           for (let i = 0, _i = OrderedSet2.size(segments2); i < _i; i++) {
@@ -67396,7 +67396,7 @@ var Volume;
             Box3D.add(bbox2, b8.min);
             Box3D.add(bbox2, b8.max);
           }
-          Box3D.transform(bbox2, bbox2, transform);
+          Box3D.transform(bbox2, bbox2, transform2);
           for (let j = 0, _j = OrderedSet2.size(instances); j < _j; j++) {
             const instance = volume.instances[OrderedSet2.getAt(instances, j)];
             Box3D.transform(bbox3, bbox2, instance.transform);
@@ -67446,8 +67446,8 @@ var Volume;
 var VolumeBox = Box();
 var DirectVolume;
 (function(DirectVolume2) {
-  function create3(bbox, gridDimension, transform, unitToCartn, cellDim, texture, stats, packedGroup, axisOrder, dataType, directVolume) {
-    return directVolume ? update10(bbox, gridDimension, transform, unitToCartn, cellDim, texture, stats, packedGroup, axisOrder, dataType, directVolume) : fromData(bbox, gridDimension, transform, unitToCartn, cellDim, texture, stats, packedGroup, axisOrder, dataType);
+  function create3(bbox, gridDimension, transform2, unitToCartn, cellDim, texture, stats, packedGroup, axisOrder, dataType, directVolume) {
+    return directVolume ? update10(bbox, gridDimension, transform2, unitToCartn, cellDim, texture, stats, packedGroup, axisOrder, dataType, directVolume) : fromData(bbox, gridDimension, transform2, unitToCartn, cellDim, texture, stats, packedGroup, axisOrder, dataType);
   }
   DirectVolume2.create = create3;
   function hashCode6(directVolume) {
@@ -67459,7 +67459,7 @@ var DirectVolume;
       directVolume.gridStats.ref.version
     ]);
   }
-  function fromData(bbox, gridDimension, transform, unitToCartn, cellDim, texture, stats, packedGroup, axisOrder, dataType) {
+  function fromData(bbox, gridDimension, transform2, unitToCartn, cellDim, texture, stats, packedGroup, axisOrder, dataType) {
     const boundingSphere = Sphere3D();
     let currentHash = -1;
     const width = texture.getWidth();
@@ -67474,7 +67474,7 @@ var DirectVolume;
       bboxMin: ValueCell.create(bbox.min),
       bboxMax: ValueCell.create(bbox.max),
       bboxSize: ValueCell.create(Vec3.sub(Vec3(), bbox.max, bbox.min)),
-      transform: ValueCell.create(transform),
+      transform: ValueCell.create(transform2),
       cellDim: ValueCell.create(cellDim),
       unitToCartn: ValueCell.create(unitToCartn),
       cartnToUnit: ValueCell.create(Mat4.invert(Mat4(), unitToCartn)),
@@ -67498,7 +67498,7 @@ var DirectVolume;
     };
     return directVolume;
   }
-  function update10(bbox, gridDimension, transform, unitToCartn, cellDim, texture, stats, packedGroup, axisOrder, dataType, directVolume) {
+  function update10(bbox, gridDimension, transform2, unitToCartn, cellDim, texture, stats, packedGroup, axisOrder, dataType, directVolume) {
     const width = texture.getWidth();
     const height = texture.getHeight();
     const depth = texture.getDepth();
@@ -67509,7 +67509,7 @@ var DirectVolume;
     ValueCell.update(directVolume.bboxMin, bbox.min);
     ValueCell.update(directVolume.bboxMax, bbox.max);
     ValueCell.update(directVolume.bboxSize, Vec3.sub(directVolume.bboxSize.ref.value, bbox.max, bbox.min));
-    ValueCell.update(directVolume.transform, transform);
+    ValueCell.update(directVolume.transform, transform2);
     ValueCell.update(directVolume.cellDim, cellDim);
     ValueCell.update(directVolume.unitToCartn, unitToCartn);
     ValueCell.update(directVolume.cartnToUnit, Mat4.invert(Mat4(), unitToCartn));
@@ -67521,7 +67521,7 @@ var DirectVolume;
   function createEmpty(directVolume) {
     const bbox = Box3D();
     const gridDimension = Vec3();
-    const transform = Mat4.identity();
+    const transform2 = Mat4.identity();
     const unitToCartn = Mat4.identity();
     const cellDim = Vec3();
     const texture = createNullTexture();
@@ -67529,7 +67529,7 @@ var DirectVolume;
     const packedGroup = false;
     const axisOrder = Vec3.create(0, 1, 2);
     const dataType = "byte";
-    return create3(bbox, gridDimension, transform, unitToCartn, cellDim, texture, stats, packedGroup, axisOrder, dataType, directVolume);
+    return create3(bbox, gridDimension, transform2, unitToCartn, cellDim, texture, stats, packedGroup, axisOrder, dataType, directVolume);
   }
   DirectVolume2.createEmpty = createEmpty;
   DirectVolume2.Params = {
@@ -67561,14 +67561,14 @@ var DirectVolume;
     updateRenderableState,
     createPositionIterator
   };
-  function createPositionIterator(directVolume, transform) {
+  function createPositionIterator(directVolume, transform2) {
     const t5 = directVolume.transform.ref.value;
     const [x, y, z] = directVolume.gridDimension.ref.value;
     const groupCount = x * y * z;
-    const instanceCount = transform.instanceCount.ref.value;
+    const instanceCount = transform2.instanceCount.ref.value;
     const location2 = PositionLocation();
     const p6 = location2.position;
-    const m = transform.aTransform.ref.value;
+    const m = transform2.aTransform.ref.value;
     const getLocation = (groupIndex, instanceIndex) => {
       const k = Math.floor(groupIndex / z);
       p6[0] = Math.floor(k / y);
@@ -67591,11 +67591,11 @@ var DirectVolume;
   function getTransferScale(stepsPerCell) {
     return 1 / stepsPerCell;
   }
-  function createValues(directVolume, transform, locationIt, theme, props) {
+  function createValues(directVolume, transform2, locationIt, theme, props) {
     const { gridTexture, gridTextureDim, gridStats } = directVolume;
     const { bboxSize, bboxMin, bboxMax, gridDimension, transform: gridTransform } = directVolume;
     const { instanceCount, groupCount } = locationIt;
-    const positionIt = createPositionIterator(directVolume, transform);
+    const positionIt = createPositionIterator(directVolume, transform2);
     const color = createColors(locationIt, positionIt, theme.color);
     const marker = props.instanceGranularity ? createMarkers(instanceCount, "instance") : createMarkers(instanceCount * groupCount, "groupInstance");
     const overpaint = createEmptyOverpaint();
@@ -67606,7 +67606,7 @@ var DirectVolume;
     const [x, y, z] = gridDimension.ref.value;
     const counts = { drawCount: VolumeBox.indices.length, vertexCount: x * y * z, groupCount, instanceCount };
     const invariantBoundingSphere = Sphere3D.clone(directVolume.boundingSphere);
-    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform.aTransform.ref.value, instanceCount, 0);
+    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform2.aTransform.ref.value, instanceCount, 0);
     const controlPoints = getControlPointsFromVec2Array(props.controlPoints);
     const transferTex = createTransferFunctionTexture(controlPoints);
     return {
@@ -67618,7 +67618,7 @@ var DirectVolume;
       ...emissive,
       ...material,
       ...clipping,
-      ...transform,
+      ...transform2,
       ...BaseGeometry.createValues(props, counts),
       aPosition: ValueCell.create(VolumeBox.vertices),
       elements: ValueCell.create(VolumeBox.indices),
@@ -67650,8 +67650,8 @@ var DirectVolume;
       meta: ValueCell.create(directVolume.meta)
     };
   }
-  function createValuesSimple(directVolume, props, colorValue, sizeValue, transform) {
-    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform);
+  function createValuesSimple(directVolume, props, colorValue, sizeValue, transform2) {
+    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform2);
     const p6 = { ...ParamDefinition.getDefaultValues(DirectVolume2.Params), ...props };
     return createValues(directVolume, s.transform, s.locationIterator, s.theme, p6);
   }
@@ -67895,13 +67895,13 @@ var Spheres;
     updateRenderableState,
     createPositionIterator
   };
-  function createPositionIterator(spheres2, transform) {
+  function createPositionIterator(spheres2, transform2) {
     const groupCount = spheres2.sphereCount;
-    const instanceCount = transform.instanceCount.ref.value;
+    const instanceCount = transform2.instanceCount.ref.value;
     const location2 = PositionLocation();
     const p6 = location2.position;
     const v4 = spheres2.centerBuffer.ref.value;
-    const m = transform.aTransform.ref.value;
+    const m = transform2.aTransform.ref.value;
     const getLocation = (groupIndex, instanceIndex) => {
       if (instanceIndex < 0) {
         Vec3.fromArray(p6, v4, groupIndex * 3);
@@ -67912,9 +67912,9 @@ var Spheres;
     };
     return LocationIterator(groupCount, instanceCount, 1, getLocation);
   }
-  function createValues(spheres2, transform, locationIt, theme, props) {
+  function createValues(spheres2, transform2, locationIt, theme, props) {
     const { instanceCount, groupCount } = locationIt;
-    const positionIt = createPositionIterator(spheres2, transform);
+    const positionIt = createPositionIterator(spheres2, transform2);
     const color = createColors(locationIt, positionIt, theme.color);
     const size4 = createSizes(locationIt, theme.size);
     const marker = props.instanceGranularity ? createMarkers(instanceCount, "instance") : createMarkers(instanceCount * groupCount, "groupInstance");
@@ -67926,7 +67926,7 @@ var Spheres;
     const counts = { drawCount: spheres2.sphereCount * 2 * 3, vertexCount: spheres2.sphereCount * 6, groupCount, instanceCount };
     const padding2 = spheres2.boundingSphere.radius ? getMaxSize(size4) * props.sizeFactor : 0;
     const invariantBoundingSphere = Sphere3D.expand(Sphere3D(), spheres2.boundingSphere, padding2);
-    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform.aTransform.ref.value, instanceCount, 0);
+    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform2.aTransform.ref.value, instanceCount, 0);
     spheres2.shaderData.update({ lodLevels: props.lodLevels, sizeFactor: props.sizeFactor });
     return {
       dGeometryType: ValueCell.create("spheres"),
@@ -67943,7 +67943,7 @@ var Spheres;
       ...emissive,
       ...material,
       ...clipping,
-      ...transform,
+      ...transform2,
       padding: ValueCell.create(padding2),
       ...BaseGeometry.createValues(props, counts),
       uSizeFactor: spheres2.shaderData.sizeFactor,
@@ -67963,8 +67963,8 @@ var Spheres;
       groupBuffer: spheres2.groupBuffer
     };
   }
-  function createValuesSimple(spheres2, props, colorValue, sizeValue, transform) {
-    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform);
+  function createValuesSimple(spheres2, props, colorValue, sizeValue, transform2) {
+    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform2);
     const p6 = { ...ParamDefinition.getDefaultValues(Spheres2.Params), ...props };
     return createValues(spheres2, s.transform, s.locationIterator, s.theme, p6);
   }
@@ -68107,7 +68107,7 @@ var TextureMesh;
     createPositionIterator
   };
   const TextureMeshName = "texture-mesh";
-  function createPositionIterator(textureMesh, transform) {
+  function createPositionIterator(textureMesh, transform2) {
     const webgl = textureMesh.meta.webgl;
     if (!webgl)
       return LocationIterator(1, 1, 1, () => NullLocation);
@@ -68132,11 +68132,11 @@ var TextureMesh;
       return data;
     };
     const groupCount = textureMesh.vertexCount;
-    const instanceCount = transform.instanceCount.ref.value;
+    const instanceCount = transform2.instanceCount.ref.value;
     const location2 = PositionLocation();
     const p6 = location2.position;
     const n = location2.normal;
-    const m = transform.aTransform.ref.value;
+    const m = transform2.aTransform.ref.value;
     const getLocation = (groupIndex, instanceIndex) => {
       const { vertices: vertices2, normals } = getData2();
       if (instanceIndex < 0) {
@@ -68150,9 +68150,9 @@ var TextureMesh;
     };
     return LocationIterator(groupCount, instanceCount, 1, getLocation);
   }
-  function createValues(textureMesh, transform, locationIt, theme, props) {
+  function createValues(textureMesh, transform2, locationIt, theme, props) {
     const { instanceCount, groupCount } = locationIt;
-    const positionIt = TextureMesh2.Utils.createPositionIterator(textureMesh, transform);
+    const positionIt = TextureMesh2.Utils.createPositionIterator(textureMesh, transform2);
     const color = createColors(locationIt, positionIt, theme.color);
     const marker = props.instanceGranularity ? createMarkers(instanceCount, "instance") : createMarkers(instanceCount * groupCount, "groupInstance");
     const overpaint = createEmptyOverpaint();
@@ -68162,7 +68162,7 @@ var TextureMesh;
     const clipping = createEmptyClipping();
     const counts = { drawCount: textureMesh.vertexCount, vertexCount: textureMesh.vertexCount, groupCount, instanceCount };
     const invariantBoundingSphere = Sphere3D.clone(textureMesh.boundingSphere);
-    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform.aTransform.ref.value, instanceCount, 0);
+    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform2.aTransform.ref.value, instanceCount, 0);
     return {
       dGeometryType: ValueCell.create("textureMesh"),
       uGeoTexDim: textureMesh.geoTextureDim,
@@ -68180,7 +68180,7 @@ var TextureMesh;
       ...emissive,
       ...substance,
       ...clipping,
-      ...transform,
+      ...transform2,
       ...BaseGeometry.createValues(props, counts),
       uDoubleSided: ValueCell.create(props.doubleSided),
       dFlatShaded: ValueCell.create(props.flatShaded),
@@ -68194,8 +68194,8 @@ var TextureMesh;
       meta: ValueCell.create(textureMesh.meta)
     };
   }
-  function createValuesSimple(textureMesh, props, colorValue, sizeValue, transform) {
-    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform);
+  function createValuesSimple(textureMesh, props, colorValue, sizeValue, transform2) {
+    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform2);
     const p6 = { ...ParamDefinition.getDefaultValues(TextureMesh2.Params), ...props };
     return createValues(textureMesh, s.transform, s.locationIterator, s.theme, p6);
   }
@@ -68766,16 +68766,16 @@ function createRenderItem(ctx, drawMode, shaderCode, schema, values2, materialId
           }
         }
       } else {
-        let offset3 = 0;
+        let offset4 = 0;
         while (true) {
-          const count3 = Math.min(drawCount - offset3, MaxDrawCount);
+          const count3 = Math.min(drawCount - offset4, MaxDrawCount);
           if (elementsBuffer) {
-            instancedArrays.drawElementsInstanced(glDrawMode, count3, elementsBuffer._dataType, offset3 * elementsBuffer._bpe, instanceCount);
+            instancedArrays.drawElementsInstanced(glDrawMode, count3, elementsBuffer._dataType, offset4 * elementsBuffer._bpe, instanceCount);
           } else {
-            instancedArrays.drawArraysInstanced(glDrawMode, offset3, count3, instanceCount);
+            instancedArrays.drawArraysInstanced(glDrawMode, offset4, count3, instanceCount);
           }
-          offset3 += count3;
-          if (offset3 >= drawCount)
+          offset4 += count3;
+          if (offset4 >= drawCount)
             break;
         }
         if (isTimingMode) {
@@ -69365,9 +69365,9 @@ var Image2;
   function createPositionIterator(_image, _transform) {
     return LocationIterator(1, 1, 1, () => NullLocation);
   }
-  function createValues(image, transform, locationIt, theme, props) {
+  function createValues(image, transform2, locationIt, theme, props) {
     const { instanceCount, groupCount } = locationIt;
-    const positionIt = createPositionIterator(image, transform);
+    const positionIt = createPositionIterator(image, transform2);
     const color = createColors(locationIt, positionIt, theme.color);
     const marker = props.instanceGranularity ? createMarkers(instanceCount, "instance") : createMarkers(instanceCount * groupCount, "groupInstance");
     const overpaint = createEmptyOverpaint();
@@ -69377,7 +69377,7 @@ var Image2;
     const clipping = createEmptyClipping();
     const counts = { drawCount: QuadIndices.length, vertexCount: QuadPositions.length / 3, groupCount, instanceCount };
     const invariantBoundingSphere = Sphere3D.clone(image.boundingSphere);
-    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform.aTransform.ref.value, instanceCount, 0);
+    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform2.aTransform.ref.value, instanceCount, 0);
     return {
       dGeometryType: ValueCell.create("image"),
       ...color,
@@ -69387,7 +69387,7 @@ var Image2;
       ...emissive,
       ...material,
       ...clipping,
-      ...transform,
+      ...transform2,
       ...BaseGeometry.createValues(props, counts),
       aPosition: image.cornerBuffer,
       aUv: ValueCell.create(QuadUvs),
@@ -69410,8 +69410,8 @@ var Image2;
       uIsoLevel: image.isoLevel
     };
   }
-  function createValuesSimple(image, props, colorValue, sizeValue, transform) {
-    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform);
+  function createValuesSimple(image, props, colorValue, sizeValue, transform2) {
+    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform2);
     const p6 = { ...ParamDefinition.getDefaultValues(Image3.Params), ...props };
     return createValues(image, s.transform, s.locationIterator, s.theme, p6);
   }
@@ -69463,8 +69463,8 @@ function getBoundingSphere2(corners) {
 // node_modules/molstar/lib/mol-geo/geometry/cylinders/cylinders.js
 var Cylinders;
 (function(Cylinders2) {
-  function create3(mappings, indices2, groups, starts, ends, scales, caps, colorModes, cylinderCount, cylinders) {
-    return cylinders ? update10(mappings, indices2, groups, starts, ends, scales, caps, colorModes, cylinderCount, cylinders) : fromArrays(mappings, indices2, groups, starts, ends, scales, caps, colorModes, cylinderCount);
+  function create3(mappings, indices3, groups, starts, ends, scales, caps, colorModes, cylinderCount, cylinders) {
+    return cylinders ? update10(mappings, indices3, groups, starts, ends, scales, caps, colorModes, cylinderCount, cylinders) : fromArrays(mappings, indices3, groups, starts, ends, scales, caps, colorModes, cylinderCount);
   }
   Cylinders2.create = create3;
   function createEmpty(cylinders) {
@@ -69492,7 +69492,7 @@ var Cylinders;
       cylinders.colorModeBuffer.ref.version
     ]);
   }
-  function fromArrays(mappings, indices2, groups, starts, ends, scales, caps, colorModes, cylinderCount) {
+  function fromArrays(mappings, indices3, groups, starts, ends, scales, caps, colorModes, cylinderCount) {
     const boundingSphere = Sphere3D();
     let groupMapping;
     let currentHash = -1;
@@ -69501,7 +69501,7 @@ var Cylinders;
       kind: "cylinders",
       cylinderCount,
       mappingBuffer: ValueCell.create(mappings),
-      indexBuffer: ValueCell.create(indices2),
+      indexBuffer: ValueCell.create(indices3),
       groupBuffer: ValueCell.create(groups),
       startBuffer: ValueCell.create(starts),
       endBuffer: ValueCell.create(ends),
@@ -69532,10 +69532,10 @@ var Cylinders;
     };
     return cylinders;
   }
-  function update10(mappings, indices2, groups, starts, ends, scales, caps, colorModes, cylinderCount, cylinders) {
+  function update10(mappings, indices3, groups, starts, ends, scales, caps, colorModes, cylinderCount, cylinders) {
     if (cylinderCount > cylinders.cylinderCount) {
       ValueCell.update(cylinders.mappingBuffer, mappings);
-      ValueCell.update(cylinders.indexBuffer, indices2);
+      ValueCell.update(cylinders.indexBuffer, indices3);
     }
     cylinders.cylinderCount = cylinderCount;
     ValueCell.update(cylinders.groupBuffer, groups);
@@ -69546,7 +69546,7 @@ var Cylinders;
     ValueCell.update(cylinders.colorModeBuffer, colorModes);
     return cylinders;
   }
-  function transform(cylinders, t5) {
+  function transform2(cylinders, t5) {
     const start4 = cylinders.startBuffer.ref.value;
     transformPositionArray(t5, start4, 0, cylinders.cylinderCount * 6);
     ValueCell.update(cylinders.startBuffer, start4);
@@ -69554,7 +69554,7 @@ var Cylinders;
     transformPositionArray(t5, end4, 0, cylinders.cylinderCount * 6);
     ValueCell.update(cylinders.endBuffer, end4);
   }
-  Cylinders2.transform = transform;
+  Cylinders2.transform = transform2;
   Cylinders2.Params = {
     ...BaseGeometry.Params,
     sizeFactor: ParamDefinition.Numeric(1, { min: 0, max: 10, step: 0.1 }),
@@ -69580,14 +69580,14 @@ var Cylinders;
     updateRenderableState,
     createPositionIterator
   };
-  function createPositionIterator(cylinders, transform2) {
+  function createPositionIterator(cylinders, transform3) {
     const groupCount = cylinders.cylinderCount * 6;
-    const instanceCount = transform2.instanceCount.ref.value;
+    const instanceCount = transform3.instanceCount.ref.value;
     const location2 = PositionLocation();
     const p6 = location2.position;
     const s = cylinders.startBuffer.ref.value;
     const e = cylinders.endBuffer.ref.value;
-    const m = transform2.aTransform.ref.value;
+    const m = transform3.aTransform.ref.value;
     const getLocation = (groupIndex, instanceIndex) => {
       const v4 = groupIndex % 6 === 0 ? s : e;
       if (instanceIndex < 0) {
@@ -69599,9 +69599,9 @@ var Cylinders;
     };
     return LocationIterator(groupCount, instanceCount, 2, getLocation);
   }
-  function createValues(cylinders, transform2, locationIt, theme, props) {
+  function createValues(cylinders, transform3, locationIt, theme, props) {
     const { instanceCount, groupCount } = locationIt;
-    const positionIt = createPositionIterator(cylinders, transform2);
+    const positionIt = createPositionIterator(cylinders, transform3);
     const color = createColors(locationIt, positionIt, theme.color);
     const size4 = createSizes(locationIt, theme.size);
     const marker = props.instanceGranularity ? createMarkers(instanceCount, "instance") : createMarkers(instanceCount * groupCount, "groupInstance");
@@ -69613,7 +69613,7 @@ var Cylinders;
     const counts = { drawCount: cylinders.cylinderCount * 4 * 3, vertexCount: cylinders.cylinderCount * 6, groupCount, instanceCount };
     const padding2 = getMaxSize(size4) * props.sizeFactor;
     const invariantBoundingSphere = Sphere3D.clone(cylinders.boundingSphere);
-    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform2.aTransform.ref.value, instanceCount, 0);
+    const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform3.aTransform.ref.value, instanceCount, 0);
     return {
       dGeometryType: ValueCell.create("cylinders"),
       aMapping: cylinders.mappingBuffer,
@@ -69635,7 +69635,7 @@ var Cylinders;
       ...emissive,
       ...material,
       ...clipping,
-      ...transform2,
+      ...transform3,
       padding: ValueCell.create(padding2),
       ...BaseGeometry.createValues(props, counts),
       uSizeFactor: ValueCell.create(props.sizeFactor * props.sizeAspectRatio),
@@ -69650,8 +69650,8 @@ var Cylinders;
       dDualColor: ValueCell.create(props.colorMode === "interpolate")
     };
   }
-  function createValuesSimple(cylinders, props, colorValue, sizeValue, transform2) {
-    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform2);
+  function createValuesSimple(cylinders, props, colorValue, sizeValue, transform3) {
+    const s = BaseGeometry.createSimple(colorValue, sizeValue, transform3);
     const p6 = { ...ParamDefinition.getDefaultValues(Cylinders2.Params), ...props };
     return createValues(cylinders, s.transform, s.locationIterator, s.theme, p6);
   }
@@ -70194,8 +70194,8 @@ var Shape;
     const utils = Geometry.getUtils(shape.geometry);
     const materialId = getNextMaterialId();
     const locationIt = groupIterator(shape);
-    const transform = createTransform2(shape.transforms, shape.geometry.boundingSphere, props.cellSize, props.batchSize);
-    const values2 = utils.createValues(shape.geometry, transform, locationIt, theme, props);
+    const transform2 = createTransform2(shape.transforms, shape.geometry.boundingSphere, props.cellSize, props.batchSize);
+    const values2 = utils.createValues(shape.geometry, transform2, locationIt, theme, props);
     const state = utils.createRenderableState(props);
     return createRenderObject(shape.geometry.kind, values2, state, materialId);
   }
@@ -70265,11 +70265,11 @@ var ShapeGroup;
   ShapeGroup2.size = size4;
   const sphereHelper = new CentroidHelper(), tmpPos2 = Vec3.zero();
   function sphereHelperInclude(groups, mapping, positions, transforms) {
-    const { indices: indices2, offsets } = mapping;
+    const { indices: indices3, offsets } = mapping;
     for (const { ids, instance } of groups) {
       OrderedSet2.forEach(ids, (v4) => {
         for (let i = offsets[v4], il = offsets[v4 + 1]; i < il; ++i) {
-          Vec3.fromArray(tmpPos2, positions, indices2[i] * 3);
+          Vec3.fromArray(tmpPos2, positions, indices3[i] * 3);
           Vec3.transformMat4(tmpPos2, tmpPos2, transforms[instance]);
           sphereHelper.includeStep(tmpPos2);
         }
@@ -70277,11 +70277,11 @@ var ShapeGroup;
     }
   }
   function sphereHelperRadius(groups, mapping, positions, transforms) {
-    const { indices: indices2, offsets } = mapping;
+    const { indices: indices3, offsets } = mapping;
     for (const { ids, instance } of groups) {
       OrderedSet2.forEach(ids, (v4) => {
         for (let i = offsets[v4], il = offsets[v4 + 1]; i < il; ++i) {
-          Vec3.fromArray(tmpPos2, positions, indices2[i] * 3);
+          Vec3.fromArray(tmpPos2, positions, indices3[i] * 3);
           Vec3.transformMat4(tmpPos2, tmpPos2, transforms[instance]);
           sphereHelper.radiusStep(tmpPos2);
         }
@@ -71727,30 +71727,30 @@ var TransientTree = class {
     this.changeNodes();
     this.transforms.set(ref, Transform.withParent(old, newParent));
   }
-  add(transform) {
-    const ref = transform.ref;
-    if (this.transforms.has(transform.ref)) {
-      const node = this.transforms.get(transform.ref);
-      if (node.parent !== transform.parent)
-        alreadyPresent(transform.ref);
+  add(transform2) {
+    const ref = transform2.ref;
+    if (this.transforms.has(transform2.ref)) {
+      const node = this.transforms.get(transform2.ref);
+      if (node.parent !== transform2.parent)
+        alreadyPresent(transform2.ref);
     }
-    const children = this.children.get(transform.parent);
+    const children = this.children.get(transform2.parent);
     if (!children)
-      parentNotPresent(transform.parent);
-    if (!children.has(transform.ref)) {
-      this.addChild(transform.parent, transform.ref);
+      parentNotPresent(transform2.parent);
+    if (!children.has(transform2.ref)) {
+      this.addChild(transform2.parent, transform2.ref);
     }
-    if (!this.children.has(transform.ref)) {
+    if (!this.children.has(transform2.ref)) {
       if (!this.changedChildren) {
         this.changedChildren = true;
         this.children = this.children.asMutable();
       }
-      this.children.set(transform.ref, OrderedSet());
+      this.children.set(transform2.ref, OrderedSet());
     }
     this.changeNodes();
-    this.transforms.set(ref, transform);
-    if (transform.dependsOn) {
-      for (const d5 of transform.dependsOn) {
+    this.transforms.set(ref, transform2);
+    if (transform2.dependsOn) {
+      for (const d5 of transform2.dependsOn) {
         this.mutateDependency(d5, ref, "add");
       }
     }
@@ -71759,44 +71759,44 @@ var TransientTree = class {
   /** Calls Transform.definition.params.areEqual if available, otherwise uses shallowEqual to check if the params changed */
   setParams(ref, params) {
     ensurePresent(this.transforms, ref);
-    const transform = this.transforms.get(ref);
-    if (shallowEqual2(transform.params, params)) {
+    const transform2 = this.transforms.get(ref);
+    if (shallowEqual2(transform2.params, params)) {
       return false;
     }
     if (!this.changedNodes) {
       this.changedNodes = true;
       this.transforms = this.transforms.asMutable();
     }
-    this.transforms.set(transform.ref, Transform.withParams(transform, params));
+    this.transforms.set(transform2.ref, Transform.withParams(transform2, params));
     return true;
   }
   /** Calls Transform.definition.params.areEqual if available, otherwise uses shallowEqual to check if the params changed */
   setTags(ref, tags) {
     ensurePresent(this.transforms, ref);
-    const transform = this.transforms.get(ref);
-    const withTags = Transform.withTags(transform, tags);
-    if (arrayEqual2(transform.tags, withTags.tags)) {
+    const transform2 = this.transforms.get(ref);
+    const withTags = Transform.withTags(transform2, tags);
+    if (arrayEqual2(transform2.tags, withTags.tags)) {
       return false;
     }
     if (!this.changedNodes) {
       this.changedNodes = true;
       this.transforms = this.transforms.asMutable();
     }
-    this.transforms.set(transform.ref, withTags);
+    this.transforms.set(transform2.ref, withTags);
     return true;
   }
   setDependsOn(ref, dependsOn) {
     ensurePresent(this.transforms, ref);
-    const transform = this.transforms.get(ref);
-    const withDependsOn = Transform.withDependsOn(transform, dependsOn);
-    if (arrayEqual2(transform.dependsOn, withDependsOn.dependsOn)) {
+    const transform2 = this.transforms.get(ref);
+    const withDependsOn = Transform.withDependsOn(transform2, dependsOn);
+    if (arrayEqual2(transform2.dependsOn, withDependsOn.dependsOn)) {
       return false;
     }
     if (!this.changedNodes) {
       this.changedNodes = true;
       this.transforms = this.transforms.asMutable();
     }
-    this.transforms.set(transform.ref, withDependsOn);
+    this.transforms.set(transform2.ref, withDependsOn);
     return true;
   }
   assignState(ref, state) {
@@ -71988,13 +71988,13 @@ var StateTree;
     const children = Map2().asMutable();
     const dependencies = Map2().asMutable();
     for (const t5 of data.transforms) {
-      const transform = Transform.fromJSON(t5);
-      nodes.set(transform.ref, transform);
-      if (!children.has(transform.ref)) {
-        children.set(transform.ref, OrderedSet().asMutable());
+      const transform2 = Transform.fromJSON(t5);
+      nodes.set(transform2.ref, transform2);
+      if (!children.has(transform2.ref)) {
+        children.set(transform2.ref, OrderedSet().asMutable());
       }
-      if (transform.ref !== transform.parent)
-        children.get(transform.parent).add(transform.ref);
+      if (transform2.ref !== transform2.parent)
+        children.get(transform2.parent).add(transform2.ref);
     }
     const dependent = /* @__PURE__ */ new Set();
     for (const t5 of data.transforms) {
@@ -72056,9 +72056,9 @@ var StateTree;
   StateTree2.getDecoratorRoot = getDecoratorRoot;
   function setParamHashVersion(tree, refs) {
     for (const ref of refs) {
-      const transform = tree.transforms.get(ref);
-      if (transform) {
-        Transform.setParamsHashVersion(transform);
+      const transform2 = tree.transforms.get(ref);
+      if (transform2) {
+        Transform.setParamsHashVersion(transform2);
       }
     }
   }
@@ -72080,10 +72080,10 @@ var StateTree;
 // node_modules/molstar/lib/mol-state/state/selection.js
 var StateSelection;
 (function(StateSelection2) {
-  function select(s, state) {
+  function select2(s, state) {
     return compile2(s)(state);
   }
-  StateSelection2.select = select;
+  StateSelection2.select = select2;
   function compile2(s) {
     const selector = s ? s : Generators.root;
     let query2;
@@ -72109,7 +72109,7 @@ var StateSelection;
   }
   const BuilderPrototype = {
     select(state) {
-      return select(this, state || this.state);
+      return select2(this, state || this.state);
     }
   };
   function registerModifier(name, f) {
@@ -72838,29 +72838,29 @@ var StateBuilder;
       return this.root;
     }
     updateState(state) {
-      const transform = this.state.tree.transforms.get(this.ref);
-      if (Transform.isStateChange(transform.state, state)) {
+      const transform2 = this.state.tree.transforms.get(this.ref);
+      if (Transform.isStateChange(transform2.state, state)) {
         this.state.tree.assignState(this.ref, state);
         this.editInfo.count++;
         this.editInfo.lastUpdate = this.ref;
         if (!this.state.actions.find((a8) => a8.kind === "update" && a8.ref === this.ref)) {
-          this.state.actions.push({ kind: "update", ref: this.ref, params: transform.params });
+          this.state.actions.push({ kind: "update", ref: this.ref, params: transform2.params });
         }
       }
     }
     /** Add tags to the current node */
     tag(tags) {
-      const transform = this.state.tree.transforms.get(this.ref);
-      this.updateTagged(transform.params, stringArrayUnion(transform.tags, tags));
+      const transform2 = this.state.tree.transforms.get(this.ref);
+      this.updateTagged(transform2.params, stringArrayUnion(transform2.tags, tags));
       return this;
     }
     /** Add dependsOn to the current node */
     dependsOn(dependsOn) {
-      const transform = this.state.tree.transforms.get(this.ref);
-      if (this.state.tree.setDependsOn(this.ref, stringArrayUnion(transform.dependsOn, dependsOn))) {
+      const transform2 = this.state.tree.transforms.get(this.ref);
+      if (this.state.tree.setDependsOn(this.ref, stringArrayUnion(transform2.dependsOn, dependsOn))) {
         this.editInfo.count++;
         this.editInfo.lastUpdate = this.ref;
-        this.state.actions.push({ kind: "update", ref: this.ref, params: transform.params });
+        this.state.actions.push({ kind: "update", ref: this.ref, params: transform2.params });
       }
     }
     to(ref) {
@@ -73546,8 +73546,8 @@ async function update8(ctx) {
     if (update10.action === "created") {
       ctx.parent.events.object.created.next({ state: ctx.parent, ref: update10.ref, obj: update10.obj });
       if (!ctx.newCurrent) {
-        const transform = ctx.tree.transforms.get(update10.ref);
-        if (!transform.state.isGhost && update10.obj !== StateObject.Null)
+        const transform2 = ctx.tree.transforms.get(update10.ref);
+        if (!transform2.state.isGhost && update10.obj !== StateObject.Null)
           newCurrent = update10.ref;
       }
     } else if (update10.action === "updated") {
@@ -73626,23 +73626,23 @@ function unlinkCell(cell) {
     arraySetRemove(other.dependencies.dependentBy, cell);
   }
 }
-function addCellsVisitor(transform, _, { ctx, added, visited }) {
-  visited.add(transform.ref);
-  if (ctx.cells.has(transform.ref)) {
+function addCellsVisitor(transform2, _, { ctx, added, visited }) {
+  visited.add(transform2.ref);
+  if (ctx.cells.has(transform2.ref)) {
     return;
   }
   const cell = {
     parent: ctx.parent,
-    transform,
+    transform: transform2,
     sourceRef: void 0,
     status: "pending",
-    state: { ...transform.state },
+    state: { ...transform2.state },
     errorText: void 0,
     params: void 0,
     dependencies: { dependentBy: [], dependsOn: [] },
     cache: void 0
   };
-  ctx.cells.set(transform.ref, cell);
+  ctx.cells.set(transform2.ref, cell);
   added.push(cell);
 }
 function linkCells(target, ctx) {
@@ -73789,24 +73789,24 @@ async function updateSubtree(ctx, root) {
       await updateSubtree(ctx, next.value);
   }
 }
-function resolveParams(ctx, transform, src, cell) {
-  const prms = transform.transformer.definition.params;
+function resolveParams(ctx, transform2, src, cell) {
+  const prms = transform2.transformer.definition.params;
   const definition = prms ? prms(src, ctx.parent.globalContext) : {};
-  if (transform.version !== transform._normalized_param_version) {
-    transform.params = ParamDefinition.normalizeParams(definition, transform.params, "all");
-    transform._normalized_param_version = transform.version;
+  if (transform2.version !== transform2._normalized_param_version) {
+    transform2.params = ParamDefinition.normalizeParams(definition, transform2.params, "all");
+    transform2._normalized_param_version = transform2.version;
   } else {
     const defaultValues = ParamDefinition.getDefaultValues(definition);
-    transform.params = transform.params ? assignIfUndefined(transform.params, defaultValues) : defaultValues;
+    transform2.params = transform2.params ? assignIfUndefined(transform2.params, defaultValues) : defaultValues;
   }
-  ParamDefinition.resolveRefs(definition, transform.params, ctx.getCellData);
-  return { definition, values: transform.params };
+  ParamDefinition.resolveRefs(definition, transform2.params, ctx.getCellData);
+  return { definition, values: transform2.params };
 }
 async function updateNode2(ctx, currentRef) {
   var _a;
   const { oldTree, tree } = ctx;
   const current2 = ctx.cells.get(currentRef);
-  const transform = current2.transform;
+  const transform2 = current2.transform;
   if (current2.transform.ref === Transform.RootRef) {
     return { action: "none" };
   }
@@ -73817,7 +73817,7 @@ async function updateNode2(ctx, currentRef) {
     if (oldTree.transforms.has(currentRef) && current2.params) {
       const oldParams = current2.params.values;
       const oldCache = current2.cache;
-      dispose(transform, current2.obj, oldParams, oldCache, ctx.parent.globalContext);
+      dispose(transform2, current2.obj, oldParams, oldCache, ctx.parent.globalContext);
       current2.params = void 0;
       current2.obj = StateObject.Null;
       return { ref: currentRef, action: "updated", obj: current2.obj };
@@ -73826,18 +73826,18 @@ async function updateNode2(ctx, currentRef) {
       return { ref: currentRef, action: "created", obj: StateObject.Null };
     }
   }
-  const parentCell = transform.transformer.definition.from.length === 0 ? treeParent : StateSelection.findAncestorOfType(tree, ctx.cells, currentRef, transform.transformer.definition.from);
+  const parentCell = transform2.transformer.definition.from.length === 0 ? treeParent : StateSelection.findAncestorOfType(tree, ctx.cells, currentRef, transform2.transformer.definition.from);
   if (!parentCell) {
     throw new Error(`No suitable parent found for '${currentRef}'`);
   }
   ctx.spine.current = current2;
   const parent = parentCell.obj;
   current2.sourceRef = parentCell.transform.ref;
-  const params = resolveParams(ctx, transform, parent, current2);
+  const params = resolveParams(ctx, transform2, parent, current2);
   if (!oldTree.transforms.has(currentRef) || !current2.params) {
     current2.params = params;
-    const obj = await createObject(ctx, current2, transform.transformer, parent, params.values);
-    updateTag(obj, transform);
+    const obj = await createObject(ctx, current2, transform2.transformer, parent, params.values);
+    updateTag(obj, transform2);
     current2.obj = obj;
     return { ref: currentRef, action: "created", obj };
   } else {
@@ -73846,21 +73846,21 @@ async function updateNode2(ctx, currentRef) {
     const oldData = (_a = current2.obj) === null || _a === void 0 ? void 0 : _a.data;
     const newParams = params.values;
     current2.params = params;
-    const updateKind = !!current2.obj && current2.obj !== StateObject.Null ? await updateObject(ctx, current2, transform.transformer, parent, current2.obj, oldParams, newParams) : Transformer.UpdateResult.Recreate;
+    const updateKind = !!current2.obj && current2.obj !== StateObject.Null ? await updateObject(ctx, current2, transform2.transformer, parent, current2.obj, oldParams, newParams) : Transformer.UpdateResult.Recreate;
     switch (updateKind) {
       case Transformer.UpdateResult.Recreate: {
         const oldObj = current2.obj;
-        dispose(transform, oldObj, oldParams, oldCache, ctx.parent.globalContext);
-        const newObj = await createObject(ctx, current2, transform.transformer, parent, newParams);
-        updateTag(newObj, transform);
+        dispose(transform2, oldObj, oldParams, oldCache, ctx.parent.globalContext);
+        const newObj = await createObject(ctx, current2, transform2.transformer, parent, newParams);
+        updateTag(newObj, transform2);
         current2.obj = newObj;
         return { ref: currentRef, action: "replaced", oldObj, obj: newObj };
       }
       case Transformer.UpdateResult.Updated:
-        updateTag(current2.obj, transform);
+        updateTag(current2.obj, transform2);
         return { ref: currentRef, action: "updated", oldData, obj: current2.obj };
       case Transformer.UpdateResult.Null: {
-        dispose(transform, current2.obj, oldParams, oldCache, ctx.parent.globalContext);
+        dispose(transform2, current2.obj, oldParams, oldCache, ctx.parent.globalContext);
         current2.obj = StateObject.Null;
         return { ref: currentRef, action: "updated", obj: current2.obj };
       }
@@ -73869,18 +73869,18 @@ async function updateNode2(ctx, currentRef) {
     }
   }
 }
-function dispose(transform, b8, params, cache, globalContext) {
+function dispose(transform2, b8, params, cache, globalContext) {
   var _a, _b;
-  (_b = (_a = transform.transformer.definition).dispose) === null || _b === void 0 ? void 0 : _b.call(_a, {
+  (_b = (_a = transform2.transformer.definition).dispose) === null || _b === void 0 ? void 0 : _b.call(_a, {
     b: b8 !== StateObject.Null ? b8 : void 0,
     params,
     cache
   }, globalContext);
 }
-function updateTag(obj, transform) {
+function updateTag(obj, transform2) {
   if (!obj || obj === StateObject.Null)
     return;
-  obj.tags = transform.tags;
+  obj.tags = transform2.tags;
 }
 function runTask(t5, ctx) {
   if (typeof t5.runInContext === "function")
@@ -74561,34 +74561,34 @@ var SimpleBuffer;
   function fromUint8Array(array2) {
     const dv = new DataView(array2.buffer);
     return Object.assign(array2.subarray(0), {
-      readInt8: (offset3) => dv.getInt8(offset3),
-      readUInt8: (offset3) => dv.getUint8(offset3),
-      writeInt8: (value, offset3) => dv.setInt8(offset3, value),
-      writeUInt8: (value, offset3) => dv.setUint8(offset3, value),
-      readInt16LE: (offset3) => dv.getInt16(offset3, true),
-      readInt32LE: (offset3) => dv.getInt32(offset3, true),
-      readUInt16LE: (offset3) => dv.getUint16(offset3, true),
-      readUInt32LE: (offset3) => dv.getUint32(offset3, true),
-      readFloatLE: (offset3) => dv.getFloat32(offset3, true),
-      readDoubleLE: (offset3) => dv.getFloat64(offset3, true),
-      writeInt16LE: (value, offset3) => dv.setInt16(offset3, value, true),
-      writeInt32LE: (value, offset3) => dv.setInt32(offset3, value, true),
-      writeUInt16LE: (value, offset3) => dv.setUint16(offset3, value, true),
-      writeUInt32LE: (value, offset3) => dv.setUint32(offset3, value, true),
-      writeFloatLE: (value, offset3) => dv.setFloat32(offset3, value, true),
-      writeDoubleLE: (value, offset3) => dv.setFloat64(offset3, value, true),
-      readInt16BE: (offset3) => dv.getInt16(offset3, false),
-      readInt32BE: (offset3) => dv.getInt32(offset3, false),
-      readUInt16BE: (offset3) => dv.getUint16(offset3, false),
-      readUInt32BE: (offset3) => dv.getUint32(offset3, false),
-      readFloatBE: (offset3) => dv.getFloat32(offset3, false),
-      readDoubleBE: (offset3) => dv.getFloat64(offset3, false),
-      writeInt16BE: (value, offset3) => dv.setInt16(offset3, value, false),
-      writeInt32BE: (value, offset3) => dv.setInt32(offset3, value, false),
-      writeUInt16BE: (value, offset3) => dv.setUint16(offset3, value, false),
-      writeUInt32BE: (value, offset3) => dv.setUint32(offset3, value, false),
-      writeFloatBE: (value, offset3) => dv.setFloat32(offset3, value, false),
-      writeDoubleBE: (value, offset3) => dv.setFloat64(offset3, value, false),
+      readInt8: (offset4) => dv.getInt8(offset4),
+      readUInt8: (offset4) => dv.getUint8(offset4),
+      writeInt8: (value, offset4) => dv.setInt8(offset4, value),
+      writeUInt8: (value, offset4) => dv.setUint8(offset4, value),
+      readInt16LE: (offset4) => dv.getInt16(offset4, true),
+      readInt32LE: (offset4) => dv.getInt32(offset4, true),
+      readUInt16LE: (offset4) => dv.getUint16(offset4, true),
+      readUInt32LE: (offset4) => dv.getUint32(offset4, true),
+      readFloatLE: (offset4) => dv.getFloat32(offset4, true),
+      readDoubleLE: (offset4) => dv.getFloat64(offset4, true),
+      writeInt16LE: (value, offset4) => dv.setInt16(offset4, value, true),
+      writeInt32LE: (value, offset4) => dv.setInt32(offset4, value, true),
+      writeUInt16LE: (value, offset4) => dv.setUint16(offset4, value, true),
+      writeUInt32LE: (value, offset4) => dv.setUint32(offset4, value, true),
+      writeFloatLE: (value, offset4) => dv.setFloat32(offset4, value, true),
+      writeDoubleLE: (value, offset4) => dv.setFloat64(offset4, value, true),
+      readInt16BE: (offset4) => dv.getInt16(offset4, false),
+      readInt32BE: (offset4) => dv.getInt32(offset4, false),
+      readUInt16BE: (offset4) => dv.getUint16(offset4, false),
+      readUInt32BE: (offset4) => dv.getUint32(offset4, false),
+      readFloatBE: (offset4) => dv.getFloat32(offset4, false),
+      readDoubleBE: (offset4) => dv.getFloat64(offset4, false),
+      writeInt16BE: (value, offset4) => dv.setInt16(offset4, value, false),
+      writeInt32BE: (value, offset4) => dv.setInt32(offset4, value, false),
+      writeUInt16BE: (value, offset4) => dv.setUint16(offset4, value, false),
+      writeUInt32BE: (value, offset4) => dv.setUint32(offset4, value, false),
+      writeFloatBE: (value, offset4) => dv.setFloat32(offset4, value, false),
+      writeDoubleBE: (value, offset4) => dv.setFloat64(offset4, value, false),
       copy: (targetBuffer, targetStart, sourceStart, sourceEnd) => {
         targetStart = defaults(targetStart, 0);
         sourceStart = defaults(sourceStart, 0);
@@ -74608,28 +74608,28 @@ var SimpleBuffer;
   }
   SimpleBuffer2.fromBuffer = fromBuffer;
   SimpleBuffer2.IsNativeEndianLittle = new Uint16Array(new Uint8Array([18, 52]).buffer)[0] === 13330;
-  function flipByteOrder2(source, target, byteCount, elementByteSize, offset3) {
+  function flipByteOrder2(source, target, byteCount, elementByteSize, offset4) {
     for (let i = 0, n = byteCount; i < n; i += elementByteSize) {
       for (let j = 0; j < elementByteSize; j++) {
-        target[offset3 + i + elementByteSize - j - 1] = source[offset3 + i + j];
+        target[offset4 + i + elementByteSize - j - 1] = source[offset4 + i + j];
       }
     }
   }
   SimpleBuffer2.flipByteOrder = flipByteOrder2;
-  function flipByteOrderInPlace2(buffer, byteOffset = 0, length) {
-    const intView = new Int16Array(buffer, byteOffset, length);
+  function flipByteOrderInPlace2(buffer, byteOffset = 0, length2) {
+    const intView = new Int16Array(buffer, byteOffset, length2);
     for (let i = 0, n = intView.length; i < n; ++i) {
       const val = intView[i];
       intView[i] = (val & 255) << 8 | val >> 8 & 255;
     }
   }
   SimpleBuffer2.flipByteOrderInPlace2 = flipByteOrderInPlace2;
-  function ensureLittleEndian(source, target, byteCount, elementByteSize, offset3) {
+  function ensureLittleEndian(source, target, byteCount, elementByteSize, offset4) {
     if (SimpleBuffer2.IsNativeEndianLittle)
       return;
     if (!byteCount || elementByteSize <= 1)
       return;
-    flipByteOrder2(source, target, byteCount, elementByteSize, offset3);
+    flipByteOrder2(source, target, byteCount, elementByteSize, offset4);
   }
   SimpleBuffer2.ensureLittleEndian = ensureLittleEndian;
 })(SimpleBuffer || (SimpleBuffer = {}));
@@ -74662,13 +74662,13 @@ var FileHandle;
         }
         return Promise.resolve({ bytesRead, buffer: outBuffer });
       },
-      writeBuffer: (position, buffer2, length) => {
-        length = defaults(length, buffer2.length);
+      writeBuffer: (position, buffer2, length2) => {
+        length2 = defaults(length2, buffer2.length);
         console.error(".writeBuffer not implemented for FileHandle.fromBuffer");
         return Promise.resolve(0);
       },
-      writeBufferSync: (position, buffer2, length) => {
-        length = defaults(length, buffer2.length);
+      writeBufferSync: (position, buffer2, length2) => {
+        length2 = defaults(length2, buffer2.length);
         console.error(".writeSync not implemented for FileHandle.fromBuffer");
         return 0;
       },
@@ -74695,14 +74695,14 @@ function getElementByteSize(type3) {
     return 2;
   return 1;
 }
-function makeTypedArray(type3, buffer, byteOffset = 0, length) {
+function makeTypedArray(type3, buffer, byteOffset = 0, length2) {
   if (type3 === TypedArrayValueType.Float32)
-    return new Float32Array(buffer, byteOffset, length);
+    return new Float32Array(buffer, byteOffset, length2);
   if (type3 === TypedArrayValueType.Int16)
-    return new Int16Array(buffer, byteOffset, length);
+    return new Int16Array(buffer, byteOffset, length2);
   if (type3 === TypedArrayValueType.Uint16)
-    return new Uint16Array(buffer, byteOffset, length);
-  return new Int8Array(buffer, byteOffset, length);
+    return new Uint16Array(buffer, byteOffset, length2);
+  return new Int8Array(buffer, byteOffset, length2);
 }
 function createTypedArrayBufferContext(size4, type3) {
   const elementByteSize = getElementByteSize(type3);
@@ -74792,18 +74792,18 @@ async function readCcp4Header(file) {
   };
   return { header: header2, littleEndian };
 }
-async function readCcp4Slices(header2, buffer, file, byteOffset, length, littleEndian) {
+async function readCcp4Slices(header2, buffer, file, byteOffset, length2, littleEndian) {
   if (isMapmode2to0(header2)) {
-    const valueByteOffset = 3 * length;
-    await file.readBuffer(byteOffset, buffer.readBuffer, length, valueByteOffset);
+    const valueByteOffset = 3 * length2;
+    await file.readBuffer(byteOffset, buffer.readBuffer, length2, valueByteOffset);
     const int82 = new Int8Array(buffer.valuesBuffer.buffer, valueByteOffset);
     const b1 = (header2.AMAX - header2.AMIN) / 255;
     const b0 = 0.5 * (header2.AMIN + header2.AMAX + b1);
-    for (let j = 0, jl = length; j < jl; ++j) {
+    for (let j = 0, jl = length2; j < jl; ++j) {
       buffer.values[j] = b1 * int82[j] + b0;
     }
   } else {
-    await readTypedArray(buffer, file, byteOffset, length, 0, littleEndian);
+    await readTypedArray(buffer, file, byteOffset, length2, 0, littleEndian);
   }
 }
 function getCcp4DataType(mode) {
@@ -74837,14 +74837,14 @@ function getCcp4DataOffset(header2) {
 async function parseInternal2(file, size4, ctx) {
   await ctx.update({ message: "Parsing CCP4/MRC/MAP file..." });
   const { header: header2, littleEndian } = await readCcp4Header(file);
-  const offset3 = getCcp4DataOffset(header2);
+  const offset4 = getCcp4DataOffset(header2);
   const dataType = getCcp4DataType(header2.MODE);
   const valueType = getCcp4ValueType(header2);
   const count3 = header2.NC * header2.NR * header2.NS;
   const elementByteSize = getElementByteSize(dataType);
   const byteCount = count3 * elementByteSize;
   const buffer = createTypedArrayBufferContext(count3, valueType);
-  readCcp4Slices(header2, buffer, file, offset3, byteCount, littleEndian);
+  readCcp4Slices(header2, buffer, file, offset4, byteCount, littleEndian);
   const result2 = { header: header2, values: buffer.values, name: file.name };
   return result2;
 }
@@ -74930,7 +74930,7 @@ async function parseDsn6Values(header2, source, target, littleEndian) {
   }
   const { divisor, summand, xExtent, yExtent, zExtent } = header2;
   const { xBlocks, yBlocks, zBlocks } = getBlocks(header2);
-  let offset3 = 0;
+  let offset4 = 0;
   for (let zz = 0; zz < zBlocks; ++zz) {
     for (let yy = 0; yy < yBlocks; ++yy) {
       for (let xx = 0; xx < xBlocks; ++xx) {
@@ -74942,10 +74942,10 @@ async function parseDsn6Values(header2, source, target, littleEndian) {
               const x = 8 * xx + i;
               if (x < xExtent && y < yExtent && z < zExtent) {
                 const idx = (x * yExtent + y) * zExtent + z;
-                target[idx] = (source[offset3] - summand) / divisor;
-                ++offset3;
+                target[idx] = (source[offset4] - summand) / divisor;
+                ++offset4;
               } else {
-                offset3 += 8 - i;
+                offset4 += 8 - i;
                 break;
               }
             }
@@ -75215,11 +75215,11 @@ function parseListElement(state, spec) {
     rowCount: count3,
     name: property2.name,
     type: property2.dataType,
-    value: (row2) => {
-      const offset3 = offsets[row2] + 1;
-      const count4 = column.value(offset3 - 1);
-      for (let i = offset3, il = offset3 + count4; i < il; ++i) {
-        listValue.entries[i - offset3] = column.value(i);
+    value: (row3) => {
+      const offset4 = offsets[row3] + 1;
+      const count4 = column.value(offset4 - 1);
+      for (let i = offset4, il = offset4 + count4; i < il; ++i) {
+        listValue.entries[i - offset4] = column.value(i);
       }
       listValue.count = count4;
       return listValue;
@@ -75267,7 +75267,7 @@ async function handleAtoms(state, count3) {
   tokenizer.position = position;
   const isLammpsFull = line.split(reWhitespace).length === 7;
   const n = isLammpsFull ? 6 : 8;
-  const { length } = tokenizer;
+  const { length: length2 } = tokenizer;
   let linesAlreadyRead = 0;
   await chunkedSubtask(state.runtimeCtx, 1e5, void 0, (chunkSize) => {
     const linesToRead = Math.min(count3 - linesAlreadyRead, chunkSize);
@@ -75331,7 +75331,7 @@ async function handleAtoms(state, count3) {
     }
     linesAlreadyRead += linesToRead;
     return linesToRead;
-  }, (ctx) => ctx.update({ message: "Parsing...", current: tokenizer.position, max: length }));
+  }, (ctx) => ctx.update({ message: "Parsing...", current: tokenizer.position, max: length2 }));
   return {
     count: count3,
     atomId: TokenColumnProvider(atomId2)(Column.Schema.int),
@@ -75348,7 +75348,7 @@ async function handleBonds(state, count3) {
   const { tokenizer } = state;
   const atomIdA = TokenBuilder.create(tokenizer.data, count3 * 2);
   const atomIdB = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const { length } = tokenizer;
+  const { length: length2 } = tokenizer;
   let bondsAlreadyRead = 0;
   await chunkedSubtask(state.runtimeCtx, 10, void 0, (chunkSize) => {
     const bondsToRead = Math.min(count3 - bondsAlreadyRead, chunkSize);
@@ -75369,7 +75369,7 @@ async function handleBonds(state, count3) {
     }
     bondsAlreadyRead += bondsToRead;
     return bondsToRead;
-  }, (ctx) => ctx.update({ message: "Parsing...", current: tokenizer.position, max: length }));
+  }, (ctx) => ctx.update({ message: "Parsing...", current: tokenizer.position, max: length2 }));
   return {
     count: count3,
     atomIdA: TokenColumnProvider(atomIdA)(Column.Schema.int),
@@ -75443,8 +75443,8 @@ var bohrToAngstromFactor = 0.529177210859;
 function readHeader(tokenizer) {
   const headerLines = Tokenizer.readLines(tokenizer, 6);
   const h = (k, l) => {
-    const field = +headerLines[k].trim().split(/\s+/g)[l];
-    return Number.isNaN(field) ? 0 : field;
+    const field2 = +headerLines[k].trim().split(/\s+/g)[l];
+    return Number.isNaN(field2) ? 0 : field2;
   };
   const basis = (i) => {
     const n = h(i + 2, 0);
@@ -75500,16 +75500,16 @@ function readValues(ctx, tokenizer, header2) {
   const N = header2.dim[0] * header2.dim[1] * header2.dim[2] * header2.dataSetIds.length;
   const chunkSize = 100 * 100 * 100;
   const data = new Float64Array(N);
-  let offset3 = 0;
+  let offset4 = 0;
   return chunkedSubtask(ctx, chunkSize, data, (count3, data2) => {
-    const max5 = Math.min(N, offset3 + count3);
-    for (let i = offset3; i < max5; i++) {
+    const max5 = Math.min(N, offset4 + count3);
+    for (let i = offset4; i < max5; i++) {
       Tokenizer.skipWhitespace(tokenizer);
       tokenizer.tokenStart = tokenizer.position;
       Tokenizer.eatValue(tokenizer);
       data2[i] = parseFloat2(tokenizer.data, tokenizer.tokenStart, tokenizer.tokenEnd);
     }
-    offset3 = max5;
+    offset4 = max5;
     return max5 === N ? 0 : chunkSize;
   }, (ctx2, _, i) => ctx2.update({ current: Math.min(i, N), max: N }));
 }
@@ -75560,16 +75560,16 @@ function readValuesText(ctx, tokenizer, header2) {
   const N = header2.dim[0] * header2.dim[1] * header2.dim[2];
   const chunkSize = 100 * 100 * 100;
   const data = new Float64Array(N);
-  let offset3 = 0;
+  let offset4 = 0;
   return chunkedSubtask(ctx, chunkSize, data, (count3, data2) => {
-    const max5 = Math.min(N, offset3 + count3);
-    for (let i = offset3; i < max5; i++) {
+    const max5 = Math.min(N, offset4 + count3);
+    for (let i = offset4; i < max5; i++) {
       Tokenizer.skipWhitespace(tokenizer);
       tokenizer.tokenStart = tokenizer.position;
       Tokenizer.eatValue(tokenizer);
       data2[i] = parseFloat2(tokenizer.data, tokenizer.tokenStart, tokenizer.tokenEnd);
     }
-    offset3 = max5;
+    offset4 = max5;
     return max5 === N ? 0 : chunkSize;
   }, (ctx2, _, i) => ctx2.update({ current: Math.min(i, N), max: N }));
 }
@@ -76687,29 +76687,29 @@ function parseDcd(data) {
 
 // node_modules/molstar/lib/mol-io/reader/common/text/column/fixed.js
 function FixedColumnProvider(lines) {
-  return function(offset3, width, type3) {
-    return FixedColumn(lines, offset3, width, type3);
+  return function(offset4, width, type3) {
+    return FixedColumn(lines, offset4, width, type3);
   };
 }
-function FixedColumn(lines, offset3, width, schema) {
-  const { data, indices: indices2, count: rowCount } = lines;
+function FixedColumn(lines, offset4, width, schema) {
+  const { data, indices: indices3, count: rowCount } = lines;
   const { valueType: type3 } = schema;
-  const value = type3 === "str" ? (row2) => {
-    const s = indices2[2 * row2] + offset3, le = indices2[2 * row2 + 1];
+  const value = type3 === "str" ? (row3) => {
+    const s = indices3[2 * row3] + offset4, le = indices3[2 * row3 + 1];
     if (s >= le)
       return "";
     let e = s + width;
     if (e > le)
       e = le;
     return trimStr(data, s, e);
-  } : type3 === "int" ? (row2) => {
-    const s = indices2[2 * row2] + offset3;
-    if (s > indices2[2 * row2 + 1])
+  } : type3 === "int" ? (row3) => {
+    const s = indices3[2 * row3] + offset4;
+    if (s > indices3[2 * row3 + 1])
       return 0;
     return parseIntSkipLeadingWhitespace(data, s, s + width);
-  } : (row2) => {
-    const s = indices2[2 * row2] + offset3;
-    if (s > indices2[2 * row2 + 1])
+  } : (row3) => {
+    const s = indices3[2 * row3] + offset4;
+    if (s > indices3[2 * row3 + 1])
       return 0;
     return parseFloatSkipLeadingWhitespace(data, s, s + width);
   };
@@ -76719,7 +76719,7 @@ function FixedColumn(lines, offset3, width, schema) {
     isDefined: true,
     rowCount,
     value,
-    valueKind: (row2) => Column.ValueKinds.Present,
+    valueKind: (row3) => Column.ValueKinds.Present,
     toArray: (params) => column_helpers_exports.createAndFillArray(rowCount, value, params),
     areValuesEqual: (rowA, rowB) => value(rowA) === value(rowB)
   };
@@ -76839,15 +76839,15 @@ var DefaultPolyhedronProps = {
 function Polyhedron(_vertices, _indices, props) {
   const { radius, detail } = { ...DefaultPolyhedronProps, ...props };
   const builder = createBuilder();
-  const { vertices: vertices2, indices: indices2 } = builder;
+  const { vertices: vertices2, indices: indices3 } = builder;
   subdivide(detail);
   appplyRadius(vertices2, radius);
   const normals = new Float32Array(vertices2.length);
-  computeIndexedVertexNormals(vertices2, indices2, normals, vertices2.length / 3, indices2.length / 3);
+  computeIndexedVertexNormals(vertices2, indices3, normals, vertices2.length / 3, indices3.length / 3);
   return {
     vertices: new Float32Array(vertices2),
     normals: new Float32Array(normals),
-    indices: new Uint32Array(indices2)
+    indices: new Uint32Array(indices3)
   };
   function subdivide(detail2) {
     const a8 = Vec3();
@@ -76894,7 +76894,7 @@ function Polyhedron(_vertices, _indices, props) {
 }
 function createBuilder() {
   const vertices2 = [];
-  const indices2 = [];
+  const indices3 = [];
   const vertexMap = /* @__PURE__ */ new Map();
   function addVertex(v4) {
     const key2 = `${v4[0].toFixed(5)}|${v4[1].toFixed(5)}|${v4[2].toFixed(5)}`;
@@ -76908,9 +76908,9 @@ function createBuilder() {
   }
   return {
     vertices: vertices2,
-    indices: indices2,
+    indices: indices3,
     add: (v1, v22, v32) => {
-      indices2.push(addVertex(v1), addVertex(v22), addVertex(v32));
+      indices3.push(addVertex(v1), addVertex(v22), addVertex(v32));
     }
   };
 }
@@ -77128,7 +77128,7 @@ var DefaultCylinderProps = {
 };
 function Cylinder(props) {
   const { radiusTop, radiusBottom, height, radialSegments, heightSegments, topCap, bottomCap, thetaStart, thetaLength } = { ...DefaultCylinderProps, ...props };
-  const indices2 = [];
+  const indices3 = [];
   const vertices2 = [];
   const normals = [];
   let index = 0;
@@ -77142,7 +77142,7 @@ function Cylinder(props) {
   return {
     vertices: new Float32Array(vertices2),
     normals: new Float32Array(normals),
-    indices: new Uint32Array(indices2)
+    indices: new Uint32Array(indices3)
   };
   function generateTorso() {
     const normal3 = Vec3.zero();
@@ -77169,8 +77169,8 @@ function Cylinder(props) {
         const b8 = indexArray[y + 1][x];
         const c8 = indexArray[y + 1][x + 1];
         const d5 = indexArray[y][x + 1];
-        indices2.push(a8, b8, d5);
-        indices2.push(b8, c8, d5);
+        indices3.push(a8, b8, d5);
+        indices3.push(b8, c8, d5);
       }
     }
   }
@@ -77197,9 +77197,9 @@ function Cylinder(props) {
       const c8 = centerIndexStart + x;
       const i = centerIndexEnd + x;
       if (top === true) {
-        indices2.push(i, i + 1, c8);
+        indices3.push(i, i + 1, c8);
       } else {
-        indices2.push(i + 1, i, c8);
+        indices3.push(i + 1, i, c8);
       }
     }
   }
@@ -77334,14 +77334,14 @@ var tmpCylinderMatRot = Mat4();
 var tmpCylinderScale = Vec3();
 var tmpCylinderStart = Vec3();
 var tmpUp = Vec3();
-function setCylinderMat(m, start4, dir, length, matchDir) {
-  Vec3.setMagnitude(tmpCylinderMatDir, dir, length / 2);
+function setCylinderMat(m, start4, dir, length2, matchDir) {
+  Vec3.setMagnitude(tmpCylinderMatDir, dir, length2 / 2);
   Vec3.add(tmpCylinderCenter, start4, tmpCylinderMatDir);
   if (matchDir)
     Vec3.matchDirection(tmpUp, up, tmpCylinderMatDir);
   else
     Vec3.copy(tmpUp, up);
-  Vec3.set(tmpCylinderScale, 1, length, 1);
+  Vec3.set(tmpCylinderScale, 1, length2, 1);
   Vec3.makeRotation(tmpCylinderMatRot, tmpUp, tmpCylinderMatDir);
   Mat4.scale(m, tmpCylinderMatRot, tmpCylinderScale);
   return Mat4.setTranslation(m, tmpCylinderCenter);
@@ -77375,8 +77375,8 @@ function getCylinder(props) {
   }
   return cylinder;
 }
-function addCylinderFromRay3D(state, ray, length, props) {
-  setCylinderMat(tmpCylinderMat, ray.origin, ray.direction, length, false);
+function addCylinderFromRay3D(state, ray, length2, props) {
+  setCylinderMat(tmpCylinderMat, ray.origin, ray.direction, length2, false);
   MeshBuilder.addPrimitive(state, tmpCylinderMat, getCylinder(props));
 }
 function addCylinder(state, start4, end4, lengthScale, props) {
@@ -77448,8 +77448,8 @@ var MeshBuilder;
   }
   MeshBuilder2.createState = createState2;
   function addTriangle(state, a8, b8, c8) {
-    const { vertices: vertices2, normals, indices: indices2, groups, currentGroup } = state;
-    const offset3 = vertices2.elementCount;
+    const { vertices: vertices2, normals, indices: indices3, groups, currentGroup } = state;
+    const offset4 = vertices2.elementCount;
     caAdd32(vertices2, a8[0], a8[1], a8[2]);
     caAdd32(vertices2, b8[0], b8[1], b8[2]);
     caAdd32(vertices2, c8[0], c8[1], c8[2]);
@@ -77458,12 +77458,12 @@ var MeshBuilder;
       caAdd32(normals, tmpV4[0], tmpV4[1], tmpV4[2]);
       caAdd2(groups, currentGroup);
     }
-    caAdd32(indices2, offset3, offset3 + 1, offset3 + 2);
+    caAdd32(indices3, offset4, offset4 + 1, offset4 + 2);
   }
   MeshBuilder2.addTriangle = addTriangle;
   function addTriangleWithNormal(state, a8, b8, c8, n) {
-    const { vertices: vertices2, normals, indices: indices2, groups, currentGroup } = state;
-    const offset3 = vertices2.elementCount;
+    const { vertices: vertices2, normals, indices: indices3, groups, currentGroup } = state;
+    const offset4 = vertices2.elementCount;
     caAdd32(vertices2, a8[0], a8[1], a8[2]);
     caAdd32(vertices2, b8[0], b8[1], b8[2]);
     caAdd32(vertices2, c8[0], c8[1], c8[2]);
@@ -77471,44 +77471,44 @@ var MeshBuilder;
       caAdd32(normals, n[0], n[1], n[2]);
       caAdd2(groups, currentGroup);
     }
-    caAdd32(indices2, offset3, offset3 + 1, offset3 + 2);
+    caAdd32(indices3, offset4, offset4 + 1, offset4 + 2);
   }
   MeshBuilder2.addTriangleWithNormal = addTriangleWithNormal;
-  function addTriangleStrip(state, vertices2, indices2) {
-    v3fromArray3(tmpVecC, vertices2, indices2[0] * 3);
-    v3fromArray3(tmpVecD, vertices2, indices2[1] * 3);
-    for (let i = 2, il = indices2.length; i < il; i += 2) {
+  function addTriangleStrip(state, vertices2, indices3) {
+    v3fromArray3(tmpVecC, vertices2, indices3[0] * 3);
+    v3fromArray3(tmpVecD, vertices2, indices3[1] * 3);
+    for (let i = 2, il = indices3.length; i < il; i += 2) {
       v3copy2(tmpVecA2, tmpVecC);
       v3copy2(tmpVecB2, tmpVecD);
-      v3fromArray3(tmpVecC, vertices2, indices2[i] * 3);
-      v3fromArray3(tmpVecD, vertices2, indices2[i + 1] * 3);
+      v3fromArray3(tmpVecC, vertices2, indices3[i] * 3);
+      v3fromArray3(tmpVecD, vertices2, indices3[i + 1] * 3);
       addTriangle(state, tmpVecA2, tmpVecB2, tmpVecC);
       addTriangle(state, tmpVecB2, tmpVecD, tmpVecC);
     }
   }
   MeshBuilder2.addTriangleStrip = addTriangleStrip;
-  function addTriangleFan(state, vertices2, indices2) {
-    v3fromArray3(tmpVecA2, vertices2, indices2[0] * 3);
-    for (let i = 2, il = indices2.length; i < il; ++i) {
-      v3fromArray3(tmpVecB2, vertices2, indices2[i - 1] * 3);
-      v3fromArray3(tmpVecC, vertices2, indices2[i] * 3);
+  function addTriangleFan(state, vertices2, indices3) {
+    v3fromArray3(tmpVecA2, vertices2, indices3[0] * 3);
+    for (let i = 2, il = indices3.length; i < il; ++i) {
+      v3fromArray3(tmpVecB2, vertices2, indices3[i - 1] * 3);
+      v3fromArray3(tmpVecC, vertices2, indices3[i] * 3);
       addTriangle(state, tmpVecA2, tmpVecC, tmpVecB2);
     }
   }
   MeshBuilder2.addTriangleFan = addTriangleFan;
-  function addTriangleFanWithNormal(state, vertices2, indices2, normal3) {
-    v3fromArray3(tmpVecA2, vertices2, indices2[0] * 3);
-    for (let i = 2, il = indices2.length; i < il; ++i) {
-      v3fromArray3(tmpVecB2, vertices2, indices2[i - 1] * 3);
-      v3fromArray3(tmpVecC, vertices2, indices2[i] * 3);
+  function addTriangleFanWithNormal(state, vertices2, indices3, normal3) {
+    v3fromArray3(tmpVecA2, vertices2, indices3[0] * 3);
+    for (let i = 2, il = indices3.length; i < il; ++i) {
+      v3fromArray3(tmpVecB2, vertices2, indices3[i - 1] * 3);
+      v3fromArray3(tmpVecC, vertices2, indices3[i] * 3);
       addTriangleWithNormal(state, tmpVecA2, tmpVecC, tmpVecB2, normal3);
     }
   }
   MeshBuilder2.addTriangleFanWithNormal = addTriangleFanWithNormal;
   function addPrimitive(state, t5, primitive) {
     const { vertices: va, normals: na, indices: ia } = primitive;
-    const { vertices: vertices2, normals, indices: indices2, groups, currentGroup } = state;
-    const offset3 = vertices2.elementCount;
+    const { vertices: vertices2, normals, indices: indices3, groups, currentGroup } = state;
+    const offset4 = vertices2.elementCount;
     const n = mat3directionTransform(tmpMat32, t5);
     for (let i = 0, il = va.length; i < il; i += 3) {
       v3transformMat42(tmpV4, v3fromArray3(tmpV4, va, i), t5);
@@ -77518,14 +77518,14 @@ var MeshBuilder;
       caAdd2(groups, currentGroup);
     }
     for (let i = 0, il = ia.length; i < il; i += 3) {
-      caAdd32(indices2, ia[i] + offset3, ia[i + 1] + offset3, ia[i + 2] + offset3);
+      caAdd32(indices3, ia[i] + offset4, ia[i + 1] + offset4, ia[i + 2] + offset4);
     }
   }
   MeshBuilder2.addPrimitive = addPrimitive;
   function addPrimitiveFlipped(state, t5, primitive) {
     const { vertices: va, normals: na, indices: ia } = primitive;
-    const { vertices: vertices2, normals, indices: indices2, groups, currentGroup } = state;
-    const offset3 = vertices2.elementCount;
+    const { vertices: vertices2, normals, indices: indices3, groups, currentGroup } = state;
+    const offset4 = vertices2.elementCount;
     const n = mat3directionTransform(tmpMat32, t5);
     for (let i = 0, il = va.length; i < il; i += 3) {
       v3transformMat42(tmpV4, v3fromArray3(tmpV4, va, i), t5);
@@ -77535,7 +77535,7 @@ var MeshBuilder;
       caAdd2(groups, currentGroup);
     }
     for (let i = 0, il = ia.length; i < il; i += 3) {
-      caAdd32(indices2, ia[i + 2] + offset3, ia[i + 1] + offset3, ia[i] + offset3);
+      caAdd32(indices3, ia[i + 2] + offset4, ia[i + 1] + offset4, ia[i] + offset4);
     }
   }
   MeshBuilder2.addPrimitiveFlipped = addPrimitiveFlipped;
@@ -77562,9 +77562,9 @@ var MeshBuilder;
   }
   MeshBuilder2.addMesh = addMesh;
   function getMesh2(state) {
-    const { vertices: vertices2, normals, indices: indices2, groups, mesh } = state;
+    const { vertices: vertices2, normals, indices: indices3, groups, mesh } = state;
     const vb = ChunkedArray.compact(vertices2, true);
-    const ib = ChunkedArray.compact(indices2, true);
+    const ib = ChunkedArray.compact(indices3, true);
     const nb = ChunkedArray.compact(normals, true);
     const gb = ChunkedArray.compact(groups, true);
     return Mesh.create(vb, ib, nb, gb, state.vertices.elementCount, state.indices.elementCount, mesh);
@@ -77662,14 +77662,14 @@ function addVerticesRange(begI, endI, state, vertex, groupIds) {
   }
 }
 function addFacesRange(begI, endI, state, face) {
-  const { indices: indices2 } = state;
+  const { indices: indices3 } = state;
   for (let i = begI; i < endI; ++i) {
     const { entries: entries3, count: count3 } = face.value(i);
     if (count3 === 3) {
-      ChunkedArray.add3(indices2, entries3[0], entries3[1], entries3[2]);
+      ChunkedArray.add3(indices3, entries3[0], entries3[1], entries3[2]);
     } else if (count3 === 4) {
-      ChunkedArray.add3(indices2, entries3[2], entries3[1], entries3[0]);
-      ChunkedArray.add3(indices2, entries3[2], entries3[0], entries3[3]);
+      ChunkedArray.add3(indices3, entries3[2], entries3[1], entries3[0]);
+      ChunkedArray.add3(indices3, entries3[2], entries3[0], entries3[3]);
     }
   }
 }
@@ -78096,15 +78096,15 @@ function parseRemark350(lines, lineStart, lineEnd) {
       assemblies.push(current2);
     } else if (line.substr(13, 5) === "BIOMT") {
       const biomt = line.split(/\s+/);
-      const row2 = parseInt(line[18]) - 1;
-      if (row2 === 0) {
+      const row3 = parseInt(line[18]) - 1;
+      if (row3 === 0) {
         matrix = Mat4.identity();
         group.operators.push({ id: operId++, matrix });
       }
-      Mat4.setValue(matrix, row2, 0, parseFloat(biomt[4]));
-      Mat4.setValue(matrix, row2, 1, parseFloat(biomt[5]));
-      Mat4.setValue(matrix, row2, 2, parseFloat(biomt[6]));
-      Mat4.setValue(matrix, row2, 3, parseFloat(biomt[7]));
+      Mat4.setValue(matrix, row3, 0, parseFloat(biomt[4]));
+      Mat4.setValue(matrix, row3, 1, parseFloat(biomt[5]));
+      Mat4.setValue(matrix, row3, 2, parseFloat(biomt[6]));
+      Mat4.setValue(matrix, row3, 3, parseFloat(biomt[7]));
     } else if (line.substr(11, 30) === "APPLY THE FOLLOWING TO CHAINS:" || line.substr(11, 30) === "                   AND CHAINS:") {
       if (line.substr(11, 5) === "APPLY") {
         group = { chains: [], operators: [] };
@@ -78157,7 +78157,7 @@ function parseRemark350(lines, lineStart, lineEnd) {
   for (const asm of assemblies) {
     for (const group2 of asm.groups) {
       for (const oper of group2.operators) {
-        const row2 = {
+        const row3 = {
           id: "" + oper.id,
           type: "?",
           name: "?",
@@ -78165,11 +78165,11 @@ function parseRemark350(lines, lineStart, lineEnd) {
         };
         for (let i = 0; i < 3; i++) {
           for (let j = 0; j < 3; j++) {
-            row2[`matrix[${i + 1}][${j + 1}]`] = "" + Mat4.getValue(oper.matrix, i, j);
+            row3[`matrix[${i + 1}][${j + 1}]`] = "" + Mat4.getValue(oper.matrix, i, j);
           }
-          row2[`vector[${i + 1}]`] = "" + Mat4.getValue(oper.matrix, i, 3);
+          row3[`vector[${i + 1}]`] = "" + Mat4.getValue(oper.matrix, i, 3);
         }
-        pdbx_struct_oper_list_rows.push(row2);
+        pdbx_struct_oper_list_rows.push(row3);
       }
     }
   }
@@ -78200,33 +78200,33 @@ function parseMtrix(lines, lineStart, lineEnd) {
   for (let i = lineStart; i < lineEnd; i++) {
     const line = getLine(i);
     const ncs = line.split(/\s+/);
-    const row2 = parseInt(line[5]) - 1;
-    if (row2 === 0) {
+    const row3 = parseInt(line[5]) - 1;
+    if (row3 === 0) {
       matrix = Mat4.identity();
       matrices.push(matrix);
     }
-    Mat4.setValue(matrix, row2, 0, parseFloat(ncs[2]));
-    Mat4.setValue(matrix, row2, 1, parseFloat(ncs[3]));
-    Mat4.setValue(matrix, row2, 2, parseFloat(ncs[4]));
-    Mat4.setValue(matrix, row2, 3, parseFloat(ncs[5]));
+    Mat4.setValue(matrix, row3, 0, parseFloat(ncs[2]));
+    Mat4.setValue(matrix, row3, 1, parseFloat(ncs[3]));
+    Mat4.setValue(matrix, row3, 2, parseFloat(ncs[4]));
+    Mat4.setValue(matrix, row3, 3, parseFloat(ncs[5]));
   }
   if (matrices.length === 0)
     return [];
   const struct_ncs_oper_rows = [];
   let id = 1;
   for (const oper of matrices) {
-    const row2 = {
+    const row3 = {
       id: "ncsop" + id++,
       code: ".",
       details: "."
     };
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
-        row2[`matrix[${i + 1}][${j + 1}]`] = "" + Mat4.getValue(oper, i, j);
+        row3[`matrix[${i + 1}][${j + 1}]`] = "" + Mat4.getValue(oper, i, j);
       }
-      row2[`vector[${i + 1}]`] = "" + Mat4.getValue(oper, i, 3);
+      row3[`vector[${i + 1}]`] = "" + Mat4.getValue(oper, i, 3);
     }
-    struct_ncs_oper_rows.push(row2);
+    struct_ncs_oper_rows.push(row3);
   }
   const struct_ncs_oper = {
     id: CifField.ofStrings(struct_ncs_oper_rows.map((r) => r.id)),
@@ -78620,7 +78620,7 @@ function getAtomSite(sites, labelAsymIdHelper, options) {
 }
 function addAtom(sites, model, data, s, e, isPdbqt) {
   const { data: str11 } = data;
-  const length = e - s;
+  const length2 = e - s;
   TokenBuilder.addToken(sites.group_PDB, Tokenizer.trim(data, s, s + 6));
   Tokenizer.trim(data, s + 6, s + 11);
   sites.id[sites.index] = data.data.substring(data.tokenStart, data.tokenEnd);
@@ -78642,7 +78642,7 @@ function addAtom(sites, model, data, s, e, isPdbqt) {
   TokenBuilder.addToken(sites.Cartn_y, Tokenizer.trim(data, s + 38, s + 46));
   TokenBuilder.addToken(sites.Cartn_z, Tokenizer.trim(data, s + 46, s + 54));
   TokenBuilder.addToken(sites.occupancy, Tokenizer.trim(data, s + 54, s + 60));
-  if (length >= 66) {
+  if (length2 >= 66) {
     TokenBuilder.addToken(sites.B_iso_or_equiv, Tokenizer.trim(data, s + 60, s + 66));
   } else {
     TokenBuilder.add(sites.B_iso_or_equiv, 0, 0);
@@ -78651,7 +78651,7 @@ function addAtom(sites, model, data, s, e, isPdbqt) {
     TokenBuilder.addToken(sites.partial_charge, Tokenizer.trim(data, s + 70, s + 76));
   } else {
   }
-  if (length >= 78 && !isPdbqt) {
+  if (length2 >= 78 && !isPdbqt) {
     Tokenizer.trim(data, s + 76, s + 78);
     if (data.tokenStart < data.tokenEnd) {
       TokenBuilder.addToken(sites.type_symbol, data);
@@ -78722,7 +78722,7 @@ function getAnisotropic(sites) {
 }
 function addAnisotropic(sites, model, data, s, e) {
   const { data: str11 } = data;
-  const length = e - s;
+  const length2 = e - s;
   Tokenizer.trim(data, s + 6, s + 11);
   sites.id[sites.index] = str11.substring(data.tokenStart, data.tokenEnd);
   TokenBuilder.addToken(sites.pdbx_auth_atom_id, Tokenizer.trim(data, s + 12, s + 16));
@@ -78745,7 +78745,7 @@ function addAnisotropic(sites, model, data, s, e) {
   sites["U[1][2]"][sites.index] = parseIntSkipLeadingWhitespace(str11, s + 49, s + 56) / 1e4;
   sites["U[1][3]"][sites.index] = parseIntSkipLeadingWhitespace(str11, s + 56, s + 63) / 1e4;
   sites["U[2][3]"][sites.index] = parseIntSkipLeadingWhitespace(str11, s + 63, s + 70) / 1e4;
-  if (length >= 78) {
+  if (length2 >= 78) {
     Tokenizer.trim(data, s + 76, s + 78);
     if (data.tokenStart < data.tokenEnd) {
       TokenBuilder.addToken(sites.type_symbol, data);
@@ -78861,13 +78861,13 @@ function addHeader(data, s, e, header2) {
 // node_modules/molstar/lib/mol-model-formats/structure/pdb/to-cif.js
 async function pdbToMmCif(pdb) {
   const { lines } = pdb;
-  const { data, indices: indices2 } = lines;
+  const { data, indices: indices3 } = lines;
   const tokenizer = Tokenizer(data);
   const isPdbqt = !!pdb.isPdbqt;
   let atomCount2 = 0;
   let anisotropicCount = 0;
   for (let i = 0, _i = lines.count; i < _i; i++) {
-    const s = indices2[2 * i], e = indices2[2 * i + 1];
+    const s = indices3[2 * i], e = indices3[2 * i + 1];
     switch (data.charAt(s)) {
       case "A":
         if (substringStartsWith(data, s, e, "ATOM  "))
@@ -78892,7 +78892,7 @@ async function pdbToMmCif(pdb) {
   let hasAssemblies = false;
   const terIndices = /* @__PURE__ */ new Set();
   for (let i = 0, _i = lines.count; i < _i; i++) {
-    let s = indices2[2 * i], e = indices2[2 * i + 1];
+    let s = indices3[2 * i], e = indices3[2 * i + 1];
     switch (data.charAt(s)) {
       case "A":
         if (substringStartsWith(data, s, e, "ATOM  ")) {
@@ -78911,8 +78911,8 @@ async function pdbToMmCif(pdb) {
         } else if (substringStartsWith(data, s, e, "CONECT")) {
           let j = i + 1;
           while (true) {
-            s = indices2[2 * j];
-            e = indices2[2 * j + 1];
+            s = indices3[2 * j];
+            e = indices3[2 * j + 1];
             if (!substringStartsWith(data, s, e, "CONECT"))
               break;
             j++;
@@ -78928,8 +78928,8 @@ async function pdbToMmCif(pdb) {
         } else if (substringStartsWith(data, s, e, "COMPND")) {
           let j = i + 1;
           while (true) {
-            s = indices2[2 * j];
-            e = indices2[2 * j + 1];
+            s = indices3[2 * j];
+            e = indices3[2 * j + 1];
             if (!substringStartsWith(data, s, e, "COMPND"))
               break;
             j++;
@@ -78950,8 +78950,8 @@ async function pdbToMmCif(pdb) {
         } else if (substringStartsWith(data, s, e, "HELIX")) {
           let j = i + 1;
           while (true) {
-            s = indices2[2 * j];
-            e = indices2[2 * j + 1];
+            s = indices3[2 * j];
+            e = indices3[2 * j + 1];
             if (!substringStartsWith(data, s, e, "HELIX"))
               break;
             j++;
@@ -78961,8 +78961,8 @@ async function pdbToMmCif(pdb) {
         } else if (substringStartsWith(data, s, e, "HETNAM")) {
           let j = i + 1;
           while (true) {
-            s = indices2[2 * j];
-            e = indices2[2 * j + 1];
+            s = indices3[2 * j];
+            e = indices3[2 * j + 1];
             if (!substringStartsWith(data, s, e, "HETNAM"))
               break;
             j++;
@@ -78979,8 +78979,8 @@ async function pdbToMmCif(pdb) {
         if (substringStartsWith(data, s, e, "MTRIX")) {
           let j = i + 1;
           while (true) {
-            s = indices2[2 * j];
-            e = indices2[2 * j + 1];
+            s = indices3[2 * j];
+            e = indices3[2 * j + 1];
             if (!substringStartsWith(data, s, e, "MTRIX"))
               break;
             j++;
@@ -78995,8 +78995,8 @@ async function pdbToMmCif(pdb) {
         if (substringStartsWith(data, s, e, "REMARK 350")) {
           let j = i + 1;
           while (true) {
-            s = indices2[2 * j];
-            e = indices2[2 * j + 1];
+            s = indices3[2 * j];
+            e = indices3[2 * j + 1];
             if (!substringStartsWith(data, s, e, "REMARK 350"))
               break;
             j++;
@@ -79010,8 +79010,8 @@ async function pdbToMmCif(pdb) {
         if (substringStartsWith(data, s, e, "SHEET")) {
           let j = i + 1;
           while (true) {
-            s = indices2[2 * j];
-            e = indices2[2 * j + 1];
+            s = indices3[2 * j];
+            e = indices3[2 * j + 1];
             if (!substringStartsWith(data, s, e, "SHEET"))
               break;
             j++;
@@ -79206,12 +79206,12 @@ function topologyFromPsf(psf) {
     const { atomIdA, atomIdB } = psf.bonds;
     const bonds = {
       indexA: Column.ofLambda({
-        value: (row2) => atomIdA.value(row2) - 1,
+        value: (row3) => atomIdA.value(row3) - 1,
         rowCount: atomIdA.rowCount,
         schema: atomIdA.schema
       }),
       indexB: Column.ofLambda({
-        value: (row2) => atomIdB.value(row2) - 1,
+        value: (row3) => atomIdB.value(row3) - 1,
         rowCount: atomIdB.rowCount,
         schema: atomIdB.schema
       }),
@@ -82335,12 +82335,12 @@ var operators2 = [
     name: "gap",
     type: postfix,
     rule: postfixOp(/GAP\s+([-+]?[0-9]*\.?[0-9]+)/i, 1).map((x) => parseFloat(x)),
-    map: (distance, target) => {
+    map: (distance2, target) => {
       return B9.struct.filter.within({
         "0": B9.struct.generator.all(),
         target,
         "atom-radius": B9.acp("vdw"),
-        "max-radius": distance,
+        "max-radius": distance2,
         invert: true
       });
     }
@@ -84402,11 +84402,11 @@ function handleFormalCharges(tokenizer, lineStart, formalCharges) {
   Tokenizer.trim(tokenizer, lineStart + 6, lineStart + 9);
   const numOfCharges = parseInt(Tokenizer.getTokenString(tokenizer));
   for (let i = 0; i < numOfCharges; ++i) {
-    const offset3 = 9 + i * 8;
-    Tokenizer.trim(tokenizer, lineStart + offset3, lineStart + offset3 + 4);
+    const offset4 = 9 + i * 8;
+    Tokenizer.trim(tokenizer, lineStart + offset4, lineStart + offset4 + 4);
     const _atomIdx = Tokenizer.getTokenString(tokenizer);
     formalCharges.atomIdx.push(+_atomIdx);
-    Tokenizer.trim(tokenizer, lineStart + offset3 + 4, lineStart + offset3 + 8);
+    Tokenizer.trim(tokenizer, lineStart + offset4 + 4, lineStart + offset4 + 8);
     const _charge = Tokenizer.getTokenString(tokenizer);
     formalCharges.charge.push(+_charge);
   }
@@ -84674,7 +84674,7 @@ async function getModels2(db, format, ctx) {
       const flag = [];
       const included = /* @__PURE__ */ new Set();
       let j = 0;
-      const { atom_site_label_1, atom_site_label_2, valence, distance } = db.geom_bond;
+      const { atom_site_label_1, atom_site_label_2, valence, distance: distance2 } = db.geom_bond;
       for (let i = 0; i < bondCount2; ++i) {
         const iA = labelIndexMap[atom_site_label_1.value(i)];
         const iB = labelIndexMap[atom_site_label_2.value(i)];
@@ -84684,7 +84684,7 @@ async function getModels2(db, format, ctx) {
         included.add(id);
         indexA[j] = iA;
         indexB[j] = iB;
-        dist[j] = distance.value(i) || -1;
+        dist[j] = distance2.value(i) || -1;
         if (bond_type) {
           const t5 = bond_type.str(i);
           if (t5 === "D") {
@@ -84923,14 +84923,14 @@ async function handleAtoms5(state) {
     chargeTokens,
     status_bitsTokens
   ];
-  const { length } = tokenizer;
+  const { length: length2 } = tokenizer;
   let linesAlreadyRead = 0;
   await chunkedSubtask(state.runtimeCtx, 1e5, void 0, (chunkSize) => {
     const linesToRead = Math.min(molecule.num_atoms - linesAlreadyRead, chunkSize);
     maxColumnCount = Math.max(maxColumnCount, _readColumnsAndGetMaxCount(linesToRead, tokenIndexToColumn, tokenizer));
     linesAlreadyRead += linesToRead;
     return linesToRead;
-  }, (ctx) => ctx.update({ message: "Parsing...", current: tokenizer.position, max: length }));
+  }, (ctx) => ctx.update({ message: "Parsing...", current: tokenizer.position, max: length2 }));
   const ret = {
     count: molecule.num_atoms,
     atom_id: TokenColumnProvider(atom_idTokens)(Column.Schema.int),
@@ -84969,14 +84969,14 @@ async function handleBonds4(state) {
     bondTypeTokens,
     status_bitsTokens
   ];
-  const { length } = tokenizer;
+  const { length: length2 } = tokenizer;
   let linesAlreadyRead = 0;
   await chunkedSubtask(state.runtimeCtx, 1e5, void 0, (chunkSize) => {
     const linesToRead = Math.min(molecule.num_bonds - linesAlreadyRead, chunkSize);
     maxColumnCount = Math.max(maxColumnCount, _readColumnsAndGetMaxCount(linesToRead, tokenIndexToColumn, tokenizer));
     linesAlreadyRead += linesToRead;
     return linesToRead;
-  }, (ctx) => ctx.update({ message: "Parsing...", current: tokenizer.position, max: length }));
+  }, (ctx) => ctx.update({ message: "Parsing...", current: tokenizer.position, max: length2 }));
   const ret = {
     count: molecule.num_bonds,
     bond_id: TokenColumnProvider(bond_idTokens)(Column.Schema.int),
@@ -85021,14 +85021,14 @@ async function handleSubstructures(state) {
     inter_bondsTokens,
     status_bitsTokens
   ];
-  const { length } = tokenizer;
+  const { length: length2 } = tokenizer;
   let linesAlreadyRead = 0;
   await chunkedSubtask(state.runtimeCtx, 1e5, void 0, (chunkSize) => {
     const linesToRead = Math.min(molecule.num_subst - linesAlreadyRead, chunkSize);
     maxColumnCount = Math.max(maxColumnCount, _readColumnsAndGetMaxCount(linesToRead, tokenIndexToColumn, tokenizer));
     linesAlreadyRead += linesToRead;
     return linesToRead;
-  }, (ctx) => ctx.update({ message: "Parsing...", current: tokenizer.position, max: length }));
+  }, (ctx) => ctx.update({ message: "Parsing...", current: tokenizer.position, max: length2 }));
   const ret = {
     count: molecule.num_subst,
     subst_id: TokenColumnProvider(subst_idTokens)(Column.Schema.int),
@@ -85392,7 +85392,7 @@ var Decoder;
   const _buffer = new ArrayBuffer(8 * 3);
   Decoder2.buf = new Int32Array(_buffer);
   const uint32view = new Uint32Array(_buffer);
-  function decodeBits(cbuf, offset3, numOfBits1) {
+  function decodeBits(cbuf, offset4, numOfBits1) {
     let numOfBits = numOfBits1;
     const mask = (1 << numOfBits) - 1;
     let lastBB0 = uint32view[1];
@@ -85400,14 +85400,14 @@ var Decoder;
     let cnt = Decoder2.buf[0];
     let num = 0;
     while (numOfBits >= 8) {
-      lastBB1 = lastBB1 << 8 | cbuf[offset3 + cnt++];
+      lastBB1 = lastBB1 << 8 | cbuf[offset4 + cnt++];
       num |= lastBB1 >> lastBB0 << numOfBits - 8;
       numOfBits -= 8;
     }
     if (numOfBits > 0) {
       if (lastBB0 < numOfBits) {
         lastBB0 += 8;
-        lastBB1 = lastBB1 << 8 | cbuf[offset3 + cnt++];
+        lastBB1 = lastBB1 << 8 | cbuf[offset4 + cnt++];
       }
       lastBB0 -= numOfBits;
       num |= lastBB1 >> lastBB0 & (1 << numOfBits) - 1;
@@ -85419,16 +85419,16 @@ var Decoder;
     return num;
   }
   Decoder2.decodeBits = decodeBits;
-  function decodeByte(cbuf, offset3) {
+  function decodeByte(cbuf, offset4) {
     let lastBB1 = uint32view[2];
     const cnt = Decoder2.buf[0];
-    lastBB1 = lastBB1 << 8 | cbuf[offset3 + cnt];
+    lastBB1 = lastBB1 << 8 | cbuf[offset4 + cnt];
     Decoder2.buf[0] = cnt + 1;
     Decoder2.buf[2] = lastBB1;
     return lastBB1 >> uint32view[1] & 255;
   }
   const intBytes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-  function decodeInts(cbuf, offset3, numOfBits1, sizes, nums) {
+  function decodeInts(cbuf, offset4, numOfBits1, sizes, nums) {
     let numOfBits = numOfBits1;
     let numOfBytes = 0;
     intBytes[0] = 0;
@@ -85436,11 +85436,11 @@ var Decoder;
     intBytes[2] = 0;
     intBytes[3] = 0;
     while (numOfBits > 8) {
-      intBytes[numOfBytes++] = decodeByte(cbuf, offset3);
+      intBytes[numOfBytes++] = decodeByte(cbuf, offset4);
       numOfBits -= 8;
     }
     if (numOfBits > 0) {
-      intBytes[numOfBytes++] = decodeBits(cbuf, offset3, numOfBits);
+      intBytes[numOfBytes++] = decodeBits(cbuf, offset4, numOfBits);
     }
     for (let i = 2; i > 0; i--) {
       let num = 0;
@@ -85478,28 +85478,28 @@ async function parseInternal11(ctx, data) {
   const sizesmall = [0, 0, 0];
   const thiscoord = [0.1, 0.1, 0.1];
   const prevcoord = [0.1, 0.1, 0.1];
-  let offset3 = 0;
+  let offset4 = 0;
   const buf = Decoder.buf;
   while (true) {
     let frameCoords;
-    const natoms = dv.getInt32(offset3 + 4);
-    offset3 += 12;
-    times.push(dv.getFloat32(offset3));
-    offset3 += 4;
-    const box4 = new Float32Array(9);
+    const natoms = dv.getInt32(offset4 + 4);
+    offset4 += 12;
+    times.push(dv.getFloat32(offset4));
+    offset4 += 4;
+    const box5 = new Float32Array(9);
     for (let i = 0; i < 9; ++i) {
-      box4[i] = dv.getFloat32(offset3) * 10;
-      offset3 += 4;
+      box5[i] = dv.getFloat32(offset4) * 10;
+      offset4 += 4;
     }
-    boxes.push(box4);
+    boxes.push(box5);
     if (natoms <= 9) {
       frameCoords = { count: natoms, x: new Float32Array(natoms), y: new Float32Array(natoms), z: new Float32Array(natoms) };
-      offset3 += 4;
+      offset4 += 4;
       for (let i = 0; i < natoms; ++i) {
-        frameCoords.x[i] = dv.getFloat32(offset3);
-        frameCoords.y[i] = dv.getFloat32(offset3 + 4);
-        frameCoords.z[i] = dv.getFloat32(offset3 + 8);
-        offset3 += 12;
+        frameCoords.x[i] = dv.getFloat32(offset4);
+        frameCoords.y[i] = dv.getFloat32(offset4 + 4);
+        frameCoords.z[i] = dv.getFloat32(offset4 + 8);
+        offset4 += 12;
       }
     } else {
       buf[0] = buf[1] = buf[2] = 0;
@@ -85510,20 +85510,20 @@ async function parseInternal11(ctx, data) {
       prevcoord[0] = prevcoord[1] = prevcoord[2] = 0;
       frameCoords = { count: natoms, x: new Float32Array(natoms), y: new Float32Array(natoms), z: new Float32Array(natoms) };
       let lfp = 0;
-      const lsize = dv.getInt32(offset3);
-      offset3 += 4;
-      const precision = dv.getFloat32(offset3);
-      offset3 += 4;
-      minMaxInt[0] = dv.getInt32(offset3);
-      minMaxInt[1] = dv.getInt32(offset3 + 4);
-      minMaxInt[2] = dv.getInt32(offset3 + 8);
-      minMaxInt[3] = dv.getInt32(offset3 + 12);
-      minMaxInt[4] = dv.getInt32(offset3 + 16);
-      minMaxInt[5] = dv.getInt32(offset3 + 20);
+      const lsize = dv.getInt32(offset4);
+      offset4 += 4;
+      const precision = dv.getFloat32(offset4);
+      offset4 += 4;
+      minMaxInt[0] = dv.getInt32(offset4);
+      minMaxInt[1] = dv.getInt32(offset4 + 4);
+      minMaxInt[2] = dv.getInt32(offset4 + 8);
+      minMaxInt[3] = dv.getInt32(offset4 + 12);
+      minMaxInt[4] = dv.getInt32(offset4 + 16);
+      minMaxInt[5] = dv.getInt32(offset4 + 20);
       sizeint[0] = minMaxInt[3] - minMaxInt[0] + 1;
       sizeint[1] = minMaxInt[4] - minMaxInt[1] + 1;
       sizeint[2] = minMaxInt[5] - minMaxInt[2] + 1;
-      offset3 += 24;
+      offset4 += 24;
       let bitsize;
       if ((sizeint[0] | sizeint[1] | sizeint[2]) > 16777215) {
         bitsizeint[0] = Decoder.sizeOfInt(sizeint[0]);
@@ -85533,26 +85533,26 @@ async function parseInternal11(ctx, data) {
       } else {
         bitsize = Decoder.sizeOfInts(3, sizeint);
       }
-      let smallidx = dv.getInt32(offset3);
-      offset3 += 4;
+      let smallidx = dv.getInt32(offset4);
+      offset4 += 4;
       let tmpIdx = smallidx - 1;
       tmpIdx = FirstIdx > tmpIdx ? FirstIdx : tmpIdx;
       let smaller = MagicInts[tmpIdx] / 2 | 0;
       let smallnum = MagicInts[smallidx] / 2 | 0;
       sizesmall[0] = sizesmall[1] = sizesmall[2] = MagicInts[smallidx];
-      const adz = Math.ceil(dv.getInt32(offset3) / 4) * 4;
-      offset3 += 4;
+      const adz = Math.ceil(dv.getInt32(offset4) / 4) * 4;
+      offset4 += 4;
       const invPrecision = 1 / precision;
       let run = 0;
       let i = 0;
       thiscoord[0] = thiscoord[1] = thiscoord[2] = 0;
       while (i < lsize) {
         if (bitsize === 0) {
-          thiscoord[0] = Decoder.decodeBits(data, offset3, bitsizeint[0]);
-          thiscoord[1] = Decoder.decodeBits(data, offset3, bitsizeint[1]);
-          thiscoord[2] = Decoder.decodeBits(data, offset3, bitsizeint[2]);
+          thiscoord[0] = Decoder.decodeBits(data, offset4, bitsizeint[0]);
+          thiscoord[1] = Decoder.decodeBits(data, offset4, bitsizeint[1]);
+          thiscoord[2] = Decoder.decodeBits(data, offset4, bitsizeint[2]);
         } else {
-          Decoder.decodeInts(data, offset3, bitsize, sizeint, thiscoord);
+          Decoder.decodeInts(data, offset4, bitsize, sizeint, thiscoord);
         }
         i++;
         thiscoord[0] += minMaxInt[0];
@@ -85561,10 +85561,10 @@ async function parseInternal11(ctx, data) {
         prevcoord[0] = thiscoord[0];
         prevcoord[1] = thiscoord[1];
         prevcoord[2] = thiscoord[2];
-        const flag = Decoder.decodeBits(data, offset3, 1);
+        const flag = Decoder.decodeBits(data, offset4, 1);
         let isSmaller = 0;
         if (flag === 1) {
-          run = Decoder.decodeBits(data, offset3, 5);
+          run = Decoder.decodeBits(data, offset4, 5);
           isSmaller = run % 3;
           run -= isSmaller;
           isSmaller--;
@@ -85572,7 +85572,7 @@ async function parseInternal11(ctx, data) {
         if (run > 0) {
           thiscoord[0] = thiscoord[1] = thiscoord[2] = 0;
           for (let k = 0; k < run; k += 3) {
-            Decoder.decodeInts(data, offset3, smallidx, sizesmall, thiscoord);
+            Decoder.decodeInts(data, offset4, smallidx, sizesmall, thiscoord);
             i++;
             thiscoord[0] += prevcoord[0] - smallnum;
             thiscoord[1] += prevcoord[1] - smallnum;
@@ -85624,7 +85624,7 @@ async function parseInternal11(ctx, data) {
           undefinedError();
         }
       }
-      offset3 += adz;
+      offset4 += adz;
     }
     for (let c8 = 0; c8 < natoms; c8++) {
       frameCoords.x[c8] *= 10;
@@ -85633,9 +85633,9 @@ async function parseInternal11(ctx, data) {
     }
     coordinates.push(frameCoords);
     if (ctx.shouldUpdate) {
-      await ctx.update({ current: offset3, max: data.length });
+      await ctx.update({ current: offset4, max: data.length });
     }
-    if (offset3 >= data.length)
+    if (offset4 >= data.length)
       break;
   }
   if (times.length >= 1) {
@@ -85666,10 +85666,10 @@ function coordinatesFromXtc(file) {
     const offsetTime = Time(file.timeOffset, deltaTime.unit);
     const frames = [];
     for (let i = 0, il = file.frames.length; i < il; ++i) {
-      const box4 = file.boxes[i];
-      const x = Vec3.fromArray(Vec3(), box4, 0);
-      const y = Vec3.fromArray(Vec3(), box4, 3);
-      const z = Vec3.fromArray(Vec3(), box4, 6);
+      const box5 = file.boxes[i];
+      const x = Vec3.fromArray(Vec3(), box5, 0);
+      const y = Vec3.fromArray(Vec3(), box5, 3);
+      const z = Vec3.fromArray(Vec3(), box5, 6);
       frames.push({
         elementCount: file.frames[i].count,
         cell: Cell.fromBasis(x, y, z),
@@ -85741,17 +85741,17 @@ function getModels5(mol, ctx) {
   const y = new Float32Array(count3);
   const z = new Float32Array(count3);
   const model_num = new Int32Array(count3);
-  let offset3 = 0;
+  let offset4 = 0;
   for (let i = 0; i < molecules.length; i++) {
     const m = molecules[i];
     for (let j = 0; j < m.count; j++) {
-      type_symbols[offset3] = m.type_symbol.value(j);
-      x[offset3] = m.x.value(j);
-      y[offset3] = m.y.value(j);
-      z[offset3] = m.z.value(j);
-      id[offset3] = j;
-      model_num[offset3] = i;
-      offset3++;
+      type_symbols[offset4] = m.type_symbol.value(j);
+      x[offset4] = m.x.value(j);
+      y[offset4] = m.y.value(j);
+      z[offset4] = m.z.value(j);
+      id[offset4] = j;
+      model_num[offset4] = i;
+      offset4++;
     }
   }
   const MOL = Column.ofConst("MOL", count3, Column.Schema.str);
@@ -85973,7 +85973,7 @@ async function handleAtoms6(state, count3, atom_style) {
   const { position } = tokenizer;
   readLine4(tokenizer).trim();
   tokenizer.position = position;
-  const { length } = tokenizer;
+  const { length: length2 } = tokenizer;
   let linesAlreadyRead = 0;
   await chunkedSubtask(state.runtimeCtx, 1e5, void 0, (chunkSize) => {
     const linesToRead = Math.min(count3 - linesAlreadyRead, chunkSize);
@@ -85992,7 +85992,7 @@ async function handleAtoms6(state, count3, atom_style) {
     }
     linesAlreadyRead += linesToRead;
     return linesToRead;
-  }, (ctx) => ctx.update({ message: "Parsing...", current: tokenizer.position, max: length }));
+  }, (ctx) => ctx.update({ message: "Parsing...", current: tokenizer.position, max: length2 }));
   return {
     count: count3,
     atomId: TokenColumnProvider(atomId2)(Column.Schema.int),
@@ -86010,7 +86010,7 @@ async function handleBonds5(state, count3) {
   const bondType = TokenBuilder.create(tokenizer.data, count3 * 2);
   const atomIdA = TokenBuilder.create(tokenizer.data, count3 * 2);
   const atomIdB = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const { length } = tokenizer;
+  const { length: length2 } = tokenizer;
   let bondsAlreadyRead = 0;
   await chunkedSubtask(state.runtimeCtx, 10, void 0, (chunkSize) => {
     const bondsToRead = Math.min(count3 - bondsAlreadyRead, chunkSize);
@@ -86037,7 +86037,7 @@ async function handleBonds5(state, count3) {
     }
     bondsAlreadyRead += bondsToRead;
     return bondsToRead;
-  }, (ctx) => ctx.update({ message: "Parsing...", current: tokenizer.position, max: length }));
+  }, (ctx) => ctx.update({ message: "Parsing...", current: tokenizer.position, max: length2 }));
   return {
     count: count3,
     bondId: TokenColumnProvider(bondId)(Column.Schema.int),
@@ -86113,19 +86113,19 @@ async function getModels6(mol, ctx, unitsStyle = "real") {
   const cy = new Float32Array(count3);
   const cz = new Float32Array(count3);
   const model_num = new Int32Array(count3);
-  let offset3 = 0;
+  let offset4 = 0;
   for (let j = 0; j < count3; j++) {
-    type_symbols[offset3] = atoms2.atomType.value(j).toString();
-    cx[offset3] = atoms2.x.value(j) * scale;
-    cy[offset3] = atoms2.y.value(j) * scale;
-    cz[offset3] = atoms2.z.value(j) * scale;
-    id[offset3] = atoms2.atomId.value(j) - 1;
-    model_num[offset3] = 0;
-    offset3++;
+    type_symbols[offset4] = atoms2.atomType.value(j).toString();
+    cx[offset4] = atoms2.x.value(j) * scale;
+    cy[offset4] = atoms2.y.value(j) * scale;
+    cz[offset4] = atoms2.z.value(j) * scale;
+    id[offset4] = atoms2.atomId.value(j) - 1;
+    model_num[offset4] = 0;
+    offset4++;
   }
   const MOL = Column.ofConst("MOL", count3, Column.Schema.str);
   const asym_id = Column.ofLambda({
-    value: (row2) => atoms2.moleculeId.value(row2).toString(),
+    value: (row3) => atoms2.moleculeId.value(row3).toString(),
     rowCount: count3,
     schema: Column.Schema.str
   });
@@ -86221,7 +86221,7 @@ async function handleAtoms7(state, count3, parts) {
   const { position } = tokenizer;
   tokenizer.position = position;
   const n = parts.length;
-  const { length } = tokenizer;
+  const { length: length2 } = tokenizer;
   let linesAlreadyRead = 0;
   await chunkedSubtask(state.runtimeCtx, 1e5, void 0, (chunkSize) => {
     const linesToRead = Math.min(count3 - linesAlreadyRead, chunkSize);
@@ -86256,7 +86256,7 @@ async function handleAtoms7(state, count3, parts) {
     }
     linesAlreadyRead += linesToRead;
     return linesToRead;
-  }, (ctx) => ctx.update({ message: "Parsing...", current: tokenizer.position, max: length }));
+  }, (ctx) => ctx.update({ message: "Parsing...", current: tokenizer.position, max: length2 }));
   return {
     count: count3,
     atomMode,
@@ -86340,25 +86340,25 @@ function coordinatesFromLammpsTrajectory(file, unitsStyle = "real") {
     const isScaled = atomsMode.includes("s");
     const frames = [];
     for (let i = 0, il = file.frames.length; i < il; ++i) {
-      const box4 = file.bounds[i];
+      const box5 = file.bounds[i];
       if (isScaled) {
-        offset_scale.x = box4.length[0];
-        offset_scale.y = box4.length[1];
-        offset_scale.z = box4.length[2];
-        offset_pos.x = box4.lower[0];
-        offset_pos.y = box4.lower[1];
-        offset_pos.z = box4.lower[2];
+        offset_scale.x = box5.length[0];
+        offset_scale.y = box5.length[1];
+        offset_scale.z = box5.length[2];
+        offset_pos.x = box5.lower[0];
+        offset_pos.y = box5.lower[1];
+        offset_pos.z = box5.lower[2];
       }
       const count3 = file.frames[i].count;
       const cx = new Float32Array(count3);
       const cy = new Float32Array(count3);
       const cz = new Float32Array(count3);
-      let offset3 = 0;
+      let offset4 = 0;
       for (let j = 0; j < count3; j++) {
-        cx[offset3] = (file.frames[i].x.value(j) * offset_scale.x + offset_pos.x) * scale;
-        cy[offset3] = (file.frames[i].y.value(j) * offset_scale.y + offset_pos.y) * scale;
-        cz[offset3] = (file.frames[i].z.value(j) * offset_scale.z + offset_pos.z) * scale;
-        offset3++;
+        cx[offset4] = (file.frames[i].x.value(j) * offset_scale.x + offset_pos.x) * scale;
+        cy[offset4] = (file.frames[i].y.value(j) * offset_scale.y + offset_pos.y) * scale;
+        cz[offset4] = (file.frames[i].z.value(j) * offset_scale.z + offset_pos.z) * scale;
+        offset4++;
       }
       frames.push({
         elementCount: file.frames[i].count,
@@ -86376,17 +86376,17 @@ async function getModels7(mol, ctx, unitsStyle = "real") {
   const atoms2 = mol.frames[0];
   const count3 = atoms2.count;
   const atomsMode = atoms2.atomMode;
-  const box4 = mol.bounds[0];
+  const box5 = mol.bounds[0];
   const offset_pos = { x: 0, y: 0, z: 0 };
   const offset_scale = { x: 1, y: 1, z: 1 };
   const scale = lammpsUnitStyles[unitsStyle].scale;
   if (atomsMode.includes("s")) {
-    offset_scale.x = box4.length[0];
-    offset_scale.y = box4.length[1];
-    offset_scale.z = box4.length[2];
-    offset_pos.x = box4.lower[0];
-    offset_pos.y = box4.lower[1];
-    offset_pos.z = box4.lower[2];
+    offset_scale.x = box5.length[0];
+    offset_scale.y = box5.length[1];
+    offset_scale.z = box5.length[2];
+    offset_pos.x = box5.lower[0];
+    offset_pos.y = box5.lower[1];
+    offset_pos.z = box5.lower[2];
   }
   const type_symbols = new Array(count3);
   const id = new Int32Array(count3);
@@ -86394,19 +86394,19 @@ async function getModels7(mol, ctx, unitsStyle = "real") {
   const cy = new Float32Array(count3);
   const cz = new Float32Array(count3);
   const model_num = new Int32Array(count3);
-  let offset3 = 0;
+  let offset4 = 0;
   for (let j = 0; j < count3; j++) {
-    type_symbols[offset3] = atoms2.atomType.value(j).toString();
-    cx[offset3] = (atoms2.x.value(j) * offset_scale.x + offset_pos.x) * scale;
-    cy[offset3] = (atoms2.y.value(j) * offset_scale.y + offset_pos.y) * scale;
-    cz[offset3] = (atoms2.z.value(j) * offset_scale.z + offset_pos.z) * scale;
-    id[offset3] = atoms2.atomId.value(j);
-    model_num[offset3] = 0;
-    offset3++;
+    type_symbols[offset4] = atoms2.atomType.value(j).toString();
+    cx[offset4] = (atoms2.x.value(j) * offset_scale.x + offset_pos.x) * scale;
+    cy[offset4] = (atoms2.y.value(j) * offset_scale.y + offset_pos.y) * scale;
+    cz[offset4] = (atoms2.z.value(j) * offset_scale.z + offset_pos.z) * scale;
+    id[offset4] = atoms2.atomId.value(j);
+    model_num[offset4] = 0;
+    offset4++;
   }
   const MOL = Column.ofConst("MOL", count3, Column.Schema.str);
   const asym_id = Column.ofLambda({
-    value: (row2) => atoms2.moleculeId.value(row2).toString(),
+    value: (row3) => atoms2.moleculeId.value(row3).toString(),
     rowCount: count3,
     schema: Column.Schema.str
   });
@@ -86663,75 +86663,75 @@ async function parseInternal16(data) {
   const coordinates = f.frames;
   const boxes = f.boxes;
   const times = f.times;
-  let offset3 = 0;
+  let offset4 = 0;
   while (true) {
-    offset3 += 8;
-    const versionSize = dv.getInt32(offset3);
-    offset3 += 4;
-    offset3 += versionSize;
-    const boxSize = dv.getInt32(offset3 + 8);
-    const virSize = dv.getInt32(offset3 + 12);
-    const presSize = dv.getInt32(offset3 + 16);
-    const coordSize = dv.getInt32(offset3 + 28);
-    const velocitySize = dv.getInt32(offset3 + 32);
-    const forceSize = dv.getInt32(offset3 + 36);
-    const natoms = dv.getInt32(offset3 + 40);
-    offset3 += 52;
+    offset4 += 8;
+    const versionSize = dv.getInt32(offset4);
+    offset4 += 4;
+    offset4 += versionSize;
+    const boxSize = dv.getInt32(offset4 + 8);
+    const virSize = dv.getInt32(offset4 + 12);
+    const presSize = dv.getInt32(offset4 + 16);
+    const coordSize = dv.getInt32(offset4 + 28);
+    const velocitySize = dv.getInt32(offset4 + 32);
+    const forceSize = dv.getInt32(offset4 + 36);
+    const natoms = dv.getInt32(offset4 + 40);
+    offset4 += 52;
     const floatSize = boxSize / 9;
     const natoms3 = natoms * 3;
     if (floatSize === 8) {
-      times.push(dv.getFloat64(offset3));
+      times.push(dv.getFloat64(offset4));
     } else {
-      times.push(dv.getFloat32(offset3));
+      times.push(dv.getFloat32(offset4));
     }
-    offset3 += 2 * floatSize;
+    offset4 += 2 * floatSize;
     if (boxSize) {
-      const box4 = new Float32Array(9);
+      const box5 = new Float32Array(9);
       if (floatSize === 8) {
         for (let i = 0; i < 9; ++i) {
-          box4[i] = dv.getFloat64(offset3) * 10;
-          offset3 += 8;
+          box5[i] = dv.getFloat64(offset4) * 10;
+          offset4 += 8;
         }
       } else {
         for (let i = 0; i < 9; ++i) {
-          box4[i] = dv.getFloat32(offset3) * 10;
-          offset3 += 4;
+          box5[i] = dv.getFloat32(offset4) * 10;
+          offset4 += 4;
         }
       }
-      boxes.push(box4);
+      boxes.push(box5);
     }
-    offset3 += virSize;
-    offset3 += presSize;
+    offset4 += virSize;
+    offset4 += presSize;
     if (coordSize) {
       const x = new Float32Array(natoms);
       const y = new Float32Array(natoms);
       const z = new Float32Array(natoms);
       if (floatSize === 8) {
         for (let i = 0; i < natoms; ++i) {
-          x[i] = dv.getFloat64(offset3) * 10;
-          y[i] = dv.getFloat64(offset3 + 8) * 10;
-          z[i] = dv.getFloat64(offset3 + 16) * 10;
-          offset3 += 24;
+          x[i] = dv.getFloat64(offset4) * 10;
+          y[i] = dv.getFloat64(offset4 + 8) * 10;
+          z[i] = dv.getFloat64(offset4 + 16) * 10;
+          offset4 += 24;
         }
       } else {
-        const tmp = new Uint32Array(data.buffer, offset3, natoms3);
+        const tmp = new Uint32Array(data.buffer, offset4, natoms3);
         for (let i = 0; i < natoms3; ++i) {
           const value = tmp[i];
           tmp[i] = (value & 255) << 24 | (value & 65280) << 8 | value >> 8 & 65280 | value >> 24 & 255;
         }
-        const frameCoords = new Float32Array(data.buffer, offset3, natoms3);
+        const frameCoords = new Float32Array(data.buffer, offset4, natoms3);
         for (let i = 0; i < natoms; ++i) {
           x[i] = frameCoords[i * 3] * 10;
           y[i] = frameCoords[i * 3 + 1] * 10;
           z[i] = frameCoords[i * 3 + 2] * 10;
-          offset3 += 12;
+          offset4 += 12;
         }
       }
       coordinates.push({ count: natoms, x, y, z });
     }
-    offset3 += velocitySize;
-    offset3 += forceSize;
-    if (offset3 >= data.byteLength)
+    offset4 += velocitySize;
+    offset4 += forceSize;
+    if (offset4 >= data.byteLength)
       break;
   }
   if (times.length >= 1) {
@@ -86762,10 +86762,10 @@ function coordinatesFromTrr(file) {
     const offsetTime = Time(file.timeOffset, deltaTime.unit);
     const frames = [];
     for (let i = 0, il = file.frames.length; i < il; ++i) {
-      const box4 = file.boxes[i];
-      const x = Vec3.fromArray(Vec3(), box4, 0);
-      const y = Vec3.fromArray(Vec3(), box4, 3);
-      const z = Vec3.fromArray(Vec3(), box4, 6);
+      const box5 = file.boxes[i];
+      const x = Vec3.fromArray(Vec3(), box5, 0);
+      const y = Vec3.fromArray(Vec3(), box5, 3);
+      const z = Vec3.fromArray(Vec3(), box5, 6);
       frames.push({
         elementCount: file.frames[i].count,
         cell: Cell.fromBasis(x, y, z),
@@ -86804,12 +86804,12 @@ var IOBuffer = class {
     } else {
       dataIsGiven = true;
     }
-    const offset3 = params.offset ? params.offset >>> 0 : 0;
-    const byteLength = data.byteLength - offset3;
-    let dvOffset = offset3;
+    const offset4 = params.offset ? params.offset >>> 0 : 0;
+    const byteLength = data.byteLength - offset4;
+    let dvOffset = offset4;
     if (!(data instanceof ArrayBuffer) && !(data instanceof SharedArrayBuffer)) {
       if (data.byteLength !== data.buffer.byteLength) {
-        dvOffset = data.byteOffset + offset3;
+        dvOffset = data.byteOffset + offset4;
       }
       data = data.buffer;
     }
@@ -86871,8 +86871,8 @@ var IOBuffer = class {
   /**
    * Move the pointer to the given offset
    */
-  seek(offset3) {
-    this.offset = offset3;
+  seek(offset4) {
+    this.offset = offset4;
     return this;
   }
   /**
@@ -86900,10 +86900,10 @@ var IOBuffer = class {
    * Pop the last pointer offset from the mark stack, and set the current pointer offset to the popped value
    */
   popMark() {
-    const offset3 = this._marks.pop();
-    if (offset3 === void 0)
+    const offset4 = this._marks.pop();
+    if (offset4 === void 0)
       throw new Error("Mark stack empty");
-    this.seek(offset3);
+    this.seek(offset4);
     return this;
   }
   /**
@@ -87399,10 +87399,10 @@ function variablesList(buffer, recordId, version) {
       const type3 = buffer.readUint32();
       notNetcdf(type3 < 1 && type3 > 6, "non valid type " + type3);
       const varSize = buffer.readUint32();
-      let offset3 = buffer.readUint32();
+      let offset4 = buffer.readUint32();
       if (version === 2) {
-        notNetcdf(offset3 > 0, "offsets larger than 4GB not supported");
-        offset3 = buffer.readUint32();
+        notNetcdf(offset4 > 0, "offsets larger than 4GB not supported");
+        offset4 = buffer.readUint32();
       }
       if (dimensionsIds[0] === recordId) {
         recordStep += varSize;
@@ -87413,7 +87413,7 @@ function variablesList(buffer, recordId, version) {
         attributes,
         type: num2str(type3),
         size: varSize,
-        offset: offset3,
+        offset: offset4,
         record: dimensionsIds[0] === recordId
       };
     }
@@ -87688,15 +87688,15 @@ function topologyFromPrmtop(prmtop) {
     const bondCount2 = NBONH + NBONA;
     const bonds = {
       indexA: Column.ofLambda({
-        value: (row2) => {
-          return row2 < NBONH ? bondsIncHydrogen.value(row2 * 3) / 3 : bondsWithoutHydrogen.value((row2 - NBONH) * 3) / 3;
+        value: (row3) => {
+          return row3 < NBONH ? bondsIncHydrogen.value(row3 * 3) / 3 : bondsWithoutHydrogen.value((row3 - NBONH) * 3) / 3;
         },
         rowCount: bondCount2,
         schema: Column.Schema.int
       }),
       indexB: Column.ofLambda({
-        value: (row2) => {
-          return row2 < NBONH ? bondsIncHydrogen.value(row2 * 3 + 1) / 3 : bondsWithoutHydrogen.value((row2 - NBONH) * 3 + 1) / 3;
+        value: (row3) => {
+          return row3 < NBONH ? bondsIncHydrogen.value(row3 * 3 + 1) / 3 : bondsWithoutHydrogen.value((row3 - NBONH) * 3 + 1) / 3;
         },
         rowCount: bondCount2,
         schema: Column.Schema.int
@@ -87916,11 +87916,11 @@ function transformParamsNeedCentroid(src) {
 function getTransformFromParams(src, centroid2) {
   var _a, _b;
   if (src.name === "matrix") {
-    const transform = Mat4();
-    Mat4.copy(transform, src.params.data);
+    const transform2 = Mat4();
+    Mat4.copy(transform2, src.params.data);
     if (src.params.transpose)
-      Mat4.transpose(transform, transform);
-    return transform;
+      Mat4.transpose(transform2, transform2);
+    return transform2;
   } else {
     if (((_a = src.params.rotationCenter) === null || _a === void 0 ? void 0 : _a.name) === "centroid") {
       Vec3.copy(GetTransformState.center, centroid2);
@@ -87932,10 +87932,10 @@ function getTransformFromParams(src, centroid2) {
     Mat4.fromTranslation(GetTransformState.translationToCenter, GetTransformState.center);
     Mat4.fromRotation(GetTransformState.rotation, src.params.angle * Math.PI / 180, src.params.axis);
     Mat4.fromTranslation(GetTransformState.translationFromCenter, Vec3.negate(GetTransformState.center, GetTransformState.center));
-    const transform = Mat4.mul3(Mat4(), GetTransformState.translationToCenter, GetTransformState.rotation, GetTransformState.translationFromCenter);
+    const transform2 = Mat4.mul3(Mat4(), GetTransformState.translationToCenter, GetTransformState.rotation, GetTransformState.translationFromCenter);
     Mat4.fromTranslation(GetTransformState.translation, src.params.translation);
-    Mat4.mul(transform, GetTransformState.translation, transform);
-    return transform;
+    Mat4.mul(transform2, GetTransformState.translation, transform2);
+    return transform2;
   }
 }
 var TransformParam = ParamDefinition.MappedStatic("matrix", {
@@ -88485,8 +88485,8 @@ var TransformStructureConformation = PluginStateTransform.BuiltIn({
   },
   apply({ a: a8, params }) {
     const center2 = transformParamsNeedCentroid(params.transform) ? a8.data.boundary.sphere.center : Vec3.unit;
-    const transform = getTransformFromParams(params.transform, center2);
-    const s = Structure.transform(a8.data, transform);
+    const transform2 = getTransformFromParams(params.transform, center2);
+    const s = Structure.transform(a8.data, transform2);
     return new PluginStateObject.Molecule.Structure(s, { label: a8.label, description: `${a8.description} [Transformed]` });
   },
   dispose({ b: b8 }) {
@@ -89614,10 +89614,10 @@ var VolumeTransform = PluginStateTransform.BuiltIn({
   },
   apply({ a: a8, params }) {
     const center2 = transformParamsNeedCentroid(params.transform) ? Grid.getBoundingSphere(a8.data.grid).center : Vec3.unit;
-    const transform = getTransformFromParams(params.transform, center2);
+    const transform2 = getTransformFromParams(params.transform, center2);
     const gridTransform = {
       kind: "matrix",
-      matrix: Mat4.mul(Mat4(), transform, Grid.getGridToCartesianTransform(a8.data.grid))
+      matrix: Mat4.mul(Mat4(), transform2, Grid.getGridToCartesianTransform(a8.data.grid))
     };
     return new PluginStateObject.Volume.Data({
       ...a8.data,
@@ -90470,8 +90470,8 @@ function eachVolumeLoci(loci, volume, props, apply) {
         changed = true;
     } else {
       for (let i = 0, il = loci.instances.length; i < il; ++i) {
-        const offset3 = loci.instances[i] * cellCount;
-        if (apply(Interval.ofBounds(offset3, offset3 + cellCount)))
+        const offset4 = loci.instances[i] * cellCount;
+        if (apply(Interval.ofBounds(offset4, offset4 + cellCount)))
           changed = true;
       }
     }
@@ -90488,8 +90488,8 @@ function eachVolumeLoci(loci, volume, props, apply) {
           changed = true;
       } else {
         for (let i = 0, il = loci.instances.length; i < il; ++i) {
-          const offset3 = loci.instances[i] * cellCount;
-          if (apply(Interval.ofBounds(offset3, offset3 + cellCount)))
+          const offset4 = loci.instances[i] * cellCount;
+          if (apply(Interval.ofBounds(offset4, offset4 + cellCount)))
             changed = true;
         }
       }
@@ -90500,8 +90500,8 @@ function eachVolumeLoci(loci, volume, props, apply) {
       for (let i = 0, il = data.length; i < il; ++i) {
         if (equalEps(v4, data[i], eps)) {
           OrderedSet2.forEach(loci.instances, (j) => {
-            const offset3 = j * cellCount;
-            if (apply(Interval.ofSingleton(offset3 + i)))
+            const offset4 = j * cellCount;
+            if (apply(Interval.ofSingleton(offset4 + i)))
               changed = true;
           });
         }
@@ -90510,18 +90510,18 @@ function eachVolumeLoci(loci, volume, props, apply) {
   } else if (Volume.Cell.isLoci(loci)) {
     if (!Volume.areEquivalent(loci.volume, volume))
       return false;
-    for (const { indices: indices2, instances } of loci.elements) {
-      if (Interval.is(indices2)) {
+    for (const { indices: indices3, instances } of loci.elements) {
+      if (Interval.is(indices3)) {
         OrderedSet2.forEach(instances, (j) => {
-          const offset3 = j * cellCount;
-          if (apply(Interval.offset(indices2, offset3)))
+          const offset4 = j * cellCount;
+          if (apply(Interval.offset(indices3, offset4)))
             changed = true;
         });
       } else {
-        OrderedSet2.forEach(indices2, (v4) => {
+        OrderedSet2.forEach(indices3, (v4) => {
           OrderedSet2.forEach(instances, (j) => {
-            const offset3 = j * cellCount;
-            if (apply(Interval.ofSingleton(offset3 + v4)))
+            const offset4 = j * cellCount;
+            if (apply(Interval.ofSingleton(offset4 + v4)))
               changed = true;
           });
         });
@@ -90534,8 +90534,8 @@ function eachVolumeLoci(loci, volume, props, apply) {
       for (const { segments: segments2, instances } of loci.elements) {
         if (OrderedSet2.areIntersecting(segments2, props.segments)) {
           OrderedSet2.forEach(instances, (j) => {
-            const offset3 = j * cellCount;
-            if (apply(Interval.ofBounds(offset3, offset3 + cellCount)))
+            const offset4 = j * cellCount;
+            if (apply(Interval.ofBounds(offset4, offset4 + cellCount)))
               changed = true;
           });
         }
@@ -90554,8 +90554,8 @@ function eachVolumeLoci(loci, volume, props, apply) {
           for (let i = 0, il = d5.length; i < il; ++i) {
             if (s.includes(d5[i])) {
               for (let j = 0, _j = OrderedSet2.size(instances); j < _j; j++) {
-                const offset3 = j * cellCount;
-                if (apply(Interval.ofSingleton(i + offset3)))
+                const offset4 = j * cellCount;
+                if (apply(Interval.ofSingleton(i + offset4)))
                   changed = true;
               }
             }
@@ -90617,31 +90617,31 @@ function createVolumeTexture2d(volume, variant, padding2 = 0, type3 = "byte") {
     for (let y = 0; y < yn; ++y) {
       for (let x = 0; x < xn; ++x) {
         const column = Math.floor(z * xnp % width / xnp);
-        const row2 = Math.floor(z * xnp / width);
+        const row3 = Math.floor(z * xnp / width);
         const px = column * xnp + x;
-        const index = itemSize * (row2 * ynp * width + y * width + px);
-        const offset3 = o(x, y, z);
+        const index = itemSize * (row3 * ynp * width + y * width + px);
+        const offset4 = o(x, y, z);
         let value;
         if (type3 === "byte") {
-          value = Math.round((data[offset3] - min5) / diff * 255);
+          value = Math.round((data[offset4] - min5) / diff * 255);
         } else if (type3 === "halfFloat") {
-          value = toHalfFloat((data[offset3] - min5) / diff);
+          value = toHalfFloat((data[offset4] - min5) / diff);
         } else {
-          value = (data[offset3] - min5) / diff;
+          value = (data[offset4] - min5) / diff;
         }
         if (variant === "data") {
           array2[index] = value;
         } else {
           if (variant === "groups") {
             if (type3 === "halfFloat") {
-              let group = clamp(Math.round(offset3), 0, 16777216 - 1) + 1;
+              let group = clamp(Math.round(offset4), 0, 16777216 - 1) + 1;
               array2[index + 2] = toHalfFloat(group % 256);
               group = Math.floor(group / 256);
               array2[index + 1] = toHalfFloat(group % 256);
               group = Math.floor(group / 256);
               array2[index] = toHalfFloat(group % 256);
             } else {
-              packIntToRGBArray(offset3, array2, index);
+              packIntToRGBArray(offset4, array2, index);
             }
           } else {
             v3set3(n02, data[o(Math.max(0, x - 1), y, z)], data[o(x, Math.max(0, y - 1), z)], data[o(x, y, Math.max(0, z - 1))]);
@@ -90681,22 +90681,22 @@ function createVolumeTexture3d(volume, type3 = "byte") {
   for (let z = 0; z < depth; ++z) {
     for (let y = 0; y < height; ++y) {
       for (let x = 0; x < width; ++x) {
-        const offset3 = o(x, y, z);
+        const offset4 = o(x, y, z);
         v3set3(n02, data[o(Math.max(0, x - 1), y, z)], data[o(x, Math.max(0, y - 1), z)], data[o(x, y, Math.max(0, z - 1))]);
         v3set3(n12, data[o(Math.min(width1, x + 1), y, z)], data[o(x, Math.min(height1, y + 1), z)], data[o(x, y, Math.min(depth1, z + 1))]);
         v3normalize(n02, v3sub(n02, n02, n12));
         v3addScalar(n02, v3scale(n02, n02, 0.5), 0.5);
         if (type3 === "byte") {
           v3toArray(v3scale(n02, n02, 255), array2, i);
-          array2[i + 3] = Math.round((data[offset3] - min5) / diff * 255);
+          array2[i + 3] = Math.round((data[offset4] - min5) / diff * 255);
         } else if (type3 === "halfFloat") {
           array2[i] = toHalfFloat(n02[0]);
           array2[i + 1] = toHalfFloat(n02[1]);
           array2[i + 2] = toHalfFloat(n02[2]);
-          array2[i + 3] = toHalfFloat((data[offset3] - min5) / diff);
+          array2[i + 3] = toHalfFloat((data[offset4] - min5) / diff);
         } else {
           v3toArray(n02, array2, i);
-          array2[i + 3] = (data[offset3] - min5) / diff;
+          array2[i + 3] = (data[offset4] - min5) / diff;
         }
         i += 4;
       }
@@ -90724,9 +90724,9 @@ function createSegmentTexture2d(volume, set4, bbox, padding2 = 0) {
     for (let y = 0; y < yn; ++y) {
       for (let x = 0; x < xn; ++x) {
         const column = Math.floor(z * xnp % width / xnp);
-        const row2 = Math.floor(z * xnp / width);
+        const row3 = Math.floor(z * xnp / width);
         const px = column * xnp + x;
-        const index = itemSize * (row2 * ynp * width + y * width + px);
+        const index = itemSize * (row3 * ynp * width + y * width + px);
         const v0 = set4.includes(data[o(x + minx, y + miny, z + minz)]) ? 255 : 0;
         const xp = set4.includes(data[o(Math.min(xn1 + maxx, x + 1 + minx), y + miny, z + minz)]) ? 255 : 0;
         const xn2 = set4.includes(data[o(Math.max(0, x - 1 + minx), y + miny, z + minz)]) ? 255 : 0;
@@ -90778,9 +90778,9 @@ function createWrappedVolume(volume) {
 function calcMeshColorSmoothing(input, resolution, stride, webgl, texture) {
   const { colorType, vertexCount, groupCount, positionBuffer, instanceBuffer, transformBuffer, groupBuffer, itemSize } = input;
   const isInstanceType = colorType.endsWith("Instance");
-  const box4 = Box3D.fromSphere3D(Box3D(), isInstanceType ? input.boundingSphere : input.invariantBoundingSphere);
+  const box5 = Box3D.fromSphere3D(Box3D(), isInstanceType ? input.boundingSphere : input.invariantBoundingSphere);
   const pad2 = 1 + resolution;
-  const expandedBox = Box3D.expand(Box3D(), box4, Vec3.create(pad2, pad2, pad2));
+  const expandedBox = Box3D.expand(Box3D(), box5, Vec3.create(pad2, pad2, pad2));
   const scaleFactor = 1 / resolution;
   const scaledBox = Box3D.scale(Box3D(), expandedBox, scaleFactor);
   const gridDim = Box3D.size(Vec3(), scaledBox);
@@ -90797,9 +90797,9 @@ function calcMeshColorSmoothing(input, resolution, stride, webgl, texture) {
   const colors = input.colorData.array;
   function getIndex(x, y, z) {
     const column = Math.floor(z * xn % width / xn);
-    const row2 = Math.floor(z * xn / width);
+    const row3 = Math.floor(z * xn / width);
     const px = column * xn + x;
-    return itemSize * (row2 * yn * width + y * width + px);
+    return itemSize * (row3 * yn * width + y * width + px);
   }
   const p6 = 2;
   const [dimX, dimY, dimZ] = gridDim;
@@ -90887,9 +90887,9 @@ function getTrilinearlyInterpolated(input) {
   const scaleFactor = gridTransform[3];
   function getIndex(x, y, z) {
     const column = Math.floor(z * xn % width / xn);
-    const row2 = Math.floor(z * xn / width);
+    const row3 = Math.floor(z * xn / width);
     const px = column * xn + x;
-    return colorStride * (row2 * yn * width + y * width + px);
+    return colorStride * (row3 * yn * width + y * width + px);
   }
   const v4 = Vec3();
   const v0 = Vec3();
@@ -91222,9 +91222,9 @@ function getSampleBuffer(sampleCount, stride) {
   }
   return sampleBuffer;
 }
-function getAccumulateRenderable(ctx, input, box4, resolution, stride) {
+function getAccumulateRenderable(ctx, input, box5, resolution, stride) {
   if (ctx.namedComputeRenderables[ColorAccumulateName]) {
-    const extent = Vec3.sub(Vec3(), box4.max, box4.min);
+    const extent = Vec3.sub(Vec3(), box5.max, box5.min);
     const v4 = ctx.namedComputeRenderables[ColorAccumulateName].values;
     const sampleCount = Math.round(input.vertexCount / stride);
     if (sampleCount > v4.drawCount.ref.value || stride !== v4.stride.ref.value) {
@@ -91245,17 +91245,17 @@ function getAccumulateRenderable(ctx, input, box4, resolution, stride) {
     ValueCell.updateIfChanged(v4.uCurrentSlice, 0);
     ValueCell.updateIfChanged(v4.uCurrentX, 0);
     ValueCell.updateIfChanged(v4.uCurrentY, 0);
-    ValueCell.update(v4.uBboxMin, box4.min);
+    ValueCell.update(v4.uBboxMin, box5.min);
     ValueCell.update(v4.uBboxSize, extent);
     ValueCell.updateIfChanged(v4.uResolution, resolution);
     ctx.namedComputeRenderables[ColorAccumulateName].update();
   } else {
-    ctx.namedComputeRenderables[ColorAccumulateName] = createAccumulateRenderable(ctx, input, box4, resolution, stride);
+    ctx.namedComputeRenderables[ColorAccumulateName] = createAccumulateRenderable(ctx, input, box5, resolution, stride);
   }
   return ctx.namedComputeRenderables[ColorAccumulateName];
 }
-function createAccumulateRenderable(ctx, input, box4, resolution, stride) {
-  const extent = Vec3.sub(Vec3(), box4.max, box4.min);
+function createAccumulateRenderable(ctx, input, box5, resolution, stride) {
+  const extent = Vec3.sub(Vec3(), box5.max, box5.min);
   const sampleCount = Math.round(input.vertexCount / stride);
   const values2 = {
     drawCount: ValueCell.create(sampleCount),
@@ -91274,7 +91274,7 @@ function createAccumulateRenderable(ctx, input, box4, resolution, stride) {
     uCurrentSlice: ValueCell.create(0),
     uCurrentX: ValueCell.create(0),
     uCurrentY: ValueCell.create(0),
-    uBboxMin: ValueCell.create(box4.min),
+    uBboxMin: ValueCell.create(box5.min),
     uBboxSize: ValueCell.create(extent),
     uResolution: ValueCell.create(resolution)
   };
@@ -91362,9 +91362,9 @@ function calcTextureMeshColorSmoothing(input, resolution, stride, webgl, texture
     webgl.timer.mark("calcTextureMeshColorSmoothing");
   const { gl, resources, state, extensions: { colorBufferHalfFloat, textureHalfFloat } } = webgl;
   const isInstanceType = input.colorType.endsWith("Instance");
-  const box4 = Box3D.fromSphere3D(Box3D(), isInstanceType ? input.boundingSphere : input.invariantBoundingSphere);
+  const box5 = Box3D.fromSphere3D(Box3D(), isInstanceType ? input.boundingSphere : input.invariantBoundingSphere);
   const pad2 = 1 + resolution;
-  const expandedBox = Box3D.expand(Box3D(), box4, Vec3.create(pad2, pad2, pad2));
+  const expandedBox = Box3D.expand(Box3D(), box5, Vec3.create(pad2, pad2, pad2));
   const scaleFactor = 1 / resolution;
   const scaledBox = Box3D.scale(Box3D(), expandedBox, scaleFactor);
   const gridDim = Box3D.size(Vec3(), scaledBox);
@@ -91923,12 +91923,12 @@ var Visual;
     }
   }
   Visual2.setThemeStrength = setThemeStrength;
-  function setTransform(renderObject, transform, instanceTransforms) {
-    if (!renderObject || !transform && !instanceTransforms)
+  function setTransform(renderObject, transform2, instanceTransforms) {
+    if (!renderObject || !transform2 && !instanceTransforms)
       return;
     const { values: values2 } = renderObject;
-    if (transform) {
-      Mat4.copy(values2.matrix.ref.value, transform);
+    if (transform2) {
+      Mat4.copy(values2.matrix.ref.value, transform2);
       ValueCell.update(values2.matrix, values2.matrix.ref.value);
     }
     if (instanceTransforms) {
@@ -92004,8 +92004,8 @@ function ShapeRepresentation(getShape, geometryUtils, builder = {}) {
       if (updateState.createNew) {
         renderObjects.length = 0;
         locationIt = Shape.groupIterator(_shape);
-        const transform = Shape.createTransform(_shape.transforms, _shape.geometry.boundingSphere, newProps.cellSize, newProps.batchSize);
-        const values2 = geometryUtils.createValues(_shape.geometry, transform, locationIt, _theme, newProps);
+        const transform2 = Shape.createTransform(_shape.transforms, _shape.geometry.boundingSphere, newProps.cellSize, newProps.batchSize);
+        const values2 = geometryUtils.createValues(_shape.geometry, transform2, locationIt, _theme, newProps);
         const state = geometryUtils.createRenderableState(newProps);
         if (builder.modifyState)
           Object.assign(state, builder.modifyState(state));
@@ -92669,7 +92669,7 @@ var TextBuilder;
     const centers = ChunkedArray.create(Float32Array, 3, chunkSize, text ? text.centerBuffer.ref.value : initialCount);
     const mappings = ChunkedArray.create(Float32Array, 2, chunkSize, text ? text.mappingBuffer.ref.value : initialCount);
     const depths = ChunkedArray.create(Float32Array, 1, chunkSize, text ? text.depthBuffer.ref.value : initialCount);
-    const indices2 = ChunkedArray.create(Uint32Array, 3, chunkSize, text ? text.indexBuffer.ref.value : initialCount);
+    const indices3 = ChunkedArray.create(Uint32Array, 3, chunkSize, text ? text.indexBuffer.ref.value : initialCount);
     const groups = ChunkedArray.create(Float32Array, 1, chunkSize, text ? text.groupBuffer.ref.value : initialCount);
     const tcoords = ChunkedArray.create(Float32Array, 2, chunkSize, text ? text.tcoordBuffer.ref.value : initialCount);
     const p6 = { ...ParamDefinition.getDefaultValues(Text.Params), ...props };
@@ -92749,13 +92749,13 @@ var TextBuilder;
           caAdd22(mappings, xLeft, yBottom);
           caAdd22(mappings, xRight, yTop);
           caAdd22(mappings, xRight, yBottom);
-          const offset3 = centers.elementCount;
+          const offset4 = centers.elementCount;
           for (let i = 0; i < 4; ++i) {
             caAdd22(tcoords, 10, 10);
             add(x, y, z, depth, group);
           }
-          caAdd33(indices2, offset3 + quadIndices[0], offset3 + quadIndices[1], offset3 + quadIndices[2]);
-          caAdd33(indices2, offset3 + quadIndices[3], offset3 + quadIndices[4], offset3 + quadIndices[5]);
+          caAdd33(indices3, offset4 + quadIndices[0], offset4 + quadIndices[1], offset4 + quadIndices[2]);
+          caAdd33(indices3, offset4 + quadIndices[3], offset4 + quadIndices[4], offset4 + quadIndices[5]);
         }
         if (tether) {
           let xTip, yTip;
@@ -92862,13 +92862,13 @@ var TextBuilder;
           caAdd22(mappings, xBaseA, yBaseA);
           caAdd22(mappings, xBaseB, yBaseB);
           caAdd22(mappings, xBaseCenter, yBaseCenter);
-          const offset3 = centers.elementCount;
+          const offset4 = centers.elementCount;
           for (let i = 0; i < 4; ++i) {
             caAdd22(tcoords, 10, 10);
             add(x, y, z, depth, group);
           }
-          caAdd33(indices2, offset3, offset3 + 1, offset3 + 3);
-          caAdd33(indices2, offset3, offset3 + 3, offset3 + 2);
+          caAdd33(indices3, offset4, offset4 + 1, offset4 + 3);
+          caAdd33(indices3, offset4, offset4 + 3, offset4 + 2);
         }
         xShift += outline;
         yShift += outline;
@@ -92890,11 +92890,11 @@ var TextBuilder;
           caAdd22(tcoords, (c8.x + c8.w) / texWidth, c8.y / texHeight);
           caAdd22(tcoords, (c8.x + c8.w) / texWidth, (c8.y + c8.h) / texHeight);
           xadvance += c8.nw - 2 * outline;
-          const offset3 = centers.elementCount;
+          const offset4 = centers.elementCount;
           for (let i = 0; i < 4; ++i)
             add(x, y, z, depth, group);
-          caAdd33(indices2, offset3 + quadIndices[0], offset3 + quadIndices[1], offset3 + quadIndices[2]);
-          caAdd33(indices2, offset3 + quadIndices[3], offset3 + quadIndices[4], offset3 + quadIndices[5]);
+          caAdd33(indices3, offset4 + quadIndices[0], offset4 + quadIndices[1], offset4 + quadIndices[2]);
+          caAdd33(indices3, offset4 + quadIndices[3], offset4 + quadIndices[4], offset4 + quadIndices[5]);
         }
       },
       getText: () => {
@@ -92902,10 +92902,10 @@ var TextBuilder;
         const cb2 = ChunkedArray.compact(centers, true);
         const mb = ChunkedArray.compact(mappings, true);
         const db = ChunkedArray.compact(depths, true);
-        const ib = ChunkedArray.compact(indices2, true);
+        const ib = ChunkedArray.compact(indices3, true);
         const gb = ChunkedArray.compact(groups, true);
         const tb = ChunkedArray.compact(tcoords, true);
-        return Text.create(ft, cb2, mb, db, ib, gb, tb, indices2.elementCount / 2, text);
+        return Text.create(ft, cb2, mb, db, ib, gb, tb, indices3.elementCount / 2, text);
       }
     };
   }
@@ -93073,14 +93073,14 @@ function _bundleLabel(bundle, options) {
   }
   if (isSingleElements) {
     const locations = bundle.loci.map((l) => {
-      const { unit: unit2, indices: indices2 } = l.elements[0];
-      return element_exports.Location.create(l.structure, unit2, unit2.elements[OrderedSet2.start(indices2)]);
+      const { unit: unit2, indices: indices3 } = l.elements[0];
+      return element_exports.Location.create(l.structure, unit2, unit2.elements[OrderedSet2.start(indices3)]);
     });
     const labels = locations.map((l) => _elementLabel(l, granularity, hidePrefix, reverse3 || condensed));
     if (condensed) {
       return labels.map((l) => l[0].replace(/\[.*\]/g, "").trim()).filter((l) => !!l).join(" \u2014 ");
     }
-    let offset3 = 0;
+    let offset4 = 0;
     for (let i = 0, il = Math.min(...labels.map((l) => l.length)) - 1; i < il; ++i) {
       let areIdentical = true;
       for (let j = 1, jl = labels.length; j < jl; ++j) {
@@ -93090,14 +93090,14 @@ function _bundleLabel(bundle, options) {
         }
       }
       if (areIdentical)
-        offset3 += 1;
+        offset4 += 1;
       else
         break;
     }
-    if (offset3 > 0) {
+    if (offset4 > 0) {
       const offsetLabels = [labels[0].join(" | ")];
       for (let j = 1, jl = labels.length; j < jl; ++j) {
-        offsetLabels.push(labels[j].slice(offset3).filter((l) => !!l).join(" | "));
+        offsetLabels.push(labels[j].slice(offset4).filter((l) => !!l).join(" | "));
       }
       return offsetLabels.join(" \u2014 ");
     } else {
@@ -93206,22 +93206,22 @@ function _coarseElementLabel(location2, granularity) {
 function distanceLabel(pair2, options = {}) {
   const o = { ...DefaultLabelOptions2, measureOnly: false, unitLabel: "\u212B", ...options };
   const [cA, cB] = pair2.loci.map((l) => Loci2.getCenter(l));
-  const distance = `${Vec3.distance(cA, cB).toFixed(2)} ${o.unitLabel}`;
+  const distance2 = `${Vec3.distance(cA, cB).toFixed(2)} ${o.unitLabel}`;
   if (o.measureOnly)
-    return distance;
+    return distance2;
   const label2 = bundleLabel(pair2, o);
-  return o.condensed ? `${distance} | ${label2}` : `Distance ${distance}</br>${label2}`;
+  return o.condensed ? `${distance2} | ${label2}` : `Distance ${distance2}</br>${label2}`;
 }
 function angleLabel(triple, options = {}) {
   const o = { ...DefaultLabelOptions2, measureOnly: false, ...options };
   const [cA, cB, cC] = triple.loci.map((l) => Loci2.getCenter(l));
   const vAB = Vec3.sub(Vec3(), cA, cB);
   const vCB = Vec3.sub(Vec3(), cC, cB);
-  const angle = `${radToDeg(Vec3.angle(vAB, vCB)).toFixed(2)}\xB0`;
+  const angle2 = `${radToDeg(Vec3.angle(vAB, vCB)).toFixed(2)}\xB0`;
   if (o.measureOnly)
-    return angle;
+    return angle2;
   const label2 = bundleLabel(triple, o);
-  return o.condensed ? `${angle} | ${label2}` : `Angle ${angle}</br>${label2}`;
+  return o.condensed ? `${angle2} | ${label2}` : `Angle ${angle2}</br>${label2}`;
 }
 function dihedralLabel(quad, options = {}) {
   const o = { ...DefaultLabelOptions2, measureOnly: false, ...options };
@@ -93310,8 +93310,8 @@ function buildText(data, props, text) {
   const builder = TextBuilder.create(props, 128, 64, text);
   for (let i = 0, il = data.pairs.length; i < il; ++i) {
     setDistanceState(data.pairs[i], tmpState);
-    const { center: center2, distance, sphereA, sphereB } = tmpState;
-    const label2 = props.customText || `${distance.toFixed(2)} ${props.unitLabel}`;
+    const { center: center2, distance: distance2, sphereA, sphereB } = tmpState;
+    const label2 = props.customText || `${distance2.toFixed(2)} ${props.unitLabel}`;
     const radius = Math.max(2, sphereA.radius, sphereB.radius);
     const scale = radius / 2;
     builder.add(label2, center2[0], center2[1], center2[2], 1, scale, i);
@@ -93443,14 +93443,14 @@ function addOrientedBox(state, axes, radiusScale, detail, radialSegments) {
   const negDirA = Vec3.negate(tmpBoxVecA, dirA);
   const negDirB = Vec3.negate(tmpBoxVecB, dirB);
   const negDirC = Vec3.negate(tmpBoxVecC, dirC);
-  let offset3 = 0;
+  let offset4 = 0;
   const addCornerHelper = function(v1, v22, v32) {
     Vec3.copy(tmpBoxVecCorner, origin);
     Vec3.add(tmpBoxVecCorner, tmpBoxVecCorner, v1);
     Vec3.add(tmpBoxVecCorner, tmpBoxVecCorner, v22);
     Vec3.add(tmpBoxVecCorner, tmpBoxVecCorner, v32);
-    Vec3.toArray(tmpBoxVecCorner, tmpVertices2, offset3);
-    offset3 += 3;
+    Vec3.toArray(tmpBoxVecCorner, tmpVertices2, offset4);
+    offset4 += 3;
   };
   addCornerHelper(dirA, dirB, dirC);
   addCornerHelper(dirA, dirB, negDirC);
@@ -93582,7 +93582,7 @@ function Circle(props) {
   const count3 = isFull ? segments2 + 1 : segments2 + 2;
   const vertices2 = new Float32Array(count3 * 3);
   const normals = new Float32Array(count3 * 3);
-  const indices2 = new Uint32Array(segments2 * 3);
+  const indices3 = new Uint32Array(segments2 * 3);
   vertices2[0] = 0;
   vertices2[1] = 0;
   vertices2[2] = 0;
@@ -93599,15 +93599,15 @@ function Circle(props) {
     normals[i + 2] = 0;
   }
   for (let s = 1, i = 0; s < segments2; ++s, i += 3) {
-    indices2[i] = s;
-    indices2[i + 1] = s + 1;
-    indices2[i + 2] = 0;
+    indices3[i] = s;
+    indices3[i + 1] = s + 1;
+    indices3[i + 2] = 0;
   }
   if (isFull) {
     const j = (segments2 - 1) * 3;
-    indices2[j] = segments2;
-    indices2[j + 1] = 1;
-    indices2[j + 2] = 0;
+    indices3[j] = segments2;
+    indices3[j + 1] = 1;
+    indices3[j + 2] = 0;
   } else {
     const segment = thetaStart + thetaLength;
     const i = (segments2 + 1) * 3;
@@ -93618,11 +93618,11 @@ function Circle(props) {
     normals[i + 1] = 1;
     normals[i + 2] = 0;
     const j = (segments2 - 1) * 3;
-    indices2[j] = segments2;
-    indices2[j + 1] = segments2 + 1;
-    indices2[j + 2] = 0;
+    indices3[j] = segments2;
+    indices3[j + 1] = segments2 + 1;
+    indices3[j + 2] = 0;
   }
-  return { vertices: vertices2, normals, indices: indices2 };
+  return { vertices: vertices2, normals, indices: indices3 };
 }
 
 // node_modules/molstar/lib/mol-repr/shape/loci/angle.js
@@ -93693,12 +93693,12 @@ function setAngleState(triple, state, arcScale) {
   return state;
 }
 function getCircle(state, segmentLength) {
-  const { radius, angle } = state;
-  const segments2 = segmentLength ? arcLength(angle, radius) / segmentLength : 32;
+  const { radius, angle: angle2 } = state;
+  const segments2 = segmentLength ? arcLength(angle2, radius) / segmentLength : 32;
   Mat4.targetTo(tmpMat2, state.sphereB.center, state.sphereA.center, state.arcNormal);
   Mat4.setTranslation(tmpMat2, state.sphereB.center);
   Mat4.mul(tmpMat2, tmpMat2, Mat4.rotY180);
-  const circle = Circle({ radius, thetaLength: angle, segments: segments2 });
+  const circle = Circle({ radius, thetaLength: angle2, segments: segments2 });
   return transformPrimitive(circle, tmpMat2);
 }
 var tmpState2 = getAngleState();
@@ -93724,12 +93724,12 @@ function buildArcLines(data, props, lines) {
   for (let i = 0, il = data.triples.length; i < il; ++i) {
     setAngleState(data.triples[i], tmpState2, props.arcScale);
     const circle = getCircle(tmpState2, props.dashLength);
-    const { indices: indices2, vertices: vertices2 } = circle;
-    for (let j = 0, jl = indices2.length; j < jl; j += 3) {
+    const { indices: indices3, vertices: vertices2 } = circle;
+    for (let j = 0, jl = indices3.length; j < jl; j += 3) {
       if (j % 2 === 1)
         continue;
-      const start4 = indices2[j] * 3;
-      const end4 = indices2[j + 1] * 3;
+      const start4 = indices3[j] * 3;
+      const end4 = indices3[j + 1] * 3;
       const startX = vertices2[start4];
       const startY = vertices2[start4 + 1];
       const startZ = vertices2[start4 + 2];
@@ -93770,8 +93770,8 @@ function buildText3(data, props, text) {
     Vec3.add(tmpVec3, tmpState2.arcDirA, tmpState2.arcDirC);
     Vec3.setMagnitude(tmpVec3, tmpVec3, tmpState2.radius);
     Vec3.add(tmpVec3, tmpState2.sphereB.center, tmpVec3);
-    const angle = radToDeg(tmpState2.angle).toFixed(2);
-    const label2 = props.customText || `${angle}\xB0`;
+    const angle2 = radToDeg(tmpState2.angle).toFixed(2);
+    const label2 = props.customText || `${angle2}\xB0`;
     const radius = Math.max(2, tmpState2.sphereA.radius, tmpState2.sphereB.radius, tmpState2.sphereC.radius);
     const scale = radius / 2;
     builder.add(label2, tmpVec3[0], tmpVec3[1], tmpVec3[2], 0.1, scale, i);
@@ -93896,12 +93896,12 @@ function setDihedralState(quad, state, arcScale) {
   return state;
 }
 function getCircle2(state, segmentLength) {
-  const { radius, angle } = state;
-  const segments2 = segmentLength ? arcLength(angle, radius) / segmentLength : 32;
-  Mat4.targetTo(tmpMat4, state.arcCenter, angle < 0 ? state.arcPointD : state.arcPointA, state.arcNormal);
+  const { radius, angle: angle2 } = state;
+  const segments2 = segmentLength ? arcLength(angle2, radius) / segmentLength : 32;
+  Mat4.targetTo(tmpMat4, state.arcCenter, angle2 < 0 ? state.arcPointD : state.arcPointA, state.arcNormal);
   Mat4.setTranslation(tmpMat4, state.arcCenter);
   Mat4.mul(tmpMat4, tmpMat4, Mat4.rotY180);
-  const circle = Circle({ radius, thetaLength: Math.abs(angle), segments: segments2 });
+  const circle = Circle({ radius, thetaLength: Math.abs(angle2), segments: segments2 });
   return transformPrimitive(circle, tmpMat4);
 }
 var tmpState3 = getDihedralState();
@@ -93968,12 +93968,12 @@ function buildArcLines2(data, props, lines) {
   for (let i = 0, il = data.quads.length; i < il; ++i) {
     setDihedralState(data.quads[i], tmpState3, props.arcScale);
     const circle = getCircle2(tmpState3, props.dashLength);
-    const { indices: indices2, vertices: vertices2 } = circle;
-    for (let j = 0, jl = indices2.length; j < jl; j += 3) {
+    const { indices: indices3, vertices: vertices2 } = circle;
+    for (let j = 0, jl = indices3.length; j < jl; j += 3) {
       if (j % 2 === 1)
         continue;
-      const start4 = indices2[j] * 3;
-      const end4 = indices2[j + 1] * 3;
+      const start4 = indices3[j] * 3;
+      const end4 = indices3[j + 1] * 3;
       const startX = vertices2[start4];
       const startY = vertices2[start4 + 1];
       const startZ = vertices2[start4 + 2];
@@ -94014,10 +94014,10 @@ function buildText4(data, props, text) {
     Vec3.add(tmpVec5, tmpState3.arcDirA, tmpState3.arcDirD);
     Vec3.setMagnitude(tmpVec5, tmpVec5, tmpState3.radius);
     Vec3.add(tmpVec5, tmpState3.arcCenter, tmpVec5);
-    let angle = radToDeg(tmpState3.angle).toFixed(2);
-    if (angle === "-0.00")
-      angle = "0.00";
-    const label2 = props.customText || `${angle}\xB0`;
+    let angle2 = radToDeg(tmpState3.angle).toFixed(2);
+    if (angle2 === "-0.00")
+      angle2 = "0.00";
+    const label2 = props.customText || `${angle2}\xB0`;
     const radius = Math.max(2, tmpState3.sphereA.radius, tmpState3.sphereB.radius, tmpState3.sphereC.radius, tmpState3.sphereD.radius);
     const scale = radius / 2;
     builder.add(label2, tmpVec5[0], tmpVec5[1], tmpVec5[2], 0.1, scale, i);
@@ -94262,18 +94262,18 @@ var BoxShape3D = PluginStateTransform.BuiltIn({
     });
   }
 });
-function getBoxMesh(box4, radius, oldMesh) {
-  const diag = Vec3.sub(Vec3(), box4.max, box4.min);
+function getBoxMesh(box5, radius, oldMesh) {
+  const diag = Vec3.sub(Vec3(), box5.max, box5.min);
   const translateUnit = Mat4.fromTranslation(Mat4(), Vec3.create(0.5, 0.5, 0.5));
   const scale = Mat4.fromScaling(Mat4(), diag);
-  const translate = Mat4.fromTranslation(Mat4(), box4.min);
-  const transform = Mat4.mul3(Mat4(), translate, scale, translateUnit);
+  const translate = Mat4.fromTranslation(Mat4(), box5.min);
+  const transform2 = Mat4.mul3(Mat4(), translate, scale, translateUnit);
   const state = MeshBuilder.createState(256, 128, oldMesh);
   state.currentGroup = 1;
-  MeshBuilder.addCage(state, transform, BoxCage(), radius, 2, 20);
+  MeshBuilder.addCage(state, transform2, BoxCage(), radius, 2, 20);
   const mesh = MeshBuilder.getMesh(state);
-  const center2 = Vec3.scaleAndAdd(Vec3(), box4.min, diag, 0.5);
-  const sphereRadius = Vec3.distance(box4.min, center2);
+  const center2 = Vec3.scaleAndAdd(Vec3(), box5.min, diag, 0.5);
+  const sphereRadius = Vec3.distance(box5.min, center2);
   mesh.setBoundingSphere(Sphere3D.create(center2, sphereRadius));
   return mesh;
 }
@@ -97925,9 +97925,9 @@ var Camera = class _Camera {
     if (snapshot.radiusMax === 0) {
       return false;
     }
-    const distance = Vec3.distance(snapshot.position, snapshot.target);
+    const distance2 = Vec3.distance(snapshot.position, snapshot.target);
     const minTargetDistance = this.minTargetDistance / this.scale;
-    if (distance < minTargetDistance) {
+    if (distance2 < minTargetDistance) {
       Vec3.sub(this.deltaDirection, snapshot.target, snapshot.position);
       Vec3.setMagnitude(this.deltaDirection, this.deltaDirection, minTargetDistance);
       Vec3.sub(snapshot.position, snapshot.target, this.deltaDirection);
@@ -98356,10 +98356,10 @@ var BoundingSphereHelper = class {
       this.update();
   }
 };
-function updateBoundingSphereData(scene, boundingSphere, data, color, materialId, transform) {
+function updateBoundingSphereData(scene, boundingSphere, data, color, materialId, transform2) {
   if (!data || !Sphere3D.equals(data.boundingSphere, boundingSphere)) {
     const mesh = createBoundingSphereMesh(boundingSphere, data && data.mesh);
-    const renderObject = data ? data.renderObject : createBoundingSphereRenderObject(mesh, color, materialId, transform);
+    const renderObject = data ? data.renderObject : createBoundingSphereRenderObject(mesh, color, materialId, transform2);
     if (data) {
       ValueCell.updateIfChanged(renderObject.values.drawCount, Geometry.getDrawCount(mesh));
     } else {
@@ -98385,8 +98385,8 @@ var sceneMaterialId = getNextMaterialId();
 var visibleSceneMaterialId = getNextMaterialId();
 var objectMaterialId = getNextMaterialId();
 var instanceMaterialId = getNextMaterialId();
-function createBoundingSphereRenderObject(mesh, color, materialId, transform) {
-  const values2 = Mesh.Utils.createValuesSimple(mesh, { alpha: 0.1, doubleSided: false, cellSize: 0, batchSize: 0 }, color, 1, transform);
+function createBoundingSphereRenderObject(mesh, color, materialId, transform2) {
+  const values2 = Mesh.Utils.createValuesSimple(mesh, { alpha: 0.1, doubleSided: false, cellSize: 0, batchSize: 0 }, color, 1, transform2);
   return createRenderObject("mesh", values2, { disposed: false, visible: true, alphaFactor: 1, pickable: false, colorOnly: false, opaque: false, writeDepth: false }, materialId);
 }
 
@@ -99973,17 +99973,17 @@ function Euler() {
     return a8[0] === b8[0] && a8[1] === b8[1] && a8[2] === b8[2];
   }
   Euler2.exactEquals = exactEquals;
-  function fromArray(e, array2, offset3) {
-    e[0] = array2[offset3 + 0];
-    e[1] = array2[offset3 + 1];
-    e[2] = array2[offset3 + 2];
+  function fromArray(e, array2, offset4) {
+    e[0] = array2[offset4 + 0];
+    e[1] = array2[offset4 + 1];
+    e[2] = array2[offset4 + 2];
     return e;
   }
   Euler2.fromArray = fromArray;
-  function toArray2(e, out, offset3) {
-    out[offset3 + 0] = e[0];
-    out[offset3 + 1] = e[1];
-    out[offset3 + 2] = e[2];
+  function toArray2(e, out, offset4) {
+    out[offset4 + 0] = e[0];
+    out[offset4 + 1] = e[1];
+    out[offset4 + 2] = e[2];
     return out;
   }
   Euler2.toArray = toArray2;
@@ -100826,8 +100826,8 @@ var DofPass = class {
       needsUpdate = true;
     }
     const worldCenter = props.center === "scene-center" ? sphere.center : camera.state.target;
-    const distance = Vec3.distance(camera.state.position, worldCenter);
-    const inFocus = distance + props.inFocus;
+    const distance2 = Vec3.distance(camera.state.position, worldCenter);
+    const inFocus = distance2 + props.inFocus;
     ValueCell.updateIfChanged(this.renderable.values.uInFocus, inFocus * camera.scale);
     const center2 = this.renderable.values.uCenter.ref.value;
     Vec3.transformMat4(center2, worldCenter, camera.view);
@@ -103058,8 +103058,8 @@ var MultiSamplePass = class {
     ValueCell.update(compose.values.tColor, drawPass.getColorTarget(props.postprocessing).texture);
     compose.update();
     for (let i = 0; i < offsetList.length; ++i) {
-      const offset3 = offsetList[i];
-      Camera.setViewOffset(camera.viewOffset, width, height, offset3[0], offset3[1], width, height);
+      const offset4 = offsetList[i];
+      Camera.setViewOffset(camera.viewOffset, width, height, offset4[0], offset4[1], width, height);
       camera.update();
       const uniformCenteredDistribution = -0.5 + (i + 0.5) / offsetList.length;
       const sampleWeight = baseSampleWeight + roundingRange * uniformCenteredDistribution;
@@ -103067,7 +103067,7 @@ var MultiSamplePass = class {
       if (i === 0 || !props.multiSample.reuseOcclusion) {
         drawPass.postprocessing.setOcclusionOffset(0, 0);
       } else {
-        drawPass.postprocessing.setOcclusionOffset(offset3[0] / width, offset3[1] / height);
+        drawPass.postprocessing.setOcclusionOffset(offset4[0] / width, offset4[1] / height);
       }
       drawPass.render(ctx, props, false);
       composeTarget.bind();
@@ -103129,13 +103129,13 @@ var MultiSamplePass = class {
       compose.update();
       const numSamplesPerFrame = Math.pow(2, Math.max(0, props.multiSample.sampleLevel - 2));
       for (let i = 0; i < numSamplesPerFrame; ++i) {
-        const offset3 = offsetList[sampleIndex];
-        Camera.setViewOffset(camera.viewOffset, width, height, offset3[0], offset3[1], width, height);
+        const offset4 = offsetList[sampleIndex];
+        Camera.setViewOffset(camera.viewOffset, width, height, offset4[0], offset4[1], width, height);
         camera.update();
         if (sampleIndex === 0 || !props.multiSample.reuseOcclusion) {
           drawPass.postprocessing.setOcclusionOffset(0, 0);
         } else {
-          drawPass.postprocessing.setOcclusionOffset(offset3[0] / width, offset3[1] / height);
+          drawPass.postprocessing.setOcclusionOffset(offset4[0] / width, offset4[1] / height);
         }
         drawPass.render(ctx, props, false);
         composeTarget.bind();
@@ -103263,9 +103263,9 @@ var JitterVectors = [
   ]
 ];
 JitterVectors.forEach((offsetList) => {
-  offsetList.forEach((offset3) => {
-    offset3[0] *= 0.0625;
-    offset3[1] *= 0.0625;
+  offsetList.forEach((offset4) => {
+    offset4[0] *= 0.0625;
+    offset4[1] *= 0.0625;
   });
 });
 var MultiSampleHelper = class {
@@ -106721,8 +106721,8 @@ var IlluminationPass = class _IlluminationPass {
       ValueCell.update(multiSampleCompose.values.tColor, this._colorTarget.texture);
       ValueCell.update(multiSampleCompose.values.uWeight, sampleWeight);
       multiSampleCompose.update();
-      const offset3 = offsetList[sampleIndex];
-      Camera.setViewOffset(camera.viewOffset, width, height, offset3[0], offset3[1], width, height);
+      const offset4 = offsetList[sampleIndex];
+      Camera.setViewOffset(camera.viewOffset, width, height, offset4[0], offset4[1], width, height);
       camera.update();
       this.renderInternal(ctx, props, false, this.prevSampleIndex !== sampleIndex);
       multiSampleComposeTarget.bind();
@@ -107668,12 +107668,12 @@ var HiZPass = class {
       texture.attachFramebuffer(framebuffer, 0);
       this.levelData.push({ texture, framebuffer, size: size4, invSize, offset: 0 });
     }
-    let offset3 = 0;
+    let offset4 = 0;
     for (let i = 0, il = levels; i < il; ++i) {
       const td = this.levelData[i];
       if (i >= minLevel) {
-        this.levelData[i].offset = offset3;
-        offset3 += td.size[0];
+        this.levelData[i].offset = offset4;
+        offset4 += td.size[0];
       }
     }
     this.clear();
@@ -107751,14 +107751,14 @@ var HiZPass = class {
       this.debug.container.style.display = "none";
       return;
     }
-    const { offset: offset3, size: [tw, th] } = this.levelData[lod];
+    const { offset: offset4, size: [tw, th] } = this.levelData[lod];
     const dw = this.tex.getWidth();
     const data = new Uint8ClampedArray(tw * th * 4);
     data.fill(255);
     for (let y2 = 0; y2 < th; ++y2) {
       for (let x2 = 0; x2 < tw; ++x2) {
         const i = (th - y2 - 1) * tw + x2;
-        const v4 = this.buffer[y2 * dw + x2 + offset3] * 255;
+        const v4 = this.buffer[y2 * dw + x2 + offset4] * 255;
         data[i * 4 + 0] = v4;
         data[i * 4 + 3] = 255 - v4;
       }
@@ -107842,7 +107842,7 @@ var HiZPass = class {
       const { aabb, w, h, lod } = this.project(vp, r);
       if (lod >= this.levelData.length || lod < this.props.minLevel)
         return false;
-      const { offset: offset3, size: size4 } = this.levelData[lod];
+      const { offset: offset4, size: size4 } = this.levelData[lod];
       const u2 = aabb[0] + w / 2;
       const v4 = aabb[1] + h / 2;
       const ts = size4[0];
@@ -107853,12 +107853,12 @@ var HiZPass = class {
       const dw = this.tex.getWidth();
       if (dx + 1 >= ts || dy + 1 >= ts)
         return false;
-      const di = (ts - dy - 1) * dw + dx + offset3;
+      const di = (ts - dy - 1) * dw + dx + offset4;
       if (z > depthToViewZ(this.buffer[di], near, far, projection))
         return false;
       if (z > depthToViewZ(this.buffer[di + 1], near, far, projection))
         return false;
-      const di2 = (ts - dy + 1 - 1) * dw + dx + offset3;
+      const di2 = (ts - dy + 1 - 1) * dw + dx + offset4;
       if (z > depthToViewZ(this.buffer[di2], near, far, projection))
         return false;
       if (z > depthToViewZ(this.buffer[di2 + 1], near, far, projection))
@@ -110019,9 +110019,9 @@ function compId2(unit2, index) {
 }
 function interBondCount(structure, unit2, index) {
   let count3 = 0;
-  const indices2 = structure.interUnitBonds.getEdgeIndices(index, unit2.id);
-  for (let i = 0, il = indices2.length; i < il; ++i) {
-    const b8 = structure.interUnitBonds.edges[indices2[i]];
+  const indices3 = structure.interUnitBonds.getEdgeIndices(index, unit2.id);
+  for (let i = 0, il = indices3.length; i < il; ++i) {
+    const b8 = structure.interUnitBonds.edges[indices3[i]];
     if (BondType.isCovalent(b8.props.flag))
       count3 += 1;
   }
@@ -110029,8 +110029,8 @@ function interBondCount(structure, unit2, index) {
 }
 function intraBondCount(unit2, index) {
   let count3 = 0;
-  const { offset: offset3, edgeProps: { flags: flags2 } } = unit2.bonds;
-  for (let i = offset3[index], il = offset3[index + 1]; i < il; ++i) {
+  const { offset: offset4, edgeProps: { flags: flags2 } } = unit2.bonds;
+  for (let i = offset4[index], il = offset4[index + 1]; i < il; ++i) {
     if (BondType.isCovalent(flags2[i]))
       count3 += 1;
   }
@@ -110048,9 +110048,9 @@ function bondToElementCount(structure, unit2, index, element) {
   return count3;
 }
 function intraConnectedTo(unit2, indexA, indexB) {
-  const { offset: offset3, b: b8, edgeProps: { flags: flags2 } } = unit2.bonds;
+  const { offset: offset4, b: b8, edgeProps: { flags: flags2 } } = unit2.bonds;
   BondType.is;
-  for (let i = offset3[indexA], il = offset3[indexA + 1]; i < il; ++i) {
+  for (let i = offset4[indexA], il = offset4[indexA + 1]; i < il; ++i) {
     if (b8[i] === indexB && BondType.isCovalent(flags2[i]))
       return true;
   }
@@ -110064,17 +110064,17 @@ function connectedTo(structure, unitA, indexA, unitB, indexB) {
   return unitA === unitB ? intraConnectedTo(unitA, indexA, indexB) : interConnectedTo(structure, unitA, indexA, unitB, indexB);
 }
 function eachInterBondedAtom(structure, unit2, index, cb2) {
-  const indices2 = structure.interUnitBonds.getEdgeIndices(index, unit2.id);
-  for (let i = 0, il = indices2.length; i < il; ++i) {
-    const b8 = structure.interUnitBonds.edges[indices2[i]];
+  const indices3 = structure.interUnitBonds.getEdgeIndices(index, unit2.id);
+  for (let i = 0, il = indices3.length; i < il; ++i) {
+    const b8 = structure.interUnitBonds.edges[indices3[i]];
     const uB = structure.unitMap.get(b8.unitB);
     if (BondType.isCovalent(b8.props.flag))
       cb2(uB, b8.indexB);
   }
 }
 function eachIntraBondedAtom(unit2, index, cb2) {
-  const { offset: offset3, b: b8, edgeProps: { flags: flags2 } } = unit2.bonds;
-  for (let i = offset3[index], il = offset3[index + 1]; i < il; ++i) {
+  const { offset: offset4, b: b8, edgeProps: { flags: flags2 } } = unit2.bonds;
+  for (let i = offset4[index], il = offset4[index + 1]; i < il; ++i) {
     if (BondType.isCovalent(flags2[i]))
       cb2(unit2, b8[i]);
   }
@@ -110195,8 +110195,8 @@ function getResidueLoci(structure, unit2, elementIndex) {
       if (unitIndex !== -1)
         _indices.push(unitIndex);
     }
-    const indices2 = OrderedSet2.ofSortedArray(SortedArray.ofSortedArray(_indices));
-    return element_exports.Loci(structure, [{ unit: unit2, indices: indices2 }]);
+    const indices3 = OrderedSet2.ofSortedArray(SortedArray.ofSortedArray(_indices));
+    return element_exports.Loci(structure, [{ unit: unit2, indices: indices3 }]);
   }
   return EmptyLoci;
 }
@@ -110225,8 +110225,8 @@ function getAltResidueLociFromId(structure, unit2, residueIndex2, elementAltId) 
       }
     }
   }
-  const indices2 = OrderedSet2.ofSortedArray(SortedArray.ofSortedArray(_indices));
-  return element_exports.Loci(structure, [{ unit: unit2, indices: indices2 }]);
+  const indices3 = OrderedSet2.ofSortedArray(SortedArray.ofSortedArray(_indices));
+  return element_exports.Loci(structure, [{ unit: unit2, indices: indices3 }]);
 }
 function createUnitsTransform(structureGroup, includeParent, invariantBoundingSphere, cellSize, batchSize, transformData) {
   const { child } = structureGroup.structure;
@@ -110257,8 +110257,8 @@ function includesUnitKind(unitKinds, unit2) {
   return false;
 }
 var DefaultMaxCells = 5e8;
-function getVolumeSliceInfo(box4, resolution, maxCells = DefaultMaxCells) {
-  const size4 = Box3D.size(Vec3(), box4);
+function getVolumeSliceInfo(box5, resolution, maxCells = DefaultMaxCells) {
+  const size4 = Box3D.size(Vec3(), box5);
   Vec3.ceil(size4, size4);
   size4.sort((a8, b8) => b8 - a8);
   const maxAreaCells = Math.floor(Math.cbrt(maxCells) * Math.cbrt(maxCells));
@@ -110266,8 +110266,8 @@ function getVolumeSliceInfo(box4, resolution, maxCells = DefaultMaxCells) {
   const areaCells = Math.ceil(area / (resolution * resolution));
   return { area, areaCells, maxAreaCells };
 }
-function ensureReasonableResolution(box4, props, maxCells = DefaultMaxCells) {
-  const { area, areaCells, maxAreaCells } = getVolumeSliceInfo(box4, props.resolution, maxCells);
+function ensureReasonableResolution(box5, props, maxCells = DefaultMaxCells) {
+  const { area, areaCells, maxAreaCells } = getVolumeSliceInfo(box5, props.resolution, maxCells);
   const resolution = areaCells > maxAreaCells ? Math.sqrt(area / maxAreaCells) : props.resolution;
   return { ...props, resolution };
 }
@@ -110292,11 +110292,11 @@ var v2 = Vec3();
 function squaredDistance(x, y, z, center2) {
   return Vec3.squaredDistance(Vec3.set(v2, x, y, z), center2);
 }
-function filterUnitId(id, elements, indices2) {
+function filterUnitId(id, elements, indices3) {
   let start4 = 0;
   const end4 = elements.length;
-  for (let i = 0, il = indices2.length; i < il; ++i) {
-    const idx = SortedArray.indexOfInRange(elements, indices2[i], start4, end4);
+  for (let i = 0, il = indices3.length; i < il; ++i) {
+    const idx = SortedArray.indexOfInRange(elements, indices3[i], start4, end4);
     if (idx === -1) {
       id[i] = -2;
     } else {
@@ -110314,7 +110314,7 @@ function getUnitConformationAndRadius(structure, unit2, sizeTheme, props) {
   const { center: center2, radius: sphereRadius } = unit2.boundary.sphere;
   const extraRadius = (4 + 1.5) * 2;
   const radiusSq = (sphereRadius + extraRadius) * (sphereRadius + extraRadius);
-  let indices2;
+  let indices3;
   let id;
   if (ignoreHydrogens || traceOnly || differentRoot) {
     const _indices = [];
@@ -110330,16 +110330,16 @@ function getUnitConformationAndRadius(structure, unit2, sizeTheme, props) {
       _indices.push(eI);
       _id.push(i);
     }
-    indices2 = SortedArray.ofSortedArray(_indices);
+    indices3 = SortedArray.ofSortedArray(_indices);
     id = _id;
   } else {
-    indices2 = elements;
-    id = fillSerial(new Int32Array(indices2.length));
+    indices3 = elements;
+    id = fillSerial(new Int32Array(indices3.length));
   }
   if (includeParent && rootUnit !== unit2) {
-    filterUnitId(id, unit2.elements, indices2);
+    filterUnitId(id, unit2.elements, indices3);
   }
-  const position = { indices: indices2, x, y, z, id };
+  const position = { indices: indices3, x, y, z, id };
   const boundary = differentRoot ? getBoundary(position) : unit2.boundary;
   const l = element_exports.Location.create(structure, rootUnit);
   const radius = (index) => {
@@ -110360,7 +110360,7 @@ function getStructureConformationAndRadius(structure, sizeTheme, props) {
   let zs;
   let rs;
   let id;
-  let indices2;
+  let indices3;
   if (ignoreHydrogens || traceOnly || differentRoot) {
     const { getSerialIndex } = structure.serialMapping;
     const units = differentRoot ? structure.root.units : structure.units;
@@ -110402,7 +110402,7 @@ function getStructureConformationAndRadius(structure, sizeTheme, props) {
     }
     xs = _xs, ys = _ys, zs = _zs, rs = _rs;
     id = _id;
-    indices2 = OrderedSet2.ofRange(0, id.length);
+    indices3 = OrderedSet2.ofRange(0, id.length);
   } else {
     const { elementCount } = structure;
     const _xs = new Float32Array(elementCount);
@@ -110426,9 +110426,9 @@ function getStructureConformationAndRadius(structure, sizeTheme, props) {
     }
     xs = _xs, ys = _ys, zs = _zs, rs = _rs;
     id = fillSerial(new Uint32Array(elementCount));
-    indices2 = OrderedSet2.ofRange(0, id.length);
+    indices3 = OrderedSet2.ofRange(0, id.length);
   }
-  const position = { indices: indices2, x: xs, y: ys, z: zs, id };
+  const position = { indices: indices3, x: xs, y: ys, z: zs, id };
   const boundary = differentRoot ? getBoundary(position) : structure.boundary;
   const radius = (index) => rs[index];
   return { position, boundary, radius };
@@ -110478,8 +110478,8 @@ var StructureImageParams = { ...Image2.Params };
 // node_modules/molstar/lib/mol-repr/structure/complex-visual.js
 function createComplexRenderObject(structure, geometry, locationIt, theme, props, materialId) {
   const { createValues, createRenderableState } = Geometry.getUtils(geometry);
-  const transform = createIdentityTransform();
-  const values2 = createValues(geometry, transform, locationIt, theme, props);
+  const transform2 = createIdentityTransform();
+  const values2 = createValues(geometry, transform2, locationIt, theme, props);
   const state = createRenderableState(props);
   return createRenderObject(geometry.kind, values2, state, materialId);
 }
@@ -111042,7 +111042,7 @@ function UnitsRepresentation(label2, ctx, getParams, visualCtor) {
     return changed;
   }
   function setVisualState(visual, group, state) {
-    const { visible, alphaFactor, pickable, overpaint, transparency, emissive, substance, clipping, themeStrength, transform, unitTransforms } = state;
+    const { visible, alphaFactor, pickable, overpaint, transparency, emissive, substance, clipping, themeStrength, transform: transform2, unitTransforms } = state;
     if (visible !== void 0)
       visual.setVisibility(visible);
     if (alphaFactor !== void 0)
@@ -111061,9 +111061,9 @@ function UnitsRepresentation(label2, ctx, getParams, visualCtor) {
       visual.setClipping(clipping);
     if (themeStrength !== void 0)
       visual.setThemeStrength(themeStrength);
-    if (transform !== void 0) {
-      if (transform !== _state.transform || !Mat4.areEqual(transform, _state.transform, EPSILON)) {
-        visual.setTransform(transform);
+    if (transform2 !== void 0) {
+      if (transform2 !== _state.transform || !Mat4.areEqual(transform2, _state.transform, EPSILON)) {
+        visual.setTransform(transform2);
       }
     }
     if (unitTransforms !== void 0) {
@@ -111075,7 +111075,7 @@ function UnitsRepresentation(label2, ctx, getParams, visualCtor) {
     }
   }
   function setState(state) {
-    const { visible, alphaFactor, pickable, overpaint, transparency, emissive, substance, clipping, themeStrength, transform, unitTransforms, syncManually, markerActions } = state;
+    const { visible, alphaFactor, pickable, overpaint, transparency, emissive, substance, clipping, themeStrength, transform: transform2, unitTransforms, syncManually, markerActions } = state;
     const newState = {};
     if (visible !== void 0)
       newState.visible = visible;
@@ -111100,8 +111100,8 @@ function UnitsRepresentation(label2, ctx, getParams, visualCtor) {
     }
     if (themeStrength !== void 0)
       newState.themeStrength = themeStrength;
-    if (transform !== void 0 && !Mat4.areEqual(transform, _state.transform, EPSILON)) {
-      newState.transform = transform;
+    if (transform2 !== void 0 && !Mat4.areEqual(transform2, _state.transform, EPSILON)) {
+      newState.transform = transform2;
     }
     if (unitTransforms !== _state.unitTransforms || (unitTransforms === null || unitTransforms === void 0 ? void 0 : unitTransforms.version) !== _state.unitTransformsVersion) {
       newState.unitTransforms = unitTransforms;
@@ -111162,8 +111162,8 @@ function UnitsRepresentation(label2, ctx, getParams, visualCtor) {
 // node_modules/molstar/lib/mol-repr/structure/units-visual.js
 function createUnitsRenderObject(structureGroup, geometry, locationIt, theme, props, materialId) {
   const { createValues, createRenderableState } = Geometry.getUtils(geometry);
-  const transform = createUnitsTransform(structureGroup, props.includeParent, geometry.boundingSphere, props.cellSize, props.batchSize);
-  const values2 = createValues(geometry, transform, locationIt, theme, props);
+  const transform2 = createUnitsTransform(structureGroup, props.includeParent, geometry.boundingSphere, props.cellSize, props.batchSize);
+  const values2 = createValues(geometry, transform2, locationIt, theme, props);
   const state = createRenderableState(props);
   return createRenderObject(geometry.kind, values2, state, materialId);
 }
@@ -111745,8 +111745,8 @@ function isConjugated(structure, unit2, index) {
 }
 function explicitValence(structure, unit2, index) {
   let v4 = 0;
-  const { offset: offset3, edgeProps: { flags: flags2, order } } = unit2.bonds;
-  for (let i = offset3[index], il = offset3[index + 1]; i < il; ++i) {
+  const { offset: offset4, edgeProps: { flags: flags2, order } } = unit2.bonds;
+  for (let i = offset4[index], il = offset4[index + 1]; i < il; ++i) {
     if (BondType.isCovalent(flags2[i]))
       v4 += order[i];
   }
@@ -112006,22 +112006,22 @@ var Features;
     const { members, count: count3, offsets: featureOffsets } = data;
     for (let i = 0, il = featureOffsets[count3]; i < il; ++i)
       ++bucketSizes[members[i]];
-    let offset3 = 0;
+    let offset4 = 0;
     for (let i = 0; i < elementsCount; i++) {
-      offsets[i] = offset3;
-      offset3 += bucketSizes[i];
+      offsets[i] = offset4;
+      offset4 += bucketSizes[i];
     }
-    offsets[elementsCount] = offset3;
-    const indices2 = new Int32Array(offset3);
+    offsets[elementsCount] = offset4;
+    const indices3 = new Int32Array(offset4);
     for (let i = 0; i < count3; ++i) {
       for (let j = featureOffsets[i], jl = featureOffsets[i + 1]; j < jl; ++j) {
         const a8 = members[j];
         const oa = offsets[a8] + bucketFill[a8];
-        indices2[oa] = i;
+        indices3[oa] = i;
         ++bucketFill[a8];
       }
     }
-    return { indices: indices2, offsets };
+    return { indices: indices3, offsets };
   }
   Features2.createElementsIndex = createElementsIndex;
   function create3(elementsCount, data) {
@@ -112051,12 +112051,12 @@ var Features;
       if (types2.has(_types[i]))
         _indices.push(i);
     }
-    const indices2 = SortedArray.ofSortedArray(_indices);
+    const indices3 = SortedArray.ofSortedArray(_indices);
     return {
-      indices: indices2,
+      indices: indices3,
       get lookup3d() {
         if (!lookup3d) {
-          const position2 = { x: data.x, y: data.y, z: data.z, indices: indices2 };
+          const position2 = { x: data.x, y: data.y, z: data.z, indices: indices3 };
           lookup3d = GridLookup3D(position2, getBoundary(position2));
         }
         return lookup3d;
@@ -112089,14 +112089,14 @@ var Features;
   Features2.position = position;
   const tmpVecA7 = Vec3();
   const tmpVecB7 = Vec3();
-  function distance(infoA, infoB) {
+  function distance2(infoA, infoB) {
     const elementA = infoA.members[infoA.offsets[infoA.feature]];
     const elementB = infoB.members[infoB.offsets[infoB.feature]];
     infoA.unit.conformation.position(infoA.unit.elements[elementA], tmpVecA7);
     infoB.unit.conformation.position(infoB.unit.elements[elementB], tmpVecB7);
     return Vec3.distance(tmpVecA7, tmpVecB7);
   }
-  Features2.distance = distance;
+  Features2.distance = distance2;
   function Provider(types2, add) {
     return { types: new Set(types2), add };
   }
@@ -112190,13 +112190,13 @@ var InteractionsIntraContacts;
         ++bucketSizes[members[j]];
       }
     }
-    let offset3 = 0;
+    let offset4 = 0;
     for (let i = 0; i < elementsCount; i++) {
-      offsets[i] = offset3;
-      offset3 += bucketSizes[i];
+      offsets[i] = offset4;
+      offset4 += bucketSizes[i];
     }
-    offsets[elementsCount] = offset3;
-    const indices2 = new Int32Array(offset3);
+    offsets[elementsCount] = offset4;
+    const indices3 = new Int32Array(offset4);
     for (let i = 0, il = contacts.edgeCount * 2; i < il; ++i) {
       const aI = contacts.a[i];
       const bI = contacts.b[i];
@@ -112205,17 +112205,17 @@ var InteractionsIntraContacts;
       for (let j = featureOffsets[aI], jl = featureOffsets[aI + 1]; j < jl; ++j) {
         const m = members[j];
         const om = offsets[m] + bucketFill[m];
-        indices2[om] = i;
+        indices3[om] = i;
         ++bucketFill[m];
       }
       for (let j = featureOffsets[bI], jl = featureOffsets[bI + 1]; j < jl; ++j) {
         const m = members[j];
         const om = offsets[m] + bucketFill[m];
-        indices2[om] = i;
+        indices3[om] = i;
         ++bucketFill[m];
       }
     }
-    return { indices: indices2, offsets };
+    return { indices: indices3, offsets };
   }
   InteractionsIntraContacts2.createElementsIndex = createElementsIndex;
 })(InteractionsIntraContacts || (InteractionsIntraContacts = {}));
@@ -112492,11 +112492,11 @@ function checkLineOfSight(structure, infoA, infoB, distFactor) {
   Features.position(tmpVecB3, infoB);
   Vec3.scale(tmpVec6, Vec3.add(tmpVec6, tmpVecA3, tmpVecB3), 0.5);
   const distMax = distFactor * MAX_LINE_OF_SIGHT_DISTANCE;
-  const { count: count3, indices: indices2, units, squaredDistances } = structure.lookup3d.find(tmpVec6[0], tmpVec6[1], tmpVec6[2], distMax, lineOfSightLookupCtx);
+  const { count: count3, indices: indices3, units, squaredDistances } = structure.lookup3d.find(tmpVec6[0], tmpVec6[1], tmpVec6[2], distMax, lineOfSightLookupCtx);
   if (count3 === 0)
     return true;
   for (let r = 0; r < count3; ++r) {
-    const i = indices2[r];
+    const i = indices3[r];
     const unit2 = units[r];
     if (!Unit.isAtomic(unit2))
       continue;
@@ -112530,12 +112530,12 @@ function _addUnitContacts(structure, unit2, features, builder, tester, props) {
   const distFactor = props.lineOfSightDistFactor;
   for (let t5 = 0, tl = OrderedSet2.size(subsetIndices); t5 < tl; ++t5) {
     const i = OrderedSet2.getAt(subsetIndices, t5);
-    const { count: count3, indices: indices2, squaredDistances } = lookup3d.find(x[i], y[i], z[i], tester.maxDistance);
+    const { count: count3, indices: indices3, squaredDistances } = lookup3d.find(x[i], y[i], z[i], tester.maxDistance);
     if (count3 === 0)
       continue;
     infoA.feature = i;
     for (let r = 0; r < count3; ++r) {
-      const j = OrderedSet2.getAt(subsetIndices, indices2[r]);
+      const j = OrderedSet2.getAt(subsetIndices, indices3[r]);
       if (j <= i)
         continue;
       infoB.feature = j;
@@ -112568,12 +112568,12 @@ function addStructureContacts(structure, unitA, featuresA, unitB, featuresB, bui
       Vec3.transformMat4(imageA, imageA, imageTransform);
     if (Vec3.squaredDistance(imageA, center2) > testDistanceSq)
       continue;
-    const { indices: indices2, count: count3, squaredDistances } = lookup3d.find(imageA[0], imageA[1], imageA[2], maxDistance);
+    const { indices: indices3, count: count3, squaredDistances } = lookup3d.find(imageA[0], imageA[1], imageA[2], maxDistance);
     if (count3 === 0)
       continue;
     infoA.feature = i;
     for (let r = 0; r < count3; ++r) {
-      const j = indices2[r];
+      const j = indices3[r];
       infoB.feature = j;
       if (!validPair(structure, infoA, infoB))
         continue;
@@ -113133,12 +113133,12 @@ function testPiStacking(structure, infoA, infoB, distanceSq, opts) {
   if (isPiStacking(typeA, typeB)) {
     getNormal(tmpNormalA, infoA);
     getNormal(tmpNormalB, infoB);
-    const angle = Vec3.angle(tmpNormalA, tmpNormalB);
-    const offset3 = Math.min(getOffset(infoA, infoB, tmpNormalB), getOffset(infoB, infoA, tmpNormalA));
-    if (offset3 <= opts.offsetMax) {
-      if (angle <= opts.angleDevMax || angle >= deg180InRad - opts.angleDevMax) {
+    const angle2 = Vec3.angle(tmpNormalA, tmpNormalB);
+    const offset4 = Math.min(getOffset(infoA, infoB, tmpNormalB), getOffset(infoB, infoA, tmpNormalA));
+    if (offset4 <= opts.offsetMax) {
+      if (angle2 <= opts.angleDevMax || angle2 >= deg180InRad - opts.angleDevMax) {
         return InteractionType.PiStacking;
-      } else if (angle <= opts.angleDevMax + deg90InRad && angle >= deg90InRad - opts.angleDevMax) {
+      } else if (angle2 <= opts.angleDevMax + deg90InRad && angle2 >= deg90InRad - opts.angleDevMax) {
         return InteractionType.PiStacking;
       }
     }
@@ -113150,8 +113150,8 @@ function testCationPi(structure, infoA, infoB, distanceSq, opts) {
   if (isCationPi(typeA, typeB)) {
     const [infoR, infoC] = typeA === FeatureType.AromaticRing ? [infoA, infoB] : [infoB, infoA];
     getNormal(tmpNormalA, infoR);
-    const offset3 = getOffset(infoC, infoR, tmpNormalA);
-    if (offset3 <= opts.offsetMax) {
+    const offset4 = getOffset(infoC, infoR, tmpNormalA);
+    if (offset4 <= opts.offsetMax) {
       return InteractionType.CationPi;
     }
   }
@@ -113473,9 +113473,9 @@ function weakHydrogenBondsRefiner(structure, interactions) {
   const hasHydrogenBond = (infoA, infoB) => {
     const acc = infoA.types[infoA.feature] === FeatureType.WeakHydrogenDonor ? infoB : infoA;
     const eI = acc.members[acc.offsets[acc.feature]];
-    const { edgeProps: { type: type3 }, elementsIndex: { offsets, indices: indices2 } } = interactions.unitsContacts.get(acc.unit.id);
+    const { edgeProps: { type: type3 }, elementsIndex: { offsets, indices: indices3 } } = interactions.unitsContacts.get(acc.unit.id);
     for (let i = offsets[eI], il = offsets[eI + 1]; i < il; ++i) {
-      if (type3[indices2[i]] === InteractionType.HydrogenBond)
+      if (type3[indices3[i]] === InteractionType.HydrogenBond)
         return true;
     }
     const interIndices = contacts.getEdgeIndices(acc.feature, acc.unit.id);
@@ -113507,9 +113507,9 @@ function filterInter(types2, index, infoA, infoB, contacts) {
   const { offsets: offsetsB, feature: featureB } = infoB;
   for (let i = offsetsA[featureA], il = offsetsA[featureA + 1]; i < il; ++i) {
     const aI = infoA.members[i];
-    const indices2 = contacts.getContactIndicesForElement(aI, infoA.unit);
-    for (let k = 0, kl = indices2.length; k < kl; ++k) {
-      const cI = indices2[k];
+    const indices3 = contacts.getContactIndicesForElement(aI, infoA.unit);
+    for (let k = 0, kl = indices3.length; k < kl; ++k) {
+      const cI = indices3[k];
       if (types2.includes(contacts.edges[cI].props.type)) {
         for (let j = offsetsB[featureB], jl = offsetsB[featureB + 1]; j < jl; ++j) {
           const bI = infoB.members[j];
@@ -113523,18 +113523,18 @@ function filterInter(types2, index, infoA, infoB, contacts) {
   }
 }
 function filterIntra(types2, index, infoA, infoB, contacts) {
-  const { edgeProps: { type: type3, flag }, elementsIndex: { offsets, indices: indices2 } } = contacts;
+  const { edgeProps: { type: type3, flag }, elementsIndex: { offsets, indices: indices3 } } = contacts;
   const { offsets: offsetsA, feature: featureA } = infoA;
   const { offsets: offsetsB, feature: featureB } = infoB;
   for (let i = offsetsA[featureA], il = offsetsA[featureA + 1]; i < il; ++i) {
     const aI = infoA.members[i];
     for (let k = offsets[aI], kl = offsets[aI + 1]; k < kl; ++k) {
-      const cI = indices2[k];
+      const cI = indices3[k];
       if (types2.includes(type3[cI])) {
         for (let j = offsetsB[featureB], jl = offsetsB[featureB + 1]; j < jl; ++j) {
           const bI = infoB.members[j];
           for (let l = offsets[bI], ll = offsets[bI + 1]; l < ll; ++l) {
-            if (cI === indices2[l]) {
+            if (cI === indices3[l]) {
               flag[index] = InteractionFlag.Filtered;
               return;
             }
@@ -114507,7 +114507,7 @@ function eachInteraction(loci, structureGroup, apply, isMarking) {
     const contacts = interactions.unitsContacts.get(unit2.id);
     const features = interactions.unitsFeatures.get(unit2.id);
     const groupCount = contacts.edgeCount * 2;
-    const { offset: offset3 } = contacts;
+    const { offset: offset4 } = contacts;
     const { offsets: fOffsets, indices: fIndices } = features.elementsIndex;
     const { members, offsets } = features;
     for (const e of loci.elements) {
@@ -114517,7 +114517,7 @@ function eachInteraction(loci, structureGroup, apply, isMarking) {
       OrderedSet2.forEach(e.indices, (v4) => {
         for (let i = fOffsets[v4], il = fOffsets[v4 + 1]; i < il; ++i) {
           const fI = fIndices[i];
-          for (let j = offset3[fI], jl = offset3[fI + 1]; j < jl; ++j) {
+          for (let j = offset4[fI], jl = offset4[fI + 1]; j < jl; ++j) {
             __contactIndicesSet.add(j);
           }
         }
@@ -117223,10 +117223,10 @@ var StructureInfo = PluginBehavior.create({
         const m = (_a = c8.obj) === null || _a === void 0 ? void 0 : _a.data;
         if (m) {
           const count3 = Model.AsymIdCount.get(m);
-          const offset3 = Model.AsymIdOffset.get(m).value;
-          if (count3 !== void 0 && offset3 !== void 0) {
-            auth = Math.max(auth, offset3.auth + count3.auth);
-            label2 = Math.max(label2, offset3.label + count3.label);
+          const offset4 = Model.AsymIdOffset.get(m).value;
+          if (count3 !== void 0 && offset4 !== void 0) {
+            auth = Math.max(auth, offset4.auth + count3.auth);
+            label2 = Math.max(label2, offset4.label + count3.label);
           }
         }
       }
@@ -117281,13 +117281,13 @@ var StructureInfo = PluginBehavior.create({
     }
     handle(ref, obj, oldObj) {
       if (PluginStateObject.Molecule.Structure.is(obj)) {
-        const transform = this.ctx.state.data.tree.transforms.get(ref);
-        if (!transform.transformer.definition.isDecorator && obj.data.parent === void 0) {
+        const transform2 = this.ctx.state.data.tree.transforms.get(ref);
+        if (!transform2.transformer.definition.isDecorator && obj.data.parent === void 0) {
           this.handleStructure(obj.data, oldObj === null || oldObj === void 0 ? void 0 : oldObj.data);
         }
       } else if (PluginStateObject.Molecule.Model.is(obj)) {
-        const transform = this.ctx.state.data.tree.transforms.get(ref);
-        if (!transform.transformer.definition.isDecorator) {
+        const transform2 = this.ctx.state.data.tree.transforms.get(ref);
+        if (!transform2.transformer.definition.isDecorator) {
           this.handleModel(obj.data, oldObj === null || oldObj === void 0 ? void 0 : oldObj.data);
         }
       }
@@ -117515,13 +117515,13 @@ function computeRange(ctx, begin, end4) {
     const aX = aUnit.conformation.x(aElementIndex);
     const aY = aUnit.conformation.y(aElementIndex);
     const aZ = aUnit.conformation.z(aElementIndex);
-    const { count: count3, units: lUnits, indices: indices2, squaredDistances } = lookup3d.find(aX, aY, aZ, maxLookupRadius);
+    const { count: count3, units: lUnits, indices: indices3, squaredDistances } = lookup3d.find(aX, aY, aZ, maxLookupRadius);
     const radius1 = probeSize + vdw1;
     const cutoff1 = probeSize + radius1;
     const neighbors = [];
     for (let iI = 0; iI < count3; ++iI) {
       const bUnit = lUnits[iI];
-      const bI = cumulativeUnitElementCount[unitIndexMap.get(bUnit.id)] + indices2[iI];
+      const bI = cumulativeUnitElementCount[unitIndexMap.get(bUnit.id)] + indices3[iI];
       const bElementIndex = elementIndices[bI];
       const vdw2 = VdWLookup[atomRadiusType[bI]];
       if (aUnit === bUnit && aElementIndex === bElementIndex || vdw2 === VdWLookup[0])
@@ -117599,9 +117599,9 @@ var AccessibleSurfaceArea;
   function generateSpherePoints(numberOfSpherePoints) {
     const points3 = [];
     const inc = Math.PI * (3 - Math.sqrt(5));
-    const offset3 = 2 / numberOfSpherePoints;
+    const offset4 = 2 / numberOfSpherePoints;
     for (let k = 0; k < numberOfSpherePoints; ++k) {
-      const y = k * offset3 - 1 + offset3 / 2;
+      const y = k * offset4 - 1 + offset4 / 2;
       const r = Math.sqrt(1 - y * y);
       const phi = k * inc;
       points3[points3.length] = Vec3.create(Math.cos(phi) * r, y, Math.sin(phi) * r);
@@ -117804,9 +117804,9 @@ function accessibleSurfaceAreaLabel(loci) {
     const { area, serialResidueIndex } = accessibleSurfaceArea;
     const seen = /* @__PURE__ */ new Set();
     let cummulativeArea = 0;
-    for (const { indices: indices2, unit: unit2 } of loci.elements) {
+    for (const { indices: indices3, unit: unit2 } of loci.elements) {
       const { elements } = unit2;
-      OrderedSet2.forEach(indices2, (idx) => {
+      OrderedSet2.forEach(indices3, (idx) => {
         const rSI = serialResidueIndex[getSerialIndex(unit2, elements[idx])];
         if (rSI !== -1 && !seen.has(rSI)) {
           cummulativeArea += area[rSI];
@@ -117894,9 +117894,9 @@ var Interactions2 = PluginBehavior.create({
                 const groupLabels = [];
                 const label2 = [];
                 const idx = OrderedSet2.start(e.indices);
-                const { types: types2, groups, elementsIndex: { indices: indices2, offsets } } = features;
+                const { types: types2, groups, elementsIndex: { indices: indices3, offsets } } = features;
                 for (let i = offsets[idx], il = offsets[idx + 1]; i < il; ++i) {
-                  const f = indices2[i];
+                  const f = indices3[i];
                   const type3 = types2[f];
                   const group = groups[f];
                   if (type3)
@@ -118225,34 +118225,34 @@ var ModelCrossLinkRestraint;
       seq_id: table.seq_id_2,
       atom_id: table.atom_id_2
     };
-    function _add(map4, element, row2) {
-      const indices2 = map4.get(element);
-      if (indices2)
-        indices2.push(row2);
+    function _add(map4, element, row3) {
+      const indices3 = map4.get(element);
+      if (indices3)
+        indices3.push(row3);
       else
-        map4.set(element, [row2]);
+        map4.set(element, [row3]);
     }
-    function add(row2, ps) {
-      const entityId = ps.entity_id.value(row2);
-      const asymId = ps.asym_id.value(row2);
-      const seqId2 = ps.seq_id.value(row2);
-      if (table.model_granularity.value(row2) === "by-atom") {
+    function add(row3, ps) {
+      const entityId = ps.entity_id.value(row3);
+      const asymId = ps.asym_id.value(row3);
+      const seqId2 = ps.seq_id.value(row3);
+      if (table.model_granularity.value(row3) === "by-atom") {
         const atomicElement = model.atomicHierarchy.index.findAtom({
           auth_seq_id: seqId2,
           label_asym_id: asymId,
-          label_atom_id: ps.atom_id.value(row2),
+          label_atom_id: ps.atom_id.value(row3),
           label_entity_id: entityId
         });
         if (atomicElement >= 0)
-          _add(atomicElementMap, atomicElement, row2);
+          _add(atomicElementMap, atomicElement, row3);
       } else if (model.coarseHierarchy.isDefined) {
         const sphereElement = model.coarseHierarchy.spheres.findSequenceKey(entityId, asymId, seqId2);
         if (sphereElement >= 0) {
-          _add(sphereElementMap, sphereElement, row2);
+          _add(sphereElementMap, sphereElement, row3);
         } else {
           const gaussianElement = model.coarseHierarchy.gaussians.findSequenceKey(entityId, asymId, seqId2);
           if (gaussianElement >= 0)
-            _add(gaussianElementMap, gaussianElement, row2);
+            _add(gaussianElementMap, gaussianElement, row3);
         }
       }
     }
@@ -118298,17 +118298,17 @@ var PairRestraints = class {
     return this.pairKeyIndices.get(key2) || emptyArray2;
   }
   getPairs(indexA, unitA, indexB, unitB) {
-    const indices2 = this.getPairIndices(indexA, unitA, indexB, unitB);
-    return indices2.map((idx) => this.pairs[idx]);
+    const indices3 = this.getPairIndices(indexA, unitA, indexB, unitB);
+    return indices3.map((idx) => this.pairs[idx]);
   }
   constructor(pairs) {
     this.pairs = pairs;
     const pairKeyIndices = /* @__PURE__ */ new Map();
     this.pairs.forEach((p6, i) => {
       const key2 = getPairKey(p6.indexA, p6.unitA, p6.indexB, p6.unitB);
-      const indices2 = pairKeyIndices.get(key2);
-      if (indices2)
-        indices2.push(i);
+      const indices3 = pairKeyIndices.get(key2);
+      if (indices3)
+        indices3.push(i);
       else
         pairKeyIndices.set(key2, [i]);
     });
@@ -118343,12 +118343,12 @@ var CrossLinkRestraint;
   }
   CrossLinkRestraint3.isApplicable = isApplicable;
   const distVecA = Vec3(), distVecB = Vec3();
-  function distance(pair2) {
+  function distance2(pair2) {
     pair2.unitA.conformation.position(pair2.unitA.elements[pair2.indexA], distVecA);
     pair2.unitB.conformation.position(pair2.unitB.elements[pair2.indexB], distVecB);
     return Vec3.distance(distVecA, distVecB);
   }
-  CrossLinkRestraint3.distance = distance;
+  CrossLinkRestraint3.distance = distance2;
   function Location2(crossLinkRestraints, structure, index) {
     return DataLocation("cross-link-restraints", { structure, crossLinkRestraints }, index);
   }
@@ -118363,7 +118363,7 @@ var CrossLinkRestraint;
   CrossLinkRestraint3.areLocationsEqual = areLocationsEqual;
   function _label(crossLinkRestraints, element) {
     const p6 = crossLinkRestraints.pairs[element];
-    return `Cross Link Restraint | Type: ${p6.restraintType} | Threshold: ${p6.distanceThreshold} \u212B | Psi: ${p6.psi} | Sigma 1: ${p6.sigma1} | Sigma 2: ${p6.sigma2} | Distance: ${distance(p6).toFixed(2)} \u212B`;
+    return `Cross Link Restraint | Type: ${p6.restraintType} | Threshold: ${p6.distanceThreshold} \u212B | Psi: ${p6.psi} | Sigma 1: ${p6.sigma1} | Sigma 2: ${p6.sigma2} | Distance: ${distance2(p6).toFixed(2)} \u212B`;
   }
   function locationLabel(location2) {
     return _label(location2.data.crossLinkRestraints, location2.element);
@@ -118452,17 +118452,17 @@ function extractIntra(pairs, unit2) {
     pairs.push(createCrossLinkRestraint(unit2, indexA, unit2, indexB, restraints, ri), createCrossLinkRestraint(unit2, indexB, unit2, indexA, restraints, ri));
   });
 }
-function createCrossLinkRestraint(unitA, indexA, unitB, indexB, restraints, row2) {
+function createCrossLinkRestraint(unitA, indexA, unitB, indexB, restraints, row3) {
   return {
     unitA,
     indexA,
     unitB,
     indexB,
-    restraintType: restraints.data.restraint_type.value(row2),
-    distanceThreshold: restraints.data.distance_threshold.value(row2),
-    psi: restraints.data.psi.value(row2),
-    sigma1: restraints.data.sigma_1.value(row2),
-    sigma2: restraints.data.sigma_2.value(row2)
+    restraintType: restraints.data.restraint_type.value(row3),
+    distanceThreshold: restraints.data.distance_threshold.value(row3),
+    psi: restraints.data.psi.value(row3),
+    sigma1: restraints.data.sigma_1.value(row3),
+    sigma2: restraints.data.sigma_2.value(row3)
   };
 }
 function extractCrossLinkRestraints(structure) {
@@ -120927,8 +120927,8 @@ function snapshotFromSphereAndDirections(camera, options) {
   const radius = Math.max(options.radius, 0.01);
   const direction = (_a = options.direction) !== null && _a !== void 0 ? _a : Vec3.sub(Vec3(), camera.target, camera.position);
   const up3 = Vec3.orthogonalize(Vec3(), direction, (_b = options.up) !== null && _b !== void 0 ? _b : camera.up);
-  const distance = camera.getTargetDistance(radius);
-  const deltaDirection = Vec3.setMagnitude(_tmpVec, direction, distance);
+  const distance2 = camera.getTargetDistance(radius);
+  const deltaDirection = Vec3.setMagnitude(_tmpVec, direction, distance2);
   const position = Vec3.sub(Vec3(), target, deltaDirection);
   return { target, position, up: up3, radius };
 }
@@ -121116,7 +121116,7 @@ function veeSlope(i, n) {
     return i - mid2;
   }
 }
-function mat3FromRows(row0, row1, row2) {
+function mat3FromRows(row0, row1, row22) {
   const m = Mat3();
   Mat3.setValue(m, 0, 0, row0[0]);
   Mat3.setValue(m, 0, 1, row0[1]);
@@ -121124,9 +121124,9 @@ function mat3FromRows(row0, row1, row2) {
   Mat3.setValue(m, 1, 0, row1[0]);
   Mat3.setValue(m, 1, 1, row1[1]);
   Mat3.setValue(m, 1, 2, row1[2]);
-  Mat3.setValue(m, 2, 0, row2[0]);
-  Mat3.setValue(m, 2, 1, row2[1]);
-  Mat3.setValue(m, 2, 2, row2[2]);
+  Mat3.setValue(m, 2, 0, row22[0]);
+  Mat3.setValue(m, 2, 1, row22[1]);
+  Mat3.setValue(m, 2, 2, row22[2]);
   return m;
 }
 function avoidMirrorRotation(rot) {
@@ -122546,9 +122546,9 @@ var StructureSelectionManager = class extends StatefulPluginComponent {
       }
     });
     for (let i = 0, il = boundaries.length; i < il; ++i) {
-      const { box: box4, sphere } = boundaries[i];
-      Vec3.min(min5, min5, box4.min);
-      Vec3.max(max5, max5, box4.max);
+      const { box: box5, sphere } = boundaries[i];
+      Vec3.min(min5, min5, box5.min);
+      Vec3.max(max5, max5, box5.max);
       boundaryHelper3.includePositionRadius(sphere.center, sphere.radius);
     }
     boundaryHelper3.finishedIncludeStep();
@@ -123017,13 +123017,13 @@ var VolumeStreaming = class extends PluginStateObject.CreateBehavior({ name: "Vo
   function createEntryParams(options) {
     const { entryData, defaultView, structure, channelParams = {} } = options;
     const info = entryData || { kind: "em", header: { sampling: [fakeSampling], availablePrecisions: [{ precision: 0, maxVoxels: 0 }] }, emDefaultContourLevel: Volume.IsoValue.relative(0) };
-    const box4 = structure && structure.boundary.box || Box3D();
+    const box5 = structure && structure.boundary.box || Box3D();
     return {
       view: ParamDefinition.MappedStatic(defaultView || (info.kind === "em" ? "auto" : "selection-box"), {
         "off": ParamDefinition.Group({}),
         "box": ParamDefinition.Group({
-          bottomLeft: ParamDefinition.Vec3(box4.min),
-          topRight: ParamDefinition.Vec3(box4.max)
+          bottomLeft: ParamDefinition.Vec3(box5.min),
+          topRight: ParamDefinition.Vec3(box5.max)
         }, { description: "Static box defined by cartesian coords.", isFlat: true }),
         "selection-box": ParamDefinition.Group({
           radius: ParamDefinition.Numeric(5, { min: 0, max: 50, step: 0.5 }, { description: "Radius in \u212B within which the volume is shown." }),
@@ -123043,8 +123043,8 @@ var VolumeStreaming = class extends PluginStateObject.CreateBehavior({ name: "Vo
           radius: ParamDefinition.Numeric(5, { min: 0, max: 50, step: 0.5 }, { description: "Radius in \u212B within which the volume is shown." }),
           selectionDetailLevel: createDetailParams(info.header.availablePrecisions, 6, { label: "Selection Detail" }),
           isSelection: ParamDefinition.Boolean(false, { isHidden: true }),
-          bottomLeft: ParamDefinition.Vec3(box4.min, {}, { isHidden: true }),
-          topRight: ParamDefinition.Vec3(box4.max, {}, { isHidden: true })
+          bottomLeft: ParamDefinition.Vec3(box5.min, {}, { isHidden: true }),
+          topRight: ParamDefinition.Vec3(box5.max, {}, { isHidden: true })
         }, { description: "Box around focused element.", isFlat: true })
       }, { options: VolumeStreaming2.ViewTypeOptions, description: 'Controls what of the volume is displayed. "Off" hides the volume alltogether. "Bounded box" shows the volume inside the given box. "Around Interaction" shows the volume around the focused element/atom. "Whole Structure" shows the volume for the whole structure.' }),
       detailLevel: createDetailParams(info.header.availablePrecisions, 3),
@@ -123086,10 +123086,10 @@ var VolumeStreaming = class extends PluginStateObject.CreateBehavior({ name: "Vo
     get info() {
       return this.infoMap.get(this.params.entry.name);
     }
-    async queryData(box4) {
+    async queryData(box5) {
       let url = urlCombine(this.data.serverUrl, `${this.info.kind}/${this.info.dataId.toLowerCase()}`);
-      if (box4) {
-        const { min: a8, max: b8 } = box4;
+      if (box5) {
+        const { min: a8, max: b8 } = box5;
         url += `/box/${a8.map((v4) => Math.round(1e3 * v4) / 1e3).join(",")}/${b8.map((v4) => Math.round(1e3 * v4) / 1e3).join(",")}`;
       } else {
         url += `/cell`;
@@ -123098,8 +123098,8 @@ var VolumeStreaming = class extends PluginStateObject.CreateBehavior({ name: "Vo
       if (this.params.entry.params.view.name === "auto" && this.params.entry.params.view.params.isSelection) {
         detail = this.params.entry.params.view.params.selectionDetailLevel;
       }
-      if (this.params.entry.params.view.name === "camera-target" && box4) {
-        detail = this.decideDetail(box4, this.params.entry.params.view.params.dynamicDetailLevel);
+      if (this.params.entry.params.view.name === "camera-target" && box5) {
+        detail = this.decideDetail(box5, this.params.entry.params.view.params.dynamicDetailLevel);
       }
       url += `?detail=${detail}`;
       const entry = LRUCache.get(this.cache, url);
@@ -123134,12 +123134,12 @@ var VolumeStreaming = class extends PluginStateObject.CreateBehavior({ name: "Vo
       }
       return ret;
     }
-    async updateParams(box4, autoIsSelection = false) {
+    async updateParams(box5, autoIsSelection = false) {
       const newParams = copyParams(this.params);
       const viewType = newParams.entry.params.view.name;
       if (viewType !== "off" && viewType !== "cell") {
-        newParams.entry.params.view.params.bottomLeft = (box4 === null || box4 === void 0 ? void 0 : box4.min) || Vec3.zero();
-        newParams.entry.params.view.params.topRight = (box4 === null || box4 === void 0 ? void 0 : box4.max) || Vec3.zero();
+        newParams.entry.params.view.params.bottomLeft = (box5 === null || box5 === void 0 ? void 0 : box5.min) || Vec3.zero();
+        newParams.entry.params.view.params.topRight = (box5 === null || box5 === void 0 ? void 0 : box5.max) || Vec3.zero();
       }
       if (viewType === "auto") {
         newParams.entry.params.view.params.isSelection = autoIsSelection;
@@ -123214,15 +123214,15 @@ var VolumeStreaming = class extends PluginStateObject.CreateBehavior({ name: "Vo
       const root = this.getStructureRoot();
       if (!root || ((_a = root.obj) === null || _a === void 0 ? void 0 : _a.data) !== ((_b = parent.obj) === null || _b === void 0 ? void 0 : _b.data))
         return Box3D();
-      const transform = GlobalModelTransformInfo.get((_c = root.obj) === null || _c === void 0 ? void 0 : _c.data.models[0]);
-      if (transform)
-        Mat4.invert(this._invTransform, transform);
+      const transform2 = GlobalModelTransformInfo.get((_c = root.obj) === null || _c === void 0 ? void 0 : _c.data.models[0]);
+      if (transform2)
+        Mat4.invert(this._invTransform, transform2);
       const extendedLoci = element_exports.Loci.extendToWholeResidues(loci);
-      const box4 = element_exports.Loci.getBoundary(extendedLoci, transform && !Number.isNaN(this._invTransform[0]) ? this._invTransform : void 0).box;
+      const box5 = element_exports.Loci.getBoundary(extendedLoci, transform2 && !Number.isNaN(this._invTransform[0]) ? this._invTransform : void 0).box;
       if (element_exports.Loci.size(extendedLoci) === 1) {
-        Box3D.expand(box4, box4, Vec3.create(1, 1, 1));
+        Box3D.expand(box5, box5, Vec3.create(1, 1, 1));
       }
-      return box4;
+      return box5;
     }
     updateAuto(loci) {
       this.updateQueue.enqueue(async () => {
@@ -123241,8 +123241,8 @@ var VolumeStreaming = class extends PluginStateObject.CreateBehavior({ name: "Vo
         } else {
           this.lastLoci = loci;
         }
-        const box4 = this.getBoxFromLoci(this.lastLoci);
-        await this.updateParams(box4);
+        const box5 = this.getBoxFromLoci(this.lastLoci);
+        await this.updateParams(box5);
       });
     }
     updateCameraTarget(snapshot) {
@@ -123252,8 +123252,8 @@ var VolumeStreaming = class extends PluginStateObject.CreateBehavior({ name: "Vo
         try {
           if (!origManualReset)
             (_b = this.plugin.canvas3d) === null || _b === void 0 ? void 0 : _b.setProps({ camera: { manualReset: true } });
-          const box4 = this.boxFromCameraTarget(snapshot, true);
-          await this.updateParams(box4);
+          const box5 = this.boxFromCameraTarget(snapshot, true);
+          await this.updateParams(box5);
         } finally {
           if (!origManualReset)
             (_c = this.plugin.canvas3d) === null || _c === void 0 ? void 0 : _c.setProps({ camera: { manualReset: origManualReset } });
@@ -123263,8 +123263,8 @@ var VolumeStreaming = class extends PluginStateObject.CreateBehavior({ name: "Vo
     boxFromCameraTarget(snapshot, boundByBoundarySize) {
       var _a;
       const target = snapshot.target;
-      const distance = this.cameraTargetDistance(snapshot);
-      const top = Math.tan(0.5 * snapshot.fov) * distance;
+      const distance2 = this.cameraTargetDistance(snapshot);
+      const top = Math.tan(0.5 * snapshot.fov) * distance2;
       let radius = top;
       const viewport = (_a = this.plugin.canvas3d) === null || _a === void 0 ? void 0 : _a.camera.viewport;
       if (viewport && viewport.width > viewport.height) {
@@ -123284,9 +123284,9 @@ var VolumeStreaming = class extends PluginStateObject.CreateBehavior({ name: "Vo
       }
       return Box3D.create(Vec3.create(target[0] - radiusX, target[1] - radiusY, target[2] - radiusZ), Vec3.create(target[0] + radiusX, target[1] + radiusY, target[2] + radiusZ));
     }
-    decideDetail(box4, baseDetail) {
+    decideDetail(box5, baseDetail) {
       const cellVolume = this.info.kind === "x-ray" ? Box3D.volume(this.data.structure.boundary.box) : this.info.header.spacegroup.size.reduce((a8, b8) => a8 * b8, 1);
-      const boxVolume = Box3D.volume(box4);
+      const boxVolume = Box3D.volume(box5);
       let ratio = boxVolume / cellVolume;
       const maxDetail = this.info.header.availablePrecisions.length - 1;
       let detail = baseDetail;
@@ -123299,7 +123299,7 @@ var VolumeStreaming = class extends PluginStateObject.CreateBehavior({ name: "Vo
     async update(params) {
       const switchedToSelection = params.entry.params.view.name === "selection-box" && this.params && this.params.entry && this.params.entry.params && this.params.entry.params.view && this.params.entry.params.view.name !== "selection-box";
       this.params = params;
-      let box4 = void 0, emptyData = false;
+      let box5 = void 0, emptyData = false;
       if (params.entry.params.view.name !== "camera-target" && this.cameraTargetSubscription) {
         this.cameraTargetSubscription.unsubscribe();
         this.cameraTargetSubscription = void 0;
@@ -123309,41 +123309,41 @@ var VolumeStreaming = class extends PluginStateObject.CreateBehavior({ name: "Vo
           emptyData = true;
           break;
         case "box":
-          box4 = Box3D.create(params.entry.params.view.params.bottomLeft, params.entry.params.view.params.topRight);
-          emptyData = Box3D.volume(box4) < 1e-4;
+          box5 = Box3D.create(params.entry.params.view.params.bottomLeft, params.entry.params.view.params.topRight);
+          emptyData = Box3D.volume(box5) < 1e-4;
           break;
         case "selection-box": {
           if (switchedToSelection) {
-            box4 = this.getBoxFromLoci(this.lastLoci) || Box3D();
+            box5 = this.getBoxFromLoci(this.lastLoci) || Box3D();
           } else {
-            box4 = Box3D.create(Vec3.clone(params.entry.params.view.params.bottomLeft), Vec3.clone(params.entry.params.view.params.topRight));
+            box5 = Box3D.create(Vec3.clone(params.entry.params.view.params.bottomLeft), Vec3.clone(params.entry.params.view.params.topRight));
           }
           const r = params.entry.params.view.params.radius;
-          emptyData = Box3D.volume(box4) < 1e-4;
-          Box3D.expand(box4, box4, Vec3.create(r, r, r));
+          emptyData = Box3D.volume(box5) < 1e-4;
+          Box3D.expand(box5, box5, Vec3.create(r, r, r));
           break;
         }
         case "camera-target":
           if (!this.cameraTargetSubscription) {
             this.cameraTargetSubscription = this.subscribeObservable(this.cameraTargetObservable, (e) => this.updateCameraTarget(e));
           }
-          box4 = this.boxFromCameraTarget(this.plugin.canvas3d.camera.getSnapshot(), true);
+          box5 = this.boxFromCameraTarget(this.plugin.canvas3d.camera.getSnapshot(), true);
           break;
         case "cell":
-          box4 = this.info.kind === "x-ray" ? this.data.structure.boundary.box : void 0;
+          box5 = this.info.kind === "x-ray" ? this.data.structure.boundary.box : void 0;
           break;
         case "auto":
-          box4 = params.entry.params.view.params.isSelection || this.info.kind === "x-ray" ? Box3D.create(Vec3.clone(params.entry.params.view.params.bottomLeft), Vec3.clone(params.entry.params.view.params.topRight)) : void 0;
-          if (box4) {
-            emptyData = Box3D.volume(box4) < 1e-4;
+          box5 = params.entry.params.view.params.isSelection || this.info.kind === "x-ray" ? Box3D.create(Vec3.clone(params.entry.params.view.params.bottomLeft), Vec3.clone(params.entry.params.view.params.topRight)) : void 0;
+          if (box5) {
+            emptyData = Box3D.volume(box5) < 1e-4;
             if (params.entry.params.view.params.isSelection) {
               const r = params.entry.params.view.params.radius;
-              Box3D.expand(box4, box4, Vec3.create(r, r, r));
+              Box3D.expand(box5, box5, Vec3.create(r, r, r));
             }
           }
           break;
       }
-      const data = emptyData ? {} : await this.queryData(box4);
+      const data = emptyData ? {} : await this.queryData(box5);
       if (!data)
         return false;
       const info = params.entry.params.channels;
@@ -125221,8 +125221,8 @@ function getIntraBondLoci(pickingId, structureGroup, id) {
     const { structure, group } = structureGroup;
     const unit2 = group.units[instanceId];
     if (groupId === PickingId.Null) {
-      const indices2 = OrderedSet2.ofRange(0, unit2.elements.length);
-      return element_exports.Loci(structure.target, [{ unit: unit2, indices: indices2 }]);
+      const indices3 = OrderedSet2.ofRange(0, unit2.elements.length);
+      return element_exports.Loci(structure.target, [{ unit: unit2, indices: indices3 }]);
     } else {
       if (Unit.isAtomic(unit2)) {
         const { target } = structure;
@@ -125270,9 +125270,9 @@ function eachIntraBond(loci, structureGroup, apply, isMarking) {
     for (const e of loci.elements) {
       const unitIdx = group.unitIndexMap.get(e.unit.id);
       if (unitIdx !== void 0) {
-        const { offset: offset3, b: b8 } = unit2.bonds;
+        const { offset: offset4, b: b8 } = unit2.bonds;
         OrderedSet2.forEach(e.indices, (v4) => {
-          for (let t5 = offset3[v4], _t2 = offset3[v4 + 1]; t5 < _t2; t5++) {
+          for (let t5 = offset4[v4], _t2 = offset4[v4 + 1]; t5 < _t2; t5++) {
             if (!isMarking || OrderedSet2.has(e.indices, b8[t5])) {
               if (apply(Interval.ofSingleton(unitIdx * groupCount + t5)))
                 changed = true;
@@ -125400,9 +125400,9 @@ function eachStructureGroupsBond(loci, structure, apply, isMarking) {
       const groupCount = unit2.bonds.edgeCount * 2;
       const unitIdx = group.unitIndexMap.get(e.unit.id);
       if (unitIdx !== void 0) {
-        const { offset: offset3, b: b8 } = unit2.bonds;
+        const { offset: offset4, b: b8 } = unit2.bonds;
         OrderedSet2.forEach(e.indices, (v4) => {
-          for (let t5 = offset3[v4], _t2 = offset3[v4 + 1]; t5 < _t2; t5++) {
+          for (let t5 = offset4[v4], _t2 = offset4[v4 + 1]; t5 < _t2; t5++) {
             if (!isMarking || OrderedSet2.has(e.indices, b8[t5])) {
               if (apply(Interval.ofSingleton(unitIdx * groupCount + t5 + o)))
                 changed = true;
@@ -125420,7 +125420,7 @@ var isBondType = BondType.is;
 function getIntraUnitBondCylinderBuilderProps(unit2, structure, theme, props) {
   const elements = unit2.elements;
   const bonds = unit2.bonds;
-  const { edgeCount, a: a8, b: b8, edgeProps, offset: offset3 } = bonds;
+  const { edgeCount, a: a8, b: b8, edgeProps, offset: offset4 } = bonds;
   const { order: _order, flags: _flags } = edgeProps;
   const { sizeFactor, sizeAspectRatio, adjustCylinderLength, aromaticBonds, includeTypes, excludeTypes, multipleBonds } = props;
   const mbOff = multipleBonds === "off";
@@ -125468,11 +125468,11 @@ function getIntraUnitBondCylinderBuilderProps(unit2, structure, theme, props) {
         return c8.invariantPosition(elements[rI], vRef);
       if (aI > bI)
         [aI, bI] = [bI, aI];
-      if (offset3[aI + 1] - offset3[aI] === 1)
+      if (offset4[aI + 1] - offset4[aI] === 1)
         [aI, bI] = [bI, aI];
       const aR = elementAromaticRingIndices.get(aI) || elementRingIndices.get(aI);
       let maxSize = 0;
-      for (let i = offset3[aI], il = offset3[aI + 1]; i < il; ++i) {
+      for (let i = offset4[aI], il = offset4[aI + 1]; i < il; ++i) {
         const _bI = b8[i];
         if (_bI !== bI && _bI !== aI) {
           if (aR) {
@@ -126147,10 +126147,10 @@ function eachElement(loci, structureGroup, apply) {
   for (const e of loci.elements) {
     const unitIdx = unitIndexMap.get(e.unit.id);
     if (unitIdx !== void 0) {
-      const offset3 = unitIdx * elementCount;
+      const offset4 = unitIdx * elementCount;
       if (Interval.is(e.indices)) {
-        const start4 = offset3 + Interval.start(e.indices);
-        const end4 = offset3 + Interval.end(e.indices);
+        const start4 = offset4 + Interval.start(e.indices);
+        const end4 = offset4 + Interval.end(e.indices);
         if (apply(Interval.ofBounds(start4, end4)))
           changed = true;
       } else {
@@ -126161,7 +126161,7 @@ function eachElement(loci, structureGroup, apply) {
             endI++;
           i = endI - 1;
           const end4 = e.indices[i];
-          changed = apply(Interval.ofRange(offset3 + start4, offset3 + end4)) || changed;
+          changed = apply(Interval.ofRange(offset4 + start4, offset4 + end4)) || changed;
         }
       }
     }
@@ -126173,8 +126173,8 @@ function getElementLoci(pickingId, structureGroup, id) {
   if (id === objectId) {
     const { structure, group } = structureGroup;
     const unit2 = group.units[instanceId];
-    const indices2 = groupId === PickingId.Null ? OrderedSet2.ofRange(0, unit2.elements.length) : OrderedSet2.ofSingleton(groupId);
-    return element_exports.Loci(structure.target, [{ unit: unit2, indices: indices2 }]);
+    const indices3 = groupId === PickingId.Null ? OrderedSet2.ofRange(0, unit2.elements.length) : OrderedSet2.ofSingleton(groupId);
+    return element_exports.Loci(structure.target, [{ unit: unit2, indices: indices3 }]);
   }
   return EmptyLoci;
 }
@@ -126325,8 +126325,8 @@ function getSerialElementLoci(pickingId, structure, id) {
       const unitIdx = unitIndices[groupId];
       const unit2 = structure.units[unitIdx];
       const idx = groupId - cumulativeUnitElementCount[unitIdx];
-      const indices2 = OrderedSet2.ofSingleton(idx);
-      return element_exports.Loci(structure, [{ unit: unit2, indices: indices2 }]);
+      const indices3 = OrderedSet2.ofSingleton(idx);
+      return element_exports.Loci(structure, [{ unit: unit2, indices: indices3 }]);
     }
   }
   return EmptyLoci;
@@ -126590,11 +126590,11 @@ function eachCarbohydrateLink(loci, structure, apply) {
   if (!Structure.areEquivalent(loci.structure, structure))
     return false;
   const { getLinkIndices } = structure.carbohydrates;
-  for (const { unit: unit2, indices: indices2 } of loci.elements) {
+  for (const { unit: unit2, indices: indices3 } of loci.elements) {
     if (!Unit.isAtomic(unit2))
       continue;
     __linkIndicesSet.clear();
-    OrderedSet2.forEach(indices2, (v4) => {
+    OrderedSet2.forEach(indices3, (v4) => {
       const linkIndices = getLinkIndices(unit2, unit2.elements[v4]);
       for (let i = 0, il = linkIndices.length; i < il; ++i) {
         if (!__linkIndicesSet.has(linkIndices[i])) {
@@ -126670,7 +126670,7 @@ function PerforatedOctagonalPyramid() {
     vertices2[8 * 3 + 3] = 0;
     vertices2[8 * 3 + 4] = 0;
     vertices2[8 * 3 + 5] = 0.5;
-    const indices2 = [
+    const indices3 = [
       0,
       1,
       8,
@@ -126696,7 +126696,7 @@ function PerforatedOctagonalPyramid() {
       0,
       9
     ];
-    perforatedOctagonalPyramid = createPrimitive(vertices2, indices2);
+    perforatedOctagonalPyramid = createPrimitive(vertices2, indices3);
   }
   return perforatedOctagonalPyramid;
 }
@@ -127021,11 +127021,11 @@ function eachCarbohydrate(loci, structure, apply) {
     return false;
   if (!Structure.areEquivalent(loci.structure, structure))
     return false;
-  for (const { unit: unit2, indices: indices2 } of loci.elements) {
+  for (const { unit: unit2, indices: indices3 } of loci.elements) {
     if (!Unit.isAtomic(unit2))
       continue;
     __elementIndicesSet.clear();
-    OrderedSet2.forEach(indices2, (v4) => {
+    OrderedSet2.forEach(indices3, (v4) => {
       const elementIndices = getElementIndices(unit2, unit2.elements[v4]);
       for (let i = 0, il = elementIndices.length; i < il; ++i) {
         if (!__elementIndicesSet.has(elementIndices[i])) {
@@ -127144,11 +127144,11 @@ function eachTerminalLink(loci, structure, apply) {
   if (!Structure.areEquivalent(loci.structure, structure))
     return false;
   const { getTerminalLinkIndices } = structure.carbohydrates;
-  for (const { unit: unit2, indices: indices2 } of loci.elements) {
+  for (const { unit: unit2, indices: indices3 } of loci.elements) {
     if (!Unit.isAtomic(unit2))
       continue;
     __linkIndicesSet2.clear();
-    OrderedSet2.forEach(indices2, (v4) => {
+    OrderedSet2.forEach(indices3, (v4) => {
       const linkIndices = getTerminalLinkIndices(unit2, unit2.elements[v4]);
       for (let i = 0, il = linkIndices.length; i < il; ++i) {
         if (!__linkIndicesSet2.has(linkIndices[i])) {
@@ -128077,8 +128077,8 @@ function getPolymerElementLoci(pickingId, structureGroup, id) {
     const { structure, group } = structureGroup;
     const unit2 = group.units[instanceId];
     if (groupId === PickingId.Null) {
-      const indices2 = OrderedSet2.ofRange(0, unit2.elements.length);
-      return element_exports.Loci(structure.target, [{ unit: unit2, indices: indices2 }]);
+      const indices3 = OrderedSet2.ofRange(0, unit2.elements.length);
+      return element_exports.Loci(structure.target, [{ unit: unit2, indices: indices3 }]);
     } else {
       if (Unit.isAtomic(unit2)) {
         return getResidueLoci(structure, unit2, unit2.polymerElements[groupId]);
@@ -128087,15 +128087,15 @@ function getPolymerElementLoci(pickingId, structureGroup, id) {
         const elementIndex = unit2.polymerElements[groupId];
         const unitIndex = OrderedSet2.indexOf(elements, elementIndex);
         if (unitIndex !== -1) {
-          const indices2 = OrderedSet2.ofSingleton(unitIndex);
-          return element_exports.Loci(structure, [{ unit: unit2, indices: indices2 }]);
+          const indices3 = OrderedSet2.ofSingleton(unitIndex);
+          return element_exports.Loci(structure, [{ unit: unit2, indices: indices3 }]);
         }
       }
     }
   }
   return EmptyLoci;
 }
-function tryApplyResidueInterval(offset3, elements, traceElementIndex, apply, r1, r2) {
+function tryApplyResidueInterval(offset4, elements, traceElementIndex, apply, r1, r2) {
   let start4 = -1, startIdx = -1;
   for (let rI = r1; rI <= r2; rI++) {
     const eI = traceElementIndex[rI];
@@ -128121,9 +128121,9 @@ function tryApplyResidueInterval(offset3, elements, traceElementIndex, apply, r1
       break;
     }
   }
-  return apply(Interval.ofRange(offset3 + start4, offset3 + end4));
+  return apply(Interval.ofRange(offset4 + start4, offset4 + end4));
 }
-function eachAtomicUnitTracedElement(offset3, groupSize, elementsSelector, apply, e) {
+function eachAtomicUnitTracedElement(offset4, groupSize, elementsSelector, apply, e) {
   let changed = false;
   const { elements } = e.unit;
   const { traceElementIndex } = e.unit.model.atomicHierarchy.derived.residue;
@@ -128131,27 +128131,27 @@ function eachAtomicUnitTracedElement(offset3, groupSize, elementsSelector, apply
   const tracedElements = elementsSelector(e.unit);
   if (Interval.is(e.indices)) {
     if (Interval.start(e.indices) === 0 && Interval.end(e.indices) === e.unit.elements.length) {
-      changed = apply(Interval.ofBounds(offset3, offset3 + groupSize)) || changed;
+      changed = apply(Interval.ofBounds(offset4, offset4 + groupSize)) || changed;
     } else {
       const r1 = resIndex[elements[Interval.min(e.indices)]];
       const r2 = resIndex[elements[Interval.max(e.indices)]];
-      changed = tryApplyResidueInterval(offset3, tracedElements, traceElementIndex, apply, r1, r2) || changed;
+      changed = tryApplyResidueInterval(offset4, tracedElements, traceElementIndex, apply, r1, r2) || changed;
     }
   } else {
-    const { indices: indices2 } = e;
-    for (let i = 0, _i = indices2.length; i < _i; i++) {
-      const r1 = resIndex[elements[indices2[i]]];
+    const { indices: indices3 } = e;
+    for (let i = 0, _i = indices3.length; i < _i; i++) {
+      const r1 = resIndex[elements[indices3[i]]];
       let r2 = r1;
       let endI = i + 1;
       while (endI < _i) {
-        const _r = resIndex[elements[indices2[endI]]];
+        const _r = resIndex[elements[indices3[endI]]];
         if (_r - r2 > 1)
           break;
         r2 = _r;
         endI++;
       }
       i = endI - 1;
-      changed = tryApplyResidueInterval(offset3, tracedElements, traceElementIndex, apply, r1, r2) || changed;
+      changed = tryApplyResidueInterval(offset4, tracedElements, traceElementIndex, apply, r1, r2) || changed;
     }
   }
   return changed;
@@ -128170,13 +128170,13 @@ function eachPolymerElement(loci, structureGroup, apply) {
   for (const e of loci.elements) {
     if (!group.unitIndexMap.has(e.unit.id))
       continue;
-    const offset3 = group.unitIndexMap.get(e.unit.id) * groupCount;
+    const offset4 = group.unitIndexMap.get(e.unit.id) * groupCount;
     if (Unit.isAtomic(e.unit)) {
-      changed = eachAtomicUnitTracedElement(offset3, groupCount, selectPolymerElements, apply, e) || changed;
+      changed = eachAtomicUnitTracedElement(offset4, groupCount, selectPolymerElements, apply, e) || changed;
     } else {
       if (Interval.is(e.indices)) {
-        const start4 = offset3 + Interval.start(e.indices);
-        const end4 = offset3 + Interval.end(e.indices);
+        const start4 = offset4 + Interval.start(e.indices);
+        const end4 = offset4 + Interval.end(e.indices);
         changed = apply(Interval.ofBounds(start4, end4)) || changed;
       } else {
         for (let i = 0, _i = e.indices.length; i < _i; i++) {
@@ -128186,7 +128186,7 @@ function eachPolymerElement(loci, structureGroup, apply) {
             endI++;
           i = endI - 1;
           const end4 = e.indices[i];
-          changed = apply(Interval.ofRange(offset3 + start4, offset3 + end4)) || changed;
+          changed = apply(Interval.ofRange(offset4 + start4, offset4 + end4)) || changed;
         }
       }
     }
@@ -128281,8 +128281,8 @@ function getNucleotideElementLoci(pickingId, structureGroup, id) {
     const unit2 = group.units[instanceId];
     if (Unit.isAtomic(unit2)) {
       if (groupId === PickingId.Null) {
-        const indices2 = Interval.ofRange(0, unit2.elements.length);
-        return element_exports.Loci(structure.target, [{ unit: unit2, indices: indices2 }]);
+        const indices3 = Interval.ofRange(0, unit2.elements.length);
+        return element_exports.Loci(structure.target, [{ unit: unit2, indices: indices3 }]);
       } else {
         return getResidueLoci(structure, unit2, unit2.nucleotideElements[groupId]);
       }
@@ -129502,16 +129502,16 @@ var v3cross2 = Vec3.cross;
 var v3set4 = Vec3.set;
 var caAdd36 = ChunkedArray.add3;
 var caAdd7 = ChunkedArray.add;
-function addCap(offset3, state, controlPoints, normalVectors, binormalVectors, width, leftHeight, rightHeight, flip2) {
-  const { vertices: vertices2, normals, indices: indices2 } = state;
+function addCap(offset4, state, controlPoints, normalVectors, binormalVectors, width, leftHeight, rightHeight, flip2) {
+  const { vertices: vertices2, normals, indices: indices3 } = state;
   const vertexCount = vertices2.elementCount;
-  v3fromArray5(tA, normalVectors, offset3);
+  v3fromArray5(tA, normalVectors, offset4);
   v3scale4(verticalLeftVector, tA, leftHeight);
   v3scale4(verticalRightVector, tA, rightHeight);
-  v3fromArray5(tB, binormalVectors, offset3);
+  v3fromArray5(tB, binormalVectors, offset4);
   v3scale4(horizontalVector, tB, width);
   v3cross2(normalVector, tB, tA);
-  v3fromArray5(positionVector, controlPoints, offset3);
+  v3fromArray5(positionVector, controlPoints, offset4);
   v3add5(p12, v3add5(p12, positionVector, horizontalVector), verticalRightVector);
   v3sub4(p23, v3add5(p23, positionVector, horizontalVector), verticalLeftVector);
   v3sub4(p32, v3sub4(p32, positionVector, horizontalVector), verticalLeftVector);
@@ -129533,18 +129533,18 @@ function addCap(offset3, state, controlPoints, normalVectors, binormalVectors, w
     for (let i = 0; i < 4; ++i) {
       caAdd36(normals, -normalVector[0], -normalVector[1], -normalVector[2]);
     }
-    caAdd36(indices2, vertexCount, vertexCount + 1, vertexCount + 2);
-    caAdd36(indices2, vertexCount + 2, vertexCount + 3, vertexCount);
+    caAdd36(indices3, vertexCount, vertexCount + 1, vertexCount + 2);
+    caAdd36(indices3, vertexCount + 2, vertexCount + 3, vertexCount);
   } else {
     for (let i = 0; i < 4; ++i) {
       caAdd36(normals, normalVector[0], normalVector[1], normalVector[2]);
     }
-    caAdd36(indices2, vertexCount + 2, vertexCount + 1, vertexCount);
-    caAdd36(indices2, vertexCount, vertexCount + 3, vertexCount + 2);
+    caAdd36(indices3, vertexCount + 2, vertexCount + 1, vertexCount);
+    caAdd36(indices3, vertexCount, vertexCount + 3, vertexCount + 2);
   }
 }
 function addSheet(state, controlPoints, normalVectors, binormalVectors, linearSegments, widthValues, heightValues, arrowHeight, startCap, endCap) {
-  const { currentGroup, vertices: vertices2, normals, indices: indices2, groups } = state;
+  const { currentGroup, vertices: vertices2, normals, indices: indices3, groups } = state;
   const vertexCount = vertices2.elementCount;
   let offsetLength = 0;
   if (arrowHeight > 0) {
@@ -129600,7 +129600,7 @@ function addSheet(state, controlPoints, normalVectors, binormalVectors, linearSe
   for (let i = 0; i < linearSegments; ++i) {
     for (let j = 0; j < 2; j++) {
       caAdd36(
-        indices2,
+        indices3,
         vertexCount + i * 8 + 2 * j,
         // a
         vertexCount + (i + 1) * 8 + 2 * j + 1,
@@ -129609,7 +129609,7 @@ function addSheet(state, controlPoints, normalVectors, binormalVectors, linearSe
         // b
       );
       caAdd36(
-        indices2,
+        indices3,
         vertexCount + i * 8 + 2 * j,
         // a
         vertexCount + (i + 1) * 8 + 2 * j,
@@ -129620,7 +129620,7 @@ function addSheet(state, controlPoints, normalVectors, binormalVectors, linearSe
     }
     for (let j = 2; j < 4; j++) {
       caAdd36(
-        indices2,
+        indices3,
         vertexCount + i * 8 + 2 * j,
         // a
         vertexCount + (i + 1) * 8 + 2 * j,
@@ -129628,7 +129628,7 @@ function addSheet(state, controlPoints, normalVectors, binormalVectors, linearSe
         vertexCount + i * 8 + 2 * j + 1
       );
       caAdd36(
-        indices2,
+        indices3,
         vertexCount + (i + 1) * 8 + 2 * j,
         // d
         vertexCount + (i + 1) * 8 + 2 * j + 1,
@@ -129685,13 +129685,13 @@ var v3unitX = Vec3.unitX;
 var caAdd37 = ChunkedArray.add3;
 var CosSinCache = /* @__PURE__ */ new Map();
 function getCosSin(radialSegments, shift2) {
-  const offset3 = shift2 ? 1 : 0;
-  const hash5 = cantorPairing(radialSegments, offset3);
+  const offset4 = shift2 ? 1 : 0;
+  const hash5 = cantorPairing(radialSegments, offset4);
   if (!CosSinCache.has(hash5)) {
     const cos = [];
     const sin = [];
     for (let j = 0; j < radialSegments; ++j) {
-      const t5 = (j * 2 + offset3) / radialSegments * Math.PI;
+      const t5 = (j * 2 + offset4) / radialSegments * Math.PI;
       cos[j] = Math.cos(t5);
       sin[j] = Math.sin(t5);
     }
@@ -129700,7 +129700,7 @@ function getCosSin(radialSegments, shift2) {
   return CosSinCache.get(hash5);
 }
 function addTube(state, controlPoints, normalVectors, binormalVectors, linearSegments, radialSegments, widthValues, heightValues, startCap, endCap, crossSection, roundCap = false) {
-  const { currentGroup, vertices: vertices2, normals, indices: indices2, groups } = state;
+  const { currentGroup, vertices: vertices2, normals, indices: indices3, groups } = state;
   let vertexCount = vertices2.elementCount;
   const { cos, sin } = getCosSin(radialSegments, crossSection === "rounded");
   const q1 = Math.round(radialSegments / 4);
@@ -129759,7 +129759,7 @@ function addTube(state, controlPoints, normalVectors, binormalVectors, linearSeg
   for (let i = 0; i < linearSegments; ++i) {
     for (let j = 0; j < radialSegmentsHalf; ++j) {
       caAdd37(
-        indices2,
+        indices3,
         vertexCount + i * radialSegments + (j + 1) % radialSegments,
         // a
         vertexCount + (i + 1) * radialSegments + (j + 1) % radialSegments,
@@ -129768,7 +129768,7 @@ function addTube(state, controlPoints, normalVectors, binormalVectors, linearSeg
         // b
       );
       caAdd37(
-        indices2,
+        indices3,
         vertexCount + (i + 1) * radialSegments + (j + 1) % radialSegments,
         // c
         vertexCount + (i + 1) * radialSegments + j,
@@ -129779,7 +129779,7 @@ function addTube(state, controlPoints, normalVectors, binormalVectors, linearSeg
     }
     for (let j = radialSegmentsHalf; j < radialSegments; ++j) {
       caAdd37(
-        indices2,
+        indices3,
         vertexCount + i * radialSegments + (j + 1) % radialSegments,
         // a
         vertexCount + (i + 1) * radialSegments + j,
@@ -129788,7 +129788,7 @@ function addTube(state, controlPoints, normalVectors, binormalVectors, linearSeg
         // b
       );
       caAdd37(
-        indices2,
+        indices3,
         vertexCount + (i + 1) * radialSegments + (j + 1) % radialSegments,
         // c
         vertexCount + (i + 1) * radialSegments + j,
@@ -129798,11 +129798,11 @@ function addTube(state, controlPoints, normalVectors, binormalVectors, linearSeg
     }
   }
   if (startCap) {
-    const offset3 = 0;
+    const offset4 = 0;
     const centerVertex = vertices2.elementCount;
-    v3fromArray6(u, normalVectors, offset3);
-    v3fromArray6(v3, binormalVectors, offset3);
-    v3fromArray6(controlPoint, controlPoints, offset3);
+    v3fromArray6(u, normalVectors, offset4);
+    v3fromArray6(v3, binormalVectors, offset4);
+    v3fromArray6(controlPoint, controlPoints, offset4);
     v3cross3(normalVector2, v3, u);
     caAdd37(vertices2, controlPoint[0], controlPoint[1], controlPoint[2]);
     caAdd37(normals, normalVector2[0], normalVector2[1], normalVector2[2]);
@@ -129821,15 +129821,15 @@ function addTube(state, controlPoints, normalVectors, binormalVectors, linearSeg
       }
       caAdd37(vertices2, surfacePoint[0], surfacePoint[1], surfacePoint[2]);
       caAdd37(normals, normalVector2[0], normalVector2[1], normalVector2[2]);
-      caAdd37(indices2, vertexCount + (i + 1) % radialSegments, vertexCount + i, centerVertex);
+      caAdd37(indices3, vertexCount + (i + 1) % radialSegments, vertexCount + i, centerVertex);
     }
   }
   if (endCap) {
-    const offset3 = linearSegments * 3;
+    const offset4 = linearSegments * 3;
     const centerVertex = vertices2.elementCount;
-    v3fromArray6(u, normalVectors, offset3);
-    v3fromArray6(v3, binormalVectors, offset3);
-    v3fromArray6(controlPoint, controlPoints, offset3);
+    v3fromArray6(u, normalVectors, offset4);
+    v3fromArray6(v3, binormalVectors, offset4);
+    v3fromArray6(controlPoint, controlPoints, offset4);
     v3cross3(normalVector2, u, v3);
     caAdd37(vertices2, controlPoint[0], controlPoint[1], controlPoint[2]);
     caAdd37(normals, normalVector2[0], normalVector2[1], normalVector2[2]);
@@ -129848,7 +129848,7 @@ function addTube(state, controlPoints, normalVectors, binormalVectors, linearSeg
       }
       caAdd37(vertices2, surfacePoint[0], surfacePoint[1], surfacePoint[2]);
       caAdd37(normals, normalVector2[0], normalVector2[1], normalVector2[2]);
-      caAdd37(indices2, vertexCount + i, vertexCount + (i + 1) % radialSegments, centerVertex);
+      caAdd37(indices3, vertexCount + i, vertexCount + (i + 1) % radialSegments, centerVertex);
     }
   }
   const addedVertexCount = (linearSegments + 1) * radialSegments + (startCap ? radialSegments + 1 : 0) + (endCap ? radialSegments + 1 : 0);
@@ -129876,7 +129876,7 @@ var positionVector2 = Vec3();
 var normalVector3 = Vec3();
 var torsionVector2 = Vec3();
 function addRibbon(state, controlPoints, normalVectors, binormalVectors, linearSegments, widthValues, heightValues, arrowHeight) {
-  const { currentGroup, vertices: vertices2, normals, indices: indices2, groups } = state;
+  const { currentGroup, vertices: vertices2, normals, indices: indices3, groups } = state;
   const vertexCount = vertices2.elementCount;
   let offsetLength = 0;
   if (arrowHeight > 0) {
@@ -129917,10 +129917,10 @@ function addRibbon(state, controlPoints, normalVectors, binormalVectors, linearS
     caAdd38(normals, tB2[0], tB2[1], tB2[2]);
   }
   for (let i = 0; i < linearSegments; ++i) {
-    caAdd38(indices2, vertexCount + i * 4, vertexCount + (i + 1) * 4 + 1, vertexCount + i * 4 + 1);
-    caAdd38(indices2, vertexCount + i * 4, vertexCount + (i + 1) * 4, vertexCount + (i + 1) * 4 + 1);
-    caAdd38(indices2, vertexCount + i * 4 + 2 + 1, vertexCount + (i + 1) * 4 + 2 + 1, vertexCount + i * 4 + 2);
-    caAdd38(indices2, vertexCount + i * 4 + 2, vertexCount + (i + 1) * 4 + 2 + 1, vertexCount + (i + 1) * 4 + 2);
+    caAdd38(indices3, vertexCount + i * 4, vertexCount + (i + 1) * 4 + 1, vertexCount + i * 4 + 1);
+    caAdd38(indices3, vertexCount + i * 4, vertexCount + (i + 1) * 4, vertexCount + (i + 1) * 4 + 1);
+    caAdd38(indices3, vertexCount + i * 4 + 2 + 1, vertexCount + (i + 1) * 4 + 2 + 1, vertexCount + i * 4 + 2);
+    caAdd38(indices3, vertexCount + i * 4 + 2, vertexCount + (i + 1) * 4 + 2 + 1, vertexCount + (i + 1) * 4 + 2);
   }
   const addedVertexCount = (linearSegments + 1) * 4;
   for (let i = 0, il = addedVertexCount; i < il; ++i)
@@ -129977,10 +129977,10 @@ function createPolymerTraceMesh(ctx, unit2, structure, theme, props, mesh) {
     let segmentCount2 = linearSegments;
     if (v4.initial) {
       segmentCount2 = Math.max(Math.round(linearSegments * shift2), 1);
-      const offset3 = linearSegments - segmentCount2;
-      curvePoints.copyWithin(0, offset3 * 3);
-      binormalVectors.copyWithin(0, offset3 * 3);
-      normalVectors.copyWithin(0, offset3 * 3);
+      const offset4 = linearSegments - segmentCount2;
+      curvePoints.copyWithin(0, offset4 * 3);
+      binormalVectors.copyWithin(0, offset4 * 3);
+      normalVectors.copyWithin(0, offset4 * 3);
       Vec3.fromArray(tmpV1, curvePoints, 3);
       Vec3.normalize(tmpV1, Vec3.sub(tmpV1, v4.p2, tmpV1));
       Vec3.scaleAndAdd(tmpV1, v4.p2, tmpV1, w1 * OverhangFactor);
@@ -130512,21 +130512,21 @@ function getTexture2(name, webgl, kind, format, type3, filter5) {
   }
   return webgl.namedTextures[_name];
 }
-function GaussianDensityTexture(webgl, position, box4, radius, props, oldTexture) {
-  return webgl.isWebGL2 ? GaussianDensityTexture3d(webgl, position, box4, radius, props, oldTexture) : GaussianDensityTexture2d(webgl, position, box4, radius, false, props, oldTexture);
+function GaussianDensityTexture(webgl, position, box5, radius, props, oldTexture) {
+  return webgl.isWebGL2 ? GaussianDensityTexture3d(webgl, position, box5, radius, props, oldTexture) : GaussianDensityTexture2d(webgl, position, box5, radius, false, props, oldTexture);
 }
-function GaussianDensityTexture2d(webgl, position, box4, radius, powerOfTwo, props, oldTexture) {
+function GaussianDensityTexture2d(webgl, position, box5, radius, powerOfTwo, props, oldTexture) {
   if (isTimingMode)
     webgl.timer.mark("GaussianDensityTexture2d");
-  const data = calcGaussianDensityTexture2d(webgl, position, box4, radius, powerOfTwo, props, oldTexture);
+  const data = calcGaussianDensityTexture2d(webgl, position, box5, radius, powerOfTwo, props, oldTexture);
   if (isTimingMode)
     webgl.timer.markEnd("GaussianDensityTexture2d");
   return finalizeGaussianDensityTexture(data);
 }
-function GaussianDensityTexture3d(webgl, position, box4, radius, props, oldTexture) {
+function GaussianDensityTexture3d(webgl, position, box5, radius, props, oldTexture) {
   if (isTimingMode)
     webgl.timer.mark("GaussianDensityTexture3d");
-  const data = calcGaussianDensityTexture3d(webgl, position, box4, radius, props, oldTexture);
+  const data = calcGaussianDensityTexture3d(webgl, position, box5, radius, props, oldTexture);
   if (isTimingMode)
     webgl.timer.markEnd("GaussianDensityTexture3d");
   return finalizeGaussianDensityTexture(data);
@@ -130535,15 +130535,15 @@ function finalizeGaussianDensityTexture({ texture, scale, bbox, gridDim, gridTex
   return { transform: getTransform(scale, bbox), texture, bbox, gridDim, gridTexDim, gridDataDim, gridTexScale, radiusFactor, resolution, maxRadius };
 }
 function getTransform(scale, bbox) {
-  const transform = Mat4.identity();
-  Mat4.fromScaling(transform, scale);
-  Mat4.setTranslation(transform, bbox.min);
-  return transform;
+  const transform2 = Mat4.identity();
+  Mat4.fromScaling(transform2, scale);
+  Mat4.setTranslation(transform2, bbox.min);
+  return transform2;
 }
-function calcGaussianDensityTexture2d(webgl, position, box4, radius, powerOfTwo, props, texture) {
+function calcGaussianDensityTexture2d(webgl, position, box5, radius, powerOfTwo, props, texture) {
   const { gl, resources, state, extensions: { colorBufferFloat, textureFloat, colorBufferHalfFloat, textureHalfFloat, blendMinMax } } = webgl;
   const { smoothness, resolution } = props;
-  const { drawCount, positions, radii, groups, scale, expandedBox, dim, maxRadius } = prepareGaussianDensityData(position, box4, radius, props);
+  const { drawCount, positions, radii, groups, scale, expandedBox, dim, maxRadius } = prepareGaussianDensityData(position, box5, radius, props);
   const [dx, dy, dz] = dim;
   const { texDimX, texDimY, texCols, powerOfTwoSize } = getTexture2dSize2(dim);
   const gridTexDim = Vec3.create(texDimX, texDimY, 0);
@@ -130600,10 +130600,10 @@ function calcGaussianDensityTexture2d(webgl, position, box4, radius, powerOfTwo,
   }
   return { texture, scale, bbox: expandedBox, gridDim: dim, gridTexDim, gridDataDim: dim, gridTexScale, radiusFactor, resolution, maxRadius };
 }
-function calcGaussianDensityTexture3d(webgl, position, box4, radius, props, texture) {
+function calcGaussianDensityTexture3d(webgl, position, box5, radius, props, texture) {
   const { gl, resources, state, extensions: { colorBufferFloat, textureFloat, colorBufferHalfFloat, textureHalfFloat } } = webgl;
   const { smoothness, resolution } = props;
-  const { drawCount, positions, radii, groups, scale, expandedBox, dim, maxRadius } = prepareGaussianDensityData(position, box4, radius, props);
+  const { drawCount, positions, radii, groups, scale, expandedBox, dim, maxRadius } = prepareGaussianDensityData(position, box5, radius, props);
   const [dx, dy, dz] = dim;
   const minDistTex = getTexture2("min-dist-3d", webgl, "volume-uint8", "rgba", "ubyte", "nearest");
   minDistTex.define(dx, dy, dz);
@@ -130638,17 +130638,17 @@ function calcGaussianDensityTexture3d(webgl, position, box4, radius, props, text
   render2(texture, false);
   return { texture, scale, bbox: expandedBox, gridDim: dim, gridTexDim: dim, gridDataDim: dim, gridTexScale, radiusFactor, resolution, maxRadius };
 }
-function prepareGaussianDensityData(position, box4, radius, props) {
+function prepareGaussianDensityData(position, box5, radius, props) {
   const { resolution, radiusOffset } = props;
   const scaleFactor = 1 / resolution;
-  const { indices: indices2, x, y, z, id } = position;
-  const n = OrderedSet2.size(indices2);
+  const { indices: indices3, x, y, z, id } = position;
+  const n = OrderedSet2.size(indices3);
   const positions = new Float32Array(n * 3);
   const radii = new Float32Array(n);
   const groups = new Float32Array(n);
   let maxRadius = 0;
   for (let i = 0; i < n; ++i) {
-    const j = OrderedSet2.getAt(indices2, i);
+    const j = OrderedSet2.getAt(indices3, i);
     positions[i * 3] = x[j];
     positions[i * 3 + 1] = y[j];
     positions[i * 3 + 2] = z[j];
@@ -130659,16 +130659,16 @@ function prepareGaussianDensityData(position, box4, radius, props) {
     groups[i] = id ? id[i] : i;
   }
   const pad2 = maxRadius * 2 + resolution * 4;
-  const expandedBox = Box3D.expand(Box3D(), box4, Vec3.create(pad2, pad2, pad2));
+  const expandedBox = Box3D.expand(Box3D(), box5, Vec3.create(pad2, pad2, pad2));
   const scaledBox = Box3D.scale(Box3D(), expandedBox, scaleFactor);
   const dim = Box3D.size(Vec3(), scaledBox);
   Vec3.ceil(dim, dim);
   const scale = Vec3.create(resolution, resolution, resolution);
   return { drawCount: n, positions, radii, groups, scale, expandedBox, dim, maxRadius };
 }
-function getGaussianDensityRenderable(webgl, drawCount, positions, radii, groups, minDistanceTexture, box4, gridDim, gridTexDim, gridTexScale, smoothness, resolution, radiusFactor) {
+function getGaussianDensityRenderable(webgl, drawCount, positions, radii, groups, minDistanceTexture, box5, gridDim, gridTexDim, gridTexScale, smoothness, resolution, radiusFactor) {
   if (webgl.namedComputeRenderables[GaussianDensityName]) {
-    const extent = Vec3.sub(Vec3(), box4.max, box4.min);
+    const extent = Vec3.sub(Vec3(), box5.max, box5.min);
     const v4 = webgl.namedComputeRenderables[GaussianDensityName].values;
     ValueCell.updateIfChanged(v4.drawCount, drawCount);
     ValueCell.updateIfChanged(v4.instanceCount, 1);
@@ -130678,7 +130678,7 @@ function getGaussianDensityRenderable(webgl, drawCount, positions, radii, groups
     ValueCell.updateIfChanged(v4.uCurrentSlice, 0);
     ValueCell.updateIfChanged(v4.uCurrentX, 0);
     ValueCell.updateIfChanged(v4.uCurrentY, 0);
-    ValueCell.update(v4.uBboxMin, box4.min);
+    ValueCell.update(v4.uBboxMin, box5.min);
     ValueCell.update(v4.uBboxSize, extent);
     ValueCell.update(v4.uGridDim, gridDim);
     ValueCell.update(v4.uGridTexDim, gridTexDim);
@@ -130691,12 +130691,12 @@ function getGaussianDensityRenderable(webgl, drawCount, positions, radii, groups
     ValueCell.updateIfChanged(v4.dCalcType, "density");
     webgl.namedComputeRenderables[GaussianDensityName].update();
   } else {
-    webgl.namedComputeRenderables[GaussianDensityName] = createGaussianDensityRenderable(webgl, drawCount, positions, radii, groups, minDistanceTexture, box4, gridDim, gridTexDim, gridTexScale, smoothness, resolution, radiusFactor);
+    webgl.namedComputeRenderables[GaussianDensityName] = createGaussianDensityRenderable(webgl, drawCount, positions, radii, groups, minDistanceTexture, box5, gridDim, gridTexDim, gridTexScale, smoothness, resolution, radiusFactor);
   }
   return webgl.namedComputeRenderables[GaussianDensityName];
 }
-function createGaussianDensityRenderable(webgl, drawCount, positions, radii, groups, minDistanceTexture, box4, gridDim, gridTexDim, gridTexScale, smoothness, resolution, radiusFactor) {
-  const extent = Vec3.sub(Vec3(), box4.max, box4.min);
+function createGaussianDensityRenderable(webgl, drawCount, positions, radii, groups, minDistanceTexture, box5, gridDim, gridTexDim, gridTexScale, smoothness, resolution, radiusFactor) {
+  const extent = Vec3.sub(Vec3(), box5.max, box5.min);
   const values2 = {
     drawCount: ValueCell.create(drawCount),
     instanceCount: ValueCell.create(1),
@@ -130706,7 +130706,7 @@ function createGaussianDensityRenderable(webgl, drawCount, positions, radii, gro
     uCurrentSlice: ValueCell.create(0),
     uCurrentX: ValueCell.create(0),
     uCurrentY: ValueCell.create(0),
-    uBboxMin: ValueCell.create(box4.min),
+    uBboxMin: ValueCell.create(box5.min),
     uBboxSize: ValueCell.create(extent),
     uGridDim: ValueCell.create(gridDim),
     uGridTexDim: ValueCell.create(gridTexDim),
@@ -130779,28 +130779,28 @@ function getTexture2dSize2(gridDim) {
 }
 
 // node_modules/molstar/lib/mol-math/geometry/gaussian-density/cpu.js
-async function GaussianDensityCPU(ctx, position, box4, radius, props) {
+async function GaussianDensityCPU(ctx, position, box5, radius, props) {
   const { resolution, radiusOffset, smoothness } = props;
   const scaleFactor = 1 / resolution;
-  const { indices: indices2, x, y, z, id } = position;
-  const n = OrderedSet2.size(indices2);
+  const { indices: indices3, x, y, z, id } = position;
+  const n = OrderedSet2.size(indices3);
   const radii = new Float32Array(n);
   let maxRadius = 0;
   for (let i = 0; i < n; ++i) {
-    const r = radius(OrderedSet2.getAt(indices2, i)) + radiusOffset;
+    const r = radius(OrderedSet2.getAt(indices3, i)) + radiusOffset;
     if (maxRadius < r)
       maxRadius = r;
     radii[i] = r;
   }
   const pad2 = maxRadius * 2 + resolution;
-  const expandedBox = Box3D.expand(Box3D(), box4, Vec3.create(pad2, pad2, pad2));
+  const expandedBox = Box3D.expand(Box3D(), box5, Vec3.create(pad2, pad2, pad2));
   const min5 = expandedBox.min;
   const scaledBox = Box3D.scale(Box3D(), expandedBox, scaleFactor);
   const dim = Box3D.size(Vec3(), scaledBox);
   Vec3.ceil(dim, dim);
   const space = Tensor.Space(dim, [0, 1, 2], Float32Array);
   const data = space.create();
-  const field = Tensor.create(space, data);
+  const field2 = Tensor.create(space, data);
   const idData = space.create();
   idData.fill(-1);
   const idField = Tensor.create(space, idData);
@@ -130814,7 +130814,7 @@ async function GaussianDensityCPU(ctx, position, box4, radius, props) {
   const updateChunk2 = Math.ceil(1e5 / (Math.pow(Math.pow(maxRadius, 3), 3) * scaleFactor));
   function accumulateRange(begI, endI) {
     for (let i = begI; i < endI; ++i) {
-      const j = OrderedSet2.getAt(indices2, i);
+      const j = OrderedSet2.getAt(indices3, i);
       const vx = x[j], vy = y[j], vz = z[j];
       const rad = radii[i];
       const rSq = rad * rad;
@@ -130864,10 +130864,10 @@ async function GaussianDensityCPU(ctx, position, box4, radius, props) {
     }
   }
   await accumulate();
-  const transform = Mat4.identity();
-  Mat4.fromScaling(transform, Vec3.create(resolution, resolution, resolution));
-  Mat4.setTranslation(transform, expandedBox.min);
-  return { field, idField, transform, radiusFactor: 1, resolution, maxRadius };
+  const transform2 = Mat4.identity();
+  Mat4.fromScaling(transform2, Vec3.create(resolution, resolution, resolution));
+  Mat4.setTranslation(transform2, expandedBox.min);
+  return { field: field2, idField, transform: transform2, radiusFactor: 1, resolution, maxRadius };
 }
 
 // node_modules/molstar/lib/mol-repr/structure/visual/util/gaussian.js
@@ -130912,10 +130912,10 @@ function computeStructureGaussianDensityTexture(structure, sizeTheme, props, web
   return GaussianDensityTexture(webgl, position, boundary.box, radius, p6, texture);
 }
 function computeStructureGaussianDensityTexture2d(structure, sizeTheme, powerOfTwo, props, webgl, texture) {
-  const { box: box4 } = structure.lookup3d.boundary;
+  const { box: box5 } = structure.lookup3d.boundary;
   const { position, boundary, radius } = getStructureConformationAndRadius(structure, sizeTheme, props);
   const p6 = ensureReasonableResolution(boundary.box, props);
-  return GaussianDensityTexture2d(webgl, position, box4, radius, powerOfTwo, p6, texture);
+  return GaussianDensityTexture2d(webgl, position, box5, radius, powerOfTwo, p6, texture);
 }
 
 // node_modules/molstar/lib/mol-geo/util/marching-cubes/tables.js
@@ -131516,7 +131516,7 @@ function MarchingCubesMeshBuilder(vertexChunkSize, mesh) {
   const vertices2 = ChunkedArray.create(Float32Array, 3, vertexChunkSize, mesh && mesh.vertexBuffer.ref.value);
   const normals = ChunkedArray.create(Float32Array, 3, vertexChunkSize, mesh && mesh.normalBuffer.ref.value);
   const groups = ChunkedArray.create(Float32Array, 1, vertexChunkSize, mesh && mesh.groupBuffer.ref.value);
-  const indices2 = ChunkedArray.create(Uint32Array, 3, triangleChunkSize, mesh && mesh.indexBuffer.ref.value);
+  const indices3 = ChunkedArray.create(Uint32Array, 3, triangleChunkSize, mesh && mesh.indexBuffer.ref.value);
   let vertexCount = 0;
   let triangleCount = 0;
   return {
@@ -131534,13 +131534,13 @@ function MarchingCubesMeshBuilder(vertexChunkSize, mesh) {
       const i = vertList[a8], j = vertList[b8], k = vertList[c8];
       if (i >= 0 && j >= 0 && k >= 0) {
         ++triangleCount;
-        ChunkedArray.add3(indices2, i, j, k);
+        ChunkedArray.add3(indices3, i, j, k);
       }
     },
     get: () => {
       const vb = ChunkedArray.compact(vertices2, true);
       const nb = ChunkedArray.compact(normals, true);
-      const ib = ChunkedArray.compact(indices2, true);
+      const ib = ChunkedArray.compact(indices3, true);
       const gb = ChunkedArray.compact(groups, true);
       return Mesh.create(vb, ib, nb, gb, vertexCount, triangleCount, mesh);
     }
@@ -131549,7 +131549,7 @@ function MarchingCubesMeshBuilder(vertexChunkSize, mesh) {
 function MarchingCubesLinesBuilder(vertexChunkSize, lines) {
   const vertices2 = ChunkedArray.create(Float32Array, 3, vertexChunkSize);
   const groups = ChunkedArray.create(Float32Array, 1, vertexChunkSize);
-  const indices2 = ChunkedArray.create(Float32Array, 2, vertexChunkSize);
+  const indices3 = ChunkedArray.create(Float32Array, 2, vertexChunkSize);
   let linesCount = 0;
   return {
     addVertex: (x, y, z) => {
@@ -131564,21 +131564,21 @@ function MarchingCubesLinesBuilder(vertexChunkSize, lines) {
       if (i >= 0 && j >= 0 && k >= 0) {
         if (AllowedContours[a8][b8] & edgeFilter) {
           ++linesCount;
-          ChunkedArray.add2(indices2, vertList[a8], vertList[b8]);
+          ChunkedArray.add2(indices3, vertList[a8], vertList[b8]);
         }
         if (AllowedContours[b8][c8] & edgeFilter) {
           ++linesCount;
-          ChunkedArray.add2(indices2, vertList[b8], vertList[c8]);
+          ChunkedArray.add2(indices3, vertList[b8], vertList[c8]);
         }
         if (AllowedContours[a8][c8] & edgeFilter) {
           ++linesCount;
-          ChunkedArray.add2(indices2, vertList[a8], vertList[c8]);
+          ChunkedArray.add2(indices3, vertList[a8], vertList[c8]);
         }
       }
     },
     get: () => {
       const vb = ChunkedArray.compact(vertices2, true);
-      const ib = ChunkedArray.compact(indices2, true);
+      const ib = ChunkedArray.compact(indices3, true);
       const gb = ChunkedArray.compact(groups, true);
       const builder = LinesBuilder.create(linesCount, linesCount / 10, lines);
       for (let i = 0; i < linesCount; ++i) {
@@ -132060,7 +132060,7 @@ function createHistogramPyramid(ctx, inputTexture, scale, gridTexDim) {
   const renderable = getHistopyramidReductionRenderable(ctx, inputTexture, levelTexturesFramebuffers[0].texture);
   state.currentRenderItemId = -1;
   setRenderingDefaults3(ctx);
-  let offset3 = 0;
+  let offset4 = 0;
   for (let i = 0; i < levels; i++) {
     const currLevel = levels - 1 - i;
     const tf = levelTexturesFramebuffers[currLevel];
@@ -132084,9 +132084,9 @@ function createHistogramPyramid(ctx, inputTexture, scale, gridTexDim) {
     state.scissor(0, 0, gridTexDim[0], gridTexDim[1]);
     renderable.render();
     pyramidTex.bind(0);
-    gl.copyTexSubImage2D(gl.TEXTURE_2D, 0, offset3, 0, 0, 0, size4, size4);
+    gl.copyTexSubImage2D(gl.TEXTURE_2D, 0, offset4, 0, 0, 0, size4, size4);
     pyramidTex.unbind(0);
-    offset3 += size4;
+    offset4 += size4;
   }
   gl.finish();
   if (isTimingMode)
@@ -132645,7 +132645,7 @@ var IsosurfaceName = "isosurface";
 function valueChannel2(ctx, volumeData) {
   return isWebGL2(ctx.gl) && volumeData.format === ctx.gl.RED ? "red" : "alpha";
 }
-function getIsosurfaceRenderable(ctx, activeVoxelsPyramid, activeVoxelsBase, volumeData, gridDim, gridTexDim, gridDataDim, transform, isoValue, levels, scale, count3, invert, packedGroup, axisOrder, constantGroup) {
+function getIsosurfaceRenderable(ctx, activeVoxelsPyramid, activeVoxelsBase, volumeData, gridDim, gridTexDim, gridDataDim, transform2, isoValue, levels, scale, count3, invert, packedGroup, axisOrder, constantGroup) {
   if (ctx.namedComputeRenderables[IsosurfaceName]) {
     const v4 = ctx.namedComputeRenderables[IsosurfaceName].values;
     ValueCell.update(v4.tActiveVoxelsPyramid, activeVoxelsPyramid);
@@ -132660,19 +132660,19 @@ function getIsosurfaceRenderable(ctx, activeVoxelsPyramid, activeVoxelsBase, vol
     ValueCell.update(v4.uGridDim, gridDim);
     ValueCell.update(v4.uGridTexDim, gridTexDim);
     ValueCell.update(v4.uGridDataDim, gridDataDim);
-    ValueCell.update(v4.uGridTransform, transform);
-    ValueCell.update(v4.uGridTransformAdjoint, Mat3.adjointFromMat4(Mat3(), transform));
+    ValueCell.update(v4.uGridTransform, transform2);
+    ValueCell.update(v4.uGridTransformAdjoint, Mat3.adjointFromMat4(Mat3(), transform2));
     ValueCell.update(v4.uScale, scale);
     ValueCell.updateIfChanged(v4.dPackedGroup, packedGroup);
     ValueCell.updateIfChanged(v4.dAxisOrder, axisOrder.join(""));
     ValueCell.updateIfChanged(v4.dConstantGroup, constantGroup);
     ctx.namedComputeRenderables[IsosurfaceName].update();
   } else {
-    ctx.namedComputeRenderables[IsosurfaceName] = createIsosurfaceRenderable(ctx, activeVoxelsPyramid, activeVoxelsBase, volumeData, gridDim, gridTexDim, gridDataDim, transform, isoValue, levels, scale, count3, invert, packedGroup, axisOrder, constantGroup);
+    ctx.namedComputeRenderables[IsosurfaceName] = createIsosurfaceRenderable(ctx, activeVoxelsPyramid, activeVoxelsBase, volumeData, gridDim, gridTexDim, gridDataDim, transform2, isoValue, levels, scale, count3, invert, packedGroup, axisOrder, constantGroup);
   }
   return ctx.namedComputeRenderables[IsosurfaceName];
 }
-function createIsosurfaceRenderable(ctx, activeVoxelsPyramid, activeVoxelsBase, volumeData, gridDim, gridTexDim, gridDataDim, transform, isoValue, levels, scale, count3, invert, packedGroup, axisOrder, constantGroup) {
+function createIsosurfaceRenderable(ctx, activeVoxelsPyramid, activeVoxelsBase, volumeData, gridDim, gridTexDim, gridDataDim, transform2, isoValue, levels, scale, count3, invert, packedGroup, axisOrder, constantGroup) {
   const values2 = {
     ...QuadValues,
     tTriIndices: ValueCell.create(getTriIndices()),
@@ -132688,8 +132688,8 @@ function createIsosurfaceRenderable(ctx, activeVoxelsPyramid, activeVoxelsBase, 
     uGridDim: ValueCell.create(gridDim),
     uGridTexDim: ValueCell.create(gridTexDim),
     uGridDataDim: ValueCell.create(gridDataDim),
-    uGridTransform: ValueCell.create(transform),
-    uGridTransformAdjoint: ValueCell.create(Mat3.adjointFromMat4(Mat3(), transform)),
+    uGridTransform: ValueCell.create(transform2),
+    uGridTransformAdjoint: ValueCell.create(Mat3.adjointFromMat4(Mat3(), transform2)),
     uScale: ValueCell.create(scale),
     dPackedGroup: ValueCell.create(packedGroup),
     dAxisOrder: ValueCell.create(axisOrder.join("")),
@@ -132710,7 +132710,7 @@ function setRenderingDefaults5(ctx) {
   state.colorMask(true, true, true, true);
   state.clearColor(0, 0, 0, 0);
 }
-function createIsosurfaceBuffers(ctx, activeVoxelsBase, volumeData, histogramPyramid, gridDim, gridTexDim, gridDataDim, transform, isoValue, invert, packedGroup, axisOrder, constantGroup, vertexTexture, groupTexture, normalTexture) {
+function createIsosurfaceBuffers(ctx, activeVoxelsBase, volumeData, histogramPyramid, gridDim, gridTexDim, gridDataDim, transform2, isoValue, invert, packedGroup, axisOrder, constantGroup, vertexTexture, groupTexture, normalTexture) {
   const { drawBuffers } = ctx.extensions;
   if (!drawBuffers)
     throw new Error("need WebGL draw buffers");
@@ -132750,7 +132750,7 @@ function createIsosurfaceBuffers(ctx, activeVoxelsBase, volumeData, histogramPyr
   vertexTexture.attachFramebuffer(framebuffer, 0);
   groupTexture.attachFramebuffer(framebuffer, 1);
   normalTexture.attachFramebuffer(framebuffer, 2);
-  const renderable = getIsosurfaceRenderable(ctx, pyramidTex, activeVoxelsBase, volumeData, gridDim, gridTexDim, gridDataDim, transform, isoValue, levels, scale, count3, invert, packedGroup, axisOrder, constantGroup);
+  const renderable = getIsosurfaceRenderable(ctx, pyramidTex, activeVoxelsBase, volumeData, gridDim, gridTexDim, gridDataDim, transform2, isoValue, levels, scale, count3, invert, packedGroup, axisOrder, constantGroup);
   ctx.state.currentRenderItemId = -1;
   framebuffer.bind();
   drawBuffers.drawBuffers([
@@ -132767,12 +132767,12 @@ function createIsosurfaceBuffers(ctx, activeVoxelsBase, volumeData, histogramPyr
     ctx.timer.markEnd("createIsosurfaceBuffers");
   return { vertexTexture, groupTexture, normalTexture, vertexCount: count3 };
 }
-function extractIsosurface(ctx, volumeData, gridDim, gridTexDim, gridDataDim, gridTexScale, transform, isoValue, invert, packedGroup, axisOrder, constantGroup, vertexTexture, groupTexture, normalTexture) {
+function extractIsosurface(ctx, volumeData, gridDim, gridTexDim, gridDataDim, gridTexScale, transform2, isoValue, invert, packedGroup, axisOrder, constantGroup, vertexTexture, groupTexture, normalTexture) {
   if (isTimingMode)
     ctx.timer.mark("extractIsosurface");
   const activeVoxelsTex = calcActiveVoxels(ctx, volumeData, gridDim, gridTexDim, isoValue, gridTexScale);
   const compacted = createHistogramPyramid(ctx, activeVoxelsTex, gridTexScale, gridTexDim);
-  const gv = createIsosurfaceBuffers(ctx, activeVoxelsTex, volumeData, compacted, gridDim, gridTexDim, gridDataDim, transform, isoValue, invert, packedGroup, axisOrder, constantGroup, vertexTexture, groupTexture, normalTexture);
+  const gv = createIsosurfaceBuffers(ctx, activeVoxelsTex, volumeData, compacted, gridDim, gridTexDim, gridDataDim, transform2, isoValue, invert, packedGroup, axisOrder, constantGroup, vertexTexture, groupTexture, normalTexture);
   if (isTimingMode)
     ctx.timer.markEnd("extractIsosurface");
   return gv;
@@ -132821,15 +132821,15 @@ function StructureGaussianSurfaceVisual(materialId, structure, props, webgl) {
 }
 async function createGaussianSurfaceMesh(ctx, unit2, structure, theme, props, mesh) {
   const { smoothness } = props;
-  const { transform, field, idField, radiusFactor, resolution, maxRadius } = await computeUnitGaussianDensity(structure, unit2, theme.size, props).runInContext(ctx.runtime);
+  const { transform: transform2, field: field2, idField, radiusFactor, resolution, maxRadius } = await computeUnitGaussianDensity(structure, unit2, theme.size, props).runInContext(ctx.runtime);
   const params = {
     isoLevel: Math.exp(-smoothness) / radiusFactor,
-    scalarField: field,
+    scalarField: field2,
     idField
   };
   const surface = await computeMarchingCubesMesh(params, mesh).runAsChild(ctx.runtime);
   surface.meta.resolution = resolution;
-  Mesh.transform(surface, transform);
+  Mesh.transform(surface, transform2);
   if (ctx.webgl && !ctx.webgl.isWebGL2) {
     Mesh.uniformTriangleGroup(surface);
     ValueCell.updateIfChanged(surface.varyingGroup, false);
@@ -132890,15 +132890,15 @@ function GaussianSurfaceMeshVisual(materialId) {
 }
 async function createStructureGaussianSurfaceMesh(ctx, structure, theme, props, mesh) {
   const { smoothness } = props;
-  const { transform, field, idField, radiusFactor, resolution, maxRadius } = await computeStructureGaussianDensity(structure, theme.size, props).runInContext(ctx.runtime);
+  const { transform: transform2, field: field2, idField, radiusFactor, resolution, maxRadius } = await computeStructureGaussianDensity(structure, theme.size, props).runInContext(ctx.runtime);
   const params = {
     isoLevel: Math.exp(-smoothness) / radiusFactor,
-    scalarField: field,
+    scalarField: field2,
     idField
   };
   const surface = await computeMarchingCubesMesh(params, mesh).runAsChild(ctx.runtime);
   surface.meta.resolution = resolution;
-  Mesh.transform(surface, transform);
+  Mesh.transform(surface, transform2);
   if (ctx.webgl && !ctx.webgl.isWebGL2) {
     Mesh.uniformTriangleGroup(surface);
     ValueCell.updateIfChanged(surface.varyingGroup, false);
@@ -133126,14 +133126,14 @@ function StructureGaussianSurfaceTextureMeshVisual(materialId) {
 // node_modules/molstar/lib/mol-repr/structure/visual/gaussian-surface-wireframe.js
 async function createGaussianWireframe(ctx, unit2, structure, theme, props, lines) {
   const { smoothness } = props;
-  const { transform, field, idField, maxRadius } = await computeUnitGaussianDensity(structure, unit2, theme.size, props).runInContext(ctx.runtime);
+  const { transform: transform2, field: field2, idField, maxRadius } = await computeUnitGaussianDensity(structure, unit2, theme.size, props).runInContext(ctx.runtime);
   const params = {
     isoLevel: Math.exp(-smoothness),
-    scalarField: field,
+    scalarField: field2,
     idField
   };
   const wireframe = await computeMarchingCubesLines(params, lines).runAsChild(ctx.runtime);
-  Lines.transform(wireframe, transform);
+  Lines.transform(wireframe, transform2);
   const sphere = Sphere3D.expand(Sphere3D(), unit2.boundary.sphere, maxRadius);
   wireframe.setBoundingSphere(sphere);
   return wireframe;
@@ -133396,7 +133396,7 @@ var MolecularSurfaceCalculationParams = {
   probePositions: ParamDefinition.Numeric(36, { min: 12, max: 90, step: 1 }, { description: "Number of positions tested for probe target intersection.", ...BaseGeometry.CustomQualityParamInfo })
 };
 var DefaultMolecularSurfaceCalculationProps = ParamDefinition.getDefaultValues(MolecularSurfaceCalculationParams);
-async function calcMolecularSurface(ctx, position, boundary, maxRadius, box4, props) {
+async function calcMolecularSurface(ctx, position, boundary, maxRadius, box5, props) {
   let lastClip = -1;
   function obscured(x, y, z, a8, b8) {
     if (lastClip !== -1) {
@@ -133408,7 +133408,7 @@ async function calcMolecularSurface(ctx, position, boundary, maxRadius, box4, pr
       }
     }
     for (let j = 0, jl = neighbours.count; j < jl; ++j) {
-      const ai = OrderedSet2.getAt(indices2, neighbours.indices[j]);
+      const ai = OrderedSet2.getAt(indices3, neighbours.indices[j]);
       if (ai !== a8 && ai !== b8 && singleAtomObscures(ai, x, y, z)) {
         lastClip = ai;
         return ai;
@@ -133426,7 +133426,7 @@ async function calcMolecularSurface(ctx, position, boundary, maxRadius, box4, pr
   }
   function projectPointsRange(begI, endI) {
     for (let i = begI; i < endI; ++i) {
-      const j = OrderedSet2.getAt(indices2, i);
+      const j = OrderedSet2.getAt(indices3, i);
       const vx = px[j], vy = py[j], vz = pz[j];
       const rad = radius[j];
       const rSq = rad * rad;
@@ -133539,7 +133539,7 @@ async function calcMolecularSurface(ctx, position, boundary, maxRadius, box4, pr
               if (current2 > 0 && dSq2 < current2 * current2) {
                 data[idx] = Math.sqrt(dSq2);
                 const dp = dx2 * atob2[0] + dy2 * atob2[1] + dz2 * atob2[2];
-                idData[idx] = id[OrderedSet2.indexOf(indices2, dp < 0 ? b8 : a8)];
+                idData[idx] = id[OrderedSet2.indexOf(indices3, dp < 0 ? b8 : a8)];
               }
             }
           }
@@ -133549,10 +133549,10 @@ async function calcMolecularSurface(ctx, position, boundary, maxRadius, box4, pr
   }
   function projectToriiRange(begI, endI) {
     for (let i = begI; i < endI; ++i) {
-      const k = OrderedSet2.getAt(indices2, i);
+      const k = OrderedSet2.getAt(indices3, i);
       lookup3d.find(px[k], py[k], pz[k], radius[k]);
       for (let j = 0, jl = neighbours.count; j < jl; ++j) {
-        const l = OrderedSet2.getAt(indices2, neighbours.indices[j]);
+        const l = OrderedSet2.getAt(indices3, neighbours.indices[j]);
         if (k < l)
           projectTorus(k, l);
       }
@@ -133573,12 +133573,12 @@ async function calcMolecularSurface(ctx, position, boundary, maxRadius, box4, pr
   Vec3.scale(cellSize, cellSize, 2);
   const lookup3d = GridLookup3D(position, boundary, cellSize);
   const neighbours = lookup3d.result;
-  if (box4 === null)
-    box4 = lookup3d.boundary.box;
-  const { indices: indices2, x: px, y: py, z: pz, id, radius } = position;
-  const n = OrderedSet2.size(indices2);
+  if (box5 === null)
+    box5 = lookup3d.boundary.box;
+  const { indices: indices3, x: px, y: py, z: pz, id, radius } = position;
+  const n = OrderedSet2.size(indices3);
   const pad2 = maxRadius + resolution;
-  const expandedBox = Box3D.expand(Box3D(), box4, Vec3.create(pad2, pad2, pad2));
+  const expandedBox = Box3D.expand(Box3D(), box5, Vec3.create(pad2, pad2, pad2));
   const [minX, minY, minZ] = expandedBox.min;
   const scaledBox = Box3D.scale(Box3D(), expandedBox, scaleFactor);
   const dim = Box3D.size(Vec3(), scaledBox);
@@ -133597,24 +133597,24 @@ async function calcMolecularSurface(ctx, position, boundary, maxRadius, box4, pr
   const updateChunk2 = Math.ceil(1e5 / (Math.pow(Math.pow(maxRadius, 3), 3) * scaleFactor));
   await projectPoints();
   await projectTorii();
-  const field = Tensor.create(space, data);
+  const field2 = Tensor.create(space, data);
   const idField = Tensor.create(space, idData);
-  const transform = Mat4.identity();
-  Mat4.fromScaling(transform, Vec3.create(resolution, resolution, resolution));
-  Mat4.setTranslation(transform, expandedBox.min);
-  return { field, idField, transform, resolution, maxRadius };
+  const transform2 = Mat4.identity();
+  Mat4.fromScaling(transform2, Vec3.create(resolution, resolution, resolution));
+  Mat4.setTranslation(transform2, expandedBox.min);
+  return { field: field2, idField, transform: transform2, resolution, maxRadius };
 }
 
 // node_modules/molstar/lib/mol-repr/structure/visual/util/molecular-surface.js
 function getUnitPositionDataAndMaxRadius(structure, unit2, sizeTheme, props) {
   const { probeRadius } = props;
   const { position, boundary, radius } = getUnitConformationAndRadius(structure, unit2, sizeTheme, props);
-  const { indices: indices2 } = position;
-  const n = OrderedSet2.size(indices2);
-  const radii = new Float32Array(OrderedSet2.end(indices2));
+  const { indices: indices3 } = position;
+  const n = OrderedSet2.size(indices3);
+  const radii = new Float32Array(OrderedSet2.end(indices3));
   let maxRadius = 0;
   for (let i = 0; i < n; ++i) {
-    const j = OrderedSet2.getAt(indices2, i);
+    const j = OrderedSet2.getAt(indices3, i);
     const r = radius(j);
     if (maxRadius < r)
       maxRadius = r;
@@ -133632,12 +133632,12 @@ function computeUnitMolecularSurface(structure, unit2, sizeTheme, props) {
 function getStructurePositionDataAndMaxRadius(structure, sizeTheme, props) {
   const { probeRadius } = props;
   const { position, boundary, radius } = getStructureConformationAndRadius(structure, sizeTheme, props);
-  const { indices: indices2 } = position;
-  const n = OrderedSet2.size(indices2);
-  const radii = new Float32Array(OrderedSet2.end(indices2));
+  const { indices: indices3 } = position;
+  const n = OrderedSet2.size(indices3);
+  const radii = new Float32Array(OrderedSet2.end(indices3));
   let maxRadius = 0;
   for (let i = 0; i < n; ++i) {
-    const j = OrderedSet2.getAt(indices2, i);
+    const j = OrderedSet2.getAt(indices3, i);
     const r = radius(j);
     if (maxRadius < r)
       maxRadius = r;
@@ -133652,8 +133652,8 @@ function computeStructureMolecularSurface(structure, sizeTheme, props) {
     return await MolecularSurface(ctx, position, boundary, maxRadius, boundary.box, p6);
   });
 }
-async function MolecularSurface(ctx, position, boundary, maxRadius, box4, props) {
-  return calcMolecularSurface(ctx, position, boundary, maxRadius, box4, props);
+async function MolecularSurface(ctx, position, boundary, maxRadius, box5, props) {
+  return calcMolecularSurface(ctx, position, boundary, maxRadius, box5, props);
 }
 
 // node_modules/molstar/lib/mol-repr/structure/visual/molecular-surface-mesh.js
@@ -133664,10 +133664,10 @@ var MolecularSurfaceMeshParams = {
   ...ColorSmoothingParams
 };
 async function createMolecularSurfaceMesh(ctx, unit2, structure, theme, props, mesh) {
-  const { transform, field, idField, resolution, maxRadius } = await computeUnitMolecularSurface(structure, unit2, theme.size, props).runInContext(ctx.runtime);
+  const { transform: transform2, field: field2, idField, resolution, maxRadius } = await computeUnitMolecularSurface(structure, unit2, theme.size, props).runInContext(ctx.runtime);
   const params = {
     isoLevel: props.probeRadius,
-    scalarField: field,
+    scalarField: field2,
     idField
   };
   const surface = await computeMarchingCubesMesh(params, mesh).runAsChild(ctx.runtime);
@@ -133675,7 +133675,7 @@ async function createMolecularSurfaceMesh(ctx, unit2, structure, theme, props, m
     const iterations = Math.ceil(2 / props.resolution);
     Mesh.smoothEdges(surface, { iterations, maxNewEdgeLength: Math.sqrt(2) });
   }
-  Mesh.transform(surface, transform);
+  Mesh.transform(surface, transform2);
   if (ctx.webgl && !ctx.webgl.isWebGL2) {
     Mesh.uniformTriangleGroup(surface);
     ValueCell.updateIfChanged(surface.varyingGroup, false);
@@ -133733,10 +133733,10 @@ function MolecularSurfaceMeshVisual(materialId) {
   }, materialId);
 }
 async function createStructureMolecularSurfaceMesh(ctx, structure, theme, props, mesh) {
-  const { transform, field, idField, resolution, maxRadius } = await computeStructureMolecularSurface(structure, theme.size, props).runInContext(ctx.runtime);
+  const { transform: transform2, field: field2, idField, resolution, maxRadius } = await computeStructureMolecularSurface(structure, theme.size, props).runInContext(ctx.runtime);
   const params = {
     isoLevel: props.probeRadius,
-    scalarField: field,
+    scalarField: field2,
     idField
   };
   const surface = await computeMarchingCubesMesh(params, mesh).runAsChild(ctx.runtime);
@@ -133744,7 +133744,7 @@ async function createStructureMolecularSurfaceMesh(ctx, structure, theme, props,
     const iterations = Math.ceil(2 / props.resolution);
     Mesh.smoothEdges(surface, { iterations, maxNewEdgeLength: Math.sqrt(2) });
   }
-  Mesh.transform(surface, transform);
+  Mesh.transform(surface, transform2);
   if (ctx.webgl && !ctx.webgl.isWebGL2) {
     Mesh.uniformTriangleGroup(surface);
     ValueCell.updateIfChanged(surface.varyingGroup, false);
@@ -133810,14 +133810,14 @@ var MolecularSurfaceWireframeParams = {
   sizeFactor: ParamDefinition.Numeric(1.5, { min: 0, max: 10, step: 0.1 })
 };
 async function createMolecularSurfaceWireframe(ctx, unit2, structure, theme, props, lines) {
-  const { transform, field, idField, maxRadius } = await computeUnitMolecularSurface(structure, unit2, theme.size, props).runInContext(ctx.runtime);
+  const { transform: transform2, field: field2, idField, maxRadius } = await computeUnitMolecularSurface(structure, unit2, theme.size, props).runInContext(ctx.runtime);
   const params = {
     isoLevel: props.probeRadius,
-    scalarField: field,
+    scalarField: field2,
     idField
   };
   const wireframe = await computeMarchingCubesLines(params, lines).runAsChild(ctx.runtime);
-  Lines.transform(wireframe, transform);
+  Lines.transform(wireframe, transform2);
   const sphere = Sphere3D.expand(Sphere3D(), unit2.boundary.sphere, maxRadius);
   wireframe.setBoundingSphere(sphere);
   return wireframe;
@@ -133949,8 +133949,8 @@ function getUnitLoci(pickingId, structureGroup, id) {
   if (id === objectId) {
     const { structure, group } = structureGroup;
     const unit2 = group.units[instanceId];
-    const indices2 = OrderedSet2.ofBounds(0, unit2.elements.length);
-    return element_exports.Loci(structure, [{ unit: unit2, indices: indices2 }]);
+    const indices3 = OrderedSet2.ofBounds(0, unit2.elements.length);
+    return element_exports.Loci(structure, [{ unit: unit2, indices: indices3 }]);
   }
   return EmptyLoci;
 }
@@ -134234,12 +134234,12 @@ function createPolymerTubeMesh(ctx, unit2, structure, theme, props, mesh) {
     let segmentCount2 = linearSegments;
     if (v4.initial) {
       segmentCount2 = Math.max(Math.round(linearSegments * shift2), 1);
-      const offset3 = linearSegments - segmentCount2;
-      curvePoints.copyWithin(0, offset3 * 3);
-      binormalVectors.copyWithin(0, offset3 * 3);
-      normalVectors.copyWithin(0, offset3 * 3);
-      widthValues.copyWithin(0, offset3 * 3);
-      heightValues.copyWithin(0, offset3 * 3);
+      const offset4 = linearSegments - segmentCount2;
+      curvePoints.copyWithin(0, offset4 * 3);
+      binormalVectors.copyWithin(0, offset4 * 3);
+      normalVectors.copyWithin(0, offset4 * 3);
+      widthValues.copyWithin(0, offset4 * 3);
+      heightValues.copyWithin(0, offset4 * 3);
       Vec3.fromArray(tmpV13, curvePoints, 3);
       Vec3.normalize(tmpV13, Vec3.sub(tmpV13, v4.p2, tmpV13));
       Vec3.scaleAndAdd(tmpV13, v4.p2, tmpV13, s1 * OverhangFactor);
@@ -134375,7 +134375,7 @@ function getIntraUnitBondLineBuilderProps(unit2, structure, theme, props) {
   const location2 = element_exports.Location.create(structure, unit2);
   const elements = unit2.elements;
   const bonds = unit2.bonds;
-  const { edgeCount, a: a8, b: b8, edgeProps, offset: offset3 } = bonds;
+  const { edgeCount, a: a8, b: b8, edgeProps, offset: offset4 } = bonds;
   const { order: _order, flags: _flags } = edgeProps;
   const { sizeFactor, aromaticBonds, includeTypes, excludeTypes, multipleBonds } = props;
   const mbOff = multipleBonds === "off";
@@ -134396,11 +134396,11 @@ function getIntraUnitBondLineBuilderProps(unit2, structure, theme, props) {
         return c8.invariantPosition(elements[rI], vRef);
       if (aI > bI)
         [aI, bI] = [bI, aI];
-      if (offset3[aI + 1] - offset3[aI] === 1)
+      if (offset4[aI + 1] - offset4[aI] === 1)
         [aI, bI] = [bI, aI];
       const aR = elementAromaticRingIndices.get(aI) || elementRingIndices.get(aI);
       let maxSize = 0;
-      for (let i = offset3[aI], il = offset3[aI + 1]; i < il; ++i) {
+      for (let i = offset4[aI], il = offset4[aI + 1]; i < il; ++i) {
         const _bI = b8[i];
         if (_bI !== bI && _bI !== aI) {
           if (aR) {
@@ -134925,10 +134925,10 @@ function createGaussianDensityVolume(ctx, structure, theme, props, directVolume)
   const create3 = (directVolume2) => {
     const oldTexture = directVolume2 ? directVolume2.gridTexture.ref.value : void 0;
     const densityTextureData = computeStructureGaussianDensityTexture(structure, theme.size, props, webgl, oldTexture);
-    const { transform, texture, bbox, gridDim } = densityTextureData;
-    const unitToCartn = Mat4.mul(Mat4(), transform, Mat4.fromScaling(Mat4(), gridDim));
-    const cellDim = Mat4.getScaling(Vec3(), transform);
-    const vol2 = DirectVolume.create(bbox, gridDim, transform, unitToCartn, cellDim, texture, stats, true, axisOrder, "byte", directVolume2);
+    const { transform: transform2, texture, bbox, gridDim } = densityTextureData;
+    const unitToCartn = Mat4.mul(Mat4(), transform2, Mat4.fromScaling(Mat4(), gridDim));
+    const cellDim = Mat4.getScaling(Vec3(), transform2);
+    const vol2 = DirectVolume.create(bbox, gridDim, transform2, unitToCartn, cellDim, texture, stats, true, axisOrder, "byte", directVolume2);
     const sphere = Sphere3D.expand(Sphere3D(), structure.boundary.sphere, densityTextureData.maxRadius);
     vol2.setBoundingSphere(sphere);
     return vol2;
@@ -134984,10 +134984,10 @@ function createUnitsGaussianDensityVolume(ctx, unit2, structure, theme, props, d
   const create3 = (directVolume2) => {
     const oldTexture = directVolume2 ? directVolume2.gridTexture.ref.value : void 0;
     const densityTextureData = computeUnitGaussianDensityTexture(structure, unit2, theme.size, props, webgl, oldTexture);
-    const { transform, texture, bbox, gridDim } = densityTextureData;
-    const unitToCartn = Mat4.mul(Mat4(), transform, Mat4.fromScaling(Mat4(), gridDim));
-    const cellDim = Mat4.getScaling(Vec3(), transform);
-    const vol2 = DirectVolume.create(bbox, gridDim, transform, unitToCartn, cellDim, texture, stats, true, axisOrder, "byte", directVolume2);
+    const { transform: transform2, texture, bbox, gridDim } = densityTextureData;
+    const unitToCartn = Mat4.mul(Mat4(), transform2, Mat4.fromScaling(Mat4(), gridDim));
+    const cellDim = Mat4.getScaling(Vec3(), transform2);
+    const vol2 = DirectVolume.create(bbox, gridDim, transform2, unitToCartn, cellDim, texture, stats, true, axisOrder, "byte", directVolume2);
     const sphere = Sphere3D.expand(Sphere3D(), unit2.boundary.sphere, densityTextureData.maxRadius);
     vol2.setBoundingSphere(sphere);
     return vol2;
@@ -135416,7 +135416,7 @@ function getFrame(structure, props) {
   return { size: size4, major, minor, normal: normal3, center: center2, trim: trim2 };
 }
 function createPlaneImage(ctx, structure, theme, props, image) {
-  const { imageResolution, offset: offset3, antialias, cutout, defaultColor } = props;
+  const { imageResolution, offset: offset4, antialias, cutout, defaultColor } = props;
   const scaleFactor = 1 / imageResolution;
   const color = "color" in theme.color && theme.color.color ? theme.color.color : () => Color(16777215);
   const { size: size4, major, minor, normal: normal3, center: center2, trim: trim2 } = getFrame(structure, props);
@@ -135429,7 +135429,7 @@ function createPlaneImage(ctx, structure, theme, props, image) {
   const anchor = Vec3();
   Vec3.add(v4, center2, major);
   Mat4.targetTo(m, center2, v4, minor);
-  Vec3.scaleAndAdd(anchor, center2, offsetDir, offset3);
+  Vec3.scaleAndAdd(anchor, center2, offsetDir, offset4);
   Mat4.setTranslation(m, anchor);
   Mat4.mul(m, m, Mat4.rotY90);
   Mat4.scale(m, m, scale);
@@ -135654,8 +135654,8 @@ function createVolumeInstancesTransform(volume, invariantBoundingSphere, cellSiz
 }
 function createVolumeRenderObject(volume, geometry, locationIt, theme, props, materialId) {
   const { createValues, createRenderableState } = Geometry.getUtils(geometry);
-  const transform = createVolumeInstancesTransform(volume, geometry.boundingSphere, props.cellSize, props.batchSize);
-  const values2 = createValues(geometry, transform, locationIt, theme, props);
+  const transform2 = createVolumeInstancesTransform(volume, geometry.boundingSphere, props.cellSize, props.batchSize);
+  const values2 = createValues(geometry, transform2, locationIt, theme, props);
   const state = createRenderableState(props);
   return createRenderObject(geometry.kind, values2, state, materialId);
 }
@@ -136018,7 +136018,7 @@ function VolumeRepresentation(label2, ctx, getParams, visualCtor, getLoci6, getK
       visual2.setThemeStrength(state.themeStrength);
   }
   function setState(state) {
-    const { visible, alphaFactor, pickable, overpaint, transparency, emissive, substance, clipping, transform, themeStrength, syncManually, markerActions } = state;
+    const { visible, alphaFactor, pickable, overpaint, transparency, emissive, substance, clipping, transform: transform2, themeStrength, syncManually, markerActions } = state;
     const newState = {};
     if (visible !== void 0)
       newState.visible = visible;
@@ -136038,8 +136038,8 @@ function VolumeRepresentation(label2, ctx, getParams, visualCtor, getLoci6, getK
       newState.clipping = clipping;
     if (themeStrength !== void 0)
       newState.themeStrength = themeStrength;
-    if (transform !== void 0 && !Mat4.areEqual(transform, _state.transform, EPSILON)) {
-      newState.transform = transform;
+    if (transform2 !== void 0 && !Mat4.areEqual(transform2, _state.transform, EPSILON)) {
+      newState.transform = transform2;
     }
     if (syncManually !== void 0)
       newState.syncManually = syncManually;
@@ -136155,8 +136155,8 @@ function getIsosurfaceLoci(pickingId, volume, key2, props, id) {
     } else if (granularity === "object" || groupId === PickingId.Null) {
       return Volume.Isosurface.Loci(volume, props.isoValue, instances);
     } else {
-      const indices2 = Interval.ofSingleton(groupId);
-      return Volume.Cell.Loci(volume, [{ indices: indices2, instances }]);
+      const indices3 = Interval.ofSingleton(groupId);
+      return Volume.Cell.Loci(volume, [{ indices: indices3, instances }]);
     }
   }
   return EmptyLoci;
@@ -136176,8 +136176,8 @@ async function createVolumeIsosurfaceMesh(ctx, volume, key2, theme, props, mesh)
     scalarField: cells,
     idField: Tensor.create(cells.space, Tensor.Data1(ids))
   }, mesh).runAsChild(ctx.runtime);
-  const transform = Grid.getGridToCartesianTransform(volume.grid);
-  Mesh.transform(surface, transform);
+  const transform2 = Grid.getGridToCartesianTransform(volume.grid);
+  Mesh.transform(surface, transform2);
   if (ctx.webgl && !ctx.webgl.isWebGL2) {
     Mesh.uniformTriangleGroup(surface, false);
     ValueCell.updateIfChanged(surface.varyingGroup, false);
@@ -136222,7 +136222,7 @@ var VolumeIsosurfaceTexture;
     var _a, _b;
     const { gpuDataType } = props;
     const wrap = shouldWrap(volume, props.wrap);
-    const transform = Grid.getGridToCartesianTransform(volume.grid);
+    const transform2 = Grid.getGridToCartesianTransform(volume.grid);
     const gridDimension = Vec3.clone(volume.grid.cells.space.dimensions);
     const { width, height, powerOfTwoSize: texDim } = getVolumeTexture2dLayout(gridDimension, Padding);
     const gridTexDim = Vec3.create(width, height, 0);
@@ -136244,7 +136244,7 @@ var VolumeIsosurfaceTexture;
     gridDimension[1] += Padding;
     return {
       texture: volume._propertyData[name].texture,
-      transform,
+      transform: transform2,
       gridDimension,
       gridTexDim,
       gridDataDim,
@@ -136271,9 +136271,9 @@ function createVolumeIsosurfaceTextureMesh(ctx, volume, key2, theme, props, text
   const groupCount = volume.grid.cells.data.length;
   const boundingSphere = Volume.getBoundingSphere(volume);
   const create3 = (textureMesh2) => {
-    const { texture, gridDimension, gridTexDim, gridDataDim, gridTexScale, transform } = VolumeIsosurfaceTexture.get(volume, webgl, props);
+    const { texture, gridDimension, gridTexDim, gridDataDim, gridTexScale, transform: transform2 } = VolumeIsosurfaceTexture.get(volume, webgl, props);
     const buffer = textureMesh2 === null || textureMesh2 === void 0 ? void 0 : textureMesh2.doubleBuffer.get();
-    const gv = extractIsosurface(webgl, texture, gridDimension, gridTexDim, gridDataDim, gridTexScale, transform, isoLevel, value < 0, false, axisOrder, true, buffer === null || buffer === void 0 ? void 0 : buffer.vertex, buffer === null || buffer === void 0 ? void 0 : buffer.group, buffer === null || buffer === void 0 ? void 0 : buffer.normal);
+    const gv = extractIsosurface(webgl, texture, gridDimension, gridTexDim, gridDataDim, gridTexScale, transform2, isoLevel, value < 0, false, axisOrder, true, buffer === null || buffer === void 0 ? void 0 : buffer.vertex, buffer === null || buffer === void 0 ? void 0 : buffer.group, buffer === null || buffer === void 0 ? void 0 : buffer.normal);
     return TextureMesh.create(gv.vertexCount, groupCount, gv.vertexTexture, gv.groupTexture, gv.normalTexture, boundingSphere, textureMesh2);
   };
   const surface = create3(textureMesh);
@@ -136318,8 +136318,8 @@ async function createVolumeIsosurfaceWireframe(ctx, volume, key2, theme, props, 
     scalarField: cells,
     idField: Tensor.create(cells.space, Tensor.Data1(ids))
   }, lines).runAsChild(ctx.runtime);
-  const transform = Grid.getGridToCartesianTransform(volume.grid);
-  Lines.transform(wireframe, transform);
+  const transform2 = Grid.getGridToCartesianTransform(volume.grid);
+  Lines.transform(wireframe, transform2);
   wireframe.setBoundingSphere(Volume.Isosurface.getBoundingSphere(volume, props.isoValue));
   return wireframe;
 }
@@ -136556,7 +136556,7 @@ function getSampledImage(volume, theme, info, isoValue, trim2, image) {
   return im;
 }
 async function createFrameImage(ctx, volume, key2, theme, props, image) {
-  const { offset: offset3, isoValue } = props;
+  const { offset: offset4, isoValue } = props;
   const { size: size4, major, minor, normal: normal3, center: center2, trim: trim2, resolution } = getFrame2(volume, props);
   const scaleFactor = 1 / resolution;
   const scale = Vec3.create(size4[0], size4[1], 1);
@@ -136568,7 +136568,7 @@ async function createFrameImage(ctx, volume, key2, theme, props, image) {
   const anchor = Vec3();
   Vec3.add(v4, center2, major);
   Mat4.targetTo(m, center2, v4, minor);
-  Vec3.scaleAndAdd(anchor, center2, offsetDir, offset3);
+  Vec3.scaleAndAdd(anchor, center2, offsetDir, offset4);
   Mat4.setTranslation(m, anchor);
   Mat4.mul(m, m, Mat4.rotY90);
   Mat4.scale(m, m, scale);
@@ -136636,8 +136636,8 @@ async function createGridImage(ctx, volume, key2, theme, props, image) {
   const imageTexture = { width, height, array: imageArray, flipY: true };
   const groupTexture = { width, height, array: groupArray, flipY: true };
   const valueTexture = { width, height, array: valueArray, flipY: true };
-  const transform = Grid.getGridToCartesianTransform(volume.grid);
-  transformPositionArray(transform, corners, 0, 4);
+  const transform2 = Grid.getGridToCartesianTransform(volume.grid);
+  transformPositionArray(transform2, corners, 0, 4);
   const trim2 = Image2.createEmptyTrim();
   const isoLevel = clamp(normalize(Volume.IsoValue.toAbsolute(isoValue, stats).absoluteValue, min5, max5), 0, 1);
   const im = Image2.create(imageTexture, corners, groupTexture, valueTexture, trim2, isoLevel, image);
@@ -136732,8 +136732,8 @@ function getGroupArray(grid, props) {
 function getObjectLoci(volume, instances, props) {
   if (props.mode === "grid") {
     const groupArray = getGroupArray(volume.grid, props);
-    const indices2 = SortedArray.ofUnsortedArray(groupArray);
-    return Volume.Cell.Loci(volume, [{ indices: indices2, instances }]);
+    const indices3 = SortedArray.ofUnsortedArray(groupArray);
+    return Volume.Cell.Loci(volume, [{ indices: indices3, instances }]);
   } else {
     return Volume.Loci(volume, instances);
   }
@@ -136753,8 +136753,8 @@ function getSliceLoci(pickingId, volume, key2, props, id) {
     if (granularity === "object" || groupId === PickingId.Null) {
       return getObjectLoci(volume, instances, props);
     } else {
-      const indices2 = Interval.ofSingleton(groupId);
-      return Volume.Cell.Loci(volume, [{ indices: indices2, instances }]);
+      const indices3 = Interval.ofSingleton(groupId);
+      return Volume.Cell.Loci(volume, [{ indices: indices3, instances }]);
     }
   }
   return EmptyLoci;
@@ -136791,10 +136791,10 @@ var SliceRepresentationProvider = VolumeRepresentationProvider({
 });
 
 // node_modules/molstar/lib/mol-repr/volume/direct-volume.js
-function getBoundingBox(gridDimension, transform) {
+function getBoundingBox(gridDimension, transform2) {
   const bbox = Box3D();
   Box3D.add(bbox, gridDimension);
-  Box3D.transform(bbox, bbox, transform);
+  Box3D.transform(bbox, bbox, transform2);
   return bbox;
 }
 function createDirectVolume2d(ctx, webgl, volume, props, directVolume) {
@@ -136805,8 +136805,8 @@ function createDirectVolume2d(ctx, webgl, volume, props, directVolume) {
   }
   const dataType = props.dataType === "halfFloat" && !webgl.extensions.textureHalfFloat ? "float" : props.dataType;
   const textureImage = createVolumeTexture2d(volume, "normals", 0, dataType);
-  const transform = Grid.getGridToCartesianTransform(volume.grid);
-  const bbox = getBoundingBox(gridDimension, transform);
+  const transform2 = Grid.getGridToCartesianTransform(volume.grid);
+  const bbox = getBoundingBox(gridDimension, transform2);
   let texture;
   if (directVolume && directVolume.dataType.ref.value === dataType) {
     texture = directVolume.gridTexture.ref.value;
@@ -136816,7 +136816,7 @@ function createDirectVolume2d(ctx, webgl, volume, props, directVolume) {
   texture.load(textureImage);
   const { unitToCartn, cellDim } = getUnitToCartn(volume.grid);
   const axisOrder = volume.grid.cells.space.axisOrderSlowToFast;
-  return DirectVolume.create(bbox, gridDimension, transform, unitToCartn, cellDim, texture, volume.grid.stats, false, axisOrder, dataType, directVolume);
+  return DirectVolume.create(bbox, gridDimension, transform2, unitToCartn, cellDim, texture, volume.grid.stats, false, axisOrder, dataType, directVolume);
 }
 function getUnitToCartn(grid) {
   if (grid.transform.kind === "matrix") {
@@ -136825,10 +136825,10 @@ function getUnitToCartn(grid) {
       cellDim: Mat4.getScaling(Vec3(), grid.transform.matrix)
     };
   }
-  const box4 = grid.transform.fractionalBox;
-  const size4 = Box3D.size(Vec3(), box4);
+  const box5 = grid.transform.fractionalBox;
+  const size4 = Box3D.size(Vec3(), box5);
   return {
-    unitToCartn: Mat4.mul3(Mat4(), grid.transform.cell.fromFractional, Mat4.fromTranslation(Mat4(), box4.min), Mat4.fromScaling(Mat4(), size4)),
+    unitToCartn: Mat4.mul3(Mat4(), grid.transform.cell.fromFractional, Mat4.fromTranslation(Mat4(), box5.min), Mat4.fromScaling(Mat4(), size4)),
     cellDim: Vec3.div(Vec3(), grid.transform.cell.size, grid.cells.space.dimensions)
   };
 }
@@ -136839,8 +136839,8 @@ function createDirectVolume3d(ctx, webgl, volume, props, directVolume) {
   }
   const dataType = props.dataType === "halfFloat" && !webgl.extensions.textureHalfFloat ? "float" : props.dataType;
   const textureVolume = createVolumeTexture3d(volume, dataType);
-  const transform = Grid.getGridToCartesianTransform(volume.grid);
-  const bbox = getBoundingBox(gridDimension, transform);
+  const transform2 = Grid.getGridToCartesianTransform(volume.grid);
+  const bbox = getBoundingBox(gridDimension, transform2);
   let texture;
   if (directVolume && directVolume.dataType.ref.value === dataType) {
     texture = directVolume.gridTexture.ref.value;
@@ -136850,7 +136850,7 @@ function createDirectVolume3d(ctx, webgl, volume, props, directVolume) {
   texture.load(textureVolume);
   const { unitToCartn, cellDim } = getUnitToCartn(volume.grid);
   const axisOrder = volume.grid.cells.space.axisOrderSlowToFast;
-  return DirectVolume.create(bbox, gridDimension, transform, unitToCartn, cellDim, texture, volume.grid.stats, false, axisOrder, dataType, directVolume);
+  return DirectVolume.create(bbox, gridDimension, transform2, unitToCartn, cellDim, texture, volume.grid.stats, false, axisOrder, dataType, directVolume);
 }
 async function createDirectVolume(ctx, volume, key2, theme, props, directVolume) {
   const { runtime, webgl } = ctx;
@@ -136866,8 +136866,8 @@ function getDirectVolumeLoci(pickingId, volume, key2, props, id) {
   const { objectId, groupId, instanceId } = pickingId;
   if (id === objectId) {
     const instances = OrderedSet2.ofSingleton(instanceId);
-    const indices2 = Interval.ofSingleton(groupId);
-    return Volume.Cell.Loci(volume, [{ indices: indices2, instances }]);
+    const indices3 = Interval.ofSingleton(groupId);
+    return Volume.Cell.Loci(volume, [{ indices: indices3, instances }]);
   }
   return EmptyLoci;
 }
@@ -136935,9 +136935,9 @@ function suitableForGpu3(volume, webgl) {
 }
 var _translate = Mat4();
 function getSegmentTransform(grid, segmentBox) {
-  const transform = Grid.getGridToCartesianTransform(grid);
+  const transform2 = Grid.getGridToCartesianTransform(grid);
   const translate = Mat4.fromTranslation(_translate, segmentBox.min);
-  return Mat4.mul(Mat4(), transform, translate);
+  return Mat4.mul(Mat4(), transform2, translate);
 }
 function SegmentVisual(materialId, volume, key2, props, webgl) {
   if (props.tryUseGpu && webgl && gpuSupport3(webgl) && suitableForGpu3(volume, webgl)) {
@@ -136961,8 +136961,8 @@ function getSegmentLoci(pickingId, volume, key2, props, id) {
       const segments2 = OrderedSet2.ofSingleton(key2);
       return Volume.Segment.Loci(volume, [{ segments: segments2, instances }]);
     } else {
-      const indices2 = Interval.ofSingleton(groupId);
-      return Volume.Cell.Loci(volume, [{ indices: indices2, instances }]);
+      const indices3 = Interval.ofSingleton(groupId);
+      return Volume.Cell.Loci(volume, [{ indices: indices3, instances }]);
     }
   }
   return EmptyLoci;
@@ -137017,8 +137017,8 @@ async function createVolumeSegmentMesh(ctx, volume, key2, theme, props, mesh) {
     scalarField: cells,
     idField: Tensor.create(cells.space, Tensor.Data1(ids))
   }, mesh).runAsChild(ctx.runtime);
-  const transform = getSegmentTransform(volume.grid, bbox);
-  Mesh.transform(surface, transform);
+  const transform2 = getSegmentTransform(volume.grid, bbox);
+  Mesh.transform(surface, transform2);
   if (ctx.webgl && !ctx.webgl.isWebGL2) {
     Mesh.uniformTriangleGroup(surface, false);
     ValueCell.updateIfChanged(surface.varyingGroup, false);
@@ -137063,7 +137063,7 @@ function getSegmentTexture(volume, segment, webgl) {
   const { resources } = webgl;
   const bbox = Box3D.clone(segmentation.bounds[segment]);
   Box3D.expand(bbox, bbox, Vec3.create(2, 2, 2));
-  const transform = getSegmentTransform(volume.grid, bbox);
+  const transform2 = getSegmentTransform(volume.grid, bbox);
   const gridDimension = Box3D.size(Vec3(), bbox);
   const { width, height, powerOfTwoSize: texDim } = getVolumeTexture2dLayout(gridDimension, Padding2);
   const gridTexDim = Vec3.create(width, height, 0);
@@ -137083,7 +137083,7 @@ function getSegmentTexture(volume, segment, webgl) {
   gridDimension[1] += Padding2;
   return {
     texture,
-    transform,
+    transform: transform2,
     gridDimension,
     gridTexDim,
     gridDataDim,
@@ -137096,10 +137096,10 @@ async function createVolumeSegmentTextureMesh(ctx, volume, segment, theme, props
   if (volume.grid.cells.data.length <= 1) {
     return TextureMesh.createEmpty(textureMesh);
   }
-  const { texture, gridDimension, gridTexDim, gridDataDim, gridTexScale, transform } = getSegmentTexture(volume, segment, ctx.webgl);
+  const { texture, gridDimension, gridTexDim, gridDataDim, gridTexScale, transform: transform2 } = getSegmentTexture(volume, segment, ctx.webgl);
   const axisOrder = volume.grid.cells.space.axisOrderSlowToFast;
   const buffer = textureMesh === null || textureMesh === void 0 ? void 0 : textureMesh.doubleBuffer.get();
-  const gv = extractIsosurface(ctx.webgl, texture, gridDimension, gridTexDim, gridDataDim, gridTexScale, transform, 0.5, false, false, axisOrder, true, buffer === null || buffer === void 0 ? void 0 : buffer.vertex, buffer === null || buffer === void 0 ? void 0 : buffer.group, buffer === null || buffer === void 0 ? void 0 : buffer.normal);
+  const gv = extractIsosurface(ctx.webgl, texture, gridDimension, gridTexDim, gridDataDim, gridTexScale, transform2, 0.5, false, false, axisOrder, true, buffer === null || buffer === void 0 ? void 0 : buffer.vertex, buffer === null || buffer === void 0 ? void 0 : buffer.group, buffer === null || buffer === void 0 ? void 0 : buffer.normal);
   const groupCount = volume.grid.cells.data.length;
   const instances = Interval.ofLength(volume.instances.length);
   const segments2 = OrderedSet2.ofSingleton(segment);
@@ -137251,8 +137251,8 @@ function createVolumeSphereImpostor(ctx, volume, key2, theme, props, spheres2) {
         if (basis) {
           Vec3.set(p6, x, y, z);
           Vec3.transformMat4(p6, p6, gridToCartn);
-          const offset3 = getRandomOffsetFromBasis(basis);
-          Vec3.add(p6, p6, offset3);
+          const offset4 = getRandomOffsetFromBasis(basis);
+          Vec3.add(p6, p6, offset4);
         } else {
           Vec3.set(p6, x, y, z);
           Vec3.transformMat4(p6, p6, gridToCartn);
@@ -137291,8 +137291,8 @@ function createVolumeSphereMesh(ctx, volume, key2, theme, props, mesh) {
         if (basis) {
           Vec3.set(p6, x, y, z);
           Vec3.transformMat4(p6, p6, gridToCartn);
-          const offset3 = getRandomOffsetFromBasis(basis);
-          Vec3.add(p6, p6, offset3);
+          const offset4 = getRandomOffsetFromBasis(basis);
+          Vec3.add(p6, p6, offset4);
         } else {
           Vec3.set(p6, x, y, z);
           Vec3.transformMat4(p6, p6, gridToCartn);
@@ -137343,8 +137343,8 @@ function createVolumePoint(ctx, volume, key2, theme, props, points3) {
         if (basis) {
           Vec3.set(p6, x, y, z);
           Vec3.transformMat4(p6, p6, gridToCartn);
-          const offset3 = getRandomOffsetFromBasis(basis);
-          Vec3.add(p6, p6, offset3);
+          const offset4 = getRandomOffsetFromBasis(basis);
+          Vec3.add(p6, p6, offset4);
         } else {
           Vec3.set(p6, x, y, z);
           Vec3.transformMat4(p6, p6, gridToCartn);
@@ -137371,8 +137371,8 @@ function getDotLoci(pickingId, volume, key2, props, id) {
     } else if (granularity === "object" || groupId === PickingId.Null) {
       return Volume.Isosurface.Loci(volume, props.isoValue, instances);
     } else {
-      const indices2 = Interval.ofSingleton(groupId);
-      return Volume.Cell.Loci(volume, [{ indices: indices2, instances }]);
+      const indices3 = Interval.ofSingleton(groupId);
+      return Volume.Cell.Loci(volume, [{ indices: indices3, instances }]);
     }
   }
   return EmptyLoci;
@@ -138900,10 +138900,10 @@ var AnimateCameraSpin = PluginStateAnimation.create({
       return { kind: "finished" };
     }
     const phase = t5.animation ? ((_a = t5.animation) === null || _a === void 0 ? void 0 : _a.currentFrame) / (t5.animation.frameCount + 1) : clamp(t5.current / ctx.params.durationInMs, 0, 1);
-    const angle = 2 * Math.PI * phase * ctx.params.speed * (ctx.params.direction === "ccw" ? -1 : 1);
+    const angle2 = 2 * Math.PI * phase * ctx.params.speed * (ctx.params.direction === "ccw" ? -1 : 1);
     Vec3.sub(_dir, snapshot.position, snapshot.target);
     Vec3.normalize(_axis, snapshot.up);
-    Quat.setAxisAngle(_rot, _axis, angle);
+    Quat.setAxisAngle(_rot, _axis, angle2);
     Vec3.transformQuat(_dir, _dir, _rot);
     const position = Vec3.add(Vec3(), snapshot.target, _dir);
     (_b = ctx.plugin.canvas3d) === null || _b === void 0 ? void 0 : _b.requestCameraReset({ snapshot: { ...snapshot, position }, durationMs: 0 });
@@ -139670,9 +139670,9 @@ var BoxifyVolumeStreaming = StateAction.build({
   const params = a8.data.params;
   if (params.entry.params.view.name !== "selection-box")
     return;
-  const box4 = Box3D.create(Vec3.clone(params.entry.params.view.params.bottomLeft), Vec3.clone(params.entry.params.view.params.topRight));
+  const box5 = Box3D.create(Vec3.clone(params.entry.params.view.params.bottomLeft), Vec3.clone(params.entry.params.view.params.topRight));
   const r = params.entry.params.view.params.radius;
-  Box3D.expand(box4, box4, Vec3.create(r, r, r));
+  Box3D.expand(box5, box5, Vec3.create(r, r, r));
   const newParams = {
     ...params,
     entry: {
@@ -139682,8 +139682,8 @@ var BoxifyVolumeStreaming = StateAction.build({
         view: {
           name: "box",
           params: {
-            bottomLeft: box4.min,
-            topRight: box4.max
+            bottomLeft: box5.min,
+            topRight: box5.max
           }
         }
       }
@@ -139790,10 +139790,10 @@ var VolumeStreamingVisual = PluginStateTransform.BuiltIn({
     const repr = provider.factory({ webgl: (_a = plugin.canvas3d) === null || _a === void 0 ? void 0 : _a.webgl, ...plugin.representation.volume.themes }, provider.getParams);
     repr.setTheme(Theme.create(plugin.representation.volume.themes, { volume: channel.data }, params));
     const structure = (_b = spine.getAncestorOfType(PluginStateObject.Molecule.Structure)) === null || _b === void 0 ? void 0 : _b.data;
-    const transform = (structure === null || structure === void 0 ? void 0 : structure.models.length) === 0 ? void 0 : GlobalModelTransformInfo.get(structure === null || structure === void 0 ? void 0 : structure.models[0]);
+    const transform2 = (structure === null || structure === void 0 ? void 0 : structure.models.length) === 0 ? void 0 : GlobalModelTransformInfo.get(structure === null || structure === void 0 ? void 0 : structure.models[0]);
     await repr.createOrUpdate(props, channel.data).runInContext(ctx);
-    if (transform)
-      repr.setState({ transform });
+    if (transform2)
+      repr.setState({ transform: transform2 });
     return new PluginStateObject.Volume.Representation3D({ repr, sourceData: channel.data }, { label: `${Math.round(channel.isoValue.relativeValue * 100) / 100} \u03C3 [${srcParams.channel}]` });
   }),
   update: ({ a: a8, b: b8, newParams, spine }, plugin) => Task.create("Volume Representation", async (ctx) => {
@@ -139951,10 +139951,10 @@ var AnimateCameraRock = PluginStateAnimation.create({
       return { kind: "finished" };
     }
     const phase = t5.animation ? ((_a = t5.animation) === null || _a === void 0 ? void 0 : _a.currentFrame) / (t5.animation.frameCount + 1) : clamp(t5.current / ctx.params.durationInMs, 0, 1);
-    const angle = Math.sin(phase * ctx.params.speed * Math.PI * 2) * degToRad(ctx.params.angle);
+    const angle2 = Math.sin(phase * ctx.params.speed * Math.PI * 2) * degToRad(ctx.params.angle);
     Vec3.sub(_dir2, snapshot.position, snapshot.target);
     Vec3.normalize(_axis2, snapshot.up);
-    Quat.setAxisAngle(_rot2, _axis2, angle);
+    Quat.setAxisAngle(_rot2, _axis2, angle2);
     Vec3.transformQuat(_dir2, _dir2, _rot2);
     const position = Vec3.add(Vec3(), snapshot.target, _dir2);
     (_b = ctx.plugin.canvas3d) === null || _b === void 0 ? void 0 : _b.requestCameraReset({ snapshot: { ...snapshot, position }, durationMs: 0 });
@@ -140084,6 +140084,16 @@ var InsertMolSysTrajectory = PluginStateTransform.BuiltIn({
     });
   }
 });
+async function replaceMolSysTrajectory(plugin, loaded, trajectory) {
+  const ref = StateObjectRef.resolveRef(loaded.trajectory);
+  const cell = ref ? plugin.state.data.cells.get(ref) : void 0;
+  if (!cell || cell.transform.transformer !== InsertMolSysTrajectory) {
+    throw new Error("Coordinate edits require a native MolSys trajectory.");
+  }
+  const update10 = plugin.state.data.build();
+  update10.to(loaded.trajectory).update(InsertMolSysTrajectory, () => ({ trajectory }));
+  await plugin.runTask(plugin.state.data.updateTree(update10));
+}
 async function loadStructureFromString(plugin, data, format = "pdb", label2, options) {
   await recyclePreviousNode(plugin, options?.previous);
   const raw2 = await plugin.builders.data.rawData({
@@ -140147,11 +140157,11 @@ async function loadStructureFromMolSysPayload(plugin, payload, label2, options) 
   const frames = payload.structures.map((structure, index) => createFrameFromStructure(structure, atomCount2, index));
   const delta2 = payload.time?.delta ?? 1;
   const unit2 = payload.time?.unit ?? "ps";
-  const offset3 = payload.time?.offset ?? 0;
+  const offset4 = payload.time?.offset ?? 0;
   const coordinates = Coordinates.create(
     frames,
     { value: delta2, unit: unit2 },
-    { value: offset3, unit: unit2 }
+    { value: offset4, unit: unit2 }
   );
   const trajectory = await plugin.runTask(
     Model.trajectoryFromTopologyAndCoordinates(topology, coordinates),
@@ -140318,13 +140328,13 @@ function planarAxisViews(coordinates, atomCount2, structureIndex) {
     z: coordinates.subarray(base + atomCount2 * 2, base + atomCount2 * 3)
   };
 }
-function createCellFromFlatBox(box4, structureIndex) {
-  if (!box4) return void 0;
-  const offset3 = structureIndex * 9;
+function createCellFromFlatBox(box5, structureIndex) {
+  if (!box5) return void 0;
+  const offset4 = structureIndex * 9;
   const candidate = Cell.fromBasis(
-    Vec3.create(box4[offset3], box4[offset3 + 1], box4[offset3 + 2]),
-    Vec3.create(box4[offset3 + 3], box4[offset3 + 4], box4[offset3 + 5]),
-    Vec3.create(box4[offset3 + 6], box4[offset3 + 7], box4[offset3 + 8])
+    Vec3.create(box5[offset4], box5[offset4 + 1], box5[offset4 + 2]),
+    Vec3.create(box5[offset4 + 3], box5[offset4 + 4], box5[offset4 + 5]),
+    Vec3.create(box5[offset4 + 6], box5[offset4 + 7], box5[offset4 + 8])
   );
   return candidate.size[0] > 0 && candidate.size[1] > 0 && candidate.size[2] > 0 ? candidate : void 0;
 }
@@ -140346,24 +140356,24 @@ function splitPositions(frame, atomCount2) {
   }
   return { x, y, z };
 }
-function ensureStringArray(values2, length, fallback) {
-  if (Array.isArray(values2) && values2.length === length) return values2;
-  const output = new Array(length);
-  for (let i = 0; i < length; i++) output[i] = fallback(i);
+function ensureStringArray(values2, length2, fallback) {
+  if (Array.isArray(values2) && values2.length === length2) return values2;
+  const output = new Array(length2);
+  for (let i = 0; i < length2; i++) output[i] = fallback(i);
   return output;
 }
-function ensureNumericArray(values2, length, fallback) {
-  if (Array.isArray(values2) && values2.length === length) {
-    const out = new Array(length);
-    for (let i = 0; i < length; i++) {
+function ensureNumericArray(values2, length2, fallback) {
+  if (Array.isArray(values2) && values2.length === length2) {
+    const out = new Array(length2);
+    for (let i = 0; i < length2; i++) {
       const v4 = values2[i];
       const n = typeof v4 === "number" ? v4 : Number(v4);
       out[i] = Number.isFinite(n) ? n : fallback(i);
     }
     return out;
   }
-  const output = new Array(length);
-  for (let i = 0; i < length; i++) output[i] = fallback(i);
+  const output = new Array(length2);
+  for (let i = 0; i < length2; i++) output[i] = fallback(i);
   return output;
 }
 function createFrameFromStructure(structure, atomCount2, index) {
@@ -140437,9 +140447,9 @@ function typedView(buffer, descriptor) {
       `${descriptor.kind} byte length mismatch: descriptor=${descriptor.byte_length}, buffer=${buffer.byteLength}, expected=${expectedBytes}`
     );
   }
-  const length = expectedBytes / bytesPerElement;
+  const length2 = expectedBytes / bytesPerElement;
   if (buffer.byteOffset % bytesPerElement === 0) {
-    return descriptor.dtype === "float32" ? new Float32Array(buffer.buffer, buffer.byteOffset, length) : new Float64Array(buffer.buffer, buffer.byteOffset, length);
+    return descriptor.dtype === "float32" ? new Float32Array(buffer.buffer, buffer.byteOffset, length2) : new Float64Array(buffer.buffer, buffer.byteOffset, length2);
   }
   const copy = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
   return descriptor.dtype === "float32" ? new Float32Array(copy) : new Float64Array(copy);
@@ -140595,21 +140605,21 @@ var LoaderHandlers = class {
       );
     }
     const blob = await response.arrayBuffer();
-    let offset3 = 0;
+    let offset4 = 0;
     const views = [];
     for (const descriptor of metadata.structural_arrays) {
-      const length = Number(descriptor.byte_length);
-      if (!Number.isFinite(length) || length < 0 || offset3 + length > blob.byteLength) {
+      const length2 = Number(descriptor.byte_length);
+      if (!Number.isFinite(length2) || length2 < 0 || offset4 + length2 > blob.byteLength) {
         throw new Error(
-          `Array-native ref blob is inconsistent at ${descriptor.kind}: needs ${length} bytes at offset ${offset3} of ${blob.byteLength}`
+          `Array-native ref blob is inconsistent at ${descriptor.kind}: needs ${length2} bytes at offset ${offset4} of ${blob.byteLength}`
         );
       }
-      views.push(new DataView(blob, offset3, length));
-      offset3 += length;
+      views.push(new DataView(blob, offset4, length2));
+      offset4 += length2;
     }
-    if (offset3 !== blob.byteLength) {
+    if (offset4 !== blob.byteLength) {
       throw new Error(
-        `Array-native ref blob has ${blob.byteLength - offset3} trailing bytes`
+        `Array-native ref blob has ${blob.byteLength - offset4} trailing bytes`
       );
     }
     const decoded = decodeStructuralArraySet(
@@ -140689,6 +140699,94 @@ var LoaderHandlers = class {
   }
 };
 
+// src/shapes/annotation-callout.ts
+var Params = { ...Text.Params, ...Lines.Params };
+function textShape(_ctx, data, props, previous) {
+  const builder = TextBuilder.create(props, 32, 32, previous?.geometry);
+  builder.add(data.text, data.position[0], data.position[1], data.position[2], 0, 1, 0);
+  return Shape.create(data.tag, data, builder.getText(), () => Color(data.color), () => data.size, () => data.tag);
+}
+function leaderShape(_ctx, data, _props, previous) {
+  const builder = LinesBuilder.create(32, 32, previous?.geometry);
+  if (data.leader) {
+    const start4 = Vec3.fromArray(Vec3(), data.anchor, 0);
+    const end4 = Vec3.fromArray(Vec3(), data.position, 0);
+    if (data.pattern === "solid") builder.addVec(start4, end4, 0);
+    else {
+      const count3 = data.pattern === "dotted" ? 24 : 12;
+      const fraction = data.pattern === "dotted" ? 0.12 : 0.5;
+      for (let i = 0; i < count3; i++) {
+        builder.addVec(
+          Vec3.lerp(Vec3(), start4, end4, i / count3),
+          Vec3.lerp(Vec3(), start4, end4, (i + fraction) / count3),
+          0
+        );
+      }
+    }
+  }
+  return Shape.create(data.tag, data, builder.getLines(), () => Color(data.color), () => 1, () => data.tag);
+}
+function createRepresentation(plugin) {
+  return Representation.createMulti("Annotation", {
+    webgl: plugin.canvas3d?.webgl,
+    ...plugin.representation.structure.themes
+  }, () => Params, Representation.StateBuilder, {
+    text: () => ShapeRepresentation(textShape, Text.Utils),
+    leader: () => ShapeRepresentation(leaderShape, Lines.Utils)
+  });
+}
+function visualProps(data) {
+  return {
+    ...ParamDefinition.getDefaultValues(Params),
+    offsetX: 0,
+    offsetY: 0,
+    offsetZ: 0,
+    tether: false,
+    background: data.background,
+    backgroundOpacity: data.backgroundOpacity
+  };
+}
+var transform = Transformer.builderFactory("molsysviewer")({
+  name: "annotation-callout-3d",
+  display: { name: "Annotation" },
+  from: PluginStateObject.Root,
+  to: PluginStateObject.Shape.Representation3D,
+  params: { geometry: ParamDefinition.Value(void 0) }
+})({
+  canAutoUpdate: () => true,
+  apply({ params }, plugin) {
+    return Task.create("Annotation", async (ctx) => {
+      const repr = createRepresentation(plugin);
+      await repr.createOrUpdate(visualProps(params.geometry), params.geometry).runInContext(ctx);
+      return new PluginStateObject.Shape.Representation3D({ repr, sourceData: params.geometry }, { label: params.geometry.text });
+    });
+  },
+  update({ b: b8, newParams }) {
+    return Task.create("Annotation", async (ctx) => {
+      await b8.data.repr.createOrUpdate(visualProps(newParams.geometry), newParams.geometry).runInContext(ctx);
+      b8.data.sourceData = newParams.geometry;
+      return Transformer.UpdateResult.Updated;
+    });
+  },
+  dispose({ b: b8 }) {
+    b8?.data.repr.destroy();
+  }
+});
+async function renderAnnotation(plugin, geometry, ref) {
+  const tree = plugin.state.data.build();
+  let appliedRef = ref;
+  if (ref) tree.to(ref).update({ geometry });
+  else appliedRef = tree.toRoot().apply(transform, { geometry }, { tags: [geometry.tag, "molsysviewer:annotation"] }).ref;
+  await PluginCommands.State.Update(plugin, { state: plugin.state.data, tree, options: { doNotLogTiming: true } });
+  return appliedRef;
+}
+function cameraOffsetPosition(anchor, offset4, camera) {
+  const toward = Vec3.normalize(Vec3(), Vec3.sub(Vec3(), camera.position, camera.target));
+  const right = Vec3.normalize(Vec3(), Vec3.cross(Vec3(), camera.up, toward));
+  const up3 = Vec3.normalize(Vec3(), Vec3.cross(Vec3(), toward, right));
+  return anchor.map((value, i) => value + offset4[0] * right[i] + offset4[1] * up3[i] + offset4[2] * toward[i]);
+}
+
 // src/managers/handlers/annotation-handlers.ts
 function styleToVisualParams(style) {
   if (!style) return void 0;
@@ -140710,6 +140808,11 @@ var AnnotationHandlers = class {
     this.plugin = plugin;
     this.callbacks = callbacks;
     this.labelRefs = /* @__PURE__ */ new Set();
+    this.hiddenTags = /* @__PURE__ */ new Set();
+    this.callouts = /* @__PURE__ */ new Map();
+    this.refreshQueue = Promise.resolve();
+    this.cameraSignature = "";
+    this.disposed = false;
     this.refsByTag = /* @__PURE__ */ new Map();
     this.specsByTag = /* @__PURE__ */ new Map();
     /** Maps layer_tag → Set of annotation tags that belong to it. */
@@ -140717,7 +140820,6 @@ var AnnotationHandlers = class {
   }
   async addLabel(msg) {
     const structure = this.callbacks.getStructure();
-    if (!structure) return;
     const text = typeof msg.options?.text === "string" ? msg.options.text : "";
     const atomIndices = Array.isArray(msg.options?.atom_indices) ? msg.options.atom_indices.map((i) => typeof i === "number" ? Math.trunc(i) : Number(i)).filter((i) => Number.isFinite(i)) : [];
     const tag = msg.tag ?? msg.options?.tag ?? "annotation";
@@ -140725,9 +140827,19 @@ var AnnotationHandlers = class {
     const style = msg.options?.style;
     const position = Array.isArray(msg.options?.position) ? msg.options.position.map(Number) : void 0;
     const offsetMode = msg.options?.offset_mode ?? "camera";
-    const offset3 = Array.isArray(msg.options?.offset) ? msg.options.offset.map(Number) : [0, 0, 0];
+    const offset4 = Array.isArray(msg.options?.offset) ? msg.options.offset.map(Number) : [0, 0, 0];
     const leaderLine = !!msg.options?.leader_line;
     const leaderLineStyle = msg.options?.leader_line_style ?? "dashed";
+    if (position && msg.options?.position_unit !== void 0 && msg.options.position_unit !== "angstrom") {
+      throw new Error("Annotation position must use angstrom units.");
+    }
+    const expectedOffsetUnit = offsetMode === "world" ? "angstrom" : "dimensionless";
+    if (msg.options?.offset_unit !== void 0 && msg.options.offset_unit !== expectedOffsetUnit) {
+      throw new Error("Annotation offset has incompatible units.");
+    }
+    if (position && (position.length !== 3 || position.some((v4) => !Number.isFinite(v4))) || offset4.length !== 3 || offset4.some((v4) => !Number.isFinite(v4))) {
+      throw new Error("Annotation coordinates and offsets require finite triples.");
+    }
     if (!text.trim() && !position && atomIndices.length === 0) return;
     this.specsByTag.set(tag, {
       text: text.trim(),
@@ -140737,7 +140849,7 @@ var AnnotationHandlers = class {
       style,
       position,
       offset_mode: offsetMode,
-      offset: offset3,
+      offset: offset4,
       leader_line: leaderLine,
       leader_line_style: leaderLineStyle
     });
@@ -140747,18 +140859,21 @@ var AnnotationHandlers = class {
       this.layerTagIndex.set(layer_tag, group);
     }
     this.callbacks.addLabelOverlay?.(msg);
-    let loci;
-    const finalOffset = [...offset3];
-    if (position) {
-      const closest = this.findClosestAtom(structure, position);
-      if (!closest) return;
-      loci = this.buildLociForSingleAtom(structure, closest.unit, closest.elementIndex);
-      finalOffset[0] = position[0] - closest.coords[0] + offset3[0];
-      finalOffset[1] = position[1] - closest.coords[1] + offset3[1];
-      finalOffset[2] = position[2] - closest.coords[2] + offset3[2];
-    } else {
-      loci = this.buildLociFromAtomIndices(structure, atomIndices);
+    if (this.hiddenTags.has(tag)) return;
+    if (position || offsetMode === "world" || leaderLine) {
+      const geometry = this.geometryFor(tag);
+      if (!geometry) return;
+      const ref = await renderAnnotation(this.plugin, geometry);
+      this.callouts.set(tag, { ref, signature: JSON.stringify(geometry) });
+      this.labelRefs.add(ref);
+      this.refsByTag.set(tag, /* @__PURE__ */ new Set([ref]));
+      this.callbacks.registerRef(ref, tag);
+      return;
     }
+    let loci;
+    const finalOffset = [...offset4];
+    if (!structure) return;
+    loci = this.buildLociFromAtomIndices(structure, atomIndices);
     if (!loci) return;
     const styleParams = styleToVisualParams(style) ?? {};
     const mergedVisualParams = {
@@ -140811,7 +140926,7 @@ var AnnotationHandlers = class {
         tag,
         layer_tag: msg.options?.layer_tag ?? prevSpec?.layer_tag,
         style: msg.options?.style ?? prevSpec?.style,
-        position: msg.options?.position ?? prevSpec?.position,
+        position: msg.options && Object.prototype.hasOwnProperty.call(msg.options, "position") ? msg.options.position ?? void 0 : prevSpec?.position,
         offset_mode: msg.options?.offset_mode ?? prevSpec?.offset_mode,
         offset: msg.options?.offset ?? prevSpec?.offset,
         leader_line: msg.options?.leader_line ?? prevSpec?.leader_line,
@@ -140820,7 +140935,11 @@ var AnnotationHandlers = class {
     });
   }
   async clearLabels() {
-    if (this.labelRefs.size === 0) return;
+    this.specsByTag.clear();
+    this.hiddenTags.clear();
+    this.layerTagIndex.clear();
+    this.callouts.clear();
+    await this.refreshQueue;
     const refs = Array.from(this.labelRefs);
     this.labelRefs.clear();
     this.refsByTag.clear();
@@ -140833,6 +140952,8 @@ var AnnotationHandlers = class {
     );
   }
   async clearLabelByTag(tag) {
+    this.callouts.delete(tag);
+    await this.refreshQueue;
     const refs = Array.from(this.refsByTag.get(tag) ?? []);
     if (refs.length === 0) return;
     this.refsByTag.delete(tag);
@@ -140852,6 +140973,7 @@ var AnnotationHandlers = class {
   }
   renameTag(oldTag, newTag) {
     if (!oldTag || !newTag || oldTag === newTag) return;
+    if (this.hiddenTags.delete(oldTag)) this.hiddenTags.add(newTag);
     const refs = this.refsByTag.get(oldTag);
     if (refs) {
       this.refsByTag.delete(oldTag);
@@ -140866,6 +140988,11 @@ var AnnotationHandlers = class {
         layer_tag: spec.layer_tag === oldTag ? newTag : spec.layer_tag
       });
     }
+    const callout = this.callouts.get(oldTag);
+    if (callout) {
+      this.callouts.delete(oldTag);
+      this.callouts.set(newTag, callout);
+    }
     for (const tags of this.layerTagIndex.values()) {
       if (tags.delete(oldTag)) tags.add(newTag);
     }
@@ -140876,6 +141003,8 @@ var AnnotationHandlers = class {
     }
   }
   dropTag(tag) {
+    this.hiddenTags.delete(tag);
+    this.callouts.delete(tag);
     const refs = Array.from(this.refsByTag.get(tag) ?? []);
     this.refsByTag.delete(tag);
     this.specsByTag.delete(tag);
@@ -140890,9 +141019,11 @@ var AnnotationHandlers = class {
       return;
     }
     if (!visible) {
+      this.hiddenTags.add(tag);
       await this.clearLabelByTag(tag);
       return;
     }
+    this.hiddenTags.delete(tag);
     if ((this.refsByTag.get(tag)?.size ?? 0) > 0) return;
     const spec = this.specsByTag.get(tag);
     if (!spec) return;
@@ -140916,6 +141047,74 @@ var AnnotationHandlers = class {
   getSpec(tag) {
     const spec = this.specsByTag.get(tag);
     return spec ? { text: spec.text, atom_indices: spec.atom_indices } : void 0;
+  }
+  geometryFor(tag) {
+    const spec = this.specsByTag.get(tag);
+    if (!spec) return;
+    let anchor = spec.position ? [...spec.position] : void 0;
+    if (!anchor) {
+      const structure = this.callbacks.getStructure();
+      if (!structure) return;
+      const wanted = new Set(spec.atom_indices);
+      const center2 = Vec3();
+      const point = Vec3();
+      let count3 = 0;
+      for (const unit2 of structure.units) {
+        if (!Unit.isAtomic(unit2)) continue;
+        for (let ordinal = 0; ordinal < OrderedSet2.size(unit2.elements); ordinal++) {
+          const atom2 = OrderedSet2.getAt(unit2.elements, ordinal);
+          if (!wanted.has(atom2)) continue;
+          unit2.conformation.position(atom2, point);
+          Vec3.add(center2, center2, point);
+          count3++;
+        }
+      }
+      if (!count3) return;
+      anchor = Array.from(Vec3.scale(center2, center2, 1 / count3));
+    }
+    const offset4 = spec.offset ?? [0, 0, 0];
+    const camera = this.plugin.canvas3d?.camera.state;
+    const position = spec.offset_mode === "world" || !camera ? anchor.map((value, i) => value + offset4[i]) : cameraOffsetPosition(anchor, offset4, camera);
+    const style = styleToVisualParams(spec.style) ?? {};
+    return {
+      tag,
+      text: spec.text,
+      anchor,
+      position,
+      color: Number(style.textColor ?? 0),
+      size: Number(style.textSize ?? 0.5),
+      background: Boolean(style.background ?? false),
+      backgroundOpacity: Number(style.backgroundOpacity ?? 0.5),
+      leader: !!spec.leader_line,
+      pattern: spec.leader_line_style ?? "dashed"
+    };
+  }
+  refresh() {
+    const update10 = this.refreshQueue.then(async () => {
+      if (this.disposed) return;
+      for (const [tag, callout] of this.callouts) {
+        const geometry = this.geometryFor(tag);
+        if (!geometry) continue;
+        const signature2 = JSON.stringify(geometry);
+        if (signature2 === callout.signature) continue;
+        await renderAnnotation(this.plugin, geometry, callout.ref);
+        if (this.callouts.get(tag) === callout) callout.signature = signature2;
+      }
+    });
+    this.refreshQueue = update10.catch(() => {
+    });
+    return update10;
+  }
+  onCamera(snapshot) {
+    if (!this.callouts.size) return;
+    const signature2 = JSON.stringify(snapshot);
+    if (signature2 === this.cameraSignature) return;
+    this.cameraSignature = signature2;
+    void this.refresh().catch((error2) => console.warn("[MolSysViewer] Annotation refresh failed", error2));
+  }
+  dispose() {
+    this.disposed = true;
+    this.callouts.clear();
   }
   buildLociFromAtomIndices(structure, atomIndices) {
     const selectionBuilder = StructureSelection.LinearBuilder(structure);
@@ -141736,8 +141935,8 @@ var PocketBlob3D = MSVTransform({
   }
 });
 function preparePocketBlobData(options) {
-  const field = buildPocketBlobField(options);
-  if (!field) {
+  const field2 = buildPocketBlobField(options);
+  if (!field2) {
     console.warn("[MolSysViewer] add_pocket_blob: no valid data");
     return void 0;
   }
@@ -141749,19 +141948,19 @@ function preparePocketBlobData(options) {
   const results = [];
   levels.forEach((level, idx) => {
     const isoColor = isoColors ? Color(isoColors[idx]) : colorScale?.color(level);
-    const regionColors = isoColor !== void 0 ? new Map(Array.from({ length: field.count }, (_v, i) => [i, isoColor])) : buildPocketBlobColors(field.count, options.values, options.color_map);
+    const regionColors = isoColor !== void 0 ? new Map(Array.from({ length: field2.count }, (_v, i) => [i, isoColor])) : buildPocketBlobColors(field2.count, options.values, options.color_map);
     const marchingCubesParams = {
       isoLevel: level,
-      scalarField: field.scalarField,
-      idField: field.idField,
-      bottomLeft: field.bottomLeft,
-      topRight: field.topRight
+      scalarField: field2.scalarField,
+      idField: field2.idField,
+      bottomLeft: field2.bottomLeft,
+      topRight: field2.topRight
     };
     const visual = options.wireframe ? "wireframe" : "mesh";
     const geometryTask = options.wireframe ? computeMarchingCubesLines(marchingCubesParams) : computeMarchingCubesMesh(marchingCubesParams);
-    const transform = Mat4.identity();
-    Mat4.fromScaling(transform, Vec3.create(field.resolution, field.resolution, field.resolution));
-    Mat4.setTranslation(transform, Vec3.create(field.origin[0], field.origin[1], field.origin[2]));
+    const transform2 = Mat4.identity();
+    Mat4.fromScaling(transform2, Vec3.create(field2.resolution, field2.resolution, field2.resolution));
+    Mat4.setTranslation(transform2, Vec3.create(field2.origin[0], field2.origin[1], field2.origin[2]));
     results.push({
       geometryTask,
       visual,
@@ -141769,7 +141968,7 @@ function preparePocketBlobData(options) {
       alpha: isoAlphas[idx],
       name: `${options.name ?? "Pocket Blob"} (iso=${level})`,
       wireframeSize: Math.max(0.1, options.wireframe_size ?? 1),
-      transform
+      transform: transform2
     });
   });
   return results;
@@ -141916,9 +142115,9 @@ function buildChannelSegments(options) {
   return { segments: segments2, radialSegments };
 }
 function normalizeTriplet(v4) {
-  const length = Math.hypot(v4[0], v4[1], v4[2]);
-  if (length <= 1e-12) return [0, 0, 1];
-  return [v4[0] / length, v4[1] / length, v4[2] / length];
+  const length2 = Math.hypot(v4[0], v4[1], v4[2]);
+  if (length2 <= 1e-12) return [0, 0, 1];
+  return [v4[0] / length2, v4[1] / length2, v4[2] / length2];
 }
 function crossTriplet(a8, b8) {
   return [
@@ -142617,7 +142816,8 @@ function buildNetworkLinkMesh(data, _props, prev) {
       radiusBottom: link.radius,
       radialSegments: Math.max(3, Math.floor(data.radialSegments))
     };
-    addCylinder(state, start4, end4, 1, cylinderProps);
+    if (data.dashed) addFixedCountDashedCylinder(state, start4, end4, 1, 9, true, cylinderProps);
+    else addCylinder(state, start4, end4, 1, cylinderProps);
   }
   return MeshBuilder.getMesh(state);
 }
@@ -142763,6 +142963,7 @@ function buildLinksFromCoordinates(options) {
       end: pair2.end,
       radius: radii[idx],
       color: linkColor,
+      label: options.labels?.[idx],
       pocketId: pocketIds[idx],
       chainId: chainIds[idx] || void 0
     };
@@ -142862,6 +143063,9 @@ async function addNetworkLinksFromPython(plugin, options) {
   }
   const data = {
     links,
+    dashed: options.dashed,
+    interaction: options.interaction,
+    kind: options.interaction ? "interaction" : void 0,
     alpha,
     radialSegments,
     name,
@@ -142961,13 +143165,13 @@ function getTriangleFacesShape(_ctx, data, _props, shape) {
     if (groupId < triCount) {
       return Color(data.triangles[groupId].color);
     }
-    let offset3 = groupId - triCount;
+    let offset4 = groupId - triCount;
     if (edgesEnabled) {
       const totalEdges = triCount * edgesPerTri;
-      if (offset3 < totalEdges) {
+      if (offset4 < totalEdges) {
         return Color(data.edges?.color ?? ColorNames.black);
       }
-      offset3 -= totalEdges;
+      offset4 -= totalEdges;
     }
     if (normalsEnabled) {
       return Color(data.normals?.color ?? ColorNames.red);
@@ -142984,16 +143188,16 @@ function getTriangleFacesShape(_ctx, data, _props, shape) {
     if (groupId < triCount) {
       return data.triangles[groupId].label ?? `Triangle ${groupId}`;
     }
-    let offset3 = groupId - triCount;
+    let offset4 = groupId - triCount;
     if (edgesEnabled) {
       const totalEdges = triCount * edgesPerTri;
-      if (offset3 < totalEdges) {
-        return `Triangle edge ${offset3}`;
+      if (offset4 < totalEdges) {
+        return `Triangle edge ${offset4}`;
       }
-      offset3 -= totalEdges;
+      offset4 -= totalEdges;
     }
     if (normalsEnabled) {
-      return `Triangle normal ${offset3}`;
+      return `Triangle normal ${offset4}`;
     }
     return `Triangle decoration ${groupId}`;
   };
@@ -143411,15 +143615,15 @@ function getTetrahedraShape(_ctx, data, _props, shape) {
       const tetraIndex = facesPickable ? faces[groupId].tetraIndex : groupId;
       return Color(data.tetrahedra[tetraIndex].color);
     }
-    let offset3 = groupId - faceGroupCount;
+    let offset4 = groupId - faceGroupCount;
     if (normalsEnabled) {
-      if (offset3 < faceCount) {
+      if (offset4 < faceCount) {
         return Color(data.normals?.color ?? ColorNames.red);
       }
-      offset3 -= faceCount;
+      offset4 -= faceCount;
     }
     if (edgesEnabled) {
-      if (offset3 < edgeCount) {
+      if (offset4 < edgeCount) {
         return Color(data.edges?.color ?? ColorNames.black);
       }
     }
@@ -143433,15 +143637,15 @@ function getTetrahedraShape(_ctx, data, _props, shape) {
       }
       return data.tetrahedra[groupId].label ?? `Tetrahedron ${groupId}`;
     }
-    let offset3 = groupId - faceGroupCount;
+    let offset4 = groupId - faceGroupCount;
     if (normalsEnabled) {
-      if (offset3 < faceCount) {
-        return `Tetrahedron normal ${offset3}`;
+      if (offset4 < faceCount) {
+        return `Tetrahedron normal ${offset4}`;
       }
-      offset3 -= faceCount;
+      offset4 -= faceCount;
     }
-    if (edgesEnabled && offset3 < edgeCount) {
-      return edgeLabel(edgeList[offset3]);
+    if (edgesEnabled && offset4 < edgeCount) {
+      return edgeLabel(edgeList[offset4]);
     }
     return `Decoration ${groupId}`;
   };
@@ -143715,14 +143919,14 @@ function buildDisplacementVectorMesh(data, _props, prev) {
     Vec3.set(start4, arrow.start[0], arrow.start[1], arrow.start[2]);
     Vec3.set(end4, arrow.end[0], arrow.end[1], arrow.end[2]);
     Vec3.sub(dir, end4, start4);
-    const length = arrow.length;
-    if (length < 1e-4) continue;
+    const length2 = arrow.length;
+    if (length2 < 1e-4) continue;
     const radialSegments = Math.max(3, Math.floor(data.radialSegments));
-    const shaftRadius = Math.max(0.01, length * data.radiusScale);
+    const shaftRadius = Math.max(0.01, length2 * data.radiusScale);
     const headRadius = shaftRadius * 1.8;
-    const headLength = Math.max(length * 0.2, headRadius * 2.5);
-    const shaftLength = Math.max(0, length - headLength);
-    Vec3.scale(dir, dir, 1 / length);
+    const headLength = Math.max(length2 * 0.2, headRadius * 2.5);
+    const shaftLength = Math.max(0, length2 - headLength);
+    Vec3.scale(dir, dir, 1 / length2);
     Vec3.scaleAndAdd(tipBase, start4, dir, shaftLength);
     addCylinder(state, start4, tipBase, 1, {
       radiusTop: shaftRadius,
@@ -143919,6 +144123,164 @@ async function addDisplacementVectorsFromPython(plugin, options) {
   return node.ref;
 }
 
+// src/managers/handlers/interaction-handlers.ts
+var escapeLabel = (value) => value.replace(/[&<>"']/g, (c8) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c8]);
+var InteractionHandlers = class {
+  constructor(plugin, ctx) {
+    this.plugin = plugin;
+    this.ctx = ctx;
+    this.refs = /* @__PURE__ */ new Map();
+    this.series = /* @__PURE__ */ new Map();
+    this.summaries = [];
+    this.frame = 0;
+    this.request = 0;
+    this.pending = null;
+    this.work = Promise.resolve();
+    this.generation = 0;
+    this.latestRevision = -1;
+    this.tokens = /* @__PURE__ */ new Map();
+    this.requestTimeout = null;
+    this.requestedFrame = -1;
+  }
+  get currentFrame() {
+    return this.frame;
+  }
+  setSummaries(items, revision = -1) {
+    if (revision < this.latestRevision && revision !== -1) return false;
+    this.latestRevision = Math.max(this.latestRevision, revision);
+    for (const tag of this.tokens.keys()) if (!items.some((item2) => item2.tag === tag)) this.drop(tag);
+    this.summaries = items;
+    this.latestRevision = Math.max(this.latestRevision, ...items.map((item2) => item2.projection_revision ?? -1));
+    if (items.some((item2) => item2.frame !== this.frame)) {
+      this.pending = null;
+      this.requestedFrame = -1;
+      this.requestFrame();
+    }
+    return true;
+  }
+  async setSeries(message) {
+    this.series.set(message.tag, message);
+    await this.apply({ ...message, ...message.frames[this.frame], op: "set_interaction_frame" });
+  }
+  async apply(message) {
+    if ((message.projection_revision ?? this.latestRevision) < this.latestRevision) return;
+    this.latestRevision = Math.max(this.latestRevision, message.projection_revision ?? -1);
+    if (message.request_id !== void 0 && !this.summaries.some((item2) => item2.tag === message.tag)) return;
+    if (message.style.radius_unit !== "nm") throw new Error("Interaction radius requires explicit nm units.");
+    if (message.coordinate_unit !== "nm") throw new Error("Interaction geometry requires explicit nm units.");
+    if (message.request_id !== void 0 && message.request_id !== this.pending) return;
+    if (message.frame !== this.frame) return;
+    const generation = this.generation;
+    if (!this.tokens.has(message.tag)) this.tokens.set(message.tag, {});
+    const token = this.tokens.get(message.tag);
+    const valid = () => generation === this.generation && this.tokens.get(message.tag) === token && message.frame === this.frame && (message.projection_revision ?? this.latestRevision) >= this.latestRevision;
+    this.work = this.work.then(async () => {
+      if (!valid()) return;
+      await this.remove(message.tag);
+      if (!valid()) return;
+      if (message.links.length) {
+        const ref = await addNetworkLinksFromPython(this.plugin, {
+          mode: "coordinates",
+          tag: message.tag,
+          dashed: true,
+          interaction: {
+            analysis_name: message.analysis_name,
+            analysis_revision: message.analysis_revision,
+            frame: message.frame,
+            observations: message.links
+          },
+          coordinate_pairs: message.links.map((link) => [link.start.map((v4) => v4 * 10), link.end.map((v4) => v4 * 10)]),
+          radii: message.style.radius_nm * 10,
+          colors: message.style.color,
+          alpha: message.style.alpha,
+          labels: message.links.map((link) => escapeLabel(`${link.interaction_type} \xB7 occurrence ${link.occurrence_index}${link.geometry === "participant_centroids" ? " \xB7 participant-centroid guide" : ""} \xB7 ${link.participants.map((p6) => `${p6.role}: ${p6.atom_indices.join(",")}`).join(" \u2192 ")}`))
+        });
+        if (ref) {
+          if (!valid()) {
+            await PluginCommands.State.RemoveObject(this.plugin, {
+              state: this.plugin.state.data,
+              ref,
+              removeParentGhosts: true
+            });
+            return;
+          }
+          this.refs.set(message.tag, ref);
+          this.ctx.register(ref, message.tag);
+          setSubtreeVisibility(this.plugin.state.data, ref, message.hidden || this.ctx.layerHidden(message.layer_tag));
+        }
+      }
+      this.summaries = this.summaries.map((item2) => item2.tag === message.tag ? { ...item2, ...message } : item2);
+      this.ctx.summaries(this.summaries, this.frame);
+    }).catch((error2) => {
+      console.error("[MolSysViewer] interaction render failed", error2);
+      if (valid()) {
+        this.summaries = this.summaries.map((item2) => item2.tag === message.tag ? { ...item2, status: "render-error", n_supported: 0, n_segments: 0 } : item2);
+        this.ctx.summaries(this.summaries, this.frame);
+      }
+    });
+    await this.work;
+  }
+  finishResponse(requestId) {
+    if (requestId === this.pending) {
+      this.pending = null;
+      if (this.requestTimeout) clearTimeout(this.requestTimeout);
+      this.requestFrame();
+    }
+  }
+  onFrame(frame) {
+    if (frame === this.frame) return;
+    this.frame = frame;
+    this.generation++;
+    this.summaries = this.summaries.map((item2) => ({ ...item2, frame, status: "pending", n_observations: 0, n_supported: 0, n_segments: 0, n_skipped: 0 }));
+    this.ctx.summaries(this.summaries, frame);
+    for (const ref of this.refs.values()) setSubtreeVisibility(this.plugin.state.data, ref, true);
+    if (this.series.size) {
+      for (const message of this.series.values()) {
+        void this.apply({ ...message, ...message.frames[frame], op: "set_interaction_frame" });
+      }
+    } else this.requestFrame();
+  }
+  requestFrame() {
+    if (!this.summaries.length || this.pending !== null || this.requestedFrame === this.frame) return;
+    this.requestedFrame = this.frame;
+    this.pending = ++this.request;
+    this.ctx.notify({ event: "request_interaction_frame", frame: this.frame, request_id: this.pending });
+    if (this.requestTimeout) clearTimeout(this.requestTimeout);
+    this.requestTimeout = setTimeout(() => {
+      this.pending = null;
+      this.summaries = this.summaries.map((item2) => ({ ...item2, status: "unavailable" }));
+      this.ctx.summaries(this.summaries, this.frame);
+    }, 1e4);
+  }
+  async remove(tag) {
+    const ref = this.refs.get(tag);
+    if (!ref) return;
+    this.refs.delete(tag);
+    this.ctx.unregister(ref, tag);
+    if (this.plugin.state.data.cells.has(ref)) await PluginCommands.State.RemoveObject(this.plugin, {
+      state: this.plugin.state.data,
+      ref,
+      removeParentGhosts: true
+    });
+  }
+  drop(tag) {
+    this.tokens.delete(tag);
+    this.series.delete(tag);
+    this.summaries = this.summaries.filter((item2) => item2.tag !== tag);
+    void this.remove(tag);
+  }
+  clear() {
+    if (this.requestTimeout) clearTimeout(this.requestTimeout);
+    this.generation++;
+    this.tokens.clear();
+    this.series.clear();
+    this.summaries = [];
+    this.pending = null;
+    this.requestedFrame = -1;
+    for (const tag of this.refs.keys()) void this.remove(tag);
+  }
+};
+
 // src/shapes/pocket-surface.ts
 var MSVTransform2 = Transformer.builderFactory("molsysviewer");
 var PocketSurfaceParams = {
@@ -144008,9 +144370,9 @@ function planeRotationFromNormal(normalInput) {
   if (Vec3.magnitude(normal3) < 1e-5) return { axis: Vec3.create(1, 0, 0), angle: 0 };
   const axis = Vec3.normalize(Vec3(), Vec3.cross(Vec3(), defaultNormal, normal3));
   const dot = Vec3.dot(defaultNormal, normal3);
-  const angle = Math.acos(Math.min(1, Math.max(-1, dot))) * (180 / Math.PI);
+  const angle2 = Math.acos(Math.min(1, Math.max(-1, dot))) * (180 / Math.PI);
   if (Vec3.magnitude(axis) < 1e-5) return { axis: Vec3.create(1, 0, 0), angle: 0 };
-  return { axis, angle };
+  return { axis, angle: angle2 };
 }
 function centroid(structure) {
   const center2 = Vec3.create(0, 0, 0);
@@ -144031,18 +144393,18 @@ function centroid(structure) {
 function createGaussianSurfaceMeshes(structure, props, isoLevels, webgl) {
   return Task.create("Pocket Surface Meshes", async (ctx) => {
     const sizeTheme = PhysicalSizeTheme({ structure }, { scale: 1 });
-    const { transform, field, idField, radiusFactor, resolution, maxRadius } = await computeStructureGaussianDensity(structure, sizeTheme, props).runInContext(ctx);
+    const { transform: transform2, field: field2, idField, radiusFactor, resolution, maxRadius } = await computeStructureGaussianDensity(structure, sizeTheme, props).runInContext(ctx);
     const baseIso = Math.exp(-props.smoothness) / radiusFactor;
     const levels = isoLevels && isoLevels.length > 0 ? isoLevels : [baseIso];
     const surfaces = [];
     for (const level of levels) {
       const params = {
         isoLevel: level,
-        scalarField: field,
+        scalarField: field2,
         idField
       };
       const surface = await computeMarchingCubesMesh(params).runAsChild(ctx);
-      Mesh.transform(surface, transform);
+      Mesh.transform(surface, transform2);
       if (webgl && !webgl.isWebGL2) {
         Mesh.uniformTriangleGroup(surface);
         ValueCell.updateIfChanged(surface.varyingGroup, false);
@@ -144966,8 +145328,8 @@ var SceneHandlers = class {
     if (dot > 0.9999) return { axis: Vec3.create(0, 0, 1), angle: 0 };
     if (dot < -0.9999) return { axis: Vec3.create(1, 0, 0), angle: 180 };
     const axis = Vec3.normalize(Vec3(), Vec3.cross(Vec3(), DEFAULT, n));
-    const angle = Math.acos(Math.max(-1, Math.min(1, dot))) * 180 / Math.PI;
-    return { axis, angle };
+    const angle2 = Math.acos(Math.max(-1, Math.min(1, dot))) * 180 / Math.PI;
+    return { axis, angle: angle2 };
   }
   async setSections(msg) {
     const sections = msg.sections ?? [];
@@ -145000,7 +145362,7 @@ var SceneHandlers = class {
       return;
     }
     const objects = visibleSections.map((s) => {
-      const { axis, angle } = this._normalToAxisAngle(s.normal);
+      const { axis, angle: angle2 } = this._normalToAxisAngle(s.normal);
       return {
         type: "plane",
         invert: s.invert ?? false,
@@ -145009,7 +145371,7 @@ var SceneHandlers = class {
           s.point[1] * NM_TO_ANGSTROM,
           s.point[2] * NM_TO_ANGSTROM
         ),
-        rotation: { axis, angle },
+        rotation: { axis, angle: angle2 },
         scale: Vec3.create(1, 1, 1),
         transform: Mat4.identity()
       };
@@ -145488,7 +145850,7 @@ var StateHandlers = class {
     this.previousFocusFadeValue = 0;
     this.previousShowOnlyWholeMask = false;
     this.previousRegionOwnershipKey = "";
-    this.previousOwnedOpaqueIndices = /* @__PURE__ */ new Set();
+    this.previousWholeHiddenIndices = /* @__PURE__ */ new Set();
     // Versioned visibility state for the delta protocol: the last applied visible
     // atom indices and the version they were stamped with. A delta only applies
     // when its base_version matches; otherwise we ask the kernel for a full resync.
@@ -145594,6 +145956,10 @@ var StateHandlers = class {
       setSubtreeVisibility(this.plugin.state.data, resolvedRef, hide);
     }
   }
+  unregisterTaggedRef(ref, tag, kind) {
+    const key2 = this.taggedKey(kind, tag);
+    this.tagIndex.get(key2)?.delete(ref);
+  }
   registerShapeRef(ref, tag) {
     this.registerTaggedRef(ref, tag, "shape");
   }
@@ -145650,15 +146016,15 @@ var StateHandlers = class {
     return components.filter((component) => this.componentRefId(component) === entryRef);
   }
   allAtomIndices(structure) {
-    const indices2 = [];
+    const indices3 = [];
     for (const unit2 of structure.units) {
       if (!Unit.isAtomic(unit2)) continue;
       const elementCount = OrderedSet2.size(unit2.elements);
       for (let ordinal = 0; ordinal < elementCount; ordinal++) {
-        indices2.push(OrderedSet2.getAt(unit2.elements, ordinal));
+        indices3.push(OrderedSet2.getAt(unit2.elements, ordinal));
       }
     }
-    return indices2;
+    return indices3;
   }
   unionAtomIndices(...sets) {
     const union4 = /* @__PURE__ */ new Set();
@@ -145667,12 +146033,12 @@ var StateHandlers = class {
     }
     return Array.from(union4).sort((a8, b8) => a8 - b8);
   }
-  atomIndexKey(indices2) {
-    return Array.isArray(indices2) && indices2.length > 0 ? indices2.join(",") : "";
+  atomIndexKey(indices3) {
+    return Array.isArray(indices3) && indices3.length > 0 ? indices3.join(",") : "";
   }
-  complementAtomIndices(structure, indices2) {
-    if (!Array.isArray(indices2) || indices2.length === 0) return void 0;
-    const keep = new Set(indices2);
+  complementAtomIndices(structure, indices3) {
+    if (!Array.isArray(indices3)) return void 0;
+    const keep = new Set(indices3);
     return this.allAtomIndices(structure).filter((index) => !keep.has(index));
   }
   isFullyOpaque(params) {
@@ -145690,6 +146056,14 @@ var StateHandlers = class {
     return Array.from(this.regionIndex.values()).filter(
       (entry) => !entry.hidden && entry.representationState !== "none" && this.isFullyOpaque(entry.params)
     ).sort((left, right) => left.order - right.order);
+  }
+  hiddenUnrepresentedAtomIndices() {
+    const hidden = /* @__PURE__ */ new Set();
+    for (const entry of this.regionIndex.values()) {
+      if (!entry.hidden || entry.representationState !== "none") continue;
+      for (const index of entry.atomIndices) hidden.add(index);
+    }
+    return Array.from(hidden).sort((a8, b8) => a8 - b8);
   }
   regionOwnedByHigherOrderAtomIndices(entry) {
     const masked = /* @__PURE__ */ new Set();
@@ -145786,11 +146160,17 @@ var StateHandlers = class {
     const { all: all3, whole, regions } = this.splitComponentsByRegionOwnership();
     if (all3.length === 0) return;
     const faded = this.focusFadeValue > 0 ? this.complementAtomIndices(structure, this.focusFadeIndices) : void 0;
-    const ownedOpaque = this.ownedOpaqueAtomIndices();
     const regionOwnershipKey = this.regionOwnershipKey();
-    const showOnlyWholeMaskActive = !!this.showOnlyRegionTag;
-    const showOnlyWholeMask = showOnlyWholeMaskActive ? this.allAtomIndices(structure) : void 0;
-    const wholeHidden = this.unionAtomIndices(this.ownedOpaqueAtomIndices(), showOnlyWholeMask);
+    const isolated = this.showOnlyRegionTag ? this.regionIndex.get(this.showOnlyRegionTag) : void 0;
+    const showOnlyWholeMaskActive = !!isolated;
+    const showOnlyWholeMask = isolated ? isolated.representationState === "none" ? this.complementAtomIndices(structure, isolated.atomIndices) : this.allAtomIndices(structure) : void 0;
+    const wholeHidden = this.unionAtomIndices(
+      this.ownedOpaqueAtomIndices(),
+      // Explicit isolation reveals the selected base set, even where
+      // other base regions (hidden by show_only) overlap it.
+      isolated ? void 0 : this.hiddenUnrepresentedAtomIndices(),
+      showOnlyWholeMask
+    );
     const fadedKey = this.atomIndexKey(faded);
     const requiresFullRebuild = !this.transparencyInitialized || fadedKey !== this.previousFadedKey || this.focusFadeValue !== this.previousFocusFadeValue || showOnlyWholeMaskActive !== this.previousShowOnlyWholeMask || regionOwnershipKey !== this.previousRegionOwnershipKey;
     if (requiresFullRebuild) {
@@ -145811,15 +146191,15 @@ var StateHandlers = class {
         await this.applyWholeTransparencyLayer(whole, wholeHidden, 1);
       }
     } else {
-      const previousOwned = this.previousOwnedOpaqueIndices;
-      const nextOwned = new Set(ownedOpaque);
+      const previousHidden = this.previousWholeHiddenIndices;
+      const nextHidden = new Set(wholeHidden);
       const fadedSet = new Set(faded ?? []);
-      const added = ownedOpaque.filter((index) => !previousOwned.has(index));
-      const removed = Array.from(previousOwned).filter((index) => !nextOwned.has(index));
+      const added = wholeHidden.filter((index) => !previousHidden.has(index));
+      const removed = Array.from(previousHidden).filter((index) => !nextHidden.has(index));
       if (added.length > 0) {
         await this.applyWholeTransparencyLayer(whole, added, 1);
       }
-      if (!showOnlyWholeMaskActive && removed.length > 0) {
+      if (removed.length > 0) {
         const fadedReleased = [];
         const clearReleased = [];
         for (const index of removed) {
@@ -145842,14 +146222,14 @@ var StateHandlers = class {
     this.previousFocusFadeValue = this.focusFadeValue;
     this.previousShowOnlyWholeMask = showOnlyWholeMaskActive;
     this.previousRegionOwnershipKey = regionOwnershipKey;
-    this.previousOwnedOpaqueIndices = new Set(ownedOpaque);
+    this.previousWholeHiddenIndices = new Set(wholeHidden);
   }
   async setFocusFade(msg) {
     const structure = this.callbacks.getStructure();
     if (!structure) return;
-    const indices2 = msg.options?.focus_atom_indices;
+    const indices3 = msg.options?.focus_atom_indices;
     const fade = msg.options?.fade ?? 0;
-    this.focusFadeIndices = Array.isArray(indices2) && indices2.length > 0 ? indices2 : void 0;
+    this.focusFadeIndices = Array.isArray(indices3) && indices3.length > 0 ? indices3 : void 0;
     this.focusFadeValue = fade > 0 ? fade : 0;
     await this.applyComposedTransparency();
   }
@@ -146161,12 +146541,15 @@ var StateHandlers = class {
     const entry = this.regionIndex.get(regionTag);
     if (!entry) return;
     this.showOnlyRegionTag = regionTag;
-    this.regionIndex.forEach((candidate, tag) => {
-      candidate.hidden = tag !== regionTag;
-      candidate.representations.forEach(
-        (ref) => setSubtreeVisibility(this.plugin.state.data, ref, tag !== regionTag)
-      );
-    });
+    if (!msg.restore_only) {
+      this.regionIndex.forEach((candidate, tag) => {
+        candidate.hidden = tag !== regionTag;
+        candidate.representations.forEach(
+          (ref) => setSubtreeVisibility(this.plugin.state.data, ref, tag !== regionTag)
+        );
+      });
+      if (entry.representationState === "none") await this.handleShowHideGlobal(false);
+    }
     await this.applyComposedTransparency();
   }
   async hideRegion(msg) {
@@ -146174,7 +146557,7 @@ var StateHandlers = class {
   }
   async setRegionsVisibility(msg) {
     const tags = Array.isArray(msg.tags) ? msg.tags : Array.from(this.regionIndex.keys());
-    await Promise.all(tags.map((tag) => this.toggleRegionVisibility(tag, !!msg.hidden)));
+    for (const tag of tags) await this.toggleRegionVisibility(tag, !!msg.hidden);
   }
   setRegionSummaries(msg) {
     const regions = Array.isArray(msg.regions) ? msg.regions : [];
@@ -146308,6 +146691,8 @@ var StateHandlers = class {
     if (!entry) return;
     this.regionIndex.delete(oldTag);
     this.regionIndex.set(newTag, entry);
+    if (this.showOnlyRegionTag === oldTag) this.showOnlyRegionTag = newTag;
+    await this.applyComposedTransparency();
     this.callbacks.notify({ event: "region_renamed", tag: oldTag, new_tag: newTag });
   }
   async createLayer(msg) {
@@ -146730,7 +147115,7 @@ var StateHandlers = class {
     this.previousFocusFadeValue = 0;
     this.previousShowOnlyWholeMask = false;
     this.previousRegionOwnershipKey = "";
-    this.previousOwnedOpaqueIndices.clear();
+    this.previousWholeHiddenIndices.clear();
     if (this.globalReprs.size > 0) {
       await Promise.all(Array.from(this.globalReprs).map((ref) => this.removeStateObject(ref)));
       this.globalReprs.clear();
@@ -147103,57 +147488,60 @@ var TrajectoryHandlers = class {
   constructor(plugin, context2) {
     this.plugin = plugin;
     this.context = context2;
+    this.pendingFrames = /* @__PURE__ */ new Set();
     this.trajectoryListeners = /* @__PURE__ */ new Set();
   }
   async partialCoordinatesUpdate(msg) {
     const loaded = this.context.getLoadedStructure();
-    if (!loaded || !loaded.structure) {
-      console.warn("[TrajectoryHandlers] partialCoordinatesUpdate ignored: no structure loaded");
-      return;
+    const ref = loaded ? StateObjectRef.resolveRef(loaded.trajectory) : void 0;
+    const trajectory = ref ? this.plugin.state.data.cells.get(ref)?.obj?.data : void 0;
+    if (!loaded || !trajectory) throw new Error("No trajectory loaded for coordinate edit.");
+    if (msg.coordinate_unit !== "angstrom") throw new Error("Coordinate edits require explicit angstrom units.");
+    const count3 = trajectory.frameCount;
+    if (!Array.isArray(msg.structure_indices) || new Set(msg.structure_indices).size !== msg.structure_indices.length || msg.structure_indices.some((i) => !Number.isInteger(i) || i < 0 || i >= count3) || msg.coordinates.length !== msg.structure_indices.length || msg.coordinates.some((frame) => frame.length !== msg.atom_indices.length || frame.some((xyz) => xyz.length !== 3 || xyz.some((value) => !Number.isFinite(value))))) {
+      throw new Error("Invalid coordinate edit structures or dimensions.");
     }
-    const structureRef = StateObjectRef.resolveRef(loaded.structure);
-    const cell = structureRef ? this.plugin.state.data.cells.get(structureRef) : void 0;
-    if (!cell || !cell.obj) {
-      console.warn("[TrajectoryHandlers] partialCoordinatesUpdate ignored: structure node not found");
-      return;
-    }
-    const structure = cell.obj.data;
-    if (!structure || !structure.models) {
-      console.warn("[TrajectoryHandlers] partialCoordinatesUpdate ignored: structure data not found");
-      return;
-    }
-    let updated = false;
-    for (const model of structure.models) {
-      const atomicConformation = model.atomicConformation;
-      if (!atomicConformation) continue;
-      const { x, y, z } = atomicConformation;
-      for (let i = 0; i < msg.atom_indices.length; i++) {
-        const atomIdx = msg.atom_indices[i];
-        const coords = msg.coordinates[i];
-        if (coords && atomIdx >= 0 && atomIdx < x.length) {
-          x[atomIdx] = coords[0];
-          y[atomIdx] = coords[1];
-          z[atomIdx] = coords[2];
-          updated = true;
+    const replacements = new Map(msg.structure_indices.map((frame, index) => [frame, msg.coordinates[index]]));
+    const models = await this.plugin.runTask(Task.create("Revise trajectory coordinates", async (ctx) => {
+      const frames = [];
+      for (let index = 0; index < count3; index++) {
+        const original = await Task.resolveInContext(trajectory.getFrameAtIndex(index), ctx);
+        const coordinates = replacements.get(index);
+        if (!coordinates) {
+          frames.push(original);
+          continue;
         }
+        const inverse = Model.getInvertedAtomSourceIndex(original).invertedIndex;
+        if (msg.atom_indices.some((atom2) => !Number.isInteger(atom2) || atom2 < 0 || atom2 >= inverse.length)) {
+          throw new Error("Invalid coordinate edit atom indices.");
+        }
+        const atomic = original.atomicConformation;
+        const x = Float32Array.from(atomic.x), y = Float32Array.from(atomic.y), z = Float32Array.from(atomic.z);
+        msg.atom_indices.forEach((source, offset4) => {
+          const atom2 = inverse[source], xyz = coordinates[offset4];
+          x[atom2] = xyz[0];
+          y[atom2] = xyz[1];
+          z[atom2] = xyz[2];
+        });
+        const revised = {
+          ...original,
+          id: UUID.create22(),
+          atomicConformation: { ...atomic, id: UUID.create22(), x, y, z },
+          customProperties: new CustomProperties(),
+          _staticPropertyData: { ...original._staticPropertyData },
+          _dynamicPropertyData: /* @__PURE__ */ Object.create(null)
+        };
+        Model.TrajectoryInfo.set(revised, { index, size: count3 });
+        frames.push(revised);
       }
-    }
-    if (updated) {
-      const currentId = structure.conformation?.id ?? "0";
-      const newId = typeof currentId === "number" ? currentId + 1 : `${currentId}_upd`;
-      if (structure.conformation) {
-        structure.conformation.id = newId;
-      }
-      const update10 = this.plugin.state.data.build();
-      update10.to(loaded.structure);
-      await this.plugin.runTask(this.plugin.state.data.updateTree(update10));
-    }
-    if (msg.transaction_id !== void 0 && this.context.notify) {
-      this.context.notify({
-        event: "trajectory_frame_rendered",
-        transaction_id: msg.transaction_id
-      });
-    }
+      return frames;
+    }));
+    await replaceMolSysTrajectory(this.plugin, loaded, new ArrayTrajectory(models));
+    this.updateTrajectoryState();
+    if (msg.transaction_id !== void 0) this.context.notify?.({
+      event: "trajectory_frame_rendered",
+      transaction_id: msg.transaction_id
+    });
   }
   async stepTrajectory(msg) {
     const by = typeof msg === "number" ? msg : msg.by ?? 1;
@@ -147166,6 +147554,15 @@ var TrajectoryHandlers = class {
     this.updateTrajectoryState();
   }
   async setTrajectoryFrame(msg) {
+    const pending = this.applyTrajectoryFrame(msg);
+    this.pendingFrames.add(pending);
+    try {
+      await pending;
+    } finally {
+      this.pendingFrames.delete(pending);
+    }
+  }
+  async applyTrajectoryFrame(msg) {
     const index = typeof msg === "number" ? msg : msg.index ?? 0;
     const frameCount = this.getFrameCount();
     if (frameCount < 1) return;
@@ -147179,6 +147576,7 @@ var TrajectoryHandlers = class {
       update10.to(m).update({ modelIndex: clamped });
     }
     await this.plugin.runTask(this.plugin.state.data.updateTree(update10));
+    await this.context.afterFrameApplied?.();
     this.updateTrajectoryState();
   }
   async setTrajectoryPlayback(msg) {
@@ -147230,6 +147628,8 @@ var TrajectoryHandlers = class {
       clearInterval(this.trajectoryPoll);
       this.trajectoryPoll = void 0;
     }
+    await Promise.all(Array.from(this.pendingFrames));
+    await this.context.afterFrameApplied?.();
     this.updateTrajectoryState();
     if (wasPlaying) {
       this.context.onPlaybackStopped?.(this.getCurrentFrameIndex());
@@ -147349,12 +147749,14 @@ function computeT(kfA, kfB, time_ms) {
 var MovieHandlers = class {
   constructor(context2) {
     this.context = context2;
+    this.cameraWrites = /* @__PURE__ */ new Set();
+    this.playbackGeneration = 0;
     this.lastMovieTime = 0;
     this.lastVisibility = {};
   }
   // ── Browser playback ──────────────────────────────────────────────────
-  play(keyframes, loop = false, startTimeMs = 0) {
-    this.stop();
+  async play(keyframes, loop = false, startTimeMs = 0) {
+    await this.stop();
     if (keyframes.length < 2) {
       console.warn("[MolSysViewer] play_movie: need at least 2 keyframes");
       return;
@@ -147369,13 +147771,21 @@ var MovieHandlers = class {
     this.lastStructureIndex = void 0;
     this.lastMovieTime = actualStart;
     this.lastVisibility = {};
+    const generation = this.playbackGeneration;
     const startRealTime = performance.now() - actualStart;
     const tick = (now2) => {
       const elapsed = now2 - startRealTime;
       if (!loop && elapsed >= totalDuration) {
-        this.applyState(keyframes, totalDuration, baseSnapshot);
         this.rafId = void 0;
-        this.context.notify?.({ event: "movie_playback_done" });
+        void (async () => {
+          await this.waitForCameraWrites();
+          if (generation !== this.playbackGeneration) return;
+          this.applyState(keyframes, totalDuration, baseSnapshot);
+          await this.waitForCameraWrites();
+          if (generation === this.playbackGeneration) {
+            this.context.notify?.({ event: "movie_playback_done" });
+          }
+        })();
         return;
       }
       const movieTime = loop ? elapsed % totalDuration : Math.min(elapsed, totalDuration);
@@ -147389,11 +147799,21 @@ var MovieHandlers = class {
     };
     this.rafId = requestAnimationFrame(tick);
   }
-  stop() {
+  async stop() {
+    this.playbackGeneration += 1;
     if (this.rafId !== void 0) {
       cancelAnimationFrame(this.rafId);
       this.rafId = void 0;
     }
+    const atStop = this.context.getCameraSnapshot();
+    const hadInFlight = this.cameraWrites.size > 0;
+    if (hadInFlight) {
+      await this.waitForCameraWrites();
+      if (atStop) await this.context.setCameraSnapshot(atStop, 0);
+    }
+  }
+  async waitForCameraWrites() {
+    await Promise.allSettled(Array.from(this.cameraWrites));
   }
   // ── Frame export ──────────────────────────────────────────────────────
   async exportFrames(keyframes, fps, totalFrames, widthPx, heightPx) {
@@ -147426,10 +147846,10 @@ var MovieHandlers = class {
     const camA = kfA.camera, camB = kfB.camera;
     if (camA && camB) {
       const snap = baseSnapshot ? { ...baseSnapshot, position: lerp3(camA.position, camB.position, t5), target: lerp3(camA.target, camB.target, t5), up: normalize3(lerp3(camA.up, camB.up, t5)) } : { position: lerp3(camA.position, camB.position, t5), target: lerp3(camA.target, camB.target, t5), up: normalize3(lerp3(camA.up, camB.up, t5)) };
-      void this.context.setCameraSnapshot(snap, 0);
+      this.submitCameraSnapshot(snap);
     } else if (camA) {
       const snap = baseSnapshot ? { ...baseSnapshot, position: camA.position, target: camA.target, up: camA.up } : { position: camA.position, target: camA.target, up: camA.up };
-      void this.context.setCameraSnapshot(snap, 0);
+      this.submitCameraSnapshot(snap);
     }
     const idxA = kfA.structure_index, idxB = kfB.structure_index;
     if (idxA !== void 0 && idxB !== void 0) {
@@ -147447,6 +147867,18 @@ var MovieHandlers = class {
         else void this.context.hideLayer(tag);
       }
     }
+  }
+  submitCameraSnapshot(snapshot) {
+    const write = this.context.setCameraSnapshot(snapshot, 0);
+    this.cameraWrites.add(write);
+    void write.then(
+      () => {
+        this.cameraWrites.delete(write);
+      },
+      () => {
+        this.cameraWrites.delete(write);
+      }
+    );
   }
   async applyStateForExport(keyframes, time_ms, baseSnapshot, exportVis, _lastStructureIndex) {
     const [segStart, segEnd] = findSegment(keyframes, time_ms);
@@ -147481,6 +147913,7 @@ var MovieHandlers = class {
 function targetTitle(target) {
   if (target.kind === "empty") return "Canvas";
   if (target.kind === "shape") return target.shape_name?.trim() || target.tag?.trim() || "Shape";
+  if (target.kind === "interaction") return target.shape_name?.trim() || target.tag?.trim() || "Interaction";
   if (target.kind === "measurement") return target.measurement_name?.trim() || target.tag?.trim() || "Measurement";
   if (target.kind === "annotation") return target.text?.trim() || target.tag?.trim() || "Annotation";
   if (target.group_name?.trim()) {
@@ -147597,6 +148030,11 @@ var ViewerContextMenu = class {
       this.scrollEl.appendChild(this.makeActionButton("Angle (Representative Atom)", "angle", { endpoint_policy: "representative_atom" }));
       this.scrollEl.appendChild(this.makeActionButton("Dihedral", "dihedral"));
       this.scrollEl.appendChild(this.makeActionButton("Dihedral (Representative Atom)", "dihedral", { endpoint_policy: "representative_atom" }));
+    } else if (target.kind === "interaction") {
+      if (target.tag?.trim()) {
+        this.scrollEl.appendChild(this.makeActionButton("Focus Interaction Set", "focus_interaction"));
+        this.scrollEl.appendChild(this.makeActionButton("Delete Interaction Set", "delete_interaction"));
+      }
     } else if (target.kind === "shape") {
       this.scrollEl.appendChild(this.makeActionButton("Focus Target", "focus_target"));
       if (target.tag?.trim()) {
@@ -147943,11 +148381,11 @@ var ViewerContextMenu = class {
       fontWeight: "600"
     });
     section.appendChild(spatialTitle);
-    for (const distance of [3, 5, 8]) {
+    for (const distance2 of [3, 5, 8]) {
       section.appendChild(this.makeActionButton(
-        `Within ${distance} \xC5`,
+        `Within ${distance2} \xC5`,
         "expand_selection",
-        { level: "spatial", distance_angstroms: distance }
+        { level: "spatial", distance_angstroms: distance2 }
       ));
     }
   }
@@ -147990,8 +148428,8 @@ var ViewerContextMenu = class {
     return button2;
   }
   makeRegionButton(region) {
-    const row2 = document.createElement("div");
-    Object.assign(row2.style, {
+    const row3 = document.createElement("div");
+    Object.assign(row3.style, {
       display: "flex",
       alignItems: "center",
       gap: "4px",
@@ -148081,11 +148519,11 @@ var ViewerContextMenu = class {
       this.notify?.({ event: "interaction_context_action", action: "delete_region", context: this.currentTarget, ...details });
       this.close();
     });
-    row2.appendChild(label2);
-    row2.appendChild(toggleBtn);
-    row2.appendChild(renameBtn);
-    row2.appendChild(deleteBtn);
-    return row2;
+    row3.appendChild(label2);
+    row3.appendChild(toggleBtn);
+    row3.appendChild(renameBtn);
+    row3.appendChild(deleteBtn);
+    return row3;
   }
   renderRegionComposer() {
     if (!this.currentTarget) return;
@@ -148195,6 +148633,10 @@ var ViewerContextMenu = class {
     input.focus?.();
   }
   resolveActionDetails(action) {
+    if (action === "delete_interaction" || action === "focus_interaction") {
+      if (this.currentTarget?.kind !== "interaction" || !this.currentTarget.tag?.trim()) return null;
+      return { tag: this.currentTarget.tag };
+    }
     if (action === "delete_annotation" || action === "delete_shape" || action === "delete_measurement" || action === "hide_measurement") {
       const tag = this.currentTarget?.kind === "annotation" || this.currentTarget?.kind === "shape" || this.currentTarget?.kind === "measurement" ? this.currentTarget.tag : void 0;
       if (!tag || tag.trim() === "") return null;
@@ -148926,8 +149368,8 @@ var LegendOverlay = class {
       right: position.endsWith("right") ? "12px" : ""
     });
     const rows = items.map((it) => {
-      const row2 = document.createElement("div");
-      Object.assign(row2.style, {
+      const row3 = document.createElement("div");
+      Object.assign(row3.style, {
         display: "flex",
         alignItems: "center",
         gap: "6px"
@@ -148944,8 +149386,8 @@ var LegendOverlay = class {
       });
       const label2 = document.createElement("span");
       label2.textContent = it.label;
-      row2.replaceChildren(chip, label2);
-      return row2;
+      row3.replaceChildren(chip, label2);
+      return row3;
     });
     this.root.replaceChildren(...rows);
     this.root.style.display = "block";
@@ -149380,20 +149822,33 @@ function formatValue(v4) {
   if (Number.isInteger(v4)) return String(v4);
   return v4.toFixed(2);
 }
+function axisFraction(value, min5, max5) {
+  if (min5 === max5) return 0.5;
+  const scale = Math.max(Math.abs(min5), Math.abs(max5), 1);
+  return (value / scale - min5 / scale) / (max5 / scale - min5 / scale);
+}
 var TrajectoryPlotOverlay = class {
-  constructor(host, onSeek, onPopout) {
+  constructor(host, onSeek, onPopout, onHide) {
     this.host = host;
     this.onSeek = onSeek;
     this.onPopout = onPopout;
+    this.onHide = onHide;
     this.entries = /* @__PURE__ */ new Map();
     this.currentFrame = 0;
   }
   set(options) {
-    const tag = options?.tag || "default";
-    if (!options || options.visible === false || !options.series || options.series.length === 0) {
-      this.hide(tag);
+    if (options?.cards) {
+      const retained = new Set(options.cards.map((card8) => card8.tag || "default"));
+      for (const tag2 of this.entries.keys()) if (!retained.has(tag2)) this.clear(tag2);
+      for (const card8 of options.cards) this.set(card8);
       return;
     }
+    if (!options || !options.series || options.series.length === 0) {
+      if (options?.visible === false) this.hide(options.tag);
+      else this.clear(options?.tag);
+      return;
+    }
+    const tag = options?.tag || "default";
     let entry = this.entries.get(tag);
     const firstSeries = options.series[0];
     const nFrames = options.n_frames ?? firstSeries.values.length;
@@ -149401,9 +149856,9 @@ var TrajectoryPlotOverlay = class {
     if (!entry) {
       const width = options.width || 450;
       const height = options.height || 210;
-      const offset3 = this.entries.size % 4 * 24;
-      const left = Math.max(10, (this.host.clientWidth || 800) / 2 - width / 2 + offset3);
-      const top = Math.max(10, (this.host.clientHeight || 600) - height - 30 - offset3);
+      const offset4 = this.entries.size % 4 * 24;
+      const left = Math.max(10, (this.host.clientWidth || 800) / 2 - width / 2 + offset4);
+      const top = Math.max(10, (this.host.clientHeight || 600) - height - 30 - offset4);
       const card8 = new FloatingDataCard(this.host, {
         tag,
         title: resolvedTitle,
@@ -149411,7 +149866,10 @@ var TrajectoryPlotOverlay = class {
         height,
         left,
         top,
-        onClose: () => this.hide(tag),
+        onClose: () => {
+          this.hide(tag);
+          this.onHide?.(tag);
+        },
         onPopout: this.onPopout ? () => this.onPopout(tag) : void 0,
         onResize: (w, h) => {
           if (entry) {
@@ -149435,7 +149893,8 @@ var TrajectoryPlotOverlay = class {
       entry.nFrames = nFrames;
       entry.card.titleElement.textContent = resolvedTitle;
     }
-    entry.card.show();
+    if (options.visible === false) entry.card.hide();
+    else entry.card.show();
     this.renderEntry(entry);
     this.setFrame(this.currentFrame);
   }
@@ -149444,6 +149903,17 @@ var TrajectoryPlotOverlay = class {
       for (const t5 of Array.from(this.entries.keys())) {
         this.hide(t5);
       }
+      return;
+    }
+    const entry = this.entries.get(tag);
+    if (entry) {
+      entry.options = { ...entry.options, visible: false };
+      entry.card.hide();
+    }
+  }
+  clear(tag) {
+    if (!tag) {
+      for (const key2 of Array.from(this.entries.keys())) this.clear(key2);
       return;
     }
     const entry = this.entries.get(tag);
@@ -149477,28 +149947,45 @@ var TrajectoryPlotOverlay = class {
   }
   frameToX(frame, entry) {
     const leftMargin = 40;
-    const rightMargin = 12;
+    const rightMargin = 14;
     const plotW = Math.max(10, entry.width - leftMargin - rightMargin);
-    const denom = Math.max(entry.nFrames - 1, 1);
     const clamped = Math.max(0, Math.min(entry.nFrames - 1, frame));
-    return leftMargin + clamped / denom * plotW;
+    const [min5, max5] = this.xRange(entry);
+    const value = entry.options.x?.[clamped] ?? clamped;
+    return leftMargin + axisFraction(value, min5, max5) * plotW;
   }
   xToFrame(px, entry) {
-    const leftMargin = 40;
-    const rightMargin = 12;
-    const plotW = Math.max(10, entry.width - leftMargin - rightMargin);
-    const denom = Math.max(entry.nFrames - 1, 1);
-    const ratio = (px - leftMargin) / plotW;
-    return Math.max(0, Math.min(entry.nFrames - 1, Math.round(ratio * denom)));
+    let chosen = 0;
+    let distance2 = Infinity;
+    for (let frame = 0; frame < entry.nFrames; frame++) {
+      const candidate = Math.abs(this.frameToX(frame, entry) - px);
+      if (candidate < distance2 - 1e-9 || Math.abs(candidate - distance2) <= 1e-9 && frame === this.currentFrame) {
+        chosen = frame;
+        distance2 = candidate;
+      }
+    }
+    return chosen;
+  }
+  xRange(entry) {
+    if (entry.xBounds) return entry.xBounds;
+    if (!entry.options.x?.length) return [0, Math.max(entry.nFrames - 1, 0)];
+    let min5 = Infinity;
+    let max5 = -Infinity;
+    for (const x of entry.options.x) {
+      min5 = Math.min(min5, x);
+      max5 = Math.max(max5, x);
+    }
+    return [min5, max5];
   }
   renderEntry(entry) {
     const opts = entry.options;
+    entry.xBounds = void 0;
+    entry.xBounds = this.xRange(entry);
     const body = entry.card.body;
     body.replaceChildren();
     const width = Math.max(200, entry.width || body.clientWidth || 440);
     const height = Math.max(120, entry.height || body.clientHeight || 168);
     const M5 = { top: 24, right: 14, bottom: opts.x_label ? 28 : 20, left: 40 };
-    const plotWidth = Math.max(10, width - M5.left - M5.right);
     const plotHeight = Math.max(10, height - M5.top - M5.bottom);
     const svg = document.createElementNS(SVG_NS, "svg");
     svg.setAttribute("width", "100%");
@@ -149518,11 +150005,7 @@ var TrajectoryPlotOverlay = class {
       min5 = 0;
       max5 = 1;
     }
-    if (min5 === max5) {
-      min5 -= 1;
-      max5 += 1;
-    }
-    const yOf = (v4) => M5.top + (1 - (v4 - min5) / (max5 - min5)) * plotHeight;
+    const yOf = (v4) => M5.top + (1 - axisFraction(v4, min5, max5)) * plotHeight;
     const axis = document.createElementNS(SVG_NS, "path");
     axis.setAttribute("d", `M${M5.left},${M5.top} L${M5.left},${height - M5.bottom} L${width - M5.right},${height - M5.bottom}`);
     axis.setAttribute("fill", "none");
@@ -149534,7 +150017,7 @@ var TrajectoryPlotOverlay = class {
     svg.appendChild(readoutText);
     entry.readoutText = readoutText;
     for (const ev of opts.events ?? []) {
-      const x = M5.left + Math.max(0, Math.min(entry.nFrames - 1, ev.frame)) / Math.max(entry.nFrames - 1, 1) * plotWidth;
+      const x = this.frameToX(ev.frame, entry);
       const line = document.createElementNS(SVG_NS, "line");
       line.setAttribute("x1", String(x));
       line.setAttribute("x2", String(x));
@@ -149546,8 +150029,7 @@ var TrajectoryPlotOverlay = class {
       svg.appendChild(line);
     }
     opts.series.forEach((s, i) => {
-      const denom = Math.max(s.values.length - 1, 1);
-      const pts = s.values.map((v4, idx) => `${M5.left + idx / denom * plotWidth},${yOf(v4)}`).join(" ");
+      const pts = s.values.map((v4, idx) => `${this.frameToX(idx, entry)},${yOf(v4)}`).join(" ");
       const poly = document.createElementNS(SVG_NS, "polyline");
       poly.setAttribute("points", pts);
       poly.setAttribute("fill", "none");
@@ -149571,8 +150053,9 @@ var TrajectoryPlotOverlay = class {
       t5.setAttribute("transform", `rotate(-90 12 ${height / 2})`);
       svg.appendChild(t5);
     }
-    svg.appendChild(this.text(M5.left, height - M5.bottom + 11, "0", "middle", "rgba(242,242,242,0.5)", 9));
-    svg.appendChild(this.text(width - M5.right, height - M5.bottom + 11, String(Math.max(entry.nFrames - 1, 0)), "middle", "rgba(242,242,242,0.5)", 9));
+    const [xMin, xMax] = this.xRange(entry);
+    svg.appendChild(this.text(M5.left, height - M5.bottom + 11, formatValue(xMin), "middle", "rgba(242,242,242,0.5)", 9));
+    svg.appendChild(this.text(width - M5.right, height - M5.bottom + 11, formatValue(xMax), "middle", "rgba(242,242,242,0.5)", 9));
     if (opts.series.length > 1) {
       opts.series.forEach((s, i) => {
         const ly = M5.top + 2 + i * 13;
@@ -149606,7 +150089,7 @@ var TrajectoryPlotOverlay = class {
     return t5;
   }
   dispose() {
-    this.hide();
+    this.clear();
   }
 };
 
@@ -150102,6 +150585,15 @@ function sameItems(a8, b8) {
 }
 
 // src/ui/panels/ui-helpers.ts
+function scalarColorRangeFromInput(value) {
+  const text = value.trim();
+  if (!text) return void 0;
+  const parts = text.split(",").map((part) => part.trim());
+  if (parts.length === 2 && parts.every((part) => part !== "" && Number.isFinite(Number(part)))) {
+    return parts.map(Number);
+  }
+  return text;
+}
 function formatUnitLabel(unit2) {
   switch (unit2.trim().toLowerCase()) {
     case "angstrom":
@@ -150173,10 +150665,10 @@ function makeButton(text, onClick) {
   return btn;
 }
 function makeRowElement(titleText, subtitleText, onActivate, onDelete, visibility, onStyle) {
-  const row2 = document.createElement("div");
-  row2.setAttribute("data-molsysviewer-group-panel-row", "true");
-  row2.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
-  Object.assign(row2.style, {
+  const row3 = document.createElement("div");
+  row3.setAttribute("data-molsysviewer-group-panel-row", "true");
+  row3.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
+  Object.assign(row3.style, {
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
@@ -150188,11 +150680,11 @@ function makeRowElement(titleText, subtitleText, onActivate, onDelete, visibilit
     gap: "8px",
     transition: "background 0.1s ease"
   });
-  row2.addEventListener("mouseenter", () => {
-    row2.style.background = "rgba(255,255,255,0.09)";
+  row3.addEventListener("mouseenter", () => {
+    row3.style.background = "rgba(255,255,255,0.09)";
   });
-  row2.addEventListener("mouseleave", () => {
-    row2.style.background = "rgba(255,255,255,0.05)";
+  row3.addEventListener("mouseleave", () => {
+    row3.style.background = "rgba(255,255,255,0.05)";
   });
   const main = document.createElement("div");
   Object.assign(main.style, {
@@ -150204,8 +150696,8 @@ function makeRowElement(titleText, subtitleText, onActivate, onDelete, visibilit
     cursor: onActivate ? "pointer" : "default"
   });
   if (onActivate) {
-    row2.style.cursor = "pointer";
-    row2.addEventListener("click", (e) => {
+    row3.style.cursor = "pointer";
+    row3.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
       onActivate();
@@ -150232,7 +150724,7 @@ function makeRowElement(titleText, subtitleText, onActivate, onDelete, visibilit
   subtitle.textContent = subtitleText;
   main.appendChild(title);
   main.appendChild(subtitle);
-  row2.appendChild(main);
+  row3.appendChild(main);
   const actions = document.createElement("div");
   Object.assign(actions.style, {
     display: "flex",
@@ -150240,7 +150732,7 @@ function makeRowElement(titleText, subtitleText, onActivate, onDelete, visibilit
     gap: "6px",
     flex: "0 0 auto"
   });
-  row2.appendChild(actions);
+  row3.appendChild(actions);
   if (onStyle) {
     const styleBtn = document.createElement("button");
     styleBtn.type = "button";
@@ -150317,7 +150809,7 @@ function makeRowElement(titleText, subtitleText, onActivate, onDelete, visibilit
     });
     actions.appendChild(delBtn);
   }
-  return row2;
+  return row3;
 }
 function makeSettingsCard(titleText) {
   const card8 = document.createElement("div");
@@ -150345,8 +150837,8 @@ function makeSettingsCard(titleText) {
   return card8;
 }
 function makeStyledSelect(options, selectedValue, onChange) {
-  const select = document.createElement("select");
-  Object.assign(select.style, {
+  const select2 = document.createElement("select");
+  Object.assign(select2.style, {
     background: "rgba(0,0,0,0.28)",
     border: "1px solid rgba(255,255,255,0.12)",
     borderRadius: "6px",
@@ -150364,17 +150856,17 @@ function makeStyledSelect(options, selectedValue, onChange) {
     el.value = value;
     el.textContent = label2;
     el.selected = value === selectedValue;
-    select.appendChild(el);
+    select2.appendChild(el);
   }
-  select.value = selectedValue;
-  select.addEventListener("change", () => {
-    onChange(select.value);
+  select2.value = selectedValue;
+  select2.addEventListener("change", () => {
+    onChange(select2.value);
   });
-  return select;
+  return select2;
 }
 function makeCheckboxRow(labelText, checked, onChange) {
-  const row2 = document.createElement("div");
-  Object.assign(row2.style, {
+  const row3 = document.createElement("div");
+  Object.assign(row3.style, {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
@@ -150384,7 +150876,7 @@ function makeCheckboxRow(labelText, checked, onChange) {
   const label2 = document.createElement("span");
   label2.textContent = labelText;
   Object.assign(label2.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
-  row2.appendChild(label2);
+  row3.appendChild(label2);
   const cb2 = document.createElement("input");
   cb2.type = "checkbox";
   cb2.checked = checked;
@@ -150396,7 +150888,7 @@ function makeCheckboxRow(labelText, checked, onChange) {
     cb2.checked = !cb2.checked;
     onChange(cb2.checked);
   };
-  row2.addEventListener("click", (e) => {
+  row3.addEventListener("click", (e) => {
     if (e.target !== cb2) {
       e.preventDefault();
       toggle();
@@ -150405,8 +150897,8 @@ function makeCheckboxRow(labelText, checked, onChange) {
   cb2.addEventListener("change", () => {
     onChange(cb2.checked);
   });
-  row2.appendChild(cb2);
-  return row2;
+  row3.appendChild(cb2);
+  return row3;
 }
 
 // src/ui/panels/base-panel.ts
@@ -150534,8 +151026,8 @@ var ViewportPanel = class extends BasePanel {
     const spinText = this.state.isSpinActive ? " \xB7 Spin" : "";
     const swingText = this.state.isSwingActive ? " \xB7 Swing" : "";
     const clipText = this.sections.length > 0 ? ` \xB7 ${this.sections.length} Section${this.sections.length === 1 ? "" : "s"}` : "";
-    const row2 = document.createElement("div");
-    Object.assign(row2.style, {
+    const row3 = document.createElement("div");
+    Object.assign(row3.style, {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
@@ -150564,15 +151056,15 @@ var ViewportPanel = class extends BasePanel {
     const textSpan = document.createElement("span");
     textSpan.textContent = `${modeLabel} \xB7 ${bgLabel}${spinText}${swingText}${clipText}`;
     info.appendChild(textSpan);
-    row2.appendChild(info);
+    row3.appendChild(info);
     const resetBtn = makeButton("Reset View", () => {
       this.ctx.onAction("reset_view");
     });
     resetBtn.style.padding = "3px 6px";
     resetBtn.style.fontSize = "10px";
     resetBtn.title = "Reset camera position to default bounds";
-    row2.appendChild(resetBtn);
-    globalCard.appendChild(row2);
+    row3.appendChild(resetBtn);
+    globalCard.appendChild(row3);
     return globalCard;
   }
   renderEnvironmentCard() {
@@ -150728,12 +151220,12 @@ var ViewportPanel = class extends BasePanel {
     return cardItem;
   }
   vectorEditor(item2, labelText, kind, values2) {
-    const row2 = document.createElement("div");
-    Object.assign(row2.style, { display: "grid", gridTemplateColumns: "72px repeat(3, minmax(0, 1fr))", gap: "5px", alignItems: "center" });
+    const row3 = document.createElement("div");
+    Object.assign(row3.style, { display: "grid", gridTemplateColumns: "72px repeat(3, minmax(0, 1fr))", gap: "5px", alignItems: "center" });
     const label2 = document.createElement("span");
     label2.textContent = labelText;
     Object.assign(label2.style, { fontSize: "10px", color: "rgba(244,244,245,0.62)" });
-    row2.appendChild(label2);
+    row3.appendChild(label2);
     const inputs = values2.map((value, axis) => {
       const input = document.createElement("input");
       input.type = "number";
@@ -150764,10 +151256,10 @@ var ViewportPanel = class extends BasePanel {
         this.endCoalescing();
       });
       input.addEventListener("blur", () => this.endCoalescing());
-      row2.appendChild(input);
+      row3.appendChild(input);
       return input;
     });
-    return row2;
+    return row3;
   }
   beginCoalescing() {
     if (this.coalescing) return;
@@ -150824,8 +151316,8 @@ var ExportPanel = class extends BasePanel {
     const estWidth = Math.round(1920 * currentScale);
     const estHeight = Math.round(1080 * currentScale);
     const presetName = currentPreset.includes("dark") ? "Dark Preset" : "Light Preset";
-    const row2 = document.createElement("div");
-    Object.assign(row2.style, {
+    const row3 = document.createElement("div");
+    Object.assign(row3.style, {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
@@ -150852,8 +151344,8 @@ var ExportPanel = class extends BasePanel {
     const textSpan = document.createElement("span");
     textSpan.textContent = `${currentScale.toFixed(1)}x Scale (${estWidth} \xD7 ${estHeight} px) \xB7 ${presetName}`;
     info.appendChild(textSpan);
-    row2.appendChild(info);
-    globalCard.appendChild(row2);
+    row3.appendChild(info);
+    globalCard.appendChild(row3);
     return globalCard;
   }
   renderFigureCard() {
@@ -151046,8 +151538,8 @@ var LayersPanel = class extends BasePanel {
     const totalUserLayers = this.userLayers();
     const totalCount = totalUserLayers.length;
     const visibleCount = totalUserLayers.filter((l) => !l.hidden).length;
-    const row2 = document.createElement("div");
-    Object.assign(row2.style, {
+    const row3 = document.createElement("div");
+    Object.assign(row3.style, {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
@@ -151076,7 +151568,7 @@ var LayersPanel = class extends BasePanel {
     const textSpan = document.createElement("span");
     textSpan.textContent = `${visibleCount} of ${totalCount} user layer${totalCount === 1 ? "" : "s"} visible`;
     info.appendChild(textSpan);
-    row2.appendChild(info);
+    row3.appendChild(info);
     const actions = document.createElement("div");
     Object.assign(actions.style, {
       display: "flex",
@@ -151104,8 +151596,8 @@ var LayersPanel = class extends BasePanel {
     hideAllBtn.style.fontSize = "10px";
     actions.appendChild(showAllBtn);
     actions.appendChild(hideAllBtn);
-    row2.appendChild(actions);
-    globalCard.appendChild(row2);
+    row3.appendChild(actions);
+    globalCard.appendChild(row3);
     return globalCard;
   }
   renderCreateCard() {
@@ -151146,28 +151638,28 @@ var LayersPanel = class extends BasePanel {
       label2.textContent = "Include items:";
       Object.assign(label2.style, { fontSize: "10px", color: "rgba(244,244,245,0.6)" });
       optRow.appendChild(label2);
-      const select = document.createElement("select");
-      this.styleControl(select);
-      select.style.flex = "1 1 auto";
+      const select2 = document.createElement("select");
+      this.styleControl(select2);
+      select2.style.flex = "1 1 auto";
       const defaultOpt = document.createElement("option");
       defaultOpt.value = "";
       defaultOpt.textContent = "Select unassigned item to include...";
-      select.appendChild(defaultOpt);
+      select2.appendChild(defaultOpt);
       for (const m of unassignedMembers) {
         const opt = document.createElement("option");
         opt.value = JSON.stringify([m.kind, m.tag]);
         opt.textContent = `${m.kind}: ${m.title}`;
-        select.appendChild(opt);
+        select2.appendChild(opt);
       }
-      select.addEventListener("change", () => {
-        if (!select.value) return;
-        const parsed = JSON.parse(select.value);
+      select2.addEventListener("change", () => {
+        if (!select2.value) return;
+        const parsed = JSON.parse(select2.value);
         if (!this.selectedInitialMembers.some(([k, t5]) => k === parsed[0] && t5 === parsed[1])) {
           this.selectedInitialMembers.push(parsed);
           this.scheduleRender();
         }
       });
-      optRow.appendChild(select);
+      optRow.appendChild(select2);
       createCard.appendChild(optRow);
       if (this.selectedInitialMembers.length > 0) {
         const stagedTagsBox = document.createElement("div");
@@ -151196,9 +151688,9 @@ var LayersPanel = class extends BasePanel {
     return createCard;
   }
   renderLayerCard(layer) {
-    const row2 = card3();
-    row2.setAttribute("data-molsysviewer-layer-card", layer.tag);
-    row2.style.opacity = layer.hidden ? "0.48" : "1";
+    const row3 = card3();
+    row3.setAttribute("data-molsysviewer-layer-card", layer.tag);
+    row3.style.opacity = layer.hidden ? "0.48" : "1";
     const head = document.createElement("div");
     Object.assign(head.style, { display: "flex", alignItems: "center", gap: "6px" });
     const identity3 = document.createElement("div");
@@ -151214,11 +151706,11 @@ var LayersPanel = class extends BasePanel {
       fontWeight: "650"
     });
     head.appendChild(identity3);
-    row2.appendChild(head);
+    row3.appendChild(head);
     const summary = document.createElement("div");
     summary.textContent = `${layer.members.length} member${layer.members.length === 1 ? "" : "s"}`;
     Object.assign(summary.style, { fontSize: "10px", color: "rgba(244,244,245,0.56)", marginTop: "2px" });
-    row2.appendChild(summary);
+    row3.appendChild(summary);
     const btnRow = document.createElement("div");
     Object.assign(btnRow.style, {
       display: "flex",
@@ -151252,9 +151744,9 @@ var LayersPanel = class extends BasePanel {
       button2.style.fontSize = "10px";
       btnRow.appendChild(button2);
     }
-    row2.appendChild(btnRow);
-    if (this.expanded.has(layer.tag)) this.renderDetails(row2, layer);
-    return row2;
+    row3.appendChild(btnRow);
+    if (this.expanded.has(layer.tag)) this.renderDetails(row3, layer);
+    return row3;
   }
   renderDetails(container, layer) {
     const editor = document.createElement("div");
@@ -151367,9 +151859,9 @@ var LayersPanel = class extends BasePanel {
     container.appendChild(editor);
   }
   renderMemberRow(layerTag, member) {
-    const row2 = document.createElement("div");
-    row2.setAttribute("data-molsysviewer-layer-member", `${member.kind}:${member.tag}`);
-    Object.assign(row2.style, {
+    const row3 = document.createElement("div");
+    row3.setAttribute("data-molsysviewer-layer-member", `${member.kind}:${member.tag}`);
+    Object.assign(row3.style, {
       display: "flex",
       justifyContent: "space-between",
       gap: "8px",
@@ -151391,9 +151883,9 @@ var LayersPanel = class extends BasePanel {
     remove3.style.fontSize = "10px";
     remove3.setAttribute("data-molsysviewer-layer-remove-member", `${member.kind}:${member.tag}`);
     remove3.title = `Remove ${member.tag} from ${layerTag} without deleting it`;
-    row2.appendChild(label2);
-    row2.appendChild(remove3);
-    return row2;
+    row3.appendChild(label2);
+    row3.appendChild(remove3);
+    return row3;
   }
   styleControl(control) {
     Object.assign(control.style, {
@@ -151453,8 +151945,8 @@ var STRUCTURAL_COLOR_OPTIONS = [
 ];
 var QUALITY_OPTIONS = ["auto", "lowest", "lower", "low", "medium", "high", "higher", "highest", "custom"];
 function makeStyleControlRow(label2, control) {
-  const row2 = document.createElement("div");
-  Object.assign(row2.style, {
+  const row3 = document.createElement("div");
+  Object.assign(row3.style, {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
@@ -151467,9 +151959,9 @@ function makeStyleControlRow(label2, control) {
     fontSize: "11px",
     color: "rgba(244,244,245,0.7)"
   });
-  row2.appendChild(text);
-  row2.appendChild(control);
-  return row2;
+  row3.appendChild(text);
+  row3.appendChild(control);
+  return row3;
 }
 function bindContinuousHistory(input, onStart, onEnd) {
   let active = false;
@@ -151610,8 +152102,8 @@ var ManualQueryComposer = class _ManualQueryComposer {
       flexDirection: "column",
       gap: "6px"
     });
-    const row2 = document.createElement("div");
-    Object.assign(row2.style, {
+    const row3 = document.createElement("div");
+    Object.assign(row3.style, {
       display: "flex",
       gap: "6px",
       alignItems: "center"
@@ -151710,16 +152202,16 @@ var ManualQueryComposer = class _ManualQueryComposer {
       this.renderStatus();
       this.onChange?.();
     });
-    row2.appendChild(this.input);
-    row2.appendChild(this.checkButton);
-    row2.appendChild(clearButton);
+    row3.appendChild(this.input);
+    row3.appendChild(this.checkButton);
+    row3.appendChild(clearButton);
     if (options?.middleElement) {
-      row2.appendChild(options.middleElement);
+      row3.appendChild(options.middleElement);
     }
     if (!options?.hideSyntax) {
-      row2.appendChild(this.syntaxSelect);
+      row3.appendChild(this.syntaxSelect);
     }
-    this.root.appendChild(row2);
+    this.root.appendChild(row3);
     this.status = document.createElement("div");
     this.status.setAttribute("data-molsysviewer-query-status", scope);
     Object.assign(this.status.style, {
@@ -151990,8 +152482,8 @@ var RegionsPanel = class extends BasePanel {
     }
     row1.appendChild(actionsCol);
     summaryCard.appendChild(row1);
-    const row2 = document.createElement("div");
-    Object.assign(row2.style, {
+    const row22 = document.createElement("div");
+    Object.assign(row22.style, {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
@@ -152017,8 +152509,8 @@ var RegionsPanel = class extends BasePanel {
     });
     wholeInfo.appendChild(wholeDot);
     wholeInfo.appendChild(document.createTextNode(`Whole Structure: ${wholeVisible ? "Visible" : "Hidden"}`));
-    row2.appendChild(wholeInfo);
-    summaryCard.appendChild(row2);
+    row22.appendChild(wholeInfo);
+    summaryCard.appendChild(row22);
     this.host.appendChild(summaryCard);
     this.host.appendChild(makeSectionHeader("New Region"));
     this.renderNewRegionElements(this.host);
@@ -152108,15 +152600,12 @@ var RegionsPanel = class extends BasePanel {
       boxShadow: isVisible && hasVisual ? "0 0 8px rgba(52,211,153,0.5)" : "none",
       flexShrink: "0",
       marginRight: "6px",
-      cursor: hasVisual ? "pointer" : "not-allowed"
+      cursor: "pointer"
     });
-    if (!hasVisual) {
-      dot.title = "This base region has no visual representation to toggle.";
-    }
+    const visibilityTitle = hasVisual ? "Show or hide this region's representations." : "Show or hide these atoms in Whole only; other representations stay independent.";
+    dot.title = visibilityTitle;
     const toggleVisibility = () => {
-      if (hasVisual) {
-        this.ctx.onAction("toggle_region_visibility", { tag: item2.tag });
-      }
+      this.ctx.onAction("toggle_region_visibility", { tag: item2.tag });
     };
     dot.addEventListener("click", (e) => {
       e.preventDefault();
@@ -152180,12 +152669,7 @@ var RegionsPanel = class extends BasePanel {
     });
     const visibilityBtn = makeButton(item2.hidden ? "Show" : "Hide", () => toggleVisibility());
     visibilityBtn.setAttribute("data-molsysviewer-region-visibility", item2.tag);
-    if (!hasVisual) {
-      visibilityBtn.disabled = true;
-      visibilityBtn.style.opacity = "0.42";
-      visibilityBtn.style.cursor = "not-allowed";
-      visibilityBtn.title = "This base region has no visual representation to hide.";
-    }
+    visibilityBtn.title = visibilityTitle;
     const renameBtn = makeButton("Rename", () => {
       this.regionRenameTag = item2.tag;
       this.scheduleRender();
@@ -152507,7 +152991,8 @@ var RegionsPanel = class extends BasePanel {
     palette.setAttribute("data-molsysviewer-region-style-color-attribute-palette", tag);
     const valueRange = document.createElement("input");
     valueRange.type = "text";
-    valueRange.placeholder = "range min,max";
+    valueRange.placeholder = "auto / min,max";
+    valueRange.title = "Leave empty for automatic range. Physical values need units, e.g. [0,100] angstrom**2.";
     valueRange.value = Array.isArray(params.color_attribute_range) ? params.color_attribute_range.join(",") : "";
     valueRange.setAttribute("data-molsysviewer-region-style-color-attribute-range", tag);
     Object.assign(valueRange.style, {
@@ -152527,13 +153012,13 @@ var RegionsPanel = class extends BasePanel {
       typeof params.color_attribute === "string" ? params.color_attribute : "",
       (value) => {
         if (!value) return;
-        const range2 = valueRange.value.split(",").map((part) => Number(part.trim())).filter((value2) => Number.isFinite(value2));
+        const range2 = scalarColorRangeFromInput(valueRange.value);
         this.ctx.onAction("color_region_by_attribute", {
           tag,
           attribute: value,
           element: attributeElement.value,
           palette: palette.value,
-          ...range2.length === 2 ? { value_range: [range2[0], range2[1]] } : {},
+          ...range2 !== void 0 ? { value_range: range2 } : {},
           replace: true
         });
       }
@@ -152857,10 +153342,10 @@ var RegionsPanel = class extends BasePanel {
         ["Bonded", "bonded to atom_index in [0]"]
       ];
       for (const [label2, expression] of examples) {
-        const row2 = document.createElement("button");
-        row2.type = "button";
-        row2.setAttribute("data-molsysviewer-regions-cheatsheet-example", label2);
-        Object.assign(row2.style, {
+        const row3 = document.createElement("button");
+        row3.type = "button";
+        row3.setAttribute("data-molsysviewer-regions-cheatsheet-example", label2);
+        Object.assign(row3.style, {
           display: "flex",
           justifyContent: "space-between",
           gap: "8px",
@@ -152885,14 +153370,14 @@ var RegionsPanel = class extends BasePanel {
           textOverflow: "ellipsis",
           whiteSpace: "nowrap"
         });
-        row2.appendChild(name);
-        row2.appendChild(code);
-        row2.addEventListener("click", (event) => {
+        row3.appendChild(name);
+        row3.appendChild(code);
+        row3.addEventListener("click", (event) => {
           event.preventDefault();
           event.stopPropagation();
           composer.setExpression(expression, "MolSysMT");
         });
-        cheatSheet.appendChild(row2);
+        cheatSheet.appendChild(row3);
       }
       queryCard.appendChild(cheatSheet);
     }
@@ -153762,10 +154247,10 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
         ["Bonded", "bonded to atom_index in [0]"]
       ];
       for (const [label2, expression] of examples) {
-        const row2 = document.createElement("button");
-        row2.type = "button";
-        row2.setAttribute("data-molsysviewer-selection-cheatsheet-example", label2);
-        Object.assign(row2.style, {
+        const row3 = document.createElement("button");
+        row3.type = "button";
+        row3.setAttribute("data-molsysviewer-selection-cheatsheet-example", label2);
+        Object.assign(row3.style, {
           display: "flex",
           justifyContent: "space-between",
           gap: "8px",
@@ -153790,14 +154275,14 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           textOverflow: "ellipsis",
           whiteSpace: "nowrap"
         });
-        row2.appendChild(name);
-        row2.appendChild(code);
-        row2.addEventListener("click", (event) => {
+        row3.appendChild(name);
+        row3.appendChild(code);
+        row3.addEventListener("click", (event) => {
           event.preventDefault();
           event.stopPropagation();
           composer.setExpression(expression, "MolSysMT");
         });
-        cheatSheet.appendChild(row2);
+        cheatSheet.appendChild(row3);
       }
       container.appendChild(cheatSheet);
     }
@@ -154348,14 +154833,195 @@ var GroupStrip = class {
   }
 };
 
+// src/ui/panels/system-load-controls.ts
+function systemStructureIndices(text) {
+  text = text.trim();
+  if (text === "all") return text;
+  if (text.startsWith("[") !== text.endsWith("]")) throw new Error("Structure-list brackets must be paired.");
+  const parts = text.replace(/^\[/, "").replace(/\]$/, "").split(",").map((part) => part.trim());
+  if (!parts.length || parts.some((part) => !/^\d+$/.test(part))) {
+    throw new Error("Structures must be 'all' or a comma-separated list of nonnegative integers.");
+  }
+  const indices3 = parts.map(Number);
+  if (indices3.some((index) => !Number.isSafeInteger(index)) || new Set(indices3).size !== indices3.length) {
+    throw new Error("Structure indices must be unique integers that can be represented exactly.");
+  }
+  return indices3;
+}
+function atomSelection(text) {
+  text = text.trim() || "all";
+  if (!text.startsWith("[")) return text;
+  const values2 = JSON.parse(text);
+  if (!Array.isArray(values2) || !values2.length || values2.some((value) => !Number.isSafeInteger(value) || value < 0)) {
+    throw new Error("Atom indices must be a nonempty list of nonnegative integers.");
+  }
+  return values2;
+}
+function systemLoadArguments(rows, input, mode, pair2) {
+  if (!rows.length || rows.some((row3) => !row3.source.trim())) throw new Error("Enter a path or PDB ID for every source.");
+  if (input !== "independent" && input !== "complementary") throw new Error("Unknown source interpretation.");
+  if (!["add", "replace", "append_structures"].includes(mode)) throw new Error("Unknown load operation.");
+  const multiple = input === "independent" && rows.length > 1;
+  if (multiple && mode === "append_structures") throw new Error("Append structures accepts one system, including its complementary files.");
+  const sources = rows.map((row3) => row3.source.trim());
+  const selectedRows = multiple ? rows : rows.slice(0, 1);
+  const selections = selectedRows.map((row3) => atomSelection(row3.selection));
+  const structures = selectedRows.map((row3) => systemStructureIndices(row3.structures));
+  return {
+    molecular_system: sources.length === 1 ? sources[0] : sources,
+    multiple,
+    mode,
+    ...multiple ? { labels: rows.map((row3) => row3.label.trim() || null) } : { label: rows[0].label.trim() || null },
+    selection: multiple ? selections : selections[0],
+    structure_indices: multiple ? structures : structures[0],
+    structure_pairing: pair2 ? "by_index" : null
+  };
+}
+var SystemLoadControls = class {
+  constructor(ctx) {
+    this.ctx = ctx;
+    this.rows = [];
+    this.pending = null;
+    this.serial = 0;
+    this.root = document.createElement("details");
+    this.root.setAttribute("data-molsysviewer-system-load", "true");
+    Object.assign(this.root.style, { flex: "0 0 auto", maxHeight: "50%", overflowY: "auto", fontSize: "11px" });
+    const summary = document.createElement("summary");
+    summary.textContent = "Load systems";
+    summary.style.cursor = "pointer";
+    this.root.appendChild(summary);
+    const card8 = makeSettingsCard("Sources");
+    this.root.appendChild(card8);
+    this.fields = document.createElement("fieldset");
+    Object.assign(this.fields.style, { margin: "0", padding: "0", border: "0", display: "flex", flexDirection: "column", gap: "8px", minWidth: "0" });
+    card8.appendChild(this.fields);
+    this.input = makeStyledSelect([
+      { value: "independent", label: "Independent systems" },
+      { value: "complementary", label: "Complementary files: one system" }
+    ], "independent", () => this.renderRows());
+    this.input.setAttribute("data-molsysviewer-load-input-mode", "true");
+    this.fields.appendChild(this.input);
+    this.operation = makeStyledSelect([
+      { value: "add", label: "Add to whole" },
+      { value: "replace", label: "Replace whole" },
+      { value: "append_structures", label: "Append structures of the current system" }
+    ], "add", () => {
+    });
+    this.operation.setAttribute("data-molsysviewer-load-operation", "true");
+    this.fields.appendChild(this.operation);
+    const hint = document.createElement("div");
+    hint.textContent = "Enter file paths accessible to the running Python session, or PDB IDs. Each independent system becomes part of whole; multiple sources get their own regions.";
+    hint.style.color = "rgba(244,244,245,0.65)";
+    this.fields.appendChild(hint);
+    this.rowsHost = document.createElement("div");
+    this.fields.appendChild(this.rowsHost);
+    const add = makeButton("Add source", () => {
+      this.addRow();
+    });
+    add.setAttribute("data-molsysviewer-load-add-source", "true");
+    this.fields.appendChild(add);
+    const pairing = document.createElement("label");
+    this.pair = document.createElement("input");
+    this.pair.type = "checkbox";
+    this.pair.setAttribute("data-molsysviewer-load-pairing", "true");
+    pairing.appendChild(this.pair);
+    pairing.appendChild(document.createTextNode(" Pair selected structures in their listed order"));
+    this.fields.appendChild(pairing);
+    const rule = document.createElement("div");
+    rule.textContent = "For combining several structures per source, declare pairing. Counts and available times must match. Coordinates are not aligned; whole keeps its first/current box.";
+    rule.style.color = "rgba(244,244,245,0.65)";
+    this.fields.appendChild(rule);
+    const submit = makeButton("Load", () => this.submit());
+    submit.setAttribute("data-molsysviewer-load-submit", "true");
+    this.fields.appendChild(submit);
+    this.status = document.createElement("div");
+    this.status.setAttribute("data-molsysviewer-load-status", "true");
+    this.status.setAttribute("role", "status");
+    card8.appendChild(this.status);
+    this.addRow();
+  }
+  open() {
+    this.root.open = true;
+  }
+  isPending() {
+    return this.pending !== null;
+  }
+  updateResult(requestId, ok, atoms2, structures, sources, error2) {
+    if (requestId !== this.pending) return;
+    this.pending = null;
+    this.fields.disabled = false;
+    this.root.setAttribute("aria-busy", "false");
+    this.status.textContent = ok ? `Loaded: ${atoms2} atoms, ${structures} structures, ${sources} source(s).` : error2 || "Loading failed.";
+  }
+  addRow() {
+    this.rows.push({ source: "", label: "", selection: "all", structures: "0" });
+    this.renderRows();
+  }
+  renderRows() {
+    this.rowsHost.replaceChildren();
+    this.rows.forEach((row3, index) => {
+      const card8 = makeSettingsCard(`Source ${index + 1}`);
+      card8.setAttribute("data-molsysviewer-load-source", String(index));
+      const field2 = (key2, label2) => {
+        const wrap = document.createElement("label");
+        wrap.textContent = label2;
+        Object.assign(wrap.style, { display: "flex", flexDirection: "column", gap: "3px" });
+        const control = document.createElement("input");
+        control.type = "text";
+        control.value = row3[key2];
+        control.setAttribute("data-molsysviewer-load-field", key2);
+        Object.assign(control.style, { width: "100%", boxSizing: "border-box", background: "rgba(255,255,255,0.05)", color: "#f4f4f5", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "4px", padding: "4px" });
+        control.addEventListener("input", () => {
+          row3[key2] = control.value;
+        });
+        wrap.appendChild(control);
+        card8.appendChild(wrap);
+      };
+      field2("source", "File path or PDB ID");
+      if (this.input.value === "independent" || index === 0) {
+        field2("label", "Label (optional)");
+        field2("selection", "Atoms: MolSysMT selection or [0, 2, ...]");
+        field2("structures", "Structures: 0, 8, 3 or all (0-based)");
+      }
+      if (this.rows.length > 1) {
+        const remove3 = makeButton("Remove source", () => {
+          this.rows.splice(index, 1);
+          this.renderRows();
+        });
+        remove3.setAttribute("data-molsysviewer-load-remove-source", String(index));
+        card8.appendChild(remove3);
+      }
+      this.rowsHost.appendChild(card8);
+    });
+  }
+  submit() {
+    if (this.pending) return;
+    try {
+      const args = systemLoadArguments(this.rows, this.input.value, this.operation.value, this.pair.checked);
+      this.pending = `load-${Date.now()}-${++this.serial}-${Math.random().toString(36).slice(2)}`;
+      this.fields.disabled = true;
+      this.root.setAttribute("aria-busy", "true");
+      this.status.textContent = "Loading\u2026";
+      this.ctx.onAction("load_systems", { ...args, request_id: this.pending });
+    } catch (error2) {
+      this.pending = null;
+      this.fields.disabled = false;
+      this.root.setAttribute("aria-busy", "false");
+      this.status.textContent = String(error2 instanceof Error ? error2.message : error2);
+    }
+  }
+};
+
 // src/ui/panels/system-panel.ts
 var SystemPanel = class {
-  constructor(ctx, callbacks) {
+  constructor(ctx, callbacks, hasAuthority = true) {
     this.ctx = ctx;
     this.callbacks = callbacks;
+    this.hasAuthority = hasAuthority;
     this.key = "system";
     this.host = null;
     this.stripsRow = null;
+    this.loading = null;
     /** Hierarchy relayed from a host, used only when this endpoint has none. */
     this.relayedItems = null;
     this.strips = /* @__PURE__ */ new Map();
@@ -154403,6 +155069,10 @@ var SystemPanel = class {
       gap: "6px"
     });
     host.appendChild(this.makeSystemHeader());
+    if (this.hasAuthority) {
+      this.loading = new SystemLoadControls(this.ctx);
+      host.appendChild(this.loading.root);
+    }
     this.stripsRow = document.createElement("div");
     Object.assign(this.stripsRow.style, {
       display: "flex",
@@ -154416,6 +155086,15 @@ var SystemPanel = class {
     host.appendChild(this.stripsRow);
   }
   // ── Domain state pushed from the host ──────────────────────
+  openLoading() {
+    this.loading?.open();
+  }
+  isLoading() {
+    return this.loading?.isPending() ?? false;
+  }
+  updateLoading(requestId, ok, atoms2, structures, sources, error2) {
+    this.loading?.updateResult(requestId, ok, atoms2, structures, sources, error2);
+  }
   setStructure(structure) {
     if (this.structure === structure) return;
     this.structure = structure;
@@ -154969,7 +155648,8 @@ var WholePanel = class {
     palette.setAttribute("data-molsysviewer-whole-color-attribute-palette", "true");
     const range2 = document.createElement("input");
     range2.type = "text";
-    range2.placeholder = "range min,max";
+    range2.placeholder = "auto / min,max";
+    range2.title = "Leave empty for automatic range. Physical values need units, e.g. [0,100] angstrom**2.";
     range2.setAttribute("data-molsysviewer-whole-color-attribute-range", "true");
     Object.assign(range2.style, {
       width: "86px",
@@ -154982,12 +155662,12 @@ var WholePanel = class {
     });
     const commit = makeButton("Apply", () => {
       if (!attr.value) return;
-      const parsed = range2.value.split(",").map((part) => Number(part.trim())).filter((value) => Number.isFinite(value));
+      const parsed = scalarColorRangeFromInput(range2.value);
       this.ctx.onAction("color_whole_by_attribute", {
         attribute: attr.value,
         element: "atom",
         palette: palette.value,
-        ...parsed.length === 2 ? { value_range: [parsed[0], parsed[1]] } : {},
+        ...parsed !== void 0 ? { value_range: parsed } : {},
         replace: true
       });
     });
@@ -155195,8 +155875,8 @@ var MeasuresPanel = class extends BasePanel {
     });
     const totalCount = this.measurements.length;
     const visibleCount = this.measurements.filter((m) => !m.hidden).length;
-    const row2 = document.createElement("div");
-    Object.assign(row2.style, {
+    const row3 = document.createElement("div");
+    Object.assign(row3.style, {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
@@ -155223,7 +155903,7 @@ var MeasuresPanel = class extends BasePanel {
     });
     info.appendChild(dot);
     info.appendChild(document.createTextNode(`${visibleCount} of ${totalCount} measurement${totalCount === 1 ? "" : "s"} visible`));
-    row2.appendChild(info);
+    row3.appendChild(info);
     const actions = document.createElement("div");
     Object.assign(actions.style, {
       display: "flex",
@@ -155244,8 +155924,8 @@ var MeasuresPanel = class extends BasePanel {
       button2.setAttribute("data-molsysviewer-measurement-global", action);
       actions.appendChild(button2);
     }
-    row2.appendChild(actions);
-    summaryCard.appendChild(row2);
+    row3.appendChild(actions);
+    summaryCard.appendChild(row3);
     return summaryCard;
   }
   isSavedSelectionActive(item2) {
@@ -155337,8 +156017,8 @@ var MeasuresPanel = class extends BasePanel {
         border: "1px solid " + (isExpanded ? "rgba(255,255,255,0.16)" : "rgba(255,255,255,0.05)"),
         borderRadius: "6px"
       });
-      const row2 = document.createElement("div");
-      Object.assign(row2.style, {
+      const row3 = document.createElement("div");
+      Object.assign(row3.style, {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
@@ -155376,7 +156056,7 @@ var MeasuresPanel = class extends BasePanel {
       selectBtn.style.borderColor = isExpanded ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.12)";
       selectBtn.style.color = slot2 ? "#34d399" : "rgba(244,244,245,0.75)";
       leftPart.appendChild(selectBtn);
-      row2.appendChild(leftPart);
+      row3.appendChild(leftPart);
       const actions = document.createElement("div");
       Object.assign(actions.style, {
         display: "flex",
@@ -155395,8 +156075,8 @@ var MeasuresPanel = class extends BasePanel {
       clearBtn.style.whiteSpace = "nowrap";
       clearBtn.setAttribute("data-molsysviewer-measurement-slot-clear", String(i));
       actions.appendChild(clearBtn);
-      row2.appendChild(actions);
-      slotWrapper.appendChild(row2);
+      row3.appendChild(actions);
+      slotWrapper.appendChild(row3);
       if (isExpanded) {
         const mechanismInline = this.renderSelectionMechanismInline(i, requiredCount);
         slotWrapper.appendChild(mechanismInline);
@@ -155677,11 +156357,11 @@ var MeasuresPanel = class extends BasePanel {
     return container;
   }
   renderMeasurement(item2) {
-    const row2 = card5();
-    row2.setAttribute("data-molsysviewer-measurement-tag", item2.tag);
-    row2.setAttribute("data-molsysviewer-measurement-broken", String(item2.broken));
-    row2.style.opacity = item2.hidden ? "0.42" : "1";
-    if (item2.brokenReason) row2.title = item2.brokenReason;
+    const row3 = card5();
+    row3.setAttribute("data-molsysviewer-measurement-tag", item2.tag);
+    row3.setAttribute("data-molsysviewer-measurement-broken", String(item2.broken));
+    row3.style.opacity = item2.hidden ? "0.42" : "1";
+    if (item2.brokenReason) row3.title = item2.brokenReason;
     const head = document.createElement("div");
     Object.assign(head.style, { display: "flex", alignItems: "center", gap: "8px" });
     const value = document.createElement("div");
@@ -155718,7 +156398,7 @@ var MeasuresPanel = class extends BasePanel {
     destroy.style.padding = "3px 6px";
     destroy.style.fontSize = "10px";
     head.appendChild(destroy);
-    row2.appendChild(head);
+    row3.appendChild(head);
     if (this.editTag === item2.tag) {
       const editor = document.createElement("div");
       Object.assign(editor.style, { display: "flex", flexDirection: "column", gap: "6px", marginTop: "6px", padding: "6px", background: "rgba(0,0,0,0.15)", borderRadius: "4px" });
@@ -155758,19 +156438,19 @@ var MeasuresPanel = class extends BasePanel {
       layerRow.appendChild(layerInput);
       layerRow.appendChild(layerBtn);
       editor.appendChild(layerRow);
-      row2.appendChild(editor);
+      row3.appendChild(editor);
     }
     const sub = document.createElement("div");
     Object.assign(sub.style, { display: "flex", justifyContent: "space-between", fontSize: "10px", color: "rgba(244,244,245,0.52)" });
     const summaryText = `${item2.kind} \xB7 ${item2.picks} pick${item2.picks === 1 ? "" : "s"}${item2.owner ? ` \xB7 from ${item2.owner}` : ""}`;
     sub.appendChild(document.createTextNode(summaryText));
-    row2.appendChild(sub);
+    row3.appendChild(sub);
     if (item2.endpointLabels.length > 0) {
       const endpoints = document.createElement("div");
       endpoints.setAttribute("data-molsysviewer-measurement-endpoints", item2.tag);
       Object.assign(endpoints.style, { fontSize: "10px", color: "rgba(244,244,245,0.72)" });
       endpoints.textContent = item2.endpointLabels.join(" \u2192 ");
-      row2.appendChild(endpoints);
+      row3.appendChild(endpoints);
     }
     const seriesData = this.seriesByTag.get(item2.tag);
     const isSeriesExpanded = this.expandedSeries.has(item2.tag);
@@ -155791,7 +156471,7 @@ var MeasuresPanel = class extends BasePanel {
     seriesToggleBtn.style.padding = "2px 6px";
     seriesToggleBtn.style.fontSize = "10px";
     seriesRow.appendChild(seriesToggleBtn);
-    row2.appendChild(seriesRow);
+    row3.appendChild(seriesRow);
     if (isSeriesExpanded && seriesData) {
       const sparklineBox = document.createElement("div");
       sparklineBox.setAttribute("data-molsysviewer-measurement-series", item2.tag);
@@ -155809,9 +156489,9 @@ var MeasuresPanel = class extends BasePanel {
       sparkText.style.color = "rgba(244,244,245,0.7)";
       sparkText.textContent = `Trajectory (${seriesData.nFrames} frames): avg ${seriesData.sparkline.length > 0 ? (seriesData.sparkline.reduce((a8, b8) => a8 + b8, 0) / seriesData.sparkline.length).toFixed(2) : "\u2014"} ${formatUnitLabel(seriesData.unit)}`;
       sparklineBox.appendChild(sparkText);
-      row2.appendChild(sparklineBox);
+      row3.appendChild(sparklineBox);
     }
-    return row2;
+    return row3;
   }
   styleControl(control) {
     Object.assign(control.style, {
@@ -156644,11 +157324,11 @@ var AnnotationsPanel = class extends BasePanel {
     }
   }
   renderAnnotation(item2) {
-    const row2 = card6();
-    row2.setAttribute("data-molsysviewer-annotation-tag", item2.tag);
-    row2.setAttribute("data-molsysviewer-annotation-broken", String(item2.broken));
-    row2.style.opacity = item2.hidden ? "0.42" : "1";
-    if (item2.brokenReason) row2.title = item2.brokenReason;
+    const row3 = card6();
+    row3.setAttribute("data-molsysviewer-annotation-tag", item2.tag);
+    row3.setAttribute("data-molsysviewer-annotation-broken", String(item2.broken));
+    row3.style.opacity = item2.hidden ? "0.42" : "1";
+    if (item2.brokenReason) row3.title = item2.brokenReason;
     const head = document.createElement("div");
     Object.assign(head.style, { display: "flex", alignItems: "center", gap: "6px" });
     if (this.editTextTag === item2.tag) {
@@ -156683,7 +157363,7 @@ var AnnotationsPanel = class extends BasePanel {
       });
       head.appendChild(text);
     }
-    row2.appendChild(head);
+    row3.appendChild(head);
     const btnRow = document.createElement("div");
     Object.assign(btnRow.style, {
       display: "flex",
@@ -156717,16 +157397,16 @@ var AnnotationsPanel = class extends BasePanel {
       button2.style.fontSize = "10px";
       btnRow.appendChild(button2);
     }
-    row2.appendChild(btnRow);
+    row3.appendChild(btnRow);
     const identity3 = document.createElement("div");
     identity3.textContent = item2.broken ? `${item2.tag} \xB7 anchor broken${item2.owner ? ` \xB7 from ${item2.owner}` : ""}` : `${item2.tag} \xB7 ${item2.nAtoms} atom${item2.nAtoms === 1 ? "" : "s"}${item2.layerTag && item2.layerTag !== item2.tag ? ` \xB7 layer: ${item2.layerTag}` : ""}${item2.owner ? ` \xB7 from ${item2.owner}` : ""}`;
     identity3.setAttribute("data-molsysviewer-annotation-identity", item2.tag);
     Object.assign(identity3.style, { fontSize: "10px", color: "rgba(244,244,245,0.58)", marginTop: "4px" });
-    row2.appendChild(identity3);
+    row3.appendChild(identity3);
     if (this.editDetailsTag === item2.tag) {
-      row2.appendChild(this.renderDetails(item2));
+      row3.appendChild(this.renderDetails(item2));
     }
-    return row2;
+    return row3;
   }
   renderTextEditor(item2) {
     const input = document.createElement("input");
@@ -156906,8 +157586,8 @@ var AnnotationsPanel = class extends BasePanel {
     });
     const totalCount = this.annotations.length;
     const visibleCount = this.annotations.filter((m) => !m.hidden).length;
-    const row2 = document.createElement("div");
-    Object.assign(row2.style, {
+    const row3 = document.createElement("div");
+    Object.assign(row3.style, {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
@@ -156934,7 +157614,7 @@ var AnnotationsPanel = class extends BasePanel {
     });
     info.appendChild(dot);
     info.appendChild(document.createTextNode(`${visibleCount} of ${totalCount} annotation${totalCount === 1 ? "" : "s"} visible`));
-    row2.appendChild(info);
+    row3.appendChild(info);
     const actions = document.createElement("div");
     Object.assign(actions.style, {
       display: "flex",
@@ -156955,8 +157635,8 @@ var AnnotationsPanel = class extends BasePanel {
       button2.setAttribute("data-molsysviewer-annotation-global", action);
       actions.appendChild(button2);
     }
-    row2.appendChild(actions);
-    card8.appendChild(row2);
+    row3.appendChild(actions);
+    card8.appendChild(row3);
     return card8;
   }
   renderStyle() {
@@ -157042,6 +157722,867 @@ var AnnotationsPanel = class extends BasePanel {
   }
 };
 
+// src/ui/panels/interaction-calculation-controls.ts
+var length = (key2, label2, required = false, allowZero = false) => ({ key: key2, label: label2, type: "length", required, allowZero });
+var angle = (label2, required = false) => ({ key: "angle_threshold", label: label2, type: "angle", required });
+var distance = length("distance_threshold", "Distance cutoff");
+var offset3 = length("offset_threshold", "Lateral offset cutoff", false, true);
+var planarity = length("planarity_threshold", "Maximum ring-plane deviation", true, true);
+var ringGeometry = {
+  key: "geometry",
+  label: "Ring geometry",
+  type: "choice",
+  choices: [["", "Both (method default)"], ["parallel", "Parallel"], ["edge_to_face", "Edge-to-face"]]
+};
+var waterOrder = {
+  key: "order",
+  label: "Number of mediator waters",
+  type: "choice",
+  choices: [["", "One water \xB7 two H-bond legs"], ["2", "Two waters \xB7 three H-bond legs"]]
+};
+var modern = "Requires declared chemical connectivity and the chemistry used by this criterion.";
+function calculationCriteria(kind) {
+  switch (kind) {
+    case "hbond":
+      return [
+        {
+          key: "buch",
+          label: "Buch \xB7 H\u2013acceptor distance",
+          parameters: { method: "buch" },
+          controls: [length("distance_threshold", "H\u2013acceptor distance cutoff")],
+          chemistry: false,
+          help: "Distance-only criterion; no angular condition."
+        },
+        {
+          key: "luzard_chandler",
+          label: "Luzard\u2013Chandler \xB7 distance and angle",
+          parameters: { method: "luzard_chandler" },
+          controls: [length("distance_threshold", "Donor\u2013acceptor distance cutoff"), angle("Maximum H\u2013donor\u2013acceptor angle")],
+          chemistry: false,
+          help: "The angle is measured at the donor, unlike the D\u2013H\u2013A minimum below."
+        },
+        {
+          key: "baker_hubbard",
+          label: "Baker\u2013Hubbard",
+          parameters: { method: "baker_hubbard" },
+          controls: [length("distance_threshold", "H\u2013acceptor distance cutoff"), angle("Minimum donor\u2013H\u2013acceptor angle")],
+          chemistry: true,
+          help: modern
+        },
+        {
+          key: "wernet_nilsson",
+          label: "Wernet\u2013Nilsson",
+          parameters: { method: "wernet_nilsson" },
+          controls: [length("distance_threshold", "Donor\u2013acceptor distance intercept")],
+          chemistry: true,
+          help: `Uses a distance\u2013angle curve; there is no independent angular cutoff. ${modern}`
+        },
+        ...["elemental_fon", "smarts_donor_acceptor"].map((profile) => ({
+          key: profile,
+          label: `Donor\u2013acceptor distance and angle \xB7 ${profile === "elemental_fon" ? "elemental F/O/N" : "SMARTS sites"}`,
+          parameters: { method: "donor_acceptor_distance_angle", profile },
+          controls: [length("distance_threshold", "Donor\u2013acceptor distance cutoff"), angle("Minimum donor\u2013H\u2013acceptor angle")],
+          chemistry: true,
+          help: modern
+        }))
+      ];
+    case "disulfide_candidate":
+      return [{
+        key: "default",
+        label: "S\u2013S geometric candidates",
+        parameters: {},
+        chemistry: false,
+        controls: [length("max_bond_length", "S\u2013S distance cutoff"), { key: "group_names", label: "Residue names (comma-separated; blank = CYS)", type: "names" }],
+        help: "Geometric candidates; calculation does not declare a covalent bond or change topology."
+      }];
+    case "ionic_contact":
+      return [{
+        key: "default",
+        label: "Minimum distance between charged groups",
+        parameters: {},
+        chemistry: true,
+        controls: [length("distance_threshold", "Minimum-atom distance cutoff", true)],
+        help: `An explicit distance is required. Centroid guides retain the measured minimum-atom distance definition. ${modern}`
+      }];
+    case "pi_pi":
+      return [
+        {
+          key: "three_atom_plane",
+          label: "Centroid, angle and offset \xB7 three-atom planes",
+          parameters: { method: "centroid_angle_offset", profile: "three_atom_plane" },
+          controls: [distance, angle("Maximum deviation from parallel/perpendicular"), offset3, ringGeometry],
+          chemistry: true,
+          help: modern
+        },
+        {
+          key: "least_squares",
+          label: "Centroid, angle and offset \xB7 fitted planes",
+          parameters: { method: "centroid_angle_offset", profile: "least_squares" },
+          controls: [
+            length("distance_threshold", "Centroid distance cutoff", true),
+            angle("Maximum deviation from parallel/perpendicular", true),
+            { ...offset3, required: true },
+            planarity,
+            ringGeometry
+          ],
+          chemistry: true,
+          help: `This criterion requires explicit distance, angle, offset and planarity limits. ${modern}`
+        },
+        ...["smarts_5_6", "aromatic_cycles"].map((profile) => ({
+          key: profile,
+          label: `Plane angle and intersection \xB7 ${profile === "smarts_5_6" ? "SMARTS 5/6-member rings" : "aromatic cycles"}`,
+          parameters: { method: "plane_angle_intersection", profile },
+          controls: [distance, ringGeometry],
+          chemistry: true,
+          help: `The profile fixes angular intervals and plane-intersection rules. ${modern}`
+        }))
+      ];
+    case "cation_pi":
+      return [
+        {
+          key: "smarts_5_6",
+          label: "Centroid distance and angle \xB7 SMARTS rings",
+          parameters: { method: "centroid_distance_angle", profile: "smarts_5_6" },
+          controls: [distance, angle("Maximum displacement\u2013ring-normal angle")],
+          chemistry: true,
+          help: modern
+        },
+        {
+          key: "three_atom_plane",
+          label: "Centroid distance and offset \xB7 three-atom plane",
+          parameters: { method: "centroid_distance_offset", profile: "three_atom_plane" },
+          controls: [distance, offset3],
+          chemistry: true,
+          help: `This criterion has no angular filter. ${modern}`
+        },
+        {
+          key: "least_squares",
+          label: "Centroid, angle and offset \xB7 fitted plane",
+          parameters: { method: "centroid_angle_offset", profile: "least_squares" },
+          controls: [
+            length("distance_threshold", "Centroid distance cutoff", true),
+            angle("Maximum displacement\u2013ring-normal angle", true),
+            { ...offset3, required: true },
+            planarity
+          ],
+          chemistry: true,
+          help: `This criterion requires explicit distance, angle, offset and planarity limits. ${modern}`
+        }
+      ];
+    case "halogen_bond":
+      return [{
+        key: "default",
+        label: "Distance and two angular intervals",
+        parameters: {},
+        chemistry: true,
+        controls: [
+          length("distance_threshold", "Halogen\u2013acceptor distance cutoff"),
+          { key: "donor_angle_range", label: "Donor\u2013halogen\u2013acceptor angle interval", type: "angle-range" },
+          { key: "acceptor_angle_range", label: "Halogen\u2013acceptor\u2013reference angle interval", type: "angle-range" }
+        ],
+        help: modern
+      }];
+    case "hydrophobic_contact":
+      return [{
+        key: "default",
+        label: "Hydrophobic atom-pair distance",
+        parameters: {},
+        chemistry: true,
+        controls: [distance],
+        help: modern
+      }];
+    case "metal_coordination_candidate":
+      return [{
+        key: "default",
+        label: "Metal\u2013ligand distance candidates",
+        parameters: {},
+        chemistry: true,
+        controls: [length("distance_threshold", "Metal\u2013ligand distance cutoff")],
+        help: `Geometric candidates; topology is unchanged. ${modern}`
+      }];
+    case "water_bridge":
+      return ["baker_hubbard", "wernet_nilsson", "elemental_fon", "smarts_donor_acceptor"].map((key2) => ({
+        key: key2,
+        label: `Water-path H-bonds \xB7 ${key2 === "baker_hubbard" ? "Baker\u2013Hubbard" : key2 === "wernet_nilsson" ? "Wernet\u2013Nilsson" : key2 === "elemental_fon" ? "donor\u2013acceptor, elemental F/O/N" : "donor\u2013acceptor, SMARTS"}`,
+        parameters: {
+          hbond_method: ["elemental_fon", "smarts_donor_acceptor"].includes(key2) ? "donor_acceptor_distance_angle" : key2,
+          ...["elemental_fon", "smarts_donor_acceptor"].includes(key2) ? { hbond_profile: key2 } : {}
+        },
+        controls: [
+          waterOrder,
+          distance,
+          ...key2 === "wernet_nilsson" ? [] : [angle("Minimum donor\u2013H\u2013acceptor angle for each leg")]
+        ],
+        chemistry: true,
+        help: `One occurrence retains every directed H-bond leg. ${key2 === "wernet_nilsson" ? "The leg criterion uses its distance\u2013angle curve. " : ""}${modern}`
+      }));
+    default:
+      return [];
+  }
+}
+function initialCalculationCriterion(kind, defaults2 = {}) {
+  const criteria = calculationCriteria(kind);
+  return (criteria.find((item2) => Object.entries(defaults2).every(([key2, value]) => item2.parameters[key2] === value)) ?? criteria[0])?.key ?? "";
+}
+function finiteNumber(text, label2) {
+  const value = Number(text);
+  if (!text.trim() || !Number.isFinite(value)) throw new Error(`${label2}: enter a finite number.`);
+  return value;
+}
+function unitFor(control, values2) {
+  const unit2 = values2[`${control.key}-unit`] || (control.type === "length" ? "nm" : "degrees");
+  const allowed = control.type === "length" ? ["nm", "angstroms"] : ["degrees", "radians"];
+  if (!allowed.includes(unit2)) throw new Error(`${control.label}: unsupported unit.`);
+  return unit2;
+}
+function angleValue(text, unit2, label2) {
+  const value = finiteNumber(text, label2);
+  if (value < 0 || value > (unit2 === "degrees" ? 180 : Math.PI)) throw new Error(`${label2}: angle must be between 0 and 180 degrees.`);
+  return value;
+}
+function scientificParameters(kind, key2, values2) {
+  const criterion = calculationCriteria(kind).find((item2) => item2.key === key2);
+  if (!criterion) throw new Error("Select an available interaction criterion.");
+  const parameters = { ...criterion.parameters };
+  for (const control of criterion.controls) {
+    const text = (values2[control.key] || "").trim();
+    if (control.type === "angle-range") {
+      const low = (values2[`${control.key}-min`] || "").trim(), high = (values2[`${control.key}-max`] || "").trim();
+      if (!low && !high) continue;
+      const unit2 = unitFor(control, values2);
+      if (angleValue(low, unit2, control.label) > angleValue(high, unit2, control.label)) throw new Error(`${control.label}: minimum must not exceed maximum.`);
+      parameters[control.key] = [`${low} ${unit2}`, `${high} ${unit2}`];
+    } else if (!text) {
+      if (control.required) throw new Error(`${control.label} is required for this criterion.`);
+    } else if (control.type === "length" || control.type === "angle") {
+      const unit2 = unitFor(control, values2);
+      const value = control.type === "angle" ? angleValue(text, unit2, control.label) : finiteNumber(text, control.label);
+      if (control.type === "length" && (value < 0 || !control.allowZero && value === 0)) throw new Error(`${control.label}: enter a ${control.allowZero ? "nonnegative" : "positive"} length.`);
+      parameters[control.key] = `${text} ${unit2}`;
+    } else if (control.type === "choice") {
+      if (!control.choices?.some(([key3]) => key3 === text)) throw new Error(`${control.label}: select an available value.`);
+      parameters[control.key] = control.key === "order" ? Number(text) : text;
+    } else {
+      const names = text.split(",").map((name) => name.trim());
+      if (names.some((name) => !name)) throw new Error(`${control.label}: use comma-separated names without empty entries.`);
+      parameters[control.key] = names;
+    }
+  }
+  return parameters;
+}
+function changeScientificUnit(values2, control, next) {
+  const previous = unitFor(control, values2);
+  const allowed = control.type === "length" ? ["nm", "angstroms"] : ["degrees", "radians"];
+  if (!allowed.includes(next)) throw new Error("Unsupported scientific control unit.");
+  const scale = control.type === "length" ? previous === "nm" ? 10 : 0.1 : previous === "degrees" ? Math.PI / 180 : 180 / Math.PI;
+  if (previous !== next) for (const key2 of control.type === "angle-range" ? [`${control.key}-min`, `${control.key}-max`] : [control.key]) {
+    if (values2[key2]?.trim() && Number.isFinite(Number(values2[key2]))) values2[key2] = String(Number(values2[key2]) * scale);
+  }
+  values2[`${control.key}-unit`] = next;
+}
+
+// src/ui/panels/interactions-panel.ts
+var box4 = () => {
+  const el = document.createElement("div");
+  Object.assign(el.style, {
+    display: "flex",
+    flexDirection: "column",
+    gap: "7px",
+    padding: "10px",
+    borderRadius: "6px",
+    border: "1px solid rgba(255,255,255,0.08)",
+    background: "rgba(255,255,255,0.035)"
+  });
+  return el;
+};
+function append(parent, ...children) {
+  for (const child of children) parent.appendChild(typeof child === "string" ? document.createTextNode(child) : child);
+}
+var row2 = () => {
+  const el = document.createElement("div");
+  Object.assign(el.style, { display: "flex", gap: "4px", flexWrap: "wrap" });
+  return el;
+};
+var note2 = (text) => {
+  const el = document.createElement("div");
+  el.textContent = text;
+  Object.assign(el.style, { fontSize: "11px", color: "rgba(244,244,245,0.65)", overflowWrap: "anywhere" });
+  return el;
+};
+function field(parent, label2, value, key2, change, type3 = "text", identity3) {
+  const wrap = document.createElement("label");
+  wrap.appendChild(note2(label2));
+  const input = document.createElement("input");
+  input.type = type3;
+  input.value = value;
+  if (identity3) input.setAttribute("data-molsysviewer-interaction-control", identity3);
+  input.setAttribute("data-molsysviewer-interaction-field", key2);
+  Object.assign(input.style, {
+    width: "100%",
+    boxSizing: "border-box",
+    minWidth: "0",
+    background: "rgba(0,0,0,0.2)",
+    border: "1px solid rgba(255,255,255,0.12)",
+    borderRadius: "6px",
+    padding: "4px 6px",
+    color: "#fff",
+    fontSize: "11px"
+  });
+  input.addEventListener("input", () => change(input.value));
+  wrap.appendChild(input);
+  parent.appendChild(wrap);
+  return input;
+}
+function select(parent, values2, current2, change) {
+  const el = document.createElement("select");
+  Object.assign(el.style, { width: "100%", minWidth: "0", color: "#fff", background: "#272335", padding: "5px", borderRadius: "6px" });
+  for (const [value, text] of values2) {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = text;
+    el.appendChild(option);
+  }
+  el.value = current2;
+  el.addEventListener("change", () => change(el.value));
+  parent.appendChild(el);
+  return el;
+}
+function indices2(value, allowCurrent = false) {
+  const text = value.trim();
+  if (text === "all" || allowCurrent && text === "current") return text;
+  if (!/^\d+(\s*,\s*\d+)*$/.test(text)) throw new Error("Use all, current (calculation), or comma-separated integer indices.");
+  return text.split(",").map((v4) => Number(v4.trim()));
+}
+var statusText = (item2) => {
+  if (item2.status === "render-error") return "Interaction rendering failed. Check viewer diagnostics.";
+  if (item2.status === "unavailable") return "Interaction projection unavailable. Return to this structure to retry.";
+  if (item2.status === "pending") return "Loading this structure\u2026";
+  if (item2.status === "render-limit") return "Display exceeds the occurrence or byte preparation budget. Reduce the display filter.";
+  if (item2.status === "unevaluated") return "Not evaluated";
+  if (item2.status === "excluded") return "Excluded by display filter";
+  if (item2.status === "broken") return "Analysis or selection needs repair";
+  if (!item2.n_observations) return "Evaluated \xB7 no matching observations";
+  return `${item2.hidden || item2.layer_hidden ? 0 : item2.n_supported} drawn / ${item2.n_observations} observations \xB7 ${item2.hidden || item2.layer_hidden ? 0 : item2.n_segments ?? item2.n_supported} segments${item2.n_skipped ? ` \xB7 ${item2.n_skipped} unsupported` : ""}`;
+};
+var InteractionsPanel = class extends BasePanel {
+  constructor(ctx) {
+    super();
+    this.ctx = ctx;
+    this.key = "interactions";
+    this.items = [];
+    this.analyses = [];
+    this.families = [];
+    this.criteria = /* @__PURE__ */ new Map();
+    this.scientificDrafts = /* @__PURE__ */ new Map();
+    this.frame = 0;
+    this.loaded = false;
+    this.backendAvailable = true;
+    this.source = "calculate";
+    this.name = "hbonds";
+    this.stored = "";
+    this.kind = "hbond";
+    this.calcStructures = "current";
+    this.pbc = false;
+    this.filename = "";
+    this.fileAnalysis = "";
+    this.aligned = false;
+    this.atomMap = "";
+    this.frameMap = "";
+    this.tag = "";
+    this.layer = "";
+    this.mode = "incident";
+    this.displayStructures = "all";
+    this.types = "";
+    this.exclusive = false;
+    this.a = null;
+    this.b = null;
+    this.slot = "a";
+    this.selection = null;
+    this.saved = [];
+    this.dockTab = "active";
+    this.editing = null;
+    this.inspecting = null;
+    this.inspection = null;
+    this.requestId = 0;
+    this.error = "";
+    this.creationRequest = 0;
+    this.busy = null;
+    this.filtersOpen = false;
+    this.analysesOpen = false;
+    this.filtersDetails = null;
+    this.analysesDetails = null;
+    this.color = "#34d399";
+    this.radius = "0.025";
+    this.alpha = "0.85";
+    this.composer = new ManualQueryComposer("interactions", (details) => ctx.onAction("selection_query_preview_request", details));
+  }
+  setSummary(message) {
+    const previous = this.items.find((item2) => item2.tag === this.inspecting);
+    const next = message.interactions.find((item2) => item2.tag === this.inspecting);
+    if (this.frame !== message.frame || this.inspecting && previous?.query_revision !== next?.query_revision) {
+      this.inspection = null;
+      this.inspecting = null;
+      this.requestId++;
+    }
+    this.backendAvailable = message.backend_available ?? this.backendAvailable;
+    this.families = message.calculation_families ?? this.families;
+    if (this.families.length && !this.families.some((family) => family.kind === this.kind)) this.kind = this.families[0].kind;
+    this.items = message.interactions;
+    this.analyses = message.analyses;
+    this.loaded = message.system_loaded;
+    this.frame = message.frame;
+    if (!this.analyses.some((item2) => item2.name === this.stored)) this.stored = this.analyses[0]?.name ?? "";
+    this.ctx.setBadge(String(this.items.length));
+    this.scheduleRender();
+  }
+  setFrame(items, frame) {
+    this.setSummary({ op: "set_interaction_summaries", interactions: items, analyses: this.analyses, system_loaded: this.loaded, frame });
+  }
+  setSelection(selection) {
+    this.selection = selection;
+    this.scheduleRender();
+  }
+  setSavedSelections(items) {
+    this.saved = items;
+    this.scheduleRender();
+  }
+  updateQuery(preview) {
+    return this.composer.updatePreview(preview);
+  }
+  updateInspection(requestId, result2) {
+    if (requestId !== this.requestId || result2.frame !== this.frame || result2.tag !== this.inspecting) return;
+    const item2 = this.items.find((item3) => item3.tag === result2.tag);
+    if (!item2 || item2.analysis_revision !== result2.analysis_revision || item2.query_revision !== result2.query_revision) return;
+    this.inspection = result2;
+    this.scheduleRender();
+  }
+  updateCreationResult(requestId, ok, name, error2) {
+    if (requestId !== this.busy) return;
+    this.busy = null;
+    if (ok && name) {
+      this.source = "stored";
+      this.stored = name;
+      this.tag = "";
+    }
+    this.error = error2 ?? "";
+    this.scheduleRender();
+  }
+  emit(action, details) {
+    this.error = "";
+    try {
+      this.ctx.onAction(action, details);
+    } catch (error2) {
+      this.busy = null;
+      this.error = String(error2);
+    }
+    this.scheduleRender();
+  }
+  filter() {
+    return {
+      selection: this.a ?? "all",
+      selection_2: this.mode === "between" ? this.b : null,
+      mode: this.mode,
+      exclusive: this.mode === "between" && this.exclusive,
+      structure_indices: indices2(this.displayStructures),
+      interaction_types: this.types.trim() ? this.types.split(",").map((v4) => v4.trim()).filter(Boolean) : null
+    };
+  }
+  inspect(tag, offset4 = 0) {
+    this.inspecting = tag;
+    this.inspection = null;
+    this.emit("inspect_interaction", { tag, frame: this.frame, offset: offset4, request_id: ++this.requestId });
+  }
+  criterion() {
+    const key2 = this.criteria.get(this.kind) ?? initialCalculationCriterion(
+      this.kind,
+      this.families.find((item2) => item2.kind === this.kind)?.default_parameters
+    );
+    return calculationCriteria(this.kind).find((item2) => item2.key === key2);
+  }
+  scientificDraft() {
+    const key2 = `${this.kind}:${this.criterion()?.key}`;
+    if (!this.scientificDrafts.has(key2)) this.scientificDrafts.set(key2, {});
+    return this.scientificDrafts.get(key2);
+  }
+  paintScientificControls(parent) {
+    const criteria = calculationCriteria(this.kind), criterion = this.criterion();
+    if (!criterion) {
+      parent.appendChild(note2("No Studio controls are available for this family."));
+      return;
+    }
+    const heading = document.createElement("label");
+    heading.appendChild(note2("Scientific criterion"));
+    parent.appendChild(heading);
+    if (criteria.length > 1) {
+      const chooser = select(
+        heading,
+        criteria.map((item2) => [item2.key, item2.label]),
+        criterion.key,
+        (value) => {
+          this.criteria.set(this.kind, value);
+          this.scheduleRender();
+        }
+      );
+      chooser.setAttribute("data-molsysviewer-interaction-criterion", "true");
+    } else heading.appendChild(note2(criterion.label));
+    parent.appendChild(note2(criterion.help));
+    parent.appendChild(note2("Blank optional fields use the criterion's defaults. Scientific values are stored with the analysis."));
+    const draft = this.scientificDraft();
+    for (const control of criterion.controls) {
+      const group = document.createElement("div");
+      parent.appendChild(group);
+      if (control.type === "choice") {
+        const label2 = document.createElement("label");
+        label2.appendChild(note2(control.label));
+        group.appendChild(label2);
+        const chooser = select(label2, control.choices, draft[control.key] || "", (value) => draft[control.key] = value);
+        chooser.setAttribute("data-molsysviewer-interaction-field", `parameter-${control.key}`);
+      } else if (control.type === "names") {
+        field(
+          group,
+          control.label,
+          draft[control.key] || "",
+          `parameter-${control.key}`,
+          (value) => draft[control.key] = value,
+          "text",
+          `${this.kind}:${criterion.key}:${control.key}`
+        );
+      } else {
+        const inputRow = row2();
+        group.appendChild(inputRow);
+        const unit2 = draft[`${control.key}-unit`] || (control.type === "length" ? "nm" : "degrees");
+        const keys2 = control.type === "angle-range" ? [`${control.key}-min`, `${control.key}-max`] : [control.key];
+        if (control.type === "angle-range") group.prepend(note2(control.label));
+        keys2.forEach((key2, index) => {
+          const cell = document.createElement("div");
+          cell.style.flex = "1";
+          cell.style.minWidth = "0";
+          inputRow.appendChild(cell);
+          const input = field(
+            cell,
+            control.type === "angle-range" ? index === 0 ? "Minimum" : "Maximum" : control.label,
+            draft[key2] || "",
+            `parameter-${key2}`,
+            (value) => draft[key2] = value,
+            "number",
+            `${this.kind}:${criterion.key}:${key2}:${unit2}`
+          );
+          input.step = "any";
+          input.min = "0";
+          input.placeholder = control.required ? "Required" : "Method default";
+          if (control.type !== "length") input.max = String(unit2 === "degrees" ? 180 : Math.PI);
+          if (control.required) input.setAttribute("aria-required", "true");
+        });
+        const unitChooser = select(
+          inputRow,
+          control.type === "length" ? [["nm", "nm"], ["angstroms", "\xC5"]] : [["degrees", "\xB0"], ["radians", "rad"]],
+          unit2,
+          (value) => {
+            changeScientificUnit(draft, control, value);
+            this.scheduleRender();
+          }
+        );
+        unitChooser.style.width = "66px";
+        unitChooser.style.alignSelf = "end";
+        unitChooser.setAttribute("aria-label", `${control.label} unit`);
+        unitChooser.setAttribute("data-molsysviewer-interaction-field", `parameter-${control.key}-unit`);
+      }
+    }
+  }
+  paint() {
+    if (!this.host) return;
+    const previousFilters = this.filtersDetails;
+    if (previousFilters) this.filtersOpen = previousFilters.open;
+    const previousAnalyses = this.analysesDetails;
+    if (previousAnalyses) this.analysesOpen = previousAnalyses.open;
+    this.host.replaceChildren();
+    Object.assign(this.host.style, { display: "flex", flexDirection: "column", gap: "9px" });
+    this.host.appendChild(makeSectionHeader("Interactions"));
+    if (!this.backendAvailable) this.host.appendChild(note2("Interactions requires a compatible MolSysMT backend. Other viewer tools remain available."));
+    const enabled = this.items.filter((item2) => !item2.hidden).length;
+    this.host.appendChild(note2(`${enabled}/${this.items.length} sets enabled \xB7 structure ${this.frame}`));
+    const all3 = row2();
+    append(all3, makeButton("Show all", () => this.emit("show_all_interactions")), makeButton("Hide all", () => this.emit("hide_all_interactions")));
+    this.host.appendChild(all3);
+    if (this.error) this.host.appendChild(note2(this.error));
+    const form = box4();
+    form.appendChild(makeSectionHeader(this.editing ? `Edit ${this.editing}` : "New interaction set"));
+    this.host.appendChild(form);
+    if (!this.editing) {
+      const tabs = row2();
+      for (const [value, text] of [["calculate", "Calculate"], ["stored", "Stored analysis"], ["file", "H5MSM file"]]) {
+        const btn = makeButton(text, () => {
+          this.source = value;
+          this.scheduleRender();
+        });
+        btn.setAttribute("data-molsysviewer-interaction-source", value);
+        if (this.source === value) btn.style.background = "rgba(139,92,246,0.25)";
+        tabs.appendChild(btn);
+      }
+      form.appendChild(tabs);
+      if (this.source === "stored") {
+        select(form, this.analyses.map((item2) => [item2.name, `${item2.name} \xB7 ${item2.n_occurrences} observations`]), this.stored, (value) => {
+          this.stored = value;
+          this.scheduleRender();
+        });
+        const analysis = this.analyses.find((item2) => item2.name === this.stored);
+        if (analysis) form.appendChild(note2(`${analysis.method} \xB7 ${analysis.n_evaluated_structures}/${analysis.n_structures} structures evaluated`));
+      } else {
+        field(form, "Store analysis as", this.name, "name", (value) => this.name = value);
+        if (this.source === "calculate") {
+          const familyLabel = document.createElement("label");
+          familyLabel.appendChild(note2("Interaction family"));
+          form.appendChild(familyLabel);
+          const chooser = select(familyLabel, this.families.map((family) => [family.kind, family.label]), this.kind, (value) => {
+            this.kind = value;
+            this.scheduleRender();
+          });
+          chooser.setAttribute("data-molsysviewer-interaction-kind", "true");
+          this.paintScientificControls(form);
+          if (["ionic_contact", "pi_pi", "cation_pi"].includes(this.kind)) form.appendChild(note2("Compound participants use centroid guides. Reported measurements keep the calculation's definition."));
+          if (["disulfide_candidate", "metal_coordination_candidate"].includes(this.kind)) form.appendChild(note2("Geometric candidates; covalent topology is unchanged."));
+          field(form, "Calculate structures: current, all, or indices", this.calcStructures, "calc-structures", (value) => this.calcStructures = value);
+          const pbc = document.createElement("label");
+          const cb2 = document.createElement("input");
+          cb2.type = "checkbox";
+          cb2.checked = this.pbc;
+          cb2.onchange = () => this.pbc = cb2.checked;
+          append(pbc, cb2, " Periodic boundary conditions");
+          form.appendChild(pbc);
+        } else {
+          field(form, "H5MSM path in the Python session", this.filename, "filename", (value) => this.filename = value);
+          field(form, "Analysis name inside the file", this.fileAnalysis, "file-analysis", (value) => this.fileAnalysis = value);
+          field(form, "Source atom indices in destination order (optional)", this.atomMap, "atom-map", (value) => this.atomMap = value);
+          field(form, "Source structure indices in destination order (optional)", this.frameMap, "frame-map", (value) => this.frameMap = value);
+          const agreement = document.createElement("label");
+          const cb2 = document.createElement("input");
+          cb2.type = "checkbox";
+          cb2.checked = this.aligned;
+          cb2.setAttribute("data-molsysviewer-interaction-aligned", "true");
+          cb2.onchange = () => {
+            this.aligned = cb2.checked;
+            this.scheduleRender();
+          };
+          append(agreement, cb2, " I declare that atom and structure indices match this system.");
+          form.appendChild(agreement);
+        }
+      }
+    }
+    field(form, "Set tag (empty = automatic)", this.tag, "tag", (value) => this.tag = value);
+    field(form, "Layer (empty = automatic)", this.layer, "layer", (value) => this.layer = value);
+    const details = document.createElement("details");
+    this.filtersDetails = details;
+    details.setAttribute("data-molsysviewer-interaction-filters", "true");
+    details.open = !!this.editing || this.filtersOpen;
+    details.addEventListener("toggle", () => {
+      if (details.isConnected) this.filtersOpen = details.open;
+    });
+    const title = document.createElement("summary");
+    title.textContent = "Display filter and selections";
+    details.appendChild(title);
+    form.appendChild(details);
+    select(details, [["incident", "Participating atoms (incident)"], ["internal", "Within selection (internal)"], ["cross", "Crossing selection boundary (cross)"], ["between", "Between disjoint A and B"]], this.mode, (value) => {
+      this.mode = value;
+      this.scheduleRender();
+    });
+    details.appendChild(note2(`A: ${this.a ? `${this.a.length} atoms` : "all atoms"} \xB7 B: ${this.b ? `${this.b.length} atoms` : "unset"}`));
+    const slots = row2();
+    append(slots, makeButton("Stage A", () => {
+      this.slot = "a";
+      this.scheduleRender();
+    }), makeButton("Stage B", () => {
+      this.slot = "b";
+      this.scheduleRender();
+    }), makeButton("Reset selections", () => {
+      this.a = this.b = null;
+      this.scheduleRender();
+    }));
+    details.appendChild(slots);
+    if (this.selection) details.appendChild(renderSelectionDock({
+      activeSelection: this.selection,
+      savedSelections: this.saved,
+      activeTab: this.dockTab,
+      buttonLabel: `Use as ${this.slot.toUpperCase()}`,
+      queryComposer: this.composer,
+      dataAttributePrefix: "interaction",
+      onTabChange: (tab) => {
+        this.dockTab = tab;
+        this.scheduleRender();
+      },
+      onCommitSelection: (atoms2) => {
+        this[this.slot] = [...atoms2];
+        this.scheduleRender();
+      },
+      onActivateSavedSelection: (item2) => this.emit("activate_selection", { tag: item2.tag })
+    }));
+    field(details, "Display structures: all or indices", this.displayStructures, "display-structures", (value) => this.displayStructures = value);
+    field(details, "Interaction types (comma-separated; empty = all)", this.types, "types", (value) => this.types = value);
+    if (this.mode === "between") {
+      const label2 = document.createElement("label");
+      const cb2 = document.createElement("input");
+      cb2.type = "checkbox";
+      cb2.checked = this.exclusive;
+      cb2.onchange = () => this.exclusive = cb2.checked;
+      append(label2, cb2, " Restrict participants to A \u222A B");
+      details.appendChild(label2);
+    }
+    if (this.editing) {
+      form.appendChild(note2("Calculation parameters are fixed. Calculate a new analysis to change cutoffs."));
+      field(form, "Color", this.color, "color", (value) => this.color = value, "color");
+      field(form, "Radius (nm)", this.radius, "radius", (value) => this.radius = value, "number");
+      field(form, "Opacity (0\u20131)", this.alpha, "alpha", (value) => this.alpha = value, "number");
+    }
+    const submit = makeButton(this.busy !== null ? "Working\u2026" : this.editing ? "Apply changes" : this.source === "calculate" ? "Calculate and create set" : this.source === "file" ? "Load and create set" : "Create set", () => {
+      try {
+        if (this.mode === "between" && (!this.a || !this.b)) throw new Error("Stage disjoint selections A and B first.");
+        const filter5 = this.filter();
+        if (this.editing) this.emit("edit_interaction", {
+          tag: this.editing,
+          new_tag: this.tag,
+          layer_tag: this.layer,
+          filter: filter5,
+          color: this.color,
+          radius_nm: Number(this.radius),
+          radius_unit: "nm",
+          alpha: Number(this.alpha)
+        });
+        else {
+          const calculation = {
+            kind: this.kind,
+            selection: this.a ?? "all",
+            structure_indices: this.source === "calculate" ? indices2(this.calcStructures, true) : "current",
+            pbc: this.pbc
+          };
+          if (this.source === "calculate") {
+            calculation.parameters = scientificParameters(this.kind, this.criterion()?.key ?? "", this.scientificDraft());
+            if (this.b && this.kind !== "disulfide_candidate") calculation.selection_2 = this.b;
+          }
+          this.busy = ++this.creationRequest;
+          this.emit("create_interaction", {
+            request_id: this.busy,
+            source: this.source,
+            analysis_name: this.source === "stored" ? this.stored : this.name,
+            tag: this.tag,
+            layer_tag: this.layer,
+            filter: filter5,
+            calculation,
+            filename: this.filename,
+            file_analysis_name: this.fileAnalysis,
+            assume_aligned: this.aligned,
+            atom_indices: this.source === "file" && this.atomMap ? indices2(this.atomMap) : null,
+            structure_indices: this.source === "file" && this.frameMap ? indices2(this.frameMap) : null
+          });
+        }
+      } catch (error2) {
+        this.busy = null;
+        this.error = String(error2);
+        this.scheduleRender();
+      }
+    });
+    submit.disabled = this.busy !== null || !this.loaded || !this.backendAvailable || !this.editing && this.source === "calculate" && (!this.families.length || !this.criterion()) || !this.editing && this.source === "file" && !this.aligned || !this.editing && this.source === "stored" && !this.stored;
+    submit.setAttribute("data-molsysviewer-interaction-create", "true");
+    form.appendChild(submit);
+    if (this.editing) form.appendChild(makeButton("Done editing", () => {
+      this.editing = null;
+      this.tag = this.layer = "";
+      this.scheduleRender();
+    }));
+    this.host.appendChild(makeSectionHeader("Saved sets"));
+    if (!this.items.length) this.host.appendChild(note2("No interaction sets. Calculate an analysis or load one from H5MSM."));
+    for (const item2 of this.items) {
+      const card8 = box4();
+      card8.setAttribute("data-molsysviewer-interaction-set", item2.tag);
+      append(card8, note2(`${item2.tag} \xB7 ${item2.analysis_name}`), note2(statusText(item2)), note2(`${item2.hidden ? "Hidden" : item2.layer_hidden ? "Hidden by layer" : "Enabled"} \xB7 layer ${item2.layer_tag}`));
+      const actions = row2();
+      for (const [text, action] of [["Focus", "focus_interaction"], [item2.hidden ? "Show" : "Hide", "toggle_interaction_visibility"], ["Delete", "delete_interaction"]]) {
+        const button2 = makeButton(text, () => this.emit(action, { tag: item2.tag }));
+        if (action === "focus_interaction") button2.disabled = !item2.n_supported;
+        actions.appendChild(button2);
+      }
+      actions.appendChild(makeButton("Edit", () => {
+        this.editing = item2.tag;
+        this.tag = item2.tag;
+        this.layer = item2.layer_tag;
+        this.a = item2.filter.selection === "all" ? null : [...item2.filter.selection];
+        this.b = Array.isArray(item2.filter.selection_2) ? [...item2.filter.selection_2] : null;
+        this.mode = item2.filter.mode;
+        this.displayStructures = item2.filter.structure_indices === "all" ? "all" : item2.filter.structure_indices.join(",");
+        this.types = item2.filter.interaction_types?.join(",") ?? "";
+        this.exclusive = item2.filter.exclusive;
+        this.color = `#${item2.style.color.toString(16).padStart(6, "0")}`;
+        this.radius = String(item2.style.radius_nm);
+        this.alpha = String(item2.style.alpha);
+        this.scheduleRender();
+      }));
+      actions.appendChild(makeButton("Inspect", () => this.inspect(item2.tag)));
+      card8.appendChild(actions);
+      if (this.inspecting === item2.tag) {
+        if (!this.inspection) card8.appendChild(note2("Requesting current structure observations\u2026"));
+        else {
+          const data = this.inspection;
+          card8.appendChild(note2(`${data.method} \xB7 ${data.total} observations \xB7 ${JSON.stringify(data.parameters)}`));
+          card8.appendChild(note2(`Calculation scope: ${JSON.stringify(data.evaluation_scope)}`));
+          if (data.limit_reason) card8.appendChild(note2(data.limit_reason));
+          for (const observation of data.observations) {
+            const detail = box4();
+            detail.setAttribute("data-molsysviewer-interaction-observation", String(observation.occurrence_index));
+            detail.appendChild(note2(`#${observation.occurrence_index} ${observation.interaction_type} \xB7 ${observation.participants.map((p6) => `${p6.role} [${p6.atom_indices.join(",")}]`).join(" \u2192 ")} \xB7 ${Object.entries(observation.measurements).map(([name, value]) => `${name}: ${value ?? "unavailable"} ${data.measure_units[name] ?? ""}`).join("; ")} \xB7 evidence ${observation.evidence ?? ""}${observation.image_vectors ? ` \xB7 images ${JSON.stringify(observation.image_vectors)}` : ""}`));
+            const actions2 = row2();
+            const identity3 = {
+              tag: item2.tag,
+              frame: data.frame,
+              occurrence_index: observation.occurrence_index,
+              analysis_revision: data.analysis_revision,
+              query_revision: data.query_revision
+            };
+            for (const [label2, action] of [["Select participants", "select_interaction_observation"], ["Focus participants", "focus_interaction_observation"]]) {
+              const button2 = makeButton(label2, () => this.emit(action, identity3));
+              button2.setAttribute("data-molsysviewer-interaction-observation-action", action);
+              actions2.appendChild(button2);
+            }
+            detail.appendChild(actions2);
+            card8.appendChild(detail);
+          }
+          const pagination = row2();
+          if (data.offset) pagination.appendChild(makeButton("Previous", () => this.inspect(item2.tag, Math.max(0, data.offset - 50))));
+          if (data.status !== "inspection-limit" && data.next_offset != null) pagination.appendChild(makeButton("Next", () => this.inspect(item2.tag, data.next_offset)));
+          card8.appendChild(pagination);
+        }
+      }
+      this.host.appendChild(card8);
+    }
+    const stored = document.createElement("details");
+    this.analysesDetails = stored;
+    stored.setAttribute("data-molsysviewer-interaction-analyses", "true");
+    stored.open = this.analysesOpen;
+    stored.addEventListener("toggle", () => {
+      if (stored.isConnected) this.analysesOpen = stored.open;
+    });
+    const summary = document.createElement("summary");
+    summary.textContent = `Stored analyses (${this.analyses.length})`;
+    stored.appendChild(summary);
+    for (const analysis of this.analyses) {
+      const card8 = box4();
+      card8.appendChild(note2(`${analysis.name} \xB7 ${analysis.n_occurrences} observations \xB7 ${analysis.n_evaluated_structures}/${analysis.n_structures} structures \xB7 ${analysis.n_references} visual references`));
+      card8.appendChild(note2(`${analysis.method} \xB7 ${JSON.stringify(analysis.parameters)} \xB7 ${JSON.stringify(analysis.software)}`));
+      const actions = row2();
+      actions.appendChild(makeButton("Use", () => {
+        this.source = "stored";
+        this.stored = analysis.name;
+        this.editing = null;
+        this.scheduleRender();
+      }));
+      const remove3 = makeButton("Delete analysis", () => this.emit("delete_interaction_analysis", { analysis_name: analysis.name }));
+      remove3.disabled = analysis.n_references > 0;
+      remove3.title = "Deleting an analysis clears scene undo history.";
+      actions.appendChild(remove3);
+      card8.appendChild(actions);
+      stored.appendChild(card8);
+    }
+    this.host.appendChild(stored);
+  }
+};
+
 // src/ui/panels/shapes-panel.ts
 var emptySelection3 = () => ({
   event: "interaction_active_selection_changed",
@@ -157081,7 +158622,6 @@ var ALL_SHAPE_TYPES = [
   { op: "add_network_links", label: "Cylinder / Link (Pair)", mode: "ui", description: "Cylindrical link connecting two selections or coordinate points." },
   { op: "add_displacement_vectors", label: "Displacement Vector (Arrow)", mode: "ui", description: "3D arrow representing direction and displacement between two points." },
   { op: "add_pocket_surface", label: "Pocket Surface", mode: "ui", description: "Molecular surface representation for binding pockets and active sites." },
-  { op: "add_hbonds", label: "Hydrogen Bonds (H-Bonds)", mode: "ui", description: "Calculates and displays hydrogen bonding networks." },
   { op: "add_rings", label: "Aromatic Rings", mode: "ui", description: "Rings centroids and aromatic planes." },
   {
     op: "add_scalar_isosurface",
@@ -157241,8 +158781,8 @@ var ShapesPanel = class extends BasePanel {
     });
     const totalCount = this.shapes.length;
     const visibleCount = this.shapes.filter((m) => !m.hidden).length;
-    const row2 = document.createElement("div");
-    Object.assign(row2.style, {
+    const row3 = document.createElement("div");
+    Object.assign(row3.style, {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
@@ -157271,7 +158811,7 @@ var ShapesPanel = class extends BasePanel {
     const textSpan = document.createElement("span");
     textSpan.textContent = `${visibleCount} of ${totalCount} shape${totalCount === 1 ? "" : "s"} visible`;
     info.appendChild(textSpan);
-    row2.appendChild(info);
+    row3.appendChild(info);
     const actions = document.createElement("div");
     Object.assign(actions.style, {
       display: "flex",
@@ -157292,8 +158832,8 @@ var ShapesPanel = class extends BasePanel {
       button2.setAttribute("data-molsysviewer-shape-global-action", action);
       actions.appendChild(button2);
     }
-    row2.appendChild(actions);
-    globalCard.appendChild(row2);
+    row3.appendChild(actions);
+    globalCard.appendChild(row3);
     return globalCard;
   }
   renderNewShapeCard() {
@@ -157312,13 +158852,13 @@ var ShapesPanel = class extends BasePanel {
     Object.assign(typeLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.7)", width: "50px" });
     typeRow.appendChild(typeLabel);
     const selectOptions = ALL_SHAPE_TYPES.map((item2) => ({ value: item2.op, label: item2.label }));
-    const select = makeStyledSelect(selectOptions, this.selectedOp, (val) => {
+    const select2 = makeStyledSelect(selectOptions, this.selectedOp, (val) => {
       this.selectedOp = val;
       this.scheduleRender();
     });
-    select.style.flex = "1 1 auto";
-    select.setAttribute("data-molsysviewer-shape-type-select", "true");
-    typeRow.appendChild(select);
+    select2.style.flex = "1 1 auto";
+    select2.setAttribute("data-molsysviewer-shape-type-select", "true");
+    typeRow.appendChild(select2);
     formCard.appendChild(typeRow);
     const currentCatalogItem = ALL_SHAPE_TYPES.find((i) => i.op === this.selectedOp) || ALL_SHAPE_TYPES[0];
     if (currentCatalogItem.mode === "guide") {
@@ -157587,11 +159127,11 @@ var ShapesPanel = class extends BasePanel {
     return formCard;
   }
   renderShape(item2) {
-    const row2 = card7();
-    row2.setAttribute("data-molsysviewer-shape-tag", item2.tag);
-    row2.setAttribute("data-molsysviewer-shape-op", item2.op);
-    row2.setAttribute("data-molsysviewer-shape-broken", String(item2.broken));
-    row2.style.opacity = item2.hidden ? "0.48" : "1";
+    const row3 = card7();
+    row3.setAttribute("data-molsysviewer-shape-tag", item2.tag);
+    row3.setAttribute("data-molsysviewer-shape-op", item2.op);
+    row3.setAttribute("data-molsysviewer-shape-broken", String(item2.broken));
+    row3.style.opacity = item2.hidden ? "0.48" : "1";
     const head = document.createElement("div");
     Object.assign(head.style, { display: "flex", alignItems: "center", gap: "6px" });
     const identity3 = document.createElement("div");
@@ -157608,7 +159148,7 @@ var ShapesPanel = class extends BasePanel {
       fontWeight: "650"
     });
     head.appendChild(identity3);
-    row2.appendChild(head);
+    row3.appendChild(head);
     const btnRow = document.createElement("div");
     Object.assign(btnRow.style, {
       display: "flex",
@@ -157637,22 +159177,22 @@ var ShapesPanel = class extends BasePanel {
       button2.style.fontSize = "10px";
       btnRow.appendChild(button2);
     }
-    row2.appendChild(btnRow);
+    row3.appendChild(btnRow);
     const layer = document.createElement("div");
     layer.textContent = item2.layerTag && item2.layerTag !== item2.tag ? `layer: ${item2.layerTag}` : item2.subtitle || item2.op;
     Object.assign(layer.style, { fontSize: "10px", color: "rgba(244,244,245,0.56)", marginTop: "2px" });
-    row2.appendChild(layer);
+    row3.appendChild(layer);
     const status = this.renderStatuses.get(item2.tag);
-    if (status && status.status !== "rendered") row2.appendChild(this.renderWarning(status));
+    if (status && status.status !== "rendered") row3.appendChild(this.renderWarning(status));
     if (item2.broken) {
       const warning = document.createElement("div");
       warning.textContent = `\u26A0 ${item2.brokenReason || "Shape anchor is broken."}`;
       warning.title = item2.brokenReason || "Shape anchor is broken.";
       Object.assign(warning.style, { color: "#fbbf24", fontSize: "10px" });
-      row2.appendChild(warning);
+      row3.appendChild(warning);
     }
-    if (this.detailsTag === item2.tag) row2.appendChild(this.renderDetails(item2));
-    return row2;
+    if (this.detailsTag === item2.tag) row3.appendChild(this.renderDetails(item2));
+    return row3;
   }
   renderWarning(status) {
     const warning = document.createElement("div");
@@ -157791,14 +159331,14 @@ var ShapesPanel = class extends BasePanel {
     return this.controlRow(label2, input);
   }
   controlRow(labelText, control) {
-    const row2 = document.createElement("div");
-    Object.assign(row2.style, { display: "grid", gridTemplateColumns: "110px 1fr", alignItems: "center", gap: "7px" });
+    const row3 = document.createElement("div");
+    Object.assign(row3.style, { display: "grid", gridTemplateColumns: "110px 1fr", alignItems: "center", gap: "7px" });
     const label2 = document.createElement("span");
     label2.textContent = labelText;
     Object.assign(label2.style, { fontSize: "10px", color: "rgba(244,244,245,0.66)" });
-    row2.appendChild(label2);
-    row2.appendChild(control);
-    return row2;
+    row3.appendChild(label2);
+    row3.appendChild(control);
+    return row3;
   }
   bindContinuous(input, apply) {
     input.addEventListener("focus", () => this.beginCoalescing());
@@ -159356,6 +160896,8 @@ var GroupPanel = class {
         entity_indices: []
       })
     );
+    this.interactionsSection = this.createSection("interactions");
+    this.interactionsPanel = new InteractionsPanel(this.makePanelContext("interactions"));
     this.shapesSection = this.createSection("shapes");
     this.shapesPanel = new ShapesPanel(this.makePanelContext("shapes"));
     this.layersSection = this.createSection("layers");
@@ -159373,12 +160915,12 @@ var GroupPanel = class {
       onContext: this.onContext,
       onAnnotationContext: this.onAnnotationContext,
       onRebuilt: (naturalVisible) => {
-        this.visible = this.runtimeVisibleOverride ?? naturalVisible;
+        this.visible = this.runtimeVisibleOverride ?? (naturalVisible || this.systemPanel?.isLoading() === true);
         this.updateBodyDisplay();
         if (!this.sharedShell && !this.visible && this.expanded) this.expanded = false;
         if (this.visible) this.applyExpandedState();
       }
-    });
+    }, this.hasAuthority);
     const registryMap = /* @__PURE__ */ new Map([
       ["system", ["System", "Molecular Hierarchy & Sequence", this.systemSection, this.systemPanel]],
       ["whole", ["Whole", "Overall Representation & Presets", this.wholeSection, this.wholePanel]],
@@ -159386,6 +160928,7 @@ var GroupPanel = class {
       ["regions", ["Regions", "0", this.regionsSection, this.regionsPanel]],
       ["annotations", ["Annotations", "0", this.annotationsSection, this.annotationsPanel]],
       ["measures", ["Measures", "0", this.measuresSection, this.measuresPanel]],
+      ["interactions", ["Interactions", "0", this.interactionsSection, this.interactionsPanel]],
       ["shapes", ["Shapes", "0", this.shapesSection, this.shapesPanel]],
       ["layers", ["Layers", "0", this.layersSection, this.layersPanel]],
       ["viewport", ["Viewport", "Dark", this.viewportSection, this.viewportPanel]],
@@ -159398,6 +160941,7 @@ var GroupPanel = class {
       "regions",
       "annotations",
       "measures",
+      "interactions",
       "shapes",
       "layers",
       "viewport",
@@ -159408,8 +160952,8 @@ var GroupPanel = class {
     if (savedOrder) {
       try {
         const parsed = JSON.parse(savedOrder);
-        if (Array.isArray(parsed) && parsed.length === defaultOrder.length && parsed.every((k) => defaultOrder.includes(k))) {
-          tabOrder = parsed;
+        if (Array.isArray(parsed) && new Set(parsed).size === parsed.length && parsed.every((k) => defaultOrder.includes(k))) {
+          tabOrder = [...parsed, ...defaultOrder.filter((k) => !parsed.includes(k))];
         }
       } catch (e) {
       }
@@ -159648,6 +161192,16 @@ var GroupPanel = class {
     this.expanded = expanded;
     this.applyExpandedState();
   }
+  openSystemLoading() {
+    if (!this.hasAuthority) return;
+    this.setRuntimeVisible(true);
+    this.switchTab("system");
+    this.setExpanded(true);
+    this.systemPanel.openLoading();
+  }
+  updateSystemLoading(requestId, ok, atoms2, structures, sources, error2) {
+    this.systemPanel.updateLoading(requestId, ok, atoms2, structures, sources, error2);
+  }
   isExpanded() {
     return this.expanded;
   }
@@ -159690,6 +161244,7 @@ var GroupPanel = class {
     this.regionsPanel.setCurrentSelection(selection);
     this.measuresPanel.setCurrentSelection(selection);
     this.annotationsPanel.setCurrentSelection(selection);
+    this.interactionsPanel.setSelection(selection);
   }
   updateSelectionHistoryState(state) {
     this.selectionPanel.updateHistory(state);
@@ -159701,11 +161256,13 @@ var GroupPanel = class {
     this.regionsPanel.setSavedSelections(items);
     this.measuresPanel.setSavedSelections(items);
     this.annotationsPanel.setSavedSelections(items);
+    this.interactionsPanel.setSavedSelections(items);
   }
   updateSelectionQueryPreview(preview) {
     if (this.regionsPanel.updatePreview(preview)) return;
     if (this.measuresPanel.updatePreview(preview)) return;
     if (this.annotationsPanel.updatePreview(preview)) return;
+    if (this.interactionsPanel.updateQuery(preview)) return;
     this.selectionPanel.updatePreview(preview);
   }
   setRegions(items) {
@@ -159724,6 +161281,18 @@ var GroupPanel = class {
   }
   updateRegionDetails(details) {
     this.regionsPanel.updateDetails(details);
+  }
+  updateInteractionCreation(requestId, ok, name, error2) {
+    this.interactionsPanel.updateCreationResult(requestId, ok, name, error2);
+  }
+  setInteractions(message) {
+    this.interactionsPanel.setSummary(message);
+  }
+  setInteractionFrame(items, frame) {
+    this.interactionsPanel.setFrame(items, frame);
+  }
+  updateInteractionInspection(requestId, result2) {
+    this.interactionsPanel.updateInspection(requestId, result2);
   }
   setShapes(items, renderStatuses) {
     this.shapesPanel.setShapes(items, renderStatuses);
@@ -160406,9 +161975,9 @@ var AddonsPanel = class {
       const failure = this.addonDiagnostics.find(
         (d5) => d5.source.toLowerCase().includes(addon.name.toLowerCase())
       );
-      const row2 = document.createElement("div");
-      row2.setAttribute("data-molsysviewer-addon-card", addon.name);
-      Object.assign(row2.style, {
+      const row3 = document.createElement("div");
+      row3.setAttribute("data-molsysviewer-addon-card", addon.name);
+      Object.assign(row3.style, {
         display: "flex",
         flexDirection: "column",
         alignItems: "stretch",
@@ -160424,8 +161993,8 @@ var AddonsPanel = class {
         cursor: "pointer"
       });
       if (failure) {
-        row2.setAttribute("data-molsysviewer-addons-addon-discovery-failure", addon.name);
-        Object.assign(row2.style, {
+        row3.setAttribute("data-molsysviewer-addons-addon-discovery-failure", addon.name);
+        Object.assign(row3.style, {
           background: "rgba(239,68,68,0.03)",
           border: "1px solid rgba(239,68,68,0.25)",
           paddingRight: "12px"
@@ -160452,11 +162021,11 @@ var AddonsPanel = class {
         badge.textContent = failure.kind === "lifecycle" ? "Lifecycle Error" : "Discovery Error";
         header3.appendChild(name);
         header3.appendChild(badge);
-        row2.appendChild(header3);
+        row3.appendChild(header3);
         const desc = document.createElement("div");
         Object.assign(desc.style, { fontSize: "10px", color: "rgba(252,165,165,0.72)" });
         desc.textContent = failure.reason || "Error loading addon.";
-        row2.appendChild(desc);
+        row3.appendChild(desc);
         const traceBox = document.createElement("pre");
         Object.assign(traceBox.style, {
           display: "none",
@@ -160471,28 +162040,28 @@ var AddonsPanel = class {
           whiteSpace: "pre-wrap"
         });
         traceBox.textContent = failure.traceback || "No traceback detail.";
-        row2.appendChild(traceBox);
-        row2.addEventListener("click", (e) => {
+        row3.appendChild(traceBox);
+        row3.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
           const isVisible = traceBox.style.display === "block";
           traceBox.style.display = isVisible ? "none" : "block";
         });
       } else {
-        row2.addEventListener("mouseenter", () => {
+        row3.addEventListener("mouseenter", () => {
           if (addon.enabled) {
-            row2.style.background = "rgba(255,255,255,0.04)";
-            row2.style.border = "1px solid rgba(255,255,255,0.1)";
+            row3.style.background = "rgba(255,255,255,0.04)";
+            row3.style.border = "1px solid rgba(255,255,255,0.1)";
           }
         });
-        row2.addEventListener("mouseleave", () => {
-          row2.style.background = "rgba(255,255,255,0.02)";
-          row2.style.border = "1px solid rgba(255,255,255,0.06)";
+        row3.addEventListener("mouseleave", () => {
+          row3.style.background = "rgba(255,255,255,0.02)";
+          row3.style.border = "1px solid rgba(255,255,255,0.06)";
         });
         const matchedWorkspace = this.workspaceItems.find(
           (w) => w.addon === addon.name || w.id === addon.name
         );
-        row2.addEventListener("click", (e) => {
+        row3.addEventListener("click", (e) => {
           e.preventDefault();
           if (addon.enabled && matchedWorkspace) {
             this.onSelectWorkspace?.(matchedWorkspace.id);
@@ -160504,7 +162073,7 @@ var AddonsPanel = class {
           alignItems: "center",
           gap: "6px"
         });
-        row2.appendChild(nameRow);
+        row3.appendChild(nameRow);
         const name = document.createElement("div");
         Object.assign(name.style, {
           fontWeight: "700",
@@ -160533,7 +162102,7 @@ var AddonsPanel = class {
           lineHeight: "1.35"
         });
         desc.textContent = addon.description || "";
-        row2.appendChild(desc);
+        row3.appendChild(desc);
         const chipRow = document.createElement("div");
         Object.assign(chipRow.style, {
           display: "flex",
@@ -160542,7 +162111,7 @@ var AddonsPanel = class {
           marginTop: "2px",
           opacity: addon.enabled ? "1" : "0.3"
         });
-        row2.appendChild(chipRow);
+        row3.appendChild(chipRow);
         const createChip = (text) => {
           const chip = document.createElement("span");
           Object.assign(chip.style, {
@@ -160573,7 +162142,7 @@ var AddonsPanel = class {
           alignItems: "center",
           gap: "8px"
         });
-        row2.appendChild(actionsContainer);
+        row3.appendChild(actionsContainer);
         const toggleTrack = document.createElement("div");
         Object.assign(toggleTrack.style, {
           width: "30px",
@@ -160635,7 +162204,7 @@ var AddonsPanel = class {
           actionsContainer.appendChild(openBtn);
         }
       }
-      listContainer.appendChild(row2);
+      listContainer.appendChild(row3);
     }
     let diagnosticsRendered = false;
     for (const failure of this.addonDiagnostics) {
@@ -160898,8 +162467,8 @@ var AddonsPanel = class {
     }
     const summary = this.activeWorkspacePanelSummary;
     if (summary && Array.isArray(summary.sections) && summary.sections.length > 0) {
-      const row2 = document.createElement("div");
-      Object.assign(row2.style, {
+      const row22 = document.createElement("div");
+      Object.assign(row22.style, {
         display: "flex",
         alignItems: "center",
         flexWrap: "wrap",
@@ -160907,7 +162476,7 @@ var AddonsPanel = class {
         width: "100%",
         marginBottom: "4px"
       });
-      this.addonHeaderHost.appendChild(row2);
+      this.addonHeaderHost.appendChild(row22);
       const sections = summary.sections;
       if (!this.activeSectionKey || !sections.some((s) => s.key === this.activeSectionKey)) {
         this.activeSectionKey = sections[0].key;
@@ -160945,7 +162514,7 @@ var AddonsPanel = class {
           this.activeSectionKey = section.key;
           this.render();
         });
-        row2.appendChild(btn);
+        row22.appendChild(btn);
       }
     }
   }
@@ -161132,6 +162701,12 @@ function shapeTargetFromLoci(loci) {
       if (typeof shape.getLabel === "function") {
         shapeName = shape.getLabel(groupIdx, 0);
       }
+      const interaction = sourceData.interaction;
+      const observation = interaction?.observations?.[groupIdx];
+      if (observation) {
+        groupAtoms = [...new Set(observation.participants.flatMap((p6) => p6.atom_indices))];
+        entityRef = { kind: "interaction", analysis_name: interaction.analysis_name, analysis_revision: interaction.analysis_revision, frame: interaction.frame, occurrence_index: observation.occurrence_index };
+      }
       const perGroup = sourceData.__groupAtoms;
       if (Array.isArray(perGroup) && Array.isArray(perGroup[groupIdx])) {
         groupAtoms = perGroup[groupIdx].map((i) => Math.trunc(Number(i))).filter((i) => Number.isFinite(i));
@@ -161147,6 +162722,7 @@ function shapeTargetFromLoci(loci) {
     }
   }
   return {
+    kind: sourceData.kind === "interaction" ? "interaction" : "shape",
     atom_indices: groupAtoms ?? atomIndices,
     tag: typeof sourceData.tag === "string" ? sourceData.tag : void 0,
     shape_name: shapeName,
@@ -161200,7 +162776,7 @@ function normalizeContextPayloadFromLoci(loci, page_x, page_y) {
       return { event: "interaction_context_menu", kind: "structure", atom_indices: atomIndices, page_x, page_y, ...meta || {} };
     }
     const shapeTarget = shapeTargetFromLoci(loci);
-    if (shapeTarget) return { event: "interaction_context_menu", kind: "shape", ...shapeTarget, page_x, page_y };
+    if (shapeTarget) return { event: "interaction_context_menu", ...shapeTarget, page_x, page_y };
     return { event: "interaction_context_menu", kind: "empty", page_x, page_y };
   }
   const item2 = groupItems[0];
@@ -161232,7 +162808,7 @@ function normalizeInteractionEvent(kind, ev) {
       return { event, kind: "structure", atom_indices: atomIndices, ...meta || {} };
     }
     const shapeTarget = shapeTargetFromLoci(ev?.current?.loci);
-    if (shapeTarget) return { event, kind: "shape", ...shapeTarget };
+    if (shapeTarget) return { event, ...shapeTarget };
     return { event, kind: "empty" };
   }
   const item2 = groupItems[0];
@@ -161432,6 +163008,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.activePanelWidgetKey = null;
     this.addonListeners = /* @__PURE__ */ new Map();
     this.layoutChangeListeners = [];
+    this.interactionSummaries = [];
     // Loaded structure bundle
     this.currentActiveSelection = null;
     this.lastMeasurementSummary = null;
@@ -161497,7 +163074,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.legendOverlay = new LegendOverlay(host);
     this.trajectoryPlotOverlay = new TrajectoryPlotOverlay(host, (frame) => {
       void this.trajectory.setTrajectoryFrame(frame);
-    });
+    }, void 0, (tag) => this.notify?.({ event: "trajectory_plot_hidden", tag }));
     this.webglStatusOverlay = new WebGLStatusOverlay(host);
     new HoverTooltip(host, plugin);
     this.measurementTools = new MeasurementToolController(plugin, emitInteractionEvent, async ({ action, picks_atom_indices, endpoint_policy }) => {
@@ -161790,7 +163367,7 @@ var MolSysViewerController = class _MolSysViewerController {
         this.notify?.({ event: "interaction_context_action", action, tag, new_tag });
         return;
       }
-      if (action === "delete_annotation" || action === "delete_shape" || action === "save_selection" || action === "remove_selection" || action === "create_region_from_selection" || action === "create_section_from_selection" || action === "add_label_from_selection" || action === "expand_selection" || action === "addon_context_action") {
+      if (action === "delete_annotation" || action === "delete_shape" || action === "delete_interaction" || action === "focus_interaction" || action === "save_selection" || action === "remove_selection" || action === "create_region_from_selection" || action === "create_section_from_selection" || action === "add_label_from_selection" || action === "expand_selection" || action === "addon_context_action") {
         return;
       }
       this.startMeasurementTool(action, details?.endpoint_policy);
@@ -162017,10 +163594,21 @@ var MolSysViewerController = class _MolSysViewerController {
       setExpectedFrameCount: (n) => this.trajectory.setExpectedFrameCount(n)
     });
     this.trajectory = new TrajectoryHandlers(plugin, {
+      afterFrameApplied: () => this.annotations.refresh(),
       getLoadedStructure: () => this.loadedStructure,
       notifyTrajectoryState: () => this.notifyTrajectoryState(),
       onPlaybackStopped: (frame) => this.notify?.({ event: "trajectory_frame_changed", frame }),
       notify: (msg) => this.notify?.(msg)
+    });
+    this.interactions = new InteractionHandlers(plugin, {
+      register: (ref, tag) => this.state.registerTaggedRef(ref, tag, "interaction"),
+      unregister: (ref, tag) => this.state.unregisterTaggedRef(ref, tag, "interaction"),
+      notify: (message) => this.notify?.(message),
+      summaries: (items, frame) => {
+        this.interactionSummaries = items;
+        this.groupPanel.setInteractionFrame(items, frame);
+      },
+      layerHidden: (tag) => this.layerSummaries.some((item2) => item2.tag === tag && item2.hidden)
     });
     this.movie = new MovieHandlers({
       setTrajectoryFrame: (index) => this.trajectory.setTrajectoryFrame(index),
@@ -162038,6 +163626,8 @@ var MolSysViewerController = class _MolSysViewerController {
       (state) => {
         this.triggerLocalAddonEvent("frame-changed", state.currentFrame);
         this.trajectoryPlotOverlay.setFrame(state.currentFrame);
+        this.interactions.onFrame(state.currentFrame);
+        void this.annotations.refresh().catch((error2) => console.warn("[MolSysViewer] Annotation refresh failed", error2));
         this.requestDynamicRegionEvaluationForFrame(state.currentFrame);
       },
       { immediate: false }
@@ -162045,6 +163635,7 @@ var MolSysViewerController = class _MolSysViewerController {
     if (plugin.canvas3d?.didDraw) {
       plugin.canvas3d.didDraw.subscribe(() => {
         const cameraState = plugin.canvas3d.camera.getSnapshot();
+        this.annotations.onCamera(cameraState);
         this.triggerLocalAddonEvent("camera-moved", cameraState);
       });
     }
@@ -162397,6 +163988,8 @@ var MolSysViewerController = class _MolSysViewerController {
     this.notify?.({ event: "webgl_context_restored" });
   }
   dispose() {
+    this.annotations.dispose();
+    this.interactions.clear();
     this.measurementTools.dispose();
     this.toolStatusOverlay.dispose();
     this.legendOverlay.dispose();
@@ -162887,7 +164480,7 @@ var MolSysViewerController = class _MolSysViewerController {
   exceedsContextMenuDragThreshold(anchor, x, y) {
     return Math.hypot(x - anchor.x, y - anchor.y) > CONTEXT_MENU_DRAG_THRESHOLD_PX;
   }
-  async handleMessage(msg) {
+  async handleMessage(msg, options = {}) {
     if (!msg || typeof msg !== "object") return;
     if (!("op" in msg)) {
       console.warn("[MolSysViewer] message missing 'op'", msg);
@@ -162968,6 +164561,30 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         case "add_pharmacophore_features":
           await this.shapes.addPharmacophore(msg);
+          break;
+        case "set_interaction_frame":
+          await this.interactions.apply(msg);
+          break;
+        case "interaction_frame_complete":
+          this.interactions.finishResponse(msg.request_id);
+          break;
+        case "set_interaction_series":
+          await this.interactions.setSeries(msg);
+          break;
+        case "set_interaction_summaries":
+          if (!this.interactions.setSummaries(msg.interactions, msg.projection_revision)) break;
+          this.interactionSummaries = msg.interactions;
+          this.groupPanel.setInteractions({ ...msg, frame: this.interactions.currentFrame, interactions: msg.interactions.map((item2) => item2.frame === this.interactions.currentFrame ? item2 : { ...item2, frame: this.interactions.currentFrame, status: "pending", n_observations: 0, n_supported: 0, n_skipped: 0 }) });
+          this.refreshAddonsPanel(false);
+          break;
+        case "interaction_action_result":
+          this.groupPanel.updateInteractionCreation(msg.request_id, msg.ok, msg.analysis_name, msg.error_message);
+          break;
+        case "system_load_result":
+          this.groupPanel.updateSystemLoading(msg.request_id, msg.ok, msg.n_atoms, msg.n_structures, msg.n_sources, msg.error_message);
+          break;
+        case "interaction_inspection":
+          this.groupPanel.updateInteractionInspection(msg.request_id, msg.result);
           break;
         case "add_network_links":
           await this.shapes.addNetworkLinks(msg);
@@ -163083,10 +164700,12 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         }
         case "clear_scene":
+          if (msg.options?.shapes ?? true) this.interactions.clear();
           await this.scene.clearScene(msg);
           this.checkCameraAfterSceneMutation("clear_scene");
           break;
         case "clear_all":
+          this.interactions.clear();
           await this.scene.clearAll();
           break;
         case "clear_shapes_by_tag":
@@ -163303,6 +164922,7 @@ var MolSysViewerController = class _MolSysViewerController {
           await this.state.hideLayer(msg);
           break;
         case "delete_layer":
+          if (msg.kind === "interaction" && msg.tag) this.interactions.drop(msg.tag);
           if (msg.kind === "annotation" && typeof msg.tag === "string" && this.annotations.hasTag(msg.tag)) {
             this.annotations.dropTag(msg.tag);
           }
@@ -163396,7 +165016,7 @@ var MolSysViewerController = class _MolSysViewerController {
               typeof msg.height_px === "number" ? msg.height_px : void 0
             );
           } else {
-            this.movie.play(
+            await this.movie.play(
               msg.keyframes ?? [],
               !!msg.loop,
               typeof msg.start_time_ms === "number" ? msg.start_time_ms : 0
@@ -163405,7 +165025,7 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         }
         case "stop_movie":
-          this.movie.stop();
+          await this.movie.stop();
           break;
         case "set_addon_runtime_summary": {
           const prevWorkspaceIds = this.addonRuntimeInitialized ? new Set(this.getWorkspaceOptions().map((item2) => item2.id)) : null;
@@ -163638,6 +165258,7 @@ var MolSysViewerController = class _MolSysViewerController {
       this.syncStripOverlaysForMessage(msg);
     } catch (error2) {
       console.error("[MolSysViewer] Error handling message:", msg, error2);
+      if (options.throwOnError) throw error2;
     }
   }
   async handleArrayNativeMolSysMessage(msg, buffers) {
@@ -163776,15 +165397,15 @@ var MolSysViewerController = class _MolSysViewerController {
     const state = canvas3d?.camera?.state;
     const sceneRadius = canvas3d?.boundingSphere?.radius ?? 0;
     if (!state || sceneRadius <= 0) return;
-    const distance = Math.hypot(
+    const distance2 = Math.hypot(
       state.position[0] - state.target[0],
       state.position[1] - state.target[1],
       state.position[2] - state.target[2]
     );
-    if (distance >= sceneRadius) return;
+    if (distance2 >= sceneRadius) return;
     this.notify?.({
       event: "camera_stranded_inside_scene",
-      distance: Number(distance.toFixed(2)),
+      distance: Number(distance2.toFixed(2)),
       scene_radius: Number(sceneRadius.toFixed(2)),
       after
     });
@@ -163905,6 +165526,7 @@ var MolSysViewerController = class _MolSysViewerController {
       this.shapeRenderStatuses
     );
     this.groupPanel.setLayerObjects([
+      ...this.interactionSummaries.map((item2) => ({ kind: "interaction", tag: item2.tag, title: item2.analysis_name, layerTag: item2.layer_tag, hidden: item2.hidden })),
       ...this.annotationSummaries.map((item2) => ({
         kind: "annotation",
         tag: item2.tag,
@@ -164537,7 +166159,8 @@ var MolSysViewerController = class _MolSysViewerController {
       boxShadow: "0 4px 12px rgba(206, 80, 39, 0.25)",
       fontFamily: "system-ui, -apple-system, sans-serif"
     });
-    btn.textContent = "Load Trial Structure (1CRN)";
+    btn.textContent = this.initOptions?.hasAuthority !== false ? "Load systems\u2026" : "Load Trial Structure (1CRN)";
+    btn.setAttribute("data-molsysviewer-welcome-load", "true");
     btn.onmouseover = () => {
       btn.style.transform = "scale(1.02)";
       btn.style.boxShadow = "0 6px 16px rgba(206, 80, 39, 0.4)";
@@ -164547,6 +166170,11 @@ var MolSysViewerController = class _MolSysViewerController {
       btn.style.boxShadow = "0 4px 12px rgba(206, 80, 39, 0.25)";
     };
     btn.onclick = () => {
+      if (this.initOptions?.hasAuthority !== false) {
+        this.hideWelcomeCard();
+        this.groupPanel.openSystemLoading();
+        return;
+      }
       btn.style.opacity = "0.7";
       btn.textContent = "Loading Crambin...";
       void this.handleMessage({ op: "load_pdb_id", pdb_id: "1CRN" });
@@ -164951,6 +166579,7 @@ var runtime_actions_default = {
     camera_snapshot: "event",
     widget_resize: "event",
     trajectory_frame_changed: "event",
+    trajectory_plot_hidden: "event",
     shape_render_status: "event",
     js_log: "event",
     movie_frame: "event",
@@ -164977,7 +166606,8 @@ var runtime_actions_default = {
     movie_export_done: "ack",
     viewer_init_failed: "error",
     camera_stranded_inside_scene: "error",
-    runtime_contract_rejected: "error"
+    runtime_contract_rejected: "error",
+    request_interaction_frame: "request"
   },
   outbound_requests: [
     "request_camera_snapshot",
@@ -166600,17 +168230,17 @@ function makeSection(heading, rows) {
   h.textContent = heading;
   section.appendChild(h);
   for (const [key2, desc] of rows) {
-    const row2 = document.createElement("div");
-    row2.className = "molsysviewer-help-row";
+    const row3 = document.createElement("div");
+    row3.className = "molsysviewer-help-row";
     const keyEl = document.createElement("span");
     keyEl.className = "molsysviewer-help-key";
     keyEl.textContent = key2;
     const descEl = document.createElement("span");
     descEl.className = "molsysviewer-help-desc";
     descEl.textContent = desc;
-    row2.appendChild(keyEl);
-    row2.appendChild(descEl);
-    section.appendChild(row2);
+    row3.appendChild(keyEl);
+    row3.appendChild(descEl);
+    section.appendChild(row3);
   }
   return section;
 }
@@ -167936,7 +169566,7 @@ function rejected(reason, detail) {
 function nonEmpty2(value) {
   return typeof value === "string" && value.trim().length > 0;
 }
-function finiteNumber(value) {
+function finiteNumber2(value) {
   return typeof value === "number" && Number.isFinite(value);
 }
 function common2(value, expected) {
@@ -168002,7 +169632,7 @@ function validateInputPacket(value, expected = {}) {
   if (!Number.isSafeInteger(checked.sequence) || checked.sequence < 0) {
     return rejected("malformed-packet", "sequence must be a non-negative safe integer");
   }
-  if (!finiteNumber(checked.timestampMs) || checked.timestampMs < 0) {
+  if (!finiteNumber2(checked.timestampMs) || checked.timestampMs < 0) {
     return rejected("malformed-packet", "timestampMs must be finite and non-negative");
   }
   if (!checked.viewport || typeof checked.viewport !== "object" || Array.isArray(checked.viewport)) {
@@ -168011,12 +169641,12 @@ function validateInputPacket(value, expected = {}) {
   const viewport = checked.viewport;
   for (const dimension of ["width", "height"]) {
     const item2 = viewport[dimension];
-    if (!finiteNumber(item2) || item2 <= 0 || item2 > raw.max_viewport_dimension) {
+    if (!finiteNumber2(item2) || item2 <= 0 || item2 > raw.max_viewport_dimension) {
       return rejected("malformed-packet", `viewport.${dimension} is out of bounds`);
     }
   }
   const dpr = viewport.devicePixelRatio;
-  if (!finiteNumber(dpr) || dpr <= 0 || dpr > raw.max_device_pixel_ratio) {
+  if (!finiteNumber2(dpr) || dpr <= 0 || dpr > raw.max_device_pixel_ratio) {
     return rejected("malformed-packet", "viewport.devicePixelRatio is out of bounds");
   }
   const kind = checked.kind;
@@ -168038,7 +169668,7 @@ function validateInputPayload(kind, payload) {
   if (kind === "pointer" || kind === "wheel" || kind === "context-menu") {
     for (const coordinate of ["x", "y"]) {
       const item2 = payload[coordinate];
-      if (!finiteNumber(item2) || item2 < 0 || item2 > 1) {
+      if (!finiteNumber2(item2) || item2 < 0 || item2 > 1) {
         return rejected("malformed-payload", `${coordinate} must be normalized to [0, 1]`);
       }
     }
@@ -168061,7 +169691,7 @@ function validateInputPayload(kind, payload) {
     }
   } else if (kind === "wheel") {
     for (const delta2 of ["deltaX", "deltaY"]) {
-      if (!finiteNumber(payload[delta2])) {
+      if (!finiteNumber2(payload[delta2])) {
         return rejected("malformed-payload", `${delta2} must be finite`);
       }
     }
@@ -168583,7 +170213,7 @@ async function bootRenderWorker(options) {
     }
     if (value?.kind === "data") {
       if (dataHeader !== null) throw new Error("nested render-worker data header");
-      if (!Number.isInteger(value.bufferCount) || value.bufferCount < 0 || !Array.isArray(value.byteLengths) || value.byteLengths.length !== value.bufferCount || value.byteLengths.some((length) => !Number.isInteger(length) || Number(length) < 0)) {
+      if (!Number.isInteger(value.bufferCount) || value.bufferCount < 0 || !Array.isArray(value.byteLengths) || value.byteLengths.length !== value.bufferCount || value.byteLengths.some((length2) => !Number.isInteger(length2) || Number(length2) < 0)) {
         throw new Error("render-worker data header is malformed");
       }
       dataHeader = value;
@@ -170095,7 +171725,7 @@ async function bootRemoteRenderedClient(options) {
       return;
     }
     if (value?.kind === "data") {
-      if (state.header !== null || !Number.isInteger(value.bufferCount) || value.bufferCount < 0 || !Array.isArray(value.byteLengths) || value.byteLengths.length !== value.bufferCount || value.byteLengths.some((length) => !Number.isInteger(length) || Number(length) < 0)) {
+      if (state.header !== null || !Number.isInteger(value.bufferCount) || value.bufferCount < 0 || !Array.isArray(value.byteLengths) || value.byteLengths.length !== value.bufferCount || value.byteLengths.some((length2) => !Number.isInteger(length2) || Number(length2) < 0)) {
         throw new Error("remote rendered client data header is malformed");
       }
       state.header = value;
@@ -170333,7 +171963,7 @@ function makeMissingAuthorityReporter(el) {
   };
 }
 function reportSceneRuntimeMismatch(el, sceneVersion) {
-  const runtimeVersion = true ? "0.23.4" : "";
+  const runtimeVersion = true ? "0.23.4+71.g3b475639.dirty" : "";
   if (typeof sceneVersion !== "string" || !sceneVersion || !runtimeVersion) return;
   const release = (version) => version.split("+")[0].split(".dev")[0];
   if (release(sceneVersion) === release(runtimeVersion)) return;
@@ -170361,9 +171991,19 @@ async function bootDocsView(opts) {
     if (!debug) return;
     console.log("[MolSysViewer docs]", level, ...args);
   };
-  const initialMessages = Array.isArray(opts.initialMessages) ? opts.initialMessages : [];
-  const popupReplay = new PopupReplayLog(initialMessages);
   const ui = opts.ui || {};
+  let initialMessages = Array.isArray(opts.initialMessages) ? opts.initialMessages : [];
+  if (typeof ui.messages_url === "string" && ui.messages_url) {
+    const url = new URL(ui.messages_url, window.location.href);
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Could not load exported scene: HTTP ${response.status}.`);
+    const data = await response.json();
+    if (data?.format !== "molsysviewer-messages" || data?.version !== 1 || !Array.isArray(data?.messages)) {
+      throw new Error("Unsupported exported scene document.");
+    }
+    initialMessages = data.messages;
+  }
+  const popupReplay = new PopupReplayLog(initialMessages);
   const notifyHost = (event) => {
     if (!event || typeof event !== "object") return;
     if (ui.host_event_transport !== "url-scheme") return;
@@ -170394,7 +172034,7 @@ async function bootDocsView(opts) {
     const meta = messageMeta(msg);
     try {
       const controller = await controllerPromise;
-      await controller.handleMessage(msg);
+      await controller.handleMessage(msg, { throwOnError: true });
       popupReplay.record(msg);
       notifyHost({ event: "message_ack", phase: "handled", ...meta });
       if (msg?.op === "load_molsys_payload" || msg?.op === "load_molsys_payload_ref") {
@@ -170550,20 +172190,36 @@ async function bootDocsView(opts) {
     }
   };
   window.addEventListener("message", messageHandler);
-  (async () => {
-    try {
-      const controller = await controllerPromise;
-      const initial = Array.isArray(opts.initialMessages) ? opts.initialMessages : [];
-      for (const msg of initial) {
-        if (msg) await controller.handleMessage(msg);
-      }
-      notifyHost({ event: "ready" });
-    } catch (err) {
-      console.error("[MolSysViewer docs] Init error:", err);
-      const message = err instanceof Error ? err.message : String(err);
-      notifyHost({ event: "frontend_error", phase: "init", error: message });
+  try {
+    const controller = await controllerPromise;
+    for (const msg of initialMessages) {
+      if (msg) await controller.handleMessage(msg, { throwOnError: true });
     }
-  })();
+    const canvas = controller.plugin.canvas3d;
+    if (!canvas) throw new Error("Exported scene has no WebGL canvas.");
+    await new Promise((resolve, reject) => {
+      let requested = false;
+      const timer2 = setTimeout(() => {
+        subscription.unsubscribe();
+        reject(new Error("Exported scene did not finish drawing."));
+      }, 3e4);
+      const subscription = canvas.didDraw.subscribe(() => {
+        if (!requested) return;
+        clearTimeout(timer2);
+        subscription.unsubscribe();
+        resolve();
+      });
+      requested = true;
+      canvas.requestDraw();
+    });
+    notifyHost({ event: "ready" });
+  } catch (err) {
+    console.error("[MolSysViewer docs] Init error:", err);
+    const message = err instanceof Error ? err.message : String(err);
+    notifyHost({ event: "frontend_error", phase: "init", error: message });
+    (await controllerPromise).dispose();
+    throw err;
+  }
 }
 function applyExportedBackground(controller, mode) {
   const transparent = mode === "transparent";

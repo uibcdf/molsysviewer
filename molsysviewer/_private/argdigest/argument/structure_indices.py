@@ -27,6 +27,33 @@ def digest_structure_indices(structure_indices, caller=None):
         If the given structure_indices has not of the correct type.
     """
 
+    from ..helpers import normalize_viewer_caller
+
+    if normalize_viewer_caller(caller) == "molsysviewer.viewer.load":
+        from molsysviewer.loaders._composition import _index_selector
+
+        if isinstance(structure_indices, (list, tuple, np.ndarray)) and any(
+            isinstance(item, (str, list, tuple, np.ndarray, range)) for item in structure_indices
+        ):
+            return [digest_structure_indices(item, caller=caller) for item in structure_indices]
+        return _index_selector(structure_indices, "structure_indices")
+
+    if caller and caller.startswith("molsysviewer.interactions."):
+        if isinstance(structure_indices, str) and structure_indices == "current":
+            return structure_indices
+        if structure_indices is not None and not is_all(structure_indices):
+            # Validate before the common digester can coerce bool indices to int.
+            from molsysviewer.interactions import _indices
+
+            return _indices(structure_indices, np.iinfo(np.int64).max, "structure_indices",
+                            unique=not caller.endswith(".load"))
+
+    if caller and caller.endswith((".partial_coordinates_update", ".set_coordinates", ".set_box")):
+        if structure_indices is not None and not is_all(structure_indices):
+            from molsysviewer.interactions import _indices
+
+            return _indices(structure_indices, np.iinfo(np.int64).max, "structure_indices", unique=False)
+
     if structure_indices is None:
         return None
     elif is_all(structure_indices):

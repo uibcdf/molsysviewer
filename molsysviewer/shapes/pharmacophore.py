@@ -168,16 +168,12 @@ class PharmacophoreShapes:
 
     @signal(tags=["shape", "pharmacophore"])
     @records_scene_history
-    def add_pharmacophore_features(
-        self,
-        *args,
-        skip_digestion: bool = False,
-        **kwargs,
-    ):
+    @digest()
+    def add_pharmacophore_features(self, *, centers, kinds, radii=None, directions=None, alphas=None, colors=None, color_scheme=None, color_table=None, tag=None, layer_tag=None, name=None, skip_digestion=False):
         """Deprecated alias for `add_interaction_sites(...)`."""
         warnings.warn(
             "add_pharmacophore_features(...) is deprecated; use add_interaction_sites(...) instead.",
             DeprecationWarning,
             stacklevel=2,
         )
-        return self.add_interaction_sites(*args, skip_digestion=True, **kwargs)
+        return self.add_interaction_sites(centers=centers, kinds=kinds, radii=radii, directions=directions, alphas=alphas, colors=colors, color_scheme=color_scheme, color_table=color_table, tag=tag, layer_tag=layer_tag, name=name, skip_digestion=True)

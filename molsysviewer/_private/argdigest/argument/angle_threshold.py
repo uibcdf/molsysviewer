@@ -11,6 +11,11 @@ common_functions_with_angle_threshold_and_None = []
 
 def digest_angle_threshold(angle_threshold, caller=None):
 
+    if caller and caller.startswith("molsysviewer.interactions."):
+        from .._interaction_arguments import digest_angle
+
+        return digest_angle(angle_threshold, "angle_threshold", caller)
+
     if caller in common_functions_with_angle_threshold:
         if puw.is_quantity(angle_threshold):
             if puw.are_compatible(angle_threshold, "0.0 radians"):

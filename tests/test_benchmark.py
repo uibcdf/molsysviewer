@@ -35,7 +35,9 @@ def test_benchmark_serialization_uses_live_coordinate_update_contract(monkeypatc
 
     assert "coordinates_500atoms" in result
     coordinate_payload = next(payload for payload in payloads if payload.get("op") == "partial_coordinates_update")
-    assert coordinate_payload["coordinates"]
+    assert len(coordinate_payload["coordinates"][0]) == 500
+    assert coordinate_payload["coordinate_unit"] == "angstrom"
+    assert coordinate_payload["structure_indices"] == [0]
     assert coordinate_payload["atom_indices"] == list(range(500))
     assert coordinate_payload["transaction_id"] == "benchmark-serialization"
     assert all(payload.get("op") != "update_coordinates" for payload in payloads)

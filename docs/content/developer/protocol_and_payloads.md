@@ -39,6 +39,19 @@ changing the Mol* atom_site construction contract.
 
 Do not reintroduce legacy names such as `positions` or `frames`.
 
+## Partial coordinate edits
+
+`partial_coordinates_update` contains explicit `atom_indices` and
+`structure_indices`, `coordinates` shaped `(structures, atoms, 3)`, and
+`coordinate_unit: "angstrom"`. The frontend validates the complete message before replacing
+native trajectory models. A new conformation identity causes Mol* to rebuild
+geometry; edited offscreen structures are updated before later playback.
+The acknowledgement follows application of the update.
+
+Python invalidates derived interaction occurrences on the edited structures
+and refreshes its molecular projection. A pending native transfer is superseded
+so an old buffer cannot later overwrite the edit.
+
 ## JS → Python events
 
 The widget emits events back to Python via `widget.on_msg`.

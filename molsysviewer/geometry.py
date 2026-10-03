@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typing import Any
 
 import numpy as np
+from smonitor import signal
 
 from ._private.argdigest import digest
 
@@ -50,8 +51,9 @@ def _jsonable_payload(value: Any, *, owner: str) -> dict[str, Any]:
     return payload
 
 
+@signal()
 @digest()
-def entity_ref_payload(ref: "EntityRef | dict[str, Any]") -> dict[str, Any]:
+def entity_ref_payload(ref: "EntityRef | dict[str, Any]", *, skip_digestion: bool = False) -> dict[str, Any]:
     """Return a JSON-serializable entity-reference payload."""
     return _jsonable_payload(ref, owner="EntityRef")
 
@@ -76,7 +78,9 @@ class EntityRef:
         except TypeError as exc:
             raise ValueError("EntityRef must be JSON-serializable.") from exc
 
-    def to_payload(self) -> dict[str, Any]:
+    @signal()
+    @digest()
+    def to_payload(self, *, skip_digestion: bool = False) -> dict[str, Any]:
         return {
             "kind": self.kind,
             "entity_id": self.entity_id,

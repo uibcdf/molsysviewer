@@ -30,7 +30,7 @@ PAGE = Path(__file__).resolve().parents[1] / "docs/content/user/representations/
 #: Names people expect to be representation types, that deliberately are not. Each one is
 #: a capability reached through its own entry point.
 NOT_REPRESENTATION_TYPES = {
-    "label": "view.annotations.add_annotation",
+    "label": "view.annotations.add",
     "orientation": "view.show_orientation_axes",
     "plane": "view.show_best_fit_plane",
 }

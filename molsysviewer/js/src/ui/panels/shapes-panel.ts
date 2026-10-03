@@ -87,7 +87,6 @@ export const ALL_SHAPE_TYPES: ReadonlyArray<ShapeTypeCatalogItem> = [
     { op: "add_network_links", label: "Cylinder / Link (Pair)", mode: "ui", description: "Cylindrical link connecting two selections or coordinate points." },
     { op: "add_displacement_vectors", label: "Displacement Vector (Arrow)", mode: "ui", description: "3D arrow representing direction and displacement between two points." },
     { op: "add_pocket_surface", label: "Pocket Surface", mode: "ui", description: "Molecular surface representation for binding pockets and active sites." },
-    { op: "add_hbonds", label: "Hydrogen Bonds (H-Bonds)", mode: "ui", description: "Calculates and displays hydrogen bonding networks." },
     { op: "add_rings", label: "Aromatic Rings", mode: "ui", description: "Rings centroids and aromatic planes." },
     {
         op: "add_scalar_isosurface",

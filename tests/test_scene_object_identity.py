@@ -12,7 +12,7 @@ def _view():
 def test_same_tag_in_two_scene_object_domains_mutates_only_target_domain():
     view = _view()
     shape = view.shapes.add_sphere(center=puw.quantity([0.0, 0.0, 0.0], "nm"), tag="site1")
-    annotation = view.annotations.add_annotation(
+    annotation = view.annotations.add(
         "site",
         atom_indices=[0],
         tag="site1",
@@ -33,7 +33,7 @@ def test_same_tag_in_two_scene_object_domains_mutates_only_target_domain():
 def test_renaming_shape_does_not_rewrite_same_tag_annotation_history():
     view = _view()
     shape = view.shapes.add_sphere(center=puw.quantity([0.0, 0.0, 0.0], "nm"), tag="site1")
-    view.annotations.add_annotation("site", atom_indices=[0], tag="site1")
+    view.annotations.add("site", atom_indices=[0], tag="site1")
 
     shape.set_tag("sphere1", skip_digestion=True)
 
@@ -48,7 +48,7 @@ def test_renaming_shape_does_not_rewrite_same_tag_annotation_layer_tag():
     # export and the popup all read these histories.
     view = _view()
     shape = view.shapes.add_sphere(center=puw.quantity([0.0, 0.0, 0.0], "nm"), tag="site1")
-    view.annotations.add_annotation("site", atom_indices=[0], tag="site1")
+    view.annotations.add("site", atom_indices=[0], tag="site1")
 
     shape.set_tag("sphere1", skip_digestion=True)
 

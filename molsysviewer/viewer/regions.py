@@ -449,7 +449,7 @@ class RegionsMixin:
                 if missing_uid in candidate.dependencies:
                     candidate._freeze_broken_recipe(missing_uid)  # noqa: SLF001
                     self._clear_dynamic_region_cache(candidate.uid)
-        self._regions.pop(tag, None)
+        dict.pop(self._regions, tag, None)
         self._refresh_region_dynamic_modes()
 
     def _refresh_region_dynamic_modes(self) -> None:
@@ -461,12 +461,40 @@ class RegionsMixin:
                     region._set_mode("static")  # noqa: SLF001
                     changed = True
 
+    def _show_only_region(self) -> Region | None:
+        return next((region for region in self._regions.values()
+                     if region._active and not region._hidden and region._show_only), None)
+
+    def _clear_region_isolation(self) -> None:
+        for region in self._regions.values():
+            region._show_only = False
+
+    def _region_isolation_message(self) -> dict | None:
+        region = self._show_only_region()
+        if region is None:
+            return None
+        return {"op": "show_only_region", "tag": region.tag, "restore_only": True}
+
+    def _restore_region_isolation(self, region: Region | None) -> None:
+        if region is None or not region._active or self._regions.get(region.tag) is not region:
+            return
+        self._clear_region_isolation()
+        # Layer restoration can hide a member that was subsequently isolated.
+        # The region record is authoritative for its final saved visibility.
+        if region._hidden:
+            region._hidden = False
+            region._send("show_region")
+        region._show_only = True
+        self._send(self._region_isolation_message())
+        self._sync_region_summaries_runtime()
+
     def _set_all_regions_visibility(self, *, hidden: bool) -> None:
         tags: list[str] = []
         for tag, region in self._regions.items():
             if not getattr(region, "_active", False):
                 continue
             region._hidden = bool(hidden)  # noqa: SLF001
+            region._show_only = False  # noqa: SLF001
             tags.append(tag)
         self._send(
             {
@@ -810,7 +838,7 @@ class RegionsMixin:
             provenance=provenance,
             mode=region_mode,
         )
-        self._regions[tag] = region
+        dict.__setitem__(self._regions, tag, region)
         if has_visual_spec:
             region._send_create(include_visual=False)
             region.set_representation(

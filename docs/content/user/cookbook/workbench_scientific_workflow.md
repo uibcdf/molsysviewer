@@ -73,7 +73,7 @@ Add a label on the ACE cap (N-terminal side):
 
 ```python
 ace_atoms = list(view.whole.select(selection="group_index==0"))
-view.annotations.add_annotation(
+view.annotations.add(
     text="ACE cap",
     atom_indices=ace_atoms,
     tag="label_ace",
@@ -84,7 +84,7 @@ view.annotations.add_annotation(
 Add a label on the ALA residue itself:
 
 ```python
-view.annotations.add_annotation(
+view.annotations.add(
     text="Ala",
     atom_indices=ala_atoms,
     tag="label_ala",
@@ -177,7 +177,7 @@ exactly what you built, with no dependency on the original notebook.
 - `view.whole.select(selection=...)`
 - `view.regions.add(atom_indices=..., tag=..., representation=...)`
 - `view.regions.add(complement_of_regions=..., tag=..., representation=...)`
-- `view.annotations.add_annotation(text=..., atom_indices=..., tag=..., label_style=...)`
+- `view.annotations.add(text=..., atom_indices=..., tag=..., label_style=...)`
 - `view.measurements.add_distance(selection_a=..., selection_b=..., tag=...)`
 - `view.annotations.records()`
 - `view.measurements.records()`

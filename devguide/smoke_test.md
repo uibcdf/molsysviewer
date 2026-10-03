@@ -421,7 +421,7 @@ the popup inherits state it never saw created):
 view = demo["dialanine"]
 view.regions.add("molecule_type == 'peptide'", tag="prot")
 view.regions["prot"].set_representation("cartoon")
-view.annotations.add_annotation("site", atom_indices=[0], tag="note")
+view.annotations.add("site", atom_indices=[0], tag="note")
 view.measurements.add_distance(selection_a=[0], selection_b=[10], tag="d1")
 view.annotations.hide("note")
 view

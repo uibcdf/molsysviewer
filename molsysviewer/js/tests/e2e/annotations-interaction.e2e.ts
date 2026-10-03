@@ -3,6 +3,7 @@ import process from "node:process";
 import { chromium } from "./e2e-browser";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
+import { execFileSync } from "node:child_process";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -168,6 +169,94 @@ async function run() {
     assert.strictEqual(tooltipResult?.tag, "label-n");
     assert.strictEqual(tooltipResult?.text, "N-terminus");
     assert.deepStrictEqual(tooltipResult?.atom_indices, [0]);
+
+    // Real demo trajectory, public Python creation, and actual Mol* canvas geometry.
+    const fixture = JSON.parse(execFileSync(process.env.PYTHON || "python", [
+        resolve(__dirname, "annotation-callout-bridge.py"),
+    ], { encoding: "utf8" }));
+    const observed = await page.evaluate(async fixture => {
+        const controller = (window as any).__controller;
+        await controller.handleMessage({ op: "clear_all" });
+        let draws = 0;
+        const subscription = controller.plugin.canvas3d.didDraw.subscribe(() => draws++);
+        for (const message of fixture.messages) await controller.handleMessage(message);
+        const geometry = (tag: string) => {
+            const cell = Array.from(controller.plugin.state.data.cells.values()).find((cell: any) =>
+                cell.obj?.data?.sourceData?.tag === tag) as any;
+            if (!cell) throw new Error(`Missing annotation geometry ${tag}`);
+            return { ...cell.obj.data.sourceData,
+                drawCounts: cell.obj.data.repr.renderObjects.map((object: any) => object.values.drawCount.ref.value) };
+        };
+        const world = ["solid", "dashed", "dotted"].map(pattern => geometry(`world-${pattern}`));
+        const cameraBefore = geometry("camera-dotted");
+        const camera = controller.plugin.canvas3d.camera;
+        camera.setState({ position: [30, 0, 10], target: fixture.point, up: [0, 1, 0] }, 0);
+        controller.annotations.onCamera(camera.getSnapshot());
+        await controller.annotations.refresh();
+        const cameraAfter = geometry("camera-dotted");
+        const worldAfter = geometry("world-dotted");
+        await controller.handleMessage({ op: "set_trajectory_frame", index: 2 });
+        const lastFrame = geometry("camera-dotted");
+        const worldLast = geometry("world-dotted");
+        await controller.handleMessage({ op: "set_trajectory_frame", index: 0 });
+        await new Promise<void>(async (resolve, reject) => {
+            const timeout = setTimeout(() => { unsubscribe(); reject(new Error("Annotation playback did not settle")); }, 10000);
+            const unsubscribe = controller.trajectory.onTrajectoryState((state: any) => {
+                if (!state.isPlaying && state.currentFrame === 2) {
+                    clearTimeout(timeout); unsubscribe(); resolve();
+                }
+            }, { immediate: false });
+            try {
+                await controller.handleMessage({ op: "set_trajectory_playback", action: "play", fps: 30, mode: "once" });
+            } catch (error) { clearTimeout(timeout); unsubscribe(); reject(error); }
+        });
+        const afterPlayback = geometry("camera-dotted");
+        // World-to-atom transition must clear the old absolute position.
+        await controller.handleMessage({ op: "update_label", tag: "world-solid", options: {
+            position: null, atom_indices: [0], text: "now atom anchored" } });
+        const reanchored = geometry("world-solid");
+        await controller.handleMessage({ op: "hide_layer", tag: "world-dotted", kind: "annotation" });
+        const hidden = !Array.from(controller.plugin.state.data.cells.values()).some((cell: any) =>
+            cell.obj?.data?.sourceData?.tag === "world-dotted");
+        await controller.handleMessage({ op: "update_label", tag: "world-dotted", options: { text: "edited while hidden" } });
+        const hiddenAfterEdit = !Array.from(controller.plugin.state.data.cells.values()).some((cell: any) =>
+            cell.obj?.data?.sourceData?.tag === "world-dotted");
+        await controller.handleMessage({ op: "show_layer", tag: "world-dotted", kind: "annotation" });
+        const shown = geometry("world-dotted");
+        // Wait for a real canvas draw after the final asynchronous state writes.
+        await new Promise<void>((resolve, reject) => {
+            const timeout = setTimeout(() => reject(new Error("No canvas draw for annotation callouts")), 10000);
+            let armed = false;
+            const sub = controller.plugin.canvas3d.didDraw.subscribe(() => {
+                if (!armed) return;
+                clearTimeout(timeout); sub.unsubscribe(); resolve();
+            });
+            armed = true;
+            controller.plugin.canvas3d.requestDraw(true);
+        });
+        subscription.unsubscribe();
+        return { world, cameraBefore, cameraAfter, worldAfter, lastFrame, afterPlayback, worldLast, reanchored, hidden, hiddenAfterEdit, shown, draws };
+    }, fixture);
+    const close = (actual: number[], expected: number[]) =>
+        actual.forEach((value, i) => assert.ok(Math.abs(value - expected[i]) < 1e-4, `${value} differs from ${expected[i]}`));
+    for (const world of observed.world) {
+        close(world.anchor, fixture.point);
+        close(world.position, fixture.point.map((value: number, i: number) => value + [3, 2, 1][i]));
+        assert.ok(world.drawCounts.some((count: number) => count > 0), "callout has renderable canvas geometry");
+    }
+    assert.equal(new Set(observed.world.map((world: any) => world.drawCounts.join(","))).size, 3,
+        "solid, dashed and dotted leaders have distinct rendered geometry");
+    close(observed.worldAfter.position, observed.world[2].position);
+    close(observed.worldLast.position, observed.world[2].position);
+    assert.notDeepEqual(observed.cameraBefore.position, observed.cameraAfter.position);
+    close(observed.lastFrame.anchor, fixture.atom_at_last_frame);
+    close(observed.afterPlayback.anchor, fixture.atom_at_last_frame);
+    close(observed.reanchored.anchor, fixture.atom_at_last_frame);
+    assert.ok(observed.hidden);
+    assert.ok(observed.hiddenAfterEdit);
+    assert.equal(observed.shown.text, "edited while hidden");
+    close(observed.shown.position, observed.world[2].position);
+    assert.ok(observed.draws > 0);
 
     await browser.close();
 

@@ -1276,9 +1276,11 @@ not repeated for this documentation slice.
     supported feature contract are post-1.0 (`uibcdf/molsysviewer#100`); their
     exclusion is not a remote pass. Hosted CI 7/7 and public-channel notebooks
     also passed on `main` in runs `36233310412` and `36233310586`, resolving
-    #88 without certifying visible Qt or final 1.0 artifacts. Its Conda
-    message also needs to distinguish a published pre-1.0 pair from final
-    1.0 certification (`uibcdf/molsysviewer#103`).
+    #88 without certifying visible Qt or final 1.0 artifacts. The Conda message
+    defect is resolved under `uibcdf/molsysviewer#103`: the
+    [local evidence checks](release_gate_evidence.md) verify exact staging,
+    public installed-pair and hosted core runs independently. This implements
+    the assessment, not the missing final candidate or human observations.
 
 **Public distribution milestone, 2026-09-25:** the exact 0.22.4/0.23.4
 pair passed 20/20 staging and 20/20 **public-channel** clean installations

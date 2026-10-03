@@ -41,6 +41,25 @@ def digest_selection(selection, syntax="MolSysMT", caller=None):
     if caller in _FRONTEND_SELECTION_PAYLOAD_CALLERS:
         return selection
 
+    from ..helpers import normalize_viewer_caller
+
+    if normalize_viewer_caller(caller) == "molsysviewer.viewer.load":
+        from molsysviewer.loaders._composition import _index_selector
+
+        if selection is None or isinstance(selection, str):
+            return selection
+        if isinstance(selection, (list, tuple, np.ndarray)) and any(
+            isinstance(item, (str, list, tuple, np.ndarray, range)) for item in selection
+        ):
+            return [digest_selection(item, syntax=syntax, caller=caller) for item in selection]
+        return _index_selector(selection, "selection")
+
+    if caller and caller.startswith("molsysviewer.interactions."):
+        if selection is not None and not isinstance(selection, str):
+            from molsysviewer.interactions import _indices
+
+            return _indices(selection, np.iinfo(np.int64).max, "selection")
+
     if syntax == "MolSysMT":
         if isinstance(selection, str):
             return selection

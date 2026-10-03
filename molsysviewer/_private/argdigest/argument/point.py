@@ -54,6 +54,13 @@ def digest_point(point, caller=None):
     value = value.astype(np.float64)
     shape = value.shape
 
+    if caller in {"molsysviewer.layers.set_point", "molsysviewer.layers.set_geometry"}:
+        if shape == (1, 3):
+            value = value[0]
+        if value.shape == (3,) and np.isfinite(value).all():
+            return puw.quantity(value, unit, standardized=True)
+        raise ArgumentError("point", value=point, caller=caller, message=None)
+
     if len(shape) == 1:
         if shape[0] == 3:
             return puw.quantity(value[np.newaxis, :], unit, standardized=True)

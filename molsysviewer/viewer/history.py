@@ -211,6 +211,12 @@ class HistoryMixin:
                         options["layer_tag"] = new_options["layer_tag"]
                     if "style" in new_options:
                         options["style"] = dict(new_options["style"] or {})
+                    for key in ("position", "position_unit", "offset", "offset_mode", "offset_unit", "leader_line", "leader_line_style"):
+                        if key in new_options:
+                            if new_options[key] is None:
+                                options.pop(key, None)
+                            else:
+                                options[key] = new_options[key]
                 updated["options"] = options
                 if "broken" in msg:
                     updated["broken"] = bool(msg["broken"])

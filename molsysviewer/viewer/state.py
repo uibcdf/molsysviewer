@@ -23,6 +23,22 @@ from ..shapes._registry import register_shape_layer
 STATE_VERSION = 2
 
 
+def _read_atom_identities(molsys, *, fingerprint=False):
+    """Read available public metadata without inventing a hierarchy for small molecules."""
+    import molsysmt as msm
+
+    attributes = ("chain_id", "group_id", "group_name", "atom_name")
+    if fingerprint:
+        attributes += ("atom_id", "atom_type")
+    available = [name for name in attributes if msm.has_attribute(molsys, name, skip_digestion=True)]
+    columns = msm.get(molsys, element="atom", skip_digestion=True, **dict.fromkeys(available, True)) if available else []
+    if len(available) == 1:
+        columns = [columns]
+    values = dict(zip(available, columns, strict=True))
+    return [tuple(str(values[name][index]) if name in values else None for name in attributes)
+            for index in range(molsys.get_n_atoms())]
+
+
 def _structure_identity(molsys) -> dict | None:
     """What a state document records about the system it was written from.
 
@@ -30,22 +46,19 @@ def _structure_identity(molsys) -> dict | None:
     document's atom indices can address anything at all; the fingerprint decides whether
     they address what they were written for.
 
-    The fingerprint is **topological, never conformational**: it is taken over atom
-    names in order, so a state saved at frame 0 loads onto frame 500 of the same
-    trajectory, which is exactly the portability the document promises. Measured at
-    0.90 ms for 4,369 atoms -- cheaper than asking for three separate counts, because it
-    is one call rather than three, each paying its own digestion.
+    The fingerprint is topological, never conformational: ordered chain/group/atom
+    identities agree across trajectory frames but distinguish changed associations.
+    JSON tuples avoid ambiguities caused by joining arbitrary names with a delimiter.
     """
 
     if molsys is None:
         return None
     import hashlib
 
-    import molsysmt as msm
-
-    names = msm.get(molsys, element="atom", atom_name=True, skip_digestion=True)
-    digest = hashlib.sha256("\n".join(map(str, names)).encode("utf-8")).hexdigest()
-    return {"n_atoms": len(names), "fingerprint": f"sha256:{digest}"}
+    identities = _read_atom_identities(molsys, fingerprint=True)
+    encoded = json.dumps(identities, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    fingerprint = hashlib.sha256(encoded).hexdigest()
+    return {"n_atoms": len(identities), "fingerprint": f"sha256:{fingerprint}", "identity_schema": 2}
 
 
 class StateMixin:
@@ -57,7 +70,7 @@ class StateMixin:
 
     @signal(tags=["state", "query"])
     @digest()
-    def export_state(self) -> dict:
+    def export_state(self, *, skip_digestion: bool = False) -> dict:
         """Serialize the current viewer overlay state to a JSON-compatible dict.
 
         The returned dict (``version: 2``) captures annotations, measurements,
@@ -78,6 +91,7 @@ class StateMixin:
             ``measurement_settings``, ``measurements``, ``regions``, ``sections``,
             ``selections``, ``shapes``, ``whole``, ``order_high_water_mark``,
             ``uid_high_water_mark``, ``tag_high_water_marks``, ``structure``, ``view``.
+            ``sources`` contains compact load records bound to the ordered system.
 
             ``structure`` records the system the document was written from -- its atom
             count and a topological fingerprint -- and is absent when no system is
@@ -117,6 +131,7 @@ class StateMixin:
             provenance = dict(region.provenance)
             record = {
                 "uid": region.uid,
+                **({"show_only": True} if region._show_only else {}),
                 "tag": tag,
                 "selection": region.selection if isinstance(region.selection, str) else None,
                 "provenance": provenance,
@@ -144,13 +159,17 @@ class StateMixin:
         for raw in self.annotations.records():
             record = deepcopy(raw)
             options = dict(record.get("options") or {})
-            atom_indices = list(options.pop("atom_indices", []))
+            atom_indices = list(options.pop("atom_indices", None) or [])
             record["options"] = options
-            anchor = {"type": "atoms", "indices": atom_indices}
+            if options.get("position") is not None:
+                anchor = {"type": "position", "coordinates": options.pop("position"),
+                          "unit": options.pop("position_unit", "angstrom")}
+            else:
+                anchor = {"type": "atoms", "indices": atom_indices}
             # Beside the indices, not instead of them: the indices stay the fast path
             # when the document comes back to the same system, and the identities are
             # what makes it survive a different one.
-            identity = self._identities_for(atom_indices)
+            identity = self._identities_for(atom_indices) if anchor["type"] == "atoms" else None
             if identity:
                 anchor["identity"] = identity
             record["anchor"] = anchor
@@ -232,10 +251,17 @@ class StateMixin:
                 # before this key existed. Contract S5's additive-key rule: a reader that
                 # does not find it imports cleanly, and must not be told off for it.
                 **({"structure": identity} if (identity := self._structure_identity()) else {}),
+                **({"sources": sources} if (sources := self._export_source_state()) else {}),
                 "annotations": annotations,
                 "measurements": measurements,
+                **({"trajectory_plots": self.trajectory_plot.records(skip_digestion=True)} if self.trajectory_plot._cards() else {}),
                 "measurement_settings": self.measurements.settings(skip_digestion=True),
                 "shapes": shapes,
+                **(
+                    {"interaction_state_version": 1, "interactions": self.interactions.records(skip_digestion=True)}
+                    if self.interactions.count(skip_digestion=True)
+                    else {}
+                ),
                 "layers": layers,
                 "selections": self._selection_records_with_identity(),
                 "regions": regions,
@@ -255,7 +281,7 @@ class StateMixin:
 
     @signal(tags=["state"])
     @digest()
-    def save_state(self, path: str | os.PathLike[str]) -> None:
+    def save_state(self, path: str | os.PathLike[str], *, skip_digestion: bool = False) -> None:
         """Write the current overlay state to a UTF-8 JSON file atomically.
 
         This is the file counterpart of :meth:`export_state`. It does not include
@@ -319,6 +345,7 @@ class StateMixin:
         *,
         clear_first: bool = True,
         on_conflict: str = "raise",
+        skip_digestion: bool = False,
     ) -> None:
         """Load overlay state from JSON onto an already loaded structure.
 
@@ -345,6 +372,7 @@ class StateMixin:
         *,
         clear_first: bool = True,
         on_conflict: str = "raise",
+        skip_digestion: bool = False,
     ) -> None:
         """Restore viewer overlay state from a dict produced by :meth:`export_state`.
 
@@ -374,6 +402,50 @@ class StateMixin:
                 f"Unsupported state version: {version!r}. This build reads only "
                 f"version {STATE_VERSION}; version 1 documents are no longer supported."
             )
+        interaction_records = state.get("interactions", [])
+        if interaction_records:
+            if state.get("interaction_state_version") != 1:
+                raise ValueError("Unsupported interaction state version.")
+            for record in interaction_records:
+                import math
+
+                from ..interactions import _analysis_signature
+
+                style = record.get("style", {})
+                if (
+                    style.get("radius_unit") != "nm"
+                    or not isinstance(style.get("color"), int)
+                    or isinstance(style.get("color"), bool)
+                    or not 0 <= style["color"] <= 0xFFFFFF
+                    or not isinstance(style.get("alpha"), (int, float))
+                    or not math.isfinite(style["alpha"])
+                    or not 0 <= style["alpha"] <= 1
+                    or not isinstance(style.get("radius_nm"), (int, float))
+                    or not math.isfinite(style["radius_nm"])
+                    or style["radius_nm"] <= 0
+                ):
+                    raise ValueError("Invalid interaction display style.")
+                if record.get("broken"):
+                    continue
+                result = self.interactions.get_analysis(record["analysis_name"], skip_digestion=True)
+                token = (id(result), self.interactions._system_revision)
+                cache = self.interactions._signature_cache
+                if token not in cache:
+                    cache[token] = _analysis_signature(result)
+                if cache[token] != record.get("analysis_revision"):
+                    raise ValueError("Interaction state references a different scientific analysis.")
+                self.interactions._filter(
+                    record["analysis_name"],
+                    **{
+                        "selection": record["filter"]["selection"],
+                        "selection_2": record["filter"]["selection_2"],
+                        "mode": record["filter"]["mode"],
+                        "exclusive": record["filter"]["exclusive"],
+                        "structures": record["filter"]["structure_indices"],
+                        "types": record["filter"]["interaction_types"],
+                        "syntax": "MolSysMT",
+                    },
+                )
         reindexing = self._structure_changed(state.get("structure"))
         if reindexing:
             recorded = state.get("structure") or {}
@@ -389,8 +461,15 @@ class StateMixin:
             )
         if on_conflict not in {"raise", "skip", "rename"}:
             raise ValueError("on_conflict must be 'raise', 'skip', or 'rename'.")
+        plot_cards = self.trajectory_plot._prepare_import(state.get("trajectory_plots", []), clear_first, on_conflict)
+        source_records = self._prepare_source_import(state.get("sources"))
 
         region_records = list(state.get("regions", []))
+        isolated_records = [record for record in region_records if record.get("show_only", False)]
+        if (any(not isinstance(record.get("show_only", False), bool) for record in region_records)
+                or len(isolated_records) > 1
+                or any(record.get("hidden") for record in isolated_records)):
+            raise ValueError("State must name at most one visible show_only region.")
         ordered_records = self._topologically_ordered_regions(region_records)
         if not clear_first and on_conflict == "raise":
             self._preflight_import_conflicts(state)
@@ -401,6 +480,8 @@ class StateMixin:
                 self._restore_high_water_marks(state)
                 if clear_first:
                     self._clear_state_for_import()
+                    if source_records is not None:
+                        self._replace_load_records(source_records)
                 hidden_layers, layer_tag_map = self._restore_user_layers(
                     state.get("layers", []),
                     on_conflict=on_conflict,
@@ -416,6 +497,7 @@ class StateMixin:
                         for target, atom_name in representative_atoms.items():
                             self.measurements.set_representative_atom(str(target), str(atom_name), skip_digestion=True)
                 if self._molsys is not None:
+                    isolated_region = None
                     for record in ordered_records:
                         tag = self._import_tag("region", str(record.get("tag") or ""), on_conflict)
                         if tag is None:
@@ -423,7 +505,11 @@ class StateMixin:
                         restored_record = deepcopy(record)
                         restored_record["tag"] = tag
                         restored_record["layer"] = layer_tag_map.get(record.get("layer"), record.get("layer"))
-                        self._restore_region_v2(restored_record)
+                        restored_region = self._restore_region_v2(restored_record)
+                        if record.get("show_only"):
+                            isolated_region = restored_region
+                else:
+                    isolated_region = None
                 self._restore_annotations(
                     state.get("annotations", []),
                     on_conflict=on_conflict,
@@ -439,6 +525,40 @@ class StateMixin:
                     on_conflict=on_conflict,
                     layer_tag_map=layer_tag_map,
                 )
+                for record in interaction_records:
+                    tag = self._import_tag("interaction", record["tag"], on_conflict)
+                    if tag is None:
+                        continue
+                    with self._state_owner_context(record):
+                        layer_tag = self._restored_layer_tag(record["layer_tag"], original_object_tag=record["tag"],
+                                                             layer_tag_map=layer_tag_map)
+                        if record.get("broken"):
+                            from ..interactions import InteractionSet
+
+                            obj = InteractionSet(
+                                self,
+                                tag,
+                                analysis_name=record["analysis_name"],
+                                filter=deepcopy(record["filter"]),
+                                layer_tag=layer_tag,
+                            )
+                            obj.analysis_revision = record.get("analysis_revision")
+                            obj.broken = True
+                            self._scene_objects[("interaction", tag)] = obj
+                            self._ensure_layer_group(obj.layer_tag, kind="interaction", provenance="auto")
+                        else:
+                            obj = self.interactions.add(
+                                record["analysis_name"],
+                                tag=tag,
+                                **record["filter"],
+                                layer_tag=layer_tag,
+                                skip_digestion=True,
+                            )
+                    obj.style = dict(record["style"])
+                    obj.broken = bool(record.get("broken", False))
+                    if record.get("hidden"):
+                        obj.hide(skip_digestion=True)
+                self.interactions._project()
                 self._restore_sections(state.get("sections", []), on_conflict=on_conflict)
                 for layer_tag in hidden_layers:
                     layer = self.layers.get(layer_tag)
@@ -447,8 +567,10 @@ class StateMixin:
                 self._restore_selections(state.get("selections", []), on_conflict=on_conflict)
                 self._restore_active_selection(state.get("active_selection"))
                 self._restore_focus_overlays(state.get("focus"))
+                self.trajectory_plot._replace(plot_cards)
                 self._restore_view_state(state.get("view"))
                 self._send_resolved_atom_colors(replay=True)
+                self._restore_region_isolation(isolated_region)
                 self._sync_whole_summary_runtime()
                 self._region_order_counter = max(
                     order_high_water_mark_before_import,
@@ -473,9 +595,8 @@ class StateMixin:
         whole export -- paid on every click, for a value that changes only when the
         system does.
 
-        The marker pairs object identity with the atom count so that both ways a system
-        can change miss the cache: replaced outright (a new object) and grown in place
-        (a live edit that adds atoms keeps the object but not the count).
+        Object identity and atom count are fast cache markers. Announced system edits
+        invalidate both caches even when they preserve those markers.
         """
         molsys = self._molsys
         count = getattr(molsys, "get_n_atoms", None)
@@ -487,10 +608,16 @@ class StateMixin:
         marker = (id(molsys), count())
         cached = getattr(self, "_structure_identity_memo", None)
         if cached is not None and cached[0] == marker:
-            return cached[1]
+            return deepcopy(cached[1])
         identity = _structure_identity(molsys)
         self._structure_identity_memo = (marker, identity)
-        return identity
+        return deepcopy(identity)
+
+    def _invalidate_system_identity(self) -> None:
+        """An announced edit can change identity without changing object or size."""
+        self._structure_identity_memo = None
+        self._atom_identities_memo = None
+        self._source_binding_memo = None
 
     def _export_focus_overlays(self) -> dict:
         """Which regions are focus overlays, and the style each was given.
@@ -510,7 +637,7 @@ class StateMixin:
                 "region_tag": str(entry.get("region_tag") or tag),
                 "style": {
                     "representation": getattr(style, "representation", None),
-                    "params": dict(getattr(style, "params", {}) or {}),
+                    "params": deepcopy(getattr(style, "params", {}) or {}),
                 },
             }
         return overlays
@@ -673,21 +800,7 @@ class StateMixin:
         if cached is not None and cached[0] == marker:
             return cached[1]
         try:
-            import molsysmt as msm
-
-            chain_id, group_id, group_name, atom_name = msm.get(
-                molsys,
-                element="atom",
-                chain_id=True,
-                group_id=True,
-                group_name=True,
-                atom_name=True,
-                skip_digestion=True,
-            )
-            identities = [
-                (str(c), str(g), str(gn), str(an))
-                for c, g, gn, an in zip(chain_id, group_id, group_name, atom_name, strict=True)
-            ]
+            identities = _read_atom_identities(molsys)
         except Exception:
             # A system that cannot describe its atoms cannot anchor by identity. The
             # document simply carries no identity block, and by Contract S5 that is a
@@ -729,7 +842,7 @@ class StateMixin:
         for entry in recorded_identities:
             if not isinstance(entry, (list, tuple)) or len(entry) != 4:
                 return None
-            index = table.get(tuple(str(field) for field in entry))
+            index = table.get(tuple(None if field is None else str(field) for field in entry))
             if index is None:
                 return None
             resolved.append(index)
@@ -794,6 +907,7 @@ class StateMixin:
             "annotation": tags(state.get("annotations")),
             "measurement": tags(state.get("measurements")),
             "shape": tags(state.get("shapes")),
+            "interaction": tags(state.get("interactions")),
             "section": tags(state.get("sections")),
             "selection": tags(state.get("selections")),
         }
@@ -807,6 +921,7 @@ class StateMixin:
                     raise ValueError(f"Cannot import {domain} tag {tag!r}: it already exists.")
 
     def _clear_state_for_import(self) -> None:
+        self.interactions.clear(skip_digestion=True)
         self.shapes.clear(skip_digestion=True)
         self.annotations.clear(skip_digestion=True)
         self.measurements.clear(skip_digestion=True)
@@ -814,6 +929,8 @@ class StateMixin:
         self.scene.clear_sections()
         for tag in list(self._regions):
             self._regions[tag].delete(skip_digestion=True)
+        for layer in self._layers.values():
+            layer._active = False
         dict.clear(self._layers)
         self._atom_color_layers = {"whole": {}}
 
@@ -859,12 +976,22 @@ class StateMixin:
                 layer_tag_map=layer_tag_map,
             )
             anchor = record.get("anchor")
+            coordinate_anchor = isinstance(anchor, dict) and anchor.get("type") == "position"
+            if coordinate_anchor:
+                from .._private.annotation_vectors import annotation_vector
+                from .._pyunitwizard import puw
+                if not isinstance(anchor.get("unit"), str):
+                    raise ValueError("A coordinate annotation anchor requires explicit length units.")
+                options["position"] = annotation_vector(
+                    puw.quantity(anchor.get("coordinates"), anchor["unit"]), "position", physical=True,
+                )
+                options["position_unit"] = "angstrom"
             if isinstance(anchor, dict) and anchor.get("type") == "atoms":
                 atom_indices = list(anchor.get("indices") or [])
             else:
                 atom_indices = list(options.get("atom_indices") or [])
             unresolved = False
-            if getattr(self, "_state_reindexing", False):
+            if not coordinate_anchor and getattr(self, "_state_reindexing", False):
                 # The indices were written for another system, so they are not evidence
                 # of anything here. Either the identities resolve, or the annotation is
                 # broken -- restoring it at the old indices would put a label on whatever
@@ -876,7 +1003,7 @@ class StateMixin:
                 else:
                     atom_indices = resolved
             missing = self._missing_anchor_indices(atom_indices)
-            if not atom_indices or missing or unresolved:
+            if not coordinate_anchor and (not atom_indices or missing or unresolved):
                 history_record = deepcopy(record)
                 history_options = dict(history_record.get("options") or {})
                 history_options["atom_indices"] = atom_indices
@@ -896,14 +1023,15 @@ class StateMixin:
                 self._annotation_history.append(history_record)
                 continue
             with self._state_owner_context(record):
-                annotation = self.annotations.add(
-                    str(options.get("text") or ""),
-                    atom_indices=atom_indices,
-                    tag=tag,
-                    layer_tag=layer_tag,
-                    label_style=dict(options.get("style") or {}),
-                    skip_digestion=True,
-                )
+                annotation = self.annotations._ensure_layer(tag, layer_tag=layer_tag)
+            message = deepcopy(record)
+            message.pop("anchor", None)
+            message["tag"] = tag
+            options["tag"] = tag
+            options["atom_indices"] = atom_indices
+            options["layer_tag"] = annotation.layer_tag
+            message["options"] = options
+            self._send(message)
             if record.get("hidden"):
                 annotation.hide(skip_digestion=True)
 
@@ -1042,6 +1170,9 @@ class StateMixin:
                 items=list(record.get("items") or []),
                 skip_digestion=True,
             )
+            if record.get("recipe"):
+                restored = next(r for r in self._selection_history if r.get("tag") == tag)
+                restored["recipe"] = deepcopy(record["recipe"])
 
     def _restore_sections(self, records: Any, *, on_conflict: str) -> None:
         for record in records if isinstance(records, list) else []:
@@ -1165,11 +1296,13 @@ class StateMixin:
             self.whole.set_color_scheme(color_scheme, skip_digestion=True)
         if whole.get("visible") is False:
             self.whole.hide(skip_digestion=True)
+        elif whole.get("visible") is True:
+            self.whole.show(skip_digestion=True)
         base_layer = self._decode_color_layer(whole.get("color_layer"))
         if base_layer:
             self._atom_color_layers["whole"] = base_layer
 
-    def _restore_region_v2(self, record: dict) -> None:
+    def _restore_region_v2(self, record: dict) -> Region | None:
         tag = record.get("tag")
         atom_indices = record.get("atom_indices")
         if not tag:
@@ -1197,7 +1330,11 @@ class StateMixin:
                 atom_indices = self._evaluate_region_provenance(probe) or []
             else:
                 return
-        if len(atom_indices) == 0:
+        # An empty frame does not invalidate a dynamic recipe. Keep it so
+        # isolation can mask all of whole until the recipe finds atoms again.
+        if len(atom_indices) == 0 and not (
+            record.get("mode") == "dynamic" and Region._is_reevaluable_provenance(provenance)
+        ):
             return
         with self._state_owner_context(record):
             region = Region(
@@ -1208,7 +1345,7 @@ class StateMixin:
                 uid=str(record["uid"]) if record.get("uid") is not None else None,
                 provenance=provenance,
             )
-        self._regions[tag] = region
+        dict.__setitem__(self._regions, tag, region)
 
         representation = record.get("representation")
         preset = record.get("preset")
@@ -1247,6 +1384,7 @@ class StateMixin:
         color_layer = self._decode_color_layer(record.get("color_layer"))
         if color_layer:
             self._atom_color_layers[tag] = color_layer
+        return region
 
     @staticmethod
     def _decode_color_layer(raw: Any) -> dict:

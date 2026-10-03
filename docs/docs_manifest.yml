@@ -51,6 +51,11 @@ sections:
       - name: "cookbook"
         path: "docs/content/user/cookbook"
         index_file: "docs/content/user/cookbook/index.md"
+        pages:
+          - path: "docs/content/user/cookbook/interactions_workbench.ipynb"
+            agents_file: "docs/content/user/cookbook/interactions_workbench.AGENTS.md"
+            status: "experimental"
+            description: "Native calculation, inspection and declared named H5MSM import."
 
   showcase:
     path: "docs/content/showcase"

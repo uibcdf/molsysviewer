@@ -3,6 +3,45 @@ import test from "node:test";
 
 import { TrajectoryPlotOverlay } from "../../src/ui/trajectory-plot-overlay";
 
+test("numeric x positions, events and playhead agree for irregular samples", () => {
+    withFakeDom(() => {
+        const host = new FakeElement();
+        const sought: number[] = [];
+        const overlay = new TrajectoryPlotOverlay(host as unknown as HTMLElement, frame => sought.push(frame));
+        overlay.set({ visible: true, width: 440, n_frames: 4, x: [10, 11, 20, 11],
+            series: [{ label: "values", values: [1, 2, 3, 4] }], events: [{ frame: 1 }] });
+        const svg = host.find("svg")!;
+        const positions = svg.find("polyline")!.attributes.points.split(" ").map(point => Number(point.split(",")[0]));
+        assert.ok(Math.abs((positions[1] - positions[0]) / (positions[2] - positions[0]) - 0.1) < 1e-9);
+        assert.equal(positions[1], positions[3]);
+        const lines = svg.findAll("line");
+        assert.equal(Number(lines.find(line => line.attributes["stroke"] === "#f59e0b")!.attributes.x1), positions[1]);
+        overlay.setFrame(3);
+        assert.equal(Number(lines.find(line => line.attributes["stroke"] === "#ffffff")!.attributes.x1), positions[3]);
+        svg.dispatch("click", { clientX: positions[1], preventDefault() {} });
+        assert.equal(sought.at(-1), 3, "a repeated x preserves the current frame");
+        overlay.setFrame(0);
+        svg.dispatch("click", { clientX: positions[1], preventDefault() {} });
+        assert.equal(sought.at(-1), 1, "otherwise a tie chooses the earliest matching frame");
+        assert.ok(svg.findAll("text").some(text => text.textContent === "10"));
+        assert.ok(svg.findAll("text").some(text => text.textContent === "20"));
+    });
+});
+
+test("finite extreme and constant plot values produce finite SVG coordinates", () => {
+    withFakeDom(() => {
+        for (const values of [[-1e308, 0, 1e308], [1e300, 1e300, 1e300]]) {
+            const host = new FakeElement();
+            const overlay = new TrajectoryPlotOverlay(host as unknown as HTMLElement, () => {});
+            overlay.set({ visible: true, n_frames: 3, x: [-1e308, 0, 1e308],
+                series: [{ label: "finite", values }] });
+            const points = host.find("polyline")!.attributes.points.split(" ").map(point => point.split(",").map(Number));
+            assert.ok(points.flat().every(Number.isFinite));
+            assert.ok(points[0][0] < points[1][0] && points[1][0] < points[2][0]);
+        }
+    });
+});
+
 class FakeElement {
     public readonly style: Record<string, string> = {};
     public children: FakeElement[] = [];
@@ -134,21 +173,28 @@ test("TrajectoryPlotOverlay handles multiple plot cards simultaneously", () => {
 
         // Hide one card
         overlay.hide("e2e");
-        assert.strictEqual(host.children.length, 1);
+        assert.strictEqual(host.children.length, 2);
+        assert.strictEqual(host.children[0].style.display, "none");
+        assert.strictEqual(host.children[1].style.display, "flex");
 
         // Hide all cards
         overlay.hide();
+        assert.ok(host.children.every(card => card.style.display === "none"));
+        overlay.set({ cards: [] });
         assert.strictEqual(host.children.length, 0);
     });
 });
 
-test("TrajectoryPlotOverlay hides on clear", () => {
+test("TrajectoryPlotOverlay retains hidden data and clears an empty canonical registry", () => {
     withFakeDom(() => {
         const host = new FakeElement();
         const overlay = new TrajectoryPlotOverlay(host as unknown as HTMLElement, () => {});
         overlay.set({ visible: true, n_frames: 3, series: [{ label: "s", values: [0, 1, 2] }] });
         assert.strictEqual(host.children.length, 1);
         overlay.hide();
+        assert.strictEqual(host.children.length, 1);
+        assert.strictEqual(host.children[0].style.display, "none");
+        overlay.set({ cards: [] });
         assert.strictEqual(host.children.length, 0);
     });
 });

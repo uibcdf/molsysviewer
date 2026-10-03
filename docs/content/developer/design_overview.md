@@ -30,13 +30,13 @@ MolSysViewer is conceived as an **interactive molecular viewer** deeply integrat
 
 Guiding rules:
 
-### 1.1. Scientific computations → MolSysMT
+## 1.1. Scientific computations → MolSysMT
 Distances, angles, PCA, RMSD, neighbors, hbonds, topology, selections.
 
-### 1.2. Visual rendering → Mol\*
+## 1.2. Visual rendering → Mol\*
 Spheres, lines, arcs, labels, camera movements, hide/show.
 
-### 1.3. MolSysView = Modules + Facade
+## 1.3. MolSysView = Modules + Facade
 Exactly like MolSysMT:
 - internal modules (basic, structure, shapes, cam, hbonds, topology),
 - plus a public *facade* exposing high-level access:

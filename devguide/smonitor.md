@@ -23,6 +23,13 @@ In this repository it is also part of the developer and QA workflow:
 ### 1. Zero String Hardcoding
 Never use plain strings for warnings or errors in the scientific logic. Always add an entry to the `CATALOG` and a corresponding template in `CODES`, then emit via the catalog key.
 
+Author the template in `MESSAGES`; `CODES` derives all profile fields from it.
+Every catalog entry requires a template, even when a caller supplies fallback
+text. `tests/test_smonitor_integration.py` checks the entire catalog, and real
+emission checks cover the addon, dynamic-region, index-mapping, recovery and
+WebGL diagnostics in `user`, `dev`, `qa`, `agent` and `debug` profiles. Template
+placeholders must match context actually supplied by the emission path.
+
 ### 2. Telemetry with `@signal`
 All major public orchestration entry points should be decorated with `@signal(tags=[...])`.
 

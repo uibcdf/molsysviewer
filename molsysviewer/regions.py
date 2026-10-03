@@ -11,7 +11,7 @@ from smonitor import signal
 from ._private.argdigest import digest
 from ._private.delegated_errors import as_our_argument_error
 from ._private.exceptions import ArgumentError
-from ._private.smonitor.warnings import RegionWithoutOwnVisualWarning, warn
+from ._private.scene_registry import SceneRegistry
 from ._private.smonitor_emit import emit_suppressed_exception
 from ._private.variables import is_all
 from .colors import expand_values_to_atoms, normalize_color
@@ -57,6 +57,7 @@ class Region:
         self.order: int = view._next_region_order()  # noqa: SLF001
         self._active = True
         self._hidden = False
+        self._show_only = False
         # Layer membership (Contract B3, Phase 9): the tag of the layer this
         # region belongs to, or None for a region that belongs to no layer.
         self._layer: str | None = None
@@ -141,6 +142,7 @@ class Region:
 
     @mode.setter
     def mode(self, value: str) -> None:
+        self._assert_current()
         self._set_mode(value)
 
     @property
@@ -209,7 +211,7 @@ class Region:
     @property
     def repr_params(self) -> Dict[str, Any]:
         """The region's representation params. Read-only; use :meth:`set_representation`."""
-        return self._repr_params
+        return deepcopy(self._repr_params)
 
     def _set_visual_fields(
         self,
@@ -322,7 +324,12 @@ class Region:
         aset = set(a)
         return sorted({ii for ii in b if ii in aset})
 
+    def _assert_current(self):
+        if self._view._regions.get(self.tag) is not self or not self._active:
+            raise ValueError(f"Region handle {self.tag!r} is retired; reacquire it from its manager.")
+
     def _require_atom_indices(self) -> tuple[int, ...]:
+        self._assert_current()
         if self.atom_indices is None:
             raise ValueError(f"Boolean region composition requires known atom_indices for region {self.tag!r}.")
         return tuple(int(index) for index in self.atom_indices)
@@ -580,6 +587,7 @@ class Region:
             raise as_our_argument_error(exc, "molsysviewer.regions.select") from exc
 
     @signal(tags=["region", "convert"])
+    @digest()
     def convert(
         self,
         to_form: str = "molsysmt.MolSys",
@@ -617,6 +625,8 @@ class Region:
             raise as_our_argument_error(exc, "molsysviewer.regions.convert") from exc
 
     @signal(tags=["region", "query"])
+    @digest(digestion_source="molsysviewer._private.argdigest.molecular_attribute_flags",
+            digestion_style="registry", strictness="error")
     def get(
         self,
         element="system",
@@ -986,7 +996,8 @@ class Region:
 
         from . import pyunitwizard as puw
 
-        raw_values = puw.get_value(values) if puw.is_quantity(values) else values
+        unit = puw.get_unit(values) if puw.is_quantity(values) else None
+        raw_values = puw.get_value(values, to_unit=unit) if unit is not None else values
         array = np.asarray(raw_values)
         array = np.squeeze(array)
         if array.ndim != 1 or array.shape[0] != len(scoped_indices):
@@ -999,7 +1010,7 @@ class Region:
             raise ValueError(f"Attribute {resolved!r} is not scalar numeric data.") from exc
 
         self.set_color_by_values(
-            scalar_values,
+            puw.quantity(scalar_values, unit) if unit is not None else scalar_values,
             element=element,
             palette=palette,
             value_range=value_range,
@@ -1091,15 +1102,11 @@ class Region:
     @signal(tags=["region", "visibility"])
     @digest()
     def show(self, skip_digestion: bool = False) -> None:
-        """Show this region (all attached representations)."""
-        if not self._has_own_visual():
-            warn(
-                RegionWithoutOwnVisualWarning(
-                    extra={"tag": repr(self.tag), "action": "show"},
-                ),
-                stacklevel=2,
-            )
-            return
+        """Show attached representations, or release this region's mask on whole.
+
+        Other regions' visibility and the whole's global visibility are unchanged.
+        """
+        self._view._clear_region_isolation()  # noqa: SLF001
         self._hidden = False
         self._send("show_region")
         self._view._sync_region_summaries_runtime()  # noqa: SLF001
@@ -1108,15 +1115,12 @@ class Region:
     @signal(tags=["region", "visibility"])
     @digest()
     def hide(self, skip_digestion: bool = False) -> None:
-        """Hide this region (all attached representations)."""
-        if not self._has_own_visual():
-            warn(
-                RegionWithoutOwnVisualWarning(
-                    extra={"tag": repr(self.tag), "action": "hide"},
-                ),
-                stacklevel=2,
-            )
-            return
+        """Hide attached representations, or mask this region's atoms on whole.
+
+        A region without a representation affects only whole, never another
+        region's representations or scene overlays.
+        """
+        self._show_only = False
         self._hidden = True
         self._send("hide_region")
         self._view._sync_region_summaries_runtime()  # noqa: SLF001
@@ -1125,13 +1129,20 @@ class Region:
     @signal(tags=["region", "visibility"])
     @digest()
     def show_only(self, skip_digestion: bool = False) -> None:
-        """Leave only this region visible in the current view."""
+        """Isolate this region, hiding the other regions.
+
+        Without a representation, show its atoms through whole, activating
+        whole if necessary. Scene overlays keep their own visibility.
+        """
         if self.atom_indices is None:
             raise ValueError("Cannot show only a region without known atom indices.")
         for tag, region in self._view._regions.items():  # noqa: SLF001
             if not getattr(region, "_active", False):
                 continue
             region._hidden = tag != self.tag  # noqa: SLF001
+            region._show_only = region is self  # noqa: SLF001
+        if not self._has_own_visual():
+            self._view.whole.show(skip_digestion=True)
         self._send("show_only_region")
         self._view._sync_region_summaries_runtime()  # noqa: SLF001
 
@@ -1160,8 +1171,8 @@ class Region:
         old_tag = self.tag
         self._send("rename_region", new_tag=new_tag)
         self._tag = new_tag
-        self._view._regions[new_tag] = self  # noqa: SLF001
-        self._view._regions.pop(old_tag, None)  # noqa: SLF001
+        dict.__setitem__(self._view._regions, new_tag, self)  # noqa: SLF001
+        dict.pop(self._view._regions, old_tag, None)  # noqa: SLF001
         self._view._rename_atom_color_layer(old_tag, new_tag)  # noqa: SLF001
         self._view._sync_region_summaries_runtime()  # noqa: SLF001
 
@@ -1230,14 +1241,16 @@ class Region:
         Parameters
         ----------
         values
-            Iterable of scalars, one per *element* present in this region.
+            Unit-free scalars or a quantity array, one per *element* present in this region.
         element
             Structural level: ``"atom"``, ``"group"``, ``"component"``,
             ``"molecule"``, ``"chain"``, ``"entity"``.  Defaults to ``"atom"``.
         palette
             Palette name, matplotlib colormap, or list of colors.
         value_range
-            ``[vmin, vmax]`` normalization range.  Auto-detected when ``None``.
+            ``[vmin, vmax]`` normalization range. Physical values require a
+            quantity vector or two scalar bounds with compatible units.
+            Auto-detected when ``None``.
         replace
             If ``True``, replace any existing per-atom color map for the entire
             canvas.  If ``False`` (default), the region colors are *merged*
@@ -1267,7 +1280,7 @@ class Region:
         self._view._clear_atom_color_layer(self.tag)  # noqa: SLF001
 
 
-class RegionsManager(dict):
+class RegionsManager(SceneRegistry):
     """Dict-like registry of :class:`Region` objects with an :meth:`info` helper."""
 
     def __init__(self, view: Any) -> None:
@@ -1310,7 +1323,7 @@ class RegionsManager(dict):
 
     @signal(tags=["region", "query"])
     @digest()
-    def tags(self) -> list[str]:
+    def tags(self, *, skip_digestion: bool = False) -> list[str]:
         """The tags of every managed region."""
         return list(self.keys())
 
@@ -1361,6 +1374,13 @@ class RegionsManager(dict):
             region = self.get(tag)
             if region is not None:
                 region.delete(skip_digestion=True)
+
+    @records_scene_history
+    @signal(tags=["region"])
+    @digest()
+    def clear(self, skip_digestion: bool = False) -> None:
+        """Delete all regions through their scene lifecycle."""
+        self.delete_all(skip_digestion=True)
 
     @records_scene_history
     @signal(tags=["region", "visibility"])
@@ -1414,7 +1434,7 @@ class RegionsManager(dict):
 
     @signal(tags=["region", "query"])
     @digest()
-    def info(self, tag: str | None = None) -> dict[str, Any] | List[dict[str, Any]]:
+    def info(self, tag: str | None = None, *, skip_digestion: bool = False) -> dict[str, Any] | List[dict[str, Any]]:
         """Return compact metadata for one region (by *tag*) or all regions."""
 
         def summarize(region: Region) -> dict[str, Any]:

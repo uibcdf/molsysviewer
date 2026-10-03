@@ -1,6 +1,8 @@
 import ast
+import re
 from pathlib import Path
 
+import pytest
 from molsysviewer._private.exceptions import ArgumentError
 from molsysviewer._private.smonitor import CATALOG, META, PACKAGE_ROOT
 from molsysviewer.demo import demo
@@ -9,6 +11,8 @@ from smonitor import get_manager
 from smonitor.integrations import emit_from_catalog
 
 from molsysviewer import MolSysView
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_smonitor_catalog_emit():
@@ -153,14 +157,14 @@ def test_public_wrappers_emit_signal_timeline_entries(tmp_path):
 
 def test_public_digest_entrypoints_have_signal_decorators():
     targets = [
-        Path("molsysviewer/viewer/core.py"),
-        Path("molsysviewer/new_view.py"),
-        Path("molsysviewer/whole.py"),
-        Path("molsysviewer/regions.py"),
-        Path("molsysviewer/layers.py"),
-        Path("molsysviewer/config/__init__.py"),
+        ROOT / "molsysviewer/viewer/core.py",
+        ROOT / "molsysviewer/new_view.py",
+        ROOT / "molsysviewer/whole.py",
+        ROOT / "molsysviewer/regions.py",
+        ROOT / "molsysviewer/layers.py",
+        ROOT / "molsysviewer/config/__init__.py",
     ]
-    targets.extend(sorted(Path("molsysviewer/shapes").glob("*.py")))
+    targets.extend(sorted((ROOT / "molsysviewer/shapes").glob("*.py")))
 
     missing: list[str] = []
 
@@ -196,18 +200,61 @@ def test_public_digest_entrypoints_have_signal_decorators():
 def test_every_catalog_entry_has_a_template_smonitor_can_resolve():
     """Keyed by code, valued by a per-profile dict, with a message for every profile.
 
-    Mutation: key `CODES` by the catalog key again, or give an entry a plain string,
-    and this fails.
+    Removing a message for any catalog entry, keying `CODES` by catalog key, or giving
+    an entry a plain string must fail, including entries with no explicit caller text.
     """
     from molsysviewer._private.smonitor.catalog import CATALOG, CODES, MESSAGES, PROFILES_FIELDS
 
-    for key, template in MESSAGES.items():
-        code = CATALOG[key]["code"]
+    assert CATALOG
+    assert set(MESSAGES) == set(CATALOG), "Every catalog entry needs a message template"
+    for key, metadata in CATALOG.items():
+        template = MESSAGES[key]
+        code = metadata["code"]
         assert code in CODES, f"{key}: no template reachable under its code {code!r}"
         entry = CODES[code]
         assert isinstance(entry, dict), f"{code}: template must be a dict, not {type(entry).__name__}"
         for field in PROFILES_FIELDS:
             assert entry.get(field) == template, f"{code}: {field} does not carry the template"
+
+
+@pytest.mark.parametrize("profile", ["user", "dev", "qa", "agent", "debug"])
+def test_diagnostic_codes_render_emitted_context_in_every_profile(profile):
+    """Use real SMonitor emission with the fields supplied by the six call sites."""
+    cases = [
+        (
+            "addon_lifecycle_failed",
+            {"addon": "analysis-addon", "hook": "on_load", "reason": "missing dataset"},
+            ["analysis-addon", "on_load", "missing dataset"],
+        ),
+        (
+            "dynamic_region_evaluation_over_budget",
+            {"tag": "mobile", "uid": "region-1", "frame": 7, "elapsed_ms": 12.25, "budget_ms": 5.0},
+            ["mobile", "structure 7", "12.25 ms", "5.00 ms", "static mode"],
+        ),
+        ("index_map_degraded", {}, ["atom index map", "selection"]),
+        (
+            "suppressed_exception",
+            {"location": "IndexMapper.selection", "exception_type": "ValueError", "reason": "invalid query"},
+            ["ValueError", "IndexMapper.selection", "invalid query"],
+        ),
+        ("webgl_context_lost", {}, ["WebGL", "lost"]),
+        ("webgl_context_restored", {}, ["WebGL", "restored"]),
+    ]
+    manager = get_manager()
+    previous_profile = manager.config.profile
+    previous_enabled = manager.enabled
+    manager.configure(profile=profile, enabled=True)
+    try:
+        for key, extra, expected_fragments in cases:
+            event = emit_from_catalog(CATALOG[key], package_root=PACKAGE_ROOT, meta=META, extra=extra)
+            assert event["code"] == CATALOG[key]["code"]
+            message = event["message"]
+            assert message, f"{profile}: {key} rendered an empty message"
+            assert not re.search(r"\{\w+[^}]*\}", message), f"Unfilled placeholder: {message}"
+            for fragment in expected_fragments:
+                assert fragment in message, f"{profile}: {key} lost context {fragment!r}"
+    finally:
+        manager.configure(profile=previous_profile, enabled=previous_enabled)
 
 
 def test_a_catalog_message_renders_its_template_rather_than_the_fallback():
@@ -243,8 +290,6 @@ def test_a_rendered_catalog_message_leaves_no_unfilled_placeholder():
     from one template. Until then, asserting on its Python warning would be a test that
     passes when the thing it names is removed.
     """
-    import re
-
     from molsysviewer._private.exceptions import ArgumentError, FileAlreadyHandledError
 
     rendered = [

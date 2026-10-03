@@ -41,9 +41,10 @@ These concepts are user-visible and must remain stable.
 
 ## Visibility (whole vs regions vs display)
 
-- `region.hide()/show()`: affects only that region; the `hidden` state is remembered. `viewer.show()` must not re-enable hidden regions.
+- `region.hide()/show()`: controls its own/inherited representations, or masks/releases its atoms on whole only when it has no representation. Other region representations and overlays remain independent. Overlapping hidden base regions retain their own constraints. The `hidden` state is remembered; `viewer.show()` must not re-enable hidden regions. See `devguide/scene_contracts.md` §A.3 for representation transitions.
 - `whole.hide()/show()`: affects only the baseline representation. It does not touch region visibility; regions in state None disappear because they have no own visual.
 - `viewer.show()`: displays the notebook widget. It does not change whole or region visibility. There is no viewer-wide `hide()` or atom mask; visibility belongs to scene objects that can be saved and replayed.
+- `region.show_only()`: hides other regions and preserves a durable isolation choice on the selected region. Without a representation it activates whole and masks the complement; with Own/Inherit it masks whole entirely. Restore uses the saved choice without re-hiding later regions or changing saved whole visibility. Ordinary show/hide releases isolation as specified in `devguide/scene_contracts.md` §A.4.
 
 Reference flows
 

@@ -4,6 +4,8 @@ from collections.abc import Callable, Mapping
 from typing import Any
 
 from .addons import HANDLERS as ADDON_HANDLERS
+from .interactions import HANDLERS as INTERACTION_HANDLERS
+from .loading import load_systems
 from .regions import HANDLERS as REGION_HANDLERS
 from .scene_objects import HANDLERS as SCENE_OBJECT_HANDLERS
 from .selections import HANDLERS as SELECTION_HANDLERS
@@ -18,6 +20,8 @@ def _build_handlers() -> dict[str, PanelActionHandler]:
     handlers: dict[str, PanelActionHandler] = {}
     for domain in (
         ADDON_HANDLERS,
+        INTERACTION_HANDLERS,
+        {"load_systems": load_systems},
         SELECTION_HANDLERS,
         REGION_HANDLERS,
         SCENE_OBJECT_HANDLERS,

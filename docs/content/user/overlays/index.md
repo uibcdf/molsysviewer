@@ -16,5 +16,6 @@ If you need tags and layers to manage what you added, see {doc}`../scene_managem
 shapes/index
 labels
 measurements
+interactions
 trajectory_plot
 ```

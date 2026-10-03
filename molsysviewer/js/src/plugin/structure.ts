@@ -110,6 +110,17 @@ const InsertMolSysTrajectory = PluginStateTransform.BuiltIn({
     },
 });
 
+export async function replaceMolSysTrajectory(plugin: PluginContext, loaded: LoadedStructure, trajectory: Trajectory) {
+    const ref = StateObjectRef.resolveRef(loaded.trajectory);
+    const cell = ref ? plugin.state.data.cells.get(ref) : undefined;
+    if (!cell || cell.transform.transformer !== InsertMolSysTrajectory) {
+        throw new Error("Coordinate edits require a native MolSys trajectory.");
+    }
+    const update = plugin.state.data.build();
+    update.to(loaded.trajectory).update(InsertMolSysTrajectory, () => ({ trajectory }));
+    await plugin.runTask(plugin.state.data.updateTree(update));
+}
+
 export async function loadStructureFromString(
     plugin: PluginContext,
     data: string,

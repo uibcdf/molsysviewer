@@ -8,6 +8,8 @@ import time
 from pathlib import Path
 from typing import Any
 
+from smonitor import signal
+
 from .._private.argdigest import digest
 
 _EASING_VALUES = frozenset({"linear", "ease-in", "ease-out", "ease-in-out"})
@@ -47,6 +49,7 @@ class MovieManager:
 
     # ── Timeline construction ─────────────────────────────────────────────
 
+    @signal()
     @digest()
     def add_keyframe(
         self,
@@ -56,6 +59,7 @@ class MovieManager:
         structure_index: int | None = None,
         layer_visibility: dict[str, bool] | None = None,
         easing: str = "linear",
+        skip_digestion: bool = False,
     ) -> None:
         """Add a keyframe to the timeline.
 
@@ -97,12 +101,14 @@ class MovieManager:
             kf["layer_visibility"] = {str(k): bool(v) for k, v in layer_visibility.items()}
         self._keyframes.append(kf)
 
+    @signal()
     @digest()
     def add_visibility_transition(
         self,
         tag: str,
         visible: bool,
         at_time_ms: float,
+        *, skip_digestion: bool = False,
     ) -> None:
         """Insert or update a visibility step for a layer/region tag.
 
@@ -135,6 +141,7 @@ class MovieManager:
         )
         self._keyframes.insert(insert_at, new_kf)
 
+    @signal()
     @digest()
     def add_camera_orbit(
         self,
@@ -145,6 +152,7 @@ class MovieManager:
         center: list[float] | None = None,
         n_keyframes: int = 36,
         easing: str = "linear",
+        skip_digestion: bool = False,
     ) -> None:
         """Append keyframes that rotate the camera around a center point.
 
@@ -221,6 +229,7 @@ class MovieManager:
             kf: dict = {"time_ms": kf_time, "easing": easing, "camera": camera_kf}
             self._keyframes.append(kf)
 
+    @signal()
     @digest()
     def add_structure_sweep(
         self,
@@ -230,6 +239,7 @@ class MovieManager:
         start_time_ms: float | None = None,
         duration_ms: float | None = None,
         end_time_ms: float | None = None,
+        skip_digestion: bool = False,
     ) -> None:
         """Append keyframes that step through structure (trajectory) indices.
 
@@ -301,8 +311,9 @@ class MovieManager:
             }
             self._keyframes.append(kf)
 
+    @signal()
     @digest()
-    def clear(self) -> None:
+    def clear(self, *, skip_digestion: bool = False) -> None:
         """Remove all keyframes and reset the timeline."""
         self._keyframes = []
 
@@ -320,8 +331,9 @@ class MovieManager:
 
     # ── Inspection ────────────────────────────────────────────────────────
 
+    @signal()
     @digest()
-    def info(self) -> dict:
+    def info(self, *, skip_digestion: bool = False) -> dict:
         """Return a summary of the current timeline.
 
         Returns
@@ -340,8 +352,9 @@ class MovieManager:
 
     # ── Serialization ─────────────────────────────────────────────────────
 
+    @signal()
     @digest()
-    def to_dict(self) -> dict:
+    def to_dict(self, *, skip_digestion: bool = False) -> dict:
         """Serialise the timeline to a JSON-compatible plain dict.
 
         The dict can be passed to :meth:`from_dict` on any view to
@@ -352,8 +365,9 @@ class MovieManager:
             "keyframes": [dict(kf) for kf in self._keyframes],
         }
 
+    @signal()
     @digest()
-    def from_dict(self, data: dict) -> None:
+    def from_dict(self, data: dict, *, skip_digestion: bool = False) -> None:
         """Replace the current timeline with data from a plain dict.
 
         Parameters
@@ -375,8 +389,9 @@ class MovieManager:
                 )
         self._keyframes = [dict(kf) for kf in keyframes]
 
+    @signal()
     @digest()
-    def save(self, path: str | Path) -> None:
+    def save(self, path: str | Path, *, skip_digestion: bool = False) -> None:
         """Write the timeline to a JSON file.
 
         Parameters
@@ -386,8 +401,9 @@ class MovieManager:
         """
         Path(path).write_text(json.dumps(self.to_dict(), indent=2), encoding="utf-8")
 
+    @signal()
     @digest()
-    def load(self, path: str | Path) -> None:
+    def load(self, path: str | Path, *, skip_digestion: bool = False) -> None:
         """Replace the timeline from a JSON file written by :meth:`save`.
 
         Parameters
@@ -399,8 +415,9 @@ class MovieManager:
 
     # ── Playback / export (Phase 2 / Phase 3) ─────────────────────────────
 
+    @signal()
     @digest()
-    def play(self, loop: bool = False, start_time_ms: float = 0.0) -> None:
+    def play(self, loop: bool = False, start_time_ms: float = 0.0, *, skip_digestion: bool = False) -> None:
         """Preview the movie in the browser.
 
         Sends the current timeline to the frontend and starts
@@ -433,11 +450,13 @@ class MovieManager:
             }
         )
 
+    @signal()
     @digest()
-    def stop(self) -> None:
+    def stop(self, *, skip_digestion: bool = False) -> None:
         """Stop browser playback."""
         self._view._send_runtime_only({"op": "stop_movie"})  # noqa: SLF001
 
+    @signal()
     @digest()
     def export(
         self,
@@ -448,6 +467,7 @@ class MovieManager:
         height_px: int | None = None,
         format: str | None = None,
         timeout_s: float | None = None,
+        skip_digestion: bool = False,
     ) -> Path:
         """Export the movie to a video file.
 

@@ -16,6 +16,15 @@ supersedes: []
 
 **Status:** post-1.0 design.
 
+**Review 2026-10-03:** an atom/group minimum is a candidate for pre-1.0 after
+#146–#150 and the #151 loading-contract discussion. It is not implemented by
+that review, and this full proposal remains deferred. Mol* granularity props
+alone cannot implement atom picking: Viewer `handlePrimaryClick` currently
+expands raw loci through `lociToGroupItems`. Both owning seams, measurements'
+temporary element granularity, Python selection metadata and Studio preferences
+require qualification. Explicit programmatic atom selections retain their exact
+indices regardless of the mouse preference.
+
 **Scope:** Canvas right-click context menu integration for toggling mouse interaction picking granularity.
 
 ---

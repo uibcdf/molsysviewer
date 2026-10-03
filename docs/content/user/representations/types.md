@@ -35,7 +35,7 @@ Three capabilities are sometimes expected here and do not belong to
 `set_representation`. Each has its own entry point, and passing its name as a
 representation type raises:
 
-- **labels** — use {doc}`../annotations/index` (`view.annotations.add_annotation(...)`).
+- **labels** — use {doc}`../overlays/labels` (`view.annotations.add(...)`).
   A label is text placed in the scene, not a way of drawing atoms, and it has its own
   lifecycle.
 - **orientation axes** — use `view.show_orientation_axes(selection)`. It returns a

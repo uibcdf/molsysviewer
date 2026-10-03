@@ -3,81 +3,13 @@ from __future__ import annotations
 from typing import Any
 
 import molsysmt as msm
-import numpy as np
 from depdigest import dep_digest
 from smonitor import signal
 
 from ..._private.argdigest import digest
+from ...loaders._composition import _validate_pairing, _validate_renderable
 from ...new_view import new_view
 from ...viewer import MolSysView
-
-
-class _OffsetMap:
-    """Proxy dict for offset-based atom index remapping (merge use case).
-
-    All source atoms survive the merge, so ``get`` always returns
-    ``key + offset``.  This is compatible with the ``dict.get`` protocol used
-    by ``MolSysView._remap_measurement_message`` and
-    ``MolSysView._remap_selection_message``.
-    """
-
-    __slots__ = ("_offset",)
-
-    def __init__(self, offset: int) -> None:
-        self._offset = offset
-
-    def get(self, key: int, default: int | None = None) -> int:  # noqa: ARG002
-        return key + self._offset
-
-
-def _remap_indices(indices: Any, atom_offset: int) -> list[int]:
-    if not isinstance(indices, (list, tuple)):
-        return []
-    return [int(ii) + atom_offset for ii in indices if isinstance(ii, (int, np.integer))]
-
-
-def _remap_atom_pairs(pairs: Any, atom_offset: int) -> list[list[int]] | None:
-    if not isinstance(pairs, list):
-        return None
-    out: list[list[int]] = []
-    for pair in pairs:
-        if (
-            isinstance(pair, (list, tuple))
-            and len(pair) == 2
-            and isinstance(pair[0], (int, np.integer))
-            and isinstance(pair[1], (int, np.integer))
-        ):
-            out.append([int(pair[0]) + atom_offset, int(pair[1]) + atom_offset])
-    return out
-
-
-def _remap_tagged_message(msg: dict[str, Any], atom_offset: int, tag_map: dict[str, str]) -> dict[str, Any]:
-    remapped = dict(msg)
-    options = remapped.get("options")
-    if not isinstance(options, dict):
-        return remapped
-
-    options = dict(options)
-    remapped["options"] = options
-
-    tag = options.get("tag")
-    if isinstance(tag, str) and tag in tag_map:
-        options["tag"] = tag_map[tag]
-
-    if "atom_indices" in options:
-        options["atom_indices"] = _remap_indices(options.get("atom_indices"), atom_offset)
-
-    if "mouth_atom_indices" in options:
-        mouths = options.get("mouth_atom_indices")
-        if isinstance(mouths, list) and mouths and isinstance(mouths[0], list):
-            options["mouth_atom_indices"] = [_remap_indices(mouth, atom_offset) for mouth in mouths]
-        else:
-            options["mouth_atom_indices"] = _remap_indices(mouths, atom_offset)
-
-    if "atom_pairs" in options:
-        options["atom_pairs"] = _remap_atom_pairs(options.get("atom_pairs"), atom_offset)
-
-    return remapped
 
 
 def _unique_tag(tag: str, used_tags: set[str], source_index: int) -> str:
@@ -96,136 +28,82 @@ def _unique_tag(tag: str, used_tags: set[str], source_index: int) -> str:
 
 
 def _import_view_state(result: MolSysView, source_views: list[MolSysView]) -> None:
-    primary = source_views[0]
-    result.widget.show_controls = bool(getattr(primary.widget, "show_controls", True))
-    result.widget.autohide_controls = bool(getattr(primary.widget, "autohide_controls", False))
-    result.widget.controls_position = list(getattr(primary.widget, "controls_position", ["top", "right"]))
-    result.widget.controls_position_fullscreen = list(
-        getattr(primary.widget, "controls_position_fullscreen", ["bottom", "right"])
-    )
-    result._last_label = getattr(primary, "_last_label", None)  # noqa: SLF001
-    result._last_camera_snapshot = (
-        dict(primary._last_camera_snapshot)  # noqa: SLF001
-        if isinstance(primary._last_camera_snapshot, dict)  # noqa: SLF001
-        else None
-    )
+    from copy import deepcopy
 
-    if primary.whole.preset is not None or primary.whole.representation is not None:
-        result.whole.set_representation(
-            primary.whole.representation,
-            preset=primary.whole.preset,
-            skip_digestion=True,
-            **primary.whole.params,
-        )
-    if not primary.whole.visible:
-        result.whole.hide(skip_digestion=True)
+    from ._scene_transfer import _copy_auxiliary, _transfer_state
+    combined = None
+    offset = 0
+    used = {}
+    used_sources = set()
+    for source_index, source in enumerate(source_views):
+        count = int(source._molsys.get_n_atoms())
+        state = _transfer_state(source, result, {i: i + offset for i in range(count)}, merge=True)
+        state.setdefault("trajectory_plots", [])
+        mappings = {}
+        for domain in ("regions", "layers", "shapes", "annotations", "measurements", "selections", "sections", "trajectory_plots"):
+            seen = used.setdefault(domain, set())
+            mappings[domain] = {r["tag"]: _unique_tag(r["tag"], seen, source_index) for r in state[domain]}
+        # Automatic layer tags follow the renamed object that owns them.
+        layer_map = mappings["layers"]
+        for domain in ("shapes", "annotations", "measurements"):
+            for old, new in mappings[domain].items():
+                if old not in layer_map:
+                    layer_map[old] = new
+        uid_map = {r["uid"]: f"merge_{source_index}_{r['uid']}" for r in state["regions"]}
+        source_map = {}
+        for record in state.get("sources", {}).get("records", []):
+            old_id = record["source_id"]
+            if old_id in used_sources:
+                from uuid import uuid4
 
-    atom_offset = 0
-    used_region_tags: set[str] = set()
-    used_layer_tags: set[str] = set()
-
-    for source_index, view in enumerate(source_views):
-        tag_map: dict[str, str] = {}
-
-        for layer in view.layers.values():
-            if not getattr(layer, "_active", True):
-                continue
-            new_tag = _unique_tag(layer.tag, used_layer_tags, source_index)
-            tag_map[layer.tag] = new_tag
-            merged_layer = result.layers.add(
-                new_tag,
-                kind=layer.kind,
-                meta=dict(layer.meta) if isinstance(layer.meta, dict) else {},
-                skip_digestion=True,
-            )
-            if getattr(layer, "_hidden", False):
-                merged_layer.hide(skip_digestion=True)
-
-        for region in view.regions.values():
-            if not getattr(region, "_active", True):
-                continue
-            new_tag = _unique_tag(region.tag, used_region_tags, source_index)
-            remapped_indices = _remap_indices(list(region.atom_indices or []), atom_offset)
-            merged_region = result.regions.add(
-                selection=remapped_indices,
-                atom_indices=remapped_indices,
-                tag=new_tag,
-                representation=None,
-                skip_digestion=True,
-            )
-            if getattr(region, "preset", None) is not None or region.representation is not None:
-                merged_region.set_representation(
-                    region.representation,
-                    preset=getattr(region, "preset", None),
-                    skip_digestion=True,
-                    **(region.repr_params or {}),
-                )
-            if getattr(region, "_hidden", False):
-                merged_region.hide(skip_digestion=True)
-
-        for shape_msg in getattr(view, "_shape_history", []):  # noqa: SLF001
-            remapped_msg = _remap_tagged_message(shape_msg, atom_offset, tag_map)
-            result._send(remapped_msg)  # noqa: SLF001
-
-        for annotation_msg in getattr(view, "_annotation_history", []):  # noqa: SLF001
-            remapped_msg = _remap_tagged_message(annotation_msg, atom_offset, tag_map)
-            result._send(remapped_msg)  # noqa: SLF001
-
-        # ── Measurements ───────────────────────────────────────────────────
-        offset_map = _OffsetMap(atom_offset)
-        for measurement_msg in getattr(view, "_measurement_history", []):  # noqa: SLF001
-            remapped = result._remap_measurement_message(measurement_msg, offset_map)  # noqa: SLF001
-            if remapped is not None:
-                result._measurement_history.append(remapped)  # noqa: SLF001
-                result._send(remapped)  # noqa: SLF001
-
-        # ── Saved selections ───────────────────────────────────────────────
-        for selection_msg in getattr(view, "_selection_history", []):  # noqa: SLF001
-            remapped = result._remap_selection_message(selection_msg, offset_map)  # noqa: SLF001
-            if remapped is not None:
-                result._selection_history.append(remapped)  # noqa: SLF001
-                result._send(remapped)  # noqa: SLF001
-
-        for original_tag, new_tag in tag_map.items():
-            source_layer = view.layers.get(original_tag)
-            if source_layer is not None and getattr(source_layer, "_hidden", False):
-                result.layers[new_tag].hide(skip_digestion=True)
-
-        # ── Per-atom colors (accumulated with offset) ──────────────────────
-        atom_color_map = getattr(view, "_atom_color_map", {})
-        for old_idx, color_int in atom_color_map.items():
-            result._atom_color_map[old_idx + atom_offset] = color_int  # noqa: SLF001
-
-        atom_offset += int(msm.get(view._molsys, element="system", n_atoms=True, skip_digestion=True))  # noqa: SLF001
-
-    # ── Per-atom colors — send accumulated map to frontend ─────────────────
-    if result._atom_color_map:  # noqa: SLF001
-        result._send(  # noqa: SLF001
-            {
-                "op": "set_atom_colors",
-                "atom_indices": list(result._atom_color_map.keys()),  # noqa: SLF001
-                "colors": list(result._atom_color_map.values()),  # noqa: SLF001
-                "replace": True,
-            }
-        )
-
-    # ── Box — take from the first source that had one ─────────────────────
-    box_record = None
-    for view in source_views:
-        box_record = getattr(view, "_box_record", None)
-        if box_record is not None:
-            break
-    if box_record is not None:
-        result.show_box(
-            color=box_record["color"],
-            width=box_record["width"],
-            alpha=box_record["alpha"],
-            structure_indices=0,
-            skip_digestion=True,
-        )
-
-    if result._last_camera_snapshot:
-        result.set_camera_snapshot(result._last_camera_snapshot, duration_ms=0, skip_digestion=True)
+                record["parent_source_id"] = old_id
+                record["source_id"] = uuid4().hex
+            used_sources.add(record["source_id"])
+            source_map[old_id] = record["source_id"]
+            old_uid = record.get("region_uid")
+            if old_uid is not None:
+                record["region_uid"] = uid_map.get(old_uid, f"merge_{source_index}_{old_uid}")
+            record["region_tag"] = mappings["regions"].get(record.get("region_tag"), record.get("region_tag"))
+        for domain, mapping in mappings.items():
+            for record in state[domain]:
+                old_tag = record["tag"]
+                record["tag"] = mapping[old_tag]
+                for field in ("layer", "layer_tag"):
+                    if record.get(field) in layer_map:
+                        record[field] = layer_map[record[field]]
+                options = record.get("options", {})
+                if options.get("tag") in mapping:
+                    options["tag"] = mapping[options["tag"]]
+                if options.get("layer_tag") in layer_map:
+                    options["layer_tag"] = layer_map[options["layer_tag"]]
+                if domain == "regions":
+                    record["uid"] = uid_map[record["uid"]]
+                    recipe = record["provenance"]
+                    if recipe.get("source_id") in source_map:
+                        recipe["source_id"] = source_map[recipe["source_id"]]
+                    if source_index:
+                        record.pop("show_only", None)
+                    for key in ("operands", "of"):
+                        value = recipe.get(key)
+                        if isinstance(value, list):
+                            recipe[key] = [uid_map.get(i, i) for i in value]
+                        elif value in uid_map:
+                            recipe[key] = uid_map[value]
+                    record["order"] += offset
+        if combined is None:
+            combined = deepcopy(state)
+        else:
+            for domain in mappings:
+                combined[domain].extend(state[domain])
+            combined["whole"]["color_layer"].update(state["whole"]["color_layer"])
+            combined.setdefault("sources", {"version": 1, "binding": result._source_state_binding(), "records": []})
+            combined["sources"]["records"].extend(state.get("sources", {}).get("records", []))
+        offset += count
+    if combined is not None:
+        for index, record in enumerate(combined.get("sources", {}).get("records", [])):
+            record["index"] = index
+        result.import_state(combined)
+        _copy_auxiliary(source_views[0], result)
 
 
 @dep_digest("molsysmt")
@@ -247,6 +125,15 @@ def merge(
     """
 
     source_views = list(views)
+    if not source_views:
+        raise ValueError("merge requires at least one loaded view.")
+    for view in source_views:
+        if view._molsys is None:
+            raise ValueError("merge requires loaded molecular systems.")
+        _validate_renderable(view._molsys)
+        _validate_pairing(source_views[0]._molsys, view._molsys, "by_index")
+    if any(getattr(view._molsys, "interactions", {}) for view in source_views):
+        raise ValueError("Merging named interaction analyses requires a scientific embedding contract; use copy or extract.")
     merged = msm.merge(
         [view._molsys for view in source_views],  # noqa: SLF001
         keep_ids=keep_ids,

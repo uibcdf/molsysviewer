@@ -22,6 +22,24 @@ You treat these as public:
 
 If you rename, remove, or change behavior here, you update docs and add tests.
 
+### Uniform argument validation
+
+The addon extension API remains available as `molsysviewer.addons` and
+`view.addons`; MolSysMT itself is the native backend.
+
+Every ordinary supported public function uses ArgDigest and declares
+`skip_digestion=False`, including scene-handle methods and delegated queries.
+Use `skip_digestion=True` only for inputs already normalized; lifecycle checks
+still apply. Constructors, properties and Python protocol methods are outside
+this callable inventory. Public wrappers expose named arguments.
+
+Create an annotation with `view.annotations.add(...)`. `add_annotation` has
+been removed before 1.0. Queries such as `records()` and `info()` return detached
+nested data. After undo, import or deletion, reacquire handles through their
+manager: an old handle cannot mutate a replacement object with the same tag.
+Region and layer registries support dictionary reads; mutate through manager
+methods. Rejected operations and no-ops preserve redo.
+
 ### `config.set_structure_scale_budget(budget_bytes)`
 
 MolSysViewer materializes **every** selected structure: `view.molsys` is the
@@ -92,8 +110,9 @@ Removed in 0.22 (`uibcdf/molsysviewer#71`, executed in `#75`):
 Added in the same change: `whole.convert(...)` and `region.convert(...)`.
 
 Pure molecular-system reads should use `view.whole.*`, `region.*`, or `molsysmt.*(view, ...)`.
-Live molecular edits on an existing viewer are provided by the MolSysMT addon namespace:
-`view.addons.molsysmt.basic.*`.
+Live molecular edits use the native viewer API, including `view.edit(...)`,
+coordinate setters and `view.interactions.calculate(...)`. MolSysMT is the
+scientific backend; it is not a built-in addon namespace.
 
 The user-facing translation table is in
 {doc}`../user/introduction/migrating_to_0_22`.
@@ -261,14 +280,14 @@ Related object wrappers are also part of the intended public surface:
 - `view.selections[tag].add_label(...)`
 - `view.selections[tag].set_tag(...)`
 - `view.selections[tag].delete()`
-- `view.annotations.add_annotation(text, selection=..., atom_indices=..., tag=..., layer_tag=..., label_style=...)`
+- `view.annotations.add(text, selection=..., atom_indices=..., tag=..., layer_tag=..., label_style=...)`
   - primary entry point for persistent labels anchored to atom selections
   - anchor resolves via MolSysMT selection string or explicit `atom_indices`
   - `label_style` accepts a dict with optional keys: `color` (CSS hex string), `size_em` (float), `background` (bool), `background_opacity` (float 0–1)
-  - `add_label(group_index=...)` is a deprecated alias; use `add_annotation` instead
+  - `add_label(group_index=...)` is a deprecated alias; use `add` instead
 - `view.annotations.add_label_from_active_selection(text, tag=..., label_style=...)`
   - anchors to all atom indices in the last active canvas selection (multi-group supported)
-  - `label_style` accepts the same dict as `add_annotation` (`color`, `size_em`)
+  - `label_style` accepts the same dict as `add` (`color`, `size_em`)
 - `view.annotations.set_anchor(tag, selection=..., atom_indices=...)`
   - reanchor an existing label to a different atom set
   - `set_group_index(tag, group_index)` is a deprecated alias; use `set_anchor` instead
@@ -389,6 +408,117 @@ the same tag; APIs resolve identity as `(domain, tag)`.
 - If a `MolSysView` instance is the last expression in a notebook cell, it renders automatically.
 - `MolSysView.load(...)` does **not** return the viewer, so it does not trigger rendering on its own.
 - `MolSysView.show()` remains the explicit way to display the widget in scripts or when needed.
+
+## Managing scientific interactions (experimental)
+
+`view.interactions` is a native scientific manager. It uses MolSysMT internally
+and requires its experimental public `Interactions` and H5MSM APIs; no addon
+registration is needed. The published dependency version for this feature is
+still to be fixed. Scientific analyses and visual sets are separate: attaching
+or computing stores an analysis; `add()` creates its filtered graphical set.
+The native Interactions Studio tab offers Calculate, Stored analysis and H5MSM
+file routes using the same public methods.
+An older supported provider can still initialize ordinary views. Feature
+availability is checked before scientific interaction operations; an unavailable
+backend produces an explicit compatibility error and disables Studio creation.
+
+```python
+import molsysviewer as msv
+
+view = msv.demo["pentalanine"]
+view.interactions.hbonds.get_buch_hbonds(name="buch", structure_indices="current")
+view.interactions.analyses()  # compact metadata, not expanded occurrences
+result = view.interactions.query("buch", structure_indices="current")
+result.to_dict()  # selected occurrences, including occurrence_indices
+hbonds = view.interactions.add("buch", tag="hbonds", interaction_types=["hbond"])
+hbonds.set_color("#34d399")
+hbonds.set_radius("0.025 nm")
+view.interactions.inspect("hbonds", structure_index=0, offset=0, limit=50)
+```
+
+| Method | Current contract |
+| --- | --- |
+| `analyses()` | Compact named-analysis metadata, including method, units, software and numeric byte count. |
+| `get_analysis(name)` | Complete MolSysMT result; a missing name raises `KeyError`. |
+| `query(analysis_name, ...)` | Sparse filtering by atom selection, interaction types and local structure indices. Default scope is all structures. |
+| `attach(result, name=..., assume_aligned=True)` | Declare correspondence and validate a complete result against the loaded axes. |
+| `load(filename, analysis_name=..., name=None, assume_aligned=True, ...)` | Read one named H5MSM analysis, optionally remapping source atom/structure indices. Does not load coordinates. |
+| `hbonds.get_buch_hbonds(name=..., ...)` | Buch distance criterion, default H···A threshold `2.3 angstroms`, default visible frame and `pbc=False`. |
+| `disulfides.get_disulfide_candidates(name=..., ...)` | Geometric S···S candidates, not topology edits or certified covalent bonds. Default visible frame and `pbc=False`. |
+| `delete_analysis(name)` | Explicitly remove scientific data and clear visual undo. |
+
+Queries accept a scalar or a nonconsecutive integer list for atoms and structures,
+and MolSysMT selection strings. Indices are local to `view.molsys`; Boolean or
+fractional indices are rejected. `incident` retains any participating atom in
+the selection; `internal` requires all participant atoms inside it; `cross`
+requires atoms inside and outside it. `mode="between"` requires disjoint
+`selection` and `selection_2`; `exclusive=True` confines all participants to
+their union. Composite participants retain their roles and atom groups.
+Evaluated frames without observations remain distinct from unevaluated frames.
+Query lists deduplicate indices; file remapping can repeat a source structure
+to produce separate destination structures.
+
+Explicit `structure_indices=[...]` or `"all"` requests calculation beyond the
+visible frame. PBC requires a valid finite box for each requested frame and
+preserves the detector's observed image vectors. A failed calculation or import
+does not publish an analysis; existing names cannot be overwritten. Independent
+attachment/import requires `assume_aligned=True`, including explicit remapping
+when atom or structure order differs. Source labels and maps are provenance,
+not automatic origin authentication.
+
+Attached results are immutable snapshots for the supported workflow. Ordinary
+`apply_system_edit` invalidates their evaluated coverage; explicit
+`interactions_policy="preserve"` declares the incoming analyses already valid.
+Unannounced molecular edits or direct array mutation are outside this contract.
+`save_session` preserves complete named results in H5MSM and verifies content
+signatures before restoring a view. `save_state` and visual undo do not store
+the scientific arrays. Tagged references include the named analysis content signature, filter, style,
+layer, visibility and broken state; importing a valid reference to different
+scientific data raises before changing the scene. Scientific arrays are stored
+once with the molecular system, outside visual history.
+
+The visual collection follows the other scene managers: `tags`, `count`,
+`contains`, `get`, `info`, `records`, `delete`, `clear`, `show`, `hide`,
+`show_all`, `hide_all`, `set_tag` and `set_layer_tag`. Each set offers
+`set_filter`, `set_color`, `set_alpha`, `set_radius` and `focus`. Visual deletion
+keeps scientific data. Referenced analyses cannot be deleted.
+
+The renderer draws H···A links for single-atom donor/hydrogen/acceptor roles
+and S···S disulfide candidates. Other interaction families and composite
+participants remain inspectable and count as unsupported graphics. Periodic
+positions use participant image differences relative to the first participant
+and the current frame box; missing required boxes suppress those links.
+
+Live projection retains one frame per set and rejects stale frame/revision
+replies. Frames outside the display filter, unevaluated frames, evaluated empty
+frames, unsupported graphics and damaged filters have separate statuses.
+Projection is refused above 50,000 observations or 8 MiB of serialized geometry
+per set/frame. Inspection pages contain at most 200 observations (Studio uses
+50); they preserve parallel occurrence identity and unsupported participants.
+An inspection reply has a 512 KiB budget, with at most 64 participants and 4,096
+participant atoms per observation. Its `evaluation_scope` is a compact count/mode
+summary. `query_revision` identifies the filter and analysis content so same-frame
+filter edits invalidate old replies. Excluded frames return no observations.
+
+The current provider codec copies all selected occurrences. The viewer counts
+first and checks a conservative numeric-copy budget before calling it. An
+oversized selection returns `inspection-limit`, its exact count and an explicit
+reason instead of silently truncating the results. This fallback is tracked in
+`uibcdf/molsysmt#264`; true public paging will replace it. These limits do not
+bound process RSS or complete-analysis residency. Large metadata is omitted only
+with an explicit inspection-limit reason; `get_analysis()` retains the full data.
+Static HTML embeds all requested frame geometry up to a shared 64 MiB export
+budget, and raises rather than truncating. These are conservative limits;
+representative large-system qualification is still pending. Scientific inspector
+pages require a live Python session; static HTML contains compiled geometry,
+not the complete scientific observation table.
+
+A structural removal that damages a fixed selection keeps a broken set;
+`set_filter` explicitly repairs it. Calculation parameters are immutable:
+calculate a new named analysis to change a cutoff. Studio edits styles and
+filters with one Apply operation, so no slider-generated history spam occurs.
+H5MSM paths address the Python session filesystem; the file form requires an
+explicit declaration of atom/structure alignment.
 
 ## Internal Python APIs
 

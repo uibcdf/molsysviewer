@@ -19,6 +19,8 @@ the host disappears and embeds it in the exported artifact.
 from copy import deepcopy
 from typing import Any
 
+from smonitor import signal
+
 from .._private.argdigest import digest
 from .._private.smonitor_emit import emit_suppressed_exception
 
@@ -43,12 +45,14 @@ _PANEL_OPS_ALREADY_IN_CANVAS = frozenset(
 
 
 class PopupSnapshotMixin:
+    @signal()
     @digest()
     def build_popup_scene_snapshot(
         self,
         mode: str,
         endpoint: Any = None,
         include_molecular: bool = True,
+        *, skip_digestion: bool = False,
     ) -> list[dict]:
         """Build the canonical popup scene snapshot for ``mode``.
 
@@ -149,6 +153,10 @@ class PopupSnapshotMixin:
             if getattr(layer, "_hidden", False):  # noqa: SLF001
                 messages.append({"op": "hide_layer", "tag": layer.tag, "kind": "layer"})
 
+        isolation = self._region_isolation_message()
+        if isolation is not None:
+            messages.append(isolation)
+
         # 9. resolved colours, after components exist.
         color_message = self._resolved_colors_message()
         if color_message is not None:
@@ -210,6 +218,7 @@ class PopupSnapshotMixin:
             {"op": "set_annotation_summaries", "annotations": self._annotation_summary_records()},
             {"op": "set_measurement_summaries", "measurements": self._measurement_summary_records()},
             {"op": "set_shape_summaries", "shapes": self._shape_summary_records()},
+            self.interactions._summary_message(),
             {"op": "set_section_summaries", "sections": self._section_summary_records()},
             {
                 "op": "set_measurement_settings",
@@ -265,10 +274,16 @@ class PopupSnapshotMixin:
         camera captured from the live host, because no endpoint exists to supply
         them when the file is opened later.
         """
-        messages = self._build_canvas_snapshot(include_molecular=True)
+        messages = [msg for msg in self._build_canvas_snapshot(include_molecular=True)
+                    if msg.get("op") != "set_interaction_frame"]
+        messages.extend(
+            msg for msg in self._build_panel_snapshot()
+            if msg.get("op") not in _PANEL_OPS_ALREADY_IN_CANVAS and msg.get("op") != "set_interaction_summaries"
+        )
+        messages.extend(self.interactions._static_messages())
+        messages.append(self.interactions._summary_message())
         if self._current_figure_spec:
             messages.append(deepcopy(self._current_figure_spec))
-        messages.append(deepcopy(self._build_addon_runtime_summary_message()))
         if self._last_camera_snapshot:
             messages.append(
                 {
@@ -338,6 +353,7 @@ class PopupSnapshotMixin:
             out.append(self._with_export_layer_tag(deepcopy(record)))
         for record in self.measurements.records():
             out.append(self._with_export_layer_tag(deepcopy(record)))
+        out.extend(self.interactions._messages())
         return out
 
     def _resolved_colors_message(self) -> dict | None:

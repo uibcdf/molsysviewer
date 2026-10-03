@@ -241,6 +241,9 @@ class SceneRegistryMixin:
             }
         )
 
+    def _sync_interaction_summaries_runtime(self) -> None:
+        self._send_runtime_only(self.interactions._summary_message())
+
     def _sync_layer_summaries_runtime(self) -> None:
         self._send_runtime_only(
             {
@@ -268,12 +271,15 @@ class SceneRegistryMixin:
             self._sync_annotation_summaries_runtime()
             self._sync_measurement_summaries_runtime()
             self._sync_shape_summaries_runtime()
+            self._sync_interaction_summaries_runtime()
             self._sync_layer_summaries_runtime()
             return
         if kind == "annotation" or op in self._ANNOTATION_SUMMARY_OPS:
             self._sync_annotation_summaries_runtime()
         elif kind == "measurement" or op in self._MEASUREMENT_SUMMARY_OPS:
             self._sync_measurement_summaries_runtime()
+        elif kind == "interaction":
+            self._sync_interaction_summaries_runtime()
         elif kind == "shape" or op in self._SHAPE_SUMMARY_OPS:
             self._sync_shape_summaries_runtime()
 
@@ -290,13 +296,15 @@ class SceneRegistryMixin:
                 yield tag, obj
 
     def _unregister_layer(self, tag: str) -> None:
-        self._layers.pop(tag, None)
+        layer = dict.pop(self._layers, tag, None)
+        if layer is not None:
+            layer._active = False
         self._sync_layer_summaries_runtime()
 
     def _reregister_layer(self, old_tag: str, new_tag: str, layer: Layer) -> None:
         if old_tag in self._layers:
-            self._layers.pop(old_tag, None)
-        self._layers[new_tag] = layer
+            dict.pop(self._layers, old_tag, None)
+        dict.__setitem__(self._layers, new_tag, layer)
 
     def _unregister_scene_object(self, kind: str, tag: str) -> None:
         status = getattr(self, "_shape_render_status", None)
@@ -305,11 +313,12 @@ class SceneRegistryMixin:
         obj = self._scene_objects.pop(self._scene_object_key(kind, tag), None)
         if obj is None:
             return
+        obj._active = False
         layer_tag = getattr(obj, "layer_tag", None)
         if isinstance(layer_tag, str):
             layer = self._layers.get(layer_tag)
             if isinstance(layer, Layer) and len(layer.members) == 0 and layer.provenance == "auto":
-                self._layers.pop(layer_tag, None)
+                dict.pop(self._layers, layer_tag, None)
         self._sync_scene_object_summaries_for_message({"op": "delete_layer", "kind": kind})
 
     def _reregister_scene_object(self, old_tag: str, new_tag: str, obj: SceneObject) -> None:
@@ -368,7 +377,7 @@ class SceneRegistryMixin:
         if isinstance(old_layer_tag, str):
             old_layer = self._layers.get(old_layer_tag)
             if isinstance(old_layer, Layer) and len(old_layer.members) == 0 and old_layer.provenance == "auto":
-                self._layers.pop(old_layer_tag, None)
+                dict.pop(self._layers, old_layer_tag, None)
             else:
                 self._sync_layer_group_hidden_state(old_layer_tag)
         self._sync_layer_group_hidden_state(text)
@@ -379,7 +388,7 @@ class SceneRegistryMixin:
         was deleted), otherwise refresh its aggregate hidden state."""
         layer = self._layers.get(layer_tag)
         if isinstance(layer, Layer) and len(layer.members) == 0 and layer.provenance == "auto":
-            self._layers.pop(layer_tag, None)
+            dict.pop(self._layers, layer_tag, None)
         else:
             self._sync_layer_group_hidden_state(layer_tag)
 
@@ -396,7 +405,7 @@ class SceneRegistryMixin:
         layer = self._layers.get(text)
         if layer is None:
             layer = Layer(self, text, kind=kind or "layer", meta={}, provenance=provenance)
-            self._layers[text] = layer
+            dict.__setitem__(self._layers, text, layer)
             self._sync_layer_summaries_runtime()
         else:
             if kind is not None:
@@ -409,9 +418,9 @@ class SceneRegistryMixin:
     def _move_or_rename_layer_group_for_object_tag_change(self, old_tag: str, new_tag: str, obj: SceneObject) -> None:
         old_layer = self._layers.get(old_tag)
         if isinstance(old_layer, Layer) and len(old_layer.members) == 1 and (obj.kind, obj.tag) in old_layer.members:
-            self._layers.pop(old_tag, None)
+            dict.pop(self._layers, old_tag, None)
             old_layer.tag = new_tag
-            self._layers[new_tag] = old_layer
+            dict.__setitem__(self._layers, new_tag, old_layer)
             return
         self._ensure_layer_group(new_tag, provenance="user")
 

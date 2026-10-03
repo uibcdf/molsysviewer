@@ -10,6 +10,8 @@ const SUITES = [
     "annotations-interaction",
     "annotations-subpanel",
     "array-native-load",
+    "coordinate-edits",
+    "composite-load",
     "popup-channel",
     "endpoint-lifecycle",
     "panel-popup-welcome",
@@ -25,6 +27,9 @@ const SUITES = [
     "history-coalescing",
     "measurements-interaction",
     "measures-subpanel",
+    "interactions-subpanel",
+    "interactions-geometry",
+    "interactions-calculation",
     "range-selection",
     "qt-live-reload",
     "region-hide",
@@ -87,7 +92,12 @@ function runSuite(name: string, endpoint: string): Promise<void> {
 }
 
 async function run(): Promise<void> {
-    const suites = suitesForLane(process.argv[2]);
+    const laneSuites = suitesForLane(process.argv[2]);
+    const selection = process.argv.find(argument => argument.startsWith("--suites="))?.slice("--suites=".length).split(",");
+    if (selection && (selection.some(name => !laneSuites.includes(name)) || new Set(selection).size !== selection.length)) {
+        throw new Error("--suites must name distinct suites included in the selected lane");
+    }
+    const suites = selection ? laneSuites.filter(name => selection.includes(name)) : laneSuites;
     let server: BrowserServer;
     try {
         server = await playwrightChromium.launchServer(e2eLaunchOptions());

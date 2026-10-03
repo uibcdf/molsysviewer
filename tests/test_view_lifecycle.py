@@ -8,8 +8,8 @@ from ipywidgets.widgets.widget import _instances
 from molsysviewer.demo import demo
 from molsysviewer.standalone_qt.view_channel import QtViewChannel
 
-import conftest
 from molsysviewer import MolSysView
+from tests import conftest
 
 
 def test_close_releases_a_loaded_view_and_its_registered_widgets():

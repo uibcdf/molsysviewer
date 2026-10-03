@@ -28,7 +28,7 @@ def _populated_view() -> MolSysView:
         radius=puw.quantity(0.2, "nm"),
         tag="shp",
     )
-    view.annotations.add_annotation("note", atom_indices=[0], tag="ann", skip_digestion=True)
+    view.annotations.add("note", atom_indices=[0], tag="ann", skip_digestion=True)
     view.measurements.add_distance(selection_a=[0], selection_b=[1], tag="dist", skip_digestion=True)
     view.selections.add("sel", atom_indices=[0, 1])
     return view

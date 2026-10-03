@@ -44,7 +44,7 @@ def digest_structure_index(structure_index, caller=None):
         If the given `structure_index` has not of the correct type or value.
     """
 
-    if caller in _OPTIONAL_STRUCTURE_INDEX_CALLERS and structure_index is None:
+    if (caller in _OPTIONAL_STRUCTURE_INDEX_CALLERS or (caller and caller.startswith("molsysviewer.interactions."))) and structure_index is None:
         return None
 
     if caller is not None:

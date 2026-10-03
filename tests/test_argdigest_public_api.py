@@ -147,10 +147,10 @@ def test_color_operations_do_not_emit_missing_digester_warnings():
     with warnings.catch_warnings(record=True) as records:
         warnings.simplefilter("always")
         # explicit range + inferred range, both replace flags, all four surfaces
-        view.whole.set_color_by_attribute("b_factor", value_range=[0.0, 50.0], replace=True)
+        view.whole.set_color_by_attribute("b_factor", value_range=puw.quantity([0.0, 50.0], "angstrom**2"), replace=True)
         view.whole.set_color_by_attribute("b_factor", value_range=None, replace=False)
         view.whole.set_color_by_values([i / n_atoms for i in range(n_atoms)], value_range=[0.0, 1.0], replace=True)
-        region.set_color_by_attribute("b_factor", value_range=[0.0, 50.0], replace=True)
+        region.set_color_by_attribute("b_factor", value_range=puw.quantity([0.0, 50.0], "angstrom**2"), replace=True)
         region.set_color_by_attribute("b_factor", value_range=None, replace=False)
         region.set_color_by_values([0.1, 0.5, 0.9], value_range=[0.0, 1.0], replace=False)
         # structural color scheme (the `scheme` argument)

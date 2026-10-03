@@ -12,6 +12,13 @@ common_functions_with_distance_threshold_and_None = []
 
 def digest_distance_threshold(distance_threshold, caller=None):
 
+    if caller and caller.startswith("molsysviewer.interactions."):
+        from .._quantity import digest_length_quantity
+
+        if distance_threshold is None:
+            return None
+        return digest_length_quantity(distance_threshold, "distance_threshold", caller)
+
     if isinstance(distance_threshold, str):
         # MolSysMT lets pint's UndefinedUnitError escape here. This package's contract is
         # that a bad argument raises its own ArgumentError, so the parse is contained.

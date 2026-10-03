@@ -53,7 +53,7 @@ def test_the_box_is_drawn_in_angstrom_whatever_the_standard_length(view_with_box
 def test_a_world_offset_is_reported_in_the_unit_the_api_accepts():
     view = MolSysView()
     view.load(BOX_SYSTEM)
-    view.annotations.add_annotation("x", atom_indices=[0], offset_mode="world", offset=[0.2, 0.0, 0.0])
+    view.annotations.add("x", atom_indices=[0], offset_mode="world", offset=[0.2, 0.0, 0.0])
 
     def reported():
         info = view.annotations.info()

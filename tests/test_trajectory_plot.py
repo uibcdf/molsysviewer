@@ -17,7 +17,7 @@ def test_show_sends_normalized_series_and_records_scene_look():
 
     msg = sent[-1]
     assert msg["op"] == "set_trajectory_plot"
-    opts = msg["options"]
+    opts = msg["options"]["cards"][0]
     assert opts["visible"] is True
     assert opts["n_frames"] == 3
     assert opts["series"] == [{"label": "rmsd", "values": [0.1, 0.2, 0.3]}]
@@ -30,7 +30,7 @@ def test_show_sends_normalized_series_and_records_scene_look():
 def test_show_accepts_multiple_series_as_list():
     view, sent = _view_with_capture()
     view.trajectory_plot.show([[0, 1, 2], [3, 4, 5]])
-    series = sent[-1]["options"]["series"]
+    series = sent[-1]["options"]["cards"][0]["series"]
     assert [s["label"] for s in series] == ["series 1", "series 2"]
     assert series[1]["values"] == [3.0, 4.0, 5.0]
 
@@ -38,7 +38,7 @@ def test_show_accepts_multiple_series_as_list():
 def test_colors_by_cvd_safe_scheme_name():
     view, sent = _view_with_capture()
     view.trajectory_plot.show({"a": [1, 2], "b": [3, 4]}, colors="okabe_ito")
-    series = sent[-1]["options"]["series"]
+    series = sent[-1]["options"]["cards"][0]["series"]
     assert series[0]["color"] == 0xE69F00  # Okabe-Ito first colour
     assert series[1]["color"] == 0x56B4E9
 
@@ -46,7 +46,7 @@ def test_colors_by_cvd_safe_scheme_name():
 def test_events_are_normalized_and_range_checked():
     view, sent = _view_with_capture()
     view.trajectory_plot.show([0, 1, 2, 3], events=[{"frame": 2, "label": "bind", "color": "red"}])
-    assert sent[-1]["options"]["events"] == [{"frame": 2, "label": "bind", "color": 0xFF0000}]
+    assert sent[-1]["options"]["cards"][0]["events"] == [{"frame": 2, "label": "bind", "color": 0xFF0000}]
 
     with pytest.raises(ValueError):
         view.trajectory_plot.show([0, 1, 2, 3], events=[{"frame": 9}])
@@ -62,7 +62,7 @@ def test_clear_sends_hidden_state():
     view, sent = _view_with_capture()
     view.trajectory_plot.show([0, 1, 2])
     view.trajectory_plot.clear()
-    assert sent[-1] == {"op": "set_trajectory_plot", "options": {"visible": False}}
+    assert sent[-1] == {"op": "set_trajectory_plot", "options": {"cards": []}}
 
 
 def test_on_frame_change_callback_fires_and_unregisters():

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import Any
 
 import molsysmt as msm
@@ -40,7 +41,7 @@ class MeasurementsManager:
     @records_scene_history
     @signal(tags=["measurement"])
     @digest()
-    def add(self, kind: str, *selections: Any, **kwargs: Any) -> Layer:
+    def add(self, kind: str, *selections: Any, skip_digestion: bool = False, **kwargs: Any) -> Layer:
         """Create a measurement of explicit *kind*."""
         methods = {
             "distance": self.add_distance,
@@ -528,12 +529,12 @@ class MeasurementsManager:
 
     @signal(tags=["measurement", "query"])
     @digest()
-    def records(self) -> list[dict]:
-        return [dict(record) for record in self._view._measurement_history]  # noqa: SLF001
+    def records(self, *, skip_digestion: bool = False) -> list[dict]:
+        return deepcopy(self._view._measurement_history)  # noqa: SLF001
 
     @signal(tags=["measurement", "query"])
     @digest()
-    def count(self) -> int:
+    def count(self, *, skip_digestion: bool = False) -> int:
         return len(self._view._measurement_history)  # noqa: SLF001
 
     @signal(tags=["measurement"])
@@ -553,7 +554,7 @@ class MeasurementsManager:
 
     @signal(tags=["measurement", "query"])
     @digest()
-    def info(self, tag: str | None = None) -> dict[str, Any] | list[dict[str, Any]]:
+    def info(self, tag: str | None = None, *, skip_digestion: bool = False) -> dict[str, Any] | list[dict[str, Any]]:
         items: list[dict] = []
         for record in self._view._measurement_history:  # noqa: SLF001
             layer_tag = record.get("tag")
@@ -621,7 +622,7 @@ class MeasurementsManager:
 
     @signal(tags=["measurement", "query"])
     @digest()
-    def series(self, tag: str):
+    def series(self, tag: str, *, skip_digestion: bool = False):
         """Return the stored or recomputed measurement time series for *tag*."""
         record = next((item for item in self._view._measurement_history if item.get("tag") == tag), None)  # noqa: SLF001
         if record is None:

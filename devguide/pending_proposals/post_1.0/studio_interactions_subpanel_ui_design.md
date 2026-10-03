@@ -15,7 +15,21 @@ supersedes: []
 # Studio Subpanel — Interactions (UI Design Specification)
 
 **Status:** Post-1.0 UI specification (2026-07-24). Companion to [the Interactions domain spec](interactions_domain.md).
+**Review 2026-10-03:** the current minimal subpanel already contains native family
+calculation controls, stored analyses/visual sets, bounded occurrence pages and
+row selection/focus. This record owns advanced growth, not implementation of a
+missing base panel. A count-series action is conditional on the provider's public
+reduction/coverage contract; full persistence analytics remain post-1.0.
+**Scope update (2026-09-28):** `uibcdf/molsysviewer#114` owns a minimal
+pre-1.0 Interactions subpanel, designed only after its Python API and after
+inspection of the current Studio panels. This specification remains the
+post-1.0 advanced UI plan. Its multi-family controls, persistence timeline,
+and Mol* `GPU/Fast` label are unvalidated design sketches, not 1.0 promises.
 **Visual Language:** Standard Studio Workbench design system (`panels/ui-helpers.ts`).  
+The current minimal design is in [the active pre-1.0 report](../interactions_minimum_before_1_0.md#studio-subpanel-design-2026-09-30).
+It follows the current panel source, distinguishes stored analyses from visual
+sets, and documents empty/unevaluated states and the three native source routes.
+The broader sketches below do not replace that bounded design.
 
 ---
 
@@ -85,7 +99,7 @@ The creation card provides a tabbed/mode-driven creation flow matching the three
 Used for automatic calculation of hydrogen bonds, salt bridges, or $\pi$-stacking based on scientific criteria:
 
 *   **Kind Dropdown:** Select interaction type (`Hydrogen Bond`, `Salt Bridge`, `Pi-Stacking`, `Hydrophobic Contact`, `Halogen Bond`).
-*   **Engine Radio:** `(•) MolSysMT (Exact)` vs `( ) Mol* (GPU/Fast)`.
+*   **Engine Radio (future design only):** MolSysMT criterion versus Mol* browser calculation, if both are validated and exposed. Neither `Exact` nor `GPU/Fast` is an established performance or scientific claim.
 *   **Target Staging Buttons:**
     *   **`[ Anchor A ]`**: Captures selection for group A (e.g. `Ligand (12 atoms)`).
     *   **`[ Anchor B ]`**: Captures selection for group B (e.g. `Active Site (45 atoms)`).

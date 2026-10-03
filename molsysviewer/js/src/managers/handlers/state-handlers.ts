@@ -141,7 +141,7 @@ export class StateHandlers {
     private previousFocusFadeValue = 0;
     private previousShowOnlyWholeMask = false;
     private previousRegionOwnershipKey = "";
-    private previousOwnedOpaqueIndices = new Set<number>();
+    private previousWholeHiddenIndices = new Set<number>();
     // Versioned visibility state for the delta protocol: the last applied visible
     // atom indices and the version they were stamped with. A delta only applies
     // when its base_version matches; otherwise we ask the kernel for a full resync.
@@ -269,6 +269,11 @@ export class StateHandlers {
         }
     }
 
+    unregisterTaggedRef(ref: string, tag: string, kind: string): void {
+        const key = this.taggedKey(kind, tag);
+        this.tagIndex.get(key)?.delete(ref);
+    }
+
     registerShapeRef(ref?: StateObjectRef, tag?: string) {
         this.registerTaggedRef(ref, tag, "shape");
     }
@@ -365,7 +370,7 @@ export class StateHandlers {
     }
 
     private complementAtomIndices(structure: Structure, indices: number[] | undefined): number[] | undefined {
-        if (!Array.isArray(indices) || indices.length === 0) return undefined;
+        if (!Array.isArray(indices)) return undefined;
         const keep = new Set(indices);
         return this.allAtomIndices(structure).filter(index => !keep.has(index));
     }
@@ -391,6 +396,15 @@ export class StateHandlers {
                 && this.isFullyOpaque(entry.params)
             )
             .sort((left, right) => left.order - right.order);
+    }
+
+    private hiddenUnrepresentedAtomIndices(): number[] {
+        const hidden = new Set<number>();
+        for (const entry of this.regionIndex.values()) {
+            if (!entry.hidden || entry.representationState !== "none") continue;
+            for (const index of entry.atomIndices) hidden.add(index);
+        }
+        return Array.from(hidden).sort((a, b) => a - b);
     }
 
     private regionOwnedByHigherOrderAtomIndices(entry: RegionEntry): number[] {
@@ -519,11 +533,23 @@ export class StateHandlers {
         const faded = this.focusFadeValue > 0
             ? this.complementAtomIndices(structure, this.focusFadeIndices)
             : undefined;
-        const ownedOpaque = this.ownedOpaqueAtomIndices();
         const regionOwnershipKey = this.regionOwnershipKey();
-        const showOnlyWholeMaskActive = !!this.showOnlyRegionTag;
-        const showOnlyWholeMask = showOnlyWholeMaskActive ? this.allAtomIndices(structure) : undefined;
-        const wholeHidden = this.unionAtomIndices(this.ownedOpaqueAtomIndices(), showOnlyWholeMask);
+        const isolated = this.showOnlyRegionTag ? this.regionIndex.get(this.showOnlyRegionTag) : undefined;
+        const showOnlyWholeMaskActive = !!isolated;
+        const showOnlyWholeMask = isolated
+            ? (isolated.representationState === "none"
+                ? this.complementAtomIndices(structure, isolated.atomIndices)
+                : this.allAtomIndices(structure))
+            : undefined;
+        // Unrepresented regions constrain only whole. Own/inherited visuals
+        // keep their independent visibility and ownership rules.
+        const wholeHidden = this.unionAtomIndices(
+            this.ownedOpaqueAtomIndices(),
+            // Explicit isolation reveals the selected base set, even where
+            // other base regions (hidden by show_only) overlap it.
+            isolated ? undefined : this.hiddenUnrepresentedAtomIndices(),
+            showOnlyWholeMask,
+        );
 
         const fadedKey = this.atomIndexKey(faded);
         const requiresFullRebuild =
@@ -552,17 +578,17 @@ export class StateHandlers {
                 await this.applyWholeTransparencyLayer(whole, wholeHidden, 1);
             }
         } else {
-            const previousOwned = this.previousOwnedOpaqueIndices;
-            const nextOwned = new Set(ownedOpaque);
+            const previousHidden = this.previousWholeHiddenIndices;
+            const nextHidden = new Set(wholeHidden);
             const fadedSet = new Set(faded ?? []);
-            const added = ownedOpaque.filter(index => !previousOwned.has(index));
-            const removed = Array.from(previousOwned).filter(index => !nextOwned.has(index));
+            const added = wholeHidden.filter(index => !previousHidden.has(index));
+            const removed = Array.from(previousHidden).filter(index => !nextHidden.has(index));
 
             if (added.length > 0) {
                 await this.applyWholeTransparencyLayer(whole, added, 1);
             }
 
-            if (!showOnlyWholeMaskActive && removed.length > 0) {
+            if (removed.length > 0) {
                 const fadedReleased: number[] = [];
                 const clearReleased: number[] = [];
                 for (const index of removed) {
@@ -586,7 +612,7 @@ export class StateHandlers {
         this.previousFocusFadeValue = this.focusFadeValue;
         this.previousShowOnlyWholeMask = showOnlyWholeMaskActive;
         this.previousRegionOwnershipKey = regionOwnershipKey;
-        this.previousOwnedOpaqueIndices = new Set(ownedOpaque);
+        this.previousWholeHiddenIndices = new Set(wholeHidden);
     }
 
     async setFocusFade(msg: SetFocusFadeMessage) {
@@ -976,12 +1002,15 @@ export class StateHandlers {
         const entry = this.regionIndex.get(regionTag);
         if (!entry) return;
         this.showOnlyRegionTag = regionTag;
-        this.regionIndex.forEach((candidate, tag) => {
-            candidate.hidden = tag !== regionTag;
-            candidate.representations.forEach(ref =>
-                setSubtreeVisibility(this.plugin.state.data, ref, tag !== regionTag)
-            );
-        });
+        if (!msg.restore_only) {
+            this.regionIndex.forEach((candidate, tag) => {
+                candidate.hidden = tag !== regionTag;
+                candidate.representations.forEach(ref =>
+                    setSubtreeVisibility(this.plugin.state.data, ref, tag !== regionTag)
+                );
+            });
+            if (entry.representationState === "none") await this.handleShowHideGlobal(false);
+        }
         await this.applyComposedTransparency();
     }
 
@@ -991,7 +1020,8 @@ export class StateHandlers {
 
     async setRegionsVisibility(msg: SetRegionsVisibilityMessage) {
         const tags = Array.isArray(msg.tags) ? msg.tags : Array.from(this.regionIndex.keys());
-        await Promise.all(tags.map(tag => this.toggleRegionVisibility(tag, !!msg.hidden)));
+        // Each toggle composes the shared whole mask; do not race its writes.
+        for (const tag of tags) await this.toggleRegionVisibility(tag, !!msg.hidden);
     }
 
     setRegionSummaries(msg: SetRegionSummariesMessage) {
@@ -1157,6 +1187,8 @@ export class StateHandlers {
         if (!entry) return;
         this.regionIndex.delete(oldTag);
         this.regionIndex.set(newTag, entry);
+        if (this.showOnlyRegionTag === oldTag) this.showOnlyRegionTag = newTag;
+        await this.applyComposedTransparency();
         this.callbacks.notify({ event: "region_renamed", tag: oldTag, new_tag: newTag });
     }
 
@@ -1672,7 +1704,7 @@ export class StateHandlers {
         this.previousFocusFadeValue = 0;
         this.previousShowOnlyWholeMask = false;
         this.previousRegionOwnershipKey = "";
-        this.previousOwnedOpaqueIndices.clear();
+        this.previousWholeHiddenIndices.clear();
         if (this.globalReprs.size > 0) {
             await Promise.all(Array.from(this.globalReprs).map(ref => this.removeStateObject(ref)));
             this.globalReprs.clear();

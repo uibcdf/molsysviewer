@@ -19,6 +19,8 @@ from molsysviewer._private.exceptions import ArgumentError
 
 
 def digest_series(series, caller=None):
+    if series is None and caller and caller.startswith("molsysviewer.trajectory_plot."):
+        return None
     if isinstance(series, Mapping):
         if not series:
             raise ArgumentError("series", value=series, caller=caller, message="a plot of no series draws nothing")

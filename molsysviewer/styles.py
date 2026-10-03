@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -31,6 +32,7 @@ class Style:
     def __post_init__(self) -> None:
         if not isinstance(self.params, dict):
             raise ValueError("Style params must be provided as a dictionary.")
+        object.__setattr__(self, "params", deepcopy(self.params))
         if self.kind == "focus":
             if self.preset is not None or self.user_preset is not None:
                 raise ValueError("Focus styles only support representation (not preset or user_preset).")
@@ -43,7 +45,9 @@ class Style:
         if defined != 1:
             raise ValueError("Style requires exactly one of representation, preset, or user_preset.")
 
-    def info(self) -> dict[str, Any]:
+    @signal()
+    @digest()
+    def info(self, *, skip_digestion: bool = False) -> dict[str, Any]:
         """Return a JSON-friendly summary of the style object."""
         return {
             "kind": self.kind,
@@ -51,7 +55,7 @@ class Style:
             "representation": self.representation,
             "preset": self.preset,
             "user_preset": self.user_preset,
-            "params": dict(self.params),
+            "params": deepcopy(self.params),
         }
 
 
@@ -264,7 +268,7 @@ class StylesManager:
         if style is not None and (representation is not None or preset is not None or params):
             raise ValueError("styles.apply(style=...) does not accept additional representation, preset, or params.")
 
-        resolved = style
+        resolved = deepcopy(style)
         if resolved is None:
             resolved = Style(representation=representation, preset=preset, params=dict(params))
 
@@ -292,11 +296,11 @@ class StylesManager:
         """Register a reusable named style in the Python-side style registry."""
         self._registry[tag] = {
             "tag": tag,
-            "style": style,
+            "style": deepcopy(style),
             "description": description,
             "source": source,
         }
-        return style
+        return deepcopy(style)
 
     @signal(tags=["style"])
     @digest()
@@ -311,7 +315,7 @@ class StylesManager:
         record = self._registry.get(tag)
         if record is None:
             return None
-        return record["style"]
+        return deepcopy(record["style"])
 
     @signal(tags=["style"])
     @digest()
@@ -500,7 +504,7 @@ class StylesManager:
     @digest()
     def get_builtin(self, tag: str, skip_digestion: bool = False) -> Style | None:
         """Return one canonical built-in scene style, if present."""
-        return BUILTIN_SCENE_STYLES.get(tag)
+        return deepcopy(BUILTIN_SCENE_STYLES.get(tag))
 
     @signal(tags=["style", "query"])
     @digest()
@@ -597,12 +601,12 @@ class StylesManager:
             builtin = BUILTIN_FOCUS_STYLES.get(style_or_tag)
             if builtin is None:
                 raise ValueError(f"No builtin focus style found for {style_or_tag!r}.")
-            resolved = builtin
+            resolved = deepcopy(builtin)
             resolved_tag = tag or style_or_tag
         elif isinstance(style_or_tag, Style):
             if style_or_tag.kind != "focus":
                 raise ValueError("styles.focus() requires a Style with kind='focus'.")
-            resolved = style_or_tag
+            resolved = deepcopy(style_or_tag)
             resolved_tag = tag or self._next_focus_tag()
         elif style_or_tag is None and representation is not None:
             resolved = Style(representation=representation, kind="focus", params=dict(params))
@@ -655,7 +659,7 @@ class StylesManager:
     @digest()
     def get_builtin_focus(self, tag: str, skip_digestion: bool = False) -> "Style | None":
         """Return one canonical built-in focus style, if present."""
-        return BUILTIN_FOCUS_STYLES.get(tag)
+        return deepcopy(BUILTIN_FOCUS_STYLES.get(tag))
 
     @signal(tags=["style", "query"])
     @digest()

@@ -1,5 +1,5 @@
 import type { WholeDetails, WholeSummary } from "../group-panel";
-import { makeButton, makeSectionHeader, makeStyledSelect } from "./ui-helpers";
+import { makeButton, makeSectionHeader, makeStyledSelect, scalarColorRangeFromInput } from "./ui-helpers";
 import { PanelContext, StudioPanel } from "./types";
 import { FALLBACK_PRESETS, FALLBACK_REPRESENTATIONS, bindContinuousHistory, createStyleDraftControls } from "./style-composer";
 
@@ -399,7 +399,8 @@ export class WholePanel implements StudioPanel {
         palette.setAttribute("data-molsysviewer-whole-color-attribute-palette", "true");
         const range = document.createElement("input");
         range.type = "text";
-        range.placeholder = "range min,max";
+        range.placeholder = "auto / min,max";
+        range.title = "Leave empty for automatic range. Physical values need units, e.g. [0,100] angstrom**2.";
         range.setAttribute("data-molsysviewer-whole-color-attribute-range", "true");
         Object.assign(range.style, {
             width: "86px",
@@ -413,12 +414,12 @@ export class WholePanel implements StudioPanel {
 
         const commit = makeButton("Apply", () => {
             if (!attr.value) return;
-            const parsed = range.value.split(",").map(part => Number(part.trim())).filter(value => Number.isFinite(value));
+            const parsed = scalarColorRangeFromInput(range.value);
             this.ctx.onAction("color_whole_by_attribute", {
                 attribute: attr.value,
                 element: "atom",
                 palette: palette.value,
-                ...(parsed.length === 2 ? { value_range: [parsed[0], parsed[1]] } : {}),
+                ...(parsed !== undefined ? { value_range: parsed } : {}),
                 replace: true,
             });
         });

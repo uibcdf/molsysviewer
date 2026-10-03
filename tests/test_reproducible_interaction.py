@@ -4,8 +4,8 @@ import pytest
 import pyunitwizard as puw
 from molsysviewer.addons import AddonLifecycleSpec, AddonSpec, addons
 
-from _edit_helpers import apply_remove
 from molsysviewer import demo
+from tests._edit_helpers import apply_remove
 
 
 def _seed_group_selection(view, group_index):

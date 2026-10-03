@@ -1,9 +1,534 @@
 # Development checkpoint
 
-This is the current handoff, not a changelog. Replace it when the project state
-changes. Normative behavior remains in the contracts linked below.
+This is the current handoff. Normative behavior remains in the linked contracts;
+previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
+
+**Latest integration completion (2026-10-03): local gates pass.** The corrected
+source candidate passes **2,800 tests, 23 skipped** in 489.46 s. The prior installed
+wheel passes **2,791 tests, 25 skipped** in 579.31 s; that complete installed run
+precedes #155. The latest box-verified wheel passes **68 installed loading/cell
+cases**, and its real published-provider guard passes separately. All **39 core
+browser suites pass under their normal 180-second deadline**, with no skip
+opt-out or local deadline override. Lifecycle, scientific geometry and all 17
+calculation forms remain mandatory. #154 and #155 are fixed and guarded locally;
+their records stay partial until product publication. The newer editable provider
+has closed #307/#309: partial H5MSM composition works through all six atom/frame
+selection combinations, without a Viewer scientific composer.
+
+The latest artifact is `0.23.4+76.g924da3a3.dirty`, SHA-256
+`24f9adf4235d4d57250d508e48d172f1f4a8c02a1e6fcca1a3c1b4e58251d190`;
+614 packaged Python sources match the product tree and runtime-version validation
+passes. The experimental installed provider remains `0.22.4+122.g396e6979f`.
+Published MolSysMT 0.22.4 still cannot initialize the cell in this route and lacks
+Interactions; the safe-error guard is not feature availability. A compatible
+published provider, reviewed product commit and exact-source installed/hosted
+matrix remain before publication. No product commit or push has occurred.
+Standalone/remote scopes and explicit skips retain their limits. Evidence and
+artifact distinctions: [`integration_completion_20261003.json`](integration_completion_20261003.json).
+
+**Studio loading slice of #151 (2026-10-03): implemented locally and verified.**
+System now offers explicit independent/complementary inputs, add/replace/append,
+labels, atom/frame selectors and ordinal pairing. The empty-view welcome action
+opens it. Paths must be available to Python; no browser-upload transport is
+introduced. Exported browser-only views omit the form. The public load owner
+performs scientific preparation; matching runtime acknowledgments preserve the
+draft and permit retry. Studio stays open during a pending system rebuild.
+
+All 18 new Python guards pass. The once-run complete Python regression passes:
+2,783 passed, 23 skipped in 470.79 s, outside the sandbox in
+`molsyssuite@uibcdf_3.14`. JS passes 320 cases; final affected Studio modules pass
+39 after the visibility correction. TypeScript and runtime builds pass. The
+extended real-Mol* composite suite verifies mixed loading, retry, progressive
+addition, replacement, complementary Amber forms, append and nonconsecutive
+multi-frame pairing, alongside session/extraction/source visibility. Actual
+acquisition of four PDB IDs gives 3,017 atoms/four sources/four regions; adding
+a native demo gives 3,039 atoms/five sources/five regions.
+
+The original partial-H5MSM extraction failure is preserved in
+[`studio_loading_20261003.json`](studio_loading_20261003.json). The newer editable
+provider repairs both extraction (uibcdf/molsysmt#307) and composition
+(uibcdf/molsysmt#309). Current positive and older installed refusal semantics,
+full regression outcomes and artifact boundaries are in the latest integration
+completion above. #151 remains partial for publication and exact-candidate gates.
+
+The earlier #151 slices are implemented locally: [whole-only base-region
+visibility](region_visibility_20261003.json), [persistent isolation](region_isolation_20261003.json),
+[explicit composite loading](composite_loading_20261003.json),
+[durable source transfer](source_records_20261003.json) and
+[controlled box assignment](box_assignment_20261003.json). Their scoped guards,
+renderer observations, compact-map benchmark and dated regression boundaries
+remain in those records. The source-transfer full attempt was interrupted by
+ENOSPC; the controlled-box attempt completed with one corrected inventory guard.
+The later complete Studio regression above passes on the recovered temporary
+filesystem. Each older record retains its original outcome and boundaries.
+
+**Integration follow-up (2026-10-03): local qualification in progress.**
+Development now uses the principal maintainer's required
+`molsyssuite@uibcdf_3.14` environment explicitly (Python 3.14.7). Viewer and
+MolSysMT import from their local checkouts. Provider HEAD is
+`bd65456e0ca994f4a92800bda5d23325c999a673`; its unrelated local work is preserved.
+Thirteen design guards and 179 affected Python cases pass there (three explicit
+environment-dependent skips). All 17 real Interactions calculation forms pass
+in Chrome outside the executor sandbox. The complete core lane was interrupted
+at the principal maintainer's request to pause for the #151 design discussion:
+19 suites passed and Interactions was in progress. It used the existing local
+600-second budget, justified by the measured six-minute forms workload; neither
+a complete core pass nor the default 180-second budget is certified here.
+
+The earlier integrated Viewer wheel is `0.23.4+71.g3b475639.dirty`; all 608 packaged
+Python sources matched the working tree at that qualification. It does not
+contain the later region-visibility changes. Its runtime version validator
+passes. The same wheel passes 13 design guards and 114 ordinary public workflow
+cases with published dependencies; the experimental installed pair passes
+23 design/Interactions cases, 68 collection corrections and four CLI guards.
+The once-run full installed regression failed (2,583 passed, 15 failed,
+44 errors, 25 skipped). Disk exhaustion, qualification-copy omissions and a
+native CLI crash are retained in the evidence; scoped recovery is not a passing
+full run. The fixture namespace defect #153 is fixed locally with an installed
+subprocess guard. Source browser bridges do not establish strict wheel-only
+qualification. See [the integration record](integration_qualification_20261003.json)
+and [artifact follow-up](installed_artifact_qualification.md#integrated-design-candidate--2026-10-03).
+No product commit or push has occurred. Compatible published-provider and
+exact committed-candidate gates remain open.
+
+**Multi-source completion remains open:** the authorized loading slice is above.
+Loading, source transfer, controlled box assignment and Studio parity are
+implemented with qualification limits above; integrated/artifact evidence and
+compatible published-provider boundary remain before #151 closure.
+
+**Final design corrections (2026-10-03): implemented locally; candidate
+qualification pending.** #146–#150 cover coordinate annotation lifecycle and
+rendering, system identity/cache correctness, validation before replacement,
+Style ownership and numeric trajectory plot axes. The new #151 records the
+principal maintainer's required discussion of batch/progressive loading of
+multiple PDBs, PDB IDs or compatible forms. Settle its minimum before freezing
+the API. Follow [the current design closure order](final_design_closure_20261003.md).
+Public documentation remains last; existing provider/artifact gates still apply.
+
+**Evidence for this block:** 13 new design guards pass; the scoped identity and
+scientific correction selection passes 90 cases; reporting/public API checks
+pass 198. The single complete Python attempt returned 2,598 passed, 38 failed
+and 26 skipped. All 38 failures were the missing-hierarchy identity regression
+and pass after its correction; no second complete attempt or final candidate
+pass is claimed. The complete JS attempt passed 313 cases; final changed
+annotation/trajectory/plot cases pass an 18-case selection outside the sandbox.
+Real Mol* Annotations, Studio Annotations and numeric trajectory plot browser
+suites pass. Runtime/harness builds, TypeScript and reviewed-source Ruff pass.
+All 713 public callables retain digestion and explicit bypasses. The 42 queued
+records agree with GitHub. Exact counts, commands/artifacts, source hashes and
+remaining integration gates are in
+[the retained evidence](final_design_closure_20261003.json).
+
+**Public workflow completion (2026-10-02): implemented and locally verified.**
+Four authorized items are now in the working tree: bounded public Interactions
+pages independent of rendering (#142), retained multi-card trajectory plots
+with state/session/transfer and structure-axis validation (#143), native complete
+named-analysis H5MSM save (#144), and per-observation selection/focus in Python
+and Studio (#145). Their reports remain partial pending product integration and
+supported-candidate qualification. Scientific save preserves sparse coverage,
+parallel/grouped observations, units and periodic images. Observation actions
+reject stale identities before changing selection/camera. Focus uses canonical
+system coordinates. Plot hide/close retains data, clear removes it, and known
+extraction maps values/x/events even for repeated or nonconsecutive frames.
+
+**Validation of this source snapshot:** 87 initial focused cases passed; the
+single full Python attempt returned 2,576 passed, 20 failed and 26 skipped.
+All 20 failures involve sandbox socket/browser restrictions; the five affected
+modules subsequently passed outside the sandbox (53 passed, one explicit GPU
+skip). A later public API/new-regression selection passed 236 cases; the final
+plot/load/edit integration selection passed 38. No second full run or green
+final-candidate suite is claimed. JavaScript's complete attempt returned 309
+passed, three failed; two obsolete hide expectations and the missing close-event
+manifest declaration were corrected and their six scoped checks pass. Runtime
+and harness builds, TypeScript and the reviewed-file Ruff check pass. Real
+Mol* trajectory-card and complete Interactions subpanel browser suites pass,
+including the new row actions, 20 family scenes and 17 calculation forms.
+The public inventory has 713 digested callables, explicit bypasses and 437
+argument digesters, with no omissions. Evidence and source hashes:
+[public workflow record](public_workflow_completion_20261002.json).
+
+**Earlier provider qualification (2026-10-02):** clean experimental MolSysMT commit
+`396e6979f3f686b110431f18bba0d41933ce71e2` was installed in the then-used
+environment (Python 3.14.7, Pandas 3.0.6, NumPy 2.4.6). This is source Viewer
+validation, separate from the earlier installed-wheel qualification using
+NumPy 2.5.3. Provider issues uibcdf/molsysmt#288 and #289 remain verified and
+closed; earlier installed checks and preserved failure/correction records live
+in [the installed follow-up](installed_artifact_qualification.md#provider-invalidation-guards-and-installed-follow-up--2026-10-02)
+and [the invalidation record](interactions_invalidation_20261002.json).
+Published MolSysMT 0.22.4 still lacks the required Interactions APIs. #114/#140
+remain partial for compatible published dependencies, a committed candidate and
+exact-candidate installed/core CI evidence. Headless browser correctness does
+not qualify GPU throughput or all native platforms. Scientific save's hard-link
+publication still needs native filesystem qualification.
+
+**Next:** finish the supported-provider/publication boundary, integrate the
+preserved product work through reviewed commits/direct main pushes, reconcile
+public documentation last, and run exact-candidate release gates plus the agreed
+final human/design review. No product commit, push or release occurred in this
+block. Preexisting work is backed up and preserved; local/remote main were at
+`f2b148722e32e2f83bc690e51e6aa622b2e31294` at the last synchronization.
+
+
+**Interactions family API (2026-10-01, local product working tree):** #140
+adapts the nine implemented experimental MolSysMT families through explicit
+namespaces (`view.interactions.hbonds.get_hbonds`, etc.). Every getter has a
+closed signature, ArgDigest and `skip_digestion`; shared calculation coordination
+is private. Scientific analyses are named/stored independently from
+`view.interactions.add()` visual sets. Both water orders, compound charge/ring
+centroid guides, halogen roles and metal candidates are supported without
+discarding scientific participants. Occurrences and drawn segments are counted
+separately. Evidence-label interning is canonicalized for H5MSM signatures.
+The calculation API is now family-only: both old manager-level `compute_*`
+methods have been removed and all executable consumers migrated, including the
+scientific tools and notebook. That cleanup passes 77 focused tests; the public
+inventory now counts 709 digested callables with explicit bypasses and no missing
+argument digesters. The public-provider compatibility probe also passes.
+**Studio controls (2026-10-02):** calculation now uses criterion selectors,
+quantities with units, angular intervals, ring geometry and water order instead
+of a parameter JSON editor. Scientific drafts have stable context identifiers
+for focus restoration. The Python angular-interval boundary now builds the
+single vector quantity required by the provider. The 16 new control tests and
+the once-run JavaScript suite (312 passed) precede the focus fix; browser checks
+then verified all 17 real form calculations across scoped correction runs.
+The initial browser invocation exposed those defects; scoped corrections
+verified the remaining cases. The subsequent complete Interactions E2E now
+passes as recorded in the current checkpoint above.
+The isolated provider wheel at commit `df1a298e70a419a8f04562f8fb9ffaa92abb3be1`
+passes 30 focused Python checks and that block's full Python suite:
+**2,533 passed, 23 skipped, zero failures** (322.31 seconds), run once outside the
+sandbox after the vector fix. JUnit records are
+`/tmp/msv-interactions-controls-python-full.xml` and
+`/tmp/msv-interactions-controls-python-targeted.xml`. Skipped external/GPU cases
+retain their qualification limits. Runtime/harness builds and Ruff pass.
+The expanded real Mol* Interactions suite passes, including 20 new calculated
+and restored scenes. #140 remains partial: code is uncommitted, compatible
+published-provider and whole-product publication CI remain pending. See
+[the current plan](interactions_pre_1_0_plan.md#family-api-update--2026-10-01)
+and [the detailed record](pending_proposals/align_interactions_with_molsysmt_families.md).
+The sibling editable MolSysMT and prior Viewer work have been preserved.
+
+**Direct-main CI qualification (2026-10-01):** `main` and `origin/main` are
+at `1cf7826d4c343bb9f517f2244a4f7ca83f909c52`, with executable changes
+qualified at `ca6a3cda9eefcbd878775bcced8e21e7cb9bc069`. Main pushes now trigger the
+Python 3.14 source-pair lane (#137), while manual frozen-candidate tag checks
+remain intact. Actual execution exposed and corrected an obsolete provider
+pin (#138) and native Windows inventory separators (#139). The default is the
+published MolSysMT 0.22.4 source commit, without relaxing the declared floor.
+Focused qualification passes 187 checks for the provider update and 173 for
+the path correction. Run `36926313726` passes the installed-source audit on
+all three platforms and completes the full suites: Linux **2,297 passed,
+17 skipped**; macOS **2,290 passed, 24 skipped**; Windows **2,291 passed,
+23 skipped**. Native metadata confirms audit, Rust/resources, native-path
+guard, installed-pair integration and full tests actually executed in each
+job. Normal CI `36926313560` and core E2E `36926313665` also pass at the same
+executable commit. #137, #138 and #139 are closed and archived; the closure
+protocol passes 127 tests; reporting in the restored full working tree passes
+144. Synchronization preserved all 287 original work paths outside the three
+intentionally updated indexes; this checkpoint was then updated. Product
+changes remain uncommitted and require separate publication qualification.
+
+**Release-tool publication (2026-10-01):** the independent dependency and
+exact-candidate evidence block (#106, #103, #134 and the #133 integration)
+reached `main` by direct push at `518728496525cc36c2b42afb92371432b75f1bcf`.
+Its clean publication checkout passes **2,284 tests, 15 skipped**, exit 0,
+against public MolSysMT 0.22.4, plus 272 focused checks. This is evidence for
+that source subset; it excludes the larger uncommitted product changes.
+A synchronization of attribution guides arrived during qualification; after
+incorporating it, 161 affected reporting/dependency/configuration checks pass.
+
+The preparation exposed and resolved #136: repository inputs on evidence
+actions no longer become source checkouts. Its 32-test guard retains rejection
+of actual undeclared and duplicate checkouts. All 318 original changed or
+untracked paths retain their exact content/deletion after synchronization.
+No package release or promotion occurred. The complete scientific/product
+publication still needs a compatible public Interactions provider (#114);
+the latest GitHub Release inventory continues to identify MolSysMT 0.22.4.
+
+**Ecosystem and CI closure (2026-10-01):** `uibcdf/molsysviewer#116` is
+verified and closed with actual CI, nightly, PR and protection evidence.
+`uibcdf/molsysviewer#110` and its last support boundary, #98, are resolved.
+Support libraries and developer tools are adopted for the reviewed boundaries.
+Scalar colors retain physical quantities, require compatible units on explicit
+physical ranges, and keep bare data unit-free. See
+[`units_and_quantities.md`](units_and_quantities.md) and
+[`python_ecosystem_policy_adoption.md`](python_ecosystem_policy_adoption.md).
+
+The last complete source attempt returned **2,480 passed, 23 skipped, one
+failed**, exit 1. The existing B-factor fixture now supplies units; the final
+focused run passes 24 tests. No second complete run or new full-suite pass is
+claimed. All 296 native JS tests and the runtime rebuild pass. PR #135 was
+updated to `84cbc6bf`, passed CI `36907639608`, core E2E `36907639873`
+and all three Python 3.14 cells in `36907639590`, then merged into `main`
+at `12faa16b`. The scoped tooling changes are published; the other working-tree
+changes are preserved. Local integration checks pass 186 tests. Development
+with the principal maintainer continues through commits and direct pushes;
+open a PR only when the user requests one, as recorded in root `AGENTS.md`.
+Next: published Interactions provider (#114), repaired installed artifacts
+(#101), public documentation last, then final-candidate and human evidence.
+
+**Dependency-contract checkpoint (2026-10-01):**
+`uibcdf/molsysviewer#106` is resolved in the working tree. The read-only audit
+derives runtime constraints and Python bounds from `pyproject.toml`; the route
+inventory covers recipe, runtime environments, packaging-only exclusions and
+the exact source-pair provider. It runs before packaging, first in the release
+gate and in metadata CI. Source-pair CI additionally checks installed provider
+version, local origin and clean requested commit before scientific consumers.
+This hosted invocation now executes on main pushes: run `36926313726` passes
+the installed-source audit on Linux, macOS and Windows. Complete native/source
+qualification is tracked in #137, #138 and #139 above.
+See [the dependency contract](dependency_contract.md).
+
+All **29 auditor tests** and **62 related packaging/release tests** pass. The
+single complete source regression passes **2,464 tests, 23 skipped**, exit 0
+in 316.90 seconds, with the isolated MolSysMT export fixed at
+`ece35e622fc3f26c57f5261088fa07a39f081aca`. This also verifies the corrected
+numeric-template fixture from #107. Log:
+`/tmp/msv-dependency-contract-full-python-20261001.log`. Public floors, the
+MolSysMT CI source pin and scientific behavior remain unchanged.
+
+The current developer-guide handoff and release plan are reconciled below.
+The later ecosystem/CI checkpoint above completes that review. Qualify a frozen
+candidate's repaired Conda/Windows artifact (#101), compatible published
+Interactions provider (#114), required hosted evidence and human workflows.
+Public documentation remains last; no candidate was published here.
+
+**Diagnostic-template checkpoint (2026-10-01):**
+`uibcdf/molsysviewer#107` is resolved in the working tree. All 48 catalog codes
+have renderable templates; the completeness guard now starts from the entire
+catalog. Real emission checks preserve context and render all six repaired
+diagnostics in the five SMonitor profiles. The official integration verifier
+passes all four checks. Code metadata and recovery behavior are unchanged.
+
+The complete source attempt returned **2,433 passed, 23 skipped, one failure**
+(exit 1, 317.91 seconds): the generic template fixture supplied strings for new
+numeric format fields. After correcting that fixture to supply actual numeric
+types and respect format specifications, both affected modules pass **95 tests,
+14 skipped**, exit 0. No second full run was performed; a fresh all-green full
+suite is not claimed here. Details and logs are in
+[the archived #107 record](archive/emitted_smonitor_codes_lack_templates.md).
+The later ecosystem checkpoint resolves #110. The dependency
+floor/source-pin audit (#106) is resolved above; qualify a candidate for the repaired
+Conda/Windows (#101) and compatible Interactions (#114) gates. Public
+documentation remains last.
+
+**Shared public-verifier checkpoint (2026-10-01):**
+`uibcdf/molsysviewer#133` is resolved. Existing hosted run `36860171883`
+at adoption commit `a8aa669c` successfully calls the pinned common verifier
+and uploads independent evidence for the exact public noarch file. GitHub ZIP
+digest/run/commit association and the `molsyssuite.public-conda@1` report were
+checked. The whole run fails because Windows reproduces #101's missing
+`molsysviewer` launcher; that defect remains partial and now reproduced.
+No workflow dispatch, package upload or promotion was performed here.
+
+The local branch incorporated ten published main commits by fast-forward with
+automatic preservation of tracked work. Archive/generated-index conflicts
+were resolved; product/docs tracked bytes match the preserved autostash
+`d0a4fb2c`. The candidate/promotion tools now import successfully after removing
+their dependency on the deleted local verifier. Existing installed artifact
+bindings retain exact builds, MD5 and SHA-256 for both channels, while shared
+public verification is called by its owner workflows. #134's gate is preserved.
+The final focused slice passes **114 tests**; complete source regression passes
+**2,418 tests, 20 skipped**, exit 0 in 295.06 seconds, with the previously
+qualified isolated MolSysMT export fixed at `ece35e622fc3f26c57f5261088fa07a39f081aca`.
+Log: `/tmp/msv-shared-verifier-full-python-20261001.log`. Public documentation
+remains deferred. Diagnostic templates (#107) and the dependency-floor audit
+(#106) are resolved above; the next release work requires a frozen candidate
+for the repaired Conda/Windows and compatible Interactions gates.
+
+**Promotion-gate checkpoint (2026-10-01):** `uibcdf/molsysviewer#134` is
+resolved in the working tree. Promotion shares the current four-platform pair
+coverage/scientific-step checks and requires a successful staged Windows
+launcher run matching the Viewer commit, version, build and SHA-256. Windows
+dispatch must use a branch/tag at the candidate SHA. The operator contract is in
+[the release evidence guide](release_gate_evidence.md#exact-file-promotion-and-windows-launchers).
+The 103 focused tests passed; the complete source regression passed **2,402
+tests, 20 skipped**, exit 0 in 307.36 seconds. To keep the provider fixed during
+concurrent MolSysMT work, that run used an isolated export of committed
+`ece35e622fc3f26c57f5261088fa07a39f081aca` with its existing native extension.
+Exact identities and logs are in the archived #134 record. The final workflow
+guard and metadata were checked separately after strengthening its assertions.
+No repaired candidate has passed hosted Windows yet, so #101 remains partial.
+The current changes still need a frozen candidate before staging/public
+certification. Shared public-verifier adoption (#133) is resolved above;
+public documentation remains deferred.
+
+**Release-gate checkpoint (2026-10-01):** `uibcdf/molsysviewer#103` is
+resolved. The verifier now assesses the exact candidate rather than printing
+an unconditional Conda blocker. Staging pair, public pair/channel state and
+hosted core E2E are separate checks; each binds versions, builds, commits,
+run attempts and the actual installed environment artifacts. ZIP and installed
+MD5 identities are tied to GitHub/channel SHA-256 records. Missing evidence
+blocks, contradictory evidence fails, and declared pre-1.0 exceptions remain
+nonzero rather than becoming passes. Strict 1.0 rejects exceptions. See
+[the local evidence contract](release_gate_evidence.md).
+
+Fresh complete regression: **2,370 Python tests passed, 20 skipped**, exit 0
+in 311.70 seconds. This closes the interrupted collection evidence gap from
+#131 below. The 56 focused release tests and all 18 guard mutations also pass;
+mutations restore exact source bytes/timestamps. A real historical public
+environment verifies the archive, installed coordinates and live channel
+bindings, without certifying the current candidate. MolSysMT remained clean at
+`ece35e622fc3f26c57f5261088fa07a39f081aca` before/after; its checkout was not
+modified. Log: `/tmp/msv-release-gate-full-python-20261001.log`.
+
+This task changes Python development tools/tests and internal records, with no
+TS/runtime product change. Earlier JS/core/performance results remain separate
+evidence. The current dirty tree still has no frozen release candidate, and
+the missing-candidate CLI correctly reports three blocked evidence steps with
+exit 2. Next technical block: the repaired Conda artifact and exact Windows
+launcher observation (#101); compatible published Interactions qualification
+remains #114. Public documentation is still deferred until functional closure.
+
+**Installed package checkpoint (2026-10-01):** the current local Viewer wheel
+passes **182 selected tests** with public MolSysMT 0.22.4 and published support
+packages in an isolated Linux/Python 3.14 environment, including eight real
+offline Chrome HTML checks. Molecular imports resolve exclusively to installed
+site-packages; pip requirements and Python/runtime/wheel versions agree. The
+installed provider probe passes ordinary views and explicit refusal of the
+unavailable Interactions backend. Exact artifact hashes, versions, commands and
+scope are in [the installed qualification record](installed_artifact_qualification.md).
+No sibling package or dependency floor was changed; #114 remains partial.
+
+`uibcdf/molsysviewer#131` resolves test helper imports in installed and ordinary
+collection modes. The original 89 affected development checks and 59 lifecycle,
+teardown and addon checks pass; the latter also pass installed. The required
+full development attempt stopped at two bare `conftest` imports during
+collection. Those imports and the function-local addon reference were fixed;
+complete collection now passes. This is not a new passing full-suite result.
+The later 2,370-pass complete regression is recorded above; the preceding
+2,330-pass product regression below remains separate evidence.
+Public documentation remains last. Next: qualify Interactions when its
+compatible provider is published, then reconcile the final support promises
+and freeze a candidate for its own complete gates.
+
+**Public HTML checkpoint (2026-10-01):** uibcdf/molsysviewer#128–#130
+are resolved. Shared non-inline exports carry a versioned scene sidecar,
+readiness follows strict complete restoration and a new Mol* draw, and Studio
+receives the current authoritative panel summaries. Actual offline inline and
+HTTP shared artifacts preserve regions, annotations, measurements, shapes,
+selections and periodic hydrogen-bond geometry across three frames. Invalid
+sidecars/restoration reject visibly; Python-owned controls explain their session
+requirement without changing the saved scene. Six guard mutations fail and
+exact source/runtime are restored. Public documentation remains deferred.
+
+Fresh local evidence: **2,330 Python tests passed, 20 skipped**, exit 0;
+**293/293 JS units**, TypeScript checking, regenerated runtime, **36/36 core
+browser suites**, and both performance harnesses pass. The artifact suite also
+passes after adding explicit format/messages rejection and restoring the schema
+guard. Logs are `/tmp/msv-html-full-python-20261001.log`,
+`/tmp/msv-html-js-unit-detail-20261001.log`,
+`/tmp/msv-html-core-e2e-20261001.log`,
+`/tmp/msv-html-final-artifacts-20261001.log` and
+`/tmp/msv-html-final-performance-20261001.log`. Tests use canonical Python
+3.14.7 and Chrome/SwiftShader, with no browser skip opt-out. Provider HEAD was
+observed at `c6e02d930297990cbd0f0023eea5e7e271c31e92`, with independent
+ongoing changes preserved. This is development-checkout evidence, not a
+published-provider or frozen-candidate qualification. The ordinary installed
+package check is now recorded above; compatible scientific-provider artifacts
+remain pending. Documentation follows
+functional closure. Shared-runtime local-file restrictions remain #39;
+standalone is experimental and remotes remain post-1.0.
+
+**Public persistence checkpoint (2026-10-01):** `uibcdf/molsysviewer#127`
+guards rejection of invalid session scenes before an existing destination is
+replaced. The isolated scene restoration borrows the incoming MolSys rather
+than copying the trajectory, and closes its temporary widgets on both success
+and failure. A failed newly allocated destination is also closed. The guards
+preserve system and handle identity, scene, coordinates, undo/redo and replay;
+scientific scene tests cover incompatible signatures, units, filters and
+versions. All three guard-removal experiments fail, with exact source bytes
+restored afterward. A fresh full Python 3.14 run passes **2,313 tests,
+20 skipped, no failures**, exit 0 in 287.11 seconds; log:
+`/tmp/msv-session-full-20261001.log`. MolSysMT HEAD remained
+`18cc43021a663b5c79b8aa7b51cdef5e1fe27785`, with independent provider changes
+preserved. This is development-checkout evidence; published-provider and exact
+candidate qualification remain pending. The session format remains
+experimental. Public documentation is deferred to the final pass by the user;
+the completed HTML follow-up is recorded above.
+
+**Final design review (2026-09-30):** issues `uibcdf/molsysviewer#118`–`#124`
+are closed, implemented and guarded. Annotation creation is now only
+`view.annotations.add`; `uibcdf/molsysviewer#125` extends the public inventory to
+exported class methods and returned scene handles. All 699 reachable ordinary
+callable routes have ArgDigest and explicit `skip_digestion=False`, with no
+exemptions or missing named digesters. Eight guard mutations fail as intended
+and the exact source bytes were restored after each experiment.
+
+**Validation checkpoint after the corrections (2026-09-30):** a fresh complete
+Python run including the four real scientific checks passes **2,296 tests,
+with 20 skips and no failures**, exit 0 in 274.18 seconds. It used canonical
+Python 3.14.7 and PySide6/Qt 6.11.2, outside
+the sandbox with its matching `CONDA_PREFIX`. The skips include explicitly
+unselected Chromium/GPU checks and unavailable test branches; they are not
+certification of those paths. The four scientific checks passed before this
+full run; the preceding documentation validation passed 2,292 tests and the
+42 selected public-contract/scene/documentation tests. No
+`DigestNotDigestedWarning` appears in the full report.
+
+A **clean strict Sphinx build passes without warnings**, exit 0. The six
+heading warnings are corrected in `uibcdf/molsysviewer#126`: the historical
+design subsections now use H2, and the home notebook has an H1 title and its
+four governed anchors. Its existing H2 sections, examples and outputs are
+preserved. Sphinx ran in the existing Python 3.13 documentation environment;
+the canonical Python 3.14 environment does not have Sphinx installed.
+
+Commands, both from the repository root with the relevant environment active:
+
+```bash
+python -m pytest --receptor=llm tests/
+sphinx-build -E -a -b html -W --keep-going docs /tmp/msv-validation-20260930-docs
+```
+
+Local logs are `/tmp/msv-real-interactions-full-20260930.log` and
+`/tmp/msv-validation-20260930-sphinx.log`. This validates the uncommitted
+working tree based on `6f49013c80c7a10eb09a1220b2236d879d8ecd5a`, with
+MolSysMT imported from its development checkout. It is not a published-provider
+or frozen-artifact qualification. Earlier design-review evidence remains:
+JS 293/293, TypeScript checking, runtime rebuild, core browser 36/36 and the
+message/region performance checks pass. Those complete lanes were not repeated
+for the subsequent documentation and qualification-tool changes; the expanded
+Interactions browser case passes separately with actual calculated links and
+restored-session geometry. The earlier design-review full Python
+run had nine failures; they were corrected and checked by affected selections
+before this separate validation task. A frozen 1.0 candidate still needs
+its own complete gates.
+
+**Interactions scientific checkpoint (2026-09-30):** real sparse queries,
+units/PBC geometry, complete and interactions-only H5MSM 0.5 imports and MSV
+session restoration pass. A real 5,000-frame detector calculation produced
+2,248 occurrences in 3.93 seconds; warm atom/frame queries took about 0.50 ms.
+The solvated 4,369-atom workload produced 2,439 observations, including 299
+with periodic images. Eight 2HGR sulfur proximity candidates preserve the
+existing topology. See [the qualification record](interactions_qualification.md)
+for exact workloads, source provenance, tests and limits.
+
+The public channel still offers MolSysMT 0.22.4, which lacks the required
+backend. Its real compatibility probe passes for ordinary views and explicit
+refusal of calculation. Keep #114 partial/experimental until a compatible
+provider is published and the installed-artifact checks pass. The final
+four-workload source qualification used clean provider commit
+`18cc43021a663b5c79b8aa7b51cdef5e1fe27785`, observed unchanged before/after;
+the complete Python run occurred during its independent development work.
+
+**Earlier Interactions working-tree evidence (2026-09-30, before the final review):** Native Interactions now includes
+scientific Python workflows, tagged current-frame geometry and the Studio tab.
+The review fixes protect domain picking, same-frame inspector replies, deletion
+during a Mol* write and occurrence materialization budgets. The full Python
+suite in the canonical Python 3.14/Qt 6.11.2 environment passed **2,235 tests**
+with **20 skips**, outside the sandbox and with its matching `CONDA_PREFIX`.
+JS units passed **294/294**, and the core browser lane passed **35/35** after
+the Interactions addition. This supersedes earlier local full-suite failure
+observations below; it does not certify a visible-window standalone host.
+
+The requested final library-design review produced issues #118–#125, recorded above.
+Interactions remains experimental under `uibcdf/molsysviewer#114` until its
+published scientific backend and exact candidate are qualified. Six synthetic
+combined-memory workloads are recorded in [interactions_performance.md](interactions_performance.md).
+The bounded paging fallback names `uibcdf/molsysmt#264`; unrelated Sphinx public
+reference warnings and cold imports were corrected in `uibcdf/molsysviewer#117`;
+the final Sphinx build passes with warnings treated as errors.
 
 The public MolSysMT 0.22.4 / MolSysViewer 0.23.4 pair is installed and
 verified across Python 3.11–3.14. It is a pre-1.0 distribution
@@ -16,7 +541,7 @@ now uses official conda-forge PySide6/Qt 6.11.2. Qt-host and
 MolSysMT–Viewer targeted tests pass. The UIBCDF family remains a
 separate fallback, not a dependency of that environment.
 Visible-window Qt and native macOS/Windows standalone validation
-remain unproven. The recent full Viewer suite was not green: three
+remain unproven. The earlier full Viewer suite was not green: three
 test-environment/assertion failures were corrected and their affected
 files passed, but the complete suite was not rerun.
 On 2026-09-28 another full local run, launched from the older shared Python
@@ -33,9 +558,10 @@ permitted`. Both exact Qt tests passed when rerun outside the sandbox with
 `CONDA_PREFIX` set to the Python 3.14 environment. This is not a green
 full-suite run or visible-window host certification.
 
-The immediate code-only task remains widening executable
-documentation-page coverage. Then complete scientific dogfooding and
-first-contact onboarding. The local standalone host and launchers are
+The final design review is implemented. The next checkpoint is published-provider
+qualification, exact-candidate gates, scientific dogfooding and first-contact
+onboarding. Executable documentation coverage still has growth work; the new
+Interactions tutorial runs. The local standalone host and launchers are
 experimental for 1.0: visible-window Qt observations and the newer
 conda-forge Qt comparison (`uibcdf/molsysviewer#113`) remain host follow-ups,
 not candidate-freeze conditions. Run exact-candidate core 1.0 gates before
@@ -181,8 +707,9 @@ conclusions do not change.
 The release explicitly excepts visible-window Qt and complete hosted E2E
 evidence for this pre-1.0 version; [#100](https://github.com/uibcdf/molsysviewer/issues/100)
 remains open and the strict 1.0 gate is not green. The stale unconditional
-Conda gate message is tracked by [#103](https://github.com/uibcdf/molsysviewer/issues/103)
-for correction on `main`, not by changing the tested tag. Both public Zenodo
+Conda gate message was tracked by [#103](https://github.com/uibcdf/molsysviewer/issues/103)
+and is now replaced by the exact-candidate checks above, without changing the
+tested tag. Both public Zenodo
 records have now been independently verified. Viewer 0.23.4 has
 [version DOI 10.5281/zenodo.22959304](https://doi.org/10.5281/zenodo.22959304)
 in concept family `10.5281/zenodo.18072956`, with the single archived file
@@ -539,6 +1066,45 @@ MolSysViewer does.** It is generated; regenerate with
 documents carry it.
 
 Resume toward **1.0** in this order:
+
+**Current session priority (2026-10-03):** independent-source loading, durable
+source transfer, controlled box assignment and Studio parity are implemented
+locally. The latest once-run source regression passes with **2,783 passed and
+23 skipped**. Qualify the integrated candidate/provider/artifacts; retain the
+published-provider qualification gate; #307 extraction and #309 composition are repaired in the editable provider. Public documentation remains
+last. Continue in this order:
+
+1. Review/freeze the cumulative source candidate and qualify the core browser
+   lane and installed artifacts. Preserve the #151 Python/browser evidence and
+   explicitly resolve or bound its partial-H5MSM provider limitation.
+2. CI enforcement (#116), ecosystem adoption (#110) and its final unit boundary
+   (#98) are resolved. PR #135 merged at `12faa16b` after updated-commit hosted
+   CI, core E2E and all three Python 3.14 cells passed. Support libraries and
+   developer tools are adopted for the reviewed boundaries. The latest complete
+   source attempt returned 2,480 passed, 23 skipped and one failed; the old
+   B-factor fixture now supplies units and the final focused checks pass
+   (24 tests). All 296 JS tests and the runtime rebuild pass. No new complete
+   source pass is claimed. See
+   [the detailed evidence](python_ecosystem_policy_adoption.md).
+3. Repeat the now-passing real Interactions workflows against a compatible
+   published MolSysMT artifact, once available: calculation, named analyses,
+   H5MSM, nonconsecutive structures, current-frame visualization, units/PBC
+   and sessions. Keep `uibcdf/molsysviewer#114` experimental until that
+   installed-provider evidence exists; `uibcdf/molsysmt#250` owns the APIs.
+   Source qualification is complete for the bounded cases recorded above.
+4. Qualify a concrete artifact candidate for repaired Conda/Windows launchers
+   (#101), the current 16-cell installed pair and hosted core browser lane.
+   The shared public verifier and promotion preconditions are implemented
+   (#133/#134); their implementation does not supply new candidate evidence.
+5. After functional and dependency qualification, finish public documentation
+   and reconcile the visible support promises. Standalone remains experimental;
+   remote sessions and the Mol* dependency update remain post-1.0.
+5. Freeze the final release candidate and validate its installed artifacts,
+   scientific workflows, first-contact experience and all required evidence
+   before publication. Preserve separate human observations.
+
+The older general growth checklist below is a follow-up inventory. It does
+not replace this session's ordered priorities.
 
 1. **Widen `EXECUTABLE_PAGES`** in `tests/test_documentation_pages_run.py`. It executes
    three documentation pages today; the rest of the markdown is run by nothing, which is

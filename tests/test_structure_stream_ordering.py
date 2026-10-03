@@ -42,7 +42,7 @@ def _view_with_a_pending_measurement() -> MolSysView:
     view = MolSysView()
     view.load(msm.systems["pentalanine"]["traj_pentalanine.h5msm"])
     view.measurements.add_distance(selection_a=[0], selection_b=[10], tag="d1")
-    view.annotations.add_annotation("note", atom_indices=[0], tag="ann", skip_digestion=True)
+    view.annotations.add("note", atom_indices=[0], tag="ann", skip_digestion=True)
     return view
 
 

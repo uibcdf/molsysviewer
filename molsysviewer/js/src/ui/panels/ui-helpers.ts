@@ -5,6 +5,17 @@
 // panels look and behave identically. Extracted from `group-panel.ts` as the
 // first step of the panel-per-module refactor.
 
+/** Preserve physical ranges for Python/PyUnitWizard; parse only plain numeric pairs. */
+export function scalarColorRangeFromInput(value: string): number[] | string | undefined {
+    const text = value.trim();
+    if (!text) return undefined;
+    const parts = text.split(",").map(part => part.trim());
+    if (parts.length === 2 && parts.every(part => part !== "" && Number.isFinite(Number(part)))) {
+        return parts.map(Number);
+    }
+    return text;
+}
+
 export function formatUnitLabel(unit: string): string {
     switch (unit.trim().toLowerCase()) {
         case "angstrom":

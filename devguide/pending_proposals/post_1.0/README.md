@@ -14,13 +14,10 @@ required before claiming a supported host, not before tagging core 1.0.
    v2 prototype and observability work; structure residency remains gated by the
    separate windowing contract.
 2. `interactions_domain.md` and
-   `studio_interactions_subpanel_ui_design.md`: the next major scientific scene
-   domain, already designed. Implement it in vertical slices:
-   - canonical Python manager and immutable records;
-   - calculation adapters and explicit imported pairs;
-   - state, history, rebuild, broken references, and frame semantics;
-   - frontend rendering;
-   - Studio subpanel last.
+   `studio_interactions_subpanel_ui_design.md`: grow beyond the bounded
+   pre-1.0 slice tracked by `uibcdf/molsysviewer#114`. Prioritize additional
+   families, imported data, persistence analytics, and advanced Studio
+   controls after reviewing what the minimum actually delivered.
 3. `canvas_picking_level.md`: self-contained interaction UX.
 4. `structure_windowing_and_lazy_materialization.md`: decide the public meaning
    of resident versus available structures before implementing a cache.
@@ -28,6 +25,9 @@ required before claiming a supported host, not before tagging core 1.0.
    ownership contract.
 6. Advanced annotations, representations, chemical metadata, typing generation,
    and test-output studies as their use cases or upstream contracts mature.
+
+The Mol* dependency update in `uibcdf/molsysviewer#115` is independent of
+that order and follows the 1.0 release.
 
 `proteinview_external_review_and_ideas.md` is an idea inventory rather than a
 design, so it has no place in that order. Read it before opening any proposal in
@@ -54,7 +54,7 @@ archived after D4; it is not a second transport specification.
 | Work | Start only when |
 |---|---|
 | Performance architecture | the Phase 8 representative baseline is accepted; each optimization sets its A/B gate before implementation |
-| Interactions | 1.0 API freeze has ended and MolSysMT calculation vocabulary is confirmed |
+| Advanced Interactions | the pre-1.0 slice is certified and the additional MolSysMT calculation vocabulary is confirmed |
 | Canvas picking | desired levels and Mol* granularity behavior are verified against local `src_molstar` |
 | Structure windowing | MolSysMT vocabulary, `view.molsys` semantics, add-on behavior, edits, and materialization are specified |
 | Multiview | view/session identity and command routing are stable |

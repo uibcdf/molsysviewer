@@ -77,6 +77,14 @@ async function run() {
                 presets: ["auto", "polymer-cartoon"],
                 regions: [
                     {
+                        tag: "base",
+                        atom_indices: [0, 1],
+                        atom_count: 2,
+                        hidden: false,
+                        representation: null,
+                        preset: null,
+                    },
+                    {
                         tag: "pocket",
                         atom_indices: [0, 1, 2, 3],
                         atom_count: 4,
@@ -102,6 +110,12 @@ async function run() {
 
         await page.locator('[data-molsysviewer-group-panel-toggle="true"]').click();
         await page.locator('[data-molsysviewer-group-panel-tab="regions"]').click();
+
+        const baseToggle = page.locator('button[data-molsysviewer-region-visibility="base"]');
+        assert.strictEqual(await baseToggle.isEnabled(), true);
+        assert.ok((await baseToggle.getAttribute("title"))?.includes("Whole only"));
+        await baseToggle.click();
+        assert.strictEqual((await latestAction(page, "toggle_region_visibility")).tag, "base");
 
         await page.locator('[data-molsysviewer-query-input="regions"]').fill("atom_index in [0, 1]");
         await page.locator('[data-molsysviewer-query-check="regions"]').click();

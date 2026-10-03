@@ -30,6 +30,7 @@ from ..annotations import AnnotationsManager
 from ..colors import colors as global_colors
 from ..exports import ExportManager
 from ..interaction_targets import InteractionTarget
+from ..interactions import InteractionsManager
 from ..layers import Layer, LayersManager, SceneObject
 from ..loaders.array_native_molsys import (
     ARRAY_NATIVE_PROTOCOL_VERSION,
@@ -111,7 +112,7 @@ class MolSysView(
 
     @signal(tags=["viewer"])
     @digest()
-    def close(self) -> None:
+    def close(self, *, skip_digestion: bool = False) -> None:
         """Release the frontend transport and widgets owned by this view.
 
         Closing is explicit because widget registries retain open views even
@@ -257,6 +258,7 @@ class MolSysView(
         self._last_label: str | None = None
         self._empty = True
         self._load_blocks: list[dict[str, Any]] = []
+        self._load_structure_count = 0
         self._current_structure_index: int = 0
         self._atom_index_mapper = None
         self._structure_index_mapper = None
@@ -279,6 +281,11 @@ class MolSysView(
                 "shape",
                 "shape",
                 lambda: (tag for kind, tag in self._scene_objects if kind == "shape"),
+            ),
+            "interaction": TagsManager(
+                "interaction",
+                "interaction",
+                lambda: (tag for kind, tag in self._scene_objects if kind == "interaction"),
             ),
             "annotation": TagsManager(
                 "annotation",
@@ -346,6 +353,7 @@ class MolSysView(
         self.annotations = AnnotationsManager(self)
         self.active_selection = ActiveSelection(self)
         self.measurements = MeasurementsManager(self)
+        self.interactions = InteractionsManager(self)
         self.selections = SelectionsManager(self)
         self.history = SceneHistory(self)
         self.scene = SceneManager(self)
@@ -374,7 +382,9 @@ class MolSysView(
         self._apply_view_modes(viewer_mode=viewer_mode, controls_mode=controls_mode, panel_mode_style=panel_mode_style)
 
     @contextmanager
-    def attributed_to(self, owner: str):
+    @signal()
+    @digest()
+    def attributed_to(self, owner: str, *, skip_digestion: bool = False):
         """Attribute scene objects created in this context to *owner*.
 
         Attribution is informational only. It never changes what the user may
@@ -459,7 +469,7 @@ class MolSysView(
 
     @signal(tags=["viewer"])
     @digest()
-    def set_dimensions(self, width: str | None = None, height: str | None = None) -> None:
+    def set_dimensions(self, width: str | None = None, height: str | None = None, *, skip_digestion: bool = False) -> None:
         """Set the dimensions of the viewer widget.
 
         Parameters
@@ -476,7 +486,7 @@ class MolSysView(
 
     @signal(tags=["viewer", "visibility"])
     @digest()
-    def set_canvas_visibility(self, visible: bool) -> None:
+    def set_canvas_visibility(self, visible: bool, *, skip_digestion: bool = False) -> None:
         """Set the visibility of the WebGL canvas.
 
         Parameters
@@ -1447,7 +1457,7 @@ class MolSysView(
             if tag and (kind, tag) not in self._scene_objects:
                 if tag not in self._layers:
                     layer = Layer(self, tag, kind=content.get("kind"), meta=content.get("meta") or {})
-                    self._layers[tag] = layer
+                    dict.__setitem__(self._layers, tag, layer)
                 else:
                     layer = self._layers[tag]
                     layer.kind = content.get("kind", layer.kind)
@@ -1455,7 +1465,7 @@ class MolSysView(
                         layer.meta.update(content.get("meta"))
         elif event == "layer_deleted":
             tag = content.get("tag")
-            if tag:
+            if tag and content.get("kind") != "interaction":
                 self._unregister_layer(tag)
         elif event == "registry_cleared":
             pass  # frontend acknowledged clear_all; Python state is managed explicitly
@@ -1720,11 +1730,28 @@ class MolSysView(
                 self._shape_render_status[tag] = dict(content)
         elif event == "interaction_measurement_created":
             self.measurements._register_interactive_measurement(dict(content))  # noqa: SLF001
+        elif event == "request_interaction_frame":
+            frame = content.get("frame")
+            request_id = content.get("request_id")
+            try:
+                from ..interactions import _indices
+
+                _indices(frame, self.molsys.structures.n_structures, "structure_indices")
+                for message in self.interactions._messages(frame):
+                    self._send_runtime_only({**message, "request_id": request_id})
+                self._send_runtime_only({"op": "interaction_frame_complete", "request_id": request_id})
+            except Exception as exc:
+                self._send_backend_error_ack(content, exc)
         elif event == "trajectory_frame_rendered":
             t_id = content.get("transaction_id")
             if t_id is not None:
                 self._rendered_transactions_acks.add(t_id)
                 self._last_rendered_transaction = t_id
+        elif event == "trajectory_plot_hidden":
+            tag = content.get("tag")
+            if not isinstance(tag, str) or not tag.strip():
+                raise ValueError("trajectory_plot_hidden requires a tag.")
+            self.trajectory_plot.hide(tag)
         elif event == "trajectory_frame_changed":
             # Emitted by TS when playback stops; update Python-side frame index and NPT box.
             frame = int(content.get("frame", 0))
@@ -1857,7 +1884,7 @@ class MolSysView(
 
     @signal(tags=["viewer", "transport"])
     @digest()
-    def wait_for_transaction(self, transaction_id: str | int, timeout_s: float = 1.0) -> bool:
+    def wait_for_transaction(self, transaction_id: str | int, timeout_s: float = 1.0, *, skip_digestion: bool = False) -> bool:
         """Wait until the frontend acknowledges that the transaction has been rendered."""
         import time
 
@@ -2070,6 +2097,8 @@ class MolSysView(
 
         options = dict(options)
         remapped["options"] = options
+        if options.get("position") is not None:
+            return remapped
         original = [int(index) for index in options.get("atom_indices") or []]
         if atom_index_map is None:
             n_atoms = int(self._molsys.get_n_atoms()) if self._molsys is not None else 0
@@ -2326,6 +2355,19 @@ class MolSysView(
     ) -> None:
         if self._molsys is None:
             raise ValueError("No molecular system loaded. Load a system before mutating the view.")
+        isolated_region = self._show_only_region()
+
+        for obj in self.interactions._objects():
+            if atom_index_map is not None:
+                for field in ("selection", "selection_2"):
+                    values = obj.filter[field]
+                    if isinstance(values, list):
+                        remapped = [atom_index_map.get(i) for i in values]
+                        if any(i is None for i in remapped):
+                            obj.broken = True
+                        else:
+                            obj.filter[field] = remapped
+            obj._payload_key = None
 
         # A rebuild supersedes any in-flight generation before replacing its
         # lazy fallback. This makes it impossible for an old timeout to
@@ -2342,7 +2384,9 @@ class MolSysView(
                 if atom_index_map is None:
                     continue
                 evaluated_atom_indices = self._remap_indices(list(region.atom_indices), atom_index_map)
-            if len(evaluated_atom_indices) == 0:
+            if len(evaluated_atom_indices) == 0 and not (
+                region.mode == "dynamic" and Region._is_reevaluable_provenance(dict(region.provenance))
+            ):
                 region._active = False  # noqa: SLF001
                 self._unregister_region(tag)
                 continue
@@ -2399,6 +2443,8 @@ class MolSysView(
 
         new_shape_history: list[dict] = []
         for msg in self._shape_history:
+            if self._tag_from_message(msg) == self._BOX_TAG:
+                continue  # Recreate cell edges from the updated scientific data.
             remapped = self._remap_shape_message(msg, atom_index_map)
             if remapped is None:
                 tag = self._tag_from_message(msg)
@@ -2408,6 +2454,7 @@ class MolSysView(
             new_shape_history.append(remapped)
             self._send_replay(remapped)
         self._shape_history = new_shape_history
+        self._refresh_box_display()
 
         new_annotation_history: list[dict] = []
         for msg in self._annotation_history:
@@ -2434,6 +2481,7 @@ class MolSysView(
             if not remapped.get("broken"):
                 self._send_replay(remapped)
         self._measurement_history = new_measurement_history
+        self.interactions._project()
 
         if atom_index_map is not None:
             remapped_scene_look: dict[str, dict] = {}
@@ -2463,9 +2511,12 @@ class MolSysView(
         for msg in self._player_replay_messages():
             self._send_replay(msg)
 
+        self._restore_region_isolation(isolated_region)
+
         self._sync_annotation_summaries_runtime()
         self._sync_measurement_summaries_runtime()
         self._sync_shape_summaries_runtime()
+        self._sync_interaction_summaries_runtime()
         self._sync_trajectory_summary_runtime()
 
     @signal(tags=["edit"])
@@ -2479,6 +2530,7 @@ class MolSysView(
         label: str | None = None,
         load_blocks: str = "keep",
         appended_n_atoms: int | None = None,
+        interactions_policy: str = "invalidate",
         skip_digestion: bool = False,
     ) -> None:
         """Replace the loaded molecular system and reconcile viewer state.
@@ -2495,47 +2547,60 @@ class MolSysView(
             Molecular system that should become the view's current system.
         atom_index_map
             Optional ``{old_atom_index: new_atom_index}`` map. Use ``None`` for
-            edits where atom identity and indices are unchanged.
+            edits where atom identity and indices are unchanged. With equal
+            structure counts, the edit also declares the structure index order
+            unchanged; use extraction for an explicit frame reorder/subset.
         label
             Optional label for the rebuilt payload. Defaults to the current
             view label.
         load_blocks
             Load-block accounting policy after the edit: ``"keep"`` (default,
-            leave the blocks as-is, e.g. coordinate/attribute edits), ``"collapse"``
+            retain/remap sources, e.g. coordinate/attribute edits), ``"collapse"``
             (one block for the current whole, e.g. after a removal), or
             ``"append"`` (record a new block; requires ``appended_n_atoms``, e.g.
             after an addition). Callers should not manage load blocks through
             private helpers.
+            A changed atom count without correspondence collapses the inventory;
+            new atoms absent from a supplied map have an explicit unmapped origin.
+            A changed structure count without declared correspondence clears
+            original-frame maps as unverified. Explicit load append retains the
+            known prefix, without inventing provenance for new frames.
         appended_n_atoms
             Number of atoms appended by the edit; required when
             ``load_blocks="append"``.
+        interactions_policy
+            ``"invalidate"`` (default) clears evaluated interaction coverage
+            conservatively when the edit supplies no affected-frame metadata.
+            ``"preserve"`` declares that attached analyses already correspond
+            to the edited system, for example after a pure extraction or reorder.
         """
         if new_molsys is None:
             raise ValueError("apply_system_edit(...) requires a molecular system.")
         if load_blocks not in ("keep", "collapse", "append"):
             raise ValueError(f"apply_system_edit(load_blocks={load_blocks!r}) must be 'keep', 'collapse', or 'append'.")
+        if load_blocks == "append":
+            if appended_n_atoms is None:
+                raise ValueError("apply_system_edit(load_blocks='append') requires appended_n_atoms.")
+            if not 0 <= int(appended_n_atoms) <= int(new_molsys.get_n_atoms()):
+                raise ValueError("appended_n_atoms must fit within the edited system's atom count.")
 
+        self.trajectory_plot._check_structure_axis(new_molsys.structures.n_structures)
         effective_label = self._last_label if label is None else label
+        source_records = self._prepare_source_records_edit(
+            new_molsys, atom_index_map, load_blocks, appended_n_atoms, effective_label,
+        )
+        self.interactions._prepare_system_edit(new_molsys, interactions_policy)
+        self.interactions._system_changed()
         self._molsys = new_molsys
         self.molecular_system = new_molsys
+        self._invalidate_system_identity()
+        self._replace_load_records(source_records)
         if label is not None:
             self._last_label = label
         self._rebuild_view_from_current_molsys(
             label=effective_label,
             atom_index_map=atom_index_map,
         )
-
-        # Reconcile load-block accounting so callers (view.add/remove and addons)
-        # do not have to touch the private load-block helpers.
-        if load_blocks == "collapse":
-            self._collapse_load_blocks_to_current_whole()
-        elif load_blocks == "append":
-            if appended_n_atoms is None:
-                raise ValueError("apply_system_edit(load_blocks='append') requires appended_n_atoms.")
-            if not self._load_blocks:
-                prior = max(int(self._molsys.get_n_atoms()) - int(appended_n_atoms), 0)
-                self._register_initial_load_block(n_atoms=prior, label=None)
-            self._append_load_block(n_atoms=int(appended_n_atoms), label=effective_label)
 
     def _local_structure_index_for_player(self) -> int:
         return int(self._current_structure_index)
@@ -2579,17 +2644,21 @@ class MolSysView(
 
     def _reset_load_blocks(self) -> None:
         self._load_blocks = []
+        self._load_structure_count = 0
         self._empty = True
 
     @property
     def load_blocks(self) -> list[dict]:
-        """Read-only list of load records for every successful load operation.
+        """Detached provenance records for independent loaded molecular sources.
 
-        Each entry is a dict with keys ``index``, ``label``, ``start``, ``stop``,
-        and ``n_atoms``.  Returns a shallow copy so the internal accounting cannot
-        be mutated accidentally.
+        Each entry includes its stable source ID, origin, compact atom/structure
+        maps and optional region UID/tag, alongside index, label and atom bounds.
+        Bounds enclose a source's atoms; the compact map defines membership.
+        Structure maps contain only known correspondence: appended frames do
+        not acquire fabricated original indices, and unknown edits invalidate it.
+        Returns detached records so the accounting cannot be mutated by callers.
         """
-        return list(self._load_blocks)
+        return self._load_records_snapshot()
 
     @property
     def visible_structure_indices(self):
@@ -2684,6 +2753,27 @@ class MolSysView(
 
         messages = self._build_export_messages()
 
+        messages_url = None
+        if shares_runtime and not inline_messages:
+            from pathlib import Path
+            from urllib.parse import quote
+
+            output = Path(output_filename)
+            sidecar = output.with_name(output.name + ".messages.json")
+            if sidecar.exists():
+                try:
+                    existing = json.loads(sidecar.read_text(encoding="utf-8"))
+                except (ValueError, UnicodeError) as error:
+                    raise FileExistsError(f"Refusing to overwrite unrelated scene data: {sidecar}") from error
+                if not isinstance(existing, dict) or existing.get("format") != "molsysviewer-messages":
+                    raise FileExistsError(f"Refusing to overwrite unrelated scene data: {sidecar}")
+            sidecar.write_text(
+                json.dumps({"format": "molsysviewer-messages", "version": 1, "messages": messages},
+                           separators=(",", ":"), allow_nan=False),
+                encoding="utf-8",
+            )
+            messages_url = "./" + quote(sidecar.name, safe="")
+
         # One page shape for both answers. A self-contained export carries the
         # runtime in the file; a shared one addresses a copy. Everything else —
         # the replayed scene, the controls, the popout — is identical, so it is
@@ -2700,6 +2790,7 @@ class MolSysView(
             runtime_source=None if shares_runtime else MolSysViewerWidget._viewer_js_source,
             background=background,
             host_event_transport=host_event_transport,
+            messages_url=messages_url,
         )
         with open(output_filename, "w", encoding="utf-8") as f:
             f.write(html)
@@ -2903,7 +2994,7 @@ class MolSysView(
             return
 
         kind = content.get("kind")
-        if kind not in {"empty", "structure", "shape", "measurement", "annotation"}:
+        if kind not in {"empty", "structure", "shape", "measurement", "annotation", "interaction"}:
             return
         target: dict[str, Any] = {
             "event": "interaction_context_menu",
@@ -3399,6 +3490,7 @@ class MolSysView(
         runtime_source: str | None = None,
         background: str = "auto",
         host_event_transport: str | None = None,
+        messages_url: str | None = None,
     ) -> str:
         """Create an HTML page that boots the runtime and replays the scene.
 
@@ -3439,6 +3531,8 @@ class MolSysView(
         }
         if host_event_transport:
             ui_config["host_event_transport"] = str(host_event_transport)
+        if messages_url:
+            ui_config["messages_url"] = messages_url
 
         messages_json = self._json_for_html_script(messages) if inline_messages else "[]"
         ui_json = self._json_for_html_script(ui_config)
@@ -3548,9 +3642,6 @@ class MolSysView(
         runtimeUrl: moduleUrl,
         runtimeSource: inlineSource || undefined,
       }});
-      // Allow Mol* to finish rendering all queued frames before signalling
-      // headless screenshot tools (e.g. playwright) that the scene is ready.
-      await new Promise(resolve => setTimeout(resolve, 2000));
       el.setAttribute("data-molsysviewer-rendered", "true");
     }};
 
@@ -3589,6 +3680,7 @@ class MolSysView(
 
     if (!booted) {{
       console.error("[MolSysViewer docs] Failed to load runtime.", lastError);
+      el.setAttribute("data-molsysviewer-error", "true");
       el.textContent = "MolSysViewer failed to load. See console for details.";
     }}
   </script>

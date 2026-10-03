@@ -2,7 +2,7 @@ import type { ActiveSelectionPayload } from "../../managers/active-selection";
 import type { RegionDetails, RegionSummary, SavedSelectionSummary, SelectionQueryPreview } from "../group-panel";
 import { BasePanel } from "./base-panel";
 import { PanelAction, PanelContext } from "./types";
-import { makeButton, makeSectionHeader, makeStyledSelect } from "./ui-helpers";
+import { makeButton, makeSectionHeader, makeStyledSelect, scalarColorRangeFromInput } from "./ui-helpers";
 import { FALLBACK_PRESETS, bindContinuousHistory, createStyleDraftControls, makeStyleControlRow } from "./style-composer";
 import { ManualQueryComposer } from "../query-composer";
 
@@ -358,16 +358,15 @@ export class RegionsPanel extends BasePanel {
             boxShadow: isVisible && hasVisual ? "0 0 8px rgba(52,211,153,0.5)" : "none",
             flexShrink: "0",
             marginRight: "6px",
-            cursor: hasVisual ? "pointer" : "not-allowed",
+            cursor: "pointer",
         });
-        if (!hasVisual) {
-            dot.title = "This base region has no visual representation to toggle.";
-        }
+        const visibilityTitle = hasVisual
+            ? "Show or hide this region's representations."
+            : "Show or hide these atoms in Whole only; other representations stay independent.";
+        dot.title = visibilityTitle;
 
         const toggleVisibility = () => {
-            if (hasVisual) {
-                this.ctx.onAction("toggle_region_visibility", { tag: item.tag });
-            }
+            this.ctx.onAction("toggle_region_visibility", { tag: item.tag });
         };
 
         dot.addEventListener("click", (e) => {
@@ -441,12 +440,7 @@ export class RegionsPanel extends BasePanel {
 
         const visibilityBtn = makeButton(item.hidden ? "Show" : "Hide", () => toggleVisibility());
         visibilityBtn.setAttribute("data-molsysviewer-region-visibility", item.tag);
-        if (!hasVisual) {
-            visibilityBtn.disabled = true;
-            visibilityBtn.style.opacity = "0.42";
-            visibilityBtn.style.cursor = "not-allowed";
-            visibilityBtn.title = "This base region has no visual representation to hide.";
-        }
+        visibilityBtn.title = visibilityTitle;
 
         const renameBtn = makeButton("Rename", () => {
             this.regionRenameTag = item.tag;
@@ -794,7 +788,8 @@ export class RegionsPanel extends BasePanel {
         palette.setAttribute("data-molsysviewer-region-style-color-attribute-palette", tag);
         const valueRange = document.createElement("input");
         valueRange.type = "text";
-        valueRange.placeholder = "range min,max";
+        valueRange.placeholder = "auto / min,max";
+        valueRange.title = "Leave empty for automatic range. Physical values need units, e.g. [0,100] angstrom**2.";
         valueRange.value = Array.isArray(params.color_attribute_range)
             ? params.color_attribute_range.join(",")
             : "";
@@ -816,16 +811,13 @@ export class RegionsPanel extends BasePanel {
             typeof params.color_attribute === "string" ? params.color_attribute : "",
             (value) => {
                 if (!value) return;
-                const range = valueRange.value
-                    .split(",")
-                    .map(part => Number(part.trim()))
-                    .filter(value => Number.isFinite(value));
+                const range = scalarColorRangeFromInput(valueRange.value);
                 this.ctx.onAction("color_region_by_attribute", {
                     tag,
                     attribute: value,
                     element: attributeElement.value,
                     palette: palette.value,
-                    ...(range.length === 2 ? { value_range: [range[0], range[1]] } : {}),
+                    ...(range !== undefined ? { value_range: range } : {}),
                     replace: true,
                 });
             },

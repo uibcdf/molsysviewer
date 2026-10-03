@@ -1,3 +1,4 @@
+import type { InteractionFrame, InteractionSeries, InteractionSummariesMessage, InteractionInspection } from "../managers/handlers/interaction-handlers";
 // src/messages/viewer-messages.ts
 
 import { PocketSurfaceOptions } from "../shapes/pocket-surface";
@@ -144,6 +145,8 @@ export type AddLabelMessage = {
         text?: string;
         atom_indices?: number[];
         position?: number[];
+        position_unit?: "angstrom";
+        offset_unit?: "angstrom" | "dimensionless";
         offset_mode?: "camera" | "world";
         offset?: number[];
         leader_line?: boolean;
@@ -160,7 +163,9 @@ export type UpdateLabelMessage = {
     options?: {
         text?: string;
         atom_indices?: number[];
-        position?: number[];
+        position?: number[] | null;
+        position_unit?: "angstrom" | null;
+        offset_unit?: "angstrom" | "dimensionless";
         offset_mode?: "camera" | "world";
         offset?: number[];
         leader_line?: boolean;
@@ -457,6 +462,8 @@ export type SetRegionOrderMessage = {
 export type ShowRegionMessage = {
     op: "show_region" | "show_only_region";
     tag?: string;
+    /** Restore isolation without rewriting saved visibility or showing whole. */
+    restore_only?: boolean;
 };
 
 export type HideRegionMessage = {
@@ -878,8 +885,10 @@ export type StopMovieMessage = {
 
 export type PartialCoordinatesUpdateMessage = {
     op: "partial_coordinates_update";
-    coordinates: number[][];
+    coordinates: number[][][];
+    coordinate_unit: "angstrom";
     atom_indices: number[];
+    structure_indices: number[];
     transaction_id?: string | number;
 };
 
@@ -900,6 +909,11 @@ export type KnownViewerMessage =
     AddRingsMessage |
     AddAnisotropyEllipsoidsMessage |
     AddPharmacophoreMessage |
+    { op: "interaction_action_result"; request_id: number; ok: boolean; analysis_name?: string; error_message?: string } |
+    { op: "system_load_result"; request_id: string; ok: boolean; n_atoms?: number; n_structures?: number; n_sources?: number; error_message?: string } |
+    InteractionFrame | InteractionSeries | InteractionSummariesMessage |
+    { op: "interaction_inspection"; request_id: number; result: InteractionInspection } |
+    { op: "interaction_frame_complete"; request_id: number } |
     AddNetworkLinksMessage |
     AddHbondsMessage |
     AddDisplacementVectorsMessage |

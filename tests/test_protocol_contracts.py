@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from _edit_helpers import apply_remove
 from molsysviewer import MolSysView
+from tests._edit_helpers import apply_remove
 
 # ---------------------------------------------------------------------------
 # reset_viewer / clear_all
@@ -115,7 +115,7 @@ def test_annotation_set_layer_tag_rewrites_annotation_history():
     view = demo["dialanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
-    view.annotations.add_annotation(
+    view.annotations.add(
         text="Site A",
         selection="group_index==0",
         tag="siteA",

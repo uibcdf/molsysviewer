@@ -70,10 +70,9 @@ def test_a_bad_argument_names_the_method_the_user_called(view, region, owner, ca
 
 
 @pytest.mark.parametrize("owner", ["whole", "region"])
-def test_the_delegated_error_stays_chained(view, region, owner):
-    """Replaced for the reader, kept for whoever is debugging."""
+def test_invalid_forms_are_rejected_at_the_public_boundary(view, region, owner):
+    """The public validator rejects invalid forms before calling the provider."""
     target = view.whole if owner == "whole" else region
     with pytest.raises(ArgumentError) as raised:
         target.convert(to_form="no.such.form")
-    assert raised.value.__cause__ is not None
-    assert "molsysmt" in type(raised.value.__cause__).__module__
+    assert raised.value.__cause__ is None

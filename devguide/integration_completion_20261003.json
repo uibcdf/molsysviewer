@@ -1,0 +1,320 @@
+{
+  "date": "2026-10-03",
+  "scope": "Cumulative loading/API candidate, default core browser qualification, installed artifacts and real provider compatibility",
+  "status": "Local source, default core and installed qualification completed; compatible published provider and frozen candidate gates remain",
+  "candidate": {
+    "head": "924da3a32111d8994639e8a72cb901ebeb8f870a",
+    "product_committed": false,
+    "product_pushed": false,
+    "working_tree": "Authorized cumulative uncommitted candidate; unrelated work and pre-integration backups retained"
+  },
+  "synchronization": {
+    "previous_head": "3b475639fdfa2a359b830bdf3314b81b5f1f3830",
+    "integrated_head": "924da3a32111d8994639e8a72cb901ebeb8f870a",
+    "preserved_paths": 402,
+    "changed_hashes_during_fast_forward": 0,
+    "backup": "/tmp/msv-core-integration-before-20261003.tar.gz",
+    "canonical_ACKREDIT_stash_retained": true
+  },
+  "environment": {
+    "development": "molsyssuite@uibcdf_3.14",
+    "python": "3.14.7",
+    "interpreter": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "provider_source": "Editable provider advanced independently: eba166188a8740b9bde10e39f2ed4353448311a4 repairs #307; 3e1eea3cd1573983cac905313831055a58e55415 repairs #309; final regression starts at 033c12b341abf6e986f9ae9ddd6c84bf167222c8. No frozen-provider artifact claim.",
+    "provider_end_head": "033c12b341abf6e986f9ae9ddd6c84bf167222c8",
+    "provider_end_unrelated_work": "The provider workspace has unrelated in-flight changes in eight files, including native/molsys.py and argument digestion; no provider edits by this session. Source runs do not certify a frozen provider checkout."
+  },
+  "artifacts": {
+    "pre_box_verification": {
+      "version": "0.23.4+76.g924da3a3.dirty",
+      "wheel": "/tmp/msv-loading-qualified-wheels-runtime-final-20261003/molsysviewer-0.23.4+76.g924da3a3.dirty-py3-none-any.whl",
+      "sha256": "8351d227c9b65b5b96e1555a14aa3056b513c391807cd9594956cf92845fe260",
+      "matching_python_files": 614,
+      "runtime_version_validator": "PASS",
+      "boundary": "Complete installed regression applies to this artifact, before #155. The local dirty version is not immutable release identity."
+    },
+    "box_verified": {
+      "version": "0.23.4+76.g924da3a3.dirty",
+      "wheel": "/tmp/msv-loading-qualified-wheels-box-verified-20261003/molsysviewer-0.23.4+76.g924da3a3.dirty-py3-none-any.whl",
+      "sha256": "24f9adf4235d4d57250d508e48d172f1f4a8c02a1e6fcca1a3c1b4e58251d190",
+      "matching_python_files": 614,
+      "runtime_version_validator": "PASS",
+      "boundary": "Latest product Python sources match this wheel; installed guards cover its box-verification change. No second full installed regression."
+    },
+    "experimental_provider": {
+      "version": "0.22.4+122.g396e6979f",
+      "origin": "/tmp/msv-loading-scientific-env-20261003/lib/python3.14/site-packages/molsysmt",
+      "publication": "Experimental artifact, not a published release"
+    },
+    "published_provider": {
+      "version": "0.22.4",
+      "origin": "/tmp/msv-loading-public-env-20261003/lib/python3.14/site-packages/molsysmt",
+      "latest_GitHub_release_checked": "0.22.4, published 2026-09-25T11:09:37Z"
+    }
+  },
+  "verification": {
+    "core_browser": {
+      "exit": 0,
+      "passed_suites": 39,
+      "registered_all_suites": 42,
+      "deadline_ms_per_suite": 180000,
+      "override": false,
+      "skip_opt_out": false,
+      "command": "node tests/e2e/e2e-runner.js --lane=core",
+      "browser": "Chrome 149.0.7827.53, WebGL2/ANGLE SwiftShader",
+      "interaction_seconds": {
+        "lifecycle": 32.542,
+        "geometry": 149.884,
+        "calculation": 117.509
+      },
+      "boundary": "Source bridges and real software rendering; three remote suites excluded by contract, not passing remote certification. No native-GPU/visible-Qt or frozen/hosted candidate claim."
+    },
+    "installed_full_once": {
+      "exit": 0,
+      "collected": 2816,
+      "passed": 2791,
+      "skipped": 25,
+      "seconds": 579.31,
+      "boundary": "Pre-#155 Viewer artifact with experimental installed provider; imports verified before and after pytest. Qt/GPU and other explicit skips are not certified lanes."
+    },
+    "installed_loading_worker": {
+      "exit": 0,
+      "passed": 25,
+      "seconds": 33.75
+    },
+    "installed_box_and_loading_followup": {
+      "exit": 0,
+      "passed": 68,
+      "seconds": 42.11,
+      "boundary": "Latest box-verified artifact, experimental installed provider, no full rerun"
+    },
+    "published_box_guard": {
+      "exit": 0,
+      "passed": 1,
+      "boundary": "Latest artifact with published provider; verifies explicit error and preservation when cell initialization is unsupported"
+    },
+    "source_box_specific": {
+      "exit": 0,
+      "passed": 44,
+      "seconds": 19.29
+    },
+    "source_box_full_once": {
+      "exit": 0,
+      "collected": 2823,
+      "passed": 2800,
+      "skipped": 23,
+      "seconds": 489.46,
+      "boundary": "One complete source regression after the #155 fix; development env explicitly molsyssuite@uibcdf_3.14, outside sandbox. Editable provider, separate from the earlier complete installed artifact."
+    },
+    "source_loading_composition": {
+      "exit": 0,
+      "passed": 65,
+      "seconds": 41.15,
+      "boundary": "Before provider #309 repair; unsupported partial-domain composition refused atomically"
+    },
+    "current_provider_partial_composition": {
+      "exit": 0,
+      "passed_guards": 6,
+      "seconds": 11.57,
+      "positive_direct_routes": 12,
+      "boundary": "Six atom/frame combinations through both public provider and Viewer; 10/all or 2/selected atoms and 3,1,2 frames. Newer editable provider, separately from older installed artifact."
+    },
+    "source_fixture_worker": {
+      "exit": 0,
+      "passed": 1,
+      "seconds": 10.23
+    },
+    "registry_and_capability_guards": {
+      "exit": 0,
+      "passed": 215,
+      "seconds": 17.39
+    },
+    "ruff": "PASS",
+    "git_diff_check": "PASS",
+    "final_reporting_protocol": {
+      "exit": 0,
+      "passed": 196,
+      "seconds": 2.3
+    },
+    "final_devguide_index": "PASS",
+    "issue_board_sync": {
+      "exit": 0,
+      "updated_issues": [
+        151,
+        154,
+        155
+      ],
+      "operation": "Only derived partial labels; no narrative comments, closure or body changes"
+    }
+  },
+  "issues": {
+    "uibcdf/molsysviewer#151": "Implemented locally; publication and frozen-candidate qualification pending",
+    "uibcdf/molsysviewer#154": "Cold scientific imports and repeated harness reload fixed locally; all required scenarios fit the default deadline",
+    "uibcdf/molsysviewer#155": "Provider result verified; ignored initialization now explicit error before scene publication",
+    "uibcdf/molsysmt#307": "Provider closed; direct extraction reproduction passes",
+    "uibcdf/molsysmt#309": "Provider closed; public composition and Viewer positive routes pass"
+  },
+  "refuted_attempts": [
+    "Initial isolated clone checkout raced overlay files; restore the isolated baseline Git index, write versioningit output and build runtime before packaging. The 0+unknown wheel was not qualified.",
+    "ParmEd alone does not enable Amber form recognition; public provider mapping requires OpenMM. OpenMM 8.6.1 installation repairs the 18-case installed selection.",
+    "600-second Interactions aggregate times out; persistent imports alone completes it but does not fit 180 seconds. Separate mandatory scenarios and reuse executable harness code while disposing every scene.",
+    "Geometry still timed out before harness reuse; the corrected complete core passes without the deadline override.",
+    "The first post-#309 probe incorrectly called nonexistent MolSys.get_n_structures after successful conversion. Corrected observer uses public msm.get and reports all 12 positive routes.",
+    "The first published box probe assumed the demo began without a cell; explicit removal corrects the setup and reproduces silent initialization failure.",
+    "Published-provider 38-case prefix passes, then the direct-provider box-initialization contract fails; do not relabel that selection green or treat the safe-error guard as availability of the unsupported operation."
+  ],
+  "logs": {
+    "msv-integrated-core-20261003.log": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-integrated-core-20261003.log",
+      "sha256": "f4a10fbf42ff4f3c77b673771f5139f99b84ef962e37ee289425b9081ee22889"
+    },
+    "msv-interactions-warm-worker-20261003.log": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-interactions-warm-worker-20261003.log",
+      "sha256": "b1aee749ace35a1d27cd3059a823ff671911bd6971539ea062c760e178939c42"
+    },
+    "msv-interactions-default-deadlines-20261003.log": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-interactions-default-deadlines-20261003.log",
+      "sha256": "7c40036627407d76e6c30c090fb2a64dd5804ea120228305b8c7947805d61333"
+    },
+    "msv-interactions-default-deadlines-scene-reset-20261003.log": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-interactions-default-deadlines-scene-reset-20261003.log",
+      "sha256": "0eb4333ded5cda93ac12417e953d6ee74ba2073ca43d1161a90247cea1083585"
+    },
+    "msv-integrated-core-default-final-20261003.log": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-integrated-core-default-final-20261003.log",
+      "sha256": "7c8a6a7834ad7a2baa861c8771e61516a78d759f10dc8246af9421c93c4bf1de"
+    },
+    "msv-loading-installed-full-final-20261003.log": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-loading-installed-full-final-20261003.log",
+      "sha256": "318e5c95fe29e257414dbf74e536bd31f105597649374c9c1d205b1f7a197586"
+    },
+    "msv-complementary-domain-guard-20261003.log": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-complementary-domain-guard-20261003.log",
+      "sha256": "f816963cfe61e85efc873182e21581e9b4129ca956d7e3f6cbd621f3ab8337eb"
+    },
+    "msv-fixture-worker-specific-20261003.log": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-fixture-worker-specific-20261003.log",
+      "sha256": "9cb02fb79421e81ff47534e95904df5b19c3f45249f14fadff29d4e6b865b386"
+    },
+    "msv-final-browser-registry-guards-20261003.log": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-final-browser-registry-guards-20261003.log",
+      "sha256": "d1e2e5347e5f06847713cb7c35aeb0c973a71dd85c8115183db998491e45d1cd"
+    },
+    "msv-loading-installed-specific-final-20261003.log": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-loading-installed-specific-final-20261003.log",
+      "sha256": "00e81161d3ed0001fc05b0b3ac4c0c4c757ad678cb01011105bec9c6b9514b69"
+    },
+    "msv-loading-installed-published-provider-normal-20261003.log": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-loading-installed-published-provider-normal-20261003.log",
+      "sha256": "e8f5c606ee0b5ea9024be6e4bde11b43159ae993548cc39bcce3aec147fab32f"
+    },
+    "msv-box-verification-source-specific-20261003.log": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-box-verification-source-specific-20261003.log",
+      "sha256": "39ad7b5bf05b603fcf45eb2b6910473f162cc01fa1ae7a523b7b5da60bfa3270"
+    },
+    "msv-box-verified-published-provider-20261003.log": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-box-verified-published-provider-20261003.log",
+      "sha256": "03441d0b940d96d77266f4f5bc3eb70f92147613d6083fc00471f591528017bf"
+    },
+    "msv-box-verified-installed-specific-20261003.log": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-box-verified-installed-specific-20261003.log",
+      "sha256": "31f728c6b3129a436b1334750371c50da87fbfc53ce042b9318380e9c4b18852"
+    },
+    "msv-partial-composition-repaired-20261003.log": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-partial-composition-repaired-20261003.log",
+      "sha256": "f3c8cc007172f9f435c5b2aa33ab2ebb36bacde1cc4056448b987fa2f99ec61d"
+    },
+    "msv-partial-composition-provider-repaired-counts-20261003.log": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-partial-composition-provider-repaired-counts-20261003.log",
+      "sha256": "e0783ee21eccd2d2d0135775ffd54e97df4b6f23bc1c19c1d36859d3dbb01443"
+    },
+    "msv-public-box-probe-cleared-20261003.log": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-public-box-probe-cleared-20261003.log",
+      "sha256": "0c9a13e559c979802466806bb663297205fa6b44bd7b07a2f01075e7d450163d"
+    },
+    "msv-loading-wheel-members-final-20261003.json": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-loading-wheel-members-final-20261003.json",
+      "sha256": "0fbbebcad5a102f65b6e5e9345618265ab7d9221344b9e300c2cabb62fe98345"
+    },
+    "msv-loading-wheel-members-box-verified-20261003.json": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-loading-wheel-members-box-verified-20261003.json",
+      "sha256": "cf7bca915d67d2d875ebfdcd1b7791cfa89305abc97f112ec8ce3cbe0b2bf1cd"
+    },
+    "msv-core-integration-before-20261003.json": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-core-integration-before-20261003.json",
+      "sha256": "f591d10bb1207f7db038ee5698cebffeca57d565d3744424aa5ccfe71f966b13"
+    },
+    "msv-loading-public-qualification-20261003.py": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-loading-public-qualification-20261003.py",
+      "sha256": "0a79f3054fbe34b0ed881df4cd2fa26d61c9d74f2c4eb234c07abd2821615442"
+    },
+    "msv-public-box-qualification-fixed-20261003.py": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-public-box-qualification-fixed-20261003.py",
+      "sha256": "92320e960f1777fa64273a8838cb9fc685f6e268bb10a4d8c23006672d69f2d4"
+    },
+    "msv-public-box-probe-20261003.py": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-public-box-probe-20261003.py",
+      "sha256": "9475835275a7b3e3a3b9ab9d248b1ebca592de1392372d1bc2618e2a1ab9ba85"
+    },
+    "msv-partial-composition-probe.py": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-partial-composition-probe.py",
+      "sha256": "cc2ce71258403ecadfe9c4098fa5770f0455a24d7f649cc5f89bc489f4a1a615"
+    },
+    "msv-loading-installed-specific-20261003.log": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-loading-installed-specific-20261003.log",
+      "sha256": "418a699884fe288475a4e2ab8393e9ab763e91575edd8adae2e4e2ebaca0ed72"
+    },
+    "msv-loading-installed-specific-openmm-20261003.log": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-loading-installed-specific-openmm-20261003.log",
+      "sha256": "6c5fed049db79b0f5dde4a0fa96112936a46fe9d90117074d6c2c9fb92c98dcd"
+    },
+    "msv-loading-wheel-build-20261003.log": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-loading-wheel-build-20261003.log",
+      "sha256": "dc2aa1a8d8acc78a21fc0c991a8989726bdb86c94a5c18f42cf0b4e19d17a84c"
+    },
+    "msv-loading-wheel-build-20261003-corrected.log": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-loading-wheel-build-20261003-corrected.log",
+      "sha256": "8940da03deb37a6e771e16919efecb6624bc2d0bb3dd82862a78d81fb17dfdd2"
+    },
+    "msv-loading-installed-parmed-20261003.log": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-loading-installed-parmed-20261003.log",
+      "sha256": "60a15760145c92baf3ff3a46a8893c8ee5b7516cc1c56315fc93262f04ba3529"
+    },
+    "msv-loading-installed-openmm-20261003.log": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-loading-installed-openmm-20261003.log",
+      "sha256": "fedecae39cf88fc9673094538f5ddbd32b78e74776c4853abe2e607a0313f44b"
+    },
+    "msv-box-verification-source-full-once-20261003.log": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-box-verification-source-full-once-20261003.log",
+      "sha256": "4763cc766769bebd253b98eb45214c416cbaa031cd6a51104b28c9e0ab7a19df"
+    },
+    "msv-integration-completion-reporting-20261003.log": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-integration-completion-reporting-20261003.log",
+      "sha256": "af9be0ed2c2f55c93a0377baade0cbfb7f4a29a7312e7e71bcb8fcfdc702f5bb"
+    },
+    "msv-integration-completion-board-sync-20261003.log": {
+      "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/integration-completion-20261003/msv-integration-completion-board-sync-20261003.log",
+      "sha256": "58457be33b7f892f93ecf00d82ed01fd03a8aa981834b8f103b32a6b910b1fc9"
+    }
+  },
+  "boundaries": [
+    "No provider source edits, scientific mock, private composition engine, hard RSS ceiling or implicit alignment/broadcasting introduced.",
+    "Compatible published Interactions/cell provider and exact committed-candidate installed/hosted matrix remain before release.",
+    "Standalone and remotes retain their experimental/post-1.0 scopes; public documentation stays last."
+  ],
+  "source_hashes_sha256": {
+    "molsysviewer/viewer/scene.py": "538658d124d33b9e4a3355e4593c88de828dcd292b57e553afc3a9d9c493e8fe",
+    "molsysviewer/loaders/load_molsysmt.py": "fcf1b1cd2c02f97fd8d3da99cade73fdd456e14fc753a9d948fa9c91bf2298a7",
+    "tests/test_box_assignment.py": "85769baad765610be2be5a75c160a09c19ab80cafd8382b090989bd4a0f58077",
+    "tests/test_studio_loading.py": "b03b2790ad8968097d2c88b95cd74bf640be3d578db15c606693eb5aebdaabb6",
+    "tests/test_e2e_fixture_worker.py": "cdcfb2e8441fd8f4414786a755df3d8872bb86118a91ccbc226fc624f108f5f3",
+    "tests/test_e2e_reliability.py": "7016481065e9caecd312ab3a7d93083c23ecde986940cb8e9df5f3a7d8be773b",
+    "molsysviewer/js/tests/e2e/python-fixture-bridge.ts": "beeacec7f9060704d4e285d1129417f91e609216f9aed9079d01562e830bdfbd",
+    "molsysviewer/js/tests/e2e/interactions-subpanel-bridge.py": "651084226cf0c4f60b5c9aebe3ccc4188b0ea058249822d2d24da862a9028716",
+    "molsysviewer/js/tests/e2e/interactions-subpanel-scenarios.ts": "3382fc08738032ebcaa2605f88ef35f23e9e7b24e0e4f70ecae3af4fad455bbd",
+    "molsysviewer/js/tests/e2e/interactions-subpanel.e2e.ts": "42142ba052a27c0bed7b9f33c11b2263910c8408d22d877d3e5ddf0dbaa35abe",
+    "molsysviewer/js/tests/e2e/interactions-geometry.e2e.ts": "0b0e490f656ca71c5e4f036edd7b18b78e97eecdcaf9f25571fa74410318fb05",
+    "molsysviewer/js/tests/e2e/interactions-calculation.e2e.ts": "e24fa2f8738e5c8c11c1aed5dcef5905482412a1934776c8c9e3c4d3c0e722b5",
+    "molsysviewer/js/tests/e2e/e2e-runner.ts": "48a346da6969450eff678a390beec0ae81ea582f8b588786b782516ecda2178c"
+  }
+}

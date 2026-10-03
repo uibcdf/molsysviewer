@@ -110,8 +110,13 @@ def test_objects_reached_by_indexing_a_manager_are_in_the_surface(inventory):
     """
     paths = {item["path"] for item in inventory["callables"]}
 
+    assert "molsysviewer.Style.info" in paths
+    assert "molsysviewer.FigureSpec.from_view" in paths
+    assert "molsysviewer.AddonPanelWidget.set_state" in paths
     assert any(path.startswith("view.regions[…].") for path in paths)
     assert any(path.startswith("view.selections[…].") for path in paths)
+    for domain in ("shapes", "annotations", "measurements", "layers", "sections", "interactions"):
+        assert any(path.startswith(f"view.{domain}[…].") for path in paths)
 
 
 def test_the_baseline_is_the_shape_the_guard_compares(inventory, baseline):
@@ -150,83 +155,26 @@ def test_every_exemption_gives_a_reason():
 
 
 def test_no_digester_is_written_for_a_var_parameter_name():
-    """`args` and `kwargs` are not argument names; they are the absence of them.
-
-    Thirteen `shapes` forwarders take `*args, **kwargs` and hand them to a sub-manager
-    method that has a closed signature and its own `@digest`. Decorating a forwarder was
-    tried and measured: nothing is digested — ArgDigest digests the empty `args` tuple and
-    leaves the `**kwargs` keys in the mapping, so `tag` and the rest never reach their
-    digesters — and every call emits `DigestNotDigestedWarning`.
-
-    That warning made `args` look like a missing digester wanted by thirteen callables.
-    Writing one would silence a signal that is correctly saying those functions should not
-    be decorated, which is why this test exists rather than a `digest_args`.
-    """
+    """Variadic placeholders cannot replace named public contracts."""
     forbidden = {"args", "kwargs"} & declared_digesters()
 
     assert forbidden == set(), (
         f"a digester was written for {sorted(forbidden)}; the warning it silences is "
-        "telling you a pure forwarder is decorated, and the fix is to undecorate it"
+        "public wrappers must expose the actual named arguments"
     )
 
 
-def test_a_pure_forwarder_is_never_decorated():
-    """Decorating one is silent debt: it digests nothing and warns on every call.
-
-    Two `add_pharmacophore_features` aliases carried `@digest` for months doing exactly
-    that. Nobody saw the warning because the only test that reaches them passes
-    `skip_digestion=True`, which turns the decorator off.
-    """
-    import ast
-
-    offenders = []
-    for path in sorted((ROOT / "molsysviewer").rglob("*.py")):
-        if "js" in path.parts:
-            continue
-        for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))):
-            if not isinstance(node, ast.FunctionDef):
-                continue
-            if not (node.args.vararg and node.args.kwarg):
-                continue
-            named = [a.arg for a in node.args.args if a.arg != "self"]
-            named += [a.arg for a in node.args.kwonlyargs if a.arg != "skip_digestion"]
-            if named:
-                continue  # it declares something of its own, so it is not a pure forwarder
-            if any("digest" in ast.unparse(d) for d in node.decorator_list):
-                offenders.append(f"{path.relative_to(ROOT)}:{node.name}")
-
-    assert offenders == [], (
-        f"these take only *args/**kwargs and are decorated, so they digest nothing and warn on every call: {offenders}"
-    )
+def test_all_public_functions_have_argdigest_and_an_explicit_bypass(inventory):
+    assert inventory["undigested"] == []
+    assert inventory["exempt"] == []
+    assert inventory["missing_skip_digestion"] == []
+    assert inventory["missing_digesters"] == {}
+    assert all(item["explicit_skip"] and item["digested"] for item in inventory["callables"])
 
 
-def test_a_digesters_own_primitive_is_never_digested():
-    """`digest_color` calls `normalize_color`, so decorating the latter is a cycle.
-
-    Measured by doing it: the call recurses through its own digester. There is no third
-    place to put the rule — the digester has to call *something* — so the primitive stays
-    undigested and the exemption says why.
-
-    Pinned by name because the failure mode is inviting: `normalize_color` is public, it
-    looks exactly like every other public callable in `colors.py`, and gate 9 counts it.
-    """
-    import ast
-
-    source = (ROOT / "molsysviewer" / "colors.py").read_text(encoding="utf-8")
-    primitives = {"normalize_color", "normalize_colors"}
-
-    decorated = {
-        node.name
-        for node in ast.walk(ast.parse(source))
-        if isinstance(node, ast.FunctionDef)
-        and node.name in primitives
-        and any("digest" in ast.unparse(d) for d in node.decorator_list)
-    }
-
-    assert decorated == set(), (
-        f"{sorted(decorated)} is what `digest_color` delegates to; decorating it makes "
-        "the digester call the function it is digesting"
-    )
+def test_variadic_aliases_are_replaced_by_real_public_signatures(inventory):
+    offenders = [item["path"] for item in inventory["callables"] if "args" in item["arguments"]]
+    assert offenders == []
 
 
 def test_no_digester_relies_only_on_a_caller_string_that_cannot_occur():

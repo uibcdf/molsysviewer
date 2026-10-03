@@ -21,6 +21,8 @@ import { SystemPanel } from "./panels/system-panel";
 import { WholePanel } from "./panels/whole-panel";
 import { MeasuresPanel, MeasurementSeries, MeasurementSettings, MeasurementSummary } from "./panels/measures-panel";
 import { AnnotationsPanel, AnnotationSettings, AnnotationSummary } from "./panels/annotations-panel";
+import { InteractionsPanel } from "./panels/interactions-panel";
+import type { InteractionSummariesMessage, InteractionInspection, InteractionSummary } from "../managers/handlers/interaction-handlers";
 import { ShapesPanel, ShapeRenderStatus, ShapeSummary } from "./panels/shapes-panel";
 import { PanelShell } from "./panel-shell";
 import { FloatingPanelShell } from "./floating-panel-shell";
@@ -160,7 +162,7 @@ export type SelectionQueryPreview = {
     status?: "pending";
 };
 
-type TabKey = "system" | "whole" | "selection" | "regions" | "measures" | "annotations" | "shapes" | "layers" | "viewport" | "export" | "settings";
+type TabKey = "system" | "whole" | "selection" | "regions" | "measures" | "interactions" | "annotations" | "shapes" | "layers" | "viewport" | "export" | "settings";
 
 export class GroupPanel {
 
@@ -176,6 +178,8 @@ export class GroupPanel {
     private readonly tabs: Map<TabKey, { button: HTMLButtonElement; badge: HTMLSpanElement }> = new Map();
 
     // Migrated subpanels (panel-per-module architecture)
+    private readonly interactionsPanel: InteractionsPanel;
+    private readonly interactionsSection: HTMLDivElement;
     private readonly shapesPanel: ShapesPanel;
     private readonly measuresPanel: MeasuresPanel;
     private readonly annotationsPanel: AnnotationsPanel;
@@ -418,6 +422,8 @@ export class GroupPanel {
                 entity_indices: [],
             }),
         );
+        this.interactionsSection = this.createSection("interactions");
+        this.interactionsPanel = new InteractionsPanel(this.makePanelContext("interactions"));
         this.shapesSection = this.createSection("shapes");
         this.shapesPanel = new ShapesPanel(this.makePanelContext("shapes"));
         this.layersSection = this.createSection("layers");
@@ -444,12 +450,14 @@ export class GroupPanel {
                 // The System subpanel having nothing to draw was silently read as
                 // the whole panel having nothing to draw, hiding Whole, Selections,
                 // Regions and the rest, which render from summaries alone.
-                this.visible = this.runtimeVisibleOverride ?? naturalVisible;
+                // Rebuilding a load temporarily removes molecular hierarchy.
+                // Its active form still has work to show during that interval.
+                this.visible = this.runtimeVisibleOverride ?? (naturalVisible || this.systemPanel?.isLoading() === true);
                 this.updateBodyDisplay();
                 if (!this.sharedShell && !this.visible && this.expanded) this.expanded = false;
                 if (this.visible) this.applyExpandedState();
             },
-        });
+        }, this.hasAuthority);
         // Register the subpanels and build their tabs, mounting each into its
         // section. Adding a subpanel is a single registry entry.
         const registryMap = new Map<TabKey, [string, string, HTMLDivElement, StudioPanel]>([
@@ -459,6 +467,7 @@ export class GroupPanel {
             ["regions", ["Regions", "0", this.regionsSection, this.regionsPanel]],
             ["annotations", ["Annotations", "0", this.annotationsSection, this.annotationsPanel]],
             ["measures", ["Measures", "0", this.measuresSection, this.measuresPanel]],
+            ["interactions", ["Interactions", "0", this.interactionsSection, this.interactionsPanel]],
             ["shapes", ["Shapes", "0", this.shapesSection, this.shapesPanel]],
             ["layers", ["Layers", "0", this.layersSection, this.layersPanel]],
             ["viewport", ["Viewport", "Dark", this.viewportSection, this.viewportPanel]],
@@ -472,6 +481,7 @@ export class GroupPanel {
             "regions",
             "annotations",
             "measures",
+            "interactions",
             "shapes",
             "layers",
             "viewport",
@@ -482,8 +492,8 @@ export class GroupPanel {
         if (savedOrder) {
             try {
                 const parsed = JSON.parse(savedOrder);
-                if (Array.isArray(parsed) && parsed.length === defaultOrder.length && parsed.every(k => defaultOrder.includes(k as TabKey))) {
-                    tabOrder = parsed as TabKey[];
+                if (Array.isArray(parsed) && new Set(parsed).size === parsed.length && parsed.every(k => defaultOrder.includes(k as TabKey))) {
+                    tabOrder = [...parsed, ...defaultOrder.filter(k => !parsed.includes(k))] as TabKey[];
                 }
             } catch (e) {
                 // Ignore parsing errors
@@ -757,6 +767,18 @@ export class GroupPanel {
         this.applyExpandedState();
     }
 
+    openSystemLoading(): void {
+        if (!this.hasAuthority) return;
+        this.setRuntimeVisible(true);
+        this.switchTab("system");
+        this.setExpanded(true);
+        this.systemPanel.openLoading();
+    }
+
+    updateSystemLoading(requestId: string, ok: boolean, atoms?: number, structures?: number, sources?: number, error?: string): void {
+        this.systemPanel.updateLoading(requestId, ok, atoms, structures, sources, error);
+    }
+
     isExpanded(): boolean {
         return this.expanded;
     }
@@ -812,6 +834,7 @@ export class GroupPanel {
         this.regionsPanel.setCurrentSelection(selection);
         this.measuresPanel.setCurrentSelection(selection);
         this.annotationsPanel.setCurrentSelection(selection);
+        this.interactionsPanel.setSelection(selection);
     }
 
     updateSelectionHistoryState(state: { canUndo: boolean; canRedo: boolean }): void {
@@ -825,12 +848,14 @@ export class GroupPanel {
         this.regionsPanel.setSavedSelections(items);
         this.measuresPanel.setSavedSelections(items);
         this.annotationsPanel.setSavedSelections(items);
+        this.interactionsPanel.setSavedSelections(items);
     }
 
     updateSelectionQueryPreview(preview: SelectionQueryPreview): void {
         if (this.regionsPanel.updatePreview(preview)) return;
         if (this.measuresPanel.updatePreview(preview)) return;
         if (this.annotationsPanel.updatePreview(preview)) return;
+        if (this.interactionsPanel.updateQuery(preview)) return;
         this.selectionPanel.updatePreview(preview);
     }
 
@@ -857,6 +882,12 @@ export class GroupPanel {
     updateRegionDetails(details: RegionDetails): void {
         this.regionsPanel.updateDetails(details);
     }
+
+    updateInteractionCreation(requestId: number, ok: boolean, name?: string, error?: string): void { this.interactionsPanel.updateCreationResult(requestId, ok, name, error); }
+
+    setInteractions(message: InteractionSummariesMessage): void { this.interactionsPanel.setSummary(message); }
+    setInteractionFrame(items: InteractionSummary[], frame: number): void { this.interactionsPanel.setFrame(items, frame); }
+    updateInteractionInspection(requestId: number, result: InteractionInspection): void { this.interactionsPanel.updateInspection(requestId, result); }
 
     setShapes(items: ShapeSummary[], renderStatuses?: ReadonlyMap<string, ShapeRenderStatus>): void {
         this.shapesPanel.setShapes(items, renderStatuses);

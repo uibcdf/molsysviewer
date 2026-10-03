@@ -16,7 +16,9 @@ from pathlib import Path
 from typing import Any
 
 from aiohttp import WSMsgType, web
+from smonitor import signal
 
+from .._private.argdigest import digest
 from .protocol import validate_input_packet, validate_signaling_packet
 from .render_worker import ManagedRenderWorker, RenderWorkerConfig, RenderWorkerDiagnostics
 from .view_channel import RemoteViewChannel
@@ -117,7 +119,9 @@ class InternalRenderWorkerHost:
     def worker_url(self) -> str:
         return f"{self.origin}/internal/worker"
 
-    async def start(self) -> str:
+    @signal()
+    @digest()
+    async def start(self, *, skip_digestion: bool = False) -> str:
         """Start the authenticated loopback service without launching Chromium."""
         if self._closed:
             raise RuntimeError("internal render-worker host is closed")
@@ -150,7 +154,9 @@ class InternalRenderWorkerHost:
         self._site = site
         return self.worker_url
 
-    async def launch_worker(self) -> RenderWorkerDiagnostics:
+    @signal()
+    @digest()
+    async def launch_worker(self, *, skip_digestion: bool = False) -> RenderWorkerDiagnostics:
         """Launch Chromium and wait until its MolSysViewer runtime says ``ready``."""
         if self._runner is None:
             await self.start()
@@ -170,7 +176,9 @@ class InternalRenderWorkerHost:
             raise
         return diagnostics
 
-    async def restart_worker(self) -> RenderWorkerDiagnostics:
+    @signal()
+    @digest()
+    async def restart_worker(self, *, skip_digestion: bool = False) -> RenderWorkerDiagnostics:
         """Consume the managed worker's bounded restart and await its new runtime."""
         if self._closed:
             raise RuntimeError("internal render-worker host is closed")
@@ -198,14 +206,18 @@ class InternalRenderWorkerHost:
             raise
         return diagnostics
 
-    async def wait_for_structure(self, timeout: float = 30.0) -> None:
+    @signal()
+    @digest()
+    async def wait_for_structure(self, timeout: float = 30.0, *, skip_digestion: bool = False) -> None:
         try:
             await asyncio.wait_for(self.structure_complete.wait(), timeout=timeout)
         except TimeoutError as error:
             detail = self.last_structure_error or self.failure or "no terminal structure event"
             raise TimeoutError(f"render-worker structure transfer timed out: {detail}") from error
 
-    def send_input(self, packet: Mapping[str, Any]) -> None:
+    @signal()
+    @digest()
+    def send_input(self, packet: Mapping[str, Any], *, skip_digestion: bool = False) -> None:
         """Forward input only for a registered human client in this session."""
         validation = validate_input_packet(
             packet,
@@ -224,11 +236,15 @@ class InternalRenderWorkerHost:
             raise ValueError("remote input source is not a registered human client")
         self._enqueue(("input", {"kind": "input", "packet": dict(packet)}))
 
-    def send_worker_wire(self, value: Mapping[str, Any]) -> None:
+    @signal()
+    @digest()
+    def send_worker_wire(self, packet: Mapping[str, Any], *, skip_digestion: bool = False) -> None:
         """Send one session-service wire message to the authenticated worker."""
-        self._enqueue(("wire", dict(value)))
+        self._enqueue(("wire", dict(packet)))
 
-    async def close(self) -> None:
+    @signal()
+    @digest()
+    async def close(self, *, skip_digestion: bool = False) -> None:
         if self._closed:
             return
         self._closed = True

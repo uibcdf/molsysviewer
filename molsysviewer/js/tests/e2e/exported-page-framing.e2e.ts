@@ -32,7 +32,10 @@ import assert from "node:assert";
 import process from "node:process";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { dirname, resolve } from "node:path";
+import { dirname, resolve, extname, join } from "node:path";
+import { createServer } from "node:http";
+import { readFile, writeFile, rename } from "node:fs/promises";
+import type { Page } from "playwright";
 import { chromium } from "./e2e-browser";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -40,6 +43,153 @@ const __dirname = dirname(__filename);
 
 /** Mol*'s own default. A camera that has never framed anything reports this. */
 const MOLSTAR_DEFAULT_RADIUS_MAX = 10;
+
+async function checkActualArtifacts(page: Page) {
+    const produced = spawnSync(process.env.PYTHON_BIN || "python",
+        [resolve(__dirname, "exported-page-artifact-bridge.py")],
+        { encoding: "utf8", cwd: resolve(__dirname, "../../../..") });
+    assert.equal(produced.status, 0, produced.stderr || produced.stdout);
+    const fixture = JSON.parse(produced.stdout);
+    assert.ok(fixture.images > 0, "the artifact must exercise real periodic observations");
+    const server = createServer(async (request, response) => {
+        try {
+            const pathname = decodeURIComponent(new URL(request.url!, "http://localhost").pathname);
+            if (pathname === "/favicon.ico") { response.writeHead(204); response.end(); return; }
+            const file = join(fixture.directory, pathname);
+            response.setHeader("Content-Type", extname(file) === ".js" ? "text/javascript"
+                : extname(file) === ".json" ? "application/json" : "text/html");
+            response.end(await readFile(file));
+        } catch { response.writeHead(404); response.end(); }
+    });
+    await new Promise<void>(resolve => server.listen(0, "127.0.0.1", resolve));
+    const address = server.address();
+    assert.ok(address && typeof address !== "string");
+    const origin = `http://127.0.0.1:${address.port}`;
+    const network: string[] = [];
+    await page.route(/^https?:/, async route => {
+        const url = route.request().url();
+        if (url.startsWith(origin + "/")) await route.continue();
+        else { network.push(url); await route.abort(); }
+    });
+    // Observe the actual Mol* draw at the instant readiness is declared. The
+    // wrapper calls the real handler and only records its completed operation.
+    await page.addInitScript(() => {
+        let controller: any;
+        let draws = 0;
+        let lastMessageDraws = 0;
+        Object.defineProperty(window, "__molsysviewerDocsController", {
+            configurable: true, get: () => controller,
+            set: value => {
+                controller = value;
+                controller.plugin.canvas3d.didDraw.subscribe(() => { draws++; });
+                const handle = controller.handleMessage.bind(controller);
+                controller.handleMessage = async (...args: any[]) => {
+                    await handle(...args);
+                    lastMessageDraws = draws;
+                };
+            },
+        });
+        new MutationObserver(() => {
+            if (document.getElementById("molsysviewer-root")?.dataset.molsysviewerRendered === "true") {
+                (window as any).__drawAtReady ??= { draws, lastMessageDraws };
+            }
+        }).observe(document, { subtree: true, attributes: true, attributeFilter: ["data-molsysviewer-rendered"] });
+    });
+    try {
+        for (const url of [pathToFileURL(join(fixture.directory, "inline.html")).href,
+                          origin + "/" + encodeURIComponent("view #1 %.html")]) {
+            await page.goto(url);
+            await page.waitForSelector('[data-molsysviewer-rendered="true"]', { timeout: 60000 });
+            console.log(`[E2E exported-page-framing]   artifact restored: ${url}`);
+            const initial = await page.evaluate(() => {
+                const c = (window as any).__molsysviewerDocsController;
+                const refs = (kind: string, tag: string) => [...c.state.tagIndex.get(`${kind}\0${tag}`) ?? []]
+                    .map((ref: any) => c.plugin.state.data.cells.get(ref));
+                const region = c.state.regionIndex.get("saved-region");
+                return {
+                    atoms: c.plugin.managers.structure.hierarchy.current.structures[0].cell.obj.data.elementCount,
+                    frame: c.trajectory.getTrajectoryState().currentFrame,
+                    regionHidden: region.hidden,
+                    regionTypes: region.representations.map((ref: string) => c.plugin.state.data.cells.get(ref).transform.params.type.name),
+                    sphere: refs("shape", "saved-sphere").some((cell: any) => cell?.obj && !cell.state.isHidden),
+                    label: c.annotations.hasTag("saved-label"), distance: c.measurements.hasTag("saved-distance"),
+                    saved: c.savedSelections.map((item: any) => item.tag),
+                    draw: (window as any).__drawAtReady,
+                };
+            });
+            assert.equal(initial.atoms, fixture.atoms);
+            assert.equal(initial.frame, 2);
+            assert.equal(initial.regionHidden, true);
+            assert.deepEqual(initial.regionTypes, ["spacefill"]);
+            assert.ok(initial.sphere && initial.label && initial.distance);
+            assert.ok(initial.saved.includes("saved-selection"));
+            assert.ok(initial.draw.draws > initial.draw.lastMessageDraws,
+                "readiness must follow a new draw after the final scene operation");
+            for (const frame of [2, 3, 0]) {
+                if (frame !== 2) {
+                    await page.evaluate((index: number) => {
+                        const input = document.querySelector('[data-molsysviewer-trajectory-frame="true"]') as HTMLInputElement;
+                        input.value = String(index);
+                        input.dispatchEvent(new Event("input", { bubbles: true }));
+                    }, frame);
+                }
+                await page.waitForFunction((index: number) => {
+                    const c = (window as any).__molsysviewerDocsController;
+                    return [...c.state.tagIndex.get("interaction\0real-hb") ?? []].some((ref: any) =>
+                        c.plugin.state.data.cells.get(ref)?.obj?.data?.sourceData?.interaction?.frame === index);
+                }, frame);
+                const mesh = await page.evaluate(() => {
+                    const c = (window as any).__molsysviewerDocsController;
+                    const ref = [...c.state.tagIndex.get("interaction\0real-hb")][0];
+                    const cell = c.plugin.state.data.cells.get(ref);
+                    return { ...cell.obj.data.sourceData, hidden: cell.state.isHidden === true };
+                });
+                assert.equal(mesh.hidden, false);
+                const expected = fixture.expected.filter((item: any) => item.frame === frame);
+                assert.equal(mesh.links.length, expected.length);
+                for (let index = 0; index < expected.length; index++) {
+                    const occurrence = mesh.interaction.observations[index].occurrence_index;
+                    const wanted = expected.find((item: any) => item.occurrence === occurrence);
+                    assert.ok(wanted);
+                    for (let axis = 0; axis < 3; axis++) {
+                        assert.ok(Math.abs(mesh.links[index].start[axis] - wanted.start[axis] * 10) < 1e-6);
+                        assert.ok(Math.abs(mesh.links[index].end[axis] - wanted.end[axis] * 10) < 1e-6);
+                    }
+                }
+                console.log(`[E2E exported-page-framing]   periodic frame ${frame} checked`);
+            }
+            // A Python-owned scene mutation must explain why it cannot run.
+            await page.getByRole("button", { name: "Panel mode (N / W)", exact: true }).click();
+            await page.locator('[data-molsysviewer-group-panel-tab="regions"]').click();
+            await page.locator('button[data-molsysviewer-region-visibility="saved-region"]').click();
+            await page.waitForSelector('[data-molsysviewer-needs-session="true"]');
+            assert.equal(await page.evaluate(() => (window as any).__molsysviewerDocsController.state.regionIndex.get("saved-region").hidden), true);
+        }
+        const sidecar = join(fixture.directory, "view #1 %.html.messages.json");
+        const original = await readFile(sidecar, "utf8");
+        for (const invalid of ["missing", "json", "format", "version", "messages", "replay"]) {
+            if (invalid === "missing") await rename(sidecar, sidecar + ".saved");
+            else {
+                const document = JSON.parse(original);
+                if (invalid === "format") document.format = "unrelated-data";
+                if (invalid === "version") document.version = 999;
+                if (invalid === "messages") document.messages = {};
+                if (invalid === "replay") document.messages.push({ op: "set_interaction_frame", tag: "invalid", style: { radius_unit: "angstrom" } });
+                await writeFile(sidecar, invalid === "json" ? "not JSON" : JSON.stringify(document));
+            }
+            await page.goto(origin + "/" + encodeURIComponent("view #1 %.html"));
+            await page.waitForSelector('[data-molsysviewer-error="true"]', { timeout: 60000 });
+            assert.equal(await page.locator('[data-molsysviewer-rendered="true"]').count(), 0);
+            if (invalid === "missing") await rename(sidecar + ".saved", sidecar);
+        }
+        await writeFile(sidecar, original);
+        assert.deepEqual(network, [], "artifacts must not require third-party network resources");
+        console.log("[E2E exported-page-framing] actual inline/shared artifacts, PBC geometry, controls and failure states pass");
+    } finally {
+        server.closeAllConnections();
+        await new Promise<void>((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
+    }
+}
 
 async function run() {
     console.log("[E2E exported-page-framing] Scenario: an exported page frames its scene");
@@ -182,6 +332,7 @@ async function run() {
 
         assert.deepStrictEqual(errors, [], "the exported page raised errors while framing");
         console.log("[E2E exported-page-framing]   initial and post-representation framing are usable");
+        await checkActualArtifacts(page);
     } finally {
         await browser.close();
     }

@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import Any
 
 import molsysmt as msm
 from smonitor import signal
 
+from ._private.annotation_vectors import annotation_vector
 from ._private.argdigest import digest
 from .layers import Annotation, Layer
 from .scene_history import records_scene_history
@@ -125,7 +127,7 @@ class AnnotationsManager:
     @digest()
     def records(self, skip_digestion: bool = False) -> list[dict[str, Any]]:
         """Return a copy of the current replayable annotation records."""
-        return [dict(item) for item in self._view._annotation_history]  # noqa: SLF001
+        return deepcopy(self._view._annotation_history)  # noqa: SLF001
 
     @signal(tags=["annotation"])
     @digest()
@@ -163,21 +165,23 @@ class AnnotationsManager:
                 "broken_reason": None if layer is None else getattr(layer, "broken_reason", None),
             }
             if "position" in options:
-                res["position"] = options["position"]
+                # Match add()'s declared legacy bare unit; get_coordinates()
+                # provides a physical quantity in the configured standard unit.
+                res["position"] = [float(value) / 10 for value in options["position"]] if options["position"] is not None else None
             if "offset_mode" in options:
                 res["offset_mode"] = options["offset_mode"]
             if "offset" in options:
                 if options.get("offset_mode") == "world":
                     from ._pyunitwizard import puw
 
-                    # Reported in nm, the unit add_annotation reads bare numbers in, so
+                    # Reported in nm, the unit add reads bare numbers in, so
                     # the report can be fed back; never in the session's standard length,
                     # which the user may have changed (uibcdf/molsysviewer#96).
                     offset_q = puw.quantity(options["offset"], "angstrom")
                     offset_nm = puw.get_value(offset_q, to_unit="nm")
                     res["offset"] = [float(x) for x in offset_nm]
                 else:
-                    res["offset"] = options["offset"]
+                    res["offset"] = deepcopy(options["offset"])
             if "leader_line" in options:
                 res["leader_line"] = options["leader_line"]
             if "leader_line_style" in options:
@@ -198,7 +202,7 @@ class AnnotationsManager:
     @records_scene_history
     @signal(tags=["annotation"])
     @digest()
-    def add_annotation(
+    def add(
         self,
         text: str,
         kind: str = "label",
@@ -229,11 +233,14 @@ class AnnotationsManager:
         atom_indices
             Explicit list of atom indices. Takes priority over *selection*.
         position
-            Explicit absolute coordinate tuple (x, y, z). Takes priority over selection/atom_indices.
+            Absolute physical coordinate (x, y, z), preferably with explicit length
+            units. Legacy bare triples mean nm. Takes priority over atom anchors.
         offset_mode
             Offset coordinate space: `"camera"` or `"world"`.
         offset
-            Relative offset displacement vector.
+            Relative displacement. World offsets accept length quantities (legacy
+            bare triples mean nm); camera offsets are dimensionless renderer units
+            along camera right, up and toward the viewer.
         leader_line
             If True, draws a connection line from the anchor to the offset label.
         leader_line_style
@@ -248,17 +255,15 @@ class AnnotationsManager:
             Optional visual style dict.
         """
         if position is not None:
-            if not isinstance(position, (list, tuple)) or len(position) != 3:
-                raise ValueError("position must be a 3-element tuple or list of floats.")
-            from ._pyunitwizard import puw
-
-            pos_q = position if puw.is_quantity(position) else puw.quantity(position, "nm")
-            pos_ang = puw.get_value(pos_q, to_unit="angstrom")
-            resolved_position = [float(x) for x in pos_ang]
-            resolved_atom_indices = None
+            resolved_position = annotation_vector(position, "position", physical=True)
+            resolved_atom_indices = []
         else:
             resolved_position = None
             resolved_atom_indices = self._resolve_anchor_atom_indices(selection, atom_indices=atom_indices)
+
+        offset_list = annotation_vector(offset, "offset", physical=offset_mode == "world")
+        if offset_mode not in {"camera", "world"} or leader_line_style not in {"solid", "dashed", "dotted"}:
+            raise ValueError("Invalid annotation offset mode or leader line style.")
 
         object_tag = tag or self._view._next_annotation_tag()  # noqa: SLF001
         resolved_layer_tag = layer_tag if layer_tag is not None else object_tag
@@ -272,18 +277,12 @@ class AnnotationsManager:
         }
         if resolved_position is not None:
             options["position"] = resolved_position
+            options["position_unit"] = "angstrom"
         if offset_mode != "camera":
             options["offset_mode"] = offset_mode
-        offset_list = list(offset) if isinstance(offset, (list, tuple)) else [0.0, 0.0, 0.0]
         if offset_list != [0.0, 0.0, 0.0]:
-            if offset_mode == "world":
-                from ._pyunitwizard import puw
-
-                offset_q = offset_list if puw.is_quantity(offset_list) else puw.quantity(offset_list, "nm")
-                offset_ang = puw.get_value(offset_q, to_unit="angstrom")
-                options["offset"] = [float(x) for x in offset_ang]
-            else:
-                options["offset"] = offset_list
+            options["offset"] = offset_list
+            options["offset_unit"] = "angstrom" if offset_mode == "world" else "dimensionless"
         if leader_line:
             options["leader_line"] = True
         if leader_line_style != "dashed":
@@ -293,11 +292,6 @@ class AnnotationsManager:
 
         self._view._send({"op": "add_label", "tag": object_tag, "options": options})  # noqa: SLF001
         return layer
-
-    @records_scene_history
-    def add(self, *args, **kwargs) -> Layer:
-        """Create an annotation; canonical manager alias for :meth:`add_annotation`."""
-        return self.add_annotation(*args, **kwargs)
 
     @records_scene_history
     @signal(tags=["annotation"])
@@ -313,21 +307,21 @@ class AnnotationsManager:
         layer_tag: str | None = None,
         skip_digestion: bool = False,
     ) -> Layer:
-        """Deprecated: use ``add_annotation()`` instead."""
+        """Deprecated: use ``add()`` instead."""
         import warnings
 
         warnings.warn(
-            "annotations.add_label() is deprecated; use add_annotation() instead.",
+            "annotations.add_label() is deprecated; use add() instead.",
             DeprecationWarning,
             stacklevel=2,
         )
-        # Resolve group_index here so add_annotation() doesn't need it.
+        # Resolve group_index here so add() doesn't need it.
         resolved_atom_indices = atom_indices
         if group_index is not None and atom_indices is None and selection is None:
             resolved_atom_indices = self._resolve_anchor_atom_indices(
                 selection=None, atom_indices=None, group_index=group_index
             )
-        return self.add_annotation(
+        return self.add(
             text=text,
             kind="label",
             selection=selection,
@@ -356,7 +350,7 @@ class AnnotationsManager:
     ) -> Layer:
         """Add a persistent label from the last active selection or coordinates."""
         if position is not None:
-            return self.add_annotation(
+            return self.add(
                 text=text,
                 position=position,
                 offset_mode=offset_mode,
@@ -377,7 +371,7 @@ class AnnotationsManager:
         if len(atom_indices) == 0:
             raise ValueError("Active selection is empty. Select at least one atom before adding a label.")
 
-        return self.add_annotation(
+        return self.add(
             text=text,
             atom_indices=[int(i) for i in atom_indices],
             offset_mode=offset_mode,
@@ -469,11 +463,6 @@ class AnnotationsManager:
         if not isinstance(text, str) or text.strip() == "":
             raise ValueError("set_text() requires non-empty text.")
 
-        record = self.info(tag, skip_digestion=True)
-        atom_indices = record.get("atom_indices") if isinstance(record, dict) else None
-        if not isinstance(atom_indices, list) or len(atom_indices) == 0:
-            raise ValueError(f"Annotation tag {tag!r} does not have a valid atom-index anchor.")
-
         self._view._send(  # noqa: SLF001
             {
                 "op": "update_label",
@@ -481,7 +470,6 @@ class AnnotationsManager:
                 "options": {
                     "tag": tag,
                     "text": text.strip(),
-                    "atom_indices": list(atom_indices),
                 },
             }
         )
@@ -522,9 +510,10 @@ class AnnotationsManager:
         selection: Any = None,
         *,
         atom_indices: Any = None,
+        position: Any = None,
         skip_digestion: bool = False,
     ) -> Layer:
-        """Reanchor an existing label to a different set of atoms.
+        """Reanchor an existing label to atoms or one absolute physical position.
 
         Parameters
         ----------
@@ -534,9 +523,13 @@ class AnnotationsManager:
             MolSysMT selection string (e.g. ``'group_index==3'``).
         atom_indices
             Explicit atom indices list.  Takes priority over *selection*.
+        position
+            Absolute coordinate with length units (legacy bare triples mean nm).
+            Takes priority over the atom anchor; offsets and style are retained.
         """
         layer = self._require_annotation_layer(tag)
-        resolved_atom_indices = self._resolve_anchor_atom_indices(selection, atom_indices=atom_indices)
+        resolved_position = annotation_vector(position, "position", physical=True) if position is not None else None
+        resolved_atom_indices = [] if position is not None else self._resolve_anchor_atom_indices(selection, atom_indices=atom_indices)
         record = self.info(tag, skip_digestion=True)
         if not isinstance(record, dict):
             raise ValueError(f"No annotation record found for tag {tag!r}.")
@@ -550,6 +543,8 @@ class AnnotationsManager:
                     "tag": tag,
                     "text": record.get("text"),
                     "atom_indices": list(resolved_atom_indices),
+                    "position": resolved_position,
+                    "position_unit": "angstrom" if resolved_position is not None else None,
                     "layer_tag": layer.layer_tag,
                     "style": dict(record.get("style") or {}),
                 },

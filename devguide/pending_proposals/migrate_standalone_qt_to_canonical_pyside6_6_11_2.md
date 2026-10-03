@@ -97,6 +97,26 @@ still expected the former `macos-latest` runner. It yielded 2,132 passed,
 17 skipped, three failed. The affected test files then passed, but the full
 suite was not rerun. This is not a green full-suite result.
 
+### Interaction integration run in an older environment (2026-09-30)
+
+The Interactions consumer check under `uibcdf/molsysviewer#114` used the existing
+Python 3.13 prefix `molsyssuite@uibcdf_3.13`, not the canonical 6.11.2 recipe.
+One full run, `python -m pytest --receptor=llm -n 12 tests/`, reported
+2,200 passed, 18 skipped and three crashed workers. The affected nodes were
+`test_qt_event_transport_smoke_real_qt`,
+`test_qt_payload_refs_replace_across_two_real_generations` and
+`test_qt_live_model_smoke_real_window` in `tests/test_standalone.py`.
+
+A focused serial invocation reproduced exit 139 on the first node. The native
+trace ends at `standalone_qt/utils.py:104`, importing `PySide6.QtWebEngineWidgets`,
+before the transport child process runs. The installed inventory mixes
+conda-forge `pyside6=6.9.3` and `qt6-main=6.9.3` with PyPI
+`pyside6-addons=6.9.2`, `pyside6-essentials=6.9.2`, and UIBCDF 6.9.2
+binding/WebEngine packages. This is outside the agreed canonical recipe.
+The mixed inventory is a diagnostic finding, not proof of the exact native
+fault mechanism. No environment or Qt source changes were made in that task.
+Do not count that full run as green or as a regression of qualified 6.11.2.
+
 ## Alternatives and refuted paths
 
 Removing the fork family now would discard rollback capacity before hosted and
@@ -114,3 +134,17 @@ Before closure, confirm the remaining native-platform policy and tests, the
 source package candidate, and the maintained installation/support matrix.
 `tests/test_standalone.py` is the prospective guard;
 record its final relevance and exact hosted evidence at closure.
+
+
+### Follow-up during native Interactions integration (2026-09-30)
+
+The single full-suite run `python -m pytest --receptor=llm tests/ -n 12`
+reported 2,212 passed, 18 skipped and four failures. Three were the same native
+Qt import worker crashes, at `standalone_qt/utils.py:104`, in
+`test_qt_event_transport_smoke_real_qt`,
+`test_qt_payload_refs_replace_across_two_real_generations` and
+`test_qt_live_model_smoke_real_window`. The fourth was the E2E inventory's old
+37-suite count; it was updated to 38 after registering the new scientific
+browser suite and its targeted inventory/protocol selection passed 130 tests.
+No second full-suite run or Qt environment change was made. The current Qt
+qualification remains the finding recorded above, not a passing standalone gate.

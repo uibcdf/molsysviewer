@@ -16,9 +16,10 @@ A self-contained export escapes that by carrying the runtime in the page and
 making its own blob, which belongs to the page. If anybody ever "simplifies"
 that into a sibling file or a CDN URL, this test is what says no.
 
-Every test here opens the page from a **file**, with the Chromium-family browser
-the reader happens to have installed. That is the question this file asks, and
-it is why the browser is not pinned.
+Every test here opens the page from a **file**, using Playwright with a
+Chromium-family browser on PATH, offline and with actual WebGL2 drawing.
+Readiness is awaited in wall-clock time: Chrome's virtual clock can finish
+before a GPU draw and cannot establish the rendering result.
 
 Three colour tests used to live here and no longer do. They embed the export in
 a host page and check that it copies the surface behind it, which means reading
@@ -39,7 +40,6 @@ import os
 import re
 import shutil
 import subprocess
-import tempfile
 from pathlib import Path
 
 import pytest
@@ -62,25 +62,14 @@ pytestmark = pytest.mark.skipif(
 
 def _open_from_disk(html_path: Path) -> tuple[str, str]:
     """Return the page's DOM and console output after opening it as a file."""
-    with tempfile.TemporaryDirectory() as profile:
-        completed = subprocess.run(
-            [
-                CHROME,
-                "--headless=new",
-                "--disable-gpu",
-                "--no-sandbox",
-                f"--user-data-dir={profile}",
-                "--enable-logging=stderr",
-                "--v=0",
-                "--virtual-time-budget=20000",
-                "--dump-dom",
-                html_path.resolve().as_uri(),
-            ],
-            capture_output=True,
-            text=True,
-            timeout=180,
-        )
-    return completed.stdout, completed.stderr
+    helper = Path(__file__).resolve().parents[1] / "devtools/e2e/open_exported_page.mjs"
+    completed = subprocess.run(
+        ["node", str(helper), str(html_path.resolve()), CHROME],
+        capture_output=True, text=True, timeout=180,
+    )
+    assert completed.returncode == 0, completed.stderr
+    inspected = json.loads(completed.stdout)
+    return inspected["dom"], inspected["console"]
 
 
 def test_a_self_contained_export_renders_with_no_server_and_no_network(tmp_path):
@@ -93,9 +82,6 @@ def test_a_self_contained_export_renders_with_no_server_and_no_network(tmp_path)
 
     assert "blocked by CORS" not in console, "the page tried to reach across an origin it does not have from disk"
     assert 'data-molsysviewer-rendered="true"' in dom, "the runtime never booted; console was:\n" + console[-3000:]
-    # Mol* needs a GPU that a headless test machine may not have. That is a
-    # limitation of the harness, not of the page, and it happens *after* the
-    # runtime booted — which is what this test is about.
 
 
 def test_the_exported_file_is_the_only_file_needed(tmp_path):
@@ -228,3 +214,20 @@ def test_the_studio_says_it_cannot_act_here(tmp_path):
         "an exported page offered the Studio with no word about what it cannot do"
     )
     assert "Studio" in dom, "the panels vanished instead of explaining themselves"
+
+
+def test_failed_scene_restoration_never_declares_the_export_rendered(tmp_path):
+    from molsysviewer.widget import MolSysViewerWidget
+
+    with demo["dialanine"] as view:
+        messages = view._build_export_messages()
+        messages.append({"op": "set_interaction_frame", "tag": "invalid", "style": {"radius_unit": "angstrom"}})
+        output = tmp_path / "invalid.html"
+        output.write_text(view._build_lite_html(
+            title="Failed scene", include_controls=True, include_popout=False,
+            messages=messages, inline_messages=True, runtime_source=MolSysViewerWidget._viewer_js_source,
+        ))
+    dom, console = _open_from_disk(output)
+    assert 'data-molsysviewer-error="true"' in dom, console[-3000:]
+    assert 'data-molsysviewer-rendered="true"' not in dom
+    assert "MolSysViewer failed to load" in dom

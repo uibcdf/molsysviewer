@@ -41,6 +41,14 @@ The Python side is intentionally layered:
   - small domain wrappers around global representation, structural subsets, and non-structural visual groups.
 - **`ShapesManager` + shape modules**:
   - public overlay API plus specialized argument normalization and message construction.
+- **`InteractionsManager`**:
+  - native scientific discovery, sparse queries, declared H5MSM import and named
+    calculations, backed by MolSysMT without addon registration;
+  - scientific results live in `view.molsys.interactions`, independent of visual
+    undo. Calculation publishes a complete snapshot only if the system revision
+    still matches. Tagged visual sets, current-frame observed-position Mol*
+    meshes and the native Studio subpanel now use those scientific snapshots.
+    Provider-release qualification remains open under `uibcdf/molsysviewer#114`.
 - **Loaders / private helpers**:
   - payload building, remapping, coordinate normalization, and export helpers.
 
@@ -74,19 +82,139 @@ The only atom-index remapping that *is* functional is `apply_system_edit`'s
 `atom_index_map` — a **temporal** reconciliation of old↔new `_molsys` across an edit,
 orthogonal to the loaded↔original axis above.
 
+## Independent-source loading
+
+`view.load(..., multiple=True)` interprets the outer list/tuple as independent
+systems. Default `multiple=False` keeps one-system semantics, including lists of
+complementary forms. Batch loading supports `add` and `replace`; both prepare all
+sources and one detached composite candidate before changing the active scene.
+Progressive `load(source)` uses the same preparation/composition owner.
+
+Flat atom/frame index lists apply to every source; nested lists and lists of atom
+selection expressions apply per source. One structure per source is supported.
+Multi-frame composition additionally requires equal selected counts and explicit
+`structure_pairing="by_index"`. Available times must agree in ps within
+`rtol=atol=1e-9`; whole retains the first/destination time and box, including
+absence. No alignment, static broadcasting or frame-axis concatenation is implied.
+
+Detached `load_blocks` record distinct source occurrences, origin descriptions
+and compact original/current atom and structure runs. Generated base regions link
+by UID; renaming or deleting a region does not erase its source occurrence.
+Single loading of named analyses is supported; incoming analyses during
+composition require a future explicit embedding policy and currently fail before
+scene mutation. Destination analyses follow existing edit invalidation.
+
+These loading contracts are guarded by `tests/test_composite_load.py` and the
+real-Mol* `composite-load` browser suite. Source records now persist through the
+additive v2-state `sources` extension, version 1; sessions, copy/extraction and
+explicit atom edit maps retain/remap them. Sources without surviving atoms drop
+out. Atom bounds enclose the runs and need not be contiguous membership. Scene
+merge preserves distinct IDs; a repeated source occurrence gets a new ID with
+`parent_source_id` and corresponding region links remapped.
+
+The source extension binds its records to topology, atom/frame counts and ordered
+coordinates/time/box in canonical units. Its SHA-256 is computed in bounded
+chunks, cached across scene operations and invalidated by announced molecular
+edits. This content check does not authenticate claimed file origins. Topological
+scene identity remains separate: ordinary state import may restore overlays on a
+different system while retaining that destination's source inventory. Only a
+matching binding replaces source records, and `clear_first=False` keeps destination
+records. Sessions require a matching binding before replacing an open view.
+
+Without atom correspondence, a changed atom count collapses the old inventory.
+Atoms missing from a supplied edit map have an explicit `unmapped_edit` origin.
+With unchanged counts, callers declare index order unchanged; extraction supplies
+explicit subset/reorder correspondence for both axes. A changed structure count
+without that correspondence clears old frame maps with `status="unverified"`.
+Explicit `load(mode="append_structures")` preserves known prefix maps; new frames
+have no fabricated original-frame provenance. Noncoverage is explicit in the map.
+Guard: `tests/test_source_records.py`. Integrated qualification remains under
+uibcdf/molsysviewer#151; no hard memory ceiling is established.
+
+### Studio loading
+
+The System subpanel offers a persistent loading draft with explicit independent
+systems versus complementary files, add/replace/append intentions, optional
+labels, atom selectors and ordered structure selectors. Multiple selected frames
+require the same explicit pairing as Python. The empty-view welcome action opens
+this form. It accepts paths available to the Python session and PDB IDs, rather
+than transporting uploaded browser files. Exported browser-only views omit it.
+
+Studio's private action handler delegates to public `view.load` with digestion
+enabled. Request-specific runtime acknowledgments report completion/error and
+counts, without entering the molecular replay journal. A failure retains the
+draft for correction; an unrelated acknowledgment cannot complete the request.
+Hierarchy/frame refreshes do not reconstruct the draft. Preparation-failure
+atomicity remains the load owner's contract, not an extra rendering rollback.
+
+Guards: `tests/test_studio_loading.py`, `system-load-controls.test.ts` and real-Mol*
+`composite-load`. Complementary Amber topology/coordinates use the public provider
+route. Provider-owned partial extraction and complementary H5MSM 0.5 composition
+are repaired in the editable provider under uibcdf/molsysmt#307 and
+uibcdf/molsysmt#309. Composition precedes atom/frame selection. Viewer keeps the
+provider's scientific validation: capable providers compose the domains; older
+experimental providers raise their public composition diagnostic before scene
+mutation. Six selectors guard both outcomes, and a direct current-provider probe
+verifies all six positive combinations through Python loading. No consumer
+extraction or composition engine is introduced; published-artifact availability
+remains a separate gate.
+
+### Controlled whole-system cell assignment
+
+`view.set_box(box, structure_indices="all")` accepts a quantity with explicit
+length units and a finite, nondegenerate right-handed basis, with the three
+vectors as rows. A single submitted matrix applies uniformly to the selected
+structures; an array supplies one matrix per selected structure, in that order.
+Initialization and `set_box(None)` removal require the complete structure axis.
+A partial replacement requires an existing complete cell series; no missing-frame
+cell or zero placeholder is invented.
+
+`view.set_box(molecular_system=source, source_structure_indices=..., ...)` reads
+cells through public MolSysMT `get`. Supported source forms include Structures
+and H5MSM. The selected counts must agree; more than one pair requires explicit
+`structure_pairing="by_index"`. Source cells never broadcast. Selected times are
+compared in ps with `rtol=atol=1e-9` when both are present. `box` and a source are
+mutually exclusive. Source selectors/pairing are invalid without a source.
+
+Assignment uses public MolSysMT `set`, verifies shape and unit-converted values
+through public `get`, then calls the existing system-edit reconciliation owner.
+A provider that ignores the edit gets a compatibility diagnostic before scene
+publication or analysis invalidation; the prior cell is restored on a mismatched
+result. This protects older compatible base providers that cannot initialize an
+absent cell (uibcdf/molsysviewer#155). Coordinates, time, atom/frame order and source occurrence maps remain
+unchanged; later atom additions retain the assigned cell, including its absence.
+Only selected structures lose evaluated interaction coverage, with immutable
+original results retained. Scene history is cleared; content binding, molecular
+projection, scientific visual sets and visible box edges are refreshed. Removing
+the cell hides its edge display. Rebuilds regenerate edges from current data
+rather than replaying their old coordinates.
+
+Invalid selectors, units, matrices, source counts/times and unsupported source
+data fail before science/scene mutation, including with digestion bypassed.
+Unexpected runtime/render errors are outside the preparation rollback guarantee.
+This path rebuilds the molecular projection through existing transport; it does
+not certify incremental box streaming, an I/O budget or a hard memory ceiling.
+Guards: `tests/test_box_assignment.py` and real-Mol* `coordinate-edits`.
+
 ## Live Edit and Rebuild
 
-Editing the molecular system lives **outside** the viewer core. The viewer exposes a
-single public reconciliation primitive,
+Scientific molecular edits belong to MolSysMT. The viewer exposes a
+public reconciliation primitive,
 `view.apply_system_edit(new_molsys, atom_index_map=…, load_blocks="keep"|"collapse"|"append")`.
-The MolSysMT addon (`view.addons.molsysmt.basic.*`) owns the edit *semantics*
-(`set`/`add`/`remove`/`append_structures`) and drives them through that primitive;
-the viewer's own loader sugar `view.load(mode="add"|"append_structures")` routes
-through it as well.
+Native workflows such as loading, coordinate/cell assignment and interactions
+use the provider without requiring addon registration. Optional domain addons
+and advanced callers can also drive this primitive. The older MolSysMT addon is
+being retired as its useful workflows acquire native replacements, as recorded
+in `molsyssuite_addon_direction.md`.
 
 When `apply_system_edit` runs:
 
 - the reconciled MolSysMT object becomes the viewer's current molecular state;
+- named interaction analyses lose their evaluated coverage by default, because
+  topology or geometry edits can invalidate scientific evidence;
+- `interactions_policy="preserve"` explicitly declares that incoming analyses
+  have already been reconciled and remain valid. Direct unannounced array or
+  system mutation is outside the interaction validity contract;
 - the viewer is rebuilt from that state;
 - regions/layers/tags are replayed;
 - visibility is restored;

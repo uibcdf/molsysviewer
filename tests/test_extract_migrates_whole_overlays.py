@@ -23,7 +23,7 @@ def populated():
     view = msv.demo["1TCD"]
     view.regions.add(selection='molecule_type=="protein"', tag="prot", representation="cartoon")
     view.shapes.add_sphere(center="[1.0, 1.0, 1.0] nm", radius="0.5 nm", tag="s1")
-    view.annotations.add_annotation(text="hola", selection="atom_index==[0]", tag="a1")
+    view.annotations.add(text="hola", selection="atom_index==[0]", tag="a1")
     view.measurements.add_distance(selection_a="atom_index==[0]", selection_b="atom_index==[10]", tag="d1")
     return view
 

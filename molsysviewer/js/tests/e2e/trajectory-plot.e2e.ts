@@ -60,7 +60,7 @@ async function run() {
                 x_label: "frame",
                 y_label: "nm",
                 n_frames: 5,
-                x: [0, 1, 2, 3, 4],
+                x: [0, 1, 10, 4, 10],
                 series: [
                     { label: "backbone", values: [0.0, 0.4, 0.9, 0.6, 1.2] },
                     { label: "sidechain", values: [0.1, 0.2, 0.5, 0.8, 0.7] },
@@ -99,16 +99,42 @@ async function run() {
     for (const label of ["RMSD", "frame", "nm"]) {
         assert.ok(text.includes(label), `Expected the plot to render ${JSON.stringify(label)}`);
     }
+    const xCoordinates = await polylines.first().evaluate(element =>
+        element.getAttribute("points")!.split(" ").map(point => Number(point.split(",")[0])));
+    assert.ok(Math.abs((xCoordinates[1] - xCoordinates[0]) / (xCoordinates[2] - xCoordinates[0]) - 0.1) < 1e-9);
+    assert.equal(xCoordinates[2], xCoordinates[4], "repeated x retains coincident positions");
 
-    // Hiding it removes what was drawn, rather than leaving a stale card behind.
+    // The canonical message reconstructs all tagged cards and retains hidden data.
+    const cards = [
+        { tag: "rmsd", visible: true, title: "RMSD", n_frames: 5, series: [{ label: "rmsd", values: [0, 1, 2, 3, 4] }] },
+        { tag: "other", visible: true, title: "Other", n_frames: 5, series: [{ label: "other", values: [4, 3, 2, 1, 0] }] },
+    ];
+    await page.evaluate(async cards => {
+        await (window as any).__controller.handleMessage({ op: "set_trajectory_plot", options: { cards } });
+    }, cards);
+    const other = page.locator('[data-molsysviewer-datacard="other"]');
+    await other.waitFor({ state: "visible" });
+    await page.evaluate(async cards => {
+        await (window as any).__controller.handleMessage({ op: "set_trajectory_plot", options: { cards: cards.map(card => ({ ...card, visible: false })) } });
+    }, cards);
+    await card.waitFor({ state: "hidden" });
+    await other.waitFor({ state: "hidden" });
+    assert.equal(await card.count(), 1, "hide retains the card and its series");
+    await page.evaluate(async cards => {
+        await (window as any).__controller.handleMessage({ op: "set_trajectory_plot", options: { cards } });
+    }, cards);
+    await card.waitFor({ state: "visible" });
+    await other.waitFor({ state: "visible" });
+    // Removing one card does not delete the other; an empty registry clears all.
+    await page.evaluate(async cards => {
+        await (window as any).__controller.handleMessage({ op: "set_trajectory_plot", options: { cards: [cards[1]] } });
+    }, cards);
+    await card.waitFor({ state: "detached" });
+    await other.waitFor({ state: "visible" });
     await page.evaluate(async () => {
-        const controller = (window as any).__controller;
-        await controller.handleMessage({
-            op: "set_trajectory_plot",
-            options: { tag: "rmsd", visible: false },
-        });
+        await (window as any).__controller.handleMessage({ op: "set_trajectory_plot", options: { cards: [] } });
     });
-    await card.waitFor({ state: "detached", timeout: 30000 });
+    await other.waitFor({ state: "detached" });
 
     await browser.close();
 

@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-03",
+  "base": "924da3a32111d8994639e8a72cb901ebeb8f870a",
+  "scope": "Reviewed cumulative source integration; no release qualification",
+  "provider_head": "033c12b341abf6e986f9ae9ddd6c84bf167222c8",
+  "provider_boundary": "Editable experimental provider, eight unrelated modified files; not a frozen or published artifact",
+  "environment": "molsyssuite@uibcdf_3.14",
+  "python": "3.14.7",
+  "validation": {
+    "source_full_once": {
+      "exit": 0,
+      "collected": 2828,
+      "passed": 2805,
+      "skipped": 23,
+      "seconds": 510.35
+    },
+    "scene_transfer": {
+      "exit": 0,
+      "passed": 7
+    },
+    "ruff": "PASS",
+    "typescript": "PASS",
+    "runtime_build": "PASS",
+    "diff_check": "PASS"
+  },
+  "logs": {
+    "integration-full-once": {
+      "path": "/tmp/msv-review-integration-full-once-20261003.log",
+      "sha256": "726ebe08055f67a813c0481da4fa7016d5e47e58f4675941fb99af11a8ef7057"
+    },
+    "scene-transfer-fixed": {
+      "path": "/tmp/msv-review-scene-transfer-fixed-20261003.log",
+      "sha256": "fe172811431b13928148c1fcce8afb861bf719d4f708d9ca818dfd4e09e9cdf1"
+    },
+    "ruff": {
+      "path": "/tmp/msv-review-ruff-20261003.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "typescript": {
+      "path": "/tmp/msv-review-typescript-20261003.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runtime-build": {
+      "path": "/tmp/msv-review-runtime-build-20261003.log",
+      "sha256": "325b827306a5e8afd8beba611a16118a5407b862670c351dcb038cf58a53344c"
+    }
+  },
+  "runtime_sha256": "262d043f8d46ff8833178cd27ddb7ad494788b7c431c16a995100d656edbace7",
+  "prior_evidence": "integration_completion_20261003.json",
+  "prior_evidence_boundary": "39/39 core browser suites, earlier complete installed run and later box guards apply to their original inputs; no new hosted or complete installed qualification of #156",
+  "ci_route": "Existing internal deferred [skip ci] route; ordinary published MolSysMT 0.22.4 lacks Interactions. Release candidate must remove skip and qualify compatible exact artifacts. CI debt retained.",
+  "finding": "uibcdf/molsysviewer#156",
+  "preserved": [
+    "ACKREDIT stash",
+    "sandbox/interactions_panel_design.html",
+    "sandbox/interactions_panel_design.png",
+    "sandbox/interactions_panel_design_stored.png"
+  ],
+  "reviewed_path_count": 409
+}

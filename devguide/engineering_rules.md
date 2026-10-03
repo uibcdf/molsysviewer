@@ -160,8 +160,8 @@ npm run build:runtime      # regenerate viewer.js (last, after the final TS edit
 And, when the change touches rendering, interaction or the scene contracts:
 
 ```bash
-npm run test:e2e:core       # 34 required non-remote browser suites (PW_CHROMIUM_BIN=/usr/bin/google-chrome)
-npm run test:e2e:all        # all 37 suites, including post-1.0 remote preview
+npm run test:e2e:core       # 36 required non-remote browser suites (PW_CHROMIUM_BIN=/usr/bin/google-chrome)
+npm run test:e2e:all        # all 39 suites, including post-1.0 remote preview
 npm run test:e2e:remote-portable # two remote-client/input diagnostic suites
 npm run test:e2e:server-gpu # one post-1.0 server-rendering suite on a qualified GPU host
 npm run test:perf          # the message-toll and dynamic-region-frame harnesses
@@ -171,7 +171,8 @@ The portable lane passed locally on 2026-09-24, but its hosted run failed in
 remote-client rendering. Since the 2026-09-26 scope decision, the core lane is
 the required 1.0 browser evidence; the three remote scenarios remain runnable
 post-1.0 preview tests, not silent skips. Do not count a core pass as a full
-37-suite pass or server-GPU evidence. See uibcdf/molsysviewer#100.
+39-suite pass or server-GPU evidence. See uibcdf/molsysviewer#100. The current
+lane inventory is defined in `molsysviewer/js/tests/e2e/e2e-runner.ts`.
 
 ## Performance
 
