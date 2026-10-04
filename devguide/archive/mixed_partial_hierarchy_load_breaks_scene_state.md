@@ -95,3 +95,15 @@ partial-hierarchy queries remain open under uibcdf/molsysmt#312/#313; the mixed
 scientific support and published-artifact qualification stay in #151. No provider
 code or fabricated hierarchy is introduced. Complete source regression evidence
 is recorded in the current checkpoint and the scientific review follow-up.
+
+## Correction — 2026-10-04 — provider repair changes the negative fixture
+
+The claim above that the out-of-range group-parent fixture remains a refusal
+guard after the provider repair was false. MolSysMT commit `577d0ab32` maps
+unmatched parents to missing identities, so that fixture now exports valid scene
+state and is accepted. The targeted Viewer test exposed this change before the
+full regression. Its negative fixture now uses genuinely ambiguous duplicate
+group keys: public identity lookup raises `pandas.errors.InvalidIndexError`,
+preserved as the loading refusal's cause. This changes the regression input,
+not the product's prevalidation policy. The real protein/caffeine branch continues
+to exercise successful composition when the repaired provider is present.

@@ -2306,6 +2306,14 @@ separate tagged visual reference. Deleting a set keeps the scientific analysis;
 deleting referenced analyses is refused. Explicit scientific deletion clears
 visual history. Calculation is never initiated by trajectory playback.
 
+Studio defaults to calculating all atoms at the current structure. Its separately
+labelled calculation atom scope can explicitly use staged A or disjoint A/B;
+restricted scope never certifies atoms outside it. Display A/B, query mode and
+structure filters do not restrict calculation unless that calculation scope is
+chosen. An unsupported or incomplete calculation scope is refused before
+dispatch. A successful current query preview activates the public selection
+owner before the shared dock can stage it; stale or failed previews do not.
+
 A visual reference records its named analysis content signature, sparse query
 filter, color, opacity, radius with explicit `radius_unit: "nm"`, layer and
 hidden/broken state. Wire geometry declares `coordinate_unit: "nm"`; the

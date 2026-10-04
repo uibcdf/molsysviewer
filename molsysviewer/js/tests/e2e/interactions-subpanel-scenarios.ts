@@ -7,6 +7,102 @@ const dir = dirname(fileURLToPath(import.meta.url));
 import { PythonFixtureBridge } from "./python-fixture-bridge";
 let fixtureWorker: PythonFixtureBridge;
 const bridge = (events: unknown[] = [], family?: string) => fixtureWorker.request(events, family);
+async function checkCalculationAndDisplayScopes(page: any) {
+    const family = "pentalanine_scope";
+    const fixture = await bridge([], family);
+    await freshController(page);
+    await apply(page, fixture.initial_messages);
+    await page.locator('[data-molsysviewer-group-panel-toggle="true"]').click();
+    await page.locator('[data-molsysviewer-group-panel-tab="interactions"]').click();
+    const latest = (action: string) => page.evaluate(action => [...((window as any).__messages || [])].reverse()
+        .find((message: any) => message.action === action || message.event === action), action);
+    const actionCount = (action: string) => page.evaluate(action => ((window as any).__messages || [])
+        .filter((message: any) => message.action === action).length, action);
+    const scope = page.locator('[data-molsysviewer-interaction-calc-scope="true"]');
+    const create = page.locator('[data-molsysviewer-interaction-create="true"]');
+    assert.equal(await scope.inputValue(), "all");
+    await scope.selectOption("a");
+    await create.click();
+    assert.equal(await actionCount("create_interaction"), 0, "an unset calculation A must stop dispatch");
+    await scope.selectOption("all");
+    await page.locator('[data-molsysviewer-interaction-filters] > summary').click();
+    const stagedEvents: any[] = [];
+    async function stageQuery(atom: number, slot: "A" | "B") {
+        await page.locator('[data-molsysviewer-interaction-filters] button').filter({ hasText: `Stage ${slot}` }).click();
+        await page.locator('[data-molsysviewer-interaction-filters] button').filter({ hasText: "Select by query" }).click();
+        await page.locator('[data-molsysviewer-query-input="interactions"]').fill(`atom_index==${atom}`);
+        await page.locator('[data-molsysviewer-query-check="interactions"]').click();
+        const request = await latest("selection_query_preview_request");
+        const preview = (await bridge([request], family)).message_batches[0];
+        const selectionCount = await actionCount("apply_selection_query");
+        const stale = preview.map((message: any) => ({ ...message, request_id: request.request_id - 1 }));
+        await apply(page, stale);
+        assert.equal(await actionCount("apply_selection_query"), selectionCount, "stale query previews must not activate selection");
+        await apply(page, preview);
+        assert.equal(await actionCount("apply_selection_query"), selectionCount + 1, "current successful query must activate selection");
+        const selection = await latest("apply_selection_query");
+        assert.equal(selection.expression, `atom_index==${atom}`);
+        stagedEvents.push(selection);
+        const selected = await bridge(stagedEvents, family);
+        await apply(page, selected.message_batches.at(-1));
+        await page.locator('[data-molsysviewer-interaction-filters] button').filter({ hasText: "Active selection" }).click();
+        await page.locator('[data-molsysviewer-interaction-slot-set="0"]').click();
+    }
+    await stageQuery(5, "A");
+    await scope.selectOption("between");
+    await create.click();
+    assert.equal(await actionCount("create_interaction"), 0, "an unset calculation B must stop dispatch");
+    await stageQuery(5, "B");
+    await create.click();
+    assert.equal(await actionCount("create_interaction"), 0, "overlapping calculation A/B must stop dispatch");
+    await stageQuery(6, "B");
+    await scope.selectOption("all");
+    await page.locator('[data-molsysviewer-interaction-field="parameter-distance_threshold"]').fill("0.4");
+    await page.locator('[data-molsysviewer-interaction-field="name"]').fill("whole");
+    await page.locator('[data-molsysviewer-interaction-field="tag"]').fill("filtered");
+    await create.click();
+    const wholeEvent = await latest("create_interaction");
+    assert.equal(wholeEvent.calculation.selection, "all");
+    assert.ok(!("selection_2" in wholeEvent.calculation), "display B must not leak into calculation");
+    assert.deepEqual(wholeEvent.filter.selection, [5]);
+    assert.equal(wholeEvent.filter.mode, "incident");
+    const whole = await bridge([wholeEvent], family);
+    assert.equal(whole.summary.analyses.find((item: any) => item.name === "whole").n_occurrences, 20);
+    assert.equal(whole.summary.interactions.find((item: any) => item.tag === "filtered").n_observations, 1);
+    await apply(page, whole.message_batches[0]);
+    assert.match(await page.locator('[data-molsysviewer-interaction-set="filtered"]').textContent(), /1 drawn \/ 1 observations/);
+    await page.locator('[data-molsysviewer-interaction-source="calculate"]').click();
+    await scope.selectOption("a");
+    await page.locator('[data-molsysviewer-interaction-field="name"]').fill("limited");
+    await page.locator('[data-molsysviewer-interaction-field="tag"]').fill("limited");
+    await create.click();
+    const limitedEvent = await latest("create_interaction");
+    assert.deepEqual(limitedEvent.calculation.selection, [5]);
+    assert.ok(!("selection_2" in limitedEvent.calculation));
+    const limited = await bridge([wholeEvent, limitedEvent], family);
+    assert.equal(limited.summary.analyses.find((item: any) => item.name === "limited").n_occurrences, 0);
+    assert.deepEqual(limited.calculation_scopes.limited.atom_indices, [5]);
+    await apply(page, limited.message_batches[1]);
+    assert.match(await page.locator('[data-molsysviewer-interaction-set="limited"]').textContent(), /Evaluated · no matching observations/);
+    await page.locator('[data-molsysviewer-interaction-source="calculate"]').click();
+    await scope.selectOption("between");
+    await page.locator('[data-molsysviewer-interaction-field="name"]').fill("between");
+    await page.locator('[data-molsysviewer-interaction-field="tag"]').fill("between");
+    await create.click();
+    const betweenEvent = await latest("create_interaction");
+    assert.deepEqual(betweenEvent.calculation.selection, [5]);
+    assert.deepEqual(betweenEvent.calculation.selection_2, [6]);
+    const between = await bridge([betweenEvent], family);
+    assert.equal(between.message_batches[0].find((message: any) => message.op === "interaction_action_result")?.ok, true);
+    assert.equal(between.calculation_scopes.between.mode, "between");
+    await apply(page, between.message_batches[0]);
+    await page.locator('[data-molsysviewer-interaction-source="calculate"]').click();
+    await page.locator('[data-molsysviewer-interaction-kind="true"]').selectOption("disulfide_candidate");
+    const before = await actionCount("create_interaction");
+    await create.click();
+    assert.equal(await actionCount("create_interaction"), before, "an unsupported retained scope must stop dispatch");
+    console.log("[E2E interactions calculation scope] query A/B, stale responses, 20 calculated/1 displayed, explicit restrictions passed");
+}
 async function checkCalculationForms(page: any) {
     const customPlane = { distance_threshold: "0.55", angle_threshold: "30", offset_threshold: "0.2", planarity_threshold: "0.01" };
     const cases: Array<{ system: string; kind?: string; criterion?: string; fields?: Record<string, string> }> = [
@@ -223,6 +319,7 @@ export async function runInteractionsSuite(chromium: typeof import("./e2e-browse
     const errors: string[] = []; page.on("pageerror", error => errors.push(String(error)));
     try {
         if (mode === "calculation" || process.argv.includes("--calculation-forms")) {
+            await checkCalculationAndDisplayScopes(page);
             const count = await checkCalculationForms(page);
             assert.deepEqual(errors, []);
             console.log(`[E2E interactions-subpanel calculation forms] ${count} real calculations passed`);

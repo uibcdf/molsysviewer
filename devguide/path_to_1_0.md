@@ -2,6 +2,15 @@
 
 This document is the authoritative release plan for the **v1.0.0** release of MolSysViewer. 
 
+**Scientific usability follow-up (2026-10-04):** Studio #158/#159 are corrected
+and guarded in real Chromium/Mol*: successful query staging and independent
+calculation/display scopes, including 20 calculated observations with one
+displayed, plus all 17 scientific forms. Provider #312/#313 are now closed and
+their local public fixes pass direct SDF and real protein/caffeine batch and
+progressive loading, state/history and sessions. These source results remove the
+immediate provider blockers; published-provider and exact-artifact/hosted gates
+remain. See [the follow-up](scientific_usability_review_20261004.md).
+
 **Candidate identity follow-up (2026-10-04):** #157 is resolved in source, with
 five targeted guards and a once-run full regression of **2,808 passed, 23 skipped**
 in `molsyssuite@uibcdf_3.14`. Failed identity preparation preserves the prior

@@ -158082,6 +158082,7 @@ var InteractionsPanel = class extends BasePanel {
     this.stored = "";
     this.kind = "hbond";
     this.calcStructures = "current";
+    this.calcAtomScope = "all";
     this.pbc = false;
     this.filename = "";
     this.fileAnalysis = "";
@@ -158114,7 +158115,7 @@ var InteractionsPanel = class extends BasePanel {
     this.color = "#34d399";
     this.radius = "0.025";
     this.alpha = "0.85";
-    this.composer = new ManualQueryComposer("interactions", (details) => ctx.onAction("selection_query_preview_request", details));
+    this.composer = new ManualQueryComposer("interactions", (details) => ctx.onAction("selection_query_preview_request", details), void 0, { buttonLabel: "Select" });
   }
   setSummary(message) {
     const previous = this.items.find((item2) => item2.tag === this.inspecting);
@@ -158147,7 +158148,12 @@ var InteractionsPanel = class extends BasePanel {
     this.scheduleRender();
   }
   updateQuery(preview) {
-    return this.composer.updatePreview(preview);
+    const updated = this.composer.updatePreview(preview);
+    if (updated && preview.ok === true) {
+      const { expression, syntax } = this.composer.value();
+      if (expression) this.ctx.onAction("apply_selection_query", { expression, syntax, op: "replace" });
+    }
+    return updated;
   }
   updateInspection(requestId, result2) {
     if (requestId !== this.requestId || result2.frame !== this.frame || result2.tag !== this.inspecting) return;
@@ -158341,6 +158347,21 @@ var InteractionsPanel = class extends BasePanel {
           this.paintScientificControls(form);
           if (["ionic_contact", "pi_pi", "cation_pi"].includes(this.kind)) form.appendChild(note2("Compound participants use centroid guides. Reported measurements keep the calculation's definition."));
           if (["disulfide_candidate", "metal_coordination_candidate"].includes(this.kind)) form.appendChild(note2("Geometric candidates; covalent topology is unchanged."));
+          const scopeLabel = document.createElement("label");
+          scopeLabel.appendChild(note2("Calculate atoms"));
+          form.appendChild(scopeLabel);
+          const scope = select(
+            scopeLabel,
+            [["all", "All atoms"], ["a", "Within staged A"], ["between", "Between staged A and B"]],
+            this.calcAtomScope,
+            (value) => {
+              this.calcAtomScope = value;
+              this.scheduleRender();
+            }
+          );
+          scope.setAttribute("data-molsysviewer-interaction-calc-scope", "true");
+          scope.querySelector('option[value="between"]').disabled = this.kind === "disulfide_candidate";
+          form.appendChild(note2(this.calcAtomScope === "all" ? "Calculation covers all atoms. A/B below filter the display only." : `Calculation uses staged ${this.calcAtomScope === "a" ? "A" : "A and B"} below; atoms outside this scope are not evaluated.`));
           field(form, "Calculate structures: current, all, or indices", this.calcStructures, "calc-structures", (value) => this.calcStructures = value);
           const pbc = document.createElement("label");
           const cb2 = document.createElement("input");
@@ -158449,13 +158470,22 @@ var InteractionsPanel = class extends BasePanel {
         else {
           const calculation = {
             kind: this.kind,
-            selection: this.a ?? "all",
+            selection: "all",
             structure_indices: this.source === "calculate" ? indices2(this.calcStructures, true) : "current",
             pbc: this.pbc
           };
           if (this.source === "calculate") {
             calculation.parameters = scientificParameters(this.kind, this.criterion()?.key ?? "", this.scientificDraft());
-            if (this.b && this.kind !== "disulfide_candidate") calculation.selection_2 = this.b;
+            if (this.calcAtomScope !== "all") {
+              if (!this.a?.length) throw new Error("Stage a nonempty selection A for this calculation scope.");
+              calculation.selection = [...this.a];
+              if (this.calcAtomScope === "between") {
+                if (this.kind === "disulfide_candidate") throw new Error("Disulfide candidates support all atoms or within A; choose a supported calculation scope.");
+                const selectedA = new Set(this.a);
+                if (!this.b?.length || this.b.some((atom2) => selectedA.has(atom2))) throw new Error("Stage nonempty disjoint selections A and B for this calculation scope.");
+                calculation.selection_2 = [...this.b];
+              }
+            }
           }
           this.busy = ++this.creationRequest;
           this.emit("create_interaction", {

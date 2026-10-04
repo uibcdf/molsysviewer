@@ -1,0 +1,192 @@
+{
+  "date": "2026-10-04",
+  "environment": "molsyssuite@uibcdf_3.14",
+  "python": "3.14.7",
+  "integration_base": "a1bb6e0aa0065abec1b5100fe3e2e8c178066b41",
+  "provider_head_at_receipt": "99d1862a71df9d44dfbfed6eb6ae30b59b3c6d3a",
+  "provider_dirty_at_receipt": [
+    "M devguide/pending_proposals/assign_and_validate_autodock_atom_types_under_a_named_scheme.md",
+    " M docs/api/build/api_build.rst",
+    " M docs/api/physchem/api_physchem.rst",
+    " M docs/content/course/Common_Core/12_Building_Repairing_and_Auditing_Systems.ipynb",
+    " M docs/content/user/cookbook/native_sdf.md",
+    " M docs/content/user/foundations/native_world/classes/molsysmt_MolSys.md",
+    " M docs/content/user/tools/build/index.md",
+    " M docs/content/user/tools/physchem/index.md",
+    " M docs/docs_manifest.yml",
+    " M molsysmt/_private/argdigest/argument/method.py",
+    " M molsysmt/_private/partial_charges.py",
+    " M molsysmt/_private/pdbqt_writer.py",
+    " M molsysmt/build/__init__.py",
+    " M molsysmt/form/molsysmt_MolSys/to_file_pdbqt.py",
+    " M molsysmt/form/molsysmt_MolecularMechanics/set.py",
+    " M molsysmt/native/molecular_mechanics.py",
+    " M molsysmt/native/molsys.py",
+    " M molsysmt/physchem/__init__.py",
+    " M molsysmt/topology/_chemical_graph.py",
+    " M tests/form/file_pdbqt/test_real_vina_examples.py",
+    "?? devguide/pending_bugs/public_signature_guard_treats_local_private_helpers_as_public_api.md",
+    "?? docs/api/build/autosummary/molsysmt.build.assign_autodock_atom_types.rst",
+    "?? docs/api/physchem/autosummary/molsysmt.physchem.get_autodock_atom_types.rst",
+    "?? docs/content/user/tools/build/assign_autodock_atom_types.md",
+    "?? docs/content/user/tools/build/assign_autodock_atom_types.md.AGENTS.md",
+    "?? docs/content/user/tools/physchem/get_autodock_atom_types.md",
+    "?? docs/content/user/tools/physchem/get_autodock_atom_types.md.AGENTS.md",
+    "?? molsysmt/_private/autodock_assignment.py",
+    "?? molsysmt/build/assign_autodock_atom_types.py",
+    "?? molsysmt/physchem/get_autodock_atom_types.py",
+    "?? tests/build/test_assign_autodock_atom_types.py",
+    "?? tests/physchem/test_get_autodock_atom_types.py"
+  ],
+  "provider_boundary": "Editable source with independent unrelated changes; no provider edits here, no frozen artifact claim.",
+  "provider_repairs": {
+    "issues": [
+      "uibcdf/molsysmt#312",
+      "uibcdf/molsysmt#313"
+    ],
+    "commit": "577d0ab32",
+    "present_locally": true
+  },
+  "resolved_consumer_issues": [
+    "uibcdf/molsysviewer#158",
+    "uibcdf/molsysviewer#159"
+  ],
+  "python_full": {
+    "passed": 2812,
+    "skipped": 23,
+    "warnings": 956,
+    "seconds": 606.81,
+    "command": "python -m pytest tests/ --tb=no -q -o addopts=--doctest-modules",
+    "exit_code": 0,
+    "log": {
+      "path": "/tmp/msv-usability-review-20261004/full-python.log",
+      "sha256": "27b88222aa53ffac5550de7bfb214b15028ae81b5500a2c1a7e87194cffaedfe"
+    },
+    "runs": 1
+  },
+  "targeted": {
+    "reporting_protocol": "pass",
+    "loading_identity": {
+      "cases": 5,
+      "result": "pass"
+    }
+  },
+  "browser": {
+    "entrypoint": "molsysviewer/js/tests/e2e/interactions-calculation.e2e.ts",
+    "exit_code": 0,
+    "seconds": 155.557,
+    "existing_forms": 17,
+    "families": 9,
+    "checks": [
+      "query staging A/B",
+      "stale preview rejection",
+      "whole 20 calculated/1 displayed",
+      "explicit A: zero observations",
+      "between A/B",
+      "missing/overlapping/unsupported scopes"
+    ],
+    "skip_opt_out": false,
+    "deadline_override": false,
+    "log": {
+      "path": "/tmp/msv-usability-review-20261004/calculation-final.log",
+      "sha256": "6a856647157f8d4e9f4abba54695eebd96127f1b2ab1e652e2ae9facda583e85"
+    }
+  },
+  "mixed_source": {
+    "result": {
+      "python": "3.14.7",
+      "provider": "/home/diego/repos@uibcdf/molsysmt/molsysmt/__init__.py",
+      "viewer": "/home/diego/repos@uibcdf/molsysviewer/molsysviewer/__init__.py",
+      "cases": [
+        {
+          "case": "direct_sdf",
+          "atoms": 24,
+          "structures": 1
+        },
+        {
+          "case": "progressive",
+          "atoms": 620,
+          "source_counts": [
+            596,
+            24
+          ],
+          "state_history_session": "pass"
+        },
+        {
+          "case": "batch",
+          "atoms": 620,
+          "source_counts": [
+            596,
+            24
+          ],
+          "state_history_session": "pass"
+        }
+      ],
+      "batch_progressive_coordinates": "identical"
+    },
+    "driver": {
+      "path": "/tmp/msv-usability-review-20261004/mixed-after.py",
+      "sha256": "51485e9fda212a5fa0ac653ca9de78396dd9762a39bc6a35683f19cfb7304578"
+    },
+    "output": {
+      "path": "/tmp/msv-usability-review-20261004/mixed-after.json",
+      "sha256": "69b884a857cbf8faf5237bb6811671f859f6c4867b05f713e66efc935963f789"
+    }
+  },
+  "checks": {
+    "ruff": "pass",
+    "typescript_no_emit": "pass",
+    "official_runtime_rebuild": "pass"
+  },
+  "sources": {
+    "molsysviewer/js/src/ui/panels/interactions-panel.ts": "80fb4db8329f0571b9337646c6110fa5987e368ad746812b8ef228f14de09dac",
+    "molsysviewer/js/tests/e2e/interactions-subpanel-scenarios.ts": "06013901a2e0272d6960496e229029ae399afae3200176cd0b05beec81265d65",
+    "molsysviewer/js/tests/e2e/interactions-subpanel-bridge.py": "fef2ac561e655e03a3304a94df1742d663c04f676fbf5ca553fe7d5387b2677a",
+    "tests/test_loading_identity_prevalidation.py": "38fc4a51461f1d6c8007fd7f44559a5407e3da8d4d9e566c915e3bbf5efd23ec",
+    "tests/test_reporting_protocol.py": "60390a01eec3e3f263ddc34a5f738510cbf9c0978ea8315d9964f5ea73175885",
+    "molsysviewer/loaders/_composition.py": "7fa94ddde7ec0a25ad0b973d14eb315b73e7c88707483b8ca8e1711c82b25456"
+  },
+  "provider_source_snapshot_hashes": {
+    "molsysmt/form/file_sdf/get_structural_attributes.py": "df44259412a6f707dbc741eabb781a889a752f09041ee374212f71006274ebd7",
+    "molsysmt/form/molsysmt_Topology/get_topological_attributes.py": "9d9a42b92989996ed5b55a9c9d2146e461b6385891aa4ac188b4e27282f2969e",
+    "molsysmt/interactions/result.py": "486b9c2c70268970e5ef725f6a96f633245dfc0d713c63d7f1d1ee3018ee1c01",
+    "molsysmt/interactions/hbonds/get_buch_hbonds.py": "d76c633cc6f21aa9a72ac97dcca903df22cc5e529c9b01b704fcfa92100da6af"
+  },
+  "before_fix_widget": {
+    "host": "isolated actual JupyterLab",
+    "source_frames": [
+      0,
+      8,
+      3
+    ],
+    "screenshots": [
+      {
+        "path": "/tmp/msv-usability-review-20261004/initial.png",
+        "sha256": "ce28aaf8078042507141b7cd698fd3f92a631220aca0f7d1741c10c9c63c2bba"
+      },
+      {
+        "path": "/tmp/msv-usability-review-20261004/interactions-before.png",
+        "sha256": "3cc79a5be7a7462a1525ce8b7579f2fcb71442158f906353312c767f911fefcf"
+      }
+    ],
+    "host_errors": [
+      "No active debugger session",
+      "ipykernel pending-task warning during setup"
+    ],
+    "host_console_cleanliness_claimed": false
+  },
+  "refuted_test_failures": [
+    "browser guard omitted delivery of between-calculation completion acknowledgment; corrected transport step",
+    "old malformed fixture became exportable after provider mapped unmatched group parents to missing identity; replaced with duplicate group keys"
+  ],
+  "scope": "Source and bounded browser qualification. No full hosted core, installed-artifact, published-provider or release certification. No new tag.",
+  "preserved": [
+    "three unrelated sandbox mockups",
+    "all existing stashes",
+    "unrelated provider work"
+  ],
+  "publication": {
+    "commit_policy": "reviewed direct main push without skip marker; inspect triggered CI",
+    "hosted_evidence": "pending; public provider and installed artifact gates remain under #114/#140/#151"
+  }
+}

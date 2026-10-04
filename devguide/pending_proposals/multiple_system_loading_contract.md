@@ -8,7 +8,7 @@ verification: measured
 area: [load, api, studio]
 guard:
 normative:
-blocked_by: [uibcdf/molsysmt#312, uibcdf/molsysmt#313]
+blocked_by: []
 supersedes: []
 ---
 
@@ -605,3 +605,15 @@ retained scene/history/analyses and real progressive/batch protein–caffeine
 refusal with a saveable prior session. This does not repair provider #312/#313
 or qualify mixed-SDF support. Once those public routes work, the real-input guard
 exercises successful composition and history/session round trips.
+
+## Repaired provider qualification — 2026-10-04
+
+MolSysMT closed #312/#313 at `577d0ab32`, present in the local checkout.
+Direct caffeine SDF loading passes (24 atoms), and real 1VII/caffeine composition
+passes progressively and by batch (620 atoms). Coordinates agree exactly;
+source/base-region records, state, region undo/redo and MSV restoration pass.
+The five-case identity-prevalidation module exercises its successful mixed-source
+branch. The provider blockers are removed from front matter; this proposal
+remains partial for supported published artifacts and its existing release
+qualification, not for the repaired source behavior. See
+[`scientific_usability_review_20261004.md`](../scientific_usability_review_20261004.md).

@@ -5,6 +5,32 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+**Scientific usability corrections (2026-10-04): #158/#159 resolved in source.**
+The real widget review found missing query activation and display selections
+silently limiting scientific calculation. Studio now activates successful
+correlated queries through the public selection owner and offers separate
+all/A/between calculation scopes. Real Mol* browser guards verify 20 calculated
+observations with one displayed, explicit restrictions and all 17 scientific
+forms; the final lane passes in 155.557 s. The once-run complete source regression
+passes **2,812 tests, 23 skipped**, in 606.81 s, in `molsyssuite@uibcdf_3.14`;
+Ruff, TypeScript and official runtime rebuild pass.
+
+MolSysMT #312/#313 are now closed at `577d0ab32`, present locally. Direct
+caffeine SDF loading and real 1VII/caffeine batch/progressive composition pass
+(620 atoms), with identical coordinates, source/base-region records, state,
+region undo/redo and MSV sessions. The five-case identity-prevalidation guard
+passes after correcting its negative fixture for the provider's new missing-parent
+semantics; a dated correction is appended to #157's archive. No provider edits
+are made here. See [the follow-up](scientific_usability_review_20261004.md) and
+[its receipt](scientific_usability_review_20261004.json).
+
+**Next:** qualify a compatible published provider and the exact installed/hosted
+candidate. #151's source-level provider blockers are removed; its existing
+published-artifact qualification remains partial. Public documentation follows
+functional closure. The 0.24.0 recommendation stands; no tag or installed/hosted
+certification is created by these source results. Earlier dated observations
+retain their own inputs and are superseded by this handoff where indicated.
+
 **Candidate identity correction (2026-10-04): #157 resolved in source.**
 Initial, replacement and composite loads validate public atom identities on the
 detached candidate before committing it. Five targeted guards pass, including
@@ -15,7 +41,7 @@ regression passes **2,808 tests, 23 skipped**, in `molsyssuite@uibcdf_3.14`;
 Ruff and diff checks pass. See [the resolved record](archive/mixed_partial_hierarchy_load_breaks_scene_state.md)
 and [the scientific review receipt](scientific_use_review_20261004.json).
 
-**Next:** obtain the public MolSysMT fixes for #312/#313, then qualify successful
+**Next at that checkpoint:** obtain the public MolSysMT fixes for #312/#313, then qualify successful
 mixed-source loading. Safe refusal resolves the consumer preparation defect;
 it does not establish feature availability. MolSysMT's unrelated local work is
 preserved. No version tag or new installed/hosted certification is claimed.

@@ -29,7 +29,15 @@ def replay(events, family, fixture_root):
     from test_interactions_scene import view as scene_fixture
 
     fixture_file = None
-    if family:
+    if family == "pentalanine_scope":
+        import molsysviewer as msv
+
+        demo = msv.demo["pentalanine"]
+        try:
+            view = msv.new_view(demo.molsys, structure_indices=[0, 8, 3])
+        finally:
+            demo.close()
+    elif family:
         from devtools.interaction_family_fixtures import make_family_view
 
         view = make_family_view(family).view
@@ -62,6 +70,10 @@ def replay(events, family, fixture_root):
             "inspection": view.interactions.inspect("hb") if view.interactions.contains("hb") else None,
             "fixture_file": str(fixture_file) if fixture_file is not None else None,
             "state": view.export_state(),
+            "calculation_scopes": {
+                item["name"]: view.interactions.get_analysis(item["name"]).evaluation_scope
+                for item in view.interactions.analyses()
+            } if family == "pentalanine_scope" else {},
         })
     finally:
         view.close()

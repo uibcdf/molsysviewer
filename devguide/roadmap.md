@@ -11,7 +11,7 @@ This roadmap states current priorities. Release gating lives in
 
 The accumulated Interactions, composite loading, public API and scene corrections
 are reviewed and integrated in `main` at `0dea171d`. The latest complete source
-regression after the identity correction passes **2,808 tests, 23 skipped** in the required Python 3.14
+regression after the usability corrections passes **2,812 tests, 23 skipped** in the required Python 3.14
 development environment. The integration review also corrected repeated-frame
 display transfer (#156). Ruff, TypeScript and runtime rebuild pass. Prior local
 core-browser evidence is **39/39** under the normal deadline; installed evidence
@@ -28,9 +28,14 @@ hosted-candidate pass is claimed.
 Devguide is reconciled; a minor version 0.24.0 is recommended without a tag.
 The bounded real scientific review passes the trajectory, interaction and
 four-PDB workflows. Consumer prevalidation #157 now refuses unusable candidates
-before mutation, with five targeted guards; provider uibcdf/molsysmt#312/#313
-remain open. Obtain those public fixes and qualify successful mixed-source
-loading; safe refusal is not feature availability.
+before mutation, with five targeted guards. Provider uibcdf/molsysmt#312/#313
+are now closed: their local public fixes pass direct SDF and real protein/caffeine
+batch/progressive loading, history/state/session and identical coordinates.
+Studio usability defects #158/#159 are corrected with real query-staging and
+independent calculation/display scope guards; all 17 scientific forms pass.
+See [the follow-up](scientific_usability_review_20261004.md). These source
+results remove the immediate provider blockers; published artifact availability
+remains unqualified.
 Then qualify Interactions with a compatible published provider
 (#114/#140), repaired exact Conda/Windows artifacts (#101), the current 16-cell
 installed pair and hosted core browser requirements. Public documentation

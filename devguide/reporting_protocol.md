@@ -94,6 +94,28 @@ protects the reported failure mechanism. See `MOLSYSSUITE_GUIDE.md` and the cano
 `uibcdf/molsyssuite` reporting protocol for the complete contract. A non-pytest guard
 requires a bounded local selector profile before it can be used for a new closure.
 
+### Interactions browser guard profile
+
+For defects originating in the Studio TypeScript request path, the bounded local
+non-pytest profile accepts exactly the scalar selector
+`molsysviewer/js/tests/e2e/interactions-calculation.e2e.ts`. The allowed root is
+`molsysviewer/js/tests/e2e/`; no node suffixes, globs or commands are accepted.
+The runner is the existing esbuild/Node/Playwright lane: from `molsysviewer/js`,
+build the harness and E2E entries with `npm run build:harness` and
+`npm run build:e2e:all`, then run
+`node tests/e2e/interactions-calculation.e2e.js`. The same entry runs in
+`npm run test:e2e:core` with the shared Chromium process. Normal browser/WebGL
+failure is an error; `E2E_ALLOW_SKIP=1` is not evidence for closure.
+
+`tests/test_reporting_protocol.py::validate_guard` checks the fixed target,
+its entrypoint imports/call and failing catch handler, the exported suite owner,
+and registration in the build and core runner. This establishes addressability;
+the closing report must identify the behavioral assertions relevant to its bug.
+The lane uses real Mol* rendering and the existing real-Python fixture transport;
+it verifies browser-generated requests against MolSysMT calculations. A Python
+test constructing an already-correct request cannot guard a TypeScript emission
+defect. Other targets retain the default pytest profile until explicitly adopted.
+
 **Archive, never delete.** A repository that deletes a closed entry breaks every reference
 into it.
 

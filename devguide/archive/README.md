@@ -37,6 +37,9 @@ user/developer documentation.
 
 Resolved defect reports, kept for their evidence:
 
+- [`interactions_query_dock_cannot_stage.md`](interactions_query_dock_cannot_stage.md) — #158, correlated successful Studio queries activate the public selection owner before staging A/B; stale replies do not.
+- [`interactions_display_filter_changes_calculation.md`](interactions_display_filter_changes_calculation.md) — #159, calculation atom scope is explicit and independent of display A/B; the real browser guards 20 calculated observations and one drawn occurrence.
+
 - [`extracted_interaction_repeated_structures.md`](extracted_interaction_repeated_structures.md)
   — #156, repeated-structure extraction retains every interaction display destination, the first current-frame copy, source maps and session restoration.
 - [`attribute_scalar_colors_unit_contract.md`](attribute_scalar_colors_unit_contract.md)

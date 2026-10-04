@@ -8,6 +8,7 @@ import numpy as np
 import pytest
 from molsysviewer._pyunitwizard import puw
 from molsysviewer.interactions import _analysis_signature
+from pandas.errors import InvalidIndexError
 
 import molsysviewer as msv
 
@@ -64,9 +65,10 @@ def _assert_preserved(view, before):
 
 def _invalid_identity(source):
     broken = msm.copy(source)
-    # Coordinates and conversion are valid; the topology points outside its groups.
-    # This stays a malformed input after the provider fixes nullable memberships.
-    broken.topology.atoms.loc[0, "group_index"] = broken.topology.n_groups
+    # Nullable/out-of-range parents now return missing identities in MolSysMT.
+    # Duplicate group keys are ambiguous instead: public Series.map cannot
+    # resolve atom metadata, while coordinates and full native copy remain valid.
+    broken.topology.groups.index = [0] * broken.topology.n_groups
     return broken
 
 
@@ -75,7 +77,7 @@ def test_initial_load_refuses_unexportable_identity(source):
         before = _snapshot(view)
         with pytest.raises(ValueError, match="atom identities") as failure:
             view.load(_invalid_identity(source))
-        assert isinstance(failure.value.__cause__, IndexError)
+        assert isinstance(failure.value.__cause__, InvalidIndexError)
         _assert_preserved(view, before)
         view.load(source)
         assert view.export_state()["structure"]["n_atoms"] == source.get_n_atoms()
@@ -89,7 +91,7 @@ def test_rejected_replacement_preserves_scene_history_and_analyses(source, tmp_p
         before = _snapshot(view)
         with pytest.raises(ValueError, match="atom identities") as failure:
             view.load(_invalid_identity(source), mode="replace", skip_digestion=skip)
-        assert isinstance(failure.value.__cause__, IndexError)
+        assert isinstance(failure.value.__cause__, InvalidIndexError)
         _assert_preserved(view, before)
         assert view.history.redo()
         assert view.annotations.info("keep_note")["text"] == "redo_text"

@@ -68,6 +68,7 @@ export class InteractionsPanel extends BasePanel {
     private stored = "";
     private kind = "hbond";
     private calcStructures = "current";
+    private calcAtomScope = "all";
     private pbc = false;
     private filename = "";
     private fileAnalysis = "";
@@ -102,7 +103,7 @@ export class InteractionsPanel extends BasePanel {
     private radius = "0.025";
     private alpha = "0.85";
     constructor(private ctx: PanelContext) {
-        super(); this.composer = new ManualQueryComposer("interactions", details => ctx.onAction("selection_query_preview_request", details));
+        super(); this.composer = new ManualQueryComposer("interactions", details => ctx.onAction("selection_query_preview_request", details), undefined, { buttonLabel: "Select" });
     }
     setSummary(message: InteractionSummariesMessage) {
         const previous = this.items.find(item => item.tag === this.inspecting);
@@ -120,7 +121,14 @@ export class InteractionsPanel extends BasePanel {
     setFrame(items: InteractionSummary[], frame: number) { this.setSummary({ op: "set_interaction_summaries", interactions: items, analyses: this.analyses, system_loaded: this.loaded, frame }); }
     setSelection(selection: ActiveSelectionPayload) { this.selection = selection; this.scheduleRender(); }
     setSavedSelections(items: SavedSelectionSummary[]) { this.saved = items; this.scheduleRender(); }
-    updateQuery(preview: SelectionQueryPreview) { return this.composer.updatePreview(preview); }
+    updateQuery(preview: SelectionQueryPreview) {
+        const updated = this.composer.updatePreview(preview);
+        if (updated && preview.ok === true) {
+            const { expression, syntax } = this.composer.value();
+            if (expression) this.ctx.onAction("apply_selection_query", { expression, syntax, op: "replace" });
+        }
+        return updated;
+    }
     updateInspection(requestId: number, result: InteractionInspection) {
         if (requestId !== this.requestId || result.frame !== this.frame || result.tag !== this.inspecting) return;
         const item = this.items.find(item => item.tag === result.tag);
@@ -227,6 +235,13 @@ export class InteractionsPanel extends BasePanel {
                     this.paintScientificControls(form);
                     if (["ionic_contact", "pi_pi", "cation_pi"].includes(this.kind)) form.appendChild(note("Compound participants use centroid guides. Reported measurements keep the calculation's definition."));
                     if (["disulfide_candidate", "metal_coordination_candidate"].includes(this.kind)) form.appendChild(note("Geometric candidates; covalent topology is unchanged."));
+                    const scopeLabel = document.createElement("label"); scopeLabel.appendChild(note("Calculate atoms")); form.appendChild(scopeLabel);
+                    const scope = select(scopeLabel, [["all", "All atoms"], ["a", "Within staged A"], ["between", "Between staged A and B"]],
+                        this.calcAtomScope, value => { this.calcAtomScope = value; this.scheduleRender(); });
+                    scope.setAttribute("data-molsysviewer-interaction-calc-scope", "true");
+                    scope.querySelector<HTMLOptionElement>('option[value="between"]')!.disabled = this.kind === "disulfide_candidate";
+                    form.appendChild(note(this.calcAtomScope === "all" ? "Calculation covers all atoms. A/B below filter the display only."
+                        : `Calculation uses staged ${this.calcAtomScope === "a" ? "A" : "A and B"} below; atoms outside this scope are not evaluated.`));
                     field(form, "Calculate structures: current, all, or indices", this.calcStructures, "calc-structures", value => this.calcStructures = value);
                     const pbc = document.createElement("label"); const cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = this.pbc; cb.onchange = () => this.pbc = cb.checked; append(pbc, cb, " Periodic boundary conditions"); form.appendChild(pbc);
                 } else {
@@ -266,11 +281,20 @@ export class InteractionsPanel extends BasePanel {
                 if (this.editing) this.emit("edit_interaction", { tag: this.editing, new_tag: this.tag, layer_tag: this.layer,
                     filter, color: this.color, radius_nm: Number(this.radius), radius_unit: "nm", alpha: Number(this.alpha) });
                 else {
-                    const calculation: Record<string, unknown> = { kind: this.kind, selection: this.a ?? "all",
+                    const calculation: Record<string, unknown> = { kind: this.kind, selection: "all",
                         structure_indices: this.source === "calculate" ? indices(this.calcStructures, true) : "current", pbc: this.pbc };
                     if (this.source === "calculate") {
                         calculation.parameters = scientificParameters(this.kind, this.criterion()?.key ?? "", this.scientificDraft());
-                        if (this.b && this.kind !== "disulfide_candidate") calculation.selection_2 = this.b;
+                        if (this.calcAtomScope !== "all") {
+                            if (!this.a?.length) throw new Error("Stage a nonempty selection A for this calculation scope.");
+                            calculation.selection = [...this.a];
+                            if (this.calcAtomScope === "between") {
+                                if (this.kind === "disulfide_candidate") throw new Error("Disulfide candidates support all atoms or within A; choose a supported calculation scope.");
+                                const selectedA = new Set(this.a);
+                                if (!this.b?.length || this.b.some(atom => selectedA.has(atom))) throw new Error("Stage nonempty disjoint selections A and B for this calculation scope.");
+                                calculation.selection_2 = [...this.b];
+                            }
+                        }
                     }
                     this.busy = ++this.creationRequest;
                     this.emit("create_interaction", { request_id: this.busy, source: this.source, analysis_name: this.source === "stored" ? this.stored : this.name,

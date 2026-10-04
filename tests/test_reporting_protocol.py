@@ -12,6 +12,7 @@ document. That needs a token, so it stays out of the suite.
 from __future__ import annotations
 
 import ast
+import json
 import re
 from pathlib import Path, PurePosixPath
 
@@ -38,6 +39,34 @@ DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 PYTHON_IDENTIFIER = re.compile(r"^[A-Za-z_]\w*$")
 GUARD_POLICY_EFFECTIVE_DATE = "2026-09-20"
 PYTEST_ROOTS = (PurePosixPath("tests"), PurePosixPath("devtools/tests"))
+INTERACTIONS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/interactions-calculation.e2e.ts"
+
+
+def validate_guard(root: Path, selector: str) -> list[str]:
+    """Resolve the default Python and one explicitly adopted browser profile."""
+    if selector != INTERACTIONS_BROWSER_GUARD:
+        return validate_pytest_guard(root, selector)
+    js_root = root / "molsysviewer/js"
+    try:
+        entry = (root / selector).read_text()
+        owner = (js_root / "tests/e2e/interactions-subpanel-scenarios.ts").read_text()
+        runner = (js_root / "tests/e2e/e2e-runner.ts").read_text()
+        scripts = json.loads((js_root / "package.json").read_text())["scripts"]
+    except (OSError, ValueError, KeyError) as error:
+        return [f"guard {selector!r} cannot be indexed: {error}"]
+    requirements = (
+        'import { chromium } from "./e2e-browser";' in entry,
+        'import { runInteractionsSuite } from "./interactions-subpanel-scenarios";' in entry,
+        'runInteractionsSuite(chromium, "calculation").catch' in entry,
+        'process.exit(1)' in entry,
+        'export async function runInteractionsSuite(' in owner,
+        '"interactions-calculation"' in runner,
+        'tests/e2e/interactions-calculation.e2e.ts' in scripts.get("build:e2e:all", ""),
+        'build:harness' in scripts.get("test:e2e:core", ""),
+        'build:e2e:all' in scripts.get("test:e2e:core", ""),
+        'e2e-runner.js --lane=core' in scripts.get("test:e2e:core", ""),
+    )
+    return [] if all(requirements) else [f"guard {selector!r} does not resolve to its documented browser lane"]
 
 
 def _is_test_class(node: ast.ClassDef) -> bool:
@@ -353,7 +382,17 @@ def test_newly_resolved_archive_guards_are_addressable(path: Path) -> None:
     fields = _front_matter(path)
     guard = fields.get("guard", "")
     if guard:
-        assert validate_pytest_guard(ROOT, guard) == []
+        assert validate_guard(ROOT, guard) == []
+
+
+def test_browser_guard_resolves_its_build_entrypoint_and_core_lane() -> None:
+    assert validate_guard(ROOT, INTERACTIONS_BROWSER_GUARD) == []
+
+
+def test_browser_guard_rejects_missing_or_unadopted_targets(tmp_path: Path) -> None:
+    assert validate_guard(tmp_path, INTERACTIONS_BROWSER_GUARD)
+    assert validate_guard(ROOT, "molsysviewer/js/tests/e2e/interactions-geometry.e2e.ts")
+    assert validate_guard(ROOT, INTERACTIONS_BROWSER_GUARD + "::checkCalculationAndDisplayScopes")
 
 
 def test_pytest_guard_rejects_a_missing_file(tmp_path: Path) -> None:
