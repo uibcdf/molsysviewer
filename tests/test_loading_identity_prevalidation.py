@@ -34,23 +34,28 @@ def _snapshot(view):
     return {
         "system": view.molsys,
         "coordinates": puw.get_value(view.molsys.structures.coordinates, to_unit="nm").copy()
-        if view.molsys is not None else None,
+        if view.molsys is not None
+        else None,
         "state": view.export_state(),
         "sources": view.load_blocks,
         "messages": deepcopy(view._test_message_log),
         "undo": list(view.history._undo),
         "redo": list(view.history._redo),
         "objects": dict(view._scene_objects),
-        "analyses": {name: (analysis, _analysis_signature(analysis))
-                     for name, analysis in view.molsys.interactions.items()} if view.molsys is not None else {},
+        "analyses": {
+            name: (analysis, _analysis_signature(analysis)) for name, analysis in view.molsys.interactions.items()
+        }
+        if view.molsys is not None
+        else {},
     }
 
 
 def _assert_preserved(view, before):
     assert view.molsys is before["system"]
     if view.molsys is not None:
-        np.testing.assert_array_equal(puw.get_value(view.molsys.structures.coordinates, to_unit="nm"),
-                                      before["coordinates"])
+        np.testing.assert_array_equal(
+            puw.get_value(view.molsys.structures.coordinates, to_unit="nm"), before["coordinates"]
+        )
         assert set(view.molsys.interactions) == set(before["analyses"])
     assert view.export_state() == before["state"]
     assert view.load_blocks == before["sources"]
@@ -135,8 +140,10 @@ def test_real_protein_ligand_load_is_usable_or_refused_before_mutation(tmp_path,
                 view.load(ligand)
             assert view.export_state()["structure"]["n_atoms"] == candidate.get_n_atoms()
             assert len(view.load_blocks) == 2
-            np.testing.assert_array_equal(puw.get_value(view.molsys.structures.coordinates, to_unit="nm"),
-                                          puw.get_value(candidate.structures.coordinates, to_unit="nm"))
+            np.testing.assert_array_equal(
+                puw.get_value(view.molsys.structures.coordinates, to_unit="nm"),
+                puw.get_value(candidate.structures.coordinates, to_unit="nm"),
+            )
             view.regions.add([0, candidate.get_n_atoms() - 1], tag="across_sources")
             assert view.history.undo()
             assert view.history.redo()

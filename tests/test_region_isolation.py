@@ -1,4 +1,5 @@
 """Region isolation is a durable scene operation, including base regions."""
+
 from copy import deepcopy
 
 import pytest
@@ -68,7 +69,9 @@ def test_isolation_survives_rename_copy_extract_and_rebuild():
     assert {"op": "show_only_region", "tag": "source", "restore_only": True} in view._test_message_log
 
 
-@pytest.mark.parametrize("action", ["show_target", "hide_target", "show_other", "delete_target", "show_all", "hide_all"])
+@pytest.mark.parametrize(
+    "action", ["show_target", "hide_target", "show_other", "delete_target", "show_all", "hide_all"]
+)
 def test_visibility_operations_release_isolation(action):
     view = _scene()
     view.regions["base"].show_only()
@@ -136,13 +139,15 @@ def test_empty_dynamic_isolation_survives_restore_and_rebuild_then_reappears(tmp
     view = _view()
     original = view.get_coordinates(selection=[1], structure_indices=[0])
     region = view.regions.add(
-        selection="atom_index==1 within 1 nm without pbc of atom_index==0", tag="near",
+        selection="atom_index==1 within 1 nm without pbc of atom_index==0",
+        tag="near",
     )
     region.mode = "dynamic"
     region.show_only()
     view.partial_coordinates_update(
         msv.pyunitwizard.quantity([[[100.0, 100.0, 100.0]]], "nm"),
-        selection=[1], structure_indices=[0],
+        selection=[1],
+        structure_indices=[0],
     )
     assert region.atom_indices == ()
     state = view.export_state()

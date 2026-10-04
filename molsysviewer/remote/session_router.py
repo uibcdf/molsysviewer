@@ -355,7 +355,8 @@ class SessionRuntimeRouter:
         request: RuntimeEnvelope,
         action: str,
         payload: Mapping[str, Any],
-        *, skip_digestion: bool = False,
+        *,
+        skip_digestion: bool = False,
     ) -> dict[str, Any]:
         """Answer an accepted client request on that client's exact endpoint."""
         if request.endpoint_id not in self._endpoints:

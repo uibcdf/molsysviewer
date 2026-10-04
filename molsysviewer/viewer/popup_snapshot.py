@@ -52,7 +52,8 @@ class PopupSnapshotMixin:
         mode: str,
         endpoint: Any = None,
         include_molecular: bool = True,
-        *, skip_digestion: bool = False,
+        *,
+        skip_digestion: bool = False,
     ) -> list[dict]:
         """Build the canonical popup scene snapshot for ``mode``.
 
@@ -274,10 +275,14 @@ class PopupSnapshotMixin:
         camera captured from the live host, because no endpoint exists to supply
         them when the file is opened later.
         """
-        messages = [msg for msg in self._build_canvas_snapshot(include_molecular=True)
-                    if msg.get("op") != "set_interaction_frame"]
+        messages = [
+            msg
+            for msg in self._build_canvas_snapshot(include_molecular=True)
+            if msg.get("op") != "set_interaction_frame"
+        ]
         messages.extend(
-            msg for msg in self._build_panel_snapshot()
+            msg
+            for msg in self._build_panel_snapshot()
             if msg.get("op") not in _PANEL_OPS_ALREADY_IN_CANVAS and msg.get("op") != "set_interaction_summaries"
         )
         messages.extend(self.interactions._static_messages())

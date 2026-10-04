@@ -63,10 +63,16 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("provider_path", type=Path, nargs="?")
     parser.add_argument("--expected-version", default="0.22.4")
-    parser.add_argument("--installed", action="store_true", help="Require both packages from this interpreter's site-packages")
+    parser.add_argument(
+        "--installed", action="store_true", help="Require both packages from this interpreter's site-packages"
+    )
     parser.add_argument("--expected-viewer-version")
     args = parser.parse_args()
     if args.installed == (args.provider_path is not None):
         parser.error("Use either provider_path or --installed.")
-    run(args.provider_path, args.expected_version, installed=args.installed,
-        expected_viewer_version=args.expected_viewer_version)
+    run(
+        args.provider_path,
+        args.expected_version,
+        installed=args.installed,
+        expected_viewer_version=args.expected_viewer_version,
+    )

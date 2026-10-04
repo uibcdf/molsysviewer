@@ -1,4 +1,5 @@
 """Scene copies and explicit extraction correspondences retain canonical state."""
+
 import molsysmt as msm
 import pytest
 
@@ -8,18 +9,28 @@ import molsysviewer as msv
 @pytest.fixture
 def populated():
     view = msv.new_view(msv.demo["pentalanine"].molsys, structure_indices=[0, 8, 3])
-    analysis = msm.Interactions.from_records([
-        {"structure_index": i, "interaction_type": "disulfide_candidate", "participants": [
-            {"role": "donor", "atom_indices": [0]}, {"role": "acceptor", "atom_indices": [2]}]}
-        for i in range(3)], n_atoms=view.molsys.get_n_atoms(), n_structures=3,
-        evaluated_structure_indices=[0, 1, 2], method="scene_transfer_fixture")
+    analysis = msm.Interactions.from_records(
+        [
+            {
+                "structure_index": i,
+                "interaction_type": "disulfide_candidate",
+                "participants": [{"role": "donor", "atom_indices": [0]}, {"role": "acceptor", "atom_indices": [2]}],
+            }
+            for i in range(3)
+        ],
+        n_atoms=view.molsys.get_n_atoms(),
+        n_structures=3,
+        evaluated_structure_indices=[0, 1, 2],
+        method="scene_transfer_fixture",
+    )
     view.interactions.attach(analysis, name="contacts", assume_aligned=True)
     view.interactions.add("contacts", tag="hb", selection=[0, 2], structure_indices=[2, 0])
     view.regions.add(selection="atom_index == [0, 1, 2]", tag="r")
     view.regions["r"].set_color("red")
     view.shapes.add_sphere(center="[0, 0, 0] nm", radius="0.1 nm", tag="s").hide()
-    view.annotations.add(text="note", atom_indices=[0], tag="a", offset_mode="camera",
-                                    offset=(1.0, 2.0, 3.0), leader_line=True)
+    view.annotations.add(
+        text="note", atom_indices=[0], tag="a", offset_mode="camera", offset=(1.0, 2.0, 3.0), leader_line=True
+    )
     view.measurements.add_distance(selection_a=[0], selection_b=[2], tag="d")
     view.selections.add("sel", atom_indices=[0, 2])
     return view
@@ -80,7 +91,9 @@ def test_extraction_retains_interaction_filter_for_every_repeated_structure(popu
             assert restored_obj.filter["structure_indices"] == [0, 2]
             assert restored.player.index == 0
             assert [restored.interactions._frame(restored_obj, index)["status"] for index in range(3)] == [
-                "evaluated", "excluded", "evaluated",
+                "evaluated",
+                "excluded",
+                "evaluated",
             ]
 
 

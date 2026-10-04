@@ -1,4 +1,5 @@
 """Independent-system load intent, source correspondence and atomic preparation."""
+
 import warnings
 from copy import deepcopy
 
@@ -12,8 +13,12 @@ from molsysviewer import pyunitwizard as puw
 
 @pytest.fixture(scope="module")
 def source_system():
-    return msm.extract(msv.demo["pentalanine"].molsys, selection=list(range(10)),
-                       structure_indices=[0, 8, 3], to_form="molsysmt.MolSys")
+    return msm.extract(
+        msv.demo["pentalanine"].molsys,
+        selection=list(range(10)),
+        structure_indices=[0, 8, 3],
+        to_form="molsysmt.MolSys",
+    )
 
 
 def _single(source_system):
@@ -81,15 +86,23 @@ def test_source_atom_and_reordered_frame_maps_resolve_actual_coordinates(source_
     source = msm.copy(source_system)
     msm.set(source, time=None)
     view = _view()
-    view.load([source, source], multiple=True, selection=[[1, 3, 4], [0, 2]],
-              structure_indices=[[0, 2], [2, 0]], structure_pairing="by_index", labels=[None, "second"])
+    view.load(
+        [source, source],
+        multiple=True,
+        selection=[[1, 3, 4], [0, 2]],
+        structure_indices=[[0, 2], [2, 0]],
+        structure_pairing="by_index",
+        labels=[None, "second"],
+    )
     records = view.load_blocks
     for record in records:
         atoms, frames = _pairs(record["atom_map"]), _pairs(record["structure_map"])
         for source_frame, current_frame in frames:
             for source_atom, current_atom in atoms:
-                np.testing.assert_array_equal(_values(view)[current_frame, current_atom],
-                    puw.get_value(source.structures.coordinates, to_unit="nm")[source_frame, source_atom])
+                np.testing.assert_array_equal(
+                    _values(view)[current_frame, current_atom],
+                    puw.get_value(source.structures.coordinates, to_unit="nm")[source_frame, source_atom],
+                )
     assert records[0]["atom_map"]["runs"] == [[1, 0, 1], [3, 1, 2]]
     assert view.molsys.structures.time is None
     records[0]["atom_map"]["runs"][0][0] = 999
@@ -140,20 +153,38 @@ def test_bad_later_source_preserves_system_scene_sources_and_history(source_syst
     _unchanged(view, original, state, records, messages, undo)
 
 
-@pytest.mark.parametrize("options", [
-    {"labels": ["only one"]}, {"labels": "AB"}, {"labels": ["A", 1]},
-    {"mode": "auto"}, {"mode": "append_structures"}, {"multiple": 1},
-    {"structure_pairing": "automatic"}, {"structure_indices": [[0]]},
-    {"structure_indices": [True]}, {"selection": [True]},
-    {"selection": []}, {"structure_indices": [99]}, {"structure_indices": [-1]},
-    {"selection": [True], "syntax": "MDTraj"}, {"selection": [1.5], "syntax": "MDTraj"},
-])
+@pytest.mark.parametrize(
+    "options",
+    [
+        {"labels": ["only one"]},
+        {"labels": "AB"},
+        {"labels": ["A", 1]},
+        {"mode": "auto"},
+        {"mode": "append_structures"},
+        {"multiple": 1},
+        {"structure_pairing": "automatic"},
+        {"structure_indices": [[0]]},
+        {"structure_indices": [True]},
+        {"selection": [True]},
+        {"selection": []},
+        {"structure_indices": [99]},
+        {"structure_indices": [-1]},
+        {"selection": [True], "syntax": "MDTraj"},
+        {"selection": [1.5], "syntax": "MDTraj"},
+    ],
+)
 @pytest.mark.parametrize("skip", [False, True])
 def test_invalid_batch_arguments_fail_before_scene_mutation(source_system, options, skip):
     source = _single(source_system)
     view = _view()
     view.load(source)
-    before = view.molsys, view.export_state(), view.load_blocks, deepcopy(view._test_message_log), list(view.history._undo)
+    before = (
+        view.molsys,
+        view.export_state(),
+        view.load_blocks,
+        deepcopy(view._test_message_log),
+        list(view.history._undo),
+    )
     kwargs = {"multiple": True, **options}
     with pytest.raises(Exception):
         view.load([source, source], **kwargs, skip_digestion=skip)
@@ -162,18 +193,25 @@ def test_invalid_batch_arguments_fail_before_scene_mutation(source_system, optio
 
 def test_trajectory_pairing_is_explicit_and_times_use_physical_units(source_system):
     left, right = msm.copy(source_system), msm.copy(source_system)
-    msm.set(left, time=puw.quantity([0., 1., 2.], "ns"))
-    msm.set(right, time=puw.quantity([0., 1000., 2000.], "ps"))
+    msm.set(left, time=puw.quantity([0.0, 1.0, 2.0], "ns"))
+    msm.set(right, time=puw.quantity([0.0, 1000.0, 2000.0], "ps"))
     view = _view()
     with pytest.raises(ValueError, match="structure_pairing"):
         view.load([left, right], multiple=True)
     assert view.molsys is None
     view.load([left, right], multiple=True, structure_pairing="by_index")
-    np.testing.assert_allclose(puw.get_value(view.molsys.structures.time, to_unit="ps"),
-                               [0, 1000, 2000], rtol=1e-9, atol=1e-9)
+    np.testing.assert_allclose(
+        puw.get_value(view.molsys.structures.time, to_unit="ps"), [0, 1000, 2000], rtol=1e-9, atol=1e-9
+    )
     mismatched = msm.copy(right)
-    msm.set(mismatched, time=puw.quantity([0., 1001., 2000.], "ps"))
-    before = view.molsys, view.export_state(), view.load_blocks, deepcopy(view._test_message_log), list(view.history._undo)
+    msm.set(mismatched, time=puw.quantity([0.0, 1001.0, 2000.0], "ps"))
+    before = (
+        view.molsys,
+        view.export_state(),
+        view.load_blocks,
+        deepcopy(view._test_message_log),
+        list(view.history._undo),
+    )
     with pytest.raises(ValueError, match="times"):
         view.load(mismatched, structure_pairing="by_index")
     _unchanged(view, *before)
@@ -200,10 +238,21 @@ def test_first_box_policy_including_absence_and_manual_removal(source_system):
 
 
 def _analysis(source):
-    return msm.Interactions.from_records([
-        {"structure_index": 0, "interaction_type": "hbond", "participants": [
-            {"role": role, "atom_indices": [i]} for i, role in enumerate(("donor", "hydrogen", "acceptor"))
-        ]}], n_atoms=source.get_n_atoms(), n_structures=1, evaluated_structure_indices=[0], method="fixture")
+    return msm.Interactions.from_records(
+        [
+            {
+                "structure_index": 0,
+                "interaction_type": "hbond",
+                "participants": [
+                    {"role": role, "atom_indices": [i]} for i, role in enumerate(("donor", "hydrogen", "acceptor"))
+                ],
+            }
+        ],
+        n_atoms=source.get_n_atoms(),
+        n_structures=1,
+        evaluated_structure_indices=[0],
+        method="fixture",
+    )
 
 
 def test_named_incoming_analyses_reject_and_destination_analyses_survive(source_system):
@@ -215,7 +264,13 @@ def test_named_incoming_analyses_reject_and_destination_analyses_survive(source_
     assert "contacts" in view.molsys.interactions
     original_result = view.molsys.interactions["contacts"]
     view.interactions.add("contacts", tag="hb")
-    before = view.molsys, view.export_state(), view.load_blocks, deepcopy(view._test_message_log), list(view.history._undo)
+    before = (
+        view.molsys,
+        view.export_state(),
+        view.load_blocks,
+        deepcopy(view._test_message_log),
+        list(view.history._undo),
+    )
     with pytest.raises(ValueError, match="analysis-merge"):
         view.load([source, with_analysis], multiple=True)
     _unchanged(view, *before)

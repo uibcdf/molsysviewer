@@ -1,4 +1,5 @@
 """Public scene guarantees: lifetimes, detached reads, registry writes and history."""
+
 from copy import deepcopy
 
 import pytest
@@ -19,15 +20,18 @@ def view():
 
 
 class TestHandleLifetime:
-    @pytest.mark.parametrize("domain,tag,mutate", [
-        ("shapes", "s", lambda obj: obj.set_color("blue")),
-        ("annotations", "a", lambda obj: obj.hide()),
-        ("measurements", "d", lambda obj: obj.hide()),
-        ("measurements", "d", lambda obj: obj.focus()),
-        ("regions", "r", lambda obj: obj.hide()),
-        ("layers", "group", lambda obj: obj.hide()),
-        ("selections", "sel", lambda obj: obj.delete()),
-    ])
+    @pytest.mark.parametrize(
+        "domain,tag,mutate",
+        [
+            ("shapes", "s", lambda obj: obj.set_color("blue")),
+            ("annotations", "a", lambda obj: obj.hide()),
+            ("measurements", "d", lambda obj: obj.hide()),
+            ("measurements", "d", lambda obj: obj.focus()),
+            ("regions", "r", lambda obj: obj.hide()),
+            ("layers", "group", lambda obj: obj.hide()),
+            ("selections", "sel", lambda obj: obj.delete()),
+        ],
+    )
     def test_replaced_handles_cannot_mutate_restored_objects(self, view, domain, tag, mutate):
         old = getattr(view, domain).get(tag)
         view.regions["r"].set_color("red")
@@ -53,8 +57,9 @@ class TestHandleLifetime:
 
 
 class TestDetachedReads:
-    @pytest.mark.parametrize("domain,key", [("shapes", "center"), ("annotations", "atom_indices"),
-                                          ("measurements", "picks_atom_indices")])
+    @pytest.mark.parametrize(
+        "domain,key", [("shapes", "center"), ("annotations", "atom_indices"), ("measurements", "picks_atom_indices")]
+    )
     def test_nested_records_are_detached(self, view, domain, key):
         state = view.export_state()
         records = getattr(view, domain).records()
@@ -82,10 +87,18 @@ class TestDetachedReads:
 
 class TestRegistryLifecycle:
     @pytest.mark.parametrize("domain,tag", [("regions", "r"), ("layers", "group")])
-    @pytest.mark.parametrize("operation", [lambda m, t: m.pop(t), lambda m, t: m.__delitem__(t),
-        lambda m, t: m.__setitem__(t, None), lambda m, t: m.update({t: None}),
-        lambda m, t: m.popitem(), lambda m, t: m.setdefault("bad", None),
-        lambda m, t: m.__ior__({t: None})])
+    @pytest.mark.parametrize(
+        "operation",
+        [
+            lambda m, t: m.pop(t),
+            lambda m, t: m.__delitem__(t),
+            lambda m, t: m.__setitem__(t, None),
+            lambda m, t: m.update({t: None}),
+            lambda m, t: m.popitem(),
+            lambda m, t: m.setdefault("bad", None),
+            lambda m, t: m.__ior__({t: None}),
+        ],
+    )
     def test_raw_mutations_are_rejected_without_scene_changes(self, view, domain, tag, operation):
         state = view.export_state()
         with pytest.raises(TypeError, match="scene manager"):
@@ -121,12 +134,21 @@ class TestHistoryCommit:
 
 def test_scene_inventory_includes_interactions_and_layer_counts():
     import molsysmt as msm
+
     view = msv.demo["dialanine"]
-    result = msm.Interactions.from_records([
-        {"structure_index": 0, "interaction_type": "hbond", "participants": [
-            {"role": "donor", "atom_indices": [0]}, {"role": "acceptor", "atom_indices": [2]}]}],
-        n_atoms=view.molsys.get_n_atoms(), n_structures=view.molsys.structures.n_structures,
-        evaluated_structure_indices=[0], method="inspection_fixture")
+    result = msm.Interactions.from_records(
+        [
+            {
+                "structure_index": 0,
+                "interaction_type": "hbond",
+                "participants": [{"role": "donor", "atom_indices": [0]}, {"role": "acceptor", "atom_indices": [2]}],
+            }
+        ],
+        n_atoms=view.molsys.get_n_atoms(),
+        n_structures=view.molsys.structures.n_structures,
+        evaluated_structure_indices=[0],
+        method="inspection_fixture",
+    )
     view.interactions.attach(result, name="contacts", assume_aligned=True)
     view.interactions.add("contacts", tag="hb", layer_tag="contacts")
     summary = view._viewer_info_summary()

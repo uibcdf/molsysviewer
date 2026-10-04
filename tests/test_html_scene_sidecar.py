@@ -47,7 +47,7 @@ def test_noninline_export_updates_its_own_sidecar(tmp_path):
         assert any(message.get("tag") == "new-label" for message in data["messages"])
 
 
-@pytest.mark.parametrize("unrelated", ['{"user_data":true}', '[]', 'not JSON'])
+@pytest.mark.parametrize("unrelated", ['{"user_data":true}', "[]", "not JSON"])
 def test_noninline_export_preserves_unrelated_sidecar_and_existing_html(tmp_path, unrelated):
     with demo["dialanine"] as view:
         output = tmp_path / "view.html"

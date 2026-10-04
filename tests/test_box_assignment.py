@@ -1,4 +1,5 @@
 """Whole-system cell edits preserve indices and invalidate scientific evidence."""
+
 from copy import deepcopy
 
 import molsysmt as msm
@@ -11,16 +12,31 @@ from molsysviewer import pyunitwizard as puw
 
 @pytest.fixture
 def view():
-    system = msm.extract(msv.demo["pentalanine"].molsys, selection=list(range(10)),
-                         structure_indices=[0, 8, 3], to_form="molsysmt.MolSys")
+    system = msm.extract(
+        msv.demo["pentalanine"].molsys,
+        selection=list(range(10)),
+        structure_indices=[0, 8, 3],
+        to_form="molsysmt.MolSys",
+    )
     msm.set(system, box=None, time=None)
     view = msv.new_view(system, debug_js=True)
-    result = msm.Interactions.from_records([
-        {"structure_index": frame, "interaction_type": "hbond", "participants": [
-            {"role": role, "atom_indices": [atom]}
-            for atom, role in enumerate(("donor", "hydrogen", "acceptor"))
-        ]} for frame in range(3)
-    ], n_atoms=10, n_structures=3, evaluated_structure_indices=[0, 1, 2], method="box_edit_fixture")
+    result = msm.Interactions.from_records(
+        [
+            {
+                "structure_index": frame,
+                "interaction_type": "hbond",
+                "participants": [
+                    {"role": role, "atom_indices": [atom]}
+                    for atom, role in enumerate(("donor", "hydrogen", "acceptor"))
+                ],
+            }
+            for frame in range(3)
+        ],
+        n_atoms=10,
+        n_structures=3,
+        evaluated_structure_indices=[0, 1, 2],
+        method="box_edit_fixture",
+    )
     view.interactions.attach(result, name="contacts", assume_aligned=True)
     view.interactions.add("contacts", tag="hb")
     return view
@@ -78,8 +94,12 @@ def test_assignment_and_removal_preserve_coordinates_sources_and_regions(view):
     np.testing.assert_allclose(projection["payload"]["structures"][2]["box"], _box(view)[2] * 10)
     view.set_box(None)
     assert _box(view) is None and view.load_blocks == sources
-    view.load(msm.extract(msv.demo["pentalanine"].molsys, selection=[0, 1], structure_indices=[0, 8, 3],
-                          to_form="molsysmt.MolSys"), structure_pairing="by_index")
+    view.load(
+        msm.extract(
+            msv.demo["pentalanine"].molsys, selection=[0, 1], structure_indices=[0, 8, 3], to_form="molsysmt.MolSys"
+        ),
+        structure_pairing="by_index",
+    )
     assert _box(view) is None  # Later sources do not introduce a cell.
 
 
@@ -90,8 +110,7 @@ def test_subset_invalidates_only_edited_frames_and_refreshes_visible_edges(view)
     view.show_box(color="red", width=0.2, alpha=0.7)
     binding = view._source_state_binding()
     original = view.interactions.get_analysis("contacts")
-    view.set_box(puw.quantity(np.array([np.diag([5, 6, 7]), np.diag([2, 3, 4])]), "nm"),
-                 structure_indices=[2, 0])
+    view.set_box(puw.quantity(np.array([np.diag([5, 6, 7]), np.diag([2, 3, 4])]), "nm"), structure_indices=[2, 0])
     np.testing.assert_array_equal(_box(view)[1], np.eye(3))
     np.testing.assert_array_equal(original.evaluated_structure_indices, [0, 1, 2])
     np.testing.assert_array_equal(view.interactions.get_analysis("contacts").evaluated_structure_indices, [1])
@@ -115,8 +134,12 @@ def test_box_from_independent_source_form_and_h5msm_preserves_axis(view, tmp_pat
     msm.set(source, box=puw.quantity(cells, "nm"))
     path = tmp_path / "cells.h5msm"
     msm.h5msm.write(source, str(path))
-    view.set_box(molecular_system=path, source_structure_indices=[2, 0, 1], structure_indices=[1, 2, 0],
-                 structure_pairing="by_index")
+    view.set_box(
+        molecular_system=path,
+        source_structure_indices=[2, 0, 1],
+        structure_indices=[1, 2, 0],
+        structure_pairing="by_index",
+    )
     np.testing.assert_array_equal(_box(view), cells[[1, 2, 0]])
     # A topology-free Structures form is a declared cell source as well.
     view.set_box(molecular_system=source.structures, source_structure_indices=[2], structure_indices=[0])
@@ -126,8 +149,11 @@ def test_box_from_independent_source_form_and_h5msm_preserves_axis(view, tmp_pat
 
 def test_box_source_selected_times_use_explicit_units(view):
     source = msm.copy(view.molsys)
-    msm.set(source, box=puw.quantity(np.broadcast_to(np.eye(3), (3, 3, 3)).copy(), "nm"),
-            time=puw.quantity([0, 1000, 2000], "fs"))
+    msm.set(
+        source,
+        box=puw.quantity(np.broadcast_to(np.eye(3), (3, 3, 3)).copy(), "nm"),
+        time=puw.quantity([0, 1000, 2000], "fs"),
+    )
     msm.set(view.molsys, time=puw.quantity([0, 1, 2], "ps"))
     view.set_box(molecular_system=source, structure_pairing="by_index")
     before = deepcopy(view.export_state())
@@ -138,24 +164,27 @@ def test_box_source_selected_times_use_explicit_units(view):
 
 
 @pytest.mark.parametrize("skip", [False, True])
-@pytest.mark.parametrize("kwargs", [
-    {"box": np.eye(3)},
-    {"box": puw.quantity(np.eye(3), "ps")},
-    {"box": puw.quantity(np.zeros((3, 3)), "nm")},
-    {"box": puw.quantity(np.diag([-1, 1, 1]), "nm")},
-    {"box": puw.quantity(np.ones((3, 3)), "nm")},
-    {"box": puw.quantity(np.full((3, 3), np.nan), "nm")},
-    {"box": puw.quantity(np.zeros((2, 3)), "nm")},
-    {"box": _cell(), "structure_indices": [True]},
-    {"box": _cell(), "structure_indices": [0.5]},
-    {"box": _cell(), "structure_indices": [3]},
-    {"box": _cell(), "structure_indices": [0, 0]},
-    {"box": _cell(), "structure_indices": []},
-    {"box": _cell(), "structure_indices": [1]},
-    {"box": puw.quantity(np.broadcast_to(np.eye(3), (2, 3, 3)).copy(), "nm")},
-    {"box": _cell(), "source_structure_indices": [0]},
-    {"box": _cell(), "structure_pairing": "by_index"},
-])
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        {"box": np.eye(3)},
+        {"box": puw.quantity(np.eye(3), "ps")},
+        {"box": puw.quantity(np.zeros((3, 3)), "nm")},
+        {"box": puw.quantity(np.diag([-1, 1, 1]), "nm")},
+        {"box": puw.quantity(np.ones((3, 3)), "nm")},
+        {"box": puw.quantity(np.full((3, 3), np.nan), "nm")},
+        {"box": puw.quantity(np.zeros((2, 3)), "nm")},
+        {"box": _cell(), "structure_indices": [True]},
+        {"box": _cell(), "structure_indices": [0.5]},
+        {"box": _cell(), "structure_indices": [3]},
+        {"box": _cell(), "structure_indices": [0, 0]},
+        {"box": _cell(), "structure_indices": []},
+        {"box": _cell(), "structure_indices": [1]},
+        {"box": puw.quantity(np.broadcast_to(np.eye(3), (2, 3, 3)).copy(), "nm")},
+        {"box": _cell(), "source_structure_indices": [0]},
+        {"box": _cell(), "structure_pairing": "by_index"},
+    ],
+)
 def test_rejected_input_keeps_science_scene_sources_and_history(view, kwargs, skip):
     state = deepcopy(view.export_state())
     messages, undo = list(view._test_message_log), list(view.history._undo)
@@ -190,8 +219,9 @@ def test_rejected_source_or_partial_removal_preserves_system(view, case):
 def test_current_box_survives_addition_copy_extraction_and_session(view, tmp_path):
     view.set_box(puw.quantity(np.array([np.diag([2 + i, 3 + i, 4 + i]) for i in range(3)]), "nm"))
     cells = _box(view).copy()
-    source = msm.extract(msv.demo["pentalanine"].molsys, selection=[0, 1], structure_indices=[0, 8, 3],
-                         to_form="molsysmt.MolSys")
+    source = msm.extract(
+        msv.demo["pentalanine"].molsys, selection=[0, 1], structure_indices=[0, 8, 3], to_form="molsysmt.MolSys"
+    )
     msm.set(source, time=None)
     view.load(source, structure_pairing="by_index")
     np.testing.assert_array_equal(_box(view), cells)

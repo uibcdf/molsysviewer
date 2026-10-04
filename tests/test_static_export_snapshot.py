@@ -74,8 +74,9 @@ def test_static_export_preserves_complete_panel_summaries_without_duplicate_scen
         static = view._build_export_messages()
         panel = view.build_popup_scene_snapshot("panel")
         canvas = view.build_popup_scene_snapshot("canvas")
-        summaries = [message for message in panel if message["op"].endswith("_summary")
-                     or message["op"].endswith("_summaries")]
+        summaries = [
+            message for message in panel if message["op"].endswith("_summary") or message["op"].endswith("_summaries")
+        ]
         assert len(summaries) >= 8
         for expected in summaries:
             matching = [message for message in static if message["op"] == expected["op"]]
@@ -84,6 +85,8 @@ def test_static_export_preserves_complete_panel_summaries_without_duplicate_scen
         assert region["tag"] == "saved-region" and region["hidden"] is True
         assert region["representation"] == "spacefill"
         for operation in ("save_selection", "set_active_selection", "set_measurement_settings"):
-            assert [msg for msg in static if msg["op"] == operation] == [msg for msg in canvas if msg["op"] == operation]
+            assert [msg for msg in static if msg["op"] == operation] == [
+                msg for msg in canvas if msg["op"] == operation
+            ]
         assert "set_region_summaries" not in [message["op"] for message in canvas]
         assert view.export_state() == state

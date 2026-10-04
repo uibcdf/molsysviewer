@@ -1,4 +1,5 @@
 """Public composite loading of real demos for Mol* browser qualification."""
+
 import json
 import sys
 import tempfile
@@ -24,10 +25,16 @@ def studio_bridge(sources):
             else:
                 msm.h5msm.write(source, str(path))
             paths.append(str(path))
-        complementary = [str(msm.systems["pentalanine"]["pentalanine.prmtop"]),
-                         str(msm.systems["pentalanine"]["pentalanine.inpcrd"])]
-        trajectory = msm.extract(msv.demo["pentalanine"].molsys, selection=list(range(10)),
-                                 structure_indices=[0, 8, 3], to_form="molsysmt.MolSys")
+        complementary = [
+            str(msm.systems["pentalanine"]["pentalanine.prmtop"]),
+            str(msm.systems["pentalanine"]["pentalanine.inpcrd"]),
+        ]
+        trajectory = msm.extract(
+            msv.demo["pentalanine"].molsys,
+            selection=list(range(10)),
+            structure_indices=[0, 8, 3],
+            to_form="molsysmt.MolSys",
+        )
         msm.set(trajectory, time=None)
         trajectory_path = Path(directory) / "trajectory.h5msm"
         msm.h5msm.write(trajectory, str(trajectory_path))
@@ -35,16 +42,29 @@ def studio_bridge(sources):
         view._ready = True
         sent = []
         view.widget.send = sent.append
-        print(json.dumps({"paths": paths, "complementary": complementary,
-                          "trajectory": str(trajectory_path)}), flush=True)
+        print(
+            json.dumps({"paths": paths, "complementary": complementary, "trajectory": str(trajectory_path)}), flush=True
+        )
         for line in sys.stdin:
             event = json.loads(line)
             view._handle_frontend_event(event)
-            print(json.dumps(_to_plain({"messages": list(sent), "records": view.load_blocks,
-                                       "coordinates": None if view.molsys is None else
-                                       puw.get_value(view.get_coordinates(), to_unit="angstrom").tolist()})), flush=True)
+            print(
+                json.dumps(
+                    _to_plain(
+                        {
+                            "messages": list(sent),
+                            "records": view.load_blocks,
+                            "coordinates": None
+                            if view.molsys is None
+                            else puw.get_value(view.get_coordinates(), to_unit="angstrom").tolist(),
+                        }
+                    )
+                ),
+                flush=True,
+            )
             sent.clear()
         view.close()
+
 
 sources = []
 for index in range(4):
@@ -75,8 +95,17 @@ with tempfile.TemporaryDirectory() as directory:
     reopened = restored._build_embedded_runtime_snapshot()
     extracted = restored.extract(selection=list(range(22, 44)) + list(range(66, 88)))
     subset = extracted._build_embedded_runtime_snapshot()
-print(json.dumps({"batch": initial, "progressive": stages, "hidden": hidden, "reopened": reopened,
-                 "extracted": subset,
-                 "extracted_coordinates": puw.get_value(extracted.get_coordinates(), to_unit="angstrom").tolist(),
-                 "records": batch.load_blocks,
-                 "coordinates": puw.get_value(batch.get_coordinates(), to_unit="angstrom").tolist()}))
+print(
+    json.dumps(
+        {
+            "batch": initial,
+            "progressive": stages,
+            "hidden": hidden,
+            "reopened": reopened,
+            "extracted": subset,
+            "extracted_coordinates": puw.get_value(extracted.get_coordinates(), to_unit="angstrom").tolist(),
+            "records": batch.load_blocks,
+            "coordinates": puw.get_value(batch.get_coordinates(), to_unit="angstrom").tolist(),
+        }
+    )
+)

@@ -122,12 +122,8 @@ def test_annotation_manager_rejects_duplicate_tags():
 
 def test_annotation_manager_supports_explicit_shared_layer_tag():
     view = demo["dialanine"]
-    first = view.annotations.add(
-        text="Group 0", selection="group_index==0", tag="notes-a", layer_tag="analysis"
-    )
-    second = view.annotations.add(
-        text="Group 1", selection="group_index==1", tag="notes-b", layer_tag="analysis"
-    )
+    first = view.annotations.add(text="Group 0", selection="group_index==0", tag="notes-a", layer_tag="analysis")
+    second = view.annotations.add(text="Group 1", selection="group_index==1", tag="notes-b", layer_tag="analysis")
 
     assert first.layer_tag == "analysis"
     assert second.layer_tag == "analysis"

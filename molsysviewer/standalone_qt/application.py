@@ -247,7 +247,6 @@ def create_standalone_qt0_window(
     app_argv: Sequence[str] | None = None,
     width: int = 1440,
     height: int = 960,
-
     skip_digestion: bool = False,
 ) -> dict[str, Any]:
     qt = _get_helper("_import_qt")()
@@ -401,7 +400,6 @@ def launch_standalone_qt0(
     width: int = 1440,
     height: int = 960,
     exec_app: bool = True,
-
     skip_digestion: bool = False,
 ) -> dict[str, Any]:
     m = sys.modules.get("molsysviewer.standalone_qt")

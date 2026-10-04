@@ -167,7 +167,9 @@ class AnnotationsManager:
             if "position" in options:
                 # Match add()'s declared legacy bare unit; get_coordinates()
                 # provides a physical quantity in the configured standard unit.
-                res["position"] = [float(value) / 10 for value in options["position"]] if options["position"] is not None else None
+                res["position"] = (
+                    [float(value) / 10 for value in options["position"]] if options["position"] is not None else None
+                )
             if "offset_mode" in options:
                 res["offset_mode"] = options["offset_mode"]
             if "offset" in options:
@@ -529,7 +531,9 @@ class AnnotationsManager:
         """
         layer = self._require_annotation_layer(tag)
         resolved_position = annotation_vector(position, "position", physical=True) if position is not None else None
-        resolved_atom_indices = [] if position is not None else self._resolve_anchor_atom_indices(selection, atom_indices=atom_indices)
+        resolved_atom_indices = (
+            [] if position is not None else self._resolve_anchor_atom_indices(selection, atom_indices=atom_indices)
+        )
         record = self.info(tag, skip_digestion=True)
         if not isinstance(record, dict):
             raise ValueError(f"No annotation record found for tag {tag!r}.")

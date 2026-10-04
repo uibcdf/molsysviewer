@@ -78,7 +78,12 @@ def extract(
         skip_digestion=True,
     )
     from ...interactions import _indices
-    frames = None if structure_indices is None or isinstance(structure_indices, str) and structure_indices == "all" else _indices(structure_indices, view._molsys.structures.n_structures, "structure_indices", unique=False)
+
+    frames = (
+        None
+        if structure_indices is None or isinstance(structure_indices, str) and structure_indices == "all"
+        else _indices(structure_indices, view._molsys.structures.n_structures, "structure_indices", unique=False)
+    )
     if frames is None:
         frames = range(view._molsys.structures.n_structures)
     result.import_state(_transfer_state(view, result, atom_index_map, list(frames)))

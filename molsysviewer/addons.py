@@ -111,7 +111,9 @@ class AddonPanelWidget(anywidget.AnyWidget):
 
     @signal()
     @digest()
-    def handle_action(self, view: Any, action_id: str, payload: dict[str, Any], *, skip_digestion: bool = False) -> None:
+    def handle_action(
+        self, view: Any, action_id: str, payload: dict[str, Any], *, skip_digestion: bool = False
+    ) -> None:
         """Override to handle panel actions sent from JS."""
 
     @signal()
@@ -1408,7 +1410,9 @@ class ViewAddonsManager(_AddonAggregationMixin):
 
     @signal()
     @digest()
-    def resolve_panel_widget(self, addon_name: str, panel_id: str, *, skip_digestion: bool = False) -> AddonPanelWidget | None:
+    def resolve_panel_widget(
+        self, addon_name: str, panel_id: str, *, skip_digestion: bool = False
+    ) -> AddonPanelWidget | None:
         """Instantiate and return the AddonPanelWidget for a given panel, or None.
 
         Returns ``None`` when the add-on is not enabled, the panel does not

@@ -44,7 +44,8 @@ class LoadMixin:
             if record.get("region_uid"):
                 region = self._region_by_uid(record["region_uid"])
                 record["region_tag"] = (
-                    region.tag if region is not None and region.provenance.get("source_id") == record.get("source_id")
+                    region.tag
+                    if region is not None and region.provenance.get("source_id") == record.get("source_id")
                     else None
                 )
         return records
@@ -88,11 +89,16 @@ class LoadMixin:
         if atom_map is not None:
             from numbers import Integral
 
-            if (not isinstance(atom_map, Mapping)
-                    or any(isinstance(i, bool) or not isinstance(i, Integral) or i < 0
-                           for pair in atom_map.items() for i in pair)
-                    or any(old >= prior or new >= count for old, new in atom_map.items())
-                    or len(set(atom_map.values())) != len(atom_map)):
+            if (
+                not isinstance(atom_map, Mapping)
+                or any(
+                    isinstance(i, bool) or not isinstance(i, Integral) or i < 0
+                    for pair in atom_map.items()
+                    for i in pair
+                )
+                or any(old >= prior or new >= count for old, new in atom_map.items())
+                or len(set(atom_map.values())) != len(atom_map)
+            ):
                 raise ValueError("atom_index_map must be an injective correspondence within the old/new atom domains.")
         if policy == "collapse" or not records or (atom_map is None and prior != count and policy != "append"):
             return [_load_record(new_molsys, label=label)] if count else []
@@ -104,8 +110,12 @@ class LoadMixin:
                 record["structure_map"] = {"encoding": "runs", "runs": [], "status": "unverified"}
         missing = _uncovered_atom_runs(records, count)
         if missing:
-            record = _load_record(new_molsys, index=len(records), label=label,
-                                  origin={"form": "molsysmt.MolSys", "reference": None, "kind": "unmapped_edit"})
+            record = _load_record(
+                new_molsys,
+                index=len(records),
+                label=label,
+                origin={"form": "molsysmt.MolSys", "reference": None, "kind": "unmapped_edit"},
+            )
             _record_atom_runs(record, missing)
             records.append(record)
         return records
@@ -280,7 +290,8 @@ class LoadMixin:
                 raise ValueError("multiple=True requires a nonempty list/tuple of sources.")
             sources = list(molecular_system)
             if labels is not None and (
-                not isinstance(labels, (list, tuple)) or len(labels) != len(sources)
+                not isinstance(labels, (list, tuple))
+                or len(labels) != len(sources)
                 or any(value is not None and not isinstance(value, str) for value in labels)
             ):
                 raise ValueError("labels must contain one string/None per source.")
@@ -304,9 +315,13 @@ class LoadMixin:
             if self.trajectory_plot._cards():
                 raise ValueError("Clear trajectory plot cards before appending structures.")
             candidate = msm.append_structures(
-                self._molsys, molecular_system, selection=selection,
-                structure_indices=structure_indices, syntax=syntax,
-                in_place=False, skip_digestion=True,
+                self._molsys,
+                molecular_system,
+                selection=selection,
+                structure_indices=structure_indices,
+                syntax=syntax,
+                in_place=False,
+                skip_digestion=True,
             )
             records = self.load_blocks
             self.apply_system_edit(candidate)
@@ -323,8 +338,13 @@ class LoadMixin:
         prepared_sources = []
         for source, source_label, atoms, structures in zip(sources, source_labels, selections, frames):
             prepared, record = _prepare_source(
-                source, selection=atoms, structure_indices=structures, syntax=syntax,
-                label=source_label, index=len(records), offset=offset,
+                source,
+                selection=atoms,
+                structure_indices=structures,
+                syntax=syntax,
+                label=source_label,
+                index=len(records),
+                offset=offset,
             )
             prepared_sources.append(prepared)
             records.append(record)
@@ -337,8 +357,12 @@ class LoadMixin:
             for region in self._regions.values():
                 provenance = region.provenance
                 if provenance.get("kind") == "query" and not provenance.get("broken"):
-                    msm.select(candidate, selection=provenance.get("expression", "all"),
-                               syntax=provenance.get("syntax", "MolSysMT"), skip_digestion=True)
+                    msm.select(
+                        candidate,
+                        selection=provenance.get("expression", "all"),
+                        syntax=provenance.get("syntax", "MolSysMT"),
+                        skip_digestion=True,
+                    )
             self.apply_system_edit(candidate, label=label, skip_digestion=True)
         else:
             # A replacement clears plots/overlays only after source preparation.
@@ -346,8 +370,17 @@ class LoadMixin:
                 self.reset_viewer(skip_digestion=True)
             else:
                 self.trajectory_plot._check_structure_axis(candidate.structures.n_structures)
-            prepared = prepared_sources[0] if len(sources) == 1 else (
-                candidate, candidate, "all", "all", None, None,
+            prepared = (
+                prepared_sources[0]
+                if len(sources) == 1
+                else (
+                    candidate,
+                    candidate,
+                    "all",
+                    "all",
+                    None,
+                    None,
+                )
             )
             _commit_molsysmt_load(self, prepared, label=label)
             self._last_label = label

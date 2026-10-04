@@ -178,16 +178,37 @@ class Whole:
             raise as_our_argument_error(exc, "molsysviewer.whole.select") from exc
 
     @signal(tags=["query", "whole"])
-    @digest(digestion_source="molsysviewer._private.argdigest.molecular_attribute_flags",
-            digestion_style="registry", strictness="error")
-    def get(self, element="system", selection="all", structure_indices="all", mask=None,
-            syntax="MolSysMT", get_missing_bonds=True, output_type="values", skip_digestion=False, **kwargs):
+    @digest(
+        digestion_source="molsysviewer._private.argdigest.molecular_attribute_flags",
+        digestion_style="registry",
+        strictness="error",
+    )
+    def get(
+        self,
+        element="system",
+        selection="all",
+        structure_indices="all",
+        mask=None,
+        syntax="MolSysMT",
+        get_missing_bonds=True,
+        output_type="values",
+        skip_digestion=False,
+        **kwargs,
+    ):
         """Retrieve molecular attributes from the whole system."""
         try:
-            return msm.get(self._view._molsys, element=element, selection=selection,
-                           structure_indices=structure_indices, mask=mask, syntax=syntax,
-                           get_missing_bonds=get_missing_bonds, output_type=output_type,
-                           skip_digestion=skip_digestion, **kwargs)
+            return msm.get(
+                self._view._molsys,
+                element=element,
+                selection=selection,
+                structure_indices=structure_indices,
+                mask=mask,
+                syntax=syntax,
+                get_missing_bonds=get_missing_bonds,
+                output_type=output_type,
+                skip_digestion=skip_digestion,
+                **kwargs,
+            )
         except Exception as exc:
             raise as_our_argument_error(exc, "molsysviewer.whole.get") from exc
 

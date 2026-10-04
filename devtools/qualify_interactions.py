@@ -170,7 +170,9 @@ def qualify_trajectory(directory):
         view.interactions.add("buch", tag="real-hb")
         expected, participants, _ = observed_geometry(view, "buch", "real-hb")
         query_checks(view, "buch", participants)
-        empty = view.interactions.hbonds.get_buch_hbonds(name="empty", structure_indices=[1], distance_threshold="0.01 nm")
+        empty = view.interactions.hbonds.get_buch_hbonds(
+            name="empty", structure_indices=[1], distance_threshold="0.01 nm"
+        )
         assert empty.n_interactions == 0
         np.testing.assert_array_equal(empty.evaluated_structure_indices, [1])
         view.interactions.disulfides.get_disulfide_candidates(name="no-cysteines", structure_indices=[3, 0])
@@ -191,7 +193,9 @@ def qualify_trajectory(directory):
 
 def periodic_view():
     view = trajectory_view()
-    view.interactions.hbonds.get_buch_hbonds(name="before", pbc=True, structure_indices="all", distance_threshold="4 angstroms")
+    view.interactions.hbonds.get_buch_hbonds(
+        name="before", pbc=True, structure_indices="all", distance_threshold="4 angstroms"
+    )
     before = view.interactions.get_analysis("before")
     # Reimage one entire residue of the real trajectory, preserving its internal geometry.
     atoms = msm.select(view.molsys, selection="group_index == 1")

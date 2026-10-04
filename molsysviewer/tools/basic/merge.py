@@ -31,6 +31,7 @@ def _import_view_state(result: MolSysView, source_views: list[MolSysView]) -> No
     from copy import deepcopy
 
     from ._scene_transfer import _copy_auxiliary, _transfer_state
+
     combined = None
     offset = 0
     used = {}
@@ -40,7 +41,16 @@ def _import_view_state(result: MolSysView, source_views: list[MolSysView]) -> No
         state = _transfer_state(source, result, {i: i + offset for i in range(count)}, merge=True)
         state.setdefault("trajectory_plots", [])
         mappings = {}
-        for domain in ("regions", "layers", "shapes", "annotations", "measurements", "selections", "sections", "trajectory_plots"):
+        for domain in (
+            "regions",
+            "layers",
+            "shapes",
+            "annotations",
+            "measurements",
+            "selections",
+            "sections",
+            "trajectory_plots",
+        ):
             seen = used.setdefault(domain, set())
             mappings[domain] = {r["tag"]: _unique_tag(r["tag"], seen, source_index) for r in state[domain]}
         # Automatic layer tags follow the renamed object that owns them.
@@ -133,7 +143,9 @@ def merge(
         _validate_renderable(view._molsys)
         _validate_pairing(source_views[0]._molsys, view._molsys, "by_index")
     if any(getattr(view._molsys, "interactions", {}) for view in source_views):
-        raise ValueError("Merging named interaction analyses requires a scientific embedding contract; use copy or extract.")
+        raise ValueError(
+            "Merging named interaction analyses requires a scientific embedding contract; use copy or extract."
+        )
     merged = msm.merge(
         [view._molsys for view in source_views],  # noqa: SLF001
         keep_ids=keep_ids,

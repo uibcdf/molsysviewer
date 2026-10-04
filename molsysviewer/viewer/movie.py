@@ -108,7 +108,8 @@ class MovieManager:
         tag: str,
         visible: bool,
         at_time_ms: float,
-        *, skip_digestion: bool = False,
+        *,
+        skip_digestion: bool = False,
     ) -> None:
         """Insert or update a visibility step for a layer/region tag.
 

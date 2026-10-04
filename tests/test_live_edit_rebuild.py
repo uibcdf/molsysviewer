@@ -344,13 +344,13 @@ def test_load_first_block_does_not_create_automatic_regions():
     assert len(view.load_blocks) == 1
     record = view.load_blocks[0]
     assert {key: record[key] for key in ("index", "label", "n_atoms", "start", "stop", "region_tag")} == {
-            "index": 0,
-            "label": "first",
-            "n_atoms": 22,
-            "start": 0,
-            "stop": 22,
-            "region_tag": None,
-        }
+        "index": 0,
+        "label": "first",
+        "n_atoms": 22,
+        "start": 0,
+        "stop": 22,
+        "region_tag": None,
+    }
     assert record["source_id"]
     assert record["atom_map"] == {"encoding": "runs", "runs": [[0, 0, 22]]}
     assert record["structure_map"] == {"encoding": "runs", "runs": [[0, 0, 1]]}

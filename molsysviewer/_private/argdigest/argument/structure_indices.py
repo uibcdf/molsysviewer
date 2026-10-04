@@ -45,8 +45,9 @@ def digest_structure_indices(structure_indices, caller=None):
             # Validate before the common digester can coerce bool indices to int.
             from molsysviewer.interactions import _indices
 
-            return _indices(structure_indices, np.iinfo(np.int64).max, "structure_indices",
-                            unique=not caller.endswith(".load"))
+            return _indices(
+                structure_indices, np.iinfo(np.int64).max, "structure_indices", unique=not caller.endswith(".load")
+            )
 
     if caller and caller.endswith((".partial_coordinates_update", ".set_coordinates", ".set_box")):
         if structure_indices is not None and not is_all(structure_indices):

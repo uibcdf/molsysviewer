@@ -90,13 +90,13 @@ def _prepare_molsysmt_load(
             budget_bytes=scale_budget.DEFAULT_COORDINATE_BUDGET_BYTES,
         )
 
-    return (converted_molsys, molecular_system, selection, structure_indices,
-            atom_index_mapper, structure_index_mapper)
+    return (converted_molsys, molecular_system, selection, structure_indices, atom_index_mapper, structure_index_mapper)
 
 
 def _commit_molsysmt_load(view, prepared, *, label=None):
-    (converted_molsys, molecular_system, selection, structure_indices,
-     atom_index_mapper, structure_index_mapper) = prepared
+    (converted_molsys, molecular_system, selection, structure_indices, atom_index_mapper, structure_index_mapper) = (
+        prepared
+    )
     view.molecular_system = molecular_system
     view.selection = selection
     view.structure_indices = structure_indices
@@ -125,7 +125,10 @@ def load_from_molsysmt(
     """Convert a MolSysMT-compatible input and register a lazy load projection."""
     view = ensure_view(view)
     prepared = _prepare_molsysmt_load(
-        molecular_system, selection=selection, structure_indices=structure_indices, syntax=syntax,
+        molecular_system,
+        selection=selection,
+        structure_indices=structure_indices,
+        syntax=syntax,
     )
     view.trajectory_plot._check_structure_axis(prepared[0].structures.n_structures)
     return _commit_molsysmt_load(view, prepared, label=label)

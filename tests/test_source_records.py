@@ -1,4 +1,5 @@
 """Scientific source correspondence survives scene and system transfers."""
+
 import json
 import zipfile
 from copy import deepcopy
@@ -13,8 +14,12 @@ from molsysviewer import pyunitwizard as puw
 
 @pytest.fixture(scope="module")
 def source():
-    result = msm.extract(msv.demo["pentalanine"].molsys, selection=list(range(10)),
-                         structure_indices=[0, 8, 3], to_form="molsysmt.MolSys")
+    result = msm.extract(
+        msv.demo["pentalanine"].molsys,
+        selection=list(range(10)),
+        structure_indices=[0, 8, 3],
+        to_form="molsysmt.MolSys",
+    )
     msm.set(result, time=None)
     return result
 
@@ -22,9 +27,14 @@ def source():
 def _view(source):
     view = msv.MolSysView(debug_js=True)
     view.widget.send = lambda _message: None
-    view.load([source, source], multiple=True, labels=["A", "B"],
-              selection=[[1, 3, 4], [0, 2]], structure_indices=[[0, 2, 1], [2, 0, 1]],
-              structure_pairing="by_index")
+    view.load(
+        [source, source],
+        multiple=True,
+        labels=["A", "B"],
+        selection=[[1, 3, 4], [0, 2]],
+        structure_indices=[[0, 2, 1], [2, 0, 1]],
+        structure_pairing="by_index",
+    )
     return view
 
 
@@ -123,8 +133,7 @@ def test_frame_edit_invalidates_unknown_map_and_explicit_append_keeps_known_pref
     view = _view(source)
     edited = msm.extract(view.molsys, structure_indices=[2, 0], to_form="molsysmt.MolSys")
     view.apply_system_edit(edited)
-    assert all(r["structure_map"] == {"encoding": "runs", "runs": [], "status": "unverified"}
-               for r in view.load_blocks)
+    assert all(r["structure_map"] == {"encoding": "runs", "runs": [], "status": "unverified"} for r in view.load_blocks)
     view = _view(source)
     original = view.load_blocks
     view.load(msm.copy(view.molsys), mode="append_structures")
@@ -175,7 +184,7 @@ def test_invalid_source_state_is_refused_before_scene_mutation(source, damage):
 def test_source_maps_do_not_replay_on_another_geometry_or_without_the_extension(source):
     view = _view(source)
     target = _view(source)
-    target.partial_coordinates_update(puw.quantity([[9., 8., 7.]], "nm"), selection=[0], structure_indices=[0])
+    target.partial_coordinates_update(puw.quantity([[9.0, 8.0, 7.0]], "nm"), selection=[0], structure_indices=[0])
     own_ids = [r["source_id"] for r in target.load_blocks]
     assert target.export_state()["structure"] == view.export_state()["structure"]
     target.import_state(view.export_state())

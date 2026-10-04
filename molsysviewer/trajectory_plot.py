@@ -70,7 +70,9 @@ class TrajectoryPlotManager:
                 raise ArgumentError("series", value=series)
             structures = self._view.player.n_structures
             if self._view.molsys is not None and length != structures:
-                raise ArgumentError("series", value=series, message="A trajectory plot requires one value per loaded structure.")
+                raise ArgumentError(
+                    "series", value=series, message="A trajectory plot requires one value per loaded structure."
+                )
             if "x" in card:
                 if not _is_sequence(card["x"]) or len(card["x"]) != length:
                     raise ArgumentError("x", value=card["x"])

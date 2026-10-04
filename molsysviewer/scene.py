@@ -112,7 +112,8 @@ class SceneManager:
         ambient: float | None = None,
         diffuse: float | None = None,
         specular: float | None = None,
-        *, skip_digestion: bool = False,
+        *,
+        skip_digestion: bool = False,
     ) -> None:
         """Adjust scene lighting components.
 
@@ -164,7 +165,8 @@ class SceneManager:
         far: float | None = None,
         min_near: float | None = None,
         thickness: float | None = None,
-        *, skip_digestion: bool = False,
+        *,
+        skip_digestion: bool = False,
     ) -> None:
         """Adjust camera Z-clipping planes.
 

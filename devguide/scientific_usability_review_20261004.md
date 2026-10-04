@@ -65,3 +65,26 @@ Mixed-source Python/session qualification is not a new mixed-source browser or
 full hosted-core certification. Compatible published dependencies, exact artifact
 and hosted gates, final public documentation and broader user observations
 remain before 1.0. No tag is created.
+
+## Hosted integration follow-up
+
+The reviewed source was committed and pushed without a skip marker at
+`c598d2f2bde13215c367fd8f4f79fd0fff20fc3e`; #158/#159 are closed and 45
+queue documents agreed with the board. Ruff lint and Conda governance passed.
+The policy run [37191306848](https://github.com/uibcdf/molsysviewer/actions/runs/37191306848)
+failed only its formatting step: 88 existing Python files needed the pinned
+Ruff 0.16.5 formatting. They are now automatically formatted; ASTs before and
+after are identical for every changed file, and formatting/lint checks pass.
+The original functional regression remains applicable to these cosmetic changes;
+its source identity and hashes are retained rather than rewritten. The formatting
+receipt is `format_policy_followup_20261004.json`.
+
+The notebook run [37191306553](https://github.com/uibcdf/molsysviewer/actions/runs/37191306553)
+executed 24 notebooks and failed two: the Interactions workbench requires a
+compatible published provider (#114/#140), and the Whole get notebook still
+advertises query strings for the index-only mask argument. The latter is now
+tracked in [#160](pending_bugs/documented_whole_mask_queries.md) for the agreed
+final documentation block; public notebook sources are not changed here.
+These hosted failures remain failures, separate from the passing local scientific
+and browser observations. Other hosted lanes were still running at inspection;
+no full hosted-head certification is claimed.

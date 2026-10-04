@@ -125,7 +125,8 @@ class FigureSpec:
     def build_variants(
         self,
         variants: dict[str, "FigureSpec | dict[str, Any]"],
-        *, skip_digestion: bool = False,
+        *,
+        skip_digestion: bool = False,
     ) -> dict[str, "FigureSpec"]:
         """Expand a mapping of named figure variants from this base recipe."""
         if not isinstance(variants, dict) or len(variants) == 0:
@@ -149,7 +150,9 @@ class FigureSpec:
 
     @signal()
     @digest()
-    def build_publication_variants(self, *, include_current: bool = False, skip_digestion: bool = False) -> dict[str, "FigureSpec"]:
+    def build_publication_variants(
+        self, *, include_current: bool = False, skip_digestion: bool = False
+    ) -> dict[str, "FigureSpec"]:
         """Return the standard small publication-oriented variant set."""
         variants: dict[str, FigureSpec | dict[str, Any]] = {
             "light": {"background": "white", "preset": "publication-light"},

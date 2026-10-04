@@ -249,9 +249,15 @@ CATALOG = {
             "level": "ERROR",
         }
         for reason in (
-            "backend_required", "system_required", "alignment_required",
-            "name_conflict", "invalid_query", "pbc_box_required",
-            "stale_calculation", "referenced_analysis", "session_mismatch",
+            "backend_required",
+            "system_required",
+            "alignment_required",
+            "name_conflict",
+            "invalid_query",
+            "pbc_box_required",
+            "stale_calculation",
+            "referenced_analysis",
+            "session_mismatch",
         )
     },
 }
@@ -284,12 +290,10 @@ MESSAGES = {
         "or between with two disjoint selections. exclusive=True applies only to between."
     ),
     "interaction_pbc_box_required": (
-        "Periodic interaction calculation requires finite, nonsingular boxes "
-        "for every requested structure."
+        "Periodic interaction calculation requires finite, nonsingular boxes for every requested structure."
     ),
     "interaction_stale_calculation": (
-        "The molecular system changed during interaction calculation/import. "
-        "The result was not attached."
+        "The molecular system changed during interaction calculation/import. The result was not attached."
     ),
     "interaction_referenced_analysis": (
         "Interaction analysis {name!r} is still referenced by scene objects; "
@@ -373,8 +377,7 @@ MESSAGES = {
         "exceeding its {budget_ms:.2f} ms budget. It was switched to static mode."
     ),
     "index_map_degraded": (
-        "The atom index map could not be applied reliably. "
-        "Check the loaded atom selection and its index mapping."
+        "The atom index map could not be applied reliably. Check the loaded atom selection and its index mapping."
     ),
     "suppressed_exception": "Recovered from {exception_type} in {location}: {reason}.",
     "webgl_context_lost": "The WebGL context was lost. Wait for the browser to restore it.",

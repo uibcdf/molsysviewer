@@ -1,4 +1,5 @@
 """Whole-only visibility constraints survive the existing scene lifecycle."""
+
 from __future__ import annotations
 
 from molsysviewer.demo import demo
@@ -13,8 +14,11 @@ def _view():
 
 
 def _visibility_messages(view, tag):
-    return [msg["op"] for msg in view._test_message_log
-            if msg.get("tag") == tag and msg.get("op") in {"hide_region", "show_region"}]
+    return [
+        msg["op"]
+        for msg in view._test_message_log
+        if msg.get("tag") == tag and msg.get("op") in {"hide_region", "show_region"}
+    ]
 
 
 def test_base_visibility_is_independent_of_whole_and_other_regions():
@@ -77,7 +81,8 @@ def test_layer_and_studio_toggle_delegate_to_base_region_visibility():
     view.layers["source"].show()
     assert base.visible is True
     assert _visibility_messages(view, "base")[-1] == "show_region"
-    view._handle_frontend_event({"event": "interaction_context_action",
-                                 "action": "toggle_region_visibility", "tag": "base"})
+    view._handle_frontend_event(
+        {"event": "interaction_context_action", "action": "toggle_region_visibility", "tag": "base"}
+    )
     assert base.visible is False
     assert _visibility_messages(view, "base")[-1] == "hide_region"

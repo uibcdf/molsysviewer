@@ -17,14 +17,26 @@ import molsysviewer as msv
 def view():
     view = msv.new_view(msv.demo["pentalanine"].molsys, structure_indices=[8, 3, 0])
     records = [
-        {"structure_index": frame, "interaction_type": "pi_pi", "participants": [
-            {"role": "ring_a", "atom_indices": [0, 1, 2]},
-            {"role": "ring_b", "atom_indices": [3, 4, 5]},
-        ], "measurements": {"distance": distance}, "evidence": "synthetic"}
+        {
+            "structure_index": frame,
+            "interaction_type": "pi_pi",
+            "participants": [
+                {"role": "ring_a", "atom_indices": [0, 1, 2]},
+                {"role": "ring_b", "atom_indices": [3, 4, 5]},
+            ],
+            "measurements": {"distance": distance},
+            "evidence": "synthetic",
+        }
         for frame, distance in [(0, 0.4), (0, 0.41), (2, 0.42)]
     ]
-    result = msm.Interactions.from_records(records, n_atoms=view.molsys.get_n_atoms(), n_structures=3,
-        evaluated_structure_indices=[0, 1, 2], method="public_completion", measure_units={"distance": "nm"})
+    result = msm.Interactions.from_records(
+        records,
+        n_atoms=view.molsys.get_n_atoms(),
+        n_structures=3,
+        evaluated_structure_indices=[0, 1, 2],
+        method="public_completion",
+        measure_units={"distance": "nm"},
+    )
     view.interactions.attach(result, name="rings", assume_aligned=True)
     view.interactions.attach(result, name="other", assume_aligned=True)
     view.interactions.add("rings", tag="rings")
@@ -33,7 +45,11 @@ def view():
 
 def identity(view, offset=0):
     page = view.interactions.inspect("rings", offset=offset, limit=1)
-    return dict(structure_index=page["frame"], analysis_revision=page["analysis_revision"], query_revision=page["query_revision"])
+    return dict(
+        structure_index=page["frame"],
+        analysis_revision=page["analysis_revision"],
+        query_revision=page["query_revision"],
+    )
 
 
 def test_named_h5msm_save_reload_preserves_sparse_parallel_and_empty_frames(view, tmp_path):
@@ -46,7 +62,9 @@ def test_named_h5msm_save_reload_preserves_sparse_parallel_and_empty_frames(view
     restored.interactions.load(path, analysis_name="rings", assume_aligned=True)
     original = view.interactions.get_analysis("rings")
     saved = restored.interactions.get_analysis("rings")
-    assert json.dumps(_to_plain(saved.to_dict()), sort_keys=True) == json.dumps(_to_plain(original.to_dict()), sort_keys=True)
+    assert json.dumps(_to_plain(saved.to_dict()), sort_keys=True) == json.dumps(
+        _to_plain(original.to_dict()), sort_keys=True
+    )
     assert saved.query(structure_indices=[1]).n_interactions == 0
     assert saved.evaluated_structure_indices.tolist() == [0, 1, 2]
     view.interactions.save(path, overwrite=True)
@@ -79,8 +97,14 @@ def test_select_and_focus_compound_parallel_observations(view):
     view.interactions.focus_observation("rings", 1, **key)
     page = view.interactions.inspect("rings", offset=1, limit=1)
     assert page["observations"][0]["occurrence_index"] == 1
-    event = dict(action="select_interaction_observation", tag="rings", occurrence_index=1,
-        frame=key["structure_index"], analysis_revision=key["analysis_revision"], query_revision=key["query_revision"])
+    event = dict(
+        action="select_interaction_observation",
+        tag="rings",
+        occurrence_index=1,
+        frame=key["structure_index"],
+        analysis_revision=key["analysis_revision"],
+        query_revision=key["query_revision"],
+    )
     view.active_selection.clear()
     dispatch_panel_action(view, event)
     assert view.active_selection.atom_indices == atoms
@@ -112,12 +136,25 @@ def test_pages_and_actions_on_nonconsecutive_visible_structure(view):
 def test_periodic_images_and_units_round_trip_through_native_save(view, tmp_path):
     box = np.array([[2, 0, 0], [0.5, 2, 0], [0, 0, 2]], dtype=float)
     msm.set(view.molsys, box=puw.quantity(np.repeat(box[None], 3, axis=0), "nm"))
-    result = msm.Interactions.from_records([
-        {"structure_index": 0, "interaction_type": "hbond", "participants": [
-            {"role": role, "atom_indices": [index]} for index, role in enumerate(("donor", "hydrogen", "acceptor"))
-        ], "images": [[1, 0, 0], [1, 1, 0], [2, 1, 0]], "measurements": {"distance": 0.2}}
-    ], n_atoms=view.molsys.get_n_atoms(), n_structures=3, evaluated_structure_indices=[0, 2],
-        method="periodic_round_trip", measure_units={"distance": "nm"})
+    result = msm.Interactions.from_records(
+        [
+            {
+                "structure_index": 0,
+                "interaction_type": "hbond",
+                "participants": [
+                    {"role": role, "atom_indices": [index]}
+                    for index, role in enumerate(("donor", "hydrogen", "acceptor"))
+                ],
+                "images": [[1, 0, 0], [1, 1, 0], [2, 1, 0]],
+                "measurements": {"distance": 0.2},
+            }
+        ],
+        n_atoms=view.molsys.get_n_atoms(),
+        n_structures=3,
+        evaluated_structure_indices=[0, 2],
+        method="periodic_round_trip",
+        measure_units={"distance": "nm"},
+    )
     view.interactions.attach(result, name="periodic", assume_aligned=True)
     path = tmp_path / "periodic.h5msm"
     view.interactions.save(path, analysis_names=["periodic"])
@@ -130,5 +167,9 @@ def test_periodic_images_and_units_round_trip_through_native_save(view, tmp_path
 def test_mutating_inspection_reply_cannot_change_action_participants(view):
     page = view.interactions.inspect("rings", limit=1)
     page["observations"][0]["participants"][0]["atom_indices"][:] = [8]
-    key = dict(structure_index=page["frame"], analysis_revision=page["analysis_revision"], query_revision=page["query_revision"])
+    key = dict(
+        structure_index=page["frame"],
+        analysis_revision=page["analysis_revision"],
+        query_revision=page["query_revision"],
+    )
     assert view.interactions.select_observation("rings", 0, **key) == [0, 1, 2, 3, 4, 5]

@@ -942,10 +942,16 @@ class ScientificInteractionsManager:
         destination = Path(filename)
         if not isinstance(overwrite, bool):
             raise ArgumentError("overwrite", value=overwrite)
-        names = list(self._collection()) if analysis_names is None else (
-            [analysis_names] if isinstance(analysis_names, str) else list(analysis_names)
+        names = (
+            list(self._collection())
+            if analysis_names is None
+            else ([analysis_names] if isinstance(analysis_names, str) else list(analysis_names))
         )
-        if not names or any(not isinstance(name, str) or not name.strip() for name in names) or len(set(names)) != len(names):
+        if (
+            not names
+            or any(not isinstance(name, str) or not name.strip() for name in names)
+            or len(set(names)) != len(names)
+        ):
             raise ArgumentError("analysis_names", value=analysis_names)
         analyses = {name: self.get_analysis(name, skip_digestion=True) for name in names}
         writer = getattr(getattr(msm, "h5msm", None), "write_layers", None)
@@ -1564,9 +1570,16 @@ class InteractionsManager(ScientificInteractionsManager):
         observations = []
         scope = dict(obj.filter)
         scope["structure_indices"] = [frame]
-        status = "broken" if obj.broken else (
-            "excluded" if obj.filter["structure_indices"] != "all" and frame not in obj.filter["structure_indices"]
-            else "evaluated" if frame in result.evaluated_structure_indices else "unevaluated"
+        status = (
+            "broken"
+            if obj.broken
+            else (
+                "excluded"
+                if obj.filter["structure_indices"] != "all" and frame not in obj.filter["structure_indices"]
+                else "evaluated"
+                if frame in result.evaluated_structure_indices
+                else "unevaluated"
+            )
         )
         excluded = status in {"excluded", "broken"}
         query = None if excluded else self.query(obj.analysis_name, **scope, skip_digestion=True)
@@ -1653,7 +1666,9 @@ class InteractionsManager(ScientificInteractionsManager):
         reply.update(
             status="inspection-limit" if limited else status,
             observations=[] if limited else observations,
-            next_offset=offset + len(observations) if not limited and observations and offset + len(observations) < total else None,
+            next_offset=offset + len(observations)
+            if not limited and observations and offset + len(observations) < total
+            else None,
             limit_reason="Narrow the filter; bounded occurrence materialization is required." if limited else None,
         )
         if not limited:
@@ -1667,23 +1682,55 @@ class InteractionsManager(ScientificInteractionsManager):
         self._revision(obj)
         record = next(item for item in self.records(skip_digestion=True) if item["tag"] == tag)
         frame = int(_indices([structure_index], self._system().structures.n_structures, "structure_index")[0])
-        if frame != self._view.player.index or analysis_revision != record["analysis_revision"] or query_revision != record["query_revision"] or obj.broken:
-            raise ArgumentError("occurrence_index", value=occurrence_index, message="Observation identity is stale; inspect the current frame again.")
+        if (
+            frame != self._view.player.index
+            or analysis_revision != record["analysis_revision"]
+            or query_revision != record["query_revision"]
+            or obj.broken
+        ):
+            raise ArgumentError(
+                "occurrence_index",
+                value=occurrence_index,
+                message="Observation identity is stale; inspect the current frame again.",
+            )
         if obj.filter["structure_indices"] != "all" and frame not in obj.filter["structure_indices"]:
             raise ArgumentError("structure_index", value=structure_index)
-        if isinstance(occurrence_index, (bool, np.bool_)) or not isinstance(occurrence_index, (int, np.integer)) or occurrence_index < 0:
+        if (
+            isinstance(occurrence_index, (bool, np.bool_))
+            or not isinstance(occurrence_index, (int, np.integer))
+            or occurrence_index < 0
+        ):
             raise ArgumentError("occurrence_index", value=occurrence_index)
         page = getattr(obj, "_inspected_page", None)
-        if page is None or page["frame"] != frame or page["analysis_revision"] != analysis_revision or page["query_revision"] != query_revision:
-            raise ArgumentError("occurrence_index", value=occurrence_index, message="Inspect the current observation page before acting.")
-        observation = next((item for item in page["observations"] if item["occurrence_index"] == occurrence_index), None)
+        if (
+            page is None
+            or page["frame"] != frame
+            or page["analysis_revision"] != analysis_revision
+            or page["query_revision"] != query_revision
+        ):
+            raise ArgumentError(
+                "occurrence_index",
+                value=occurrence_index,
+                message="Inspect the current observation page before acting.",
+            )
+        observation = next(
+            (item for item in page["observations"] if item["occurrence_index"] == occurrence_index), None
+        )
         if observation is None:
-            raise ArgumentError("occurrence_index", value=occurrence_index, message="Occurrence is absent from the latest inspected page.")
-        return sorted({int(atom) for participant in observation["participants"] for atom in participant["atom_indices"]})
+            raise ArgumentError(
+                "occurrence_index",
+                value=occurrence_index,
+                message="Occurrence is absent from the latest inspected page.",
+            )
+        return sorted(
+            {int(atom) for participant in observation["participants"] for atom in participant["atom_indices"]}
+        )
 
     @signal(tags=["interaction", "selection"])
     @digest()
-    def select_observation(self, tag, occurrence_index, *, structure_index, analysis_revision, query_revision, skip_digestion=False):
+    def select_observation(
+        self, tag, occurrence_index, *, structure_index, analysis_revision, query_revision, skip_digestion=False
+    ):
         """Activate every participant atom of a current inspected observation.
 
         Supply frame/revisions from the latest ``inspect`` page. Stale or filtered identities
@@ -1695,7 +1742,9 @@ class InteractionsManager(ScientificInteractionsManager):
 
     @signal(tags=["interaction", "camera"])
     @digest()
-    def focus_observation(self, tag, occurrence_index, *, structure_index, analysis_revision, query_revision, skip_digestion=False):
+    def focus_observation(
+        self, tag, occurrence_index, *, structure_index, analysis_revision, query_revision, skip_digestion=False
+    ):
         """Focus canonical system positions of a current observation's atoms.
 
         Uses the existing camera selection operation; this does not unwrap

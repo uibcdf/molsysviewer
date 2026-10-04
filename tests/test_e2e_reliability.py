@@ -95,8 +95,11 @@ def test_e2e_runner_inventory_matches_every_scientific_suite():
 
 def test_all_interactions_scenarios_keep_default_deadlines_and_fresh_worker():
     scenarios = (E2E_ROOT / "interactions-subpanel-scenarios.ts").read_text()
-    for suite, mode in (("interactions-subpanel", "lifecycle"), ("interactions-geometry", "geometry"),
-                        ("interactions-calculation", "calculation")):
+    for suite, mode in (
+        ("interactions-subpanel", "lifecycle"),
+        ("interactions-geometry", "geometry"),
+        ("interactions-calculation", "calculation"),
+    ):
         source = (E2E_ROOT / f"{suite}.e2e.ts").read_text()
         assert f'runInteractionsSuite(chromium, "{mode}")' in source
     assert "new PythonFixtureBridge" in scenarios
@@ -104,7 +107,7 @@ def test_all_interactions_scenarios_keep_default_deadlines_and_fresh_worker():
     assert "await fixtureWorker.close()" in scenarios
     assert "__controller?.dispose()" in scenarios
     assert 'page.goto("about:blank")' not in scenarios
-    assert 'process.env.E2E_SUITE_TIMEOUT_MS ?? 180_000' in (E2E_ROOT / "e2e-runner.ts").read_text()
+    assert "process.env.E2E_SUITE_TIMEOUT_MS ?? 180_000" in (E2E_ROOT / "e2e-runner.ts").read_text()
 
 
 def test_e2e_suites_use_the_shared_browser_without_silent_success_paths():

@@ -65,7 +65,9 @@ def _open_from_disk(html_path: Path) -> tuple[str, str]:
     helper = Path(__file__).resolve().parents[1] / "devtools/e2e/open_exported_page.mjs"
     completed = subprocess.run(
         ["node", str(helper), str(html_path.resolve()), CHROME],
-        capture_output=True, text=True, timeout=180,
+        capture_output=True,
+        text=True,
+        timeout=180,
     )
     assert completed.returncode == 0, completed.stderr
     inspected = json.loads(completed.stdout)
@@ -223,10 +225,16 @@ def test_failed_scene_restoration_never_declares_the_export_rendered(tmp_path):
         messages = view._build_export_messages()
         messages.append({"op": "set_interaction_frame", "tag": "invalid", "style": {"radius_unit": "angstrom"}})
         output = tmp_path / "invalid.html"
-        output.write_text(view._build_lite_html(
-            title="Failed scene", include_controls=True, include_popout=False,
-            messages=messages, inline_messages=True, runtime_source=MolSysViewerWidget._viewer_js_source,
-        ))
+        output.write_text(
+            view._build_lite_html(
+                title="Failed scene",
+                include_controls=True,
+                include_popout=False,
+                messages=messages,
+                inline_messages=True,
+                runtime_source=MolSysViewerWidget._viewer_js_source,
+            )
+        )
     dom, console = _open_from_disk(output)
     assert 'data-molsysviewer-error="true"' in dom, console[-3000:]
     assert 'data-molsysviewer-rendered="true"' not in dom

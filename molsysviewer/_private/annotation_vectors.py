@@ -1,4 +1,5 @@
 """Coordinate/offset normalization shared by the annotation API and Studio."""
+
 import numpy as np
 
 from .._pyunitwizard import puw
@@ -24,4 +25,6 @@ def annotation_vector(value, argument, *, physical=False, caller=None):
             raise ValueError("Expected a finite vector of length three.")
         return array.tolist()
     except Exception as exc:
-        raise ArgumentError(argument, value=value, caller=caller, message="Requires a finite three-component vector.") from exc
+        raise ArgumentError(
+            argument, value=value, caller=caller, message="Requires a finite three-component vector."
+        ) from exc

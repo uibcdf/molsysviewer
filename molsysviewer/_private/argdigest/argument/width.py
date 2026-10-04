@@ -16,8 +16,10 @@ _CSS_WIDTH_CALLERS = {
 
 
 def digest_width(width, caller=None):
-    if caller in {"molsysviewer.standalone_qt.application.create_standalone_qt0_window",
-                  "molsysviewer.standalone_qt.application.launch_standalone_qt0"}:
+    if caller in {
+        "molsysviewer.standalone_qt.application.create_standalone_qt0_window",
+        "molsysviewer.standalone_qt.application.launch_standalone_qt0",
+    }:
         if isinstance(width, int) and not isinstance(width, bool) and width > 0:
             return width
         raise ArgumentError("width", value=width, caller=caller, message="expected a positive number of pixels")

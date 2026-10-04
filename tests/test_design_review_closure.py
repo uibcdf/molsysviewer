@@ -1,4 +1,5 @@
 """Real-system guards for the final pre-1.0 design review (#146--#150)."""
+
 import json
 from copy import deepcopy
 
@@ -15,13 +16,22 @@ import molsysviewer as msv
 
 def test_coordinate_annotation_lifecycle(tmp_path):
     view = msv.demo["dialanine"]
-    note = view.annotations.add("site", position=puw.quantity([1, 2, 3], "nm"), tag="point",
-        offset_mode="world", offset=puw.quantity([2, 0, 0], "angstrom"), leader_line=True)
+    note = view.annotations.add(
+        "site",
+        position=puw.quantity([1, 2, 3], "nm"),
+        tag="point",
+        offset_mode="world",
+        offset=puw.quantity([2, 0, 0], "angstrom"),
+        leader_line=True,
+    )
     assert view.annotations.info("point")["position"] == pytest.approx([1, 2, 3])
     assert view.annotations.info("point")["offset"] == pytest.approx([0.2, 0, 0])
     state = view.export_state()
     assert state["annotations"][0]["anchor"] == {
-        "type": "position", "coordinates": [10.0, 20.0, 30.0], "unit": "angstrom"}
+        "type": "position",
+        "coordinates": [10.0, 20.0, 30.0],
+        "unit": "angstrom",
+    }
     assert state["annotations"][0]["options"]["offset_unit"] == "angstrom"
     view.annotations.set_text("point", "updated")
     view.annotations.set_style("point", {"color": "#ff0000"})
@@ -53,9 +63,12 @@ def test_coordinate_annotation_units_and_nonfinite_refusal():
         assert puw.get_value(note.get_coordinates(), to_unit="nm") == pytest.approx([1, 0, 0])
         assert view.annotations.info(note.tag)["offset"] == pytest.approx([0.2, 0, 0])
     before = view.export_state()
-    for kwargs in ({"position": [float("nan"), 0, 0]}, {"position": [1, 2]},
-                   {"position": puw.quantity([1, 2, 3], "ps")},
-                   {"atom_indices": [0], "offset": [float("inf"), 0, 0]}):
+    for kwargs in (
+        {"position": [float("nan"), 0, 0]},
+        {"position": [1, 2]},
+        {"position": puw.quantity([1, 2, 3], "ps")},
+        {"atom_indices": [0], "offset": [float("inf"), 0, 0]},
+    ):
         with pytest.raises(ArgumentError):
             view.annotations.add("invalid", **kwargs)
         assert view.export_state() == before

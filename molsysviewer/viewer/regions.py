@@ -462,8 +462,14 @@ class RegionsMixin:
                     changed = True
 
     def _show_only_region(self) -> Region | None:
-        return next((region for region in self._regions.values()
-                     if region._active and not region._hidden and region._show_only), None)
+        return next(
+            (
+                region
+                for region in self._regions.values()
+                if region._active and not region._hidden and region._show_only
+            ),
+            None,
+        )
 
     def _clear_region_isolation(self) -> None:
         for region in self._regions.values():

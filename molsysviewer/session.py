@@ -78,9 +78,7 @@ def _validate_session_scene(molsys: Any, state: dict) -> None:
     from .viewer import MolSysView
 
     with MolSysView() as candidate:
-        candidate.apply_system_edit(
-            molsys, load_blocks="collapse", interactions_policy="preserve"
-        )
+        candidate.apply_system_edit(molsys, load_blocks="collapse", interactions_policy="preserve")
         if state.get("sources") is not None and candidate._prepare_source_import(state["sources"]) is None:
             raise SessionFormatError("Session source maps refer to a different ordered molecular system.")
         candidate.import_state(state)

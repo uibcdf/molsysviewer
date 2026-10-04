@@ -33,12 +33,15 @@ for module in ('test_selections', 'test_protocol_contracts', 'test_live_edit_reb
 assert Path(sys.modules['tests._edit_helpers'].__file__).parent == directory
 assert Path(sys.modules['tests.conftest'].__file__).parent == directory
 """
-    result = subprocess.run([sys.executable, "-I", "-c", code, str(root)],
-                            cwd=tmp_path, capture_output=True, text=True, timeout=60)
+    result = subprocess.run(
+        [sys.executable, "-I", "-c", code, str(root)], cwd=tmp_path, capture_output=True, text=True, timeout=60
+    )
     assert result.returncode == 0, result.stdout + result.stderr
 
 
-@pytest.mark.skipif(os.environ.get("MOLSYSVIEWER_TEST_INSTALLED") != "1", reason="Requires installed scientific artifacts")
+@pytest.mark.skipif(
+    os.environ.get("MOLSYSVIEWER_TEST_INSTALLED") != "1", reason="Requires installed scientific artifacts"
+)
 def test_installed_qualification_uses_own_metadata_and_rejects_source_modules(tmp_path):
     root = Path(__file__).resolve().parents[1]
     code = """
@@ -78,8 +81,13 @@ except ValueError as error:
 else:
     raise AssertionError('The installed guard accepted a scientific source import.')
 """
-    result = subprocess.run([sys.executable, "-I", "-c", code, str(root), str(tmp_path)],
-                            cwd=tmp_path, capture_output=True, text=True, timeout=60)
+    result = subprocess.run(
+        [sys.executable, "-I", "-c", code, str(root), str(tmp_path)],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
     assert result.returncode == 0, result.stdout + result.stderr
 
 
@@ -114,12 +122,15 @@ for name in ('devtools.benchmarks.interactions_residency',
         assert importlib.metadata.version(package) == version, name
         assert sys.modules[package].__file__ == origins[package], name
 """
-    result = subprocess.run([sys.executable, "-I", "-c", code, str(root)],
-                            cwd=tmp_path, capture_output=True, text=True, timeout=60)
+    result = subprocess.run(
+        [sys.executable, "-I", "-c", code, str(root)], cwd=tmp_path, capture_output=True, text=True, timeout=60
+    )
     assert result.returncode == 0, result.stdout + result.stderr
 
 
-@pytest.mark.skipif(os.environ.get("MOLSYSVIEWER_TEST_INSTALLED") != "1", reason="Requires installed scientific artifacts")
+@pytest.mark.skipif(
+    os.environ.get("MOLSYSVIEWER_TEST_INSTALLED") != "1", reason="Requires installed scientific artifacts"
+)
 def test_direct_family_cli_uses_installed_science_without_checkout_on_sys_path(tmp_path):
     import molsysmt
 
@@ -128,13 +139,15 @@ def test_direct_family_cli_uses_installed_science_without_checkout_on_sys_path(t
     root = Path(__file__).resolve().parents[1]
     result = subprocess.run(
         [sys.executable, "-I", str(root / "devtools/qualify_interaction_families.py"), str(tmp_path)],
-        cwd=tmp_path, capture_output=True, text=True, timeout=120,
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        timeout=120,
     )
     assert result.returncode == 0, result.stderr
     report = json.loads(result.stdout)
     assert report["provider_version"] == molsysmt.__version__
     assert report["viewer_version"] == molsysviewer.__version__
-    assert report["scientific_module_paths"] == {
-        "molsysmt": molsysmt.__file__, "molsysviewer": molsysviewer.__file__}
+    assert report["scientific_module_paths"] == {"molsysmt": molsysmt.__file__, "molsysviewer": molsysviewer.__file__}
     assert len(report["cases"]) == 10
     assert all(case["expected"]["n_supported"] > 0 for case in report["cases"])

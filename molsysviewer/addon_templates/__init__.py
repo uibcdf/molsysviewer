@@ -49,7 +49,6 @@ def register_reference_addon(
     name: str,
     *,
     registry: "GlobalAddonsRegistry | None" = None,
-
     skip_digestion: bool = False,
 ) -> "AddonSpec":
     """Register one bundled reference add-on into a registry."""
@@ -64,7 +63,6 @@ def register_reference_addon(
 def register_all_reference_addons(
     *,
     registry: "GlobalAddonsRegistry | None" = None,
-
     skip_digestion: bool = False,
 ) -> list["AddonSpec"]:
     """Register all bundled reference add-ons into a registry."""
@@ -92,7 +90,6 @@ def import_reference_module(name: str, *, skip_digestion: bool = False):
 def register_dummy_addon(
     *,
     registry: "GlobalAddonsRegistry | None" = None,
-
     skip_digestion: bool = False,
 ) -> "AddonSpec":
     """Register the generic dummy/tester add-on into the registry."""
@@ -107,7 +104,6 @@ def build_reference_demo_view(
     demo_key: str = "dialanine",
     registry: "GlobalAddonsRegistry | None" = None,
     expand_workbench: bool = True,
-
     skip_digestion: bool = False,
 ) -> "MolSysView":
     """Build a demo view with one bundled reference add-on already active.

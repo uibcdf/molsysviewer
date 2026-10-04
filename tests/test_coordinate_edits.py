@@ -12,12 +12,21 @@ from molsysviewer import pyunitwizard as puw
 def view():
     view = msv.new_view(msv.demo["pentalanine"].molsys, structure_indices=[0, 8, 3], debug_js=True)
     result = msm.Interactions.from_records(
-        [{"structure_index": frame, "interaction_type": "hbond", "participants": [
-            {"role": role, "atom_indices": [index]}
-            for index, role in enumerate(("donor", "hydrogen", "acceptor"))
-        ]} for frame in range(3)],
-        n_atoms=view.molsys.get_n_atoms(), n_structures=3,
-        evaluated_structure_indices=[0, 1, 2], method="coordinate_edit_fixture",
+        [
+            {
+                "structure_index": frame,
+                "interaction_type": "hbond",
+                "participants": [
+                    {"role": role, "atom_indices": [index]}
+                    for index, role in enumerate(("donor", "hydrogen", "acceptor"))
+                ],
+            }
+            for frame in range(3)
+        ],
+        n_atoms=view.molsys.get_n_atoms(),
+        n_structures=3,
+        evaluated_structure_indices=[0, 1, 2],
+        method="coordinate_edit_fixture",
     )
     view.interactions.attach(result, name="contacts", assume_aligned=True)
     view.interactions.add("contacts", tag="hb")
@@ -50,14 +59,17 @@ def test_coordinate_edits_invalidate_only_edited_structures_and_refresh_projecti
         np.testing.assert_allclose(message["coordinates"], values * 10)
 
 
-@pytest.mark.parametrize("structures, values", [
-    ([3], np.zeros((1, 1, 3))),
-    ([True], np.zeros((1, 1, 3))),
-    ([0.5], np.zeros((1, 1, 3))),
-    ([0, 0], np.zeros((2, 1, 3))),
-    ([0], np.zeros((1, 2, 3))),
-    ([0], np.full((1, 1, 3), np.nan)),
-])
+@pytest.mark.parametrize(
+    "structures, values",
+    [
+        ([3], np.zeros((1, 1, 3))),
+        ([True], np.zeros((1, 1, 3))),
+        ([0.5], np.zeros((1, 1, 3))),
+        ([0, 0], np.zeros((2, 1, 3))),
+        ([0], np.zeros((1, 2, 3))),
+        ([0], np.full((1, 1, 3), np.nan)),
+    ],
+)
 def test_rejected_coordinate_edits_preserve_system_analysis_and_history(view, structures, values):
     before = puw.get_value(view.get_coordinates(), to_unit="nm")
     analysis = view.interactions.get_analysis("contacts")
@@ -74,8 +86,9 @@ def test_rejected_coordinate_edits_preserve_system_analysis_and_history(view, st
 def test_edit_supersedes_pending_native_buffers_before_lazy_fallback(view):
     sent = []
     view.widget.send = lambda message, buffers=None: sent.append(dict(message))
-    view._handle_frontend_event({"event": "ready", "capabilities": {
-        "binary_structure_data": [1], "max_buffer_bytes": 16 * 1024 * 1024}})
+    view._handle_frontend_event(
+        {"event": "ready", "capabilities": {"binary_structure_data": [1], "max_buffer_bytes": 16 * 1024 * 1024}}
+    )
     manager = view._structure_transfer_manager(None)
     old = manager.active
     assert old is not None

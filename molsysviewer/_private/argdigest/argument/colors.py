@@ -6,6 +6,7 @@ _COLOR_SCALARS = (int, str)
 def digest_colors(colors, caller=None):
     if caller == "molsysviewer.colors.normalize_colors":
         from molsysviewer.colors import _normalize_colors
+
         try:
             return _normalize_colors(colors)
         except (TypeError, ValueError) as exc:

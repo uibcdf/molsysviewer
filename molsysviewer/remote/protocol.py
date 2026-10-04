@@ -103,7 +103,6 @@ def validate_signaling_packet(
     expected_viewer_id: str | None = None,
     expected_session_id: str | None = None,
     expected_endpoint_id: str | None = None,
-
     skip_digestion: bool = False,
 ) -> PacketValidation:
     packet, failure = _common_identity(
@@ -152,7 +151,6 @@ def validate_input_packet(
     expected_viewer_id: str | None = None,
     expected_session_id: str | None = None,
     expected_endpoint_id: str | None = None,
-
     skip_digestion: bool = False,
 ) -> PacketValidation:
     packet, failure = _common_identity(

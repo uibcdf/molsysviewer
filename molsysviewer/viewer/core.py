@@ -469,7 +469,9 @@ class MolSysView(
 
     @signal(tags=["viewer"])
     @digest()
-    def set_dimensions(self, width: str | None = None, height: str | None = None, *, skip_digestion: bool = False) -> None:
+    def set_dimensions(
+        self, width: str | None = None, height: str | None = None, *, skip_digestion: bool = False
+    ) -> None:
         """Set the dimensions of the viewer widget.
 
         Parameters
@@ -1884,7 +1886,9 @@ class MolSysView(
 
     @signal(tags=["viewer", "transport"])
     @digest()
-    def wait_for_transaction(self, transaction_id: str | int, timeout_s: float = 1.0, *, skip_digestion: bool = False) -> bool:
+    def wait_for_transaction(
+        self, transaction_id: str | int, timeout_s: float = 1.0, *, skip_digestion: bool = False
+    ) -> bool:
         """Wait until the frontend acknowledges that the transaction has been rendered."""
         import time
 
@@ -2587,7 +2591,11 @@ class MolSysView(
         self.trajectory_plot._check_structure_axis(new_molsys.structures.n_structures)
         effective_label = self._last_label if label is None else label
         source_records = self._prepare_source_records_edit(
-            new_molsys, atom_index_map, load_blocks, appended_n_atoms, effective_label,
+            new_molsys,
+            atom_index_map,
+            load_blocks,
+            appended_n_atoms,
+            effective_label,
         )
         self.interactions._prepare_system_edit(new_molsys, interactions_policy)
         self.interactions._system_changed()
@@ -2768,8 +2776,11 @@ class MolSysView(
                 if not isinstance(existing, dict) or existing.get("format") != "molsysviewer-messages":
                     raise FileExistsError(f"Refusing to overwrite unrelated scene data: {sidecar}")
             sidecar.write_text(
-                json.dumps({"format": "molsysviewer-messages", "version": 1, "messages": messages},
-                           separators=(",", ":"), allow_nan=False),
+                json.dumps(
+                    {"format": "molsysviewer-messages", "version": 1, "messages": messages},
+                    separators=(",", ":"),
+                    allow_nan=False,
+                ),
                 encoding="utf-8",
             )
             messages_url = "./" + quote(sidecar.name, safe="")

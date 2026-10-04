@@ -253,7 +253,6 @@ def build_standalone0_html(
     runtime_urls: Sequence[str] | None = None,
     host_event_transport: str | None = None,
     show_empty_host_overlay: bool = True,
-
     skip_digestion: bool = False,
 ) -> str:
     """Build a first standalone-shaped HTML host using the current viewer runtime."""
@@ -323,7 +322,6 @@ def launch_standalone0(
     addon_modules: Sequence[str] | None = None,
     apply_project_config: bool = True,
     debug_js: bool | None = None,
-
     skip_digestion: bool = False,
 ) -> str:
     """Create a standalone-0 HTML file and optionally open it in the browser."""

@@ -1,4 +1,5 @@
 """The uniform public contract validates real input and offers an explicit bypass."""
+
 import inspect
 import warnings
 
@@ -50,10 +51,12 @@ def test_molecular_query_aliases_keep_boolean_attribute_semantics():
 
 def _check_molecular_query_aliases(view, region):
     for subject in (view.whole, region):
-        np.testing.assert_array_equal(subject.get(element="group", index=True),
-                                      subject.get(element="group", group_index=True))
-        np.testing.assert_array_equal(subject.get(element="group", residue_name=True),
-                                      subject.get(element="group", group_name=True))
+        np.testing.assert_array_equal(
+            subject.get(element="group", index=True), subject.get(element="group", group_index=True)
+        )
+        np.testing.assert_array_equal(
+            subject.get(element="group", residue_name=True), subject.get(element="group", group_name=True)
+        )
         with pytest.raises(Exception):
             subject.get(element="group", group_index=[0])
         with pytest.raises(Exception):

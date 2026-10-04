@@ -192,16 +192,20 @@ def delete_interaction_analysis(view, content):
 
 def select_interaction_observation(view, content):
     view.interactions.select_observation(
-        _tag(content, "select_interaction_observation"), content.get("occurrence_index"),
-        structure_index=content.get("frame"), analysis_revision=content.get("analysis_revision"),
+        _tag(content, "select_interaction_observation"),
+        content.get("occurrence_index"),
+        structure_index=content.get("frame"),
+        analysis_revision=content.get("analysis_revision"),
         query_revision=content.get("query_revision"),
     )
 
 
 def focus_interaction_observation(view, content):
     view.interactions.focus_observation(
-        _tag(content, "focus_interaction_observation"), content.get("occurrence_index"),
-        structure_index=content.get("frame"), analysis_revision=content.get("analysis_revision"),
+        _tag(content, "focus_interaction_observation"),
+        content.get("occurrence_index"),
+        structure_index=content.get("frame"),
+        analysis_revision=content.get("analysis_revision"),
         query_revision=content.get("query_revision"),
     )
 

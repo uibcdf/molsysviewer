@@ -1,4 +1,5 @@
 """Real demo trajectory edits supplied to the browser through public Python."""
+
 import json
 import sys
 from pathlib import Path
@@ -19,8 +20,9 @@ stages = []
 for indices, shift in (([2], 1.0), ([2, 0], 2.0)):
     coordinates = puw.get_value(view.get_coordinates(structure_indices=indices), to_unit="nm")[:, 2:3, :].copy()
     coordinates[:, :, 0] += shift
-    view.partial_coordinates_update(puw.quantity(coordinates, "nm"), selection=[2], structure_indices=indices,
-                                    transaction_id=f"edit-{len(stages)}")
+    view.partial_coordinates_update(
+        puw.quantity(coordinates, "nm"), selection=[2], structure_indices=indices, transaction_id=f"edit-{len(stages)}"
+    )
     stages.append({"messages": list(sent), "after": puw.get_value(view.get_coordinates(), to_unit="nm").tolist()})
     sent.clear()
 box_stages = []
@@ -33,6 +35,8 @@ for cells, indices in (
     if not box_stages:
         view.show_box(color="red", width=0.2)
     box = view.molsys.structures.box
-    box_stages.append({"messages": list(sent), "cells": None if box is None else puw.get_value(box, to_unit="nm").tolist()})
+    box_stages.append(
+        {"messages": list(sent), "cells": None if box is None else puw.get_value(box, to_unit="nm").tolist()}
+    )
     sent.clear()
 print(json.dumps({"initial": initial, "before": before.tolist(), "stages": stages, "box_stages": box_stages}))

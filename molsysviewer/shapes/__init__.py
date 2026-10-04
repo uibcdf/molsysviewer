@@ -379,85 +379,561 @@ class ShapesManager:
     @records_scene_history
     @signal(tags=["shape"])
     @digest()
-    def add_pocket_surface(self, *, atom_indices, scalars=None, grid=None, alpha=None, iso_levels=None, iso_colors=None, iso_alphas=None, color_map=None, mouth_atom_indices=None, clip_plane=None, tag=None, layer_tag=None, skip_digestion=False):
-        return self.pockets.add_pocket_surface(atom_indices=atom_indices, scalars=scalars, grid=grid, alpha=alpha, iso_levels=iso_levels, iso_colors=iso_colors, iso_alphas=iso_alphas, color_map=color_map, mouth_atom_indices=mouth_atom_indices, clip_plane=clip_plane, tag=tag, layer_tag=layer_tag, skip_digestion=True)
+    def add_pocket_surface(
+        self,
+        *,
+        atom_indices,
+        scalars=None,
+        grid=None,
+        alpha=None,
+        iso_levels=None,
+        iso_colors=None,
+        iso_alphas=None,
+        color_map=None,
+        mouth_atom_indices=None,
+        clip_plane=None,
+        tag=None,
+        layer_tag=None,
+        skip_digestion=False,
+    ):
+        return self.pockets.add_pocket_surface(
+            atom_indices=atom_indices,
+            scalars=scalars,
+            grid=grid,
+            alpha=alpha,
+            iso_levels=iso_levels,
+            iso_colors=iso_colors,
+            iso_alphas=iso_alphas,
+            color_map=color_map,
+            mouth_atom_indices=mouth_atom_indices,
+            clip_plane=clip_plane,
+            tag=tag,
+            layer_tag=layer_tag,
+            skip_digestion=True,
+        )
 
     @records_scene_history
     @signal(tags=["shape"])
     @digest()
-    def add_set_alpha_spheres(self, *, centers, radii, atom_centers=None, atom_radius='1.0 nm', color_alpha_spheres=65280, color_atoms=255, alpha_alpha_spheres=0.3, alpha_atoms=0.5, tag=None, layer_tag=None, skip_digestion=False):
-        return self.spheres.add_set_alpha_spheres(centers=centers, radii=radii, atom_centers=atom_centers, atom_radius=atom_radius, color_alpha_spheres=color_alpha_spheres, color_atoms=color_atoms, alpha_alpha_spheres=alpha_alpha_spheres, alpha_atoms=alpha_atoms, tag=tag, layer_tag=layer_tag, skip_digestion=True)
+    def add_set_alpha_spheres(
+        self,
+        *,
+        centers,
+        radii,
+        atom_centers=None,
+        atom_radius="1.0 nm",
+        color_alpha_spheres=65280,
+        color_atoms=255,
+        alpha_alpha_spheres=0.3,
+        alpha_atoms=0.5,
+        tag=None,
+        layer_tag=None,
+        skip_digestion=False,
+    ):
+        return self.spheres.add_set_alpha_spheres(
+            centers=centers,
+            radii=radii,
+            atom_centers=atom_centers,
+            atom_radius=atom_radius,
+            color_alpha_spheres=color_alpha_spheres,
+            color_atoms=color_atoms,
+            alpha_alpha_spheres=alpha_alpha_spheres,
+            alpha_atoms=alpha_atoms,
+            tag=tag,
+            layer_tag=layer_tag,
+            skip_digestion=True,
+        )
 
     @records_scene_history
     @signal(tags=["shape"])
     @digest()
-    def add_links(self, *, atom_pairs=None, coordinate_pairs=None, structure_coordinate_pairs=None, radius='0.2 nm', color=4495871, radii=None, colors=None, pocket_ids=None, chain_ids=None, color_by=None, color_scheme=None, color_table=None, color_mode='link', alpha=1.0, radial_segments=None, tag=None, layer_tag=None, skip_digestion=False):
-        return self.links.add_links(atom_pairs=atom_pairs, coordinate_pairs=coordinate_pairs, structure_coordinate_pairs=structure_coordinate_pairs, radius=radius, color=color, radii=radii, colors=colors, pocket_ids=pocket_ids, chain_ids=chain_ids, color_by=color_by, color_scheme=color_scheme, color_table=color_table, color_mode=color_mode, alpha=alpha, radial_segments=radial_segments, tag=tag, layer_tag=layer_tag, skip_digestion=True)
+    def add_links(
+        self,
+        *,
+        atom_pairs=None,
+        coordinate_pairs=None,
+        structure_coordinate_pairs=None,
+        radius="0.2 nm",
+        color=4495871,
+        radii=None,
+        colors=None,
+        pocket_ids=None,
+        chain_ids=None,
+        color_by=None,
+        color_scheme=None,
+        color_table=None,
+        color_mode="link",
+        alpha=1.0,
+        radial_segments=None,
+        tag=None,
+        layer_tag=None,
+        skip_digestion=False,
+    ):
+        return self.links.add_links(
+            atom_pairs=atom_pairs,
+            coordinate_pairs=coordinate_pairs,
+            structure_coordinate_pairs=structure_coordinate_pairs,
+            radius=radius,
+            color=color,
+            radii=radii,
+            colors=colors,
+            pocket_ids=pocket_ids,
+            chain_ids=chain_ids,
+            color_by=color_by,
+            color_scheme=color_scheme,
+            color_table=color_table,
+            color_mode=color_mode,
+            alpha=alpha,
+            radial_segments=radial_segments,
+            tag=tag,
+            layer_tag=layer_tag,
+            skip_digestion=True,
+        )
 
     @records_scene_history
     @signal(tags=["shape"])
     @digest()
-    def add_displacement_vectors(self, origins, vectors, *, atom_indices=None, length_scale=1.0, min_length='0.0 nm', max_length=None, color_by=None, palette=None, color_mode='norm', color_component=2, color_map=None, radius_scale=0.05, radial_segments=None, tag=None, layer_tag=None, skip_digestion=False):
-        return self.vectors.add_displacement_vectors(origins=origins, vectors=vectors, atom_indices=atom_indices, length_scale=length_scale, min_length=min_length, max_length=max_length, color_by=color_by, palette=palette, color_mode=color_mode, color_component=color_component, color_map=color_map, radius_scale=radius_scale, radial_segments=radial_segments, tag=tag, layer_tag=layer_tag, skip_digestion=True)
+    def add_displacement_vectors(
+        self,
+        origins,
+        vectors,
+        *,
+        atom_indices=None,
+        length_scale=1.0,
+        min_length="0.0 nm",
+        max_length=None,
+        color_by=None,
+        palette=None,
+        color_mode="norm",
+        color_component=2,
+        color_map=None,
+        radius_scale=0.05,
+        radial_segments=None,
+        tag=None,
+        layer_tag=None,
+        skip_digestion=False,
+    ):
+        return self.vectors.add_displacement_vectors(
+            origins=origins,
+            vectors=vectors,
+            atom_indices=atom_indices,
+            length_scale=length_scale,
+            min_length=min_length,
+            max_length=max_length,
+            color_by=color_by,
+            palette=palette,
+            color_mode=color_mode,
+            color_component=color_component,
+            color_map=color_map,
+            radius_scale=radius_scale,
+            radial_segments=radial_segments,
+            tag=tag,
+            layer_tag=layer_tag,
+            skip_digestion=True,
+        )
 
     @records_scene_history
     @signal(tags=["shape"])
     @digest()
-    def add_triangle_faces(self, *, vertices=None, structure_vertices=None, atom_triplets=None, colors=13421772, alpha=1.0, alphas=None, labels=None, entity_refs=None, draw_edges=None, edge_radius=None, edge_color=None, show_normals=None, normal_length=None, normal_color=None, tag=None, layer_tag=None, skip_digestion=False):
-        return self.triangles.add_triangle_faces(vertices=vertices, structure_vertices=structure_vertices, atom_triplets=atom_triplets, colors=colors, alpha=alpha, alphas=alphas, labels=labels, entity_refs=entity_refs, draw_edges=draw_edges, edge_radius=edge_radius, edge_color=edge_color, show_normals=show_normals, normal_length=normal_length, normal_color=normal_color, tag=tag, layer_tag=layer_tag, skip_digestion=True)
+    def add_triangle_faces(
+        self,
+        *,
+        vertices=None,
+        structure_vertices=None,
+        atom_triplets=None,
+        colors=13421772,
+        alpha=1.0,
+        alphas=None,
+        labels=None,
+        entity_refs=None,
+        draw_edges=None,
+        edge_radius=None,
+        edge_color=None,
+        show_normals=None,
+        normal_length=None,
+        normal_color=None,
+        tag=None,
+        layer_tag=None,
+        skip_digestion=False,
+    ):
+        return self.triangles.add_triangle_faces(
+            vertices=vertices,
+            structure_vertices=structure_vertices,
+            atom_triplets=atom_triplets,
+            colors=colors,
+            alpha=alpha,
+            alphas=alphas,
+            labels=labels,
+            entity_refs=entity_refs,
+            draw_edges=draw_edges,
+            edge_radius=edge_radius,
+            edge_color=edge_color,
+            show_normals=show_normals,
+            normal_length=normal_length,
+            normal_color=normal_color,
+            tag=tag,
+            layer_tag=layer_tag,
+            skip_digestion=True,
+        )
 
     @records_scene_history
     @signal(tags=["shape"])
     @digest()
-    def add_tetrahedra(self, *, tetra_coords=None, atom_quads=None, colors=16746496, alphas=0.6, labels=None, entity_refs=None, exterior_only=True, draw_faces=None, faces_pickable=None, face_meta=None, edge_meta=None, draw_edges=None, edge_radius=None, edge_color=None, show_normals=None, normal_length=None, normal_color=None, tag=None, layer_tag=None, name=None, skip_digestion=False):
-        return self.tetrahedra.add_tetrahedra(tetra_coords=tetra_coords, atom_quads=atom_quads, colors=colors, alphas=alphas, labels=labels, entity_refs=entity_refs, exterior_only=exterior_only, draw_faces=draw_faces, faces_pickable=faces_pickable, face_meta=face_meta, edge_meta=edge_meta, draw_edges=draw_edges, edge_radius=edge_radius, edge_color=edge_color, show_normals=show_normals, normal_length=normal_length, normal_color=normal_color, tag=tag, layer_tag=layer_tag, name=name, skip_digestion=True)
+    def add_tetrahedra(
+        self,
+        *,
+        tetra_coords=None,
+        atom_quads=None,
+        colors=16746496,
+        alphas=0.6,
+        labels=None,
+        entity_refs=None,
+        exterior_only=True,
+        draw_faces=None,
+        faces_pickable=None,
+        face_meta=None,
+        edge_meta=None,
+        draw_edges=None,
+        edge_radius=None,
+        edge_color=None,
+        show_normals=None,
+        normal_length=None,
+        normal_color=None,
+        tag=None,
+        layer_tag=None,
+        name=None,
+        skip_digestion=False,
+    ):
+        return self.tetrahedra.add_tetrahedra(
+            tetra_coords=tetra_coords,
+            atom_quads=atom_quads,
+            colors=colors,
+            alphas=alphas,
+            labels=labels,
+            entity_refs=entity_refs,
+            exterior_only=exterior_only,
+            draw_faces=draw_faces,
+            faces_pickable=faces_pickable,
+            face_meta=face_meta,
+            edge_meta=edge_meta,
+            draw_edges=draw_edges,
+            edge_radius=edge_radius,
+            edge_color=edge_color,
+            show_normals=show_normals,
+            normal_length=normal_length,
+            normal_color=normal_color,
+            tag=tag,
+            layer_tag=layer_tag,
+            name=name,
+            skip_digestion=True,
+        )
 
     @records_scene_history
     @signal(tags=["shape"])
     @digest()
-    def add_pocket_blob(self, *, centers, radii, radius_scale=None, resolution=None, iso_level=None, iso_levels=None, iso_colors=None, iso_alphas=None, smoothing=None, values=None, color_map=None, alpha=None, wireframe=False, wireframe_size=None, tag=None, layer_tag=None, name=None, skip_digestion=False):
-        return self.blobs.add_pocket_blob(centers=centers, radii=radii, radius_scale=radius_scale, resolution=resolution, iso_level=iso_level, iso_levels=iso_levels, iso_colors=iso_colors, iso_alphas=iso_alphas, smoothing=smoothing, values=values, color_map=color_map, alpha=alpha, wireframe=wireframe, wireframe_size=wireframe_size, tag=tag, layer_tag=layer_tag, name=name, skip_digestion=True)
+    def add_pocket_blob(
+        self,
+        *,
+        centers,
+        radii,
+        radius_scale=None,
+        resolution=None,
+        iso_level=None,
+        iso_levels=None,
+        iso_colors=None,
+        iso_alphas=None,
+        smoothing=None,
+        values=None,
+        color_map=None,
+        alpha=None,
+        wireframe=False,
+        wireframe_size=None,
+        tag=None,
+        layer_tag=None,
+        name=None,
+        skip_digestion=False,
+    ):
+        return self.blobs.add_pocket_blob(
+            centers=centers,
+            radii=radii,
+            radius_scale=radius_scale,
+            resolution=resolution,
+            iso_level=iso_level,
+            iso_levels=iso_levels,
+            iso_colors=iso_colors,
+            iso_alphas=iso_alphas,
+            smoothing=smoothing,
+            values=values,
+            color_map=color_map,
+            alpha=alpha,
+            wireframe=wireframe,
+            wireframe_size=wireframe_size,
+            tag=tag,
+            layer_tag=layer_tag,
+            name=name,
+            skip_digestion=True,
+        )
 
     @records_scene_history
     @signal(tags=["shape"])
     @digest()
-    def add_scalar_isosurface(self, *, centers, radii, radius_scale=None, resolution=None, iso_level=None, iso_levels=None, iso_colors=None, iso_alphas=None, smoothing=None, values=None, color_map=None, alpha=None, wireframe=False, wireframe_size=None, tag=None, layer_tag=None, name=None, skip_digestion=False):
-        return self.blobs.add_scalar_isosurface(centers=centers, radii=radii, radius_scale=radius_scale, resolution=resolution, iso_level=iso_level, iso_levels=iso_levels, iso_colors=iso_colors, iso_alphas=iso_alphas, smoothing=smoothing, values=values, color_map=color_map, alpha=alpha, wireframe=wireframe, wireframe_size=wireframe_size, tag=tag, layer_tag=layer_tag, name=name, skip_digestion=True)
+    def add_scalar_isosurface(
+        self,
+        *,
+        centers,
+        radii,
+        radius_scale=None,
+        resolution=None,
+        iso_level=None,
+        iso_levels=None,
+        iso_colors=None,
+        iso_alphas=None,
+        smoothing=None,
+        values=None,
+        color_map=None,
+        alpha=None,
+        wireframe=False,
+        wireframe_size=None,
+        tag=None,
+        layer_tag=None,
+        name=None,
+        skip_digestion=False,
+    ):
+        return self.blobs.add_scalar_isosurface(
+            centers=centers,
+            radii=radii,
+            radius_scale=radius_scale,
+            resolution=resolution,
+            iso_level=iso_level,
+            iso_levels=iso_levels,
+            iso_colors=iso_colors,
+            iso_alphas=iso_alphas,
+            smoothing=smoothing,
+            values=values,
+            color_map=color_map,
+            alpha=alpha,
+            wireframe=wireframe,
+            wireframe_size=wireframe_size,
+            tag=tag,
+            layer_tag=layer_tag,
+            name=name,
+            skip_digestion=True,
+        )
 
     @records_scene_history
     @signal(tags=["shape"])
     @digest()
-    def add_channel_tube(self, *, centers, radii, structure_centers=None, color_by=None, palette=None, color_mode=None, solvent_distances=None, colors=None, color_map=None, radial_segments=None, smoothing_subdivisions=None, tube_style=None, tube_aspect_ratio=None, surface_resolution=None, surface_smoothing=None, surface_iso_level=None, surface_radius_scale=None, alpha=None, tag=None, layer_tag=None, name=None, skip_digestion=False):
-        return self.tubes.add_channel_tube(centers=centers, radii=radii, structure_centers=structure_centers, color_by=color_by, palette=palette, color_mode=color_mode, solvent_distances=solvent_distances, colors=colors, color_map=color_map, radial_segments=radial_segments, smoothing_subdivisions=smoothing_subdivisions, tube_style=tube_style, tube_aspect_ratio=tube_aspect_ratio, surface_resolution=surface_resolution, surface_smoothing=surface_smoothing, surface_iso_level=surface_iso_level, surface_radius_scale=surface_radius_scale, alpha=alpha, tag=tag, layer_tag=layer_tag, name=name, skip_digestion=True)
+    def add_channel_tube(
+        self,
+        *,
+        centers,
+        radii,
+        structure_centers=None,
+        color_by=None,
+        palette=None,
+        color_mode=None,
+        solvent_distances=None,
+        colors=None,
+        color_map=None,
+        radial_segments=None,
+        smoothing_subdivisions=None,
+        tube_style=None,
+        tube_aspect_ratio=None,
+        surface_resolution=None,
+        surface_smoothing=None,
+        surface_iso_level=None,
+        surface_radius_scale=None,
+        alpha=None,
+        tag=None,
+        layer_tag=None,
+        name=None,
+        skip_digestion=False,
+    ):
+        return self.tubes.add_channel_tube(
+            centers=centers,
+            radii=radii,
+            structure_centers=structure_centers,
+            color_by=color_by,
+            palette=palette,
+            color_mode=color_mode,
+            solvent_distances=solvent_distances,
+            colors=colors,
+            color_map=color_map,
+            radial_segments=radial_segments,
+            smoothing_subdivisions=smoothing_subdivisions,
+            tube_style=tube_style,
+            tube_aspect_ratio=tube_aspect_ratio,
+            surface_resolution=surface_resolution,
+            surface_smoothing=surface_smoothing,
+            surface_iso_level=surface_iso_level,
+            surface_radius_scale=surface_radius_scale,
+            alpha=alpha,
+            tag=tag,
+            layer_tag=layer_tag,
+            name=name,
+            skip_digestion=True,
+        )
 
     @records_scene_history
     @signal(tags=["shape"])
     @digest()
-    def add_rings(self, *, centers, normals, radii, thickness=None, colors=None, color_by=None, color_mode=None, values=None, palette=None, color_map=None, segments=None, alpha=None, tag=None, layer_tag=None, name=None, skip_digestion=False):
-        return self.rings.add_rings(centers=centers, normals=normals, radii=radii, thickness=thickness, colors=colors, color_by=color_by, color_mode=color_mode, values=values, palette=palette, color_map=color_map, segments=segments, alpha=alpha, tag=tag, layer_tag=layer_tag, name=name, skip_digestion=True)
+    def add_rings(
+        self,
+        *,
+        centers,
+        normals,
+        radii,
+        thickness=None,
+        colors=None,
+        color_by=None,
+        color_mode=None,
+        values=None,
+        palette=None,
+        color_map=None,
+        segments=None,
+        alpha=None,
+        tag=None,
+        layer_tag=None,
+        name=None,
+        skip_digestion=False,
+    ):
+        return self.rings.add_rings(
+            centers=centers,
+            normals=normals,
+            radii=radii,
+            thickness=thickness,
+            colors=colors,
+            color_by=color_by,
+            color_mode=color_mode,
+            values=values,
+            palette=palette,
+            color_map=color_map,
+            segments=segments,
+            alpha=alpha,
+            tag=tag,
+            layer_tag=layer_tag,
+            name=name,
+            skip_digestion=True,
+        )
 
     @records_scene_history
     @signal(tags=["shape"])
     @digest()
-    def add_anisotropy_ellipsoids(self, *, centers, eigenvalues=None, eigenvectors=None, tensors=None, principal_directions=None, scale=None, max_eccentricity=None, color_by=None, palette=None, color_mode=None, colors=None, color_map=None, values=None, alpha=None, tag=None, layer_tag=None, name=None, skip_digestion=False):
-        return self.ellipsoids.add_anisotropy_ellipsoids(centers=centers, eigenvalues=eigenvalues, eigenvectors=eigenvectors, tensors=tensors, principal_directions=principal_directions, scale=scale, max_eccentricity=max_eccentricity, color_by=color_by, palette=palette, color_mode=color_mode, colors=colors, color_map=color_map, values=values, alpha=alpha, tag=tag, layer_tag=layer_tag, name=name, skip_digestion=True)
+    def add_anisotropy_ellipsoids(
+        self,
+        *,
+        centers,
+        eigenvalues=None,
+        eigenvectors=None,
+        tensors=None,
+        principal_directions=None,
+        scale=None,
+        max_eccentricity=None,
+        color_by=None,
+        palette=None,
+        color_mode=None,
+        colors=None,
+        color_map=None,
+        values=None,
+        alpha=None,
+        tag=None,
+        layer_tag=None,
+        name=None,
+        skip_digestion=False,
+    ):
+        return self.ellipsoids.add_anisotropy_ellipsoids(
+            centers=centers,
+            eigenvalues=eigenvalues,
+            eigenvectors=eigenvectors,
+            tensors=tensors,
+            principal_directions=principal_directions,
+            scale=scale,
+            max_eccentricity=max_eccentricity,
+            color_by=color_by,
+            palette=palette,
+            color_mode=color_mode,
+            colors=colors,
+            color_map=color_map,
+            values=values,
+            alpha=alpha,
+            tag=tag,
+            layer_tag=layer_tag,
+            name=name,
+            skip_digestion=True,
+        )
 
     @records_scene_history
     @signal(tags=["shape"])
     @digest()
-    def add_interaction_sites(self, *, centers, kinds, radii=None, directions=None, alphas=None, colors=None, color_scheme=None, color_table=None, tag=None, layer_tag=None, name=None, skip_digestion=False):
-        return self.interaction_sites.add_interaction_sites(centers=centers, kinds=kinds, radii=radii, directions=directions, alphas=alphas, colors=colors, color_scheme=color_scheme, color_table=color_table, tag=tag, layer_tag=layer_tag, name=name, skip_digestion=True)
+    def add_interaction_sites(
+        self,
+        *,
+        centers,
+        kinds,
+        radii=None,
+        directions=None,
+        alphas=None,
+        colors=None,
+        color_scheme=None,
+        color_table=None,
+        tag=None,
+        layer_tag=None,
+        name=None,
+        skip_digestion=False,
+    ):
+        return self.interaction_sites.add_interaction_sites(
+            centers=centers,
+            kinds=kinds,
+            radii=radii,
+            directions=directions,
+            alphas=alphas,
+            colors=colors,
+            color_scheme=color_scheme,
+            color_table=color_table,
+            tag=tag,
+            layer_tag=layer_tag,
+            name=name,
+            skip_digestion=True,
+        )
 
     @records_scene_history
     @signal(tags=["shape"])
     @digest()
-    def add_pharmacophore_features(self, *, centers, kinds, radii=None, directions=None, alphas=None, colors=None, color_scheme=None, color_table=None, tag=None, layer_tag=None, name=None, skip_digestion=False):
+    def add_pharmacophore_features(
+        self,
+        *,
+        centers,
+        kinds,
+        radii=None,
+        directions=None,
+        alphas=None,
+        colors=None,
+        color_scheme=None,
+        color_table=None,
+        tag=None,
+        layer_tag=None,
+        name=None,
+        skip_digestion=False,
+    ):
         warnings.warn(
             "shapes.add_pharmacophore_features(...) is deprecated; use shapes.add_interaction_sites(...) instead.",
             DeprecationWarning,
             stacklevel=2,
         )
-        return self.interaction_sites.add_interaction_sites(centers=centers, kinds=kinds, radii=radii, directions=directions, alphas=alphas, colors=colors, color_scheme=color_scheme, color_table=color_table, tag=tag, layer_tag=layer_tag, name=name, skip_digestion=True)
+        return self.interaction_sites.add_interaction_sites(
+            centers=centers,
+            kinds=kinds,
+            radii=radii,
+            directions=directions,
+            alphas=alphas,
+            colors=colors,
+            color_scheme=color_scheme,
+            color_table=color_table,
+            tag=tag,
+            layer_tag=layer_tag,
+            name=name,
+            skip_digestion=True,
+        )
 
     @records_scene_history
     @signal(tags=["shape"])

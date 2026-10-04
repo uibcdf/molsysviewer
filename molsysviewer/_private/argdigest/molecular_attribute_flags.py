@@ -3,6 +3,7 @@
 Attribute values remain MolSysMT's concern. Here a request flag must be a bool;
 the scientific provider still validates and executes the resulting query.
 """
+
 from molsysmt.attribute import attributes
 
 from ..exceptions import ArgumentError
@@ -21,6 +22,7 @@ def _flag_validator(attribute):
         if isinstance(flag, bool):
             return flag
         raise ArgumentError(attribute, value=flag, caller=caller)
+
     return validate
 
 
@@ -31,14 +33,16 @@ def _chemical_state(chemical_state, caller=None):
 
 
 ARGUMENT_DIGESTERS = {name: _flag_validator(name) for name in attributes}
-ARGUMENT_DIGESTERS.update({
-    "element": digest_element,
-    "selection": digest_selection,
-    "structure_indices": digest_structure_indices,
-    "mask": digest_mask,
-    "syntax": digest_syntax,
-    "get_missing_bonds": digest_get_missing_bonds,
-    "output_type": digest_output_type,
-    "chemical_state": _chemical_state,
-    "skip_digestion": digest_skip_digestion,
-})
+ARGUMENT_DIGESTERS.update(
+    {
+        "element": digest_element,
+        "selection": digest_selection,
+        "structure_indices": digest_structure_indices,
+        "mask": digest_mask,
+        "syntax": digest_syntax,
+        "get_missing_bonds": digest_get_missing_bonds,
+        "output_type": digest_output_type,
+        "chemical_state": _chemical_state,
+        "skip_digestion": digest_skip_digestion,
+    }
+)

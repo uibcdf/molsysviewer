@@ -204,8 +204,11 @@ def walk_public_surface(roots: dict[str, Any]) -> Iterator[PublicCallable]:
         for name in _public_names(owner):
             if isinstance(owner, type):
                 declared = inspect.getattr_static(owner, name)
-                if not (inspect.isfunction(declared) or isinstance(declared, (classmethod, staticmethod))
-                        or _owned_by_molsysviewer(declared)):
+                if not (
+                    inspect.isfunction(declared)
+                    or isinstance(declared, (classmethod, staticmethod))
+                    or _owned_by_molsysviewer(declared)
+                ):
                     continue
             try:
                 value = getattr(owner, name)

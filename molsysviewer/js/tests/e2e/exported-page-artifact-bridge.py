@@ -30,11 +30,19 @@ def main():
         view.player.go_to_structure(2)
         view.export.html(str(output / "inline.html"))
         view.export.html(str(output / "view #1 %.html"), shared_runtime=str(assets), inline_messages=False)
-        print(json.dumps({
-            "directory": str(output), "atoms": view.molsys.get_n_atoms(), "images": images,
-            "expected": [{"occurrence": occurrence, "frame": frame, "start": start.tolist(), "end": end.tolist()}
-                         for occurrence, (frame, start, end) in expected.items()],
-        }))
+        print(
+            json.dumps(
+                {
+                    "directory": str(output),
+                    "atoms": view.molsys.get_n_atoms(),
+                    "images": images,
+                    "expected": [
+                        {"occurrence": occurrence, "frame": frame, "start": start.tolist(), "end": end.tolist()}
+                        for occurrence, (frame, start, end) in expected.items()
+                    ],
+                }
+            )
+        )
 
 
 if __name__ == "__main__":

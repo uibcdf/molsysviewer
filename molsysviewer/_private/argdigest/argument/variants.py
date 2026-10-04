@@ -3,6 +3,7 @@ from molsysviewer._private.exceptions import ArgumentError
 
 def digest_variants(variants, caller=None):
     from molsysviewer.figures import FigureSpec
+
     if not isinstance(variants, dict) or len(variants) == 0:
         raise ArgumentError("variants", value=variants, caller=caller, message="Expected a non-empty dictionary.")
 

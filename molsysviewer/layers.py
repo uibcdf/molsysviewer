@@ -173,8 +173,11 @@ class LayerHandle:
 
     @property
     def interactions(self):
-        return {item.tag: item for item in self._view._scene_objects.values()
-                if item.kind == "interaction" and item.layer_tag == self.tag}
+        return {
+            item.tag: item
+            for item in self._view._scene_objects.values()
+            if item.kind == "interaction" and item.layer_tag == self.tag
+        }
 
     @property
     def regions(self) -> Dict[str, Any]:
@@ -1181,7 +1184,8 @@ class Shape(SceneObject):
         duration: Any = "250 ms",
         duration_ms: Any | None = None,
         extra_radius: Any = "0.5 nanometers",
-        *, skip_digestion: bool = False,
+        *,
+        skip_digestion: bool = False,
     ) -> None:
         """Center the camera on this shape.
 
@@ -1278,12 +1282,15 @@ class Annotation(SceneObject):
     def set_coordinates(self, new_pos, *, skip_digestion: bool = False) -> None:
         """Replace this annotation's anchor with one absolute physical position."""
         import numpy as np
+
         self._assert_current()
         values = np.asarray(puw.get_value(new_pos, to_unit="angstrom"))
         if values.size != 3:
             raise ValueError("An annotation anchor requires exactly one position.")
         self._view.annotations.set_anchor(
-            self.tag, position=puw.quantity(values.reshape(3), "angstrom"), skip_digestion=True,
+            self.tag,
+            position=puw.quantity(values.reshape(3), "angstrom"),
+            skip_digestion=True,
         )
 
 
@@ -1342,7 +1349,8 @@ class Measurement(SceneObject):
         duration: Any = "250 ms",
         duration_ms: Any | None = None,
         extra_radius: Any = "0.5 nanometers",
-        *, skip_digestion: bool = False,
+        *,
+        skip_digestion: bool = False,
     ) -> None:
         """Center the camera on the atoms involved in this measurement.
 

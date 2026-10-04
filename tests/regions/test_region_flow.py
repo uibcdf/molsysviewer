@@ -160,8 +160,11 @@ def test_none_region_hide_and_show_emit_visibility_without_inventing_a_visual():
     assert record == []
     assert region.visible is True
     assert region.representation is None and region.preset is None
-    visibility = [msg["op"] for msg in view._test_message_log  # noqa: SLF001
-                  if msg.get("tag") == "logical" and msg.get("op") in {"hide_region", "show_region"}]
+    visibility = [
+        msg["op"]
+        for msg in view._test_message_log  # noqa: SLF001
+        if msg.get("tag") == "logical" and msg.get("op") in {"hide_region", "show_region"}
+    ]
     assert visibility == ["hide_region", "show_region"]
 
 

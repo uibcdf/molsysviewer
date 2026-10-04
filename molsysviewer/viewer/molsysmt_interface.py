@@ -68,8 +68,11 @@ class MolSysMTInterfaceMixin:
                 "count": len(selection_tags),
                 "tags": selection_tags,
             },
-            "interactions": {"count": len(interaction_tags), "tags": interaction_tags,
-                             "analysis_names": sorted(getattr(self._molsys, "interactions", {}) or {})},
+            "interactions": {
+                "count": len(interaction_tags),
+                "tags": interaction_tags,
+                "analysis_names": sorted(getattr(self._molsys, "interactions", {}) or {}),
+            },
             "active_selection": {
                 "is_empty": self.active_selection.is_empty(skip_digestion=True),
                 "info": self.active_selection.info(skip_digestion=True),
@@ -244,12 +247,22 @@ class MolSysMTInterfaceMixin:
             )
 
         for item in self.interactions.info(skip_digestion=True):
-            records.append({"section": "interactions", "tag": item["tag"], "kind": "interaction",
-                            "visible": not item["hidden"] and not item.get("layer_hidden", False),
-                            "active": not item["broken"], "layer tag": item["layer_tag"],
-                            "representation": "links", "preset": None, "n atoms": None,
-                            "n members": None, "n picks": None,
-                            "details": f"analysis={item['analysis_name']}, status={item.get('status', 'broken' if item['broken'] else 'ready')}"})
+            records.append(
+                {
+                    "section": "interactions",
+                    "tag": item["tag"],
+                    "kind": "interaction",
+                    "visible": not item["hidden"] and not item.get("layer_hidden", False),
+                    "active": not item["broken"],
+                    "layer tag": item["layer_tag"],
+                    "representation": "links",
+                    "preset": None,
+                    "n atoms": None,
+                    "n members": None,
+                    "n picks": None,
+                    "details": f"analysis={item['analysis_name']}, status={item.get('status', 'broken' if item['broken'] else 'ready')}",
+                }
+            )
 
         for item in self.selections.info(skip_digestion=True):
             records.append(

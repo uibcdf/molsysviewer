@@ -82,7 +82,9 @@ class SceneMixin:
             source_count = int(msm.get(molecular_system, n_structures=True))
             source_frames = selected(source_structure_indices, source_count, "source_structure_indices")
             if len(source_frames) != len(frames):
-                raise ValueError("Selected source and destination structure counts must agree; sources do not broadcast.")
+                raise ValueError(
+                    "Selected source and destination structure counts must agree; sources do not broadcast."
+                )
             if len(frames) > 1 and structure_pairing != "by_index":
                 raise ValueError("Reading multiple source cells requires structure_pairing='by_index'.")
             box = msm.get(molecular_system, structure_indices=source_frames, box=True)
@@ -91,11 +93,21 @@ class SceneMixin:
             source_time = msm.get(molecular_system, structure_indices=source_frames, time=True)
             target_time = self._molsys.structures.time
             if source_time is not None and target_time is not None:
-                if not np.allclose(puw.get_value(source_time, to_unit="ps"),
-                                   puw.get_value(target_time, to_unit="ps")[frames], rtol=1e-9, atol=1e-9):
+                if not np.allclose(
+                    puw.get_value(source_time, to_unit="ps"),
+                    puw.get_value(target_time, to_unit="ps")[frames],
+                    rtol=1e-9,
+                    atol=1e-9,
+                ):
                     raise ValueError("Selected source times do not match the destination time axis.")
-        elif not (source_structure_indices is None or isinstance(source_structure_indices, str)
-                  and source_structure_indices == "all") or structure_pairing is not None:
+        elif (
+            not (
+                source_structure_indices is None
+                or isinstance(source_structure_indices, str)
+                and source_structure_indices == "all"
+            )
+            or structure_pairing is not None
+        ):
             raise ValueError("Source selectors and pairing require molecular_system.")
 
         existing = self._molsys.structures.box
@@ -111,25 +123,40 @@ class SceneMixin:
                 raise ValueError("Box count must match the selected destination structures.")
             if existing is None and not complete:
                 raise ValueError("Initialize every structure's box before replacing a subset.")
-            updated = np.empty((count, 3, 3), dtype=float) if existing is None else np.array(
-                puw.get_value(existing, to_unit="nm"), dtype=float, copy=True,
+            updated = (
+                np.empty((count, 3, 3), dtype=float)
+                if existing is None
+                else np.array(
+                    puw.get_value(existing, to_unit="nm"),
+                    dtype=float,
+                    copy=True,
+                )
             )
             updated[frames] = values
             quantity = puw.quantity(updated, "nm")
 
         analyses = getattr(self._molsys, "interactions", {})
         reconciled = {name: result.invalidate_structures(frames) for name, result in analyses.items()}
-        previous_box = None if existing is None else puw.quantity(
-            np.array(puw.get_value(existing, to_unit="nm"), copy=True), "nm",
+        previous_box = (
+            None
+            if existing is None
+            else puw.quantity(
+                np.array(puw.get_value(existing, to_unit="nm"), copy=True),
+                "nm",
+            )
         )
         msm.set(self._molsys, box=quantity)
         # Older compatible base providers can silently ignore cell initialization.
         # Verify through the same public scientific route used by projections.
         actual = msm.get(self._molsys, box=True)
-        applied = actual is None if quantity is None else (
-            actual is not None
-            and np.shape(puw.get_value(actual, to_unit="nm")) == np.shape(updated)
-            and np.allclose(puw.get_value(actual, to_unit="nm"), updated, rtol=1e-12, atol=1e-12)
+        applied = (
+            actual is None
+            if quantity is None
+            else (
+                actual is not None
+                and np.shape(puw.get_value(actual, to_unit="nm")) == np.shape(updated)
+                and np.allclose(puw.get_value(actual, to_unit="nm"), updated, rtol=1e-12, atol=1e-12)
+            )
         )
         if not applied:
             msm.set(self._molsys, box=previous_box)
@@ -146,8 +173,13 @@ class SceneMixin:
             self.hide_box(skip_digestion=True)
             return
         style = self._box_record
-        self.show_box(color=style["color"], width=style["width"], alpha=style["alpha"],
-                      structure_indices=self.player.index, skip_digestion=True)
+        self.show_box(
+            color=style["color"],
+            width=style["width"],
+            alpha=style["alpha"],
+            structure_indices=self.player.index,
+            skip_digestion=True,
+        )
 
     @signal(tags=["scene", "box"])
     @digest()
@@ -486,7 +518,10 @@ class SceneMixin:
         analyses = getattr(self._molsys, "interactions", {})
         reconciled = {name: result.invalidate_structures(structures) for name, result in analyses.items()}
         self._molsys.structures.set_coordinates(
-            indices=atoms, structure_indices=structures, value=puw.quantity(values, "nm"), skip_digestion=True,
+            indices=atoms,
+            structure_indices=structures,
+            value=puw.quantity(values, "nm"),
+            skip_digestion=True,
         )
         if analyses:
             self._molsys.interactions = reconciled
@@ -518,7 +553,10 @@ class SceneMixin:
 
         pending_transfer = any(manager.active is not None for _, manager in self._iter_structure_transfer_managers())
         atom_indices, structures, coordinates_a = self._edit_coordinates(
-            coordinates, selection, structure_indices, syntax,
+            coordinates,
+            selection,
+            structure_indices,
+            syntax,
         )
         if not atom_indices or not structures:
             return
@@ -555,7 +593,12 @@ class SceneMixin:
         self.structure_indices = None
         self._molsys = None
         self.structure_mask = None
-        for obj in [*self._regions.values(), *self._layers.values(), *self._scene_objects.values(), *self._selections.values()]:
+        for obj in [
+            *self._regions.values(),
+            *self._layers.values(),
+            *self._scene_objects.values(),
+            *self._selections.values(),
+        ]:
             obj._active = False
         dict.clear(self._regions)
         dict.clear(self._layers)

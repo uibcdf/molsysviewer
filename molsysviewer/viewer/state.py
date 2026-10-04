@@ -31,12 +31,16 @@ def _read_atom_identities(molsys, *, fingerprint=False):
     if fingerprint:
         attributes += ("atom_id", "atom_type")
     available = [name for name in attributes if msm.has_attribute(molsys, name, skip_digestion=True)]
-    columns = msm.get(molsys, element="atom", skip_digestion=True, **dict.fromkeys(available, True)) if available else []
+    columns = (
+        msm.get(molsys, element="atom", skip_digestion=True, **dict.fromkeys(available, True)) if available else []
+    )
     if len(available) == 1:
         columns = [columns]
     values = dict(zip(available, columns, strict=True))
-    return [tuple(str(values[name][index]) if name in values else None for name in attributes)
-            for index in range(molsys.get_n_atoms())]
+    return [
+        tuple(str(values[name][index]) if name in values else None for name in attributes)
+        for index in range(molsys.get_n_atoms())
+    ]
 
 
 def _structure_identity(molsys) -> dict | None:
@@ -162,8 +166,11 @@ class StateMixin:
             atom_indices = list(options.pop("atom_indices", None) or [])
             record["options"] = options
             if options.get("position") is not None:
-                anchor = {"type": "position", "coordinates": options.pop("position"),
-                          "unit": options.pop("position_unit", "angstrom")}
+                anchor = {
+                    "type": "position",
+                    "coordinates": options.pop("position"),
+                    "unit": options.pop("position_unit", "angstrom"),
+                }
             else:
                 anchor = {"type": "atoms", "indices": atom_indices}
             # Beside the indices, not instead of them: the indices stay the fast path
@@ -254,7 +261,11 @@ class StateMixin:
                 **({"sources": sources} if (sources := self._export_source_state()) else {}),
                 "annotations": annotations,
                 "measurements": measurements,
-                **({"trajectory_plots": self.trajectory_plot.records(skip_digestion=True)} if self.trajectory_plot._cards() else {}),
+                **(
+                    {"trajectory_plots": self.trajectory_plot.records(skip_digestion=True)}
+                    if self.trajectory_plot._cards()
+                    else {}
+                ),
                 "measurement_settings": self.measurements.settings(skip_digestion=True),
                 "shapes": shapes,
                 **(
@@ -466,9 +477,11 @@ class StateMixin:
 
         region_records = list(state.get("regions", []))
         isolated_records = [record for record in region_records if record.get("show_only", False)]
-        if (any(not isinstance(record.get("show_only", False), bool) for record in region_records)
-                or len(isolated_records) > 1
-                or any(record.get("hidden") for record in isolated_records)):
+        if (
+            any(not isinstance(record.get("show_only", False), bool) for record in region_records)
+            or len(isolated_records) > 1
+            or any(record.get("hidden") for record in isolated_records)
+        ):
             raise ValueError("State must name at most one visible show_only region.")
         ordered_records = self._topologically_ordered_regions(region_records)
         if not clear_first and on_conflict == "raise":
@@ -530,8 +543,9 @@ class StateMixin:
                     if tag is None:
                         continue
                     with self._state_owner_context(record):
-                        layer_tag = self._restored_layer_tag(record["layer_tag"], original_object_tag=record["tag"],
-                                                             layer_tag_map=layer_tag_map)
+                        layer_tag = self._restored_layer_tag(
+                            record["layer_tag"], original_object_tag=record["tag"], layer_tag_map=layer_tag_map
+                        )
                         if record.get("broken"):
                             from ..interactions import InteractionSet
 
@@ -980,10 +994,13 @@ class StateMixin:
             if coordinate_anchor:
                 from .._private.annotation_vectors import annotation_vector
                 from .._pyunitwizard import puw
+
                 if not isinstance(anchor.get("unit"), str):
                     raise ValueError("A coordinate annotation anchor requires explicit length units.")
                 options["position"] = annotation_vector(
-                    puw.quantity(anchor.get("coordinates"), anchor["unit"]), "position", physical=True,
+                    puw.quantity(anchor.get("coordinates"), anchor["unit"]),
+                    "position",
+                    physical=True,
                 )
                 options["position_unit"] = "angstrom"
             if isinstance(anchor, dict) and anchor.get("type") == "atoms":

@@ -8,6 +8,7 @@ def digest_offset(offset, offset_mode="camera", caller=None):
         raise ArgumentError("offset", value=offset, caller=caller)
     if caller and caller.startswith("molsysviewer.annotations."):
         from ...annotation_vectors import annotation_vector
+
         annotation_vector(offset, "offset", physical=offset_mode == "world", caller=caller)
         return offset
     if isinstance(offset, (list, tuple)) and len(offset) == 3:

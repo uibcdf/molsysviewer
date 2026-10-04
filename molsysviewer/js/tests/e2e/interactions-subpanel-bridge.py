@@ -62,19 +62,23 @@ def replay(events, family, fixture_root):
             view._handle_frontend_event(event)
             batches.append(list(sent))
             sent.clear()
-        return _to_plain({
-            "initial_messages": initial,
-            "message_batches": batches,
-            "series": view.interactions._static_messages(),
-            "summary": view.interactions._summary_message(),
-            "inspection": view.interactions.inspect("hb") if view.interactions.contains("hb") else None,
-            "fixture_file": str(fixture_file) if fixture_file is not None else None,
-            "state": view.export_state(),
-            "calculation_scopes": {
-                item["name"]: view.interactions.get_analysis(item["name"]).evaluation_scope
-                for item in view.interactions.analyses()
-            } if family == "pentalanine_scope" else {},
-        })
+        return _to_plain(
+            {
+                "initial_messages": initial,
+                "message_batches": batches,
+                "series": view.interactions._static_messages(),
+                "summary": view.interactions._summary_message(),
+                "inspection": view.interactions.inspect("hb") if view.interactions.contains("hb") else None,
+                "fixture_file": str(fixture_file) if fixture_file is not None else None,
+                "state": view.export_state(),
+                "calculation_scopes": {
+                    item["name"]: view.interactions.get_analysis(item["name"]).evaluation_scope
+                    for item in view.interactions.analyses()
+                }
+                if family == "pentalanine_scope"
+                else {},
+            }
+        )
     finally:
         view.close()
 

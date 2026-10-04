@@ -29,6 +29,7 @@ def digest_position(position, caller=None):
     if caller and caller.startswith("molsysviewer.annotations."):
         if position is not None:
             from ...annotation_vectors import annotation_vector
+
             annotation_vector(position, "position", physical=True, caller=caller)
         return position
     try:

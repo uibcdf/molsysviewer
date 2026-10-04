@@ -3,6 +3,7 @@
 Scientific conversion/addition belongs to MolSysMT. This module owns Viewer
 input intent, compact source correspondence and composition preconditions.
 """
+
 from numbers import Integral
 from uuid import uuid4
 
@@ -26,8 +27,10 @@ def _index_selector(value, name):
     if value is None or isinstance(value, str) and value == "all":
         return "all"
     values = [value] if isinstance(value, Integral) else list(value)
-    if not values or any(isinstance(i, (bool, np.bool_)) or not isinstance(i, Integral)
-                         or i < 0 or i > np.iinfo(np.int64).max for i in values):
+    if not values or any(
+        isinstance(i, (bool, np.bool_)) or not isinstance(i, Integral) or i < 0 or i > np.iinfo(np.int64).max
+        for i in values
+    ):
         raise ValueError(f"{name} must contain nonnegative integer indices.")
     return np.asarray(values, dtype=np.int64)
 
@@ -58,12 +61,17 @@ def _load_record(molsys, *, index=0, offset=0, label=None, origin=None, atoms=No
     count = int(molsys.get_n_atoms())
     frames = int(molsys.structures.n_structures)
     return {
-        "index": int(index), "label": label.strip() if isinstance(label, str) and label.strip() else None,
-        "n_atoms": count, "start": int(offset), "stop": int(offset) + count,
-        "source_id": uuid4().hex, "origin": origin or {"form": "molsysmt.MolSys", "reference": None},
+        "index": int(index),
+        "label": label.strip() if isinstance(label, str) and label.strip() else None,
+        "n_atoms": count,
+        "start": int(offset),
+        "stop": int(offset) + count,
+        "source_id": uuid4().hex,
+        "origin": origin or {"form": "molsysmt.MolSys", "reference": None},
         "atom_map": {"encoding": "runs", "runs": _index_runs(range(count) if atoms is None else atoms, offset)},
         "structure_map": {"encoding": "runs", "runs": _index_runs(range(frames) if structures is None else structures)},
-        "region_tag": None, "region_uid": None,
+        "region_tag": None,
+        "region_uid": None,
     }
 
 
@@ -106,23 +114,25 @@ def _prepare_source(source, *, selection, structure_indices, syntax, label, inde
         raise ValueError("Source atom correspondence does not match the converted system.")
     if frames is not None and len(frames) != int(converted.structures.n_structures):
         raise ValueError("Source structure correspondence does not match the converted system.")
-    record = _load_record(converted, index=index, offset=offset, label=label,
-                          origin=_origin(source), atoms=atoms, structures=frames)
+    record = _load_record(
+        converted, index=index, offset=offset, label=label, origin=_origin(source), atoms=atoms, structures=frames
+    )
     return prepared, record
 
 
 def _validate_pairing(target, incoming, pairing):
     frames = int(target.structures.n_structures)
     if frames != int(incoming.structures.n_structures):
-        raise ValueError("Sources must have the same number of selected structures; static broadcasting is not implicit.")
+        raise ValueError(
+            "Sources must have the same number of selected structures; static broadcasting is not implicit."
+        )
     if frames > 1 and pairing != "by_index":
         raise ValueError("Combining trajectories requires structure_pairing='by_index'.")
     left, right = target.structures.time, incoming.structures.time
     if left is not None and right is not None:
         # Input compatibility, not inferred physical synchronization. Tolerance
         # only permits floating roundoff after explicit unit normalization.
-        if not np.allclose(puw.get_value(left, to_unit="ps"), puw.get_value(right, to_unit="ps"),
-                           rtol=1e-9, atol=1e-9):
+        if not np.allclose(puw.get_value(left, to_unit="ps"), puw.get_value(right, to_unit="ps"), rtol=1e-9, atol=1e-9):
             raise ValueError("Selected source times do not match the destination time axis.")
 
 

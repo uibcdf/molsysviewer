@@ -625,8 +625,11 @@ class Region:
             raise as_our_argument_error(exc, "molsysviewer.regions.convert") from exc
 
     @signal(tags=["region", "query"])
-    @digest(digestion_source="molsysviewer._private.argdigest.molecular_attribute_flags",
-            digestion_style="registry", strictness="error")
+    @digest(
+        digestion_source="molsysviewer._private.argdigest.molecular_attribute_flags",
+        digestion_style="registry",
+        strictness="error",
+    )
     def get(
         self,
         element="system",

@@ -31,6 +31,14 @@ functional closure. The 0.24.0 recommendation stands; no tag or installed/hosted
 certification is created by these source results. Earlier dated observations
 retain their own inputs and are superseded by this handoff where indicated.
 
+The source commit is `c598d2f2`, pushed without a skip marker. Its initial
+hosted policy check exposed formatting debt: 88 files are normalized with pinned
+Ruff 0.16.5 and identical before/after ASTs, preserving functional evidence.
+The hosted notebook lane also exposes the published-provider block and the stale
+Whole mask example now tracked as #160 for the final documentation block.
+See the follow-up above and `format_policy_followup_20261004.json` for the
+distinction between functional qualification and remaining hosted evidence.
+
 **Candidate identity correction (2026-10-04): #157 resolved in source.**
 Initial, replacement and composite loads validate public atom identities on the
 detached candidate before committing it. Five targeted guards pass, including

@@ -58,13 +58,13 @@ def validate_guard(root: Path, selector: str) -> list[str]:
         'import { chromium } from "./e2e-browser";' in entry,
         'import { runInteractionsSuite } from "./interactions-subpanel-scenarios";' in entry,
         'runInteractionsSuite(chromium, "calculation").catch' in entry,
-        'process.exit(1)' in entry,
-        'export async function runInteractionsSuite(' in owner,
+        "process.exit(1)" in entry,
+        "export async function runInteractionsSuite(" in owner,
         '"interactions-calculation"' in runner,
-        'tests/e2e/interactions-calculation.e2e.ts' in scripts.get("build:e2e:all", ""),
-        'build:harness' in scripts.get("test:e2e:core", ""),
-        'build:e2e:all' in scripts.get("test:e2e:core", ""),
-        'e2e-runner.js --lane=core' in scripts.get("test:e2e:core", ""),
+        "tests/e2e/interactions-calculation.e2e.ts" in scripts.get("build:e2e:all", ""),
+        "build:harness" in scripts.get("test:e2e:core", ""),
+        "build:e2e:all" in scripts.get("test:e2e:core", ""),
+        "e2e-runner.js --lane=core" in scripts.get("test:e2e:core", ""),
     )
     return [] if all(requirements) else [f"guard {selector!r} does not resolve to its documented browser lane"]
 

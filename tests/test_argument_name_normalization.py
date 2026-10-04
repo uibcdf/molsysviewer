@@ -136,9 +136,12 @@ def test_every_method_that_forwards_undigested_kwargs_has_a_table(registry):
             if not any("digest" in ast.unparse(d) for d in node.decorator_list):
                 continue
             delegates_attributes = any(
-                isinstance(call, ast.Call) and isinstance(call.func, ast.Attribute)
-                and isinstance(call.func.value, ast.Name) and call.func.value.id == "msm"
-                and call.func.attr == "get" and any(kw.arg is None for kw in call.keywords)
+                isinstance(call, ast.Call)
+                and isinstance(call.func, ast.Attribute)
+                and isinstance(call.func.value, ast.Name)
+                and call.func.value.id == "msm"
+                and call.func.attr == "get"
+                and any(kw.arg is None for kw in call.keywords)
                 for call in ast.walk(node)
             )
             if delegates_attributes:
@@ -176,16 +179,20 @@ def test_a_real_atom_indices_argument_survives_untouched(view):
 
 def test_normalization_tables_are_scoped_to_molecular_queries(registry):
     from molsysmt.attribute import get_argument_aliases
+
     contract = get_argument_aliases()
     assert contract["schema_version"] == 1
     tables = describe_normalization(registry)
     assert {table["applies_to"] for table in tables} == {
-        "molsysviewer.whole.get", "molsysviewer.regions.get",
+        "molsysviewer.whole.get",
+        "molsysviewer.regions.get",
     }
     for caller in ("molsysviewer.whole.get", "molsysviewer.regions.get"):
         scoped = [table for table in tables if table["applies_to"] == caller]
         assert next(table for table in scoped if table["when"] is None)["aliases"] == contract["attribute_synonyms"]
-        assert {table["when"]["element"]: table["aliases"] for table in scoped if table["when"]} == contract["element_attribute_aliases"]
+        assert {table["when"]["element"]: table["aliases"] for table in scoped if table["when"]} == contract[
+            "element_attribute_aliases"
+        ]
 
 
 @pytest.mark.parametrize(

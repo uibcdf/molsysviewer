@@ -1,4 +1,5 @@
 """Scope the public MolSysMT alias contract to the viewer's molecular queries."""
+
 from argdigest import AliasTable
 from molsysmt.attribute import get_argument_aliases
 
