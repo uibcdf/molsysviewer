@@ -8,7 +8,7 @@ verification: measured
 area: [load, api, studio]
 guard:
 normative:
-blocked_by: [uibcdf/molsysmt#312, uibcdf/molsysmt#313, uibcdf/molsysviewer#157]
+blocked_by: [uibcdf/molsysmt#312, uibcdf/molsysmt#313]
 supersedes: []
 ---
 
@@ -595,3 +595,13 @@ then adding it exposes missing-group getter failure (uibcdf/molsysmt#313) and
 Viewer candidate prevalidation gap #157. The provider owns hierarchy semantics;
 the consumer must refuse an unexportable candidate before active-state mutation.
 See [`scientific_use_review_20261004.md`](../scientific_use_review_20261004.md).
+
+## Candidate identity refusal — 2026-10-04
+
+The Viewer preparation gap #157 is resolved: detached candidates read public
+atom identities through the existing state owner before replacing the active
+system. Five targeted guards verify initial/replacement refusal, bypass parity,
+retained scene/history/analyses and real progressive/batch protein–caffeine
+refusal with a saveable prior session. This does not repair provider #312/#313
+or qualify mixed-SDF support. Once those public routes work, the real-input guard
+exercises successful composition and history/session round trips.

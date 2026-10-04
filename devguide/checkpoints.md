@@ -5,6 +5,21 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+**Candidate identity correction (2026-10-04): #157 resolved in source.**
+Initial, replacement and composite loads validate public atom identities on the
+detached candidate before committing it. Five targeted guards pass, including
+malformed native input and real progressive/batch protein–caffeine refusal.
+The prior system, coordinates, scene objects, source maps, analyses and undo/redo
+remain intact, and its session still round-trips. The once-run complete source
+regression passes **2,808 tests, 23 skipped**, in `molsyssuite@uibcdf_3.14`;
+Ruff and diff checks pass. See [the resolved record](archive/mixed_partial_hierarchy_load_breaks_scene_state.md)
+and [the scientific review receipt](scientific_use_review_20261004.json).
+
+**Next:** obtain the public MolSysMT fixes for #312/#313, then qualify successful
+mixed-source loading. Safe refusal resolves the consumer preparation defect;
+it does not establish feature availability. MolSysMT's unrelated local work is
+preserved. No version tag or new installed/hosted certification is claimed.
+
 **Scientific-use review (2026-10-04): bounded workflows pass; mixed SDF remains open.**
 The reviewed source and devguide reconciliation are pushed at `0dea171d` and
 `cdbf52b3`. Four real PDBs (7,953 atoms) agree between batch/progressive loading;
@@ -18,7 +33,8 @@ gap (#157): loading can accept a scene that later cannot export state/history.
 These failures are reproduced and reported, without provider patches or invented
 hierarchy. See [the review](scientific_use_review_20261004.md).
 
-**Next:** address #157 and the two provider defects, then qualify the repaired
+That review's preparation finding is corrected in the follow-up above.
+**Next:** address the two provider defects, then qualify the repaired
 mixed-source workflow. A minor version **0.24.0** is recommended; no tag was
 created. Compatible published dependencies, exact-artifact/hosted gates, final
 public documentation and human observations remain. Older passing results retain
@@ -1112,18 +1128,20 @@ documents carry it.
 
 Resume toward **1.0** in this order:
 
-**Current session priority (2026-10-03):** the cumulative source has been reviewed,
+**Current session priority (2026-10-04):** the cumulative source has been reviewed,
 committed and pushed. Loading #151 has an accepted and implemented contract;
 it is no longer an undecided design. The latest source regression passes
-**2,805 tests, 23 skipped**. Provider #307/#309 repairs are verified in the
-editable provider, with published-artifact qualification still outstanding.
+**2,808 tests, 23 skipped** after the identity correction. Provider #307/#309
+repairs are verified in the editable provider, with published-artifact
+qualification still outstanding.
 Continue in the maintainer's order:
 
 1. The source integration, current devguide reconciliation and bounded scientific
    review are complete. Preserve their dated records and qualification limits.
-2. Address the newly reproduced mixed-source gap #157 and coordinate public SDF
-   count/partial-hierarchy fixes with uibcdf/molsysmt#312/#313. Repeat the affected
-   workflow; do not infer that public SDF conversion is a complete workaround.
+2. Candidate prevalidation #157 is resolved. Coordinate public SDF count and
+   partial-hierarchy fixes with uibcdf/molsysmt#312/#313, then qualify successful
+   mixed-source loading. Safe refusal and public SDF conversion do not establish
+   that workflow's support.
 3. The version assessment recommends 0.24.0. Freeze no tag before compatible
    dependency and exact-candidate gates pass. Obtain human scientific usability,
    visual and first-contact observations in addition to the automated review.

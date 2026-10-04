@@ -215,3 +215,7 @@ Completed work, kept for the reasoning:
 - [adopt_shared_public_conda_verifier.md](adopt_shared_public_conda_verifier.md) — #133: Both workflows call the pinned shared public verifier and retain independent evidence; its hosted call passes, local candidate/promotion tools remain compatible, and the Windows launcher defect stays tracked under #101.
 
 - [dependency_audit_mistakes_evidence_actions_for_source_checkouts.md](dependency_audit_mistakes_evidence_actions_for_source_checkouts.md) — #136: evidence-action repository inputs no longer become source checkouts; undeclared and duplicate actual checkouts remain rejected.
+
+## Scientific loading follow-up — 2026-10-04
+
+- [mixed_partial_hierarchy_load_breaks_scene_state.md](mixed_partial_hierarchy_load_breaks_scene_state.md) — #157: Detached load candidates validate public scene identity before commit; rejected malformed or mixed partial-hierarchy systems preserve the existing scene, sources, history and analyses.

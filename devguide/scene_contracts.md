@@ -2481,7 +2481,14 @@ integration and supported-provider qualification remain separate release gates.
   count. Older fingerprints conservatively trigger identity re-resolution.
   This is an index-correspondence safeguard, not source authentication.
 - Replacement preparation converts the system and resolves source maps before
-  resetting the viewer. Required append accounting is validated before changing
+  resetting the viewer. Initial, replacement and composite loads also read the
+  candidate's public atom identities through the state owner before committing
+  it. If an advertised identity column cannot be read or indexed, preparation
+  refuses the load with the original exception as cause, preserving the prior
+  system, scene, sources, history and analyses. Absent optional columns remain
+  explicit missing hierarchy; the provider owns it and the Viewer does not
+  invent it.
+  Required append accounting is validated before changing
   systems, analyses or scene state. This does not undo prior external edits or
   promise rollback of arbitrary rendering failures.
 - Styles own detached nested recipe inputs; registered and builtin Style queries
@@ -2495,7 +2502,8 @@ integration and supported-provider qualification remain separate release gates.
   geometry. API/state import refuse NaN/infinity before mutation; there is no
   implicit missing-data-to-zero conversion.
 
-Python guards: `tests/test_design_review_closure.py`. Browser guards:
+Python guards: `tests/test_design_review_closure.py` and
+`tests/test_loading_identity_prevalidation.py`. Browser guards:
 `js/tests/e2e/annotations-interaction.e2e.ts`,
 `js/tests/e2e/annotations-subpanel.e2e.ts` and
 `js/tests/e2e/trajectory-plot.e2e.ts`; numeric geometry/seeking also has a unit guard

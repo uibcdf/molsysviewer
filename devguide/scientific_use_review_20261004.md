@@ -89,9 +89,40 @@ the sparse interactions alone or a scalability target. The trajectory selects
 four samples from a 5,000-structure source; this review does not recalculate all
 5,000 structures. Earlier large-workload measurements remain in their own records.
 
+## Corrective follow-up — 2026-10-04
+
+The consumer defect #157 is resolved by prevalidating public atom identities on
+the detached load candidate using the existing scene-state owner. All five
+targeted guards in `tests/test_loading_identity_prevalidation.py` pass in
+`molsyssuite@uibcdf_3.14`: malformed native initial/replacement loads, normal and
+bypassed digestion, and real progressive/batch protein–caffeine loads. The latter
+now refuse the candidate with the provider's `IndexError` retained as cause,
+preserving the prior system, scene objects, sources, analyses and undo/redo.
+The prior session remains saveable and reloadable. The table above retains the
+earlier observations; safe refusal does not certify mixed-source support.
+
+The real-input guard takes the successful composition/history/session path when
+the public provider's partial-hierarchy getters work. The malformed-native guard
+continues to protect refusal independently of the provider fix. MolSysMT
+#312/#313 remain open and no sibling code was edited. Their component labels
+link the consumer evidence. The once-run complete source suite passes
+**2,808 tests, 23 skipped**, with exit 0; Ruff and diff checks pass. The native
+pytest log, SHA-256, source hashes, provider provenance and preservation checks
+are retained in the `candidate_identity_followup` section of the
+[machine-readable receipt](scientific_use_review_20261004.json). Queue-dependent
+protocol parameterizations change when reports move to the archive; test counts
+are not inferred by adding new cases to an older total. These results do not
+replace exact installed/hosted qualification.
+
+During this follow-up, an independent MolSysMT session committed its partial-charge
+work and synchronized governance: the provider advanced from dirty `033c12b3` to
+clean `7894435e`. The SDF count and atom-hierarchy getter sources retain identical
+hashes, and #312/#313 remain open. The receipt records both boundaries; this is
+development evidence rather than a frozen provider-pair qualification.
+
 ## Next steps
 
-Resolve #157's candidate prevalidation and coordinate #312/#313 with MolSysMT.
+Coordinate #312/#313 with MolSysMT; consumer prevalidation #157 is resolved.
 Then repeat the affected mixed-source workflow against a fixed provider and its
 eventual published artifact. Retain the existing #114/#140/#101 exact-package,
 platform and hosted-candidate gates. Finish public documentation and obtain

@@ -45,8 +45,10 @@ After publication, separately verify each distribution and Zenodo ingestion.
 
 The subsequent [scientific review](scientific_use_review_20261004.md) reproduces
 two provider defects (uibcdf/molsysmt#312/#313) and the consumer prevalidation
-gap #157. Close and requalify the affected mixed-source workflow before claiming
-that support in the next version. Other bounded real workflows pass; this does
+gap #157. The consumer now rejects unusable candidates before mutation; the two
+provider defects remain open. Requalify successful mixed-source loading after
+their public fixes before claiming that support in the next version. Other
+bounded real workflows pass; this does
 not remove the exact-provider/artifact gates below.
 
 Review representative real molecular workflows before freezing the next version:

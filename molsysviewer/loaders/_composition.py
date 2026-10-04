@@ -143,4 +143,14 @@ def _compose_sources(target, prepared_sources, pairing):
     for system in systems:
         msm.add(candidate, system, keep_ids=True, in_place=True, skip_digestion=True)
     _validate_renderable(candidate)
+    # Scene export and history need public atom identities as well as coordinates.
+    # Read them on the detached candidate before any active-system mutation.
+    from ..viewer.state import _structure_identity
+
+    try:
+        _structure_identity(candidate)
+    except Exception as error:
+        raise ValueError(
+            "Prepared molecular system cannot provide the atom identities required for scene state."
+        ) from error
     return candidate

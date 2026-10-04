@@ -346,5 +346,56 @@
     "indexes": "current",
     "issue_board": "46 queued records agree",
     "full_regression_repeated": false
+  },
+  "candidate_identity_followup": {
+    "date": "2026-10-04",
+    "base_commit": "b74ec09a378c13b2660c8681b6d208ff71238b3d",
+    "environment": "molsyssuite@uibcdf_3.14",
+    "provider_head": "033c12b341abf6e986f9ae9ddd6c84bf167222c8",
+    "provider_status_during_validation": "M devguide/pending_bugs/README.md\n M devguide/pending_proposals/assign_partial_charges_with_an_explicit_named_model.md\n M docs/api/interactions/autosummary/molsysmt.interactions.ionic.get_ionic_interactions.rst\n M docs/api/physchem/autosummary/molsysmt.physchem.get_charge_centers.rst\n M docs/content/course/Common_Core/12_Building_Repairing_and_Auditing_Systems.ipynb\n M docs/content/user/cookbook/index.md\n M docs/content/user/foundations/native_world/classes/molsysmt_MolSys.md\n M docs/content/user/tools/basic/set.ipynb\n M docs/content/user/tools/build/index.md\n M docs/content/user/tools/physchem/index.md\n M docs/docs_manifest.yml\n M molsysmt/_private/argdigest/argument/forcefield.py\n M molsysmt/_private/argdigest/argument/method.py\n M molsysmt/_private/argdigest/argument/partial_charge.py\n M molsysmt/_private/argdigest/argument/value.py\n M molsysmt/_private/pdbqt_writer.py\n M molsysmt/_private/scientific_citations.py\n M molsysmt/basic/set.py\n M molsysmt/build/__init__.py\n M molsysmt/form/molsysmt_MolSys/set.py\n M molsysmt/form/molsysmt_MolSys/to_file_pdbqt.py\n M molsysmt/form/molsysmt_MolecularMechanics/set.py\n M molsysmt/native/molecular_mechanics.py\n M molsysmt/native/molsys.py\n M molsysmt/physchem/__init__.py\n?? devguide/partial_charge_assignment.md\n?? devguide/pending_bugs/public_set_rejects_partial_charge_values_before_native_mechanical_delegation.md\n?? docs/content/user/cookbook/assigning_partial_charges.md\n?? docs/content/user/cookbook/assigning_partial_charges.md.AGENTS.md\n?? docs/content/user/tools/build/assign_partial_charges.md\n?? docs/content/user/tools/build/assign_partial_charges.md.AGENTS.md\n?? docs/content/user/tools/physchem/get_partial_charges.md\n?? docs/content/user/tools/physchem/get_partial_charges.md.AGENTS.md\n?? molsysmt/_private/argdigest/argument/expected_total_charge.py\n?? molsysmt/_private/partial_charges.py\n?? molsysmt/build/assign_partial_charges.py\n?? molsysmt/physchem/get_partial_charges.py\n?? tests/basic/test_set_partial_charge.py\n?? tests/build/test_assign_partial_charges.py\n?? tests/physchem/test_get_partial_charges.py",
+    "provider_affected_file_sha256": {
+      "molsysmt/form/file_sdf/get_structural_attributes.py": "a5a00f6bd84f485b59eefa57232838f3e969283ef3a720125c63b59bce146c21",
+      "molsysmt/form/molsysmt_Topology/get_topological_attributes.py": "4a6b9c80252fb0565fd2c30db5f83dcda91bb5c7d25fb3b28b5458320d8658ed"
+    },
+    "preserved_scratch_sha256": {
+      "sandbox/interactions_panel_design.html": "0edd0d3e943691e72af2c1e64e815e1f939ab545031e6822cfede15f05345635",
+      "sandbox/interactions_panel_design.png": "954cb007748850a31292f97df2e4185735178fcc4d59fad0ddadeec4d040ff02",
+      "sandbox/interactions_panel_design_stored.png": "82a92fc023252ebf11fbc9d845c4af786f23241728083d1b2a1f2bbde4d6369e"
+    },
+    "preserved_stashes": "stash@{0}: On main: Preserve canonical ACKREDIT guide during main synchronization\nstash@{1}: On main: Preserve product work before integrating #137 #138 #139 closure evidence\nstash@{2}: On main: Preserve product work before integrating qualified source-pair corrections #138 #139\nstash@{3}: On main: Preserve product work before integrating direct-main CI routing #137\nstash@{4}: On main: Preserve product work before integrating published release tools 51872849\nstash@{5}: On main: Preserve product work before release-tools publication 04fd6725, 2026-10-01\nstash@{6}: On main: Preserve accumulated MolSysViewer work before integrating PR 135, 2026-10-01\nstash@{7}: autostash",
+    "targeted_tests": {
+      "command": "python -m pytest tests/test_loading_identity_prevalidation.py -x -q",
+      "passed": 5,
+      "result": "pass"
+    },
+    "full_tests": {
+      "command": "python -m pytest tests/ --tb=long -q",
+      "log": "/tmp/msv-identity-prevalidation-full-20261004.log",
+      "result": "pass",
+      "exit": 0,
+      "passed": 2808,
+      "skipped": 23,
+      "total": 2831,
+      "log_sha256": "627ec3371deefcf6fefbf921125a9fb88b464336d59509b09dbed88b0e3d41ac",
+      "count_source": "Native pytest terminal progress at 100%; double quiet suppresses the text summary. Queue-dependent protocol parameterizations change as reports move to archive."
+    },
+    "scope": "Consumer preparation only; provider source is independently dirty and was not edited. Safe refusal does not qualify successful mixed-source loading or installed/hosted artifacts.",
+    "ruff": "pass",
+    "diff_check": "pass",
+    "provider_status_after_validation": "",
+    "provider_issues": {
+      "uibcdf/molsysmt#312": "OPEN",
+      "uibcdf/molsysmt#313": "OPEN"
+    },
+    "provider_files_unchanged_by_this_session": true,
+    "source_sha256": {
+      "molsysviewer/loaders/_composition.py": "7fa94ddde7ec0a25ad0b973d14eb315b73e7c88707483b8ca8e1711c82b25456",
+      "tests/test_loading_identity_prevalidation.py": "bad049c9285dce2e370d74cdac1684ae8ae11c66dae018ed0272bc4e2aa45fb2"
+    },
+    "preservation_check": "pass",
+    "ci_route": "Existing internal deferred [skip ci] route; hosted debt retained. Not a release candidate or installed/hosted certification.",
+    "provider_head_after_validation": "7894435e748bc55254b6c3d2b63ae82c101e5774",
+    "provider_affected_files_unchanged_during_validation": true,
+    "provider_concurrent_work": "Independent session committed partial-charge work and synchronized governance during validation; provider went from dirty HEAD 033c12b3 to clean HEAD 7894435e. SDF count and hierarchy getter sources stayed unchanged. This is development evidence, not a frozen provider-pair qualification."
   }
 }

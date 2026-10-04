@@ -91,8 +91,9 @@ truncate, align, broadcast, concatenate trajectory axes or overwrite analyses.
 
 1. Source integration, developer-guide reconciliation and bounded real scientific
    review are complete. Their dated records retain input and observation limits.
-2. Resolve the mixed-source prevalidation gap #157 and coordinate the provider's
-   SDF count/hierarchy fixes in uibcdf/molsysmt#312/#313. Repeat that workflow.
+2. Mixed-source prevalidation #157 is resolved with safe candidate refusal.
+   Coordinate the provider's SDF count/hierarchy fixes in uibcdf/molsysmt#312/#313,
+   then qualify successful composition rather than treating refusal as support.
 3. A minor version 0.24.0 is recommended without a tag. Preserve separate human
    usability/visual observations. #151 is implemented but its mixed-SDF and
    supported-artifact qualification remain open.

@@ -2,6 +2,12 @@
 
 This document is the authoritative release plan for the **v1.0.0** release of MolSysViewer. 
 
+**Candidate identity follow-up (2026-10-04):** #157 is resolved in source, with
+five targeted guards and a once-run full regression of **2,808 passed, 23 skipped**
+in `molsyssuite@uibcdf_3.14`. Failed identity preparation preserves the prior
+view. Provider #312/#313 and successful mixed-SDF qualification remain pending.
+See [the current checkpoint](checkpoints.md).
+
 **Current closure checkpoint (2026-10-03):** the accumulated source is reviewed,
 committed and pushed to `main` at `0dea171d`. It includes nine explicit
 Interactions families, bounded observation pages/actions and H5MSM save;
@@ -20,8 +26,9 @@ Published MolSysMT 0.22.4 lacks Interactions; compatible published dependencies
 public documentation and human release workflows remain. CI enforcement (#116),
 ecosystem adoption (#110) and earlier release-tool corrections are implemented.
 Devguide reconciliation and the bounded scientific review are complete. The
-review additionally identifies #157 and uibcdf/molsysmt#312/#313 for mixed-source
-SDF/hierarchy support. Address those failures before claiming that workflow;
+review identified #157 and uibcdf/molsysmt#312/#313 for mixed-source SDF/hierarchy
+support. Consumer prevalidation #157 is resolved with safe candidate refusal;
+obtain and qualify the two provider fixes before claiming that workflow.
 0.24.0 is recommended without a tag. Follow [the current execution order](checkpoints.md#what-is-next)
 and [the reviewed integration record](integration_review_20261003.md).
 

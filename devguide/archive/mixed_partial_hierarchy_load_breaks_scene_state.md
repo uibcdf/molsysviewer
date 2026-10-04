@@ -1,15 +1,15 @@
 ---
 summary: Mixed partial-hierarchy loading accepts a candidate that cannot export scene state.
 issue: uibcdf/molsysviewer#157
-status: open
+status: resolved
 opened: 2026-10-04
-closed:
+closed: 2026-10-04
 severity: high
 verification: reproduced
 area: [loading, state, history]
-guard:
+guard: tests/test_loading_identity_prevalidation.py
 normative: devguide/scene_contracts.md
-blocked_by: [uibcdf/molsysmt#313]
+blocked_by: []
 supersedes: []
 ---
 
@@ -77,4 +77,21 @@ extraction and H5MSM. The Viewer loading owner must prevalidate the scene identi
 contract using the existing reusable owner before active-system mutation. Guard
 refusal and preservation with the real protein/caffeine workflow; with the fixed
 provider, guard normal regions/history/state/session use and retained source maps.
-The report stays open; no guard or correction is claimed yet.
+## Resolution — 2026-10-04
+
+The detached composition now calls the existing state-identity owner before the
+loading owner commits it. Failure raises a descriptive `ValueError` with the
+provider exception retained as its cause. The new regression module covers a
+malformed native topology and the real protein/caffeine case, including retained
+scene objects, sources, analyses, undo/redo and session saving. All five targeted
+cases pass in `molsyssuite@uibcdf_3.14`. The malformed native input makes this
+guard durable after nullable membership is repaired; the real-input tests then
+exercise normal composition, regions/history and session restoration rather
+than skipping the case. With the current provider they assert refusal before
+active-state mutation, not mixed-source feature availability.
+
+This resolves the Viewer's preparation defect. Direct SDF count dispatch and
+partial-hierarchy queries remain open under uibcdf/molsysmt#312/#313; the mixed
+scientific support and published-artifact qualification stay in #151. No provider
+code or fabricated hierarchy is introduced. Complete source regression evidence
+is recorded in the current checkpoint and the scientific review follow-up.
