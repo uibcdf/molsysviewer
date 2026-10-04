@@ -89,13 +89,13 @@ truncate, align, broadcast, concatenate trajectory axes or overwrite analyses.
 
 ## Next execution order
 
-1. Source integration is complete. Reconcile developer-guide summaries and
-   reports with `integration_review_20261003.md`, without rewriting older evidence.
-2. Assess a minor version for the accumulated public features. Freeze no tag
-   until compatible dependencies and exact-candidate release gates pass.
-3. Review real scientific use of the accepted loading and Interactions contracts.
-   Preserve automated correctness evidence and human usability observations
-   separately. #151 is implemented, with artifact qualification still pending.
+1. Source integration, developer-guide reconciliation and bounded real scientific
+   review are complete. Their dated records retain input and observation limits.
+2. Resolve the mixed-source prevalidation gap #157 and coordinate the provider's
+   SDF count/hierarchy fixes in uibcdf/molsysmt#312/#313. Repeat that workflow.
+3. A minor version 0.24.0 is recommended without a tag. Preserve separate human
+   usability/visual observations. #151 is implemented but its mixed-SDF and
+   supported-artifact qualification remain open.
 4. Qualify the compatible published provider and exact installed/hosted candidate,
    finish public documentation, then complete the release evidence.
 

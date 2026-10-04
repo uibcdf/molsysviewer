@@ -1,0 +1,350 @@
+{
+  "date": "2026-10-04",
+  "source_commit": "cdbf52b37915266fcca67287b76bcec8a7e368f2",
+  "product_integration": "0dea171db750c289e6b1f85c2407f91f3ce58f4a",
+  "development_environment": "molsyssuite@uibcdf_3.14",
+  "python": "3.14.7",
+  "provider_head": "033c12b341abf6e986f9ae9ddd6c84bf167222c8",
+  "provider_dirty_paths": [
+    "devguide/pending_bugs/README.md",
+    "docs/content/course/Common_Core/12_Building_Repairing_and_Auditing_Systems.ipynb",
+    "docs/content/user/cookbook/index.md",
+    "docs/content/user/foundations/native_world/classes/molsysmt_MolSys.md",
+    "docs/content/user/tools/basic/set.ipynb",
+    "docs/content/user/tools/build/index.md",
+    "docs/content/user/tools/physchem/index.md",
+    "docs/docs_manifest.yml",
+    "molsysmt/_private/argdigest/argument/forcefield.py",
+    "molsysmt/_private/argdigest/argument/method.py",
+    "molsysmt/_private/argdigest/argument/partial_charge.py",
+    "molsysmt/_private/argdigest/argument/value.py",
+    "molsysmt/_private/pdbqt_writer.py",
+    "molsysmt/_private/scientific_citations.py",
+    "molsysmt/basic/set.py",
+    "molsysmt/build/__init__.py",
+    "molsysmt/form/molsysmt_MolSys/set.py",
+    "molsysmt/form/molsysmt_MolecularMechanics/set.py",
+    "molsysmt/native/molecular_mechanics.py",
+    "molsysmt/native/molsys.py",
+    "molsysmt/physchem/__init__.py",
+    "devguide/pending_bugs/public_set_rejects_partial_charge_values_before_native_mechanical_delegation.md",
+    "docs/content/user/cookbook/assigning_partial_charges.md",
+    "docs/content/user/cookbook/assigning_partial_charges.md.AGENTS.md",
+    "docs/content/user/tools/build/assign_partial_charges.md",
+    "docs/content/user/tools/build/assign_partial_charges.md.AGENTS.md",
+    "docs/content/user/tools/physchem/get_partial_charges.md",
+    "docs/content/user/tools/physchem/get_partial_charges.md.AGENTS.md",
+    "molsysmt/_private/argdigest/argument/expected_total_charge.py",
+    "molsysmt/_private/partial_charges.py",
+    "molsysmt/build/assign_partial_charges.py",
+    "molsysmt/physchem/get_partial_charges.py",
+    "tests/basic/test_set_partial_charge.py",
+    "tests/build/test_assign_partial_charges.py",
+    "tests/physchem/test_get_partial_charges.py"
+  ],
+  "provider_boundary": "Editable source with independently changing dirty work; reported derived version is not a frozen release identity. No provider edits by this session.",
+  "scientific_cases": {
+    "provider_version": "0.22.4+24.g42b487869",
+    "provider_source": "/home/diego/repos@uibcdf/molsysmt/molsysmt/__init__.py",
+    "viewer_source": "/home/diego/repos@uibcdf/molsysviewer/molsysviewer/__init__.py",
+    "cases": [
+      {
+        "case": "trajectory",
+        "atoms": 62,
+        "source_frames": [
+          4999,
+          0,
+          73,
+          3
+        ],
+        "evaluated_local_frames": [
+          3,
+          0,
+          2
+        ],
+        "observations": 56,
+        "round_trips": [
+          "complete H5MSM",
+          "interactions-only H5MSM",
+          "MSV session"
+        ],
+        "elapsed_ms": 6063.452337868512
+      },
+      {
+        "case": "periodic-reimaging",
+        "atoms": 62,
+        "observations": 76,
+        "nonzero_image_observations": 16,
+        "policy": "angstrom",
+        "controlled_change": "one real residue translated by the first box vector"
+      },
+      {
+        "case": "solvated-villin",
+        "atoms": 4369,
+        "structures": 1,
+        "observations": 2439,
+        "nonzero_image_observations": 299,
+        "analysis_numeric_bytes": 429648,
+        "elapsed_ms": 1961.1415704712272
+      },
+      {
+        "case": "2HGR-sulfur-proximity",
+        "atoms": 55628,
+        "observations": 8,
+        "criterion_nm": 0.205,
+        "topology_unchanged": true,
+        "interpretation": "geometric candidates, not certified covalent bonds"
+      }
+    ],
+    "peak_process_rss_mib": 851.37109375,
+    "provider_before": {
+      "head": "033c12b341abf6e986f9ae9ddd6c84bf167222c8",
+      "dirty": true
+    },
+    "provider_after": {
+      "head": "033c12b341abf6e986f9ae9ddd6c84bf167222c8",
+      "dirty": true
+    }
+  },
+  "public_workbench": {
+    "case": "public-calculation-inspection-save-import-extraction-export",
+    "source_frames": [
+      4999,
+      0,
+      73,
+      3
+    ],
+    "observations": 56,
+    "frame_2_observations": 18,
+    "repeated_extracted_observations": 36,
+    "public_H5MSM_save_import": true,
+    "declared_alignment": true,
+    "real_repeated_structure_filter": true,
+    "offline_HTML": "/tmp/msv-real-scientific-review-20261003/public/real-pentalanine.html",
+    "html_bytes": 7031611,
+    "scope": "Calculated source observation; browser export checked separately; no published provider qualification"
+  },
+  "four_PDB": {
+    "case": "real-four-PDB-batch-and-progressive",
+    "sources": [
+      "/home/diego/repos@uibcdf/molsysmt/molsysmt/data/pdb/1vii.pdb",
+      "/home/diego/repos@uibcdf/molsysmt/molsysmt/data/pdb/1l2y.pdb",
+      "/home/diego/repos@uibcdf/molsysmt/molsysmt/data/pdb/1tcd.pdb",
+      "/home/diego/repos@uibcdf/molsysmt/molsysmt/data/pdb/1atp.pdb"
+    ],
+    "atoms_four_PDB": 7953,
+    "atoms_SDF": 0,
+    "total_atoms": 7953,
+    "base_sources": 4,
+    "regions_including_detail": 5,
+    "structures": 1,
+    "batch_equals_progressive": true,
+    "source_coordinates_preserved": true,
+    "first_box_preserved": true,
+    "base_visibility_independent_of_detail": true,
+    "explicit_isolation": true,
+    "session_restored": true,
+    "bad_batch_refused_before_mutation": true,
+    "refusal_type": "FileNotFoundError",
+    "elapsed_ms": 12748.09009116143,
+    "scope": "First structure per file; no alignment, centering, docking or automatic trajectory broadcasting; Python/session observation, not human visual certification"
+  },
+  "small_molecule_probe": [
+    {
+      "form": "sdf",
+      "call": "count",
+      "status": "FAIL",
+      "type": "UnknownArgumentError",
+      "message": "'molsysmt.form.file_sdf.get_structural_attributes.get_n_structures_from_system' does not accept the argument 'structure_indices'. Check the arguments it accepts. See https://www.uibcdf.org/argdigest."
+    },
+    {
+      "form": "sdf",
+      "call": "convert",
+      "status": "PASS",
+      "count": 1
+    },
+    {
+      "form": "mol2",
+      "call": "count",
+      "status": "FAIL",
+      "type": "ArgumentError",
+      "message": "Error in argument 'molecular_system' with value '/home/diego/repos@uibcdf/molsysmt/molsysmt/data/mol2/caffeine.mol2'. Check the API for the expected argument format. Docs: https://www.uibcdf.org/MolSysMT | Issues: https://github.com/uibcdf/MolSysMT/issues"
+    },
+    {
+      "form": "mol2",
+      "call": "convert",
+      "status": "FAIL",
+      "type": "ArgumentError",
+      "message": "Error in argument 'molecular_system' with value '/home/diego/repos@uibcdf/molsysmt/molsysmt/data/mol2/caffeine.mol2'. Check the API for the expected argument format. Docs: https://www.uibcdf.org/MolSysMT | Issues: https://github.com/uibcdf/MolSysMT/issues"
+    }
+  ],
+  "partial_hierarchy_probe": {
+    "n_atoms": 620,
+    "n_groups": 36,
+    "group_index_dtype": "Int64",
+    "missing_group_indices": 24,
+    "routes": [
+      {
+        "attribute": "group_id",
+        "status": "FAIL",
+        "type": "IndexError",
+        "message": "arrays used as indices must be of integer (or boolean) type"
+      },
+      {
+        "attribute": "group_name",
+        "status": "FAIL",
+        "type": "IndexError",
+        "message": "arrays used as indices must be of integer (or boolean) type"
+      },
+      {
+        "attribute": "chain_id",
+        "status": "PASS",
+        "length": 620
+      },
+      {
+        "attribute": "chain_name",
+        "status": "PASS",
+        "length": 620
+      }
+    ]
+  },
+  "consumer_prevalidation_probe": {
+    "load_returned_success": true,
+    "system_changed": true,
+    "atoms": 620,
+    "sources": 2,
+    "export_state": "FAIL",
+    "type": "IndexError",
+    "message": "arrays used as indices must be of integer (or boolean) type"
+  },
+  "offline_browser": {
+    "exit": 0,
+    "WebGL2": true,
+    "rendered_marker": true,
+    "canvas_count": 1,
+    "console_errors": "",
+    "offline": true,
+    "boundary": "Readiness observation, not human visual/first-contact or full hosted-candidate qualification"
+  },
+  "failed_attempts": [
+    {
+      "case": "Initial composite exercise assertion",
+      "cause": "immutable tuple compared to list",
+      "product_defect": false
+    },
+    {
+      "case": "Direct SDF load",
+      "cause": "provider public count dispatcher rejects structure_indices",
+      "issue": "uibcdf/molsysmt#312"
+    },
+    {
+      "case": "Public SDF conversion followed by addition",
+      "cause": "mixed nullable group membership fails subsequent public group identities and scene state",
+      "issues": [
+        "uibcdf/molsysmt#313",
+        "uibcdf/molsysviewer#157"
+      ]
+    },
+    {
+      "case": "Browser launch inside sandbox",
+      "cause": "setsockopt Operation not permitted and SIGTRAP",
+      "rerun": "Explicitly escalated outside sandbox; PASS without skip"
+    }
+  ],
+  "data": [
+    {
+      "path": "molsysmt/data/pdb/1vii.pdb",
+      "sha256": "ebecd3d6c0dd9c8b34bcbea9b57c73e4f73986cc674150f0aaa0687db66e77ef"
+    },
+    {
+      "path": "molsysmt/data/pdb/1l2y.pdb",
+      "sha256": "5d1bbb545a312dfff1ae1e64b6d8addecb2f561ddc4011aeb5bee9d1dfcd4438"
+    },
+    {
+      "path": "molsysmt/data/pdb/1tcd.pdb",
+      "sha256": "6a67597ad4d07d36fad72c7059a80b2297dc1218291b06261cae1f072e3c204d"
+    },
+    {
+      "path": "molsysmt/data/pdb/1atp.pdb",
+      "sha256": "5ee1528569a18ad723092ec8b1cd7776af23fd3c5028f0e4074546d4a91e36a2"
+    },
+    {
+      "path": "molsysmt/data/pdb/2hgr.pdb",
+      "sha256": "0b57c2900058e62b74c6913bed2a10b41f4080e5deb2143359c90eb8b69dae4b"
+    },
+    {
+      "path": "molsysmt/data/sdf/caffeine.sdf",
+      "sha256": "5fa7d904623492f573a51f82300b815e1036b90c76545b27ab32a8a61e08206c"
+    },
+    {
+      "path": "molsysmt/data/h5msm/traj_pentalanine.h5msm",
+      "sha256": "d882572a520fe0cb7dbd4c3254e8f38171d4c788d739ab81ee387acd495433b6"
+    },
+    {
+      "path": "molsysmt/data/h5msm/traj_chicken_villin_HP35_solvated.h5msm",
+      "sha256": "696349ed5ee495160c04be05c24a476296d86acb469996ff5f7b92678c185c31"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "/tmp/msv-real-scientific-review-20261003.json",
+      "sha256": "1cdb0ed52aa04f9b501ed5a3060076e79aa3a7d6e68c76f9b101daab46142d73"
+    },
+    {
+      "path": "/tmp/msv-real-public-interactions-review-20261003.json",
+      "sha256": "ff5133ddef16130abc710395d24ec1416d6e8f0064eef9c8d96463a70083089f"
+    },
+    {
+      "path": "/tmp/msv-real-four-pdb-review-20261004.json",
+      "sha256": "f0e9b60cadc9359d7fe9b17ee7d49f64971d441e9fe0fe2de87d19dc8b6f8a36"
+    },
+    {
+      "path": "/tmp/msv-small-molecule-provider-review-20261003.json",
+      "sha256": "ff368d709a198e78b9f684205a7ea2b5ecf98f463f65f7976b939681f5efa369"
+    },
+    {
+      "path": "/tmp/msv-partial-hierarchy-provider-review-20261003.json",
+      "sha256": "2476adc33ea0c45b4e0c60da9cb53ec4fe1019f9f49d7bdf0ff9aeec21e4f257"
+    },
+    {
+      "path": "/tmp/msv-mixed-hierarchy-consumer-review-20261004.json",
+      "sha256": "7e395adca47ca22bc226677d628aa87779a1ff63da0d76bc78217ff96c8c007c"
+    },
+    {
+      "path": "/tmp/msv-real-composite-review-20261003.log",
+      "sha256": "4d7ba82c8cdc6c089b7c553d52dafef8255200fc69afc0dd31cf2476bbeb7bc4"
+    },
+    {
+      "path": "/tmp/msv-real-composite-review-fixed-20261003.log",
+      "sha256": "3d793237965cac236017b644dfea7a792c0d38fca227ded06cba581d24e96eb2"
+    },
+    {
+      "path": "/tmp/msv-real-composite-review-workaround-20261003.log",
+      "sha256": "8fe8b51d95a1dd5f816f0df0371e57eba9a4c2b63273ef5477d9bbc4c17bffb7"
+    },
+    {
+      "path": "/tmp/msv-real-export-browser-review-20261003.log",
+      "sha256": "4b322b136b1d1d633088718566b97c3e67e0314a7a0644a0904ba1353b03d85b"
+    },
+    {
+      "path": "/tmp/msv-real-export-browser-review-escalated-20261003.json",
+      "sha256": "b87c2d3391db038dc4b1ffb4c40c21854db090265358e51a16327d3385f80f4b"
+    }
+  ],
+  "public_tag_created": false,
+  "recommended_version": "0.24.0",
+  "new_issues": [
+    "uibcdf/molsysmt#312",
+    "uibcdf/molsysmt#313",
+    "uibcdf/molsysviewer#157"
+  ],
+  "reporting_followup": {
+    "guards": {
+      "passed": 201,
+      "seconds": 2.43
+    },
+    "indexes": "current",
+    "issue_board": "46 queued records agree",
+    "full_regression_repeated": false
+  }
+}

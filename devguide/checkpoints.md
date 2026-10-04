@@ -5,6 +5,25 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+**Scientific-use review (2026-10-04): bounded workflows pass; mixed SDF remains open.**
+The reviewed source and devguide reconciliation are pushed at `0dea171d` and
+`cdbf52b3`. Four real PDBs (7,953 atoms) agree between batch/progressive loading;
+source visibility, isolation and session restoration pass. Real pentalanine,
+periodic images/Å, solvated villin and 2HGR candidate calculations pass, along
+with public Interactions save/import/repeated extraction and offline HTML
+readiness in actual Chromium/WebGL2. The scientific review found SDF count
+dispatch failure (uibcdf/molsysmt#312) and mixed missing-group getter failure
+(uibcdf/molsysmt#313). The latter also exposes a Viewer candidate-prevalidation
+gap (#157): loading can accept a scene that later cannot export state/history.
+These failures are reproduced and reported, without provider patches or invented
+hierarchy. See [the review](scientific_use_review_20261004.md).
+
+**Next:** address #157 and the two provider defects, then qualify the repaired
+mixed-source workflow. A minor version **0.24.0** is recommended; no tag was
+created. Compatible published dependencies, exact-artifact/hosted gates, final
+public documentation and human observations remain. Older passing results retain
+their original input boundaries.
+
 **Reviewed source integration (2026-10-03): committed and pushed.** Commit
 `0dea171db750c289e6b1f85c2407f91f3ce58f4a` integrates the accumulated public
 API, Interactions, scene corrections and composite loading. The final once-run
@@ -1100,14 +1119,14 @@ it is no longer an undecided design. The latest source regression passes
 editable provider, with published-artifact qualification still outstanding.
 Continue in the maintainer's order:
 
-1. Reconcile current devguide summaries and active reports with the reviewed
-   integration, keeping dated artifact and failure records intact.
-2. Assess a minor release for the accumulated API/features. Freeze no public tag
-   until its compatible dependency and exact-candidate gates pass.
-3. Review real scientific workflows: batch/progressive loading, nonconsecutive
-   structures, calculation/query/display, cells/units and scientific/session
-   round trips. Record friction and scientific correctness separately from
-   human visual and first-contact observations.
+1. The source integration, current devguide reconciliation and bounded scientific
+   review are complete. Preserve their dated records and qualification limits.
+2. Address the newly reproduced mixed-source gap #157 and coordinate public SDF
+   count/partial-hierarchy fixes with uibcdf/molsysmt#312/#313. Repeat the affected
+   workflow; do not infer that public SDF conversion is a complete workaround.
+3. The version assessment recommends 0.24.0. Freeze no tag before compatible
+   dependency and exact-candidate gates pass. Obtain human scientific usability,
+   visual and first-contact observations in addition to the automated review.
 4. Repeat the now-passing Interactions workflows against a compatible published
    MolSysMT artifact once available. Keep #114 experimental until installed
    evidence exists; uibcdf/molsysmt#250 owns scientific APIs. Existing source

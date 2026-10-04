@@ -19,8 +19,10 @@ Published MolSysMT 0.22.4 lacks Interactions; compatible published dependencies
 (#114/#140), repaired exact Windows artifacts (#101), the 16-cell installed pair,
 public documentation and human release workflows remain. CI enforcement (#116),
 ecosystem adoption (#110) and earlier release-tool corrections are implemented.
-Reconcile devguide, assess a minor version and review scientific use before
-freezing a new candidate. Follow [the current execution order](checkpoints.md#what-is-next)
+Devguide reconciliation and the bounded scientific review are complete. The
+review additionally identifies #157 and uibcdf/molsysmt#312/#313 for mixed-source
+SDF/hierarchy support. Address those failures before claiming that workflow;
+0.24.0 is recommended without a tag. Follow [the current execution order](checkpoints.md#what-is-next)
 and [the reviewed integration record](integration_review_20261003.md).
 
 **Support boundary (2026-09-28):** The Python/Jupyter viewer, reproducible

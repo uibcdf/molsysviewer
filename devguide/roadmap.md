@@ -1,13 +1,13 @@
 # Development roadmap
 
-**Updated:** 2026-10-03
+**Updated:** 2026-10-04
 
 This roadmap states current priorities. Release gating lives in
 [`path_to_1_0.md`](path_to_1_0.md), normative behavior in
 [`scene_contracts.md`](scene_contracts.md), and concrete open designs in
 [`pending_proposals/`](pending_proposals/).
 
-## Current execution order — 2026-10-03
+## Current execution order — 2026-10-04
 
 The accumulated Interactions, composite loading, public API and scene corrections
 are reviewed and integrated in `main` at `0dea171d`. The latest complete source
@@ -25,8 +25,11 @@ This source integration uses the existing internal deferred CI route: ordinary
 CI still selects public MolSysMT 0.22.4, which lacks Interactions. No exact
 hosted-candidate pass is claimed.
 
-Next reconcile devguide, assess a new minor version and review representative
-scientific use. Then qualify Interactions with a compatible published provider
+Devguide is reconciled; a minor version 0.24.0 is recommended without a tag.
+The bounded real scientific review passes the trajectory, interaction and
+four-PDB workflows, and reproduces the mixed-source gap #157 plus provider
+uibcdf/molsysmt#312/#313. Address those failures and requalify that workflow.
+Then qualify Interactions with a compatible published provider
 (#114/#140), repaired exact Conda/Windows artifacts (#101), the current 16-cell
 installed pair and hosted core browser requirements. Public documentation
 follows functional closure. Finally freeze the release candidate and retain

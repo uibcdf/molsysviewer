@@ -39,6 +39,8 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- [`scientific_use_review_20261004.md`](scientific_use_review_20261004.md): real
+  molecular workflows, reproduced SDF/hierarchy gaps and their owning issues.
 - [`integration_review_20261003.md`](integration_review_20261003.md): reviewed
   source integration, validation limits and deferred CI evidence.
 - [`version_assessment_20261003.md`](version_assessment_20261003.md): proposed

@@ -8,7 +8,7 @@ verification: measured
 area: [load, api, studio]
 guard:
 normative:
-blocked_by: []
+blocked_by: [uibcdf/molsysmt#312, uibcdf/molsysmt#313, uibcdf/molsysviewer#157]
 supersedes: []
 ---
 
@@ -584,3 +584,14 @@ internal integration used the existing deferred CI route and does not certify
 an exact hosted or published-provider candidate. The report remains partial
 for its existing supported-artifact/release qualification. See
 [`integration_review_20261003.md`](../integration_review_20261003.md).
+
+## Real scientific-use review — 2026-10-04
+
+Four real PDBs (1VII, 1L2Y, 1TCD and 1ATP) pass batch/progressive loading,
+coordinate/map preservation, source visibility/isolation and MSV restoration:
+7,953 atoms and four sources. The mixed SDF slice remains unqualified. Direct
+SDF count dispatch fails (uibcdf/molsysmt#312); converting caffeine publicly
+then adding it exposes missing-group getter failure (uibcdf/molsysmt#313) and
+Viewer candidate prevalidation gap #157. The provider owns hierarchy semantics;
+the consumer must refuse an unexportable candidate before active-state mutation.
+See [`scientific_use_review_20261004.md`](../scientific_use_review_20261004.md).

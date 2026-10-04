@@ -33,6 +33,10 @@ list.
 - [`trajectory_plot_card_lifecycle.md`](trajectory_plot_card_lifecycle.md) — [#143](https://github.com/uibcdf/molsysviewer/issues/143) — Trajectory plot cards lose state and disagree on hide and clear semantics *(medium, measured)*
 - [`trajectory_plot_numeric_axis.md`](trajectory_plot_numeric_axis.md) — [#150](https://github.com/uibcdf/molsysviewer/issues/150) — Trajectory plot x coordinates and nonfinite values have inconsistent rendering semantics *(medium, measured)*
 
+### Open (1)
+
+- [`mixed_partial_hierarchy_load_breaks_scene_state.md`](mixed_partial_hierarchy_load_breaks_scene_state.md) — [#157](https://github.com/uibcdf/molsysviewer/issues/157) — Mixed partial-hierarchy loading accepts a candidate that cannot export scene state. *(high, reproduced)*
+
 ### Deferred until after 1.0 (1)
 
 - [`standalone_qt_movie_camera_snapshot.md`](post_1.0/standalone_qt_movie_camera_snapshot.md) — [#36](https://github.com/uibcdf/molsysviewer/issues/36) — Movie export in the Qt host fails because the camera snapshot is never mirrored back.
