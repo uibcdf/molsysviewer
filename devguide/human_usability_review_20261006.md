@@ -72,12 +72,30 @@ pass with normal pytest outside the sandbox. This selected follow-up is not
 a second complete run. The unit JS fixture failure is separately tracked as
 [#166](pending_bugs/group_panel_unit_dom_missing_query_selector.md).
 [The validation receipt](load_usability_fixes_20261006.json) preserves the scope.
-Human confirmation has not been reported. Restart the
-notebook kernel, refresh the browser and create the protein/caffeine view
-again so both the Python module and widget runtime use the new code. Check
-that Welcome does not flash and Regions displays `Proteína` and `Cafeína`.
 
-Then continue in the same notebook:
+**Human confirmation — 2026-10-06:** after publication of the corrections in
+`66a924404feadaef7aa7147fea573533c21d40c8`, Diego reports that both errors
+are corrected: Welcome no longer flashes and the source-region labels are
+correct. This closes the pending human retest for #164/#165. Kernel/browser
+restart details and client version were not separately reported. Visibility
+and representation of regions are the next stage; their human result is
+still pending.
+
+For this stage, use Studio's Hide/Show buttons first, then the notebook's
+Python cells for `show_only()` and restoration. The notebook prose suggests
+isolating through Studio, but the current Regions cards do not expose a
+dedicated isolation button; the Python cell is the available step. The open
+scratch notebook is preserved.
+
+Before adding an own representation, hiding caffeine masks its atoms on Whole.
+After adding orange ball-and-stick, hiding the own representation can reveal
+Whole underneath; that is the fallback contract, not an atom-wide hide.
+An additional independent-visibility check is to hide Whole with caffeine's
+own representation visible, then show Whole again. Resetting the region's
+representation returns it to the base visibility behavior. These are expected
+results for the pending human observation, not newly observed passes.
+
+Continue in the same notebook:
 
 1. Hide/show/isolate source regions, restore them and add a dedicated representation.
 2. Compare batch loading with progressive loading.

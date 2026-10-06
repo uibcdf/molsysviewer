@@ -19,8 +19,9 @@ The once-run Python suite returns 2,816 passed, 22 sandbox permission failures
 and 23 skipped; normal pytest outside the sandbox passes those explicit 22
 nodes. The full Python suite is not repeated. See
 [the loading-fix receipt](load_usability_fixes_20261006.json).
-The human review repeats the protein/caffeine load with a restarted kernel and
-refreshed browser before proceeding to source-region visibility controls.
+Diego now confirms both corrections in the human review after the source fix
+`66a924404feadaef7aa7147fea573533c21d40c8`. Next: source-region hide/show,
+isolation/restoration and own representations; those observations remain pending.
 The JS unit run separately exposes [#166](pending_bugs/group_panel_unit_dom_missing_query_selector.md): GroupPanel's test DOM lacks
 `querySelector`, although the real browser route passes. That fixture remains
 an open 1.0 validation task.
