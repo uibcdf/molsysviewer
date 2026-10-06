@@ -1,13 +1,13 @@
 ---
 summary: Exact source-pair CI omits the complete scientific notebook and browser workflows
 issue: uibcdf/molsysviewer#170
-status: partial
+status: resolved
 opened: 2026-10-06
-closed:
+closed: 2026-10-06
 severity: medium
 verification: reproduced
 area: [ci, documentation, interactions]
-guard:
+guard: tests/test_source_workflow_coverage.py::test_exact_source_pair_executes_all_notebooks_and_core_browser_suites
 normative:
 blocked_by: []
 supersedes: []
@@ -48,10 +48,19 @@ remain distinct from the existing installed-artifact gates.
 
 ## Resolution
 
-All 25 notebooks execute (82 seconds), all 39 core browser suites pass,
-and strict Sphinx passes locally with the clean provider source revision.
-The focused contracts pass and final archive/link checks pass 229 tests.
-The once-run full Python result and resolved Git-index/link failures are
-preserved in `devguide/ci_workflow_closure_20261006.json`. Hosted confirmation
-of the expanded source lane is pending. Published-provider failures remain
-owned by coordinated release/installed-pair work after this source fix.
+The exact-source workflow on
+`d7939f08d604138112edfe84ccc9bc4a40428057` now includes the complete consumer
+workflows. Run `37523291585` passes all three native platforms. Its Linux job
+executes **39/39 core browser suites**, including 17 real calculation forms and
+10 geometry fixtures, followed by **25/25 documented notebooks** (59 seconds).
+No browser skip or experimental-tutorial exclusion is used. The guard rejects
+loss of the documentation trigger, full runners, correct kernel/browser and
+failure-log path. The source origin, dependency and native-resource checks
+precede these observations. Local 25-notebook, 39-browser, strict Sphinx and
+contract results are retained in `devguide/ci_workflow_closure_20261006.json`.
+
+Normal published/staging workflows and their release-gate role are unchanged.
+The published provider still lacks required capabilities; compatible installed
+artifacts remain pending under #93/#114/#140/#151. The corrected #160 get
+notebook now also passes against that published provider. Qt's hosted WebGL
+failure is the already recorded experimental-host finding under #109.

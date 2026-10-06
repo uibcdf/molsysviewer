@@ -1,5 +1,8 @@
 # Archived implementation plans
 
+- [`source_guards_use_platform_encoding.md`](source_guards_use_platform_encoding.md) — #169: explicit UTF-8 source readers and guard; native Windows/Linux/macOS source suites pass.
+- [`source_pair_omits_scientific_workflows.md`](source_pair_omits_scientific_workflows.md) — #170: exact-source Linux CI executes all 39 core browser suites and 25 notebooks; published/staging gates stay independent.
+
 - [`documented_whole_mask_queries.md`](documented_whole_mask_queries.md) — #160: resolve CA/PHE queries into atom-index masks; actual tutorial cells, all 25 notebooks and strict Sphinx build pass.
 
 - [`explicit_interaction_selection_mode_names.md`](explicit_interaction_selection_mode_names.md) — #168: canonical query names in Python/Studio, targeted v1 filter migration to extension v2, public rejection guards and real provider/browser qualification.

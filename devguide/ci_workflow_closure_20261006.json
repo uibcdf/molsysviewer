@@ -1,6 +1,6 @@
 {
   "schema": "molsysviewer.ci_workflow_closure@1",
-  "recorded_at": "2026-10-06T19:57:56+00:00",
+  "recorded_at": "2026-10-06T20:26:40+00:00",
   "issues": [
     "uibcdf/molsysviewer#160",
     "uibcdf/molsysviewer#169",
@@ -91,18 +91,544 @@
         "passed": 7,
         "failed": 0
       }
+    },
+    "post_closure_governance_checks": {
+      "passed": 218,
+      "failed": 0,
+      "files": [
+        "tests/test_reporting_protocol.py",
+        "tests/test_devguide_links.py"
+      ]
     }
   },
   "hosted": {
     "initial_source_pair": "https://github.com/uibcdf/molsysviewer/actions/runs/37508347848",
     "initial_published_notebooks": "https://github.com/uibcdf/molsysviewer/actions/runs/37519346853",
     "initial_published_browser": "https://github.com/uibcdf/molsysviewer/actions/runs/37519346977",
-    "new_source_pair": "pending push",
+    "new_source_pair": "https://github.com/uibcdf/molsysviewer/actions/runs/37523291585",
     "first_source_candidate_commit": "1ed34994e3d6953bc6f9678d8b93711efa3a9331",
-    "first_new_source_pair": "https://github.com/uibcdf/molsysviewer/actions/runs/37522965703"
+    "first_new_source_pair": "https://github.com/uibcdf/molsysviewer/actions/runs/37522965703",
+    "source_candidate_commit": "d7939f08d604138112edfe84ccc9bc4a40428057",
+    "final_policy": {
+      "run": "https://github.com/uibcdf/molsysviewer/actions/runs/37523292344",
+      "conclusion": "success"
+    },
+    "published_notebooks_after_mask_fix": {
+      "run": "https://github.com/uibcdf/molsysviewer/actions/runs/37522965865",
+      "executed": 25,
+      "failed": 2,
+      "get_notebook": "passed",
+      "failures": {
+        "molecular_workbench": "Released provider lacks caffeine.sdf.",
+        "interactions_workbench": "Released provider lacks required Interactions/H5MSM capabilities."
+      }
+    },
+    "published_browser_on_final_source": {
+      "run": "https://github.com/uibcdf/molsysviewer/actions/runs/37523291605",
+      "conclusion": "failure",
+      "failure": "Released provider lacks public molsysmt.h5msm writer in composite-load fixture."
+    },
+    "superseded_cancel_requests": {
+      "runs": [
+        37522965703,
+        37522965907
+      ],
+      "result": "GitHub cancel API returned HTTP 502; no cancellation success claimed.",
+      "observed_final_source_result": "Run 37522965703 completed successfully despite the unsuccessful cancel request."
+    },
+    "native_source_jobs": {
+      "macos": {
+        "job_id": 112473840677,
+        "conclusion": "success",
+        "python_tests": {
+          "passed": 2848,
+          "skipped": 54,
+          "failed": 0,
+          "seconds": 319.26
+        },
+        "native_path_guards": {
+          "passed": 3
+        },
+        "installed_integration": {
+          "passed": 2
+        }
+      },
+      "linux": {
+        "job_id": 112473841002,
+        "conclusion": "success",
+        "python_tests": {
+          "passed": 2875,
+          "skipped": 27,
+          "failed": 0,
+          "seconds": 385.69
+        },
+        "native_path_guards": {
+          "passed": 3
+        },
+        "installed_integration": {
+          "passed": 2
+        },
+        "core_browser": {
+          "suites": 39,
+          "failed": 0,
+          "skipped": 0,
+          "calculation_forms": 17,
+          "geometry_fixtures": 10
+        },
+        "notebooks": {
+          "executed": 25,
+          "failed": 0,
+          "seconds": 59
+        }
+      },
+      "windows": {
+        "job_id": 112473841010,
+        "conclusion": "success",
+        "python_tests": {
+          "passed": 2849,
+          "skipped": 53,
+          "failed": 0,
+          "seconds": 473.77
+        },
+        "native_path_guards": {
+          "passed": 3
+        },
+        "installed_integration": {
+          "passed": 2
+        }
+      }
+    },
+    "published_py312_after_fix": {
+      "run": "https://github.com/uibcdf/molsysviewer/actions/runs/37523291581",
+      "job_id": 112473842215,
+      "passed": 2627,
+      "failed": 121,
+      "errors": 127,
+      "skipped": 27,
+      "seconds": 442.05,
+      "diagnosis": "Released provider lacks Interactions/H5MSM/caffeine fixture and repaired loading/box capabilities. Owned by coordinated installed-pair qualification (#93/#114/#140/#151/#155). Source-level fixes remain separate."
+    },
+    "experimental_qt_after_fix": {
+      "run": "https://github.com/uibcdf/molsysviewer/actions/runs/37523291581",
+      "job_id": 112473841989,
+      "failed_node": "tests/test_standalone.py::test_qt_live_model_smoke_real_window",
+      "diagnosis": "No WebGL canvas/context in Xvfb; already recorded under #109. Experimental host remains outside core 1.0 support."
+    },
+    "final_source_run": {
+      "conclusion": "success",
+      "headSha": "d7939f08d604138112edfe84ccc9bc4a40428057",
+      "jobs": [
+        {
+          "completedAt": "2026-10-06T20:11:17Z",
+          "conclusion": "success",
+          "id": 112473840677,
+          "name": "Source pair on macos-15, Python 3.14",
+          "startedAt": "2026-10-06T20:01:38Z",
+          "status": "completed",
+          "steps": [
+            {
+              "conclusion": "success",
+              "name": "Set up job",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Check out MolSysViewer",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Check out the exact MolSysMT source candidate",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Require an exact MolSysMT commit",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Select MolSysMT's pinned Rust toolchain",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Create the Python 3.14 source-pair environment",
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Validate and locally tag the exact Viewer source candidate",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Install both exact source candidates",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Audit dependency routes and the installed exact source provider",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Check installed Rust and viewer resources",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Record published pytest tool versions",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Guard native MolSysMT paths in the installed pair",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Test MolSysMT integration against the installed pair",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Install JavaScript test dependencies",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Run MolSysViewer Python tests",
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Register the exact source-pair notebook kernel",
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Build the source-pair browser runtime and harness",
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Verify the hosted source-pair browser",
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Run all core browser suites against the exact source pair",
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Execute every documented notebook against the exact source pair",
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Preserve source-pair notebook failure logs",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Post Create the Python 3.14 source-pair environment",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Post Check out the exact MolSysMT source candidate",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Post Check out MolSysViewer",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Complete job",
+              "status": "completed"
+            }
+          ]
+        },
+        {
+          "completedAt": "2026-10-06T20:24:26Z",
+          "conclusion": "success",
+          "id": 112473841002,
+          "name": "Source pair on ubuntu-latest, Python 3.14",
+          "startedAt": "2026-10-06T20:01:31Z",
+          "status": "completed",
+          "steps": [
+            {
+              "conclusion": "success",
+              "name": "Set up job",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Check out MolSysViewer",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Check out the exact MolSysMT source candidate",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Require an exact MolSysMT commit",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Select MolSysMT's pinned Rust toolchain",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Create the Python 3.14 source-pair environment",
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Validate and locally tag the exact Viewer source candidate",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Install both exact source candidates",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Audit dependency routes and the installed exact source provider",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Check installed Rust and viewer resources",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Record published pytest tool versions",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Guard native MolSysMT paths in the installed pair",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Test MolSysMT integration against the installed pair",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Install JavaScript test dependencies",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Run MolSysViewer Python tests",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Register the exact source-pair notebook kernel",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Build the source-pair browser runtime and harness",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Verify the hosted source-pair browser",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Run all core browser suites against the exact source pair",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Execute every documented notebook against the exact source pair",
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Preserve source-pair notebook failure logs",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Post Create the Python 3.14 source-pair environment",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Post Check out the exact MolSysMT source candidate",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Post Check out MolSysViewer",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Complete job",
+              "status": "completed"
+            }
+          ]
+        },
+        {
+          "completedAt": "2026-10-06T20:17:30Z",
+          "conclusion": "success",
+          "id": 112473841010,
+          "name": "Source pair on windows-2025, Python 3.14",
+          "startedAt": "2026-10-06T20:01:32Z",
+          "status": "completed",
+          "steps": [
+            {
+              "conclusion": "success",
+              "name": "Set up job",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Check out MolSysViewer",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Check out the exact MolSysMT source candidate",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Require an exact MolSysMT commit",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Select MolSysMT's pinned Rust toolchain",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Create the Python 3.14 source-pair environment",
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Validate and locally tag the exact Viewer source candidate",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Install both exact source candidates",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Audit dependency routes and the installed exact source provider",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Check installed Rust and viewer resources",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Record published pytest tool versions",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Guard native MolSysMT paths in the installed pair",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Test MolSysMT integration against the installed pair",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Install JavaScript test dependencies",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Run MolSysViewer Python tests",
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Register the exact source-pair notebook kernel",
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Build the source-pair browser runtime and harness",
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Verify the hosted source-pair browser",
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Run all core browser suites against the exact source pair",
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Execute every documented notebook against the exact source pair",
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Preserve source-pair notebook failure logs",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Post Create the Python 3.14 source-pair environment",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Post Check out the exact MolSysMT source candidate",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Post Check out MolSysViewer",
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Complete job",
+              "status": "completed"
+            }
+          ]
+        }
+      ],
+      "status": "completed",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37523291585"
+    }
   },
   "limits": [
-    "Native Windows confirmation is pending until the new source-pair run finishes.",
     "Published/staging gates remain independent and fail until the compatible provider is available.",
     "No tag, artifact promotion or strict 1.0 qualification is authorized by these source observations."
   ],
@@ -117,5 +643,11 @@
     "tests/test_documented_whole_masks.py": "f6aef13a127874988853a66f7673ec83a96deace1793c4a37a2bcec4ae39fde7",
     "tests/test_source_text_encoding.py": "2e5ba133f44f58d43cbfadb05429893be8c7c4bc50c3a5c23b84170fac3c19c2",
     "tests/test_source_workflow_coverage.py": "7d8e702a429baeac44ed4016c8026f4447d2db5e34ad4596297f281e788aa9f2"
+  },
+  "handoff": {
+    "viewer_source_commit": "d7939f08d604138112edfe84ccc9bc4a40428057",
+    "provider_source_commit": "a0ceca86ec99c89377e78fac15cbdf32145a362e",
+    "status": "qualified source pair; ready for coordinated staging preparation",
+    "evidence_only_successor": "The final devguide/issue closure commit changes no library, test, environment or CI source."
   }
 }

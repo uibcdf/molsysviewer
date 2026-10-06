@@ -5,25 +5,36 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-**CI closure (2026-10-06): #160 resolved; #169/#170 awaiting hosted confirmation.**
-The query-vocabulary source run `37508347848` passes Linux and macOS; Windows
-fails six source-inspection/reporting tests because unspecified text reads use
-cp1252. #169 declares UTF-8 at each affected read and adds a regression guard.
-The current published-provider notebook and browser runs `37519346853` and
-`37519346977` also fail: the old MolSysMT lacks the caffeine SDF fixture,
-Interactions contract and public H5MSM writer. #170 extends the existing Linux
-exact-source lane to every documented notebook and all 39 core browser suites,
-using the same installed/audited provider and Python 3.14 interpreter. The
-independent released/staging gates remain pending; source success cannot clear
-them. #160 corrects the actual Whole mask examples to resolve queries into
-indices. The 302 focused checks pass. The once-run full Python suite returns
-2,883 passed/23 skipped and one new-report Git-index link failure. Staging the
-reports fixes that failure. Final archive/link/reporting/example checks pass
-229 tests after correcting the moved #160 link; no second full run is made.
-All 25 notebooks execute and strict Sphinx passes. All 39 core browser suites pass, including 17 real calculation forms and
-10 geometry fixtures. New native/source-workflow CI confirmation is pending. See
-[the closure receipt](ci_workflow_closure_20261006.json). No library runtime
-behavior or release tag changes.
+**Current qualified source handoff (2026-10-06): #160/#169/#170 resolved.**
+Viewer **`d7939f08d604138112edfe84ccc9bc4a40428057`** with MolSysMT
+**`a0ceca86ec99c89377e78fac15cbdf32145a362e`** passes source-pair run
+[`37523291585`](https://github.com/uibcdf/molsysviewer/actions/runs/37523291585):
+Linux **2,875 passed/27 skipped**, macOS **2,848/54 skipped**, Windows
+**2,849/53 skipped**, zero failures. Installed-source origin/dependency/Rust
+checks and real integration pass on all three platforms. Linux additionally
+passes **39/39 core browser suites** (17 calculation forms, 10 geometry fixtures)
+and **25/25 documented notebooks**. This fixed pair is ready for MolSysMT's
+coordinated staging preparation and supersedes the earlier c046fca/5e272169 handoff.
+
+[#169](archive/source_guards_use_platform_encoding.md) fixes the six Windows
+encoding failures with explicit UTF-8 reads and a guard. [#170](archive/source_pair_omits_scientific_workflows.md)
+adds complete notebook/browser source coverage without changing the distinct
+published/staging gates. [#160](archive/documented_whole_mask_queries.md) corrects
+Whole masks to atom indices; its notebook also passes with the published provider.
+Local validation includes 302 focused checks, 229 final archive/contract checks,
+all 25 notebooks, 39 core suites and strict Sphinx. The once-run full local suite
+has 2,883 passes/23 skips and one new-report Git-index failure corrected by staging
+and targeted link checks. A moved archive link and one format-only hosted policy
+failure are diagnosed and corrected; all 886 Python files pass formatting and lint.
+The final source commit passes hosted MolSysSuite policy. These complete native
+verdicts supply the later regression result; no second local full run is made.
+See [the closure receipt](ci_workflow_closure_20261006.json).
+
+Compatible installed-package qualification is still pending. Public notebooks
+fail on the missing caffeine SDF and Interactions API, and public browser CI on
+the absent H5MSM writer. The public Python matrix also lacks repaired loading/box
+capabilities. Qt's hosted WebGL failure is already tracked under experimental
+#109. No release tag, package promotion or strict 1.0 clearance is created.
 
 **Human review (2026-10-06): the five-stage notebook walkthrough is complete.**
 The initial protein displays correctly. Rotation, zoom, translation, context
@@ -1331,9 +1342,12 @@ remain recorded separately. The later three-platform complete source verdict
 and real browser pass are in the current handoff above.
 Continue in the maintainer's order:
 
-1. Give MolSysMT the fixed, validated Viewer/provider commits above so both
-   teams can prepare the coordinated staging pair. The three-platform source
-   matrix and real core browser lane pass; #161/#162/#163 are resolved.
+1. Give MolSysMT the qualified Viewer
+   `d7939f08d604138112edfe84ccc9bc4a40428057` and provider
+   `a0ceca86ec99c89377e78fac15cbdf32145a362e` for coordinated staging.
+   #169/#170 are resolved and the complete source/native/browser/notebook
+   run passes.
+   The earlier c046fca/5e272169 handoff predates the canonical query vocabulary.
    Preserve the completed source integration and bounded scientific review
    records and their limits.
 2. Candidate prevalidation #157 and the source-level fixes in
@@ -1341,8 +1355,9 @@ Continue in the maintainer's order:
    batch/progressive workflows pass in the editable provider. Repeat them
    against the compatible published candidate before declaring installed support.
 3. The version assessment recommends 0.24.0. Freeze no tag before compatible
-   dependency and exact-candidate gates pass. Obtain human scientific usability,
-   visual and first-contact observations in addition to the automated review.
+   dependency and exact-candidate gates pass. The five-stage human walkthrough
+   is complete. First-contact observation with the actual installed candidate
+   remains separate; do not restart the completed notebook review.
 4. Repeat the now-passing Interactions workflows against a compatible published
    MolSysMT artifact once available. Keep #114 experimental until installed
    evidence exists; uibcdf/molsysmt#250 owns scientific APIs. Existing source

@@ -1,13 +1,13 @@
 ---
 summary: Source inspection guards use platform encoding and fail on Windows
 issue: uibcdf/molsysviewer#169
-status: partial
+status: resolved
 opened: 2026-10-06
-closed:
+closed: 2026-10-06
 severity: medium
 verification: reproduced
 area: [testing, reporting, portability]
-guard:
+guard: tests/test_source_text_encoding.py::test_source_guard_readers_declare_utf8
 normative:
 blocked_by: []
 supersedes: []
@@ -44,7 +44,12 @@ No generated runtime or exported HTML needs to be read or modified.
 
 ## Resolution
 
-The 302 focused checks pass. The full Python run has 2,883 passes, 23 skips
-and one new-report Git-index failure, fixed by staging the reports; all four
-link guards then pass. The full suite is not repeated. Native Windows
-confirmation remains pending on the new committed source candidate.
+Fixed in `1ed34994`, with the final formatting-only successor
+`d7939f08d604138112edfe84ccc9bc4a40428057`. The UTF-8 guard protects every
+repository text read in the three affected owners. Exact-source run
+`37523291585` passes on Windows: **2,849 passed, 53 skipped, zero failures**.
+macOS passes 2,848/54 skipped and Linux 2,875/27 skipped, both with zero failures.
+All three installed-source audits, native path guards and real integration pass.
+The full local attempt and diagnosed Git-index/format follow-ups remain in
+`devguide/ci_workflow_closure_20261006.json`; no second local full suite is run.
+This resolves the six encoding failures without a UTF-8 environment workaround.
