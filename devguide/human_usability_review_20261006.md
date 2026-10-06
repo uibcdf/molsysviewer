@@ -156,9 +156,26 @@ usability observation in the calculation workflow.
 **Subsequent human confirmation:** Diego reports that H bonds are now represented
 and are specific to each structure. This establishes visible, structure-dependent
 interaction geometry in his review. He does not separately report exact counts,
-all-frame evaluated metadata or the new analysis name. Saved-set Hide/Show,
-inspection, participant selection/focus and display filters remain to review
-before the notebook's independent Python reference and session recovery.
+all-frame evaluated metadata or the new analysis name.
+
+Diego subsequently confirms saved-set Hide/Show works. Inspect presents the
+current frame's interactions with participants and distances in nm; Select
+participants and Focus participants both work. Inspect also works after changing
+the frame. Diego also confirms the proposed structure-filter checks all work
+as expected: restrict display to local structure 0, see Excluded by display
+filter on 1/2, restore all and preserve evaluated-structure/total-observation
+counts in Stored analyses. No new defect is reported in those checks. Next
+is the notebook's Python reference calculation and atom-incident filter, then
+session recovery. Hide the Studio-generated set before drawing the Python
+reference so the two representations can be compared separately.
+
+**Accepted naming decision:** during the Python atom-filter step, Diego finds
+incident unfamiliar and approves `involving_selection`, `within_selection`,
+`across_selection_boundary` and `between_selections`. This is a planned public
+query/display vocabulary change, tracked in
+[#168](pending_proposals/explicit_interaction_selection_mode_names.md), requiring
+MolSysMT coordination and a saved-filter compatibility decision. It is not yet
+implemented; the current notebook remains on the existing executable names.
 
 ## Next observations
 

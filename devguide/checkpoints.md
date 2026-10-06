@@ -39,10 +39,18 @@ structures actually defaults to `current`, which explains the coverage pattern.
 His supplied analysis metadata confirms one evaluated structure and zero
 occurrences at 0.23 nm, rather than the planned 0.4 nm review cutoff. After the
 explicit all-frame/0.4 nm guidance and returning from Stored analysis to Calculate,
-Diego confirms visible H bonds specific to each structure. Next review saved-set
-Hide/Show, inspection/participant actions and display filters, then the Python
-reference calculation and session recovery. Record the scope/mode confusion as
-usability evidence; exact human counts and evaluated metadata are not supplied.
+Diego confirms visible H bonds specific to each structure, working Hide/Show,
+frame-specific Inspect with participants/distances in nm, participant selection
+and focus, and Inspect after a frame change. He confirms the structure display
+filter, excluded-frame status, all-frame restoration and preserved analysis
+counts work as proposed. Next is the Python reference and atom filter, then
+session recovery. Record the scope/mode confusion as usability evidence; the
+human has not transcribed exact new-analysis counts.
+The naming discussion approves explicit query/display values in
+[#168](pending_proposals/explicit_interaction_selection_mode_names.md):
+involving_selection, within_selection, across_selection_boundary and
+between_selections. Implementation and MolSysMT coordination are pending;
+current notebook calls retain the old executable names during the review.
 The separate [#166](archive/group_panel_unit_dom_missing_query_selector.md)
 GroupPanel test DOM defect is fixed: the complete JS unit lane passes 322 tests.
 [#167](archive/region_enablement_and_visibility.md) has 12 focused Python tests
