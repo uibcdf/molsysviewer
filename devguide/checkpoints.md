@@ -60,11 +60,12 @@ Qt transport/payload processes cannot initialize their OpenGL RHI, tracked
 under experimental #109. This is not a full-suite pass. The receiving guard
 and receipt are published at `a48478fc`; policy and Conda governance pass.
 Its three-platform source-pair CI now passes; Linux also passes 39 core browser suites and all 25 documented notebooks. Compatible installed
-scientific-pair and cross-platform release qualification remain pending. See
+scientific-pair staging qualification is now complete as recorded above;
+public-pair and final 1.0 qualification remain pending. See
 [the maintained adoption record](python_ecosystem_policy_adoption.md#published-support-library-receiving-check--2026-10-06)
 and [the receiving receipt](support_library_receiving_20261006.json).
 
-**Current qualified source handoff (2026-10-06): #160/#169/#170 resolved.**
+**Earlier qualified source handoff (2026-10-06): #160/#169/#170 resolved.**
 Viewer **`d7939f08d604138112edfe84ccc9bc4a40428057`** with MolSysMT
 **`a0ceca86ec99c89377e78fac15cbdf32145a362e`** passes source-pair run
 [`37523291585`](https://github.com/uibcdf/molsysviewer/actions/runs/37523291585):
@@ -72,8 +73,10 @@ Linux **2,875 passed/27 skipped**, macOS **2,848/54 skipped**, Windows
 **2,849/53 skipped**, zero failures. Installed-source origin/dependency/Rust
 checks and real integration pass on all three platforms. Linux additionally
 passes **39/39 core browser suites** (17 calculation forms, 10 geometry fixtures)
-and **25/25 documented notebooks**. This fixed pair is ready for MolSysMT's
-coordinated staging preparation and supersedes the earlier c046fca/5e272169 handoff.
+and **25/25 documented notebooks**. At that checkpoint this fixed pair was ready
+for MolSysMT's coordinated staging preparation and superseded the earlier
+c046fca/5e272169 handoff. The current stabilization pair at the top of this page
+supersedes those source coordinates.
 
 [#169](archive/source_guards_use_platform_encoding.md) fixes the six Windows
 encoding failures with explicit UTF-8 reads and a guard. [#170](archive/source_pair_omits_scientific_workflows.md)

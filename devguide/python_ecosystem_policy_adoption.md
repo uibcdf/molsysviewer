@@ -40,8 +40,15 @@ Public dependency minima remain `smonitor>=0.13.0` and `argdigest>=0.13.0`.
 No new default capture policy, pipeline-only mode or explicit provider-policy
 opt-in is selected. This validates the existing consumer against the released
 providers; it does not qualify older bounds, other platforms, a compatible
-published Interactions backend or the complete installed pair. MolSysMT's compatible 0.23.0 candidate has subsequently arrived in staging;
-the separate installed-package/1.0 gates remain pending.
+published Interactions backend or the complete installed pair. Subsequent
+qualification of Viewer 0.24.0 build 1 with MolSysMT 0.23.0 ABI3 build 0 passes
+all sixteen installed staging cells and the exact Windows launchers. Canonical
+source Python 3.14 integration passes on Linux, macOS and Windows, including
+39 core browser suites and all 25 documented notebooks on Linux. See the
+[current qualification](installed_artifact_qualification.md) and
+[exact receipt](stabilization_024_preparation_20261006.json). Public-pair and
+final 1.0 gates remain pending; the support-library receiving evidence below
+retains its earlier candidate and scope.
 Hashes, provenance, test selections and reproduction commands are retained in
 [the receiving receipt](support_library_receiving_20261006.json).
 
@@ -65,7 +72,7 @@ without replacing the installed-package gates.
 | --- | --- | --- |
 | ArgDigest | Ordinary public entrypoints digest arguments; scoped MolSysMT wrappers pass the public bypass through. `tests/test_argdigest_public_api.py`, `tests/test_public_entrypoint_contract.py` and `tests/test_support_integrations.py` protect these paths. | Quarantined unreachable digesters are a separate cleanup under `uibcdf/molsysviewer#78`; they are outside the ordinary public surface. |
 | DepDigest | Hard dependencies are checked before lazy public imports; optional engine guards and loader form mappings are explicit. `tests/test_support_integrations.py` and `tests/test_dependency_contract.py` protect the applicable routes. | No blanket claim that every optional external engine has been certified. |
-| SMonitor | Public diagnostic catalog templates and real rendering in five profiles are guarded by `tests/test_smonitor_integration.py`; `uibcdf/molsysviewer#107` is resolved in the working tree. | Publication of the accumulated source corrections is separate from their local verification. |
+| SMonitor | Public diagnostic catalog templates and real rendering in five profiles are guarded by `tests/test_smonitor_integration.py`; `uibcdf/molsysviewer#107` is resolved and integrated. | Public release of the accumulated corrections remains separate from their staged qualification. |
 | PyUnitWizard | Reuse the shared registry and preserve an application's active unit policy. Convert physical scene inputs explicitly to the wire unit. Scalar values retain quantities and explicit physical ranges require compatible units. `tests/test_units_under_a_user_policy.py` and `tests/test_scalar_color_units.py` protect these conversions and whole/region attributes. | Publication and exact-candidate qualification remain separate; no region scoring-threshold API is introduced. |
 
 `uibcdf/molsysviewer#98` resolves the last reviewed support-library gap.

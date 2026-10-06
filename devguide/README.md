@@ -39,7 +39,7 @@ documents, and historical audits.
 
 ## Current status and planning
 
-- [`human_usability_review_20261006.md`](human_usability_review_20261006.md): ongoing remote-Jupyter review with Diego; initial protein, canvas controls and Studio/popup controls observed passing.
+- [`human_usability_review_20261006.md`](human_usability_review_20261006.md): completed five-stage remote-Jupyter review with Diego; observations, corrected usability defects and tutorial follow-up retained.
 
 - [`scientific_usability_review_20261004.md`](scientific_usability_review_20261004.md): real widget findings, separate Interactions calculation/display scopes and successful repaired-provider SDF composition.
 
@@ -74,8 +74,11 @@ documents, and historical audits.
   query/geometry, H5MSM/session and calculated-link browser evidence, with the
   explicit published-provider boundary.
 - [`installed_artifact_qualification.md`](installed_artifact_qualification.md):
-  current wheel with public dependencies, isolated imports and offline HTML
-  rendering; compatible Interactions publication and final candidate remain pending.
+  fixed Viewer 0.24.0 build 1 / MolSysMT 0.23.0 ABI3 build 0 qualified in all
+  sixteen staging cells, exact Windows launchers and hosted core browser suites;
+  public-pair and final 1.0 qualification remain pending.
+- [`stabilization_024_preparation_20261006.json`](stabilization_024_preparation_20261006.json):
+  exact candidate coordinates, artifact digests, native CI verdicts and publication boundary.
 - [`pending_bugs/`](pending_bugs/): confirmed unresolved defects.
 - [`pending_proposals/`](pending_proposals/): active proposals, with its own
   indexed status table.

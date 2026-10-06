@@ -14,6 +14,16 @@ supersedes: []
 
 # Introduce a minimal Interactions scene domain before 1.0
 
+**Current qualification — 2026-10-06:** implementation is committed and
+integrated in Viewer 0.24.0 build 1 with MolSysMT 0.23.0 ABI3 build 0. All
+sixteen installed staging cells and 39 hosted core browser suites pass;
+canonical-source Python 3.14 integration passes on all three native hosts,
+with 25 documented notebooks passing on Linux. This report remains partial
+for its public-provider/release qualification; staging evidence does not
+close that gate. See the [current handoff](../checkpoints.md#resume-in-one-page)
+and [exact candidate receipt](../stabilization_024_preparation_20261006.json).
+Earlier dated sections retain their original scope.
+
 **Current API update (2026-10-01):** the maintainer selected named family
 wrappers (`view.interactions.hbonds.get_hbonds`, etc.) for the nine implemented
 experimental provider families. The original two `compute_*` calculation routes

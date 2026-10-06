@@ -310,8 +310,35 @@
     "corrected_automatic_source_hosted": {
       "id": 37545069147,
       "commit": "d5ac10f0604b3cbdb9d80d6774a7aad72df5e731",
-      "status": "queued",
-      "scope": "Automatic development provenance and current tooling; does not replace fixed canonical-source/artifact results."
+      "status": "in_progress",
+      "scope": "Automatic development provenance and current tooling; does not replace fixed canonical-source/artifact results.",
+      "jobs": {
+        "windows": {
+          "id": 112546998716,
+          "status": "completed",
+          "conclusion": "success",
+          "passed": 2867,
+          "skipped": 53,
+          "failed": 0,
+          "seconds": 397.47,
+          "initial_viewer_version": "0.23.4+111.gd5ac10f0",
+          "reinstalled_viewer_version": "0.23.4+111.gd5ac10f0.dirty",
+          "provider_version": "0.23.0",
+          "pip_check": "pass",
+          "native_rust": "pass; 101 exports",
+          "provider_integration_passed": 3,
+          "viewer_integration_passed": 2,
+          "log": "/tmp/msv-024-corrected-development-windows-20261006.log"
+        },
+        "linux": {
+          "id": 112546999009,
+          "status": "in_progress"
+        },
+        "macos": {
+          "id": 112546998944,
+          "status": "in_progress"
+        }
+      }
     },
     "corrected_tooling_policy": {
       "id": 37545070019,
@@ -659,5 +686,55 @@
       ]
     }
   },
-  "current_candidate": "next_candidate; immutable Viewer 0.24.0 py_1 from 1a4c97a58b68b69f3a836546c9e4ac6187c3efa2"
+  "current_candidate": "next_candidate; immutable Viewer 0.24.0 py_1 from 1a4c97a58b68b69f3a836546c9e4ac6187c3efa2",
+  "devguide_reconciliation": {
+    "date": "2026-10-06",
+    "status": "pass; current summaries and 17 active report receiving checkpoints reconciled; automatic hosted follow-up still in progress",
+    "board_sync": {
+      "result": "pass",
+      "matching_active_documents": 45
+    },
+    "preserved": [
+      "fixed build 1 producer and hashes",
+      "earlier failed/native verdicts",
+      "dated performance inputs",
+      "open public-provider/release gates",
+      "unrelated user scratch files"
+    ],
+    "corrected": [
+      "README human review completion and staged qualification",
+      "earlier source handoff labelled historical",
+      "support-library receiving versus complete staged pair",
+      "Interactions planning/qualification/performance current scopes",
+      "loading guide independent-source contract",
+      "design closure receiving evidence",
+      "Windows staged repair versus public repair"
+    ],
+    "public_core_observation": {
+      "id": 37545293648,
+      "commit": "aa6f8f06d1a65014beaa776ecf44301f571c76b4",
+      "conclusion": "failure",
+      "scientific_tests_started": false,
+      "cause": "libmamba cannot solve molsysmt>=0.23.0 from public channels; provider candidate remains staging-only",
+      "secondary_cleanup_error": "ENOENT micromamba-shell",
+      "receptor_limitation": "GH Run Receptor 1.1.1 ranks the cleanup ENOENT as root cause; native log establishes the earlier solver failure, the already reported uibcdf/gh-run-receptor#61 mechanism",
+      "native_log": "/tmp/msv-024-devguide-public-core-20261006-native.log"
+    },
+    "validation": {
+      "targeted_links": {
+        "passed": 4,
+        "failed": 0,
+        "seconds": 1.92
+      },
+      "protocol_architecture_dependency_workflow_ecosystem": {
+        "passed": 273,
+        "failed": 0,
+        "seconds": 11.7,
+        "log": "/tmp/msv-024-devguide-validation-20261006.log"
+      },
+      "generated_indexes": "current",
+      "git_diff_check": "pass",
+      "full_suite_repeated": false
+    }
+  }
 }

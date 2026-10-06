@@ -112,7 +112,7 @@ it reports the batch source records. The reference source counts are 596 and
 The manually added orange representation in the progressive view is not
 expected in the fresh batch scene.
 
-## 5. Interactions and trajectory — calculation/display observed; remaining controls under review
+## Interactions and trajectory — observed with usability follow-up
 
 Notebook section 4 loads real pentalanine structures in source order [0, 8, 3],
 mapped to local frames 0, 1 and 2. Diego reports correct molecular representation
@@ -185,7 +185,7 @@ restart details separately. This records his general confirmation without
 turning it into an exhaustive manual matrix. The open scratch notebook is
 preserved.
 
-## Next observations
+## Review corrections and additional observations
 
 The source corrections for #164/#165 and their regression guards pass,
 including all 39 core browser suites. The once-run Python suite has 2,816

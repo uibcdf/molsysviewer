@@ -14,6 +14,17 @@ supersedes: []
 
 # Extend MolSysViewer Python support to 3.14 alongside MolSysMT
 
+**Current follow-up — 2026-10-06:** core Python 3.11–3.14 support remains
+delivered by the earlier public pair. The later Viewer 0.24.0 build 1 /
+MolSysMT 0.23.0 ABI3 build 0 candidate additionally passes all sixteen installed
+staging cells on the four candidate platforms. Canonical-source Python 3.14
+integration passes on Linux, macOS and Windows, with all 39 core browser suites
+and 25 documented notebooks passing on Linux. See the
+[exact receipt](../stabilization_024_preparation_20261006.json). Optional Qt
+evidence and central admission retain their separate scope; Qt remains
+experimental for 1.0. Earlier development bounds and environment directions
+below are historical: current local development uses `molsyssuite@uibcdf_3.14`.
+
 **Reported:** 2026-09-22 during the MolSysSuite Python 3.14 transition
 (`uibcdf/molsyssuite#29`). This is paired with `uibcdf/molsysmt#237`.
 **Status (2026-09-25):** The core Viewer 0.23.4 / MolSysMT 0.22.4 pair is
@@ -79,7 +90,7 @@ that specific constraint.
 - Changing only MolSysMT's metadata cannot solve a package pair whose viewer
   half explicitly excludes 3.14.
 
-## Current evidence and open gates
+## Earlier evidence and open gates — original Python 3.14 transition
 
 - At the start of this work, source `pyproject.toml`, Conda recipe, and the
   Linux/macOS CI matrix stopped at Python 3.13. The candidate branch now

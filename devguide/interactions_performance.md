@@ -1,6 +1,15 @@
 # Interaction residency, queries and projection
 
-**Current status — 2026-10-02:** 24 sparse adapter workloads and ten detector
+**Current qualification — 2026-10-06:** the fixed Viewer 0.24.0 build 1 /
+MolSysMT 0.23.0 ABI3 build 0 pair passes all sixteen installed staging cells and
+39 hosted core browser suites. Public-pair and larger GPU qualification remain
+open. Provider uibcdf/molsysmt#288 and uibcdf/molsysmt#289 source corrections and
+their bounded receiving measurements are recorded below; the earlier open-provider observation does
+not describe their current status. See the
+[current scientific qualification](interactions_qualification.md) and
+[exact receipt](stabilization_024_preparation_20261006.json).
+
+**Earlier observation — 2026-10-02:** 24 sparse adapter workloads and ten detector
 probes pass. Compound projection batching is done (#141); provider frame-query
 cost (#288) and published-artifact qualification remain open under #140/#114.
 The dated sections preserve measured inputs and their limits.

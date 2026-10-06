@@ -2,10 +2,10 @@
 
 ## Current status
 
-This front is no longer a pending proposal.
-
-It is now implemented in a **first operational version** and should be treated
-as an active capability with known limitations, not as an unimplemented idea.
+The single-system modes are implemented. The later independent-system contract
+is implemented under [#151](pending_proposals/multiple_system_loading_contract.md)
+and passes the fixed 0.24.0 / MolSysMT 0.23.0 staged qualification. Public-pair
+qualification remains pending; see the [current handoff](checkpoints.md#resume-in-one-page).
 
 ## Implemented now
 
@@ -15,6 +15,15 @@ as an active capability with known limitations, not as an unimplemented idea.
 - `mode="replace"`
 - `mode="append_structures"`
 - `mode="auto"`
+
+By default, `multiple=False` treats the input as one molecular system, including
+complementary topology/coordinate forms. `multiple=True` explicitly interprets
+the outer list/tuple as independent systems combined in one MolSys; that route
+supports only `add` and `replace`. Batch and progressive loading preserve
+source identity, labels and compact maps exposed through detached `load_blocks`
+records. They create one source region per independent source when more than
+one source is present. Regions preserve Unicode labels and remain linked by UID.
+The normative contract is in [scene contracts](scene_contracts.md).
 
 ### `mode="add"`
 
@@ -46,6 +55,7 @@ Current first-version heuristic:
 - same atom count + no topology in the input -> `append_structures`
 - same atom count + matching topology -> `append_structures`
 - different atom count -> `add`
+- same atom count + different topology -> `add`
 
 This is intentionally conservative.
 
@@ -67,7 +77,13 @@ Those are follow-up tasks, not grounds to keep this front listed as pending.
 The current implementation should be considered a **first working version**.
 It is useful and operational, but not yet the final design.
 
-Known areas that still need work:
+The remaining broader trajectory/scale investigations do not reopen the
+implemented bounded workflow. Mixed PDB/SDF loading, explicit topology/frame
+compatibility, source maps and replay/session transfer have regression coverage
+and exact staging evidence; old general coverage requests below describe the
+earlier first version.
+
+Earlier areas identified for follow-up:
 
 - stronger test coverage for mixed file/form inputs
 - broader replay/export coverage for multi-step loading stories
@@ -76,7 +92,7 @@ Known areas that still need work:
 - more explicit handling of structure-count compatibility in some cases
 - better support and validation for large trajectory workflows
 
-## Important next improvements
+## Earlier improvement inventory
 
 ### 1. Larger trajectory support
 
@@ -106,4 +122,7 @@ revisited after more real workflows are exercised.
 
 This status document only covers the loading surface.
 
-The broader MolSysMT integration front is still separate and remains pending.
+Scientific operations call the native MolSysMT backend directly. Compatible
+staging qualification is complete; public provider/pair publication and final
+1.0 qualification remain separate. Complete retirement of the remaining
+legacy addon workflows is outside the bounded Interactions slice.

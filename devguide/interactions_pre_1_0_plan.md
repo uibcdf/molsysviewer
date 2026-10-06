@@ -1,5 +1,20 @@
 # Minimal Interactions before 1.0
 
+## Current implementation and qualification — 2026-10-06
+
+The API, renderer and Studio changes are committed and integrated. Viewer
+0.24.0 build 1 with MolSysMT 0.23.0 ABI3 build 0 passes all sixteen installed
+staging cells, exact Windows launchers and 39 hosted core browser suites.
+Canonical-source Python 3.14 integration passes on all three native hosts,
+including 39 core suites and all 25 documented notebooks on Linux. The
+five-stage human notebook review is complete. See the
+[current scientific qualification](interactions_qualification.md) and
+[exact candidate receipt](stabilization_024_preparation_20261006.json).
+Public-pair qualification, public documentation reconciliation and final 1.0
+review remain. Earlier dated sections retain their original implementation
+and validation scope; their former working-tree or candidate blockers are not
+instructions to repeat completed integration.
+
 ## Explicit selection-mode vocabulary — implementation 2026-10-06
 
 Python and Studio use `involving_selection`, `within_selection`,

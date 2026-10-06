@@ -16,8 +16,14 @@ supersedes: []
 # Noarch Conda package omits three Windows launchers
 
 **Reported:** 2026-09-24 by the suite noarch recipe survey.
-**Status:** Partial; source and verification routes exist, but no repaired
-artifact has been staged or published.
+**Status — 2026-10-06:** Partial; the repaired Viewer 0.24.0 noarch build 1
+is staged and its exact Windows launcher job passes in
+[37542333568](https://github.com/uibcdf/molsysviewer/actions/runs/37542333568).
+The job verifies producer `1a4c97a58b68b69f3a836546c9e4ac6187c3efa2`, version,
+build, file hash and installed record, then executes all three `.exe` commands
+outside the checkout. Publication and the independent public Windows check
+remain pending. See the
+[exact candidate receipt](../stabilization_024_preparation_20261006.json).
 
 ## What
 

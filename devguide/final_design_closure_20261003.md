@@ -5,6 +5,19 @@ documentation remains last. Issues #146–#150 own the five corrections; #151 ow
 the accepted additional loading contract. Existing unrelated working-tree changes were
 preserved before implementation in `/tmp/msv-design-closure-before-20261003.tar.gz`.
 
+**Current qualification — 2026-10-06:** the accumulated corrections are
+integrated in fixed Viewer 0.24.0 build 1 with MolSysMT 0.23.0 ABI3 build 0.
+All sixteen installed staging cells, exact Windows launchers and 39 hosted
+core browser suites pass. Canonical-source Python 3.14 integration passes on
+all three native hosts, with 25 documented notebooks passing on Linux.
+Provider uibcdf/molsysmt#312 and uibcdf/molsysmt#313 fixes and successful mixed
+PDB/SDF loading are qualified in the source and staging workflows; the
+five-stage human review is complete.
+Public-pair qualification, public documentation and final 1.0 review remain.
+Use the [current handoff](checkpoints.md#resume-in-one-page) and
+[exact receipt](stabilization_024_preparation_20261006.json); the execution
+order and validation records below describe the earlier integration stage.
+
 ## Current implementation
 
 | Issue | Surface | Outcome in the integrated source |
@@ -87,7 +100,7 @@ excluded from the minimum. Acquisition errors, source selectors, compact-map
 memory budgets and Studio parity are guarded. Never silently
 truncate, align, broadcast, concatenate trajectory axes or overwrite analyses.
 
-## Next execution order
+## Earlier execution order — 2026-10-03
 
 1. Source integration, developer-guide reconciliation and bounded real scientific
    review are complete. Their dated records retain input and observation limits.

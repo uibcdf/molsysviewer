@@ -16,8 +16,9 @@ Earlier failed attempts remain in [the preparation receipt](stabilization_024_pr
 and ArgDigest 0.15.0 pass 122 bounded installed checks (14 expected skips)
 with a wheel from fixed Viewer source and public MolSysMT 0.22.4, in a fresh
 Linux/Python 3.14.8 environment. Runtime/version, dependency consistency,
-origins and installed archive-member checks pass. The compatible scientific
-pair and complete release matrix remain pending. See
+origins and installed archive-member checks pass. This receiving check predates
+the complete scientific staging qualification above; public-pair and final
+release qualification remain pending. See
 [the receiving check](python_ecosystem_policy_adoption.md#published-support-library-receiving-check--2026-10-06)
 and [its receipt](support_library_receiving_20261006.json).
 

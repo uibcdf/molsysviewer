@@ -53,6 +53,16 @@ tags the declared frozen Viewer candidate, retaining its version/runtime/tag
 identity assertions. A development check never qualifies an installed public
 artifact or authorizes moving a published tag (`uibcdf/molsysviewer#137`).
 
+For automatic development events, install both source candidates first, then
+run `npm run build:runtime` and reinstall the Viewer before source validation.
+This binds the bundled runtime to the development version without rewriting JS
+package metadata or introducing a release tag. Manual frozen-candidate events
+retain the declared canonical version. Any temporary tag created for an
+installation is removed before release-history and capability checks; an
+existing tag is not removed. The workflow ordering is guarded by
+`tests/test_source_workflow_coverage.py`; the development tagging policy is
+guarded by `tests/test_python_ecosystem_contract.py`.
+
 The scientific source baseline also supplies the pinned provider's own runtime
 floors and runs `python -m pip check` immediately after both installations.
 This catches dependency metadata contradictions introduced by `--no-deps`;

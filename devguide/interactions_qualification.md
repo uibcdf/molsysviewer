@@ -1,5 +1,23 @@
 # Interactions qualification
 
+## Current staging qualification — 2026-10-06
+
+Viewer **0.24.0 noarch build 1**, producer
+`1a4c97a58b68b69f3a836546c9e4ac6187c3efa2`, with MolSysMT **0.23.0 ABI3 build 0**,
+producer `46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9`, passes all sixteen installed
+staging cells and exact Windows launcher checks. All 39 hosted core browser
+suites pass. Canonical-source Python 3.14 integration passes on Linux, macOS
+and Windows, with all 39 core suites and 25 documented notebooks passing on Linux.
+The scientific results, named analyses, explicit selection-mode vocabulary and
+H5MSM 0.5 workflows are therefore qualified against this fixed staged pair.
+See [the installed qualification](installed_artifact_qualification.md) and
+[the exact preparation receipt](stabilization_024_preparation_20261006.json).
+
+Both candidates remain staging-only. Public installed-pair qualification,
+publication and the final 1.0 candidate remain open under #114/#140. The
+measured workloads below retain their original provider, date and scope;
+they do not establish native-GPU or large-system browser limits.
+
 ## Nine-family source integration — 2026-10-01
 
 Explicit family wrappers and their role-aware projections pass against an
@@ -51,9 +69,9 @@ ordinary-view evidence, not the scientific feature qualification.
 The publication must provide the public sparse `Interactions` result and its
 query/occurrence identity contract, named `MolSys.interactions` analyses,
 Buch/disulfide optional result outputs, and H5MSM 0.5 read/write-layer APIs.
-Repeat the commands below against that exact installed artifact, verify the
-import location/version, then decide its feature dependency floor. Do not
-invent a version floor before the provider publishes and qualifies it.
+The later staged pair above qualifies those capabilities with the dependency
+floor `molsysmt>=0.23.0`. Public promotion and independent public installed-pair
+verification remain necessary before claiming a supported public route.
 
 ## Real scientific workloads
 
