@@ -63,6 +63,31 @@ reports that both warnings are understandable. This observation does not
 change the scientific box/attribute policy or declare the combined system
 chemically prepared.
 
+## 3. Region visibility and representation — observed, design discussion open
+
+Diego reports that Studio Regions/Saved Regions Hide removes unrepresented
+caffeine while the protein remains, and Show restores caffeine. He reports
+that the section 2 Python API works throughout: hide/show, isolation,
+restoration and the orange own representation.
+
+After creating the orange own representation, Studio Hide removes that style
+but caffeine remains drawn through Whole. This matches the current §A.3
+fallback contract, but Diego questions whether the user expects a region Hide
+action to behave that way. The observation reopens the design decision; it
+does not authorize changing the contract or establish an implementation bug.
+The additional independent Whole hide/show check has not been explicitly
+reported.
+
+Diego also asks whether Saved Regions should offer Show Only and how users
+should return from it. Discuss a plain action using scene Undo versus a
+temporary isolation with an explicit visibility restore. A restore must
+preserve earlier hidden regions and Whole visibility; showing everything is
+not equivalent. Current `show_only()` changes region hidden flags and does
+not itself retain a dedicated visibility restoration snapshot.
+
+Keep both decisions open while discussing them. No new runtime behavior,
+temporary-isolation API or revised region hide semantics has been accepted.
+
 ## Next observations
 
 The source corrections for #164/#165 and their regression guards pass,
@@ -77,9 +102,8 @@ a second complete run. The unit JS fixture failure is separately tracked as
 `66a924404feadaef7aa7147fea573533c21d40c8`, Diego reports that both errors
 are corrected: Welcome no longer flashes and the source-region labels are
 correct. This closes the pending human retest for #164/#165. Kernel/browser
-restart details and client version were not separately reported. Visibility
-and representation of regions are the next stage; their human result is
-still pending.
+restart details and client version were not separately reported. Region
+observations are recorded above; their two design questions remain open.
 
 For this stage, use Studio's Hide/Show buttons first, then the notebook's
 Python cells for `show_only()` and restoration. The notebook prose suggests
@@ -97,7 +121,7 @@ results for the pending human observation, not newly observed passes.
 
 Continue in the same notebook:
 
-1. Hide/show/isolate source regions, restore them and add a dedicated representation.
+1. Resolve the isolation-control and represented-region Hide design questions above.
 2. Compare batch loading with progressive loading.
 3. Review Studio Interactions calculation, inspection/display filters and trajectory controls.
 4. Save/reopen a recognizable session and compare the restored scene.

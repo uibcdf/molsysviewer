@@ -20,8 +20,12 @@ and 23 skipped; normal pytest outside the sandbox passes those explicit 22
 nodes. The full Python suite is not repeated. See
 [the loading-fix receipt](load_usability_fixes_20261006.json).
 Diego now confirms both corrections in the human review after the source fix
-`66a924404feadaef7aa7147fea573533c21d40c8`. Next: source-region hide/show,
-isolation/restoration and own representations; those observations remain pending.
+`66a924404feadaef7aa7147fea573533c21d40c8`. Studio base-region Hide/Show
+and the section 2 Python API are reported passing. Own-region Hide reveals
+Whole as contracted, but Diego questions that user experience and asks how
+Studio isolation should offer a return. Both design decisions are reopened
+for discussion; no runtime semantics change is authorized. Next: agree those
+rules before continuing the notebook review.
 The JS unit run separately exposes [#166](pending_bugs/group_panel_unit_dom_missing_query_selector.md): GroupPanel's test DOM lacks
 `querySelector`, although the real browser route passes. That fixture remains
 an open 1.0 validation task.
