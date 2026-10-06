@@ -96,6 +96,7 @@ jobs:
             ${{ inputs.use_staging && format('molsysmt={0}', inputs.molsysmt_version) || '' }}
 
       - name: Validate and locally tag the exact Viewer source candidate
+        id: viewer-candidate-tag
         if: github.event_name == 'workflow_dispatch' && inputs.use_staging
         shell: bash -l {0}
         env:
@@ -109,11 +110,22 @@ jobs:
             test "$(git rev-list -n 1 "$EXPECTED_VERSION")" = "$GITHUB_SHA"
           else
             git tag "$EXPECTED_VERSION" HEAD
+            echo "created=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Install package
         shell: bash -l {0}
         run: python -m pip install . --no-deps
+
+      - name: Remove the temporary Viewer tag after installation
+        if: always() && steps.viewer-candidate-tag.outputs.created == 'true'
+        shell: bash -l {0}
+        env:
+          EXPECTED_VERSION: ${{ inputs.viewer_version }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-list -n 1 "$EXPECTED_VERSION")" = "$GITHUB_SHA"
+          git tag -d "$EXPECTED_VERSION"
 
       - name: Install JS deps
         working-directory: molsysviewer/js

@@ -1,5 +1,8 @@
 # Archived implementation plans
 
+- [`temporary_candidate_tags_change_release_history.md`](temporary_candidate_tags_change_release_history.md) — #171: remove only owned local version tags after installation; staged metadata stays exact and 208 installed capability checks pass.
+- [`movie_done_precedes_final_canvas_draw.md`](movie_done_precedes_final_canvas_draw.md) — #172: shared fresh-draw synchronization makes Movie completion observe the final camera; both unit cases and three affected browser suites pass.
+
 - [`source_guards_use_platform_encoding.md`](source_guards_use_platform_encoding.md) — #169: explicit UTF-8 source readers and guard; native Windows/Linux/macOS source suites pass.
 - [`source_pair_omits_scientific_workflows.md`](source_pair_omits_scientific_workflows.md) — #170: exact-source Linux CI executes all 39 core browser suites and 25 notebooks; published/staging gates stay independent.
 

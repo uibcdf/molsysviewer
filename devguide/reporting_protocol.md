@@ -94,6 +94,18 @@ protects the reported failure mechanism. See `MOLSYSSUITE_GUIDE.md` and the cano
 `uibcdf/molsyssuite` reporting protocol for the complete contract. A non-pytest guard
 requires a bounded local selector profile before it can be used for a new closure.
 
+### Movie playback browser guard profile
+
+For the rendered final-camera completion contract, the bounded frontend profile
+also accepts exactly `molsysviewer/js/tests/e2e/movie-playback.e2e.ts`. From
+`molsysviewer/js/`, build with `npm run build:harness` and
+`npm run build:e2e:all`, then run `node tests/e2e/movie-playback.e2e.js`.
+The same entry runs in `npm run test:e2e:core` with real Mol*/Chromium.
+It checks interpolation, the camera at the completion event, final position
+and interruption; browser/WebGL errors fail. No node suffix, wildcard or
+unregistered browser target is accepted. `tests/test_reporting_protocol.py`
+verifies this exact build/runner registration.
+
 ### Interactions browser guard profile
 
 For defects originating in the Studio TypeScript request path, the bounded local

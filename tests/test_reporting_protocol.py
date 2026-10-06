@@ -41,6 +41,7 @@ GUARD_POLICY_EFFECTIVE_DATE = "2026-09-20"
 PYTEST_ROOTS = (PurePosixPath("tests"), PurePosixPath("devtools/tests"))
 INTERACTIONS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/interactions-calculation.e2e.ts"
 COMPOSITE_LOAD_BROWSER_GUARD = "molsysviewer/js/tests/e2e/composite-load.e2e.ts"
+MOVIE_BROWSER_GUARD = "molsysviewer/js/tests/e2e/movie-playback.e2e.ts"
 GROUP_PANEL_UNIT_GUARD = "molsysviewer/js/tests/unit/group-panel.test.ts"
 
 
@@ -64,7 +65,7 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             "node --test tests/unit/dist-index.js" in scripts.get("test:js", ""),
         )
         return [] if all(requirements) else [f"guard {selector!r} does not resolve to its documented unit lane"]
-    if selector not in (INTERACTIONS_BROWSER_GUARD, COMPOSITE_LOAD_BROWSER_GUARD):
+    if selector not in (INTERACTIONS_BROWSER_GUARD, COMPOSITE_LOAD_BROWSER_GUARD, MOVIE_BROWSER_GUARD):
         return validate_pytest_guard(root, selector)
     js_root = root / "molsysviewer/js"
     try:
@@ -74,7 +75,7 @@ def validate_guard(root: Path, selector: str) -> list[str]:
         scripts = json.loads((js_root / "package.json").read_text(encoding="utf-8"))["scripts"]
     except (OSError, ValueError, KeyError) as error:
         return [f"guard {selector!r} cannot be indexed: {error}"]
-    name = "interactions-calculation" if selector == INTERACTIONS_BROWSER_GUARD else "composite-load"
+    name = Path(selector).name.removesuffix(".e2e.ts")
     requirements = (
         'import { chromium } from "./e2e-browser";' in entry,
         "process.exit(1)" in entry,
@@ -90,12 +91,19 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             'runInteractionsSuite(chromium, "calculation").catch' in entry,
             "export async function runInteractionsSuite(" in owner,
         )
-    else:
+    elif selector == COMPOSITE_LOAD_BROWSER_GUARD:
         requirements += (
             "async function checkProgressiveWelcome(" in entry,
             "await checkProgressiveWelcome(page, fixture);" in entry,
             "run().catch(" in entry,
             (js_root / "tests/e2e/composite-load-bridge.py").is_file(),
+        )
+    else:
+        requirements += (
+            "movie_playback_done" in entry,
+            "result.atCompletion" in entry,
+            "Completion preceded the final camera draw" in entry,
+            "run().catch(" in entry,
         )
     return [] if all(requirements) else [f"guard {selector!r} does not resolve to its documented browser lane"]
 
@@ -419,6 +427,7 @@ def test_newly_resolved_archive_guards_are_addressable(path: Path) -> None:
 def test_browser_guard_resolves_its_build_entrypoint_and_core_lane() -> None:
     assert validate_guard(ROOT, INTERACTIONS_BROWSER_GUARD) == []
     assert validate_guard(ROOT, COMPOSITE_LOAD_BROWSER_GUARD) == []
+    assert validate_guard(ROOT, MOVIE_BROWSER_GUARD) == []
 
 
 def test_group_panel_unit_guard_is_bounded_and_registered() -> None:
@@ -431,6 +440,8 @@ def test_group_panel_unit_guard_is_bounded_and_registered() -> None:
 def test_browser_guard_rejects_missing_or_unadopted_targets(tmp_path: Path) -> None:
     assert validate_guard(tmp_path, INTERACTIONS_BROWSER_GUARD)
     assert validate_guard(tmp_path, COMPOSITE_LOAD_BROWSER_GUARD)
+    assert validate_guard(tmp_path, MOVIE_BROWSER_GUARD)
+    assert validate_guard(ROOT, MOVIE_BROWSER_GUARD + "::run")
     assert validate_guard(ROOT, COMPOSITE_LOAD_BROWSER_GUARD + "::checkProgressiveWelcome")
     assert validate_guard(ROOT, "molsysviewer/js/tests/e2e/interactions-geometry.e2e.ts")
     assert validate_guard(ROOT, INTERACTIONS_BROWSER_GUARD + "::checkCalculationAndDisplayScopes")

@@ -48,7 +48,10 @@ async function run() {
 
     const result = await page.evaluate(async pdb => {
         const w = window as any;
-        const controller = await w.Harness.createController("root");
+        let atCompletion: number[] | null = null;
+        const controller = await w.Harness.createController("root", undefined, (message: any) => {
+            if (message?.event === "movie_playback_done" && !atCompletion) atCompletion = pos();
+        });
         await controller.handleMessage({
             op: "load_structure_from_string",
             data: pdb,
@@ -112,7 +115,7 @@ async function run() {
         await new Promise(r => setTimeout(r, 700));
         const afterStop = pos();
 
-        return { settled, during, after, done, atStop, afterStop };
+        return { settled, during, after, done, atCompletion, atStop, afterStop };
     }, PDB_TEXT);
 
     const dist = (a: number[] | null, b: number[] | null) => {
@@ -123,6 +126,10 @@ async function run() {
     assert.ok(result.done, "play_movie never reported movie_playback_done");
 
     const end = [60, 0, 0];
+    assert.ok(
+        dist(result.atCompletion, end) < 1e-6,
+        `Completion preceded the final camera draw: ${JSON.stringify(result.atCompletion)}`,
+    );
 
     // Interpolation is the thing only a browser can see. A runtime that jumped
     // straight to the last keyframe, or that applied nothing until the final tick,

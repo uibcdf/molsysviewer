@@ -58,3 +58,18 @@ PW_CHROMIUM_BIN=/usr/bin/google-chrome npm --prefix molsysviewer/js run test:e2e
 
 - Use {doc}`debugging` for message-level debugging and popout sync issues.
 - Use your browser devtools console for runtime logs.
+
+## Awaiting a completed canvas draw
+
+`js/src/managers/canvas-draw.ts` owns `waitForCanvasDraw(canvas, timeoutMs)`.
+It subscribes to Mol*'s `didDraw`, ignores the BehaviorSubject's synchronous
+replay, requests a new draw, and releases its subscription on completion or
+timeout. The default deadline is 30 seconds. Exported-scene readiness and Movie
+completion use this shared tool.
+
+`PluginCommands.Camera.SetSnapshot` acknowledges a requested camera reset.
+Mol* applies the reset during scene commit/draw; awaiting that command alone
+does not establish a rendered final camera. Movie waits for its pending commands,
+submits the last keyframe, awaits the new draw, and only then reports completion.
+The playback generation check still prevents a stopped/replaced movie from
+reporting completion.

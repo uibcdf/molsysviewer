@@ -104,6 +104,7 @@ jobs:
             channel_priority: strict
 
       - name: Validate and locally tag the exact Viewer source candidate
+        id: viewer-candidate-tag
         if: github.event_name == 'workflow_dispatch'
         shell: bash -l {0}
         working-directory: molsysviewer-source
@@ -118,9 +119,11 @@ jobs:
             test "$(git rev-list -n 1 "$EXPECTED_VERSION")" = "$GITHUB_SHA"
           else
             git tag "$EXPECTED_VERSION" HEAD
+            echo "created=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Locally tag the exact MolSysMT candidate version
+        id: provider-candidate-tag
         shell: bash -l {0}
         working-directory: molsysmt-source
         env:
@@ -134,6 +137,7 @@ jobs:
             test "$(git rev-list -n 1 "$EXPECTED_VERSION")" = "$MOLSYSMT_SHA"
           else
             git tag "$EXPECTED_VERSION" HEAD
+            echo "created=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Install both exact source candidates
@@ -143,6 +147,28 @@ jobs:
           python -m pip install --no-deps --no-build-isolation ./molsysmt-source
           python -m pip install --no-deps --no-build-isolation ./molsysviewer-source
           python -m pip check
+
+      - name: Remove the temporary Viewer tag after installation
+        if: always() && steps.viewer-candidate-tag.outputs.created == 'true'
+        shell: bash -l {0}
+        working-directory: molsysviewer-source
+        env:
+          EXPECTED_VERSION: ${{ inputs.viewer_version }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-list -n 1 "$EXPECTED_VERSION")" = "$GITHUB_SHA"
+          git tag -d "$EXPECTED_VERSION"
+
+      - name: Remove the temporary MolSysMT tag after installation
+        if: always() && steps.provider-candidate-tag.outputs.created == 'true'
+        shell: bash -l {0}
+        working-directory: molsysmt-source
+        env:
+          EXPECTED_VERSION: ${{ inputs.molsysmt_version || '0.23.0' }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-list -n 1 "$EXPECTED_VERSION")" = "$(git rev-parse HEAD)"
+          git tag -d "$EXPECTED_VERSION"
 
       - name: Audit dependency routes and the installed exact source provider
         shell: bash -l {0}

@@ -5,13 +5,28 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-**0.24.0 staging preparation (2026-10-06): in progress.** MolSysMT supplies
-version 0.23.0, commit `46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9`, build 0
-ABI3 in `uibcdf/label/staging`. The downloaded Linux archive matches the supplied
-SHA-256; the registry confirms all four platform filenames and hashes. Viewer
-now declares `molsysmt>=0.23.0` consistently and prepares citations, staged route
-and runtime for 0.24.0. Local-only CI tags bind both candidate versions before
-installation; source feasibility remains separate from installed-package gates.
+**0.24.0 staging preparation (2026-10-06): build 1 is next.** MolSysMT
+0.23.0, commit `46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9`, build 0 ABI3,
+is verified in staging. Viewer build 0 is produced from `6c4ddba31c289a27f761576c07fa641603c4392e`;
+both installed packages' member hashes and `pip check` pass. The ordinary wheel
+passes 194 bounded scientific checks; the installed Conda passes 41 loading cases.
+All 25 hosted notebooks and native Windows launchers pass. The once-run installed
+regression returns **2,877 passed/25 skipped/one failed**: temporary candidate tags
+pollute capability history, fixed in [#171](archive/temporary_candidate_tags_change_release_history.md).
+After removing only that owned local tag, all 208 capability checks pass and
+installed version 0.24.0 is preserved. The hosted core lane passes 38 suites and
+finds premature Movie completion, fixed in [#172](archive/movie_done_precedes_final_canvas_draw.md).
+The completion callback now observes the rendered final camera; all three affected
+real-browser suites and both Movie unit cases pass. Source/workflow checks pass
+231 cases and governance checks 234. These corrections require a new immutable
+build 1, preserving build 0 and its original failed full/browser outcomes.
+
+The four-platform installed matrix needs a provider-owned branch/tag at the exact
+MolSysMT package commit: GitHub dispatch rejects a bare SHA and provider `main`
+has advanced. The maintainer has been asked for that reference; independent
+qualification continues. Public-channel CI fails before tests because 0.23.0
+is currently staging-only; the diagnostic ranking observation is reported as
+uibcdf/gh-run-receptor#61. Qt's WebGL failure remains experimental #109.
 No public tag, release or promotion is created. See
 [the candidate preparation](stabilization_024_preparation_20261006.json).
 

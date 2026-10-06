@@ -25,6 +25,7 @@ import { SceneHandlers } from "./handlers/scene-handlers";
 import { StateHandlers } from "./handlers/state-handlers";
 import { TrajectoryHandlers, TrajectoryState } from "./handlers/trajectory-handlers";
 import { MovieHandlers } from "./handlers/movie-handlers";
+import { waitForCanvasDraw } from "./canvas-draw";
 import { ContextMenuTarget, LastMeasurementSummary, RegionSummary, SavedSelectionSummary, ViewerContextMenu } from "../ui/context-menu";
 import { MeasurementEndpointPolicy, MeasurementToolAction, MeasurementToolController } from "./measurement-tools";
 import { ToolStatusOverlay } from "../ui/tool-status";
@@ -1631,6 +1632,11 @@ export class MolSysViewerController {
             setTrajectoryFrame: (index) => this.trajectory.setTrajectoryFrame(index),
             setCameraSnapshot: (snap, durationMs) => this.setCameraSnapshot(snap, durationMs),
             getCameraSnapshot: () => this.getCameraSnapshot(),
+            waitForDraw: async () => {
+                const canvas = this.plugin.canvas3d;
+                if (!canvas) throw new Error("Movie playback has no WebGL canvas.");
+                await waitForCanvasDraw(canvas);
+            },
             getImageDataUri: async (options) => {
                 const result = await this.getImageDataUri(options);
                 return typeof result === "string" ? result : undefined;

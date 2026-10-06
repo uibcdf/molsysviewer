@@ -20,6 +20,7 @@ test("stop_movie drains an in-flight camera write and restores the stopped posit
     try {
         const movie = new MovieHandlers({
             getCameraSnapshot: () => ({ position: [...position] }) as any,
+            waitForDraw: async () => {},
             setCameraSnapshot: async snapshot => {
                 const next = [...snapshot.position];
                 written.push(next);
@@ -61,6 +62,7 @@ test("movie_playback_done waits for the final camera write", async () => {
     const originalCancel = globalThis.cancelAnimationFrame;
     let tick: FrameRequestCallback | undefined;
     let releaseWrite: (() => void) | undefined;
+    let releaseDraw: (() => void) | undefined;
     let position = [0, 0, 60];
     const events: string[] = [];
 
@@ -70,6 +72,7 @@ test("movie_playback_done waits for the final camera write", async () => {
     try {
         const movie = new MovieHandlers({
             getCameraSnapshot: () => ({ position: [...position] }) as any,
+            waitForDraw: () => new Promise<void>(resolve => { releaseDraw = resolve; }),
             setCameraSnapshot: async snapshot => {
                 await new Promise<void>(resolve => { releaseWrite = resolve; });
                 position = [...snapshot.position];
@@ -92,6 +95,10 @@ test("movie_playback_done waits for the final camera write", async () => {
         releaseWrite();
         await new Promise(resolve => setTimeout(resolve, 0));
         assert.deepStrictEqual(position, [60, 0, 0]);
+        assert.deepStrictEqual(events, []);
+        assert.ok(releaseDraw);
+        releaseDraw();
+        await new Promise(resolve => setTimeout(resolve, 0));
         assert.deepStrictEqual(events, ["movie_playback_done"]);
     } finally {
         globalThis.requestAnimationFrame = originalRequest;

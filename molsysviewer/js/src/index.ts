@@ -4,6 +4,7 @@ import { MolSysViewerController, suppressCanvasContextMenu } from "./managers/vi
 import { ViewerMessage } from "./messages/viewer-messages";
 import { bootPopup } from "./popup/popup-logic";
 import { PopupHostManager } from "./managers/popup-host";
+import { waitForCanvasDraw } from "./managers/canvas-draw";
 import { buildControls } from "./ui/controls";
 import { createLogger } from "./utils/logger";
 import type {
@@ -475,22 +476,7 @@ export async function bootDocsView(opts: {
         }
         const canvas = controller.plugin.canvas3d;
         if (!canvas) throw new Error("Exported scene has no WebGL canvas.");
-        await new Promise<void>((resolve, reject) => {
-            let requested = false;
-            const timer = setTimeout(() => {
-                subscription.unsubscribe();
-                reject(new Error("Exported scene did not finish drawing."));
-            }, 30000);
-            const subscription = canvas.didDraw.subscribe(() => {
-                // BehaviorSubject replays the preceding draw synchronously.
-                if (!requested) return;
-                clearTimeout(timer);
-                subscription.unsubscribe();
-                resolve();
-            });
-            requested = true;
-            canvas.requestDraw();
-        });
+        await waitForCanvasDraw(canvas);
         notifyHost({ event: "ready" });
     } catch (err) {
         console.error("[MolSysViewer docs] Init error:", err);

@@ -1,5 +1,7 @@
 """The development source handoff includes real notebooks and browser workflows."""
 
+import subprocess
+import sys
 from pathlib import Path
 
 import yaml
@@ -64,3 +66,29 @@ def test_candidate_versions_are_bound_before_source_installation():
     assert "validate_python_wheel_runtime.py" in tag["run"]
     assert 'git rev-list -n 1 "$EXPECTED_VERSION"' in tag["run"]
     assert '= "$GITHUB_SHA"' in tag["run"]
+
+
+def test_temporary_candidate_tags_are_removed_after_installation():
+    for name in ("CI.yaml", "CI_e2e.yaml", "ci-python-314-source-pair.yaml"):
+        workflow = yaml.load((ROOT / ".github/workflows" / name).read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
+        for job in workflow["jobs"].values():
+            steps = job.get("steps", [])
+            for create in (step for step in steps if step.get("id", "").endswith("-candidate-tag")):
+                identifier = create["id"]
+                cleanup = next(
+                    step for step in steps if f"steps.{identifier}.outputs.created == 'true'" in step.get("if", "")
+                )
+                install = next(step for step in steps if "pip install" in step.get("run", ""))
+                assert steps.index(create) < steps.index(install) < steps.index(cleanup)
+                # Ownership is recorded only when this job creates the tag; a preexisting
+                # public tag must not enter the cleanup branch.
+                branch = create["run"].split("else\n", 1)[1]
+                assert 'git tag "$EXPECTED_VERSION" HEAD' in branch
+                assert 'echo "created=true" >> "$GITHUB_OUTPUT"' in branch
+                assert 'echo "created=true"' not in create["run"].split("else\n", 1)[0]
+                assert 'git rev-list -n 1 "$EXPECTED_VERSION"' in cleanup["run"]
+                assert 'git tag -d "$EXPECTED_VERSION"' in cleanup["run"]
+                assert cleanup.get("working-directory") == create.get("working-directory")
+                if sys.platform != "win32":
+                    syntax = subprocess.run(["bash", "-n"], input=cleanup["run"], text=True, capture_output=True)
+                    assert syntax.returncode == 0, syntax.stderr

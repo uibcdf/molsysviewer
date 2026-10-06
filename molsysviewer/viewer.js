@@ -147803,6 +147803,7 @@ var MovieHandlers = class {
           if (generation !== this.playbackGeneration) return;
           this.applyState(keyframes, totalDuration, baseSnapshot);
           await this.waitForCameraWrites();
+          await this.context.waitForDraw();
           if (generation === this.playbackGeneration) {
             this.context.notify?.({ event: "movie_playback_done" });
           }
@@ -147929,6 +147930,25 @@ var MovieHandlers = class {
     }
   }
 };
+
+// src/managers/canvas-draw.ts
+async function waitForCanvasDraw(canvas, timeoutMs = 3e4) {
+  await new Promise((resolve, reject) => {
+    let requested = false;
+    const timer2 = setTimeout(() => {
+      subscription.unsubscribe();
+      reject(new Error("Canvas did not finish drawing."));
+    }, timeoutMs);
+    const subscription = canvas.didDraw.subscribe(() => {
+      if (!requested) return;
+      clearTimeout(timer2);
+      subscription.unsubscribe();
+      resolve();
+    });
+    requested = true;
+    canvas.requestDraw();
+  });
+}
 
 // src/ui/context-menu.ts
 function targetTitle(target) {
@@ -163685,6 +163705,11 @@ var MolSysViewerController = class _MolSysViewerController {
       setTrajectoryFrame: (index) => this.trajectory.setTrajectoryFrame(index),
       setCameraSnapshot: (snap, durationMs) => this.setCameraSnapshot(snap, durationMs),
       getCameraSnapshot: () => this.getCameraSnapshot(),
+      waitForDraw: async () => {
+        const canvas = this.plugin.canvas3d;
+        if (!canvas) throw new Error("Movie playback has no WebGL canvas.");
+        await waitForCanvasDraw(canvas);
+      },
       getImageDataUri: async (options) => {
         const result2 = await this.getImageDataUri(options);
         return typeof result2 === "string" ? result2 : void 0;
@@ -172290,21 +172315,7 @@ async function bootDocsView(opts) {
     }
     const canvas = controller.plugin.canvas3d;
     if (!canvas) throw new Error("Exported scene has no WebGL canvas.");
-    await new Promise((resolve, reject) => {
-      let requested = false;
-      const timer2 = setTimeout(() => {
-        subscription.unsubscribe();
-        reject(new Error("Exported scene did not finish drawing."));
-      }, 3e4);
-      const subscription = canvas.didDraw.subscribe(() => {
-        if (!requested) return;
-        clearTimeout(timer2);
-        subscription.unsubscribe();
-        resolve();
-      });
-      requested = true;
-      canvas.requestDraw();
-    });
+    await waitForCanvasDraw(canvas);
     notifyHost({ event: "ready" });
   } catch (err) {
     console.error("[MolSysViewer docs] Init error:", err);

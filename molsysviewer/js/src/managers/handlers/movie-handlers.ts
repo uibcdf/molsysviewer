@@ -5,6 +5,7 @@ export interface MovieContext {
     setTrajectoryFrame: (index: number) => Promise<void>;
     setCameraSnapshot: (snap: any, durationMs: number) => Promise<void>;
     getCameraSnapshot: () => Camera.Snapshot | undefined;
+    waitForDraw: () => Promise<void>;
     getImageDataUri: (options?: { width?: number; height?: number }) => Promise<string | undefined>;
     showLayer: (tag: string) => Promise<void>;
     hideLayer: (tag: string) => Promise<void>;
@@ -103,6 +104,9 @@ export class MovieHandlers {
                     if (generation !== this.playbackGeneration) return;
                     this.applyState(keyframes, totalDuration, baseSnapshot);
                     await this.waitForCameraWrites();
+                    // SetSnapshot only requests a camera reset. Mol* consumes it
+                    // during scene commit/draw, after the command promise resolves.
+                    await this.context.waitForDraw();
                     if (generation === this.playbackGeneration) {
                         this.context.notify?.({ event: "movie_playback_done" });
                     }

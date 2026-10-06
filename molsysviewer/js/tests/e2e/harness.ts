@@ -1323,12 +1323,14 @@ async function setRegionVisibility(controller: ProfileController, tag: string, v
 export async function createController(
     targetId = "root",
     options?: { isPanelOnly?: boolean; panelModeStyle?: string; hasAuthority?: boolean },
+    onNotify?: (message: any) => void,
 ) {
     const target = document.getElementById(targetId) ?? document.body;
     (window as any).__messages = [];
     const controller = await MolSysViewerController.create(
         target,
         msg => {
+            onNotify?.(msg);
             (window as any).__lastMessage = msg;
             (window as any).__messages.push(msg);
         },
