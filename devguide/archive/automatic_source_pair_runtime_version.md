@@ -68,3 +68,13 @@ plan. All eight real offline-export cases pass with the installed canonical pair
 including quiet matching versions and explicit notices for mismatches. The explicit
 canonical-version source run is 37542642197 at the unchanged package candidate;
 it remains running at this closure and is not counted as a full source pass.
+
+## Correction — 2026-10-06
+
+The subsequent automatic-source full run at `e0ae8a05` rejects the unconditional
+candidate-tag approach through the existing no-retagging policy guard. The bounded
+closure selection above omitted that neighboring guard and was insufficient.
+`uibcdf/molsysviewer#175` restores dispatch-only canonical tagging and instead
+rebuilds/reinstalls the development runtime before source validation. The exact
+canonical package/source qualification at `1a4c97a5` remains unaffected and passes
+on all three native hosts, with 39 Linux core suites and all 25 notebooks.

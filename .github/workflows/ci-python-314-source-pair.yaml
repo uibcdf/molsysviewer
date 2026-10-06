@@ -105,10 +105,11 @@ jobs:
 
       - name: Validate and locally tag the exact Viewer source candidate
         id: viewer-candidate-tag
+        if: github.event_name == 'workflow_dispatch'
         shell: bash -l {0}
         working-directory: molsysviewer-source
         env:
-          EXPECTED_VERSION: ${{ inputs.viewer_version || '0.24.0' }}
+          EXPECTED_VERSION: ${{ inputs.viewer_version }}
         run: |
           set -euo pipefail
           [[ "$EXPECTED_VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]
@@ -152,7 +153,7 @@ jobs:
         shell: bash -l {0}
         working-directory: molsysviewer-source
         env:
-          EXPECTED_VERSION: ${{ inputs.viewer_version || '0.24.0' }}
+          EXPECTED_VERSION: ${{ inputs.viewer_version }}
         run: |
           set -euo pipefail
           test "$(git rev-list -n 1 "$EXPECTED_VERSION")" = "$GITHUB_SHA"
@@ -168,6 +169,21 @@ jobs:
           set -euo pipefail
           test "$(git rev-list -n 1 "$EXPECTED_VERSION")" = "$(git rev-parse HEAD)"
           git tag -d "$EXPECTED_VERSION"
+
+      - name: Install JavaScript test dependencies
+        shell: bash -l {0}
+        working-directory: molsysviewer-source/molsysviewer/js
+        run: npm ci
+
+      - name: Synchronize the development runtime before source validation
+        if: github.event_name != 'workflow_dispatch'
+        shell: bash -l {0}
+        working-directory: molsysviewer-source/molsysviewer/js
+        run: |
+          set -euo pipefail
+          npm run build:runtime
+          python -m pip install --no-deps --no-build-isolation ../..
+          python -m pip check
 
       - name: Audit dependency routes and the installed exact source provider
         shell: bash -l {0}
@@ -200,11 +216,6 @@ jobs:
           MOLSYSVIEWER_TEST_INSTALLED: "1"
         run: python -m pytest -o receptor_rerun_command="python -m pytest" --receptor=ci --import-mode=importlib molsysviewer-source/tests/integration/test_molsysmt_integration.py
 
-      - name: Install JavaScript test dependencies
-        shell: bash -l {0}
-        working-directory: molsysviewer-source/molsysviewer/js
-        run: npm ci
-
       - name: Run MolSysViewer Python tests
         shell: bash -l {0}
         working-directory: molsysviewer-source
@@ -223,8 +234,12 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash -l {0}
         working-directory: molsysviewer-source/molsysviewer/js
+        env:
+          SOURCE_EVENT: ${{ github.event_name }}
         run: |
-          npm run build:runtime
+          if [[ "$SOURCE_EVENT" == 'workflow_dispatch' ]]; then
+            npm run build:runtime
+          fi
           npm run build:harness
           npm run build:e2e:all
 

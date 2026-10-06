@@ -96,18 +96,49 @@ def test_temporary_candidate_tags_are_removed_after_installation():
 
 
 def test_automatic_source_pair_uses_the_prepared_runtime_version():
-    """Push/PR installs must agree with the committed release-preparation runtime."""
+    """Explicit candidate installs use the prepared version; development rebuilds it."""
     workflow = yaml.load(
         (ROOT / ".github/workflows/ci-python-314-source-pair.yaml").read_text(encoding="utf-8"),
         Loader=yaml.BaseLoader,
     )
     plan = tomllib.loads((ROOT / "devtools/conda-build/release_plan.toml").read_text(encoding="utf-8"))
-    expected = "${{ inputs.viewer_version || '" + plan["version"] + "' }}"
+    assert workflow["on"]["workflow_dispatch"]["inputs"]["viewer_version"]["default"] == plan["version"]
     steps = workflow["jobs"]["source-pair"]["steps"]
     tag = next(step for step in steps if step.get("id") == "viewer-candidate-tag")
     cleanup = next(step for step in steps if step["name"] == "Remove the temporary Viewer tag after installation")
     install = next(step for step in steps if step["name"] == "Install both exact source candidates")
-    assert "if" not in tag, "automatic source builds must also bind the intended version"
-    assert tag["env"]["EXPECTED_VERSION"] == cleanup["env"]["EXPECTED_VERSION"] == expected
+    assert tag["if"] == "github.event_name == 'workflow_dispatch'"
+    assert tag["env"]["EXPECTED_VERSION"] == cleanup["env"]["EXPECTED_VERSION"] == "${{ inputs.viewer_version }}"
     assert "validate_python_wheel_runtime.py" in tag["run"]
     assert steps.index(tag) < steps.index(install) < steps.index(cleanup)
+
+
+def test_development_runtime_is_installed_before_source_validation():
+    workflow = yaml.load(
+        (ROOT / ".github/workflows/ci-python-314-source-pair.yaml").read_text(encoding="utf-8"),
+        Loader=yaml.BaseLoader,
+    )
+    steps = workflow["jobs"]["source-pair"]["steps"]
+    install = next(step for step in steps if step["name"] == "Install both exact source candidates")
+    dependencies = next(step for step in steps if step["name"] == "Install JavaScript test dependencies")
+    runtime = next(
+        step for step in steps if step["name"] == "Synchronize the development runtime before source validation"
+    )
+    audit = next(
+        step for step in steps if step["name"] == "Audit dependency routes and the installed exact source provider"
+    )
+    tests = next(step for step in steps if step["name"] == "Run MolSysViewer Python tests")
+    assert (
+        steps.index(install)
+        < steps.index(dependencies)
+        < steps.index(runtime)
+        < steps.index(audit)
+        < steps.index(tests)
+    )
+    assert runtime["if"] == "github.event_name != 'workflow_dispatch'"
+    assert runtime["working-directory"] == "molsysviewer-source/molsysviewer/js"
+    lines = runtime["run"].splitlines()
+    assert lines.index("npm run build:runtime") < lines.index(
+        "python -m pip install --no-deps --no-build-isolation ../.."
+    )
+    assert "git tag" not in runtime["run"] and "npm run build\n" not in runtime["run"]

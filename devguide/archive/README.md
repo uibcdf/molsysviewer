@@ -1,6 +1,8 @@
 # Archived implementation plans
 
-- [`automatic_source_pair_runtime_version.md`](automatic_source_pair_runtime_version.md) — #173: automatic source builds bind the prepared runtime version before installation and remove only the owned temporary tag; workflow and real offline-export guards pass.
+- [`automatic_source_version_retags_development.md`](automatic_source_version_retags_development.md) — #175: rebuild/reinstall the development runtime before source validation while preserving dispatch-only candidate tags; policy/workflow and eight real offline exports pass.
+
+- [`automatic_source_pair_runtime_version.md`](automatic_source_pair_runtime_version.md) — #173: initial canonical source binding passes bounded export checks; its automatic-event policy conflict is corrected by #175, preserving the original failed attempt.
 - [`hosted_core_inactive_backlog_gate.md`](hosted_core_inactive_backlog_gate.md) — #174: exact hosted evidence permits only the inactive backlog control while rejecting omitted scientific checks; live staging/core verification and 66 evidence guards pass.
 
 - [`temporary_candidate_tags_change_release_history.md`](temporary_candidate_tags_change_release_history.md) — #171: remove only owned local version tags after installation; staged metadata stays exact and 208 installed capability checks pass.
