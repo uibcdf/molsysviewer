@@ -52,3 +52,10 @@ complete Viewer suite. The manual event additionally verifies and locally
 tags the declared frozen Viewer candidate, retaining its version/runtime/tag
 identity assertions. A development check never qualifies an installed public
 artifact or authorizes moving a published tag (`uibcdf/molsysviewer#137`).
+
+The scientific source baseline also supplies the pinned provider's own runtime
+floors and runs `python -m pip check` immediately after both installations.
+This catches dependency metadata contradictions introduced by `--no-deps`;
+it does not replace exact origin checks or behavioral qualification. Test
+fixture dependencies such as RDKit belong to the test/development environments,
+not to the mandatory Viewer runtime requirements (`uibcdf/molsysviewer#161`).

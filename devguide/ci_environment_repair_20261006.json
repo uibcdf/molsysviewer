@@ -1,0 +1,208 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-06",
+  "issues": [
+    "uibcdf/molsysviewer#161",
+    "uibcdf/molsysviewer#162",
+    "uibcdf/molsysviewer#93"
+  ],
+  "scope": "Local source regression and scientific CI environment repair; hosted and published qualification remain separate.",
+  "viewer_source_parent": "cb81214931ebb0fb921101462ab3b197549af4a9",
+  "current_patch_sha256": {
+    ".github/workflows/ci-python-314-source-pair.yaml": "8e37af3e568561973bf334129cb7ef9eb5f4711cece2452e9e1dbf951ee63531",
+    "devtools/conda-envs/test_env.yaml": "08d2a1a3fb918cb643f91ed2be3009074629763a4ad796195022247795a10eda",
+    "devtools/conda-envs/test_source_pair_py314.yaml": "f3e5569aa0ff735b55a64e0f057fa3b4e89b879c65babfb714dd7784c5c945c1",
+    "devtools/conda-envs/development_env.yaml": "72a6441b1b962433e6674a51c76ead38bb3e9e7cd0b4975338a8178170a2610c",
+    "tests/test_distribution_artifact.py": "dbe8c233c80ed6b3dc048a09d535968bda545d8e89173383a18fb9ce9c543d53",
+    "tests/test_dependency_contract.py": "64323ea2e121f6cce0d33937770a6071ff649b00bbf521726734b0339b6fa66b",
+    "tests/test_interactions_scene.py": "79544b17ae4f0fbb4693533ab8913bbd7ae82e1fb953b74ed0dbccf39e06d53c"
+  },
+  "provider": {
+    "source_pair_pin": "5e2721691b6a3c175406a8e4c0926dfb7b160671",
+    "local_head_after_tests": "3f6642ecda94d60daf30c2e52a2b191271cdfba9",
+    "changes_since_pin": [
+      "devguide/pending_bugs/sphinx_warning_baseline_and_api_reference_debt.md",
+      "devguide/pending_proposals/extend_molsysmt_python_support_to_3_14.md",
+      "devguide/pending_proposals/review_python_ecosystem_policy_adoption.md",
+      "devguide/release_1_0_status.md",
+      "devtools/data/stabilization_s5_shared_20261006.json"
+    ],
+    "code_matches_pin": true,
+    "local_status": []
+  },
+  "environment": {
+    "name": "molsyssuite@uibcdf_3.14",
+    "python_executable": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "python_version": "3.14.7",
+    "platform": "Linux-7.0.0-28-generic-x86_64-with-glibc2.39",
+    "installed_metadata": {
+      "molsysviewer": "0.23.4+27.gfed1c4b8.dirty",
+      "molsysmt": "0.22.4+24.g42b487869",
+      "pytest": "9.1.1",
+      "pytest-receptor": "1.1.0+19.g6d87a24",
+      "rdkit": "2025.9.5",
+      "numpy": "2.4.6",
+      "pandas": "2.3.3",
+      "smonitor": "0.18.0+1.gb308ee0",
+      "pyunitwizard": "0.28.1+3.g2ab37a5"
+    },
+    "imports": {
+      "molsysviewer": "/home/diego/repos@uibcdf/molsysviewer/molsysviewer/__init__.py",
+      "molsysmt": "/home/diego/repos@uibcdf/molsysmt/molsysmt/__init__.py"
+    }
+  },
+  "focused": [
+    {
+      "module": "tests/test_distribution_artifact.py",
+      "passed": 19
+    },
+    {
+      "module": "tests/test_interaction_families.py",
+      "passed": 30
+    },
+    {
+      "modules": [
+        "tests/test_dependency_contract.py",
+        "tests/test_python_ecosystem_contract.py"
+      ],
+      "passed": 44
+    }
+  ],
+  "guard_mutations": {
+    "missing_rdkit_rejected": [
+      "test_env.yaml",
+      "test_source_pair_py314.yaml",
+      "development_env.yaml"
+    ]
+  },
+  "full_suite": {
+    "command": "python -m pytest --receptor=llm -o receptor_rerun_command=\"python -m pytest\" tests/ --junitxml=/tmp/msv-ci-environments-20261006-junit.xml",
+    "runs": 1,
+    "exit_code": 1,
+    "warnings": 956,
+    "counts": {
+      "tests": 2844,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 23
+    },
+    "passed": 2820,
+    "seconds": 556.192,
+    "junit_sha256": "1f9470319d578bbc606456fda5c27056b2aaf5242fb260bc6f2aa5ff3995d690",
+    "failed_nodes": [
+      "tests.test_interactions_scene::test_oversized_frame_is_refused_before_occurrence_materialization"
+    ],
+    "skips": [
+      {
+        "node": "tests.test_catalog_templates_render::test_template_substitutes_every_placeholder[index_map_degraded]",
+        "reason": "template has no placeholders"
+      },
+      {
+        "node": "tests.test_catalog_templates_render::test_template_substitutes_every_placeholder[interaction_alignment_required]",
+        "reason": "template has no placeholders"
+      },
+      {
+        "node": "tests.test_catalog_templates_render::test_template_substitutes_every_placeholder[interaction_backend_required]",
+        "reason": "template has no placeholders"
+      },
+      {
+        "node": "tests.test_catalog_templates_render::test_template_substitutes_every_placeholder[interaction_pbc_box_required]",
+        "reason": "template has no placeholders"
+      },
+      {
+        "node": "tests.test_catalog_templates_render::test_template_substitutes_every_placeholder[interaction_stale_calculation]",
+        "reason": "template has no placeholders"
+      },
+      {
+        "node": "tests.test_catalog_templates_render::test_template_substitutes_every_placeholder[interaction_system_required]",
+        "reason": "template has no placeholders"
+      },
+      {
+        "node": "tests.test_catalog_templates_render::test_template_substitutes_every_placeholder[molecular_system_needed]",
+        "reason": "template has no placeholders"
+      },
+      {
+        "node": "tests.test_catalog_templates_render::test_template_substitutes_every_placeholder[molecular_systems_needed]",
+        "reason": "template has no placeholders"
+      },
+      {
+        "node": "tests.test_catalog_templates_render::test_template_substitutes_every_placeholder[not_compatible_conversion]",
+        "reason": "template has no placeholders"
+      },
+      {
+        "node": "tests.test_catalog_templates_render::test_template_substitutes_every_placeholder[not_implemented_conversion]",
+        "reason": "template has no placeholders"
+      },
+      {
+        "node": "tests.test_catalog_templates_render::test_template_substitutes_every_placeholder[not_implemented_iterator]",
+        "reason": "template has no placeholders"
+      },
+      {
+        "node": "tests.test_catalog_templates_render::test_template_substitutes_every_placeholder[not_with_this_form]",
+        "reason": "template has no placeholders"
+      },
+      {
+        "node": "tests.test_catalog_templates_render::test_template_substitutes_every_placeholder[webgl_context_lost]",
+        "reason": "template has no placeholders"
+      },
+      {
+        "node": "tests.test_catalog_templates_render::test_template_substitutes_every_placeholder[webgl_context_restored]",
+        "reason": "template has no placeholders"
+      },
+      {
+        "node": "tests.test_installed_test_imports::test_installed_qualification_uses_own_metadata_and_rejects_source_modules",
+        "reason": "Requires installed scientific artifacts"
+      },
+      {
+        "node": "tests.test_installed_test_imports::test_direct_family_cli_uses_installed_science_without_checkout_on_sys_path",
+        "reason": "Requires installed scientific artifacts"
+      },
+      {
+        "node": "tests.test_internal_render_worker_host::test_real_worker_loads_the_pentalanine_demo_through_array_native",
+        "reason": "requires an explicitly selected real Chromium/GPU environment"
+      },
+      {
+        "node": "tests.test_movie::test_export_requires_imageio",
+        "reason": "imageio is installed; cannot test ImportError path"
+      },
+      {
+        "node": "tests.test_readme_addon_table::test_the_reported_level_is_the_one_the_addon_declares[molsysviewer_elastnetmt]",
+        "reason": "molsysviewer_elastnetmt is not installed"
+      },
+      {
+        "node": "tests.test_remote_render_worker::test_real_worker_reports_hardware_webgl2_and_streaming_capabilities",
+        "reason": "requires an explicitly selected real Chromium/GPU environment"
+      },
+      {
+        "node": "tests.test_representative_scale_benchmark::test_windows_benchmark_memory_counters_are_available",
+        "reason": "Windows process memory API"
+      },
+      {
+        "node": "tests.test_standalone::test_qt_live_model_smoke_real_window",
+        "reason": "Requires a real X11 display context to initialize WebGL (run manually, not in headless CI)."
+      },
+      {
+        "node": "tests.test_standalone::test_qt_live_model_full_render_gpu",
+        "reason": "Set MOLSYSVIEWER_QT_GPU_TEST=1 (WebGL-capable env) to run the full render test."
+      }
+    ]
+  },
+  "post_full_correction": {
+    "issue": "uibcdf/molsysviewer#162",
+    "cause": "Profiler observed a shared SMonitor wrapper instead of the actual serializer.",
+    "module": "tests/test_interactions_scene.py",
+    "passed": 22,
+    "seconds": 13.85,
+    "positive_control": "A real small query serialization is observed exactly once; the 50001-row render/inspection route performs no to_dict serialization.",
+    "full_suite_repeated": false
+  },
+  "limits": [
+    "Focused and complete suites overlap; do not sum counts as distinct coverage.",
+    "Tests import editable sibling source; installed distribution metadata does not identify the tested checkout.",
+    "The complete run failed one guard; its corrected module passes 22 cases. No second complete run or clean final full-suite verdict is claimed.",
+    "Local pytest-receptor and controlled scientific dependencies have development metadata; hosted environments pin published pytest-receptor 1.2.0.",
+    "No compatible public MolSysMT release or installed exact-candidate certification is established.",
+    "No hosted result, tag, package promotion or release publication is established by this local receipt.",
+    "Human scientific usability and visual observations remain separate release evidence."
+  ]
+}

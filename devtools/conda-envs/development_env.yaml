@@ -31,6 +31,8 @@ dependencies:
   - pytest
   - pytest-receptor ==1.2.0
   - pytest-cov
+  # Real interaction-family fixtures construct molecular topology with RDKit.
+  - rdkit
 
   # --- Optional but helpful for interactive debugging ---
   - jupyterlab_code_formatter

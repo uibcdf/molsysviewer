@@ -14,7 +14,7 @@ dependencies:
   - pytest-receptor ==1.2.0
   - pytest-cov
   - pyyaml
-  - nodejs>=18
+  - nodejs>=22,<23
   - h5py
   - numpy>=1.26,<3
   - pandas
@@ -24,8 +24,9 @@ dependencies:
   - py-mmcif>=1.1.1
   - argdigest>=0.13.0
   - depdigest>=0.10.0
-  - smonitor>=0.13.0
-  - pyunitwizard>=0.25.0
+  # Floors declared by the exact MolSysMT source candidate.
+  - smonitor>=0.16.0
+  - pyunitwizard>=0.28.1
   - aiohttp>=3.10
   - anywidget>=0.9.15
   - packaging>=23
@@ -34,3 +35,5 @@ dependencies:
   - jinja2
   - mdtraj
   - biopython
+  # Real interaction-family fixtures construct molecular topology with RDKit.
+  - rdkit

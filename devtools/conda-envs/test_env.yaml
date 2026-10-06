@@ -36,3 +36,5 @@ dependencies:
   # information-table tests render Pandas Styler HTML.
   - mdtraj
   - jinja2
+  # Real interaction-family fixtures construct molecular topology with RDKit.
+  - rdkit

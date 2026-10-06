@@ -1,5 +1,6 @@
 """Native interaction objects on real molecular systems and provider results."""
 
+import inspect
 import json
 import sys
 import zipfile
@@ -139,13 +140,20 @@ def test_oversized_frame_is_refused_before_occurrence_materialization(view):
     view.interactions.attach(result, name="large", assume_aligned=True)
     materialized = []
     previous = sys.getprofile()
+    serializer_code = inspect.unwrap(msm.Interactions.to_dict).__code__
 
     def record_call(frame, event, arg):
-        if event == "call" and frame.f_code is msm.Interactions.to_dict.__code__:
+        if previous is not None:
+            previous(frame, event, arg)
+        if event == "call" and frame.f_code is serializer_code:
             materialized.append(frame.f_code.co_name)
 
     sys.setprofile(record_call)
     try:
+        # The real serializer must be observed, even behind shared decorators.
+        source.query(structure_indices=[0]).to_dict()
+        assert materialized == ["to_dict"], "The guard must detect actual occurrence materialization."
+        materialized.clear()
         obj = view.interactions.add("large", tag="large")
         payload = view.interactions._frame(obj, 0)
         inspection = view.interactions.inspect("large")

@@ -12,6 +12,7 @@ from email.parser import BytesParser
 from pathlib import Path
 
 import yaml
+from devtools.audit_dependency_contract import _requirements as _conda_dependencies_by_name
 from packaging.requirements import Requirement
 from packaging.utils import canonicalize_name
 from packaging.version import Version
@@ -428,12 +429,29 @@ def test_python_314_source_pair_uses_exact_provider_commit_without_metadata_bypa
     workflow = (ROOT / ".github" / "workflows" / "ci-python-314-source-pair.yaml").read_text(encoding="utf-8")
     assert "repository: uibcdf/molsysmt" in workflow
     assert "inputs.molsysmt_sha" in workflow
-    # Exact released source baseline; the installed audit enforces its version floor.
-    assert workflow.count("${{ inputs.molsysmt_sha || 'e28ceb9ea0de0cc86bc370e5aff1e96c4cc71c69' }}") == 3
+    # Exact scientific source baseline; public package qualification remains separate.
+    assert workflow.count("${{ inputs.molsysmt_sha || '5e2721691b6a3c175406a8e4c0926dfb7b160671' }}") == 3
     assert "^[0-9a-f]{40}$" in workflow
     assert "git -C molsysmt-source rev-parse HEAD" in workflow
     assert "--ignore-requires-python" not in workflow
+    assert "python -m pip check" in workflow
     assert "--receptor=ci tests/" in workflow
+
+    environment = yaml.safe_load((ROOT / "devtools/conda-envs/test_source_pair_py314.yaml").read_text(encoding="utf-8"))
+    dependencies = _conda_dependencies_by_name(environment["dependencies"])
+    for name, floor, previous in (("smonitor", "0.16.0", "0.15.99"), ("pyunitwizard", "0.28.1", "0.28.0")):
+        assert Version(floor) in dependencies[name].specifier
+        assert Version(previous) not in dependencies[name].specifier
+    assert Version("22.0") in dependencies["nodejs"].specifier
+    assert Version("26.0") not in dependencies["nodejs"].specifier
+
+
+def test_scientific_test_environments_include_rdkit():
+    """Real chemical fixtures must collect in both hosted routes and local development."""
+    for filename in ("test_env.yaml", "test_source_pair_py314.yaml", "development_env.yaml"):
+        environment = yaml.safe_load((ROOT / "devtools/conda-envs" / filename).read_text(encoding="utf-8"))
+        dependencies = _conda_dependencies_by_name(environment["dependencies"])
+        assert "rdkit" in dependencies, f"{filename} cannot import the real interaction-family fixtures"
 
 
 def test_hosted_gates_can_select_the_exact_coordinated_staging_candidate():

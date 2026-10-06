@@ -5,6 +5,32 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+**CI environment repair (2026-10-06): #161 implemented; hosted evidence pending.**
+RDKit is now declared in both scientific test environments and the local
+development recipe. The guard rejects its removal from each of the three
+recipes; the distribution module passes 19 tests and the real Interactions
+family module passes 30. Python 3.14 source-pair CI uses exact MolSysMT commit
+`5e2721691b6a3c175406a8e4c0926dfb7b160671`, with its own runtime floors,
+Node 22 and immediate `pip check`. Public dependency floors are unchanged.
+See [the bug record](pending_bugs/scientific_test_environments_missing_rdkit.md)
+and [the source-pair baseline](pending_proposals/extend_python_support_to_3_14.md#current-scientific-source-pair-baseline--2026-10-06).
+
+The once-run complete regression returns **2,820 passed, 23 skipped and one
+failed guard**, in 556.22 s. #162 identifies a profiler that counted SMonitor's
+shared wrapper as full serialization. It is corrected with an unwrapped target
+and a real serialization positive control; its 22-case scene module passes.
+The complete suite was not repeated. Preserve this distinction in
+[the receipt](ci_environment_repair_20261006.json); hosted full-suite confirmation
+remains pending.
+
+The preceding audit identified three separate hosted causes: missing RDKit
+during Python collection; published MolSysMT 0.22.4 missing Interactions/H5MSM
+in core-browser and notebook consumers; and the stale Whole mask notebook
+example (#160), deferred to the final public documentation block. Fixing the
+first cause does not close the other two. Source-level provider #312/#313 and
+mixed-SDF qualification are complete; compatible published-provider and exact
+installed/hosted candidate qualification are the current release blockers.
+
 **Scientific usability corrections (2026-10-04): #158/#159 resolved in source.**
 The real widget review found missing query activation and display selections
 silently limiting scientific calculation. Studio now activates successful
@@ -1162,20 +1188,23 @@ documents carry it.
 
 Resume toward **1.0** in this order:
 
-**Current session priority (2026-10-04):** the cumulative source has been reviewed,
+**Current session priority (2026-10-06):** the cumulative source has been reviewed,
 committed and pushed. Loading #151 has an accepted and implemented contract;
-it is no longer an undecided design. The latest source regression passes
-**2,808 tests, 23 skipped** after the identity correction. Provider #307/#309
+it is no longer an undecided design. The preceding clean source regression passes
+**2,812 tests, 23 skipped** after the scientific usability correction. Provider #307/#309
 repairs are verified in the editable provider, with published-artifact
 qualification still outstanding.
+The 2026-10-06 complete attempt and focused guard correction are recorded in
+the current handoff above; they do not create a new clean full-suite verdict.
 Continue in the maintainer's order:
 
-1. The source integration, current devguide reconciliation and bounded scientific
-   review are complete. Preserve their dated records and qualification limits.
-2. Candidate prevalidation #157 is resolved. Coordinate public SDF count and
-   partial-hierarchy fixes with uibcdf/molsysmt#312/#313, then qualify successful
-   mixed-source loading. Safe refusal and public SDF conversion do not establish
-   that workflow's support.
+1. Confirm the #161 environment repair and the current exact source-provider
+   pair in hosted CI. The source integration and bounded scientific review are
+   complete; preserve their dated records and qualification limits.
+2. Candidate prevalidation #157 and the source-level fixes in
+   uibcdf/molsysmt#312/#313 are resolved. Direct SDF and mixed protein/caffeine
+   batch/progressive workflows pass in the editable provider. Repeat them
+   against the compatible published candidate before declaring installed support.
 3. The version assessment recommends 0.24.0. Freeze no tag before compatible
    dependency and exact-candidate gates pass. Obtain human scientific usability,
    visual and first-contact observations in addition to the automated review.

@@ -63,8 +63,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: uibcdf/molsysmt
-          # Published MolSysMT 0.22.4 satisfies the current runtime floor.
-          ref: ${{ inputs.molsysmt_sha || 'e28ceb9ea0de0cc86bc370e5aff1e96c4cc71c69' }}
+          # Exact source baseline for Interactions/H5MSM and mixed-source loading.
+          # Source feasibility does not establish a compatible published package.
+          ref: ${{ inputs.molsysmt_sha || '5e2721691b6a3c175406a8e4c0926dfb7b160671' }}
           path: molsysmt-source
           fetch-depth: 0
           persist-credentials: false
@@ -72,7 +73,7 @@ jobs:
       - name: Require an exact MolSysMT commit
         shell: bash
         env:
-          MOLSYSMT_SHA: ${{ inputs.molsysmt_sha || 'e28ceb9ea0de0cc86bc370e5aff1e96c4cc71c69' }}
+          MOLSYSMT_SHA: ${{ inputs.molsysmt_sha || '5e2721691b6a3c175406a8e4c0926dfb7b160671' }}
         run: |
           [[ "$MOLSYSMT_SHA" =~ ^[0-9a-f]{40}$ ]]
           test "$(git -C molsysmt-source rev-parse HEAD)" = "$MOLSYSMT_SHA"
@@ -117,12 +118,13 @@ jobs:
           set -euo pipefail
           python -m pip install --no-deps --no-build-isolation ./molsysmt-source
           python -m pip install --no-deps --no-build-isolation ./molsysviewer-source
+          python -m pip check
 
       - name: Audit dependency routes and the installed exact source provider
         shell: bash -l {0}
         working-directory: molsysviewer-source
         env:
-          MOLSYSMT_SHA: ${{ inputs.molsysmt_sha || 'e28ceb9ea0de0cc86bc370e5aff1e96c4cc71c69' }}
+          MOLSYSMT_SHA: ${{ inputs.molsysmt_sha || '5e2721691b6a3c175406a8e4c0926dfb7b160671' }}
         run: |
           python devtools/audit_dependency_contract.py \
             --installed-source "molsysmt=../molsysmt-source@$MOLSYSMT_SHA"

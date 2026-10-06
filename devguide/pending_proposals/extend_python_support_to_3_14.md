@@ -439,3 +439,30 @@ This checkpoint changes the caller and guide only plus the isolated
 metadata-audit interpreter. It does not run the scientific suite
 or certify the current scientific branch or every optional backend.
 
+## Current scientific source-pair baseline — 2026-10-06
+
+The default provider is now the exact public Git commit
+`5e2721691b6a3c175406a8e4c0926dfb7b160671`, containing the experimental
+Interactions/H5MSM and mixed-source repairs required by the current Viewer
+suite. The old published `0.22.4` source cannot exercise those consumers.
+Manual dispatch still requires an explicit full provider SHA.
+
+The source environment now honors that provider's declared
+`smonitor>=0.16.0` and `pyunitwizard>=0.28.1`, supplies RDKit for real molecular
+fixtures (#161), and uses Node 22 consistently with the distribution tests.
+Immediately after installing both exact checkouts, CI executes `pip check`
+before the origin audit and native/scientific tests. No Python/version metadata
+bypass is permitted. The distribution guard checks this baseline and the
+environment constraints.
+
+This is source compatibility work. Public runtime floors, published installation
+routes and the exact installed-package release gate remain unchanged. Linux
+editable-source results do not qualify the hosted three-platform pair or a
+compatible public MolSysMT release. The shared status inspection preserves
+unrelated MolSysMT documentation work and the Viewer sandbox mockups.
+
+The once-run local complete suite executes all 2,844 cases: 2,820 passed,
+23 skipped and one profiler-guard failure (#162), corrected with a real
+serialization positive control and a passing 22-case scene module. This does
+not establish a new clean full-suite, hosted or installed-package verdict.
+See [the exact local record](../ci_environment_repair_20261006.json).

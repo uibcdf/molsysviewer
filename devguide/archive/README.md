@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [`interactions_materialization_guard_shared_wrapper.md`](interactions_materialization_guard_shared_wrapper.md) — #162: profile the concrete serializer rather than shared decorators; a real serialization control and the 22-case scene module verify the bounded large-frame guard.
+
 - [`compound_interaction_projection_dispatches_per_group.md`](compound_interaction_projection_dispatches_per_group.md) — #141: bounded public geometry batches preserve projection semantics and cut the measured 1,000-observation preparation to 281–291 ms; real-call guards and the complete Interactions browser suite pass.
 
 - [`source_pair_ci_for_direct_main_pushes.md`](source_pair_ci_for_direct_main_pushes.md) — #137: direct-main Python 3.14 validation, preserving manual frozen-candidate identity checks; three native source-pair jobs pass.
