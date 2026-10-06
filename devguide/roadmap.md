@@ -27,8 +27,10 @@ Movie completion, automatic-source version and hosted-control evidence defects
 (#171–#175) are resolved; developer-tooling successors do not replace the frozen
 package producer. Earlier failed attempts retain their original verdicts.
 
-Observe the corrected automatic-development hosted follow-up, then review
-publication of 0.24.0 with MolSysMT. No public tag, GitHub Release or promotion is created. MolSysMT 0.23.0
+The corrected automatic-development hosted follow-up passes on all three native
+hosts, including 39 core suites and 25 notebooks on Linux. Devguide reconciliation
+and its issue-board checks pass. Review publication of 0.24.0 with MolSysMT.
+No public tag, GitHub Release or promotion is created. MolSysMT 0.23.0
 is staging-only, so public-channel CI cannot yet solve the required dependency;
 the exact public pair gate remains blocked. Coordinate public releases and
 promote the already verified immutable files after maintainer authorization,

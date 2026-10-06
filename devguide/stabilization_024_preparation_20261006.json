@@ -1,7 +1,7 @@
 {
   "schema": "molsysviewer.stabilization_preparation@1",
   "date": "2026-10-06",
-  "status": "immutable_staging_candidate_qualified; corrected_automatic_development_hosted_followup_running",
+  "status": "immutable_staging_candidate_and_corrected_automatic_development_qualified; publication_review_next",
   "viewer": {
     "version": "0.24.0",
     "build_number": 0,
@@ -165,7 +165,6 @@
     }
   },
   "remaining": [
-    "Observe automatic-development hosted follow-up 37545069147; local policy/workflow and real offline export guards pass",
     "Review publication readiness and coordinate public MolSysMT 0.23.0 / Viewer 0.24.0 release",
     "Publish and promote exact artifacts only with maintainer authorization",
     "Complete public-channel 16-cell qualification, GitHub Release and Zenodo archival verification before declaring publication complete"
@@ -310,7 +309,7 @@
     "corrected_automatic_source_hosted": {
       "id": 37545069147,
       "commit": "d5ac10f0604b3cbdb9d80d6774a7aad72df5e731",
-      "status": "in_progress",
+      "status": "completed",
       "scope": "Automatic development provenance and current tooling; does not replace fixed canonical-source/artifact results.",
       "jobs": {
         "windows": {
@@ -332,13 +331,49 @@
         },
         "linux": {
           "id": 112546999009,
-          "status": "in_progress"
+          "status": "completed",
+          "conclusion": "success",
+          "passed": 2893,
+          "skipped": 27,
+          "failed": 0,
+          "seconds": 354.97,
+          "core_browser_suites_passed": 39,
+          "core_browser_suites_failed": 0,
+          "documented_notebooks_executed": 25,
+          "documented_notebooks_failed": 0,
+          "documented_notebooks_seconds": 56,
+          "initial_viewer_version": "0.23.4+111.gd5ac10f0",
+          "reinstalled_viewer_version": "0.23.4+111.gd5ac10f0.dirty",
+          "provider_version": "0.23.0",
+          "pip_check": "pass",
+          "native_rust": "pass; 101 exports",
+          "provider_integration_passed": 3,
+          "viewer_integration_passed": 2,
+          "log": "/tmp/msv-024-corrected-development-linux-20261006.log"
         },
         "macos": {
           "id": 112546998944,
-          "status": "in_progress"
+          "status": "completed",
+          "conclusion": "success",
+          "passed": 2866,
+          "skipped": 54,
+          "failed": 0,
+          "seconds": 439.62,
+          "initial_viewer_version": "0.23.4+111.gd5ac10f0",
+          "reinstalled_viewer_version": "0.23.4+111.gd5ac10f0.dirty",
+          "provider_version": "0.23.0",
+          "pip_check": "pass",
+          "native_rust": "pass; 101 exports",
+          "provider_integration_passed": 3,
+          "viewer_integration_passed": 2,
+          "log": "/tmp/msv-024-corrected-development-macos-20261006.log"
         }
-      }
+      },
+      "conclusion": "success",
+      "attempt": 1,
+      "event": "push",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37545069147",
+      "native_run_record": "/tmp/msv-024-corrected-development-run-20261006.json"
     },
     "corrected_tooling_policy": {
       "id": 37545070019,
@@ -689,7 +724,7 @@
   "current_candidate": "next_candidate; immutable Viewer 0.24.0 py_1 from 1a4c97a58b68b69f3a836546c9e4ac6187c3efa2",
   "devguide_reconciliation": {
     "date": "2026-10-06",
-    "status": "pass; current summaries and 17 active report receiving checkpoints reconciled; automatic hosted follow-up still in progress",
+    "status": "pass; current summaries, contracts and 17 active report checkpoints reconciled with complete staged and automatic-development evidence",
     "board_sync": {
       "result": "pass",
       "matching_active_documents": 45
@@ -708,7 +743,8 @@
       "Interactions planning/qualification/performance current scopes",
       "loading guide independent-source contract",
       "design closure receiving evidence",
-      "Windows staged repair versus public repair"
+      "Windows staged repair versus public repair",
+      "annotation constructor and dated renderer survey versus actual shared batched mesh implementation"
     ],
     "public_core_observation": {
       "id": 37545293648,
@@ -734,7 +770,28 @@
       },
       "generated_indexes": "current",
       "git_diff_check": "pass",
-      "full_suite_repeated": false
+      "full_suite_repeated": false,
+      "final_scene_contract_checks": {
+        "passed": 5,
+        "failed": 0,
+        "seconds": 1.86
+      },
+      "final_link_checks": {
+        "passed": 4,
+        "failed": 0,
+        "seconds": 1.96
+      }
+    },
+    "integrated_commit": "22b14eec17a0b504c1318137d76a381c9760272f",
+    "hosted_controls": {
+      "suite_policy": {
+        "id": 37546817020,
+        "conclusion": "success"
+      },
+      "conda_publication_governance": {
+        "id": 37546817085,
+        "conclusion": "success"
+      }
     }
   }
 }

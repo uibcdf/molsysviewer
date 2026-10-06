@@ -34,7 +34,10 @@ stays `1a4c97a5`. The initial #173 approach conflicts with an existing policy gu
 and is preserved as refuted evidence. The correction at `d5ac10f0` passes
 310 closure/policy/gate/link checks and eight real development offline exports;
 automatic hosted follow-up [37545069147](https://github.com/uibcdf/molsysviewer/actions/runs/37545069147)
-is pending and supplies no complete verdict yet.
+now passes on all three native hosts: Linux 2,893 cases/27 skips, macOS
+2,866/54 and Windows 2,867/53, zero failures. Linux additionally passes all
+39 core suites and 25 documented notebooks. These development-provenance
+results complete the tooling correction without replacing the fixed package.
 
 Canonical exact-source Python 3.14 integration passes in
 [37542642197](https://github.com/uibcdf/molsysviewer/actions/runs/37542642197).
@@ -42,8 +45,8 @@ Linux passes 2,879 cases/27 skips, macOS 2,852/54 and Windows 2,853/53,
 with zero failures; Linux additionally passes 39 core suites and all 25 notebooks.
 Public-channel CI fails before tests because MolSysMT 0.23.0 is staging-only;
 the public installed gate remains BLOCKED. No public tag, release or promotion
-is created. Next: observe the corrected automatic-development hosted follow-up, review
-coordinated publication,
+is created. Devguide reconciliation passes 277 bounded checks and all 45 active
+reports agree with the issue board. Next: review coordinated publication,
 then qualify the exact public pair and verify GitHub Release/Zenodo preservation.
 See [the candidate preparation](stabilization_024_preparation_20261006.json).
 
@@ -1394,15 +1397,15 @@ documents carry it.
 Resume toward **1.0** in this order:
 
 **Current session priority (2026-10-06):** the immutable stabilization pair
-and its staging/core gates are verified in the current handoff above. Observe
-the corrected automatic-development hosted follow-up before publication.
+and its staging/core gates are verified in the current handoff above. The
+corrected automatic-development hosted follow-up also passes on all three hosts.
 Use the fixed Viewer producer `1a4c97a58b68b69f3a836546c9e4ac6187c3efa2` and
 MolSysMT producer `46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9`; earlier source
 handoffs do not replace these artifact identities.
 
-1. Exact canonical-source integration passes and #175 is locally resolved.
-   Observe automatic hosted follow-up 37545069147; preserve native verdicts
-   and Linux notebook/core results without repeating the local full suite.
+1. Exact canonical-source integration and automatic hosted follow-up 37545069147
+   pass. #175 is resolved; native verdicts and Linux notebook/core results are
+   preserved. Review the completed candidate evidence before publication.
 2. Review the 0.24.0 publication with MolSysMT. Staging is qualified; the public
    dependency/pair is not yet published. Keep already staged files and SHA-256
    identities fixed through the coordinated promotion.

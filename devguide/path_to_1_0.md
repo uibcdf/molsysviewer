@@ -10,8 +10,10 @@ Independent verification checks actual environment archives/digests and staging
 repodata. Canonical-source Python 3.14 integration passes on all three native hosts,
 with 39 core suites and all 25 notebooks passing on Linux. The public
 pair gate is blocked until the coordinated public release; no tag, Release,
-promotion or strict 1.0 clearance is created. Observe the corrected automatic-development hosted follow-up, review
-publication, qualify the exact public pair and verify preserved citation records.
+promotion or strict 1.0 clearance is created. The corrected automatic-development
+hosted follow-up also passes on all three native hosts, including 39 core suites
+and 25 notebooks on Linux. Devguide is reconciled with the current evidence.
+Review publication, qualify the exact public pair and verify preserved citation records.
 Public documentation and final 1.0 first-contact/candidate review remain separate.
 The older checkpoints below preserve their original scope; use
 [the current handoff](checkpoints.md#resume-in-one-page) and

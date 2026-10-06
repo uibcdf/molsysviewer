@@ -1486,8 +1486,8 @@ defect and the API gap are the same wound.
 `view.selections.tags`; `docs/` must be migrated in the same phase. Pre-1.0 is
 when this is cheap; after 1.0 it is not.
 
-`annotations.add()` stutters and `layers` has no verb at all; both
-are covered above.
+Annotations and layers use the canonical `add(...)` constructor. The removed
+`annotations.add_annotation` alias is not part of the public surface.
 
 ### Contract S1 — Python is the source of truth for every scene object
 
@@ -1697,8 +1697,8 @@ would end up with a layer full of ad-hoc metadata — the definition of a bad mo
 Worse, the user could delete the shape inside and be left with a measurement that
 has no line: the object's integrity evaporates.
 
-**But the underlying observation is right, and it must be acted on.** Today there
-are **three separate drawing engines**:
+**The underlying observation remains relevant.** At the 2026-07-12 survey,
+there were **three separate drawing engines**:
 
 | domain | drawn by |
 |---|---|
@@ -1706,8 +1706,12 @@ are **three separate drawing engines**:
 | annotations | ours (`annotation-handlers.ts`, 220 lines) |
 | **measurements** | **Mol\* native** — `plugin.managers.structure.measurement.addDistance` (`measurement-handlers.ts:281`) |
 
-and a naive Interactions domain would bring a **fourth**. That duplication is real
-and must not grow.
+Adding a naive Interactions domain would have brought a **fourth**. The implemented
+bounded Interactions domain instead reuses `addNetworkLinksFromPython` and
+`NetworkLinks3D`: one batched Mol* mesh representation with per-occurrence
+labels and scientific metadata. It does not expose a renderer switch or create
+separate user Shapes/Annotations for its links. The `CustomInteractions` inlet
+surveyed below is a possible later implementation, not the current rendering path.
 
 #### The contract
 
@@ -1727,16 +1731,18 @@ its realisation, the second renderer is purely **additive**. Tie the domain to
 shapes on day one and we lose Mol\*'s native rendering, which is free and good.
 Own the realisation and we lose nothing.
 
-**Build `native` first. Declare `primitives`; do not build it** until a real user
-needs per-edge colouring by occupancy or a distance label on every bond. Two
-renderers are twice the maintenance and twice the bugs.
+The 2026-07-12 native-first recommendation is realized for the bounded #114
+implementation through the shared batched mesh owner described above. Keep one
+rendering path; a selectable primitives backend remains deferred until a real
+user needs it. Neither `renderer` option is a new public argument promised by
+the current implementation.
 
 #### Mol\* offers far more native machinery than we use (2026-07-12 survey)
 
 The `native` renderer is not a compromise — in every domain checked, Mol\* exposes
 an inlet for **externally supplied data** and keeps its own engine optional:
 
-| domain | what Mol\* offers | what we use today |
+| domain | what Mol\* offers | what we used at the 2026-07-12 survey |
 |---|---|---|
 | **interactions** | `CustomInteractions` transformer — you hand it the edges (`{kind, a, b}` addressed by **`atom_index`**), it renders them natively. Its own `ComputeContacts` engine is a *separate, optional* inlet. | **nothing** — we draw pre-computed pairs as anonymous cylinder shapes |
 | **annotations** | MolViewSpec (`extensions/mvs/components/`): `annotation-label` (`fieldName` picks the text column), `annotation-color-theme`, `annotation-tooltips-prop`, `annotation-structure-component`, and `custom-label` (`items: [{text, position}]`, position by *selection* **or** by explicit `x,y,z`). Addressed at any level — `whole_structure / entity / chain / residue / residue_range / atom` — with **`atom_index`** and **`residue_index`** among the fields, plus `group_id` to gather several rows under **one** label. | the basic `label` representation with `customText` |
@@ -1770,7 +1776,8 @@ makes deferring free** because a renderer swap is additive once the object owns 
 realisation.
 
 **It does not touch Interactions**: `extensions/mvs/` and `extensions/interactions/`
-are different extensions, and the `CustomInteractions` plan stands unchanged.
+are different extensions. The surveyed `CustomInteractions` option remains
+independent of the current shared batched-mesh implementation.
 
 **One condition binds the pre-1.0 work**, and it is the only reason this contract
 mentions it at all: **an annotation's anchor must be an extensible concept from the
