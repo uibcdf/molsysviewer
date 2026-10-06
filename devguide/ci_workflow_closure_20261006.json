@@ -75,13 +75,31 @@
     },
     "ruff": {
       "exit_code": 0
+    },
+    "format_policy_followup": {
+      "failed_hosted_run": "https://github.com/uibcdf/molsysviewer/actions/runs/37522966757",
+      "cause": "UTF-8 keyword length requires Ruff to wrap one existing E2E source-reader comprehension.",
+      "fix": "Ruff formats that comprehension; AST equality with 1ed34994 confirms identical behavior.",
+      "all_repository_format_check": {
+        "files": 886,
+        "exit_code": 0
+      },
+      "all_repository_lint_check": {
+        "exit_code": 0
+      },
+      "focused_e2e_reliability": {
+        "passed": 7,
+        "failed": 0
+      }
     }
   },
   "hosted": {
     "initial_source_pair": "https://github.com/uibcdf/molsysviewer/actions/runs/37508347848",
     "initial_published_notebooks": "https://github.com/uibcdf/molsysviewer/actions/runs/37519346853",
     "initial_published_browser": "https://github.com/uibcdf/molsysviewer/actions/runs/37519346977",
-    "new_source_pair": "pending push"
+    "new_source_pair": "pending push",
+    "first_source_candidate_commit": "1ed34994e3d6953bc6f9678d8b93711efa3a9331",
+    "first_new_source_pair": "https://github.com/uibcdf/molsysviewer/actions/runs/37522965703"
   },
   "limits": [
     "Native Windows confirmation is pending until the new source-pair run finishes.",
@@ -94,7 +112,7 @@
     "docs/content/developer/docs_workflow.md": "e48c5bbb3a5790127ed9307e82feda46e2d1b5a0f15008ba6ee44954fb8ef454",
     "docs/content/user/molecular_system/get.ipynb": "9d60753da612573a069877516800ddad13e7e6c70cf519310e4866e3ebf7faad",
     "tests/loaders/test_load_from_molsysmt.py": "c284abf306f6b97e935c770466962dde3ddaf851818daf00a0aed43f5ff84900",
-    "tests/test_e2e_reliability.py": "3e58e48b3d400a786463174e64c2558e55af959da7956b085cf2b773b149fd48",
+    "tests/test_e2e_reliability.py": "02c8872c75e40bf8fd3c5b785be021635cb5e58acb1f1acdf145bc59ddb6f876",
     "tests/test_reporting_protocol.py": "c0b480469e56bbf925dbb1dbb6b7d0016df4bb347e4b302c7327aca39926f9e9",
     "tests/test_documented_whole_masks.py": "f6aef13a127874988853a66f7673ec83a96deace1793c4a37a2bcec4ae39fde7",
     "tests/test_source_text_encoding.py": "2e5ba133f44f58d43cbfadb05429893be8c7c4bc50c3a5c23b84170fac3c19c2",
