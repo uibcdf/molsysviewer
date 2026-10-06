@@ -5,6 +5,18 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+**Human review (2026-10-06): in progress with Diego through remote Jupyter.**
+The initial protein displays correctly. Rotation, zoom, translation, context
+menu/reset, both Help routes, full screen and its return, floating Studio
+controls/docking/popup lifecycle and canvas-popup movement synchronization
+are reported passing. Progressive caffeine loading displays both sources with
+appropriate framing; the provider warnings are understood. It reveals a
+transient Welcome card (#164) and lossy accented source-region tags (#165),
+now tracked without runtime edits. Next: source-region visibility controls.
+Keep these direct human
+observations separate from automated evidence in
+[the current review](human_usability_review_20261006.md).
+
 **Coordinated source handoff (2026-10-06): validated and ready for MolSysMT.**
 Fixed Viewer commit `c046fca173f501c6e259761ef8f3d6b1825f17e8` passes exact
 source-pair run `37441973999` against MolSysMT

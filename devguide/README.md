@@ -39,6 +39,8 @@ documents, and historical audits.
 
 ## Current status and planning
 
+- [`human_usability_review_20261006.md`](human_usability_review_20261006.md): ongoing remote-Jupyter review with Diego; initial protein, canvas controls and Studio/popup controls observed passing.
+
 - [`scientific_usability_review_20261004.md`](scientific_usability_review_20261004.md): real widget findings, separate Interactions calculation/display scopes and successful repaired-provider SDF composition.
 
 - [`scientific_use_review_20261004.md`](scientific_use_review_20261004.md): real
