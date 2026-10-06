@@ -8,7 +8,7 @@ verification: inspected
 area: [interactions, api, studio, state]
 guard:
 normative:
-blocked_by: []
+blocked_by: [uibcdf/molsysmt#346]
 supersedes: []
 ---
 
@@ -34,6 +34,8 @@ result contract originates in uibcdf/molsysmt#250 and uibcdf/molsysviewer#114.
 
 ## How
 
+The requested provider-side coordination is filed in uibcdf/molsysmt#346,
+linked to uibcdf/molsysviewer#168 and labelled component:molsysviewer for triage.
 Coordinate provider query vocabulary before consumer implementation. The owning
 consumer routes are `InteractionsManager.query/_filter`, set creation/editing,
 Python/TypeScript messages, Studio controls and state/session filter records.

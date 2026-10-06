@@ -49,7 +49,8 @@ human has not transcribed exact new-analysis counts.
 The naming discussion approves explicit query/display values in
 [#168](pending_proposals/explicit_interaction_selection_mode_names.md):
 involving_selection, within_selection, across_selection_boundary and
-between_selections. Implementation and MolSysMT coordination are pending;
+between_selections. Provider coordination is requested in uibcdf/molsysmt#346.
+Implementation and MolSysMT agreement are pending;
 current notebook calls retain the old executable names during the review.
 The separate [#166](archive/group_panel_unit_dom_missing_query_selector.md)
 GroupPanel test DOM defect is fixed: the complete JS unit lane passes 322 tests.

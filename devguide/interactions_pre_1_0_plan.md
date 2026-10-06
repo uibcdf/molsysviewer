@@ -6,7 +6,8 @@ The human review approves `involving_selection`, `within_selection`,
 `across_selection_boundary` and `between_selections` as query/display filter
 names. Coordinate the provider vocabulary and saved-filter migration before
 changing the executable consumer; current calls still use the earlier names.
-The single-theme work is tracked in uibcdf/molsysviewer#168 and
+The single-theme work is tracked in uibcdf/molsysviewer#168, with the provider
+handoff in uibcdf/molsysmt#346, and
 [the naming proposal](pending_proposals/explicit_interaction_selection_mode_names.md).
 
 ## Public workflow completion — 2026-10-02
