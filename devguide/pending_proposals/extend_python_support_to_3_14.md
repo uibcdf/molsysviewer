@@ -466,3 +466,16 @@ The once-run local complete suite executes all 2,844 cases: 2,820 passed,
 serialization positive control and a passing 22-case scene module. This does
 not establish a new clean full-suite, hosted or installed-package verdict.
 See [the exact local record](../ci_environment_repair_20261006.json).
+
+**Hosted source handoff confirmed:** run `37441973999` qualifies Viewer
+`c046fca173f501c6e259761ef8f3d6b1825f17e8` against the exact provider above
+on Python 3.14.7. Linux returns 2,819 passed/27 skipped, macOS 2,792
+passed/54 skipped and Windows 2,793 passed/53 skipped, all with zero failures.
+Each platform passes installation, `pip check`, source-origin/native-resource
+audits and real installed-pair integration. OpenMM now supplies the real AMBER
+fixture (#163); tracked-reference validation replaces the local-only mockup
+link. All 39 core-browser suites pass separately in the canonical Linux
+development environment. The fixed Viewer commit is available to MolSysMT
+for coordinated staging preparation before a compatible provider package
+exists. See [the handoff receipt](../source_pair_handoff_20261006.json) for
+provenance and excluded scope; public installation remains unqualified.

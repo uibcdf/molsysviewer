@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-06",
+  "purpose": "Provide MolSysMT with a fixed scientific Viewer source baseline for coordinated staging preparation.",
+  "viewer_commit": "c046fca173f501c6e259761ef8f3d6b1825f17e8",
+  "provider_commit": "5e2721691b6a3c175406a8e4c0926dfb7b160671",
+  "source_pair": {
+    "run_id": 37441973999,
+    "attempt": 1,
+    "conclusion": "success",
+    "python": "3.14.7",
+    "pytest": "9.1.1",
+    "pytest_receptor": "1.2.0",
+    "results": [
+      {
+        "platform": "ubuntu-latest",
+        "job_id": 112197651562,
+        "conclusion": "success",
+        "passed": 2819,
+        "skipped": 27,
+        "seconds": 390.83
+      },
+      {
+        "platform": "macos-15",
+        "job_id": 112197651707,
+        "conclusion": "success",
+        "passed": 2792,
+        "skipped": 54,
+        "seconds": 336.95
+      },
+      {
+        "platform": "windows-2025",
+        "job_id": 112197651808,
+        "conclusion": "success",
+        "passed": 2793,
+        "skipped": 53,
+        "seconds": 446.39
+      }
+    ],
+    "gates": [
+      "Require the full exact provider SHA",
+      "Install both sources without metadata/dependency bypass",
+      "pip check",
+      "Installed provider origin and dependency route audit",
+      "Installed Rust extension and Viewer resources",
+      "Native MolSysMT bundled-path detection/conversion",
+      "Real installed-pair integration",
+      "Complete Viewer Python suite"
+    ],
+    "skips": "Retained native counts include optional Qt, installed scientific artifacts and platform-specific probes. macOS also lacks the browser used by eight Python browser cases. These are not passing observations for their excluded scope."
+  },
+  "local_core_browser": {
+    "conclusion": "success",
+    "exit_code": 0,
+    "suites_passed": 39,
+    "suites_selected": 39,
+    "command": "npm run test:e2e:core",
+    "working_directory": "molsysviewer/js",
+    "conda_environment": "molsyssuite@uibcdf_3.14",
+    "python_executable": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "python": "3.14.7",
+    "chrome": "149.0.7827.53",
+    "node": "24.11.1",
+    "playwright": "1.57.0",
+    "renderer": "Real Mol* in headless Chrome, WebGL2 with ANGLE/SwiftShader",
+    "browser_opt_out": false,
+    "interaction_calculation_forms_passed": 17,
+    "provider_checkout_head": "5bd893c85fe8d211663b2b1f865f5f1d2c382a90",
+    "provider_runtime_python_delta_from_pin": [],
+    "provider_delta_limit": "The local checkout has packaging/workflow/documentation successors and Rust import-order formatting. No molsysmt package file differs from the CI source pin. Native exact-source builds are qualified separately by the hosted matrix.",
+    "installed_metadata": {
+      "molsysviewer": "0.23.0+17.g3fa27e68",
+      "molsysmt": "0.22.4+24.g42b487869",
+      "rdkit": "2025.9.5",
+      "openmm": "8.6.1"
+    },
+    "metadata_limit": "Shared editable distribution metadata predates the current source commits; it is not an installed public package identity.",
+    "infrastructure": "The sandboxed launch failed before any suite with setsockopt: Operation not permitted. The authorized execution outside the sandbox ran all 39 core suites without opt-out."
+  },
+  "current_public_core_browser": {
+    "run_id": 37441974019,
+    "job_id": 112197652682,
+    "conclusion": "failure",
+    "passed_before_failure": 4,
+    "failed_suite": "composite-load",
+    "diagnostic": "composite-load-bridge.py:26: AttributeError: module molsysmt has no attribute h5msm",
+    "scope": "Public-provider qualification is still open; source-browser success does not change this hosted public failure."
+  },
+  "other_exact_commit_runs": [
+    {
+      "workflow": "CI",
+      "run_id": 37441974002,
+      "conclusion": "failure",
+      "scope": "Public-provider and experimental Qt qualification; retain the earlier native diagnostics without declaring this failed run cleared."
+    },
+    {
+      "workflow": "MolSysSuite policy",
+      "run_id": 37441974732,
+      "conclusion": "success"
+    },
+    {
+      "workflow": "Conda publication governance",
+      "run_id": 37441974900,
+      "conclusion": "success"
+    }
+  ],
+  "previous_attempts": [
+    "ci_environment_repair_20261006.json",
+    "ci_hosted_followup_20261006.json"
+  ],
+  "next": [
+    "MolSysMT can use the fixed Viewer commit to prepare its compatible candidate; coordinate exact versions and commits for both packages.",
+    "Qualify the exact staging pair, current 16-cell installed matrix, Windows launchers and hosted core browser with compatible packages.",
+    "Complete human scientific/visual observations and the final public documentation block before final 1.0 qualification."
+  ],
+  "limits": [
+    "No source or runtime edits follow this Viewer baseline; the handoff record and queue closure are documentation successors.",
+    "A source-built installed pair is distinct from preserved staging/public distribution artifacts.",
+    "No tag, package publication, promotion, DOI archival or 1.0 clearance is produced here.",
+    "Standalone remains experimental and remote sessions remain post-1.0; local headless WebGL is not a visible-window Qt/GPU certificate."
+  ],
+  "local_log_sha256": {
+    "linux": "30719461e762f1056126d52a41223dd4c09d679cd8a795fb0501766cde67d12e",
+    "macos": "7559e01585fca5f5c5fd1e969ac8177f2dff539fb5baf0352bf2cbe7374c295c",
+    "windows": "7e957f7782d2f1bdabc01dc77001f24d28b283fdfeb2b93aa4ffedc72d20879a",
+    "local_core": "a23f440944142b62a3a7037006f305789c26f39d2eb26dd3390f9dff4ee231af",
+    "public_core": "cabfc04287dde9414329b0f6bfec52dc4de9e8cc49510538c5f7e3c629c1b1a5"
+  },
+  "handoff_document_checks": {
+    "modules": [
+      "tests/test_devguide_links.py",
+      "tests/test_reporting_protocol.py"
+    ],
+    "passed": 213,
+    "seconds": 2.57,
+    "exit_code": 0,
+    "full_local_suite_repeated": false
+  }
+}

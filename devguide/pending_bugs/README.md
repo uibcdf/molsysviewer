@@ -19,9 +19,8 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Partially done (12)
+### Partially done (11)
 
-- [`amber_test_environments_missing_openmm.md`](amber_test_environments_missing_openmm.md) — [#163](https://github.com/uibcdf/molsysviewer/issues/163) — Scientific test environments omit OpenMM required by the AMBER workflow *(medium, reproduced)*
 - [`annotation_anchor_contract.md`](annotation_anchor_contract.md) — [#146](https://github.com/uibcdf/molsysviewer/issues/146) — Annotation coordinate anchors and callout options lack a coherent public lifecycle *(high, measured)*
 - [`box_edit_silent_provider_failure.md`](box_edit_silent_provider_failure.md) — [#155](https://github.com/uibcdf/molsysviewer/issues/155) — Box initialization reports success when the provider leaves the cell absent *(medium, reproduced)*
 - [`installed_scientific_cli_fixture_namespace.md`](installed_scientific_cli_fixture_namespace.md) — [#153](https://github.com/uibcdf/molsysviewer/issues/153) — Installed scientific CLI cannot resolve its development fixtures *(medium, reproduced)*

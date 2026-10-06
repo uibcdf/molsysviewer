@@ -5,7 +5,25 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-**CI environment repair (2026-10-06): #161/#162 resolved; #163 follow-up pending.**
+**Coordinated source handoff (2026-10-06): validated and ready for MolSysMT.**
+Fixed Viewer commit `c046fca173f501c6e259761ef8f3d6b1825f17e8` passes exact
+source-pair run `37441973999` against MolSysMT
+`5e2721691b6a3c175406a8e4c0926dfb7b160671` on Python 3.14.7: Linux
+**2,819 passed/27 skipped**, macOS **2,792 passed/54 skipped**, Windows
+**2,793 passed/53 skipped**, zero failures. All three installed-source builds,
+`pip check`, origin/native-resource audits and real integration pass.
+The real local Mol*/WebGL2 browser lane also passes **39/39 core suites**,
+including 17 Interactions calculation forms. Exact native job identities,
+local provider provenance and excluded scope are retained in
+[the handoff receipt](source_pair_handoff_20261006.json).
+
+MolSysMT needs this stable Viewer commit before preparing its compatible
+package. Use these fixed identities for coordinated staging preparation;
+this handoff precedes compatible package qualification and does not depend
+on a provider release arriving first. The separate public CI/core-browser
+runs still fail with the old provider. No tag or 1.0 clearance is created.
+
+**CI environment repair (2026-10-06): #161/#162/#163 resolved in source.**
 RDKit is now declared in both scientific test environments and the local
 development recipe. The guard rejects its removal from each of the three
 recipes; the distribution module passes 19 tests and the real Interactions
@@ -20,18 +38,19 @@ failed guard**, in 556.22 s. #162 identifies a profiler that counted SMonitor's
 shared wrapper as full serialization. It is corrected with an unwrapped target
 and a real serialization positive control; its 22-case scene module passes.
 The complete suite was not repeated. Preserve this distinction in
-[the receipt](ci_environment_repair_20261006.json); hosted full-suite confirmation
-remains pending.
+[the receipt](ci_environment_repair_20261006.json); the later hosted full-suite
+confirmation above supplies the clean source verdict.
 
 The first hosted source-pair run `37438220076` installs the pair on all three
 native platforms and collects its scientific cases without the RDKit defect.
-Linux/macOS full suites expose an OpenMM omission for complementary AMBER
+All three full suites expose an OpenMM omission for complementary AMBER
 files (#163) and a link to the untracked local design mockup (#114). The
 follow-up declares OpenMM in test/development recipes and links the tracked
 Studio design record, preserving the scratch artifacts. A clean-checkout
 reference guard now rejects existing untracked targets. The 47-case local
-AMBER/distribution/link selection passes; exact hosted confirmation remains
-pending. The public core lane still fails on absent `molsysmt.h5msm`, and the
+AMBER/distribution/link selection passes; exact hosted confirmation above
+closes [#163](archive/amber_test_environments_missing_openmm.md). The public
+core lane still fails on absent `molsysmt.h5msm`, and the
 experimental Qt lane fails to create WebGL; neither is the repaired RDKit defect.
 Exact job counts, diagnostics and the bounded follow-up are in
 [the hosted record](ci_hosted_followup_20261006.json).
@@ -1207,14 +1226,16 @@ it is no longer an undecided design. The preceding clean source regression passe
 **2,812 tests, 23 skipped** after the scientific usability correction. Provider #307/#309
 repairs are verified in the editable provider, with published-artifact
 qualification still outstanding.
-The 2026-10-06 complete attempt and focused guard correction are recorded in
-the current handoff above; they do not create a new clean full-suite verdict.
+The original 2026-10-06 local complete attempt and focused guard correction
+remain recorded separately. The later three-platform complete source verdict
+and real browser pass are in the current handoff above.
 Continue in the maintainer's order:
 
-1. Confirm the #163 OpenMM and clean-checkout-reference follow-up with the
-   current exact source-provider pair in hosted CI. #161/#162 are resolved.
-   The source integration and bounded scientific review are
-   complete; preserve their dated records and qualification limits.
+1. Give MolSysMT the fixed, validated Viewer/provider commits above so both
+   teams can prepare the coordinated staging pair. The three-platform source
+   matrix and real core browser lane pass; #161/#162/#163 are resolved.
+   Preserve the completed source integration and bounded scientific review
+   records and their limits.
 2. Candidate prevalidation #157 and the source-level fixes in
    uibcdf/molsysmt#312/#313 are resolved. Direct SDF and mixed protein/caffeine
    batch/progressive workflows pass in the editable provider. Repeat them

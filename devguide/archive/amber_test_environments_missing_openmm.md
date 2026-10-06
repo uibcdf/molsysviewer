@@ -1,9 +1,9 @@
 ---
 summary: Scientific test environments omit OpenMM required by the AMBER workflow
 issue: uibcdf/molsysviewer#163
-status: partial
+status: resolved
 opened: 2026-10-06
-closed:
+closed: 2026-10-06
 severity: medium
 verification: reproduced
 area: [ci, testing, loading]
@@ -57,4 +57,13 @@ OpenMM is declared in both hosted test recipes and the development recipe.
 The 47-case AMBER/distribution/link selection passes locally with the real
 bundled files. Removing OpenMM from each of the three recipes in independent
 temporary copies makes the backend guard fail with the affected filename.
-Exact hosted confirmation remains pending; no complete local suite is repeated.
+Exact-source run `37441973999`, at Viewer
+`c046fca173f501c6e259761ef8f3d6b1825f17e8` and MolSysMT
+`5e2721691b6a3c175406a8e4c0926dfb7b160671`, confirms the correction on all
+three native platforms. The complete suites return 2,819 passed/27 skipped
+on Linux, 2,792 passed/54 skipped on macOS and 2,793 passed/53 skipped on
+Windows, with zero failures. The real complementary-file test remains
+unconditional and the recipe guard prevents the backend omission from
+returning. No complete local suite is repeated. See the retained
+`devguide/source_pair_handoff_20261006.json` for native job identities and
+the separate 39/39 core-browser result; this does not qualify public artifacts.

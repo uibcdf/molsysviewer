@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [`amber_test_environments_missing_openmm.md`](amber_test_environments_missing_openmm.md) — #163: provision the AMBER backend in all scientific test/development recipes; the real complementary-file workflow and full exact-source suites pass on Linux, macOS and Windows.
+
 - [`scientific_test_environments_missing_rdkit.md`](scientific_test_environments_missing_rdkit.md) — #161: provision RDKit for real chemical fixtures in all test/development recipes; the guard rejects three omissions and the native source-pair matrices collect their scientific cases.
 
 - [`interactions_materialization_guard_shared_wrapper.md`](interactions_materialization_guard_shared_wrapper.md) — #162: profile the concrete serializer rather than shared decorators; a real serialization control and the 22-case scene module verify the bounded large-frame guard.
