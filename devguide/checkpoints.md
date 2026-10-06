@@ -31,8 +31,18 @@ to keep Python `show_only()` and Studio controls unchanged; no isolation button
 or temporary-isolation redesign is added. Diego also confirms notebook section 3:
 batch loading of protein and caffeine has appropriate framing and source regions,
 Whole contains both, caffeine Hide/Show preserves the protein, and the exact
-coordinate comparison cell passes. Next is notebook section 4: Interactions
-and the three selected pentalanine structures.
+coordinate comparison cell passes. In notebook section 4 he confirms correct
+pentalanine display and navigation across three frames. Interaction calculation
+scope is under review: only the first frame says Evaluated; the others say Not
+evaluated. Diego confirms leaving the default, believing it was `all`; Calculate
+structures actually defaults to `current`, which explains the coverage pattern.
+His supplied analysis metadata confirms one evaluated structure and zero
+occurrences at 0.23 nm, rather than the planned 0.4 nm review cutoff. After the
+explicit all-frame/0.4 nm guidance and returning from Stored analysis to Calculate,
+Diego confirms visible H bonds specific to each structure. Next review saved-set
+Hide/Show, inspection/participant actions and display filters, then the Python
+reference calculation and session recovery. Record the scope/mode confusion as
+usability evidence; exact human counts and evaluated metadata are not supplied.
 The separate [#166](archive/group_panel_unit_dom_missing_query_selector.md)
 GroupPanel test DOM defect is fixed: the complete JS unit lane passes 322 tests.
 [#167](archive/region_enablement_and_visibility.md) has 12 focused Python tests

@@ -112,12 +112,53 @@ it reports the batch source records. The reference source counts are 596 and
 The manually added orange representation in the progressive view is not
 expected in the fresh batch scene.
 
-## 5. Interactions and trajectory — next human step
+## 5. Interactions and trajectory — calculation/display observed; remaining controls under review
 
 Notebook section 4 loads real pentalanine structures in source order [0, 8, 3],
-mapped to local frames 0, 1 and 2. The next step is to inspect trajectory controls
-and Studio's Calculate workflow before running the Python reference calculation.
-No human outcome has yet been reported for this step.
+mapped to local frames 0, 1 and 2. Diego reports correct molecular representation
+and successful navigation across all three frames with the canvas controls.
+The calculation appears to complete, but he believes no H bonds are displayed
+on the first structure. Saved sets shows Evaluated there and Not evaluated on
+the other two. He expected the calculation to cover all three; the submitted
+calculation scope and stored scientific parameters have not yet been confirmed.
+
+Read-only local reproduction of the semantic Studio action on the same source
+structures, with Buch, 4 Å, all atoms, no PBC and unrestricted display, gives
+20 occurrences and coverage [0] for `current`; `all` gives coverage [0, 1, 2]
+and per-frame occurrences [20, 25, 20]. The current-frame request produces the
+same evaluated/unevaluated status pattern Diego reports. This is a diagnostic
+comparison, not a reproduction of his browser input or a confirmed root cause.
+The frontend defaults Calculate structures to `current` and Display structures
+to `all`; they are independent fields. Diego subsequently confirms that he
+left the initial value, believing it was `all`. The current-frame default
+explains the reported coverage; there is no evidence here that an explicit
+`all` request was lost. This confusion is a human usability observation about
+the separate calculation/display scopes, not a diagnosed transport defect.
+Diego supplies `analyses()` for `revision-studio`: Buch, 62 atoms, three
+structures, one evaluated structure, zero occurrences/relations and no PBC.
+The stored hydrogen–acceptor cutoff is 0.23 nm (2.3 Å), rather than the planned
+0.4 nm (4 Å). The empty canvas lines therefore correspond to an empty analysis,
+not evidence that existing occurrences failed to render. The optional Studio
+distance field is initially blank with Method default and nm units, so the
+effective cutoff comes from the provider when left blank. The next comparison
+was to create a separately named analysis with Calculate structures explicitly
+set to `all`, Buch, 0.4 nm and no PBC. The subsequent human result is below.
+
+Diego then reports that the former name field is now a dropdown showing
+`revision-studio 0 observations` and cannot find how to enter a new calculation
+name. After successful creation, InteractionsPanel switches its source to
+Stored analysis; this dropdown selects a saved analysis. The Calculate tab at
+the top of New interaction set restores the Store analysis as text field.
+Guide him through that switch before the explicit all-frame comparison. The
+automatic mode transition is not evident to him; this is a second direct
+usability observation in the calculation workflow.
+
+**Subsequent human confirmation:** Diego reports that H bonds are now represented
+and are specific to each structure. This establishes visible, structure-dependent
+interaction geometry in his review. He does not separately report exact counts,
+all-frame evaluated metadata or the new analysis name. Saved-set Hide/Show,
+inspection, participant selection/focus and display filters remain to review
+before the notebook's independent Python reference and session recovery.
 
 ## Next observations
 
