@@ -1,14 +1,16 @@
 # Minimal Interactions before 1.0
 
-## Explicit selection-mode vocabulary — accepted 2026-10-06, implementation pending
+## Explicit selection-mode vocabulary — implementation 2026-10-06
 
-The human review approves `involving_selection`, `within_selection`,
-`across_selection_boundary` and `between_selections` as query/display filter
-names. Coordinate the provider vocabulary and saved-filter migration before
-changing the executable consumer; current calls still use the earlier names.
-The single-theme work is tracked in uibcdf/molsysviewer#168, with the provider
-handoff in uibcdf/molsysmt#346, and
-[the naming proposal](pending_proposals/explicit_interaction_selection_mode_names.md).
+Python and Studio use `involving_selection`, `within_selection`,
+`across_selection_boundary` and `between_selections`. The provider handoff is
+uibcdf/molsysmt#346 at `a0ceca86ec99c89377e78fac15cbdf32145a362e`.
+Old public arguments are rejected; saved visual query filters alone migrate
+from interaction extension 1 to 2. Scientific detector `selection_mode`,
+stored `evaluation_mode` and H5MSM 0.5 remain unchanged. Qualification and
+closure are retained in resolved uibcdf/molsysviewer#168 and
+[the naming proposal](archive/explicit_interaction_selection_mode_names.md).
+This source adoption does not certify a published provider package.
 
 ## Public workflow completion — 2026-10-02
 

@@ -1,14 +1,14 @@
 ---
 summary: Adopt explicit interaction selection mode names before 1.0
 issue: uibcdf/molsysviewer#168
-status: open
+status: resolved
 opened: 2026-10-06
-closed:
-verification: inspected
+closed: 2026-10-06
+verification: measured
 area: [interactions, api, studio, state]
-guard:
-normative:
-blocked_by: [uibcdf/molsysmt#346]
+guard: molsysviewer/js/tests/e2e/interactions-calculation.e2e.ts
+normative: devguide/scene_contracts.md
+blocked_by: []
 supersedes: []
 ---
 
@@ -29,7 +29,7 @@ Adopt these explicit query/display filter names in coordination with MolSysMT:
 
 Studio labels: All interactions involving the selection; Only within the
 selection; Between the selection and the rest; Between selections A and B.
-Names are approved; executable APIs still use the old values. The shared sparse
+The provider and consumer implement the canonical-only public query names. The shared sparse
 result contract originates in uibcdf/molsysmt#250 and uibcdf/molsysviewer#114.
 
 ## How
@@ -39,7 +39,7 @@ linked to uibcdf/molsysviewer#168 and labelled component:molsysviewer for triage
 Coordinate provider query vocabulary before consumer implementation. The owning
 consumer routes are `InteractionsManager.query/_filter`, set creation/editing,
 Python/TypeScript messages, Studio controls and state/session filter records.
-MolSysMT owns sparse participant semantics, coverage and `between(A, B)`.
+MolSysMT owns sparse participant semantics, coverage and `between_selections(A, B)`.
 Use one consistent public vocabulary rather than adding viewer-only aliases.
 
 Agree migration for existing saved filters, interaction extension versioning and
@@ -74,6 +74,37 @@ coverage metadata, which is outside this query-name decision.
 
 ## Resolution
 
-Implementation and provider agreement pending. Continue the human review with
-current executable names; the approved names become callable when the coordinated
-change and persistence migration are verified.
+Provider uibcdf/molsysmt#346 is resolved at
+`a0ceca86ec99c89377e78fac15cbdf32145a362e` (functional change
+`ea10577136fff6ea1d4af7b58346680a267f00d7`). The earlier alias-compatible handoff
+was withdrawn. The provider now rejects old query arguments, including trusted
+bypass; its separate two-selection method is `between_selections`.
+
+Consumer code, Studio, query tools and examples adopt the canonical vocabulary.
+Saved visual filters alone migrate from extension version 1; new exports use
+version 2. Scientific coverage metadata and H5MSM are untouched. The source-pair
+CI pin is updated to the final provider handoff. Local Linux source-pair
+qualification passes; this does not certify a provider package release.
+
+The browser guard exercises all four selector values, verifies exact emitted
+selection A/B and mode fields, applies the real provider responses and preserves
+20 calculated observations while changing only the display. It also passes the
+17 real calculation forms. The scene-module migration guard
+`test_legacy_query_filters_migrate_through_state_and_sessions` exercises all
+four old names through actual state and H5MSM-backed sessions, preserving signed
+scientific content, occurrence identity, evaluated-empty and unevaluated frames.
+Additional guards reject old public arguments with digestion enabled or bypassed,
+reject invalid version/mode records before mutation and migrate broken filters
+without silently repairing their atom selection.
+
+Validation: 37 scene tests; 149 focused API/family/benchmark/dependency/package
+tests; full Python once, 2,869 passed/23 skipped/zero failures; 322 Node 22 unit
+tests; all three affected real Mol*/Python browser suites; the provider's
+previously deselected real Viewer bibliography/session test passes. TypeScript,
+runtime rebuild and dependency audit pass. The maintained API guide, tutorial,
+scene contract and implementation plan absorb the change.
+[The qualification receipt](../interactions_query_modes_20261006.json) retains
+commands, provenance and the corrected browser-test response sequencing failure.
+Hosted updated-source matrix, installed package qualification and direct human
+retest of the renamed controls remain separate evidence. The open sandbox review
+notebook is preserved; change its explicit old query argument before rerunning.

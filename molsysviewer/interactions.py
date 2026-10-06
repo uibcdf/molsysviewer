@@ -24,6 +24,7 @@ from ._private.argdigest import digest
 from ._private.exceptions import ArgumentError
 from ._private.exceptions.interaction_analysis_error import InteractionAnalysisError
 from ._private.interaction_families import FAMILIES, segments
+from ._private.interaction_query_modes import QUERY_MODES
 from ._pyunitwizard import puw
 from .layers import SceneObject, _bounding_sphere_nm
 from .scene_history import records_scene_history
@@ -71,7 +72,9 @@ def _require_provider():
 
 
 def _provider_available():
-    return hasattr(msm, "Interactions") and callable(getattr(getattr(msm, "h5msm", None), "read_layers", None))
+    return callable(getattr(getattr(msm, "Interactions", None), "between_selections", None)) and callable(
+        getattr(getattr(msm, "h5msm", None), "read_layers", None)
+    )
 
 
 _FRAME_OCCURRENCE_LIMIT = 50000
@@ -835,7 +838,7 @@ class ScientificInteractionsManager:
         *,
         selection="all",
         selection_2=None,
-        mode="incident",
+        mode="involving_selection",
         exclusive=False,
         structure_indices="all",
         interaction_types=None,
@@ -844,23 +847,25 @@ class ScientificInteractionsManager:
     ):
         """Query sparse occurrences by atom sets and local structure indices.
 
-        ``incident`` retains any participating atom in the set; ``internal``
-        requires every participating atom; ``cross`` is incident minus internal.
-        ``between`` requires disjoint sets A/B; exclusive confines all atoms
+        ``involving_selection`` retains any participating atom in the set;
+        ``within_selection`` requires every participating atom;
+        ``across_selection_boundary`` requires atoms inside and outside.
+        ``between_selections`` requires disjoint sets A/B; exclusive confines all atoms
         to their union. Hydrogen and all atoms in grouped participants count.
         Query views retain provider coverage and original occurrence indices.
         """
         molsys = self._system()
         result = self.get_analysis(analysis_name, skip_digestion=True)
         if (
-            mode not in {"incident", "internal", "cross", "between"}
-            or (mode == "between") != (selection_2 is not None)
-            or (exclusive and mode != "between")
+            not isinstance(mode, str)
+            or mode not in QUERY_MODES
+            or (mode == "between_selections") != (selection_2 is not None)
+            or (exclusive and mode != "between_selections")
         ):
             raise InteractionAnalysisError(reason="invalid_query", extra={"mode": mode})
         structures = self._structures(structure_indices, molsys)
         atoms = self._atoms(selection, molsys, syntax)
-        if mode == "between":
+        if mode == "between_selections":
             atoms_b = self._atoms(selection_2, molsys, syntax)
             # Two disjoint proper sets are required. An unrestricted all-axis
             # set cannot be disjoint from a nonempty second selection.
@@ -868,7 +873,7 @@ class ScientificInteractionsManager:
                 atoms = np.arange(molsys.get_n_atoms(), dtype=np.int64)
             if atoms_b is None:
                 atoms_b = np.arange(molsys.get_n_atoms(), dtype=np.int64)
-            return result.between(
+            return result.between_selections(
                 atoms, atoms_b, structure_indices=structures, exclusive=exclusive, interaction_types=interaction_types
             )
         return result.query(
@@ -1080,7 +1085,7 @@ class InteractionSet(SceneObject):
         *,
         selection="all",
         selection_2=None,
-        mode="incident",
+        mode="involving_selection",
         exclusive=False,
         structure_indices="all",
         interaction_types=None,
@@ -1176,7 +1181,7 @@ class InteractionsManager(ScientificInteractionsManager):
         tag=None,
         selection="all",
         selection_2=None,
-        mode="incident",
+        mode="involving_selection",
         exclusive=False,
         structure_indices="all",
         interaction_types=None,

@@ -454,9 +454,10 @@ view.interactions.inspect("hbonds", structure_index=0, offset=0, limit=50)
 
 Queries accept a scalar or a nonconsecutive integer list for atoms and structures,
 and MolSysMT selection strings. Indices are local to `view.molsys`; Boolean or
-fractional indices are rejected. `incident` retains any participating atom in
-the selection; `internal` requires all participant atoms inside it; `cross`
-requires atoms inside and outside it. `mode="between"` requires disjoint
+fractional indices are rejected. The default `involving_selection` retains any
+participating atom in the selection; `within_selection` requires all participant
+atoms inside it; `across_selection_boundary` requires atoms inside and outside
+it. `mode="between_selections"` requires disjoint
 `selection` and `selection_2`; `exclusive=True` confines all participants to
 their union. Composite participants retain their roles and atom groups.
 Evaluated frames without observations remain distinct from unevaluated frames.
@@ -481,6 +482,11 @@ the scientific arrays. Tagged references include the named analysis content sign
 layer, visibility and broken state; importing a valid reference to different
 scientific data raises before changing the scene. Scientific arrays are stored
 once with the molecular system, outside visual history.
+
+Interaction display state uses extension version 2. Version 1 saved query filters
+are migrated on import (`incident`, `internal`, `cross`, `between`); old names
+are rejected in new public calls, including with `skip_digestion=True`.
+Scientific `selection_mode` and `evaluation_mode` are unchanged.
 
 The visual collection follows the other scene managers: `tags`, `count`,
 `contains`, `get`, `info`, `records`, `delete`, `clear`, `show`, `hide`,

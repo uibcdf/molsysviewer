@@ -78,23 +78,23 @@ def test_frame_coverage_is_distinct_from_visual_filter(view):
     assert view.interactions._frame(obj, 2)["status"] == "unevaluated"
     obj.set_filter(structure_indices=[0, 2])
     assert view.interactions._frame(obj, 1)["status"] == "excluded"
-    obj.set_filter(selection=[0], mode="internal")
+    obj.set_filter(selection=[0], mode="within_selection")
     assert view.interactions._frame(obj, 0)["n_observations"] == 0
-    obj.set_filter(selection=[0], selection_2=[2], mode="between")
+    obj.set_filter(selection=[0], selection_2=[2], mode="between_selections")
     assert view.interactions._frame(obj, 0)["n_supported"] == 2
 
 
 def test_inspector_tracks_query_revision_and_respects_excluded_frames(view):
     obj = view.interactions.add("contacts", tag="hb")
     original = view.interactions.inspect("hb")
-    obj.set_filter(selection=[0, 1, 2], mode="internal", structure_indices=[1])
+    obj.set_filter(selection=[0, 1, 2], mode="within_selection", structure_indices=[1])
     excluded = view.interactions.inspect("hb", structure_index=0)
     assert excluded["status"] == "excluded" and excluded["total"] == 0
     assert excluded["observations"] == []
     assert excluded["query_revision"] != original["query_revision"]
     assert excluded["analysis_revision"] == original["analysis_revision"]
     assert "atom_indices" not in excluded["evaluation_scope"]
-    obj.set_filter(selection=[0], mode="incident")
+    obj.set_filter(selection=[0], mode="involving_selection")
     assert view.interactions.inspect("hb")["total"] == 2
 
 
@@ -335,7 +335,7 @@ def test_invalid_visual_edits_leave_valid_configuration(view):
     obj = view.interactions.add("contacts")
     before = deepcopy(obj.filter)
     with pytest.raises(ValueError):
-        obj.set_filter(selection=[0], selection_2=[0], mode="between")
+        obj.set_filter(selection=[0], selection_2=[0], mode="between_selections")
     assert obj.filter == before
     with pytest.raises(ValueError):
         obj.set_radius("0 nm")
@@ -434,3 +434,99 @@ def test_radius_unit_is_declared_and_checked_before_restore(view):
     with pytest.raises(ValueError, match="Invalid interaction display style"):
         view.import_state(state)
     assert view.interactions["hb"] is obj
+
+
+@pytest.mark.parametrize(
+    "legacy,canonical,expected",
+    [
+        ("incident", "involving_selection", [0, 1]),
+        ("internal", "within_selection", []),
+        ("cross", "across_selection_boundary", [0, 1]),
+        ("between", "between_selections", [0, 1]),
+    ],
+)
+def test_legacy_query_filters_migrate_through_state_and_sessions(view, tmp_path, legacy, canonical, expected):
+    view.interactions.add(
+        "contacts",
+        tag="hb",
+        selection=[0],
+        selection_2=[2] if canonical == "between_selections" else None,
+        mode=canonical,
+        structure_indices=[2, 0, 1],
+    )
+    original_analysis = view.interactions.get_analysis("contacts")
+    signature = view.interactions.records()[0]["analysis_revision"]
+    state = view.export_state()
+    assert state["interaction_state_version"] == 2
+    state["interaction_state_version"] = 1
+    state["interactions"][0]["filter"]["mode"] = legacy
+    snapshot = deepcopy(state)
+    view.import_state(state)
+    assert state == snapshot, "import must not mutate the supplied state"
+    assert view.interactions.get_analysis("contacts") is original_analysis
+    assert view.interactions["hb"].filter["mode"] == canonical
+    assert view.interactions.records()[0]["analysis_revision"] == signature
+    queried = view.interactions.query("contacts", **view.interactions["hb"].filter).to_dict()
+    np.testing.assert_array_equal(queried["occurrence_indices"], expected)
+    np.testing.assert_array_equal(queried["evaluated_structure_indices"], [0, 1])
+    assert view.interactions._frame(view.interactions["hb"], 2)["status"] == "unevaluated"
+    assert view.interactions._frame(view.interactions["hb"], 1)["status"] == "evaluated"
+
+    path = tmp_path / "legacy-query-filter.msv"
+    view.save_session(path)
+    with zipfile.ZipFile(path) as archive:
+        members = {name: archive.read(name) for name in archive.namelist()}
+    saved_state = json.loads(members["state.json"])
+    saved_state["interaction_state_version"] = 1
+    saved_state["interactions"][0]["filter"]["mode"] = legacy
+    members["state.json"] = json.dumps(saved_state).encode()
+    with zipfile.ZipFile(path, "w") as archive:
+        for name, payload in members.items():
+            archive.writestr(name, payload)
+    restored = msv.load_session(path)
+    try:
+        assert restored.interactions["hb"].filter["mode"] == canonical
+        assert restored.interactions.records()[0]["analysis_revision"] == signature
+        assert restored.export_state()["interaction_state_version"] == 2
+        np.testing.assert_array_equal(
+            restored.interactions.query("contacts", **restored.interactions["hb"].filter).to_dict()[
+                "occurrence_indices"
+            ],
+            expected,
+        )
+    finally:
+        restored.close()
+
+
+@pytest.mark.parametrize("broken", [False, True])
+@pytest.mark.parametrize(
+    "version,mode",
+    [(2, "incident"), (1, "bogus"), (1, []), (True, "involving_selection"), (1.0, "involving_selection")],
+)
+def test_invalid_saved_query_vocabulary_is_refused_before_mutation(view, broken, version, mode):
+    obj = view.interactions.add("contacts", tag="keep")
+    before = view.export_state()
+    invalid = deepcopy(before)
+    invalid["interaction_state_version"] = version
+    invalid["interactions"][0]["filter"]["mode"] = mode
+    invalid["interactions"][0]["broken"] = broken
+    with pytest.raises(ValueError):
+        view.import_state(invalid)
+    assert view.export_state() == before
+    assert view.interactions["keep"] is obj
+
+
+def test_broken_legacy_filter_migrates_without_repairing_its_selection(view):
+    obj = view.interactions.add("contacts", tag="hb", selection=[0])
+    obj.broken = True
+    obj.filter["selection"] = [view.molsys.get_n_atoms() + 10]
+    state = view.export_state()
+    state["interaction_state_version"] = 1
+    state["interactions"][0]["filter"]["mode"] = "incident"
+    view.import_state(state)
+    restored = view.interactions["hb"]
+    assert restored.broken
+    assert restored.filter["mode"] == "involving_selection"
+    assert restored.filter["selection"] == obj.filter["selection"]
+    restored.set_filter(selection=[0])
+    assert not restored.broken

@@ -65,7 +65,7 @@ jobs:
           repository: uibcdf/molsysmt
           # Exact source baseline for Interactions/H5MSM and mixed-source loading.
           # Source feasibility does not establish a compatible published package.
-          ref: ${{ inputs.molsysmt_sha || '5e2721691b6a3c175406a8e4c0926dfb7b160671' }}
+          ref: ${{ inputs.molsysmt_sha || 'a0ceca86ec99c89377e78fac15cbdf32145a362e' }}
           path: molsysmt-source
           fetch-depth: 0
           persist-credentials: false
@@ -73,7 +73,7 @@ jobs:
       - name: Require an exact MolSysMT commit
         shell: bash
         env:
-          MOLSYSMT_SHA: ${{ inputs.molsysmt_sha || '5e2721691b6a3c175406a8e4c0926dfb7b160671' }}
+          MOLSYSMT_SHA: ${{ inputs.molsysmt_sha || 'a0ceca86ec99c89377e78fac15cbdf32145a362e' }}
         run: |
           [[ "$MOLSYSMT_SHA" =~ ^[0-9a-f]{40}$ ]]
           test "$(git -C molsysmt-source rev-parse HEAD)" = "$MOLSYSMT_SHA"
@@ -124,7 +124,7 @@ jobs:
         shell: bash -l {0}
         working-directory: molsysviewer-source
         env:
-          MOLSYSMT_SHA: ${{ inputs.molsysmt_sha || '5e2721691b6a3c175406a8e4c0926dfb7b160671' }}
+          MOLSYSMT_SHA: ${{ inputs.molsysmt_sha || 'a0ceca86ec99c89377e78fac15cbdf32145a362e' }}
         run: |
           python devtools/audit_dependency_contract.py \
             --installed-source "molsysmt=../molsysmt-source@$MOLSYSMT_SHA"

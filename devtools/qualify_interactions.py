@@ -97,16 +97,16 @@ def query_checks(view, name, participants):
     frames = [2, 0] if view.molsys.structures.n_structures > 2 else [0]
     data = view.interactions.get_analysis(name).to_dict()
     frame_by_occurrence = dict(zip(data["occurrence_indices"].tolist(), data["structure_indices"].tolist()))
-    for mode in ("incident", "internal", "cross"):
+    for mode in ("involving_selection", "within_selection", "across_selection_boundary"):
         expected = {
             i
             for i, part in participants.items()
             if frame_by_occurrence[i] in frames
             and (
                 bool(part & atoms)
-                if mode == "incident"
+                if mode == "involving_selection"
                 else part <= atoms
-                if mode == "internal"
+                if mode == "within_selection"
                 else bool(part & atoms) and bool(part - atoms)
             )
         }
@@ -115,7 +115,7 @@ def query_checks(view, name, participants):
     a, b = {min(first)}, {max(first)}
     expected = {i for i, part in participants.items() if frame_by_occurrence[i] in frames and part & a and part & b}
     actual = view.interactions.query(
-        name, selection=sorted(a), selection_2=sorted(b), structure_indices=frames, mode="between"
+        name, selection=sorted(a), selection_2=sorted(b), structure_indices=frames, mode="between_selections"
     ).to_dict()
     assert set(actual["occurrence_indices"].tolist()) == expected
 

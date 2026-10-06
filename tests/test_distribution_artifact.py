@@ -430,7 +430,7 @@ def test_python_314_source_pair_uses_exact_provider_commit_without_metadata_bypa
     assert "repository: uibcdf/molsysmt" in workflow
     assert "inputs.molsysmt_sha" in workflow
     # Exact scientific source baseline; public package qualification remains separate.
-    assert workflow.count("${{ inputs.molsysmt_sha || '5e2721691b6a3c175406a8e4c0926dfb7b160671' }}") == 3
+    assert workflow.count("${{ inputs.molsysmt_sha || 'a0ceca86ec99c89377e78fac15cbdf32145a362e' }}") == 3
     assert "^[0-9a-f]{40}$" in workflow
     assert "git -C molsysmt-source rev-parse HEAD" in workflow
     assert "--ignore-requires-python" not in workflow

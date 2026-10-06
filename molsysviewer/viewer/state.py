@@ -270,7 +270,7 @@ class StateMixin:
                 "measurement_settings": self.measurements.settings(skip_digestion=True),
                 "shapes": shapes,
                 **(
-                    {"interaction_state_version": 1, "interactions": self.interactions.records(skip_digestion=True)}
+                    {"interaction_state_version": 2, "interactions": self.interactions.records(skip_digestion=True)}
                     if self.interactions.count(skip_digestion=True)
                     else {}
                 ),
@@ -416,8 +416,18 @@ class StateMixin:
             )
         interaction_records = state.get("interactions", [])
         if interaction_records:
-            if state.get("interaction_state_version") != 1:
+            interaction_version = state.get("interaction_state_version")
+            if type(interaction_version) is not int or interaction_version not in (1, 2):
                 raise ValueError("Unsupported interaction state version.")
+            from .._private.interaction_query_modes import migrate_saved_query_filter
+
+            interaction_records = [
+                {
+                    **record,
+                    "filter": migrate_saved_query_filter(record["filter"], version=interaction_version),
+                }
+                for record in interaction_records
+            ]
             for record in interaction_records:
                 import math
 

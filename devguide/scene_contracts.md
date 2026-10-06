@@ -858,7 +858,7 @@ These are semantic changes to a **published** public API. Each is deliberate:
 | native interaction sets (2026-09-30) | no scene domain | `view.interactions`, separate named scientific data and tagged visual references |
 | Studio hydrogen-bond creation (2026-09-30) | Shapes claimed calculation while requiring explicit pair data | Calculate and create set in Interactions; explicit Python pair primitives remain |
 | interaction picks and detail replies (2026-09-30) | graphical primitive could be normalized as shape; replies used only analysis signature | typed interaction target, domain-specific context actions, filter/query revision and bounded preflight |
-| interaction state (2026-09-30) | absent | optional state-v2 `interaction_state_version: 1` and signed visual references |
+| interaction state (2026-09-30) | absent | optional state-v2 `interaction_state_version: 2` and signed visual references |
 | `Region.reset_colors()` | wiped the canvas | clears the region's layer |
 | `Region.set_color_by_values(replace=True)` | replaced the canvas map | replaces within the region's layer |
 | `Whole.reset_colors()` | wiped the canvas | clears the base layer |
@@ -2355,11 +2355,23 @@ A visual reference records its named analysis content signature, sparse query
 filter, color, opacity, radius with explicit `radius_unit: "nm"`, layer and
 hidden/broken state. Wire geometry declares `coordinate_unit: "nm"`; the
 renderer validates both units and converts once to Mol* angstroms. State v2
-adds optional `interaction_state_version: 1` and `interactions` keys. Unknown
+adds optional `interaction_state_version: 2` and `interactions` keys. Unknown
 interaction extension versions and different valid analysis signatures are
 rejected before scene clearing. Sessions store scientific results once in
 H5MSM and then restore those references. A damaged fixed selection survives
 structural extraction as broken; explicit `set_filter` repairs it.
+
+Query/display modes are `involving_selection` (default), `within_selection`,
+`across_selection_boundary` and `between_selections`. The first three delegate
+to MolSysMT `query`; the last delegates to `between_selections(A, B)` with
+unchanged disjoint/exclusive rules. Every atom of a compound participant counts.
+Old public names are rejected, including with digestion bypassed. Import alone
+migrates the known `mode` field of version-1 visual filters from
+`incident/internal/cross/between` to these names; it never rewrites detector
+`selection_mode`, stored `evaluation_mode`, parameters, attribution or H5MSM.
+Migration copies input records, applies even to broken sets, and validates
+vocabulary before replacing the scene. Version 2 records require canonical
+names. Restored state is emitted as extension version 2; H5MSM remains 0.5.
 
 Native graphic support is H···A for single-atom donor/hydrogen/acceptor roles,
 and S···S disulfide candidates. Other kinds or compound participants remain

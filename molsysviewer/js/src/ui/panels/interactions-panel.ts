@@ -77,7 +77,7 @@ export class InteractionsPanel extends BasePanel {
     private frameMap = "";
     private tag = "";
     private layer = "";
-    private mode = "incident";
+    private mode = "involving_selection";
     private displayStructures = "all";
     private types = "";
     private exclusive = false;
@@ -145,8 +145,8 @@ export class InteractionsPanel extends BasePanel {
     private emit(action: Parameters<PanelContext["onAction"]>[0], details?: Record<string, unknown>) {
         this.error = ""; try { this.ctx.onAction(action, details); } catch (error) { this.busy = null; this.error = String(error); } this.scheduleRender();
     }
-    private filter() { return { selection: this.a ?? "all", selection_2: this.mode === "between" ? this.b : null,
-        mode: this.mode, exclusive: this.mode === "between" && this.exclusive, structure_indices: indices(this.displayStructures),
+    private filter() { return { selection: this.a ?? "all", selection_2: this.mode === "between_selections" ? this.b : null,
+        mode: this.mode, exclusive: this.mode === "between_selections" && this.exclusive, structure_indices: indices(this.displayStructures),
         interaction_types: this.types.trim() ? this.types.split(",").map(v => v.trim()).filter(Boolean) : null }; }
     private inspect(tag: string, offset = 0) { this.inspecting = tag; this.inspection = null; this.emit("inspect_interaction", { tag, frame: this.frame, offset, request_id: ++this.requestId }); }
     private criterion() {
@@ -258,7 +258,7 @@ export class InteractionsPanel extends BasePanel {
         field(form, "Set tag (empty = automatic)", this.tag, "tag", value => this.tag = value);
         field(form, "Layer (empty = automatic)", this.layer, "layer", value => this.layer = value);
         const details = document.createElement("details"); this.filtersDetails = details; details.setAttribute("data-molsysviewer-interaction-filters", "true"); details.open = !!this.editing || this.filtersOpen; details.addEventListener("toggle", () => { if (details.isConnected) this.filtersOpen = details.open; }); const title = document.createElement("summary"); title.textContent = "Display filter and selections"; details.appendChild(title); form.appendChild(details);
-        select(details, [["incident", "Participating atoms (incident)"], ["internal", "Within selection (internal)"], ["cross", "Crossing selection boundary (cross)"], ["between", "Between disjoint A and B"]], this.mode, value => { this.mode = value; this.scheduleRender(); });
+        select(details, [["involving_selection", "All interactions involving the selection"], ["within_selection", "Only within the selection"], ["across_selection_boundary", "Between the selection and the rest"], ["between_selections", "Between selections A and B"]], this.mode, value => { this.mode = value; this.scheduleRender(); });
         details.appendChild(note(`A: ${this.a ? `${this.a.length} atoms` : "all atoms"} · B: ${this.b ? `${this.b.length} atoms` : "unset"}`));
         const slots = row(); append(slots, makeButton("Stage A", () => { this.slot = "a"; this.scheduleRender(); }), makeButton("Stage B", () => { this.slot = "b"; this.scheduleRender(); }), makeButton("Reset selections", () => { this.a = this.b = null; this.scheduleRender(); })); details.appendChild(slots);
         if (this.selection) details.appendChild(renderSelectionDock({ activeSelection: this.selection, savedSelections: this.saved,
@@ -267,7 +267,7 @@ export class InteractionsPanel extends BasePanel {
             onCommitSelection: atoms => { this[this.slot] = [...atoms]; this.scheduleRender(); }, onActivateSavedSelection: item => this.emit("activate_selection", { tag: item.tag }) }));
         field(details, "Display structures: all or indices", this.displayStructures, "display-structures", value => this.displayStructures = value);
         field(details, "Interaction types (comma-separated; empty = all)", this.types, "types", value => this.types = value);
-        if (this.mode === "between") { const label = document.createElement("label"); const cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = this.exclusive; cb.onchange = () => this.exclusive = cb.checked; append(label, cb, " Restrict participants to A ∪ B"); details.appendChild(label); }
+        if (this.mode === "between_selections") { const label = document.createElement("label"); const cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = this.exclusive; cb.onchange = () => this.exclusive = cb.checked; append(label, cb, " Restrict participants to A ∪ B"); details.appendChild(label); }
         if (this.editing) {
             form.appendChild(note("Calculation parameters are fixed. Calculate a new analysis to change cutoffs."));
             field(form, "Color", this.color, "color", value => this.color = value, "color");
@@ -276,7 +276,7 @@ export class InteractionsPanel extends BasePanel {
         }
         const submit = makeButton(this.busy !== null ? "Working…" : this.editing ? "Apply changes" : this.source === "calculate" ? "Calculate and create set" : this.source === "file" ? "Load and create set" : "Create set", () => {
             try {
-                if (this.mode === "between" && (!this.a || !this.b)) throw new Error("Stage disjoint selections A and B first.");
+                if (this.mode === "between_selections" && (!this.a || !this.b)) throw new Error("Stage disjoint selections A and B first.");
                 const filter = this.filter();
                 if (this.editing) this.emit("edit_interaction", { tag: this.editing, new_tag: this.tag, layer_tag: this.layer,
                     filter, color: this.color, radius_nm: Number(this.radius), radius_unit: "nm", alpha: Number(this.alpha) });

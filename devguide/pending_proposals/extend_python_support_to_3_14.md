@@ -442,9 +442,12 @@ or certify the current scientific branch or every optional backend.
 ## Current scientific source-pair baseline — 2026-10-06
 
 The default provider is now the exact public Git commit
-`5e2721691b6a3c175406a8e4c0926dfb7b160671`, containing the experimental
-Interactions/H5MSM and mixed-source repairs required by the current Viewer
-suite. The old published `0.22.4` source cannot exercise those consumers.
+`a0ceca86ec99c89377e78fac15cbdf32145a362e`, containing the experimental
+Interactions/H5MSM, mixed-source repairs and canonical-only interaction query
+vocabulary required by the current Viewer suite (uibcdf/molsysmt#346;
+uibcdf/molsysviewer#168). The earlier qualified pair at
+`5e2721691b6a3c175406a8e4c0926dfb7b160671` retains its own historical evidence.
+The old published `0.22.4` source cannot exercise those consumers.
 Manual dispatch still requires an explicit full provider SHA.
 
 The source environment now honors that provider's declared

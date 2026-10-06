@@ -47,11 +47,18 @@ counts work as proposed. Next is the Python reference and atom filter, then
 session recovery. Record the scope/mode confusion as usability evidence; the
 human has not transcribed exact new-analysis counts.
 The naming discussion approves explicit query/display values in
-[#168](pending_proposals/explicit_interaction_selection_mode_names.md):
+[#168](archive/explicit_interaction_selection_mode_names.md):
 involving_selection, within_selection, across_selection_boundary and
-between_selections. Provider coordination is requested in uibcdf/molsysmt#346.
-Implementation and MolSysMT agreement are pending;
-current notebook calls retain the old executable names during the review.
+between_selections. Provider uibcdf/molsysmt#346 and consumer #168 are now
+resolved in source, using provider `a0ceca86ec99c89377e78fac15cbdf32145a362e`.
+The new full Linux Python run passes 2,869/23 skipped with zero failures;
+322 Node 22 unit tests and the three affected browser suites pass, including
+four display modes and 17 calculation forms. Version-1 saved display filters
+migrate to extension 2; new public calls reject old names. Scientific coverage
+metadata/H5MSM are unchanged. See [the receipt](interactions_query_modes_20261006.json).
+The updated hosted matrix and installed-package gate remain pending. Restart
+the Jupyter kernel and update the open notebook's explicit `mode="incident"`
+to `mode="involving_selection"` before the next human atom-filter check.
 The separate [#166](archive/group_panel_unit_dom_missing_query_selector.md)
 GroupPanel test DOM defect is fixed: the complete JS unit lane passes 322 tests.
 [#167](archive/region_enablement_and_visibility.md) has 12 focused Python tests
@@ -86,7 +93,7 @@ runs still fail with the old provider. No tag or 1.0 clearance is created.
 RDKit is now declared in both scientific test environments and the local
 development recipe. The guard rejects its removal from each of the three
 recipes; the distribution module passes 19 tests and the real Interactions
-family module passes 30. Python 3.14 source-pair CI uses exact MolSysMT commit
+family module passes 30. The earlier Python 3.14 source-pair qualification used MolSysMT commit
 `5e2721691b6a3c175406a8e4c0926dfb7b160671`, with its own runtime floors,
 Node 22 and immediate `pip check`. Public dependency floors are unchanged.
 See [the resolved bug record](archive/scientific_test_environments_missing_rdkit.md)

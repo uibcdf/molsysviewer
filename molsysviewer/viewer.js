@@ -158131,7 +158131,7 @@ var InteractionsPanel = class extends BasePanel {
     this.frameMap = "";
     this.tag = "";
     this.layer = "";
-    this.mode = "incident";
+    this.mode = "involving_selection";
     this.displayStructures = "all";
     this.types = "";
     this.exclusive = false;
@@ -158226,9 +158226,9 @@ var InteractionsPanel = class extends BasePanel {
   filter() {
     return {
       selection: this.a ?? "all",
-      selection_2: this.mode === "between" ? this.b : null,
+      selection_2: this.mode === "between_selections" ? this.b : null,
       mode: this.mode,
-      exclusive: this.mode === "between" && this.exclusive,
+      exclusive: this.mode === "between_selections" && this.exclusive,
       structure_indices: indices2(this.displayStructures),
       interaction_types: this.types.trim() ? this.types.split(",").map((v4) => v4.trim()).filter(Boolean) : null
     };
@@ -158442,7 +158442,7 @@ var InteractionsPanel = class extends BasePanel {
     title.textContent = "Display filter and selections";
     details.appendChild(title);
     form.appendChild(details);
-    select(details, [["incident", "Participating atoms (incident)"], ["internal", "Within selection (internal)"], ["cross", "Crossing selection boundary (cross)"], ["between", "Between disjoint A and B"]], this.mode, (value) => {
+    select(details, [["involving_selection", "All interactions involving the selection"], ["within_selection", "Only within the selection"], ["across_selection_boundary", "Between the selection and the rest"], ["between_selections", "Between selections A and B"]], this.mode, (value) => {
       this.mode = value;
       this.scheduleRender();
     });
@@ -158478,7 +158478,7 @@ var InteractionsPanel = class extends BasePanel {
     }));
     field(details, "Display structures: all or indices", this.displayStructures, "display-structures", (value) => this.displayStructures = value);
     field(details, "Interaction types (comma-separated; empty = all)", this.types, "types", (value) => this.types = value);
-    if (this.mode === "between") {
+    if (this.mode === "between_selections") {
       const label2 = document.createElement("label");
       const cb2 = document.createElement("input");
       cb2.type = "checkbox";
@@ -158495,7 +158495,7 @@ var InteractionsPanel = class extends BasePanel {
     }
     const submit = makeButton(this.busy !== null ? "Working\u2026" : this.editing ? "Apply changes" : this.source === "calculate" ? "Calculate and create set" : this.source === "file" ? "Load and create set" : "Create set", () => {
       try {
-        if (this.mode === "between" && (!this.a || !this.b)) throw new Error("Stage disjoint selections A and B first.");
+        if (this.mode === "between_selections" && (!this.a || !this.b)) throw new Error("Stage disjoint selections A and B first.");
         const filter5 = this.filter();
         if (this.editing) this.emit("edit_interaction", {
           tag: this.editing,

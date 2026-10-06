@@ -1,4 +1,5 @@
 from molsysviewer._private.exceptions import ArgumentError
+from molsysviewer._private.interaction_query_modes import QUERY_MODES
 
 from ..helpers import normalize_viewer_caller
 
@@ -25,7 +26,7 @@ def digest_mode(mode, caller=None):
 
     if isinstance(mode, str):
         if caller and caller.startswith("molsysviewer.interactions."):
-            if mode in {"incident", "internal", "cross", "between"}:
+            if mode in QUERY_MODES:
                 return mode
         if caller.startswith("molsysmt.file"):
             if mode in ["auto", "read", "write"]:

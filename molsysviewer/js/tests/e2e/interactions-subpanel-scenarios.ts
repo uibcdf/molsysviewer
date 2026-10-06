@@ -65,12 +65,32 @@ async function checkCalculationAndDisplayScopes(page: any) {
     assert.equal(wholeEvent.calculation.selection, "all");
     assert.ok(!("selection_2" in wholeEvent.calculation), "display B must not leak into calculation");
     assert.deepEqual(wholeEvent.filter.selection, [5]);
-    assert.equal(wholeEvent.filter.mode, "incident");
+    assert.equal(wholeEvent.filter.mode, "involving_selection");
     const whole = await bridge([wholeEvent], family);
     assert.equal(whole.summary.analyses.find((item: any) => item.name === "whole").n_occurrences, 20);
     assert.equal(whole.summary.interactions.find((item: any) => item.tag === "filtered").n_observations, 1);
     await apply(page, whole.message_batches[0]);
     assert.match(await page.locator('[data-molsysviewer-interaction-set="filtered"]').textContent(), /1 drawn \/ 1 observations/);
+    const displayMode = page.locator('[data-molsysviewer-interaction-filters] select').first();
+    const modes = ["involving_selection", "within_selection", "across_selection_boundary", "between_selections"];
+    assert.deepEqual(await displayMode.locator("option").evaluateAll(options => options.map(option => (option as HTMLOptionElement).value)), modes);
+    for (const mode of modes) {
+        await displayMode.selectOption(mode);
+        await page.locator('[data-molsysviewer-interaction-field="tag"]').fill(`mode-${mode}`);
+        await create.click();
+        const request = await latest("create_interaction");
+        assert.equal(request.filter.mode, mode);
+        assert.deepEqual(request.filter.selection, [5]);
+        assert.deepEqual(request.filter.selection_2, mode === "between_selections" ? [6] : null);
+        const response = await bridge([wholeEvent, request], family);
+        assert.equal(response.message_batches[1].find((message: any) => message.op === "interaction_action_result")?.ok, true);
+        const item = response.summary.interactions.find((item: any) => item.tag === `mode-${mode}`);
+        assert.equal(item.filter.mode, mode);
+        if (mode !== "between_selections") assert.equal(item.n_observations, mode === "within_selection" ? 0 : 1);
+        assert.equal(response.summary.analyses.find((item: any) => item.name === "whole").n_occurrences, 20);
+        await apply(page, response.message_batches[1]);
+    }
+    await displayMode.selectOption("involving_selection");
     await page.locator('[data-molsysviewer-interaction-source="calculate"]').click();
     await scope.selectOption("a");
     await page.locator('[data-molsysviewer-interaction-field="name"]').fill("limited");
@@ -413,7 +433,7 @@ export async function runInteractionsSuite(chromium: typeof import("./e2e-browse
         assert.ok(await page.locator('[data-molsysviewer-interaction-create="true"]').isEnabled());
         // A filter edit keeps the scientific signature but invalidates inspected rows.
         const inspectedBefore = (await bridge([{ action: "inspect_interaction", event: "interaction_context_action", tag: "hb", frame: 0, request_id: 1 }])).inspection;
-        const filterEdit = { event: "interaction_context_action", action: "edit_interaction", tag: "hb", filter: { selection: [0], mode: "incident" } };
+        const filterEdit = { event: "interaction_context_action", action: "edit_interaction", tag: "hb", filter: { selection: [0], mode: "involving_selection" } };
         const filtered = await bridge([event, event, create, filterEdit]);
         await card.getByRole("button", { name: "Inspect", exact: true }).click();
         const inspectionRequest = await page.evaluate(() => [...((window as any).__messages || [])].reverse().find((m: any) => m.action === "inspect_interaction"));
@@ -473,9 +493,9 @@ export async function runInteractionsSuite(chromium: typeof import("./e2e-browse
         assert.equal(await page.locator('[data-molsysviewer-interaction-set="browser-file"]').count(), 1);
         const filters = page.locator("details").filter({ has: page.getByText("Display filter and selections", { exact: true }) }).first();
         await filters.locator("summary").click();
-        await filters.locator("select").selectOption("between");
+        await filters.locator("select").selectOption("between_selections");
         await filters.locator('input[type="checkbox"]').check();
-        await filters.locator("select").selectOption("incident");
+        await filters.locator("select").selectOption("involving_selection");
         await page.locator('[data-molsysviewer-interaction-field="tag"]').fill("mode-reset");
         await page.locator('[data-molsysviewer-interaction-create="true"]').click();
         const resetModeEvent = await page.evaluate(() => [...((window as any).__messages || [])].reverse().find((m: any) => m.action === "create_interaction"));

@@ -1,0 +1,173 @@
+{
+  "date": "2026-10-06",
+  "issue": "uibcdf/molsysviewer#168",
+  "status": "local_source_pair_qualified",
+  "viewer_parent": "26fafa0b9be7e279dce9ad6f742aac4c7cdd9827",
+  "provider": {
+    "issue": "uibcdf/molsysmt#346",
+    "commit": "a0ceca86ec99c89377e78fac15cbdf32145a362e",
+    "functional_commit": "ea10577136fff6ea1d4af7b58346680a267f00d7",
+    "dirty": false,
+    "publication_qualified": false
+  },
+  "environment": {
+    "name": "molsyssuite@uibcdf_3.14",
+    "python": "3.14.7 | packaged by conda-forge | (main, Sep  2 2026, 21:08:32) [GCC 15.3.0]",
+    "interpreter": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "platform": "Linux-7.0.0-28-generic-x86_64-with-glibc2.39",
+    "node_qualification": "22.13.0",
+    "chromium": "/usr/bin/google-chrome"
+  },
+  "contract": {
+    "modes": [
+      "involving_selection",
+      "within_selection",
+      "across_selection_boundary",
+      "between_selections"
+    ],
+    "default": "involving_selection",
+    "new_public_legacy_aliases": false,
+    "saved_filter_migration": "interaction extension v1 mode field only; exports v2",
+    "scientific_selection_mode": "unchanged",
+    "scientific_evaluation_mode": "unchanged",
+    "h5msm": "0.5 unchanged"
+  },
+  "validation": {
+    "scene": {
+      "selector": "tests/test_interactions_scene.py",
+      "passed": 37,
+      "exit": 0
+    },
+    "focused": {
+      "selectors": [
+        "tests/test_interactions_api.py",
+        "tests/test_interaction_families.py",
+        "tests/test_interactions_residency_benchmark.py",
+        "tests/test_dependency_contract.py",
+        "tests/test_distribution_artifact.py"
+      ],
+      "passed": 149,
+      "exit": 0
+    },
+    "provider_integration": {
+      "selector": "tests/interactions/test_scientific_attribution.py::test_real_viewer_preserves_original_bibliography_in_named_analyses_and_sessions",
+      "passed": 1,
+      "exit": 0,
+      "meaning": "previously deselected provider-to-real-Viewer bibliography/H5MSM/session path"
+    },
+    "js_units": {
+      "command": "node --test tests/unit/dist-index.js",
+      "node": "22.13.0",
+      "passed": 322,
+      "failed": 0,
+      "skipped": 0,
+      "exit": 0,
+      "earlier_node24_sandbox_result": "exit 0, one aggregate file reported; not used for the assertion count"
+    },
+    "typescript": {
+      "command": "npx tsc --noEmit",
+      "exit": 0
+    },
+    "runtime": {
+      "command": "npm run build:runtime",
+      "exit": 0
+    },
+    "e2e_build": {
+      "commands": [
+        "npm run build:harness",
+        "npm run build:e2e:all"
+      ],
+      "exit": 0
+    },
+    "browser": {
+      "suites": [
+        "interactions-calculation",
+        "interactions-subpanel",
+        "interactions-geometry"
+      ],
+      "passed": 3,
+      "calculation_forms": 17,
+      "display_modes": 4,
+      "geometry_families": 10,
+      "real_molstar": true,
+      "real_python_provider": true,
+      "opt_out": false
+    },
+    "dependency_contract": {
+      "command": "python devtools/audit_dependency_contract.py",
+      "exit": 0
+    },
+    "public_inventory": {
+      "public_callables": 717,
+      "digested": 717,
+      "undigested": 0,
+      "exempt": 0,
+      "declared_digesters": 441,
+      "missing_digesters": 0
+    },
+    "full_python": {
+      "command": "python -m pytest --receptor=llm tests/",
+      "runs": 1,
+      "status": "passed",
+      "passed": 2869,
+      "skipped": 23,
+      "failed": 0,
+      "exit": 0,
+      "duration_s": 544.81,
+      "scope": "Completed before the final diagnostics-only message update; the new message receives a selected follow-up, no second full run.",
+      "report": "receptor: 20% 579/2892 96s\nreceptor: 40% 1157/2892 235s\nreceptor: 60% 1736/2892 413s\nreceptor: 80% 2314/2892 429s\nreceptor: 100% 2892/2892 545s\nPASS exit=0 | 2869 passed, 23 skipped | 544.81s | 996 warnings\n\nwarnings: 996 in 17 groups\n  LegacyH5MSMWarning x964 | ../molsysmt/molsysmt/form/molsysmt_H5MSMFileHandler/to_molsysmt_H5MSMFileHandler.py:44 | H5MSM 0.4 is deprecated; reading remains supported. Convert a copy to H5MSM 0.5 with molsysmt.h5msm.migrate_to...\n  DeprecationWarning x5 | ../argdigest/argdigest/core/decorator.py:168 | annotations.add_label() is deprecated; use add() instead.\n  DeprecationWarning x5 | ../argdigest/argdigest/core/decorator.py:168 | The group_index parameter is deprecated. Use selection or atom_indices instead.\n  StructuralAttributeDropWarning x5 | ../argdigest/argdigest/core/decorator.py:460 | Structural attributes were discarded during concatenation: b_factor, occupancy. Use attribute_policy='strict'...\n  IncompatibleBoxWarning x4 | ../argdigest/argdigest/core/decorator.py:460 | Atoms were added under a periodic box that does not match the one of the target system: the added atoms have n...\n  IncompatibleBoxWarning x2 | ../argdigest/argdigest/core/decorator.py:460 | Atoms were added under a periodic box that does not match the one of the target system: the target system has...\n  DeprecationWarning x1 | molsysviewer/scene_history.py:65 | 'radii' is deprecated; use 'radius'.\n  DeprecationWarning x1 | molsysviewer/scene_history.py:65 | 'colors' is deprecated; use 'color'.\n  IncompatibleBoxWarning x1 | ../argdigest/argdigest/core/decorator.py:460 | Atoms were added under a periodic box that does not match the one of the target system: the boxes differ, firs...\n  RegionOverlapWarning x1 | molsysviewer/scene_history.py:65 | Region 'second' overlaps visible represented region(s) first. Overlapping region representations can produce z...\n  RegionOverlapWarning x1 | molsysviewer/scene_history.py:65 | Region 'element-cpk' overlaps visible represented region(s) chain-id. Overlapping region representations can p...\n  RegionOverlapWarning x1 | molsysviewer/scene_history.py:65 | Region 'my-cpk' overlaps visible represented region(s) my-chain. Overlapping region representations can produc...\n  RegionOverlapWarning x1 | molsysviewer/scene_history.py:65 | Region 'f2' overlaps visible represented region(s) f1. Overlapping region representations can produce z-fighti...\n  RegionOverlapWarning x1 | molsysviewer/scene_history.py:65 | Region 'sweep' overlaps visible represented region(s) reg. Overlapping region representations can produce z-fi...\n  StateStructureDiffersWarning x1 | ../argdigest/argdigest/core/decorator.py:660 | This state was saved from a different system (1441 atoms; this one has 22), so its stored atom indices do not...\n  StructuralAttributeDropWarning x1 | ../argdigest/argdigest/core/decorator.py:460 | Structural attributes were discarded during concatenation: b_factor. Use attribute_policy='strict' to reject t...\n  StructureStreamFallbackWarning x1 | molsysviewer/viewer/core.py:1017 | Array-native stream failed; using JSON fallback: no acknowledgement within 30s while awaiting 'waiting_begin_a...\n\nskipped: 23 in 8 groups\n  x14 | template has no placeholders\n  x2 | Requires installed scientific artifacts\n  x2 | requires an explicitly selected real Chromium/GPU environment\n  +5 more\n\n"
+    },
+    "final_diagnostics": {
+      "selectors": [
+        "tests/test_interactions_api.py::test_legacy_query_names_are_rejected_on_all_public_routes",
+        "tests/test_support_integrations.py"
+      ],
+      "passed": 19,
+      "exit": 0
+    },
+    "final_governance": {
+      "selectors": [
+        "tests/test_reporting_protocol.py",
+        "tests/test_public_api_inventory.py"
+      ],
+      "passed": 229,
+      "exit": 0
+    },
+    "ruff": {
+      "scope": "All changed Python sources and tests",
+      "exit": 0
+    }
+  },
+  "diagnosed_browser_guard_failure": {
+    "cause": "New test loop dispatched the next create before applying the previous real backend response, leaving the Working button disabled.",
+    "fix": "Apply response.message_batches[1] on each iteration.",
+    "trace": "[E2E interactions calculation] 57520 ms\nlocator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-molsysviewer-interaction-create=\"true\"]')\u001b[22m\n\u001b[2m    - locator resolved to <button disabled data-molsysviewer-interaction-create=\"true\">Working\u2026</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 \u00d7 waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 \u00d7 waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    56 \u00d7 waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not enabled\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n    at checkCalculationAndDisplayScopes (/home/diego/repos@uibcdf/molsysviewer/molsysviewer/js/tests/e2e/interactions-calculation.e2e.js:230:18)\n    at async runInteractionsSuite (/home/diego/repos@uibcdf/molsysviewer/molsysviewer/js/tests/e2e/interactions-calculation.e2e.js:512:7) {\n  name: 'TimeoutError'\n}\n",
+    "followup": "Complete calculation suite passes after the test-only fix."
+  },
+  "limits": [
+    "Local Linux source pair only; updated hosted native matrix still pending.",
+    "No release/tag or installed-provider-package qualification.",
+    "Human retest of the renamed selector remains pending.",
+    "No broad rewrite of historical receipts or scientific metadata.",
+    "The open sandbox review notebook is preserved; its old explicit query argument must be updated by the user after kernel restart."
+  ],
+  "source_sha256": {
+    ".github/workflows/ci-python-314-source-pair.yaml": "6400b2470108e8a6188957d8c35297afab74f2b335d7fd2a8d195837ac095688",
+    "devtools/benchmarks/interactions_residency.py": "9a8761462138155282ac3165ae622dd34e124a367f75bc49aaca37e9b1b8b230",
+    "devtools/qualify_interactions.py": "5c6a991d43d2cadd6d07b1e50304b57eb0dddb83a9635c27e91762d34609e865",
+    "molsysviewer/_private/argdigest/argument/mode.py": "e89c5086f23ef78aed74c3a68f8c89155d16041a1586637067d1c74102c128eb",
+    "molsysviewer/_private/interaction_query_modes.py": "94eaa28b3af0566eb3b53e7e7b3721d77c5b95b2b50f3684790b320a1534982a",
+    "molsysviewer/_private/smonitor/catalog.py": "b42d285a5c6345342c7c918a85d20292544c7782208637b88b8d038942517f62",
+    "molsysviewer/interactions.py": "49d7876e5ea2f9dc457406385588441a8bef73993f0c5a58e129fbd8aa0ebe84",
+    "molsysviewer/js/src/ui/panels/interactions-panel.ts": "24a74dce8a840afd31adf24e12437299109c48f483fb1515ec3de21a0ca83449",
+    "molsysviewer/js/tests/e2e/interactions-subpanel-scenarios.ts": "22caf14150319059fb4917efcb09d63e368ce5c74f53ee20390b28a737be4b6b",
+    "molsysviewer/viewer/panel_actions/interactions.py": "ef126a76cea955e6dd46d25bcd8384e4a4cb9f4ceb26060fa40cfbcb73faf403",
+    "molsysviewer/viewer/state.py": "b9934093db6c26f45e4348e37674f5d4b24c4922848d75e6b78df780f39d58d1",
+    "tests/test_dependency_contract.py": "fa86ce33d8105744369abf8352b4eca559b20de54c01f99dd5d5a2277012e42d",
+    "tests/test_distribution_artifact.py": "5217df71228459099181aa9c1211b6369477da749b8ac099cd281dc746db66bd",
+    "tests/test_interaction_families.py": "fd124eb09b0526451a1f3455cf94385a3205cc3fe37ed1fe43b6bdbd7cbe3583",
+    "tests/test_interactions_api.py": "b90c5dfa34ffa1fa1c2082bb412d588f25339f94de4b6c60c27cc499a7abb1b2",
+    "tests/test_interactions_residency_benchmark.py": "26ea70b6351425c8743c54caed91f979a9c740ce6e15300a6389d09f84a5ac2f",
+    "tests/test_interactions_scene.py": "efee0cb0d6c5ff0542a1c23820b1885ac52a6bde56b327aea751a770c79b7de3"
+  }
+}

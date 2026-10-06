@@ -90,22 +90,26 @@ def test_named_family_calculation_roles_frames_geometry_and_h5msm(kind, tmp_path
         atoms = np.unique(result.participant_atoms).tolist()
         assert (
             view.interactions.query(
-                "contacts", selection=atoms, mode="internal", structure_indices=[2, 0]
+                "contacts", selection=atoms, mode="within_selection", structure_indices=[2, 0]
             ).n_interactions
             == result.n_interactions
         )
         atom = int(result.participant_atoms[0])
-        incident = view.interactions.query("contacts", selection=[atom], mode="incident", structure_indices=[2, 0])
+        incident = view.interactions.query(
+            "contacts", selection=[atom], mode="involving_selection", structure_indices=[2, 0]
+        )
         assert incident.n_interactions > 0
         assert (
-            view.interactions.query("contacts", selection=[atom], mode="cross", structure_indices=[2, 0]).n_interactions
+            view.interactions.query(
+                "contacts", selection=[atom], mode="across_selection_boundary", structure_indices=[2, 0]
+            ).n_interactions
             == incident.n_interactions
         )
         assert (
             view.interactions.query(
                 "contacts",
                 selection=[atom],
-                mode="between",
+                mode="between_selections",
                 selection_2=[i for i in atoms if i != atom],
                 structure_indices=[2, 0],
             ).n_interactions

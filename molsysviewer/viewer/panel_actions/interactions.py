@@ -107,7 +107,7 @@ def edit_interaction(view, content):
             obj.analysis_name,
             f.get("selection", "all"),
             f.get("selection_2"),
-            f.get("mode", "incident"),
+            f.get("mode", "involving_selection"),
             f.get("exclusive", False),
             f.get("structure_indices", "all"),
             f.get("interaction_types"),

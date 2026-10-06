@@ -286,8 +286,9 @@ MESSAGES = {
     ),
     "interaction_name_conflict": "Interaction analysis {name!r} already exists; choose a new name.",
     "interaction_invalid_query": (
-        "Interaction mode {mode!r} requires incident/internal/cross with one selection, "
-        "or between with two disjoint selections. exclusive=True applies only to between."
+        "Interaction mode {mode!r} requires involving_selection, within_selection or "
+        "across_selection_boundary with one selection, or between_selections with two "
+        "disjoint selections. exclusive=True applies only to between_selections."
     ),
     "interaction_pbc_box_required": (
         "Periodic interaction calculation requires finite, nonsingular boxes for every requested structure."

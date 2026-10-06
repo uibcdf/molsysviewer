@@ -20,19 +20,19 @@ def test_reference_respects_membership_empty_frames_and_original_occurrence_iden
     positions, coverage = reference_query(analysis, options)
     np.testing.assert_array_equal(np.sort(positions), expected)
     np.testing.assert_array_equal(coverage, [2, 0, 1])
-    for mode in ("incident", "cross"):
+    for mode in ("involving_selection", "across_selection_boundary"):
         positions, _ = reference_query(analysis, {**options, "mode": mode})
         np.testing.assert_array_equal(np.sort(positions), expected)
-    assert reference_query(analysis, {**options, "mode": "internal"})[0].size == 0
-    assert reference_query(analysis, {"selection": [], "mode": "internal"})[0].size == 0
+    assert reference_query(analysis, {**options, "mode": "within_selection"})[0].size == 0
+    assert reference_query(analysis, {"selection": [], "mode": "within_selection"})[0].size == 0
     # A full local molecule contains every member of all these relations.
-    assert len(reference_query(analysis, {"selection": list(range(62)), "mode": "internal"})[0]) == 10
+    assert len(reference_query(analysis, {"selection": list(range(62)), "mode": "within_selection"})[0]) == 10
     for frame in (1, 3):
         positions, coverage = reference_query(analysis, {"structure_indices": frame})
         assert positions.size == 0
         np.testing.assert_array_equal(coverage, [1] if frame == 1 else [])
     other_atom = LAYOUTS[layout][2][-1][0]
-    options = {"selection": [0], "selection_2": [other_atom], "mode": "between"}
+    options = {"selection": [0], "selection_2": [other_atom], "mode": "between_selections"}
     np.testing.assert_array_equal(np.sort(reference_query(analysis, options)[0]), expected)
     assert reference_query(analysis, {**options, "exclusive": True})[0].size == 0
 

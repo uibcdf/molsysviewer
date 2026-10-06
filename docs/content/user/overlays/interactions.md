@@ -54,10 +54,10 @@ create observations for atoms or structures that were not evaluated.
 
 | Mode | Retained interactions |
 | --- | --- |
-| Incident | At least one participant atom is in your selection. |
-| Internal | All participant atoms are in your selection. |
-| Cross | Participant atoms are both inside and outside your selection. |
-| Between | Participants touch both disjoint selections A and B. Exclusive confines all atoms to their union. |
+| `involving_selection` | At least one participant atom is in your selection. |
+| `within_selection` | All participant atoms are in your selection. |
+| `across_selection_boundary` | Participant atoms are both inside and outside your selection. |
+| `between_selections` | Participants touch both disjoint selections A and B. Exclusive confines all atoms to their union. |
 
 Atom and structure indices are local to the loaded system. You can supply
 nonconsecutive integer lists. The selection dock fills the same selections used

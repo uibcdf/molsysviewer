@@ -171,11 +171,17 @@ reference so the two representations can be compared separately.
 
 **Accepted naming decision:** during the Python atom-filter step, Diego finds
 incident unfamiliar and approves `involving_selection`, `within_selection`,
-`across_selection_boundary` and `between_selections`. This is a planned public
-query/display vocabulary change, tracked in
-[#168](pending_proposals/explicit_interaction_selection_mode_names.md), requiring
-MolSysMT coordination and a saved-filter compatibility decision. It is not yet
-implemented; the current notebook remains on the existing executable names.
+`across_selection_boundary` and `between_selections`. This public
+query/display vocabulary change is tracked in
+[#168](archive/explicit_interaction_selection_mode_names.md), requiring
+MolSysMT coordination and a saved-filter compatibility decision. Both are now
+implemented against provider `a0ceca86ec99c89377e78fac15cbdf32145a362e`:
+new calls use the canonical names; version-1 saved visual filters migrate to
+extension 2, leaving scientific metadata/H5MSM untouched. Automated qualification
+is in [the receipt](interactions_query_modes_20261006.json). Direct human retest
+of the renamed controls is pending. The open scratch notebook is preserved;
+after kernel restart, change its explicit `mode="incident"` to
+`mode="involving_selection"` before repeating the atom-filter check.
 
 ## Next observations
 

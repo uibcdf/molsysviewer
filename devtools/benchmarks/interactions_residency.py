@@ -127,15 +127,19 @@ def reference_query(analysis, options):
     """
     relation_atoms = analysis.participant_atoms.reshape(len(analysis.relation_types), -1)
     selected = options.get("selection", "all")
-    mode = options.get("mode", "incident")
+    mode = options.get("mode", "involving_selection")
     membership = (
         np.ones_like(relation_atoms, dtype=bool)
         if isinstance(selected, str)
         else np.isin(relation_atoms, np.atleast_1d(selected))
     )
     incident, internal = membership.any(axis=1), membership.all(axis=1)
-    allowed = {"incident": incident, "internal": internal, "cross": incident & ~internal}.get(mode)
-    if mode == "between":
+    allowed = {
+        "involving_selection": incident,
+        "within_selection": internal,
+        "across_selection_boundary": incident & ~internal,
+    }.get(mode)
+    if mode == "between_selections":
         b = np.atleast_1d(options["selection_2"])
         allowed = incident & np.isin(relation_atoms, b).any(axis=1)
         if options.get("exclusive", False):
@@ -171,17 +175,21 @@ def query_workloads(frames, n_atoms):
     axes = {"frame": 0, "nonconsecutive": [frames - 2, 0, frames // 2], "trajectory": "all"}
     selections = {
         "atom": {"selection": 0},
-        "incident": {"selection": [0, 1, 10, 16, 20, 30]},
-        "internal": {"selection": list(range(62)), "mode": "internal"},
-        "cross": {"selection": list(range(16)), "mode": "cross"},
-        "between": {"selection": list(range(6)), "selection_2": list(range(10, 31)), "mode": "between"},
+        "involving_selection": {"selection": [0, 1, 10, 16, 20, 30]},
+        "within_selection": {"selection": list(range(62)), "mode": "within_selection"},
+        "across_selection_boundary": {"selection": list(range(16)), "mode": "across_selection_boundary"},
+        "between_selections": {
+            "selection": list(range(6)),
+            "selection_2": list(range(10, 31)),
+            "mode": "between_selections",
+        },
         "exclusive": {
             "selection": list(range(16)),
             "selection_2": list(range(16, 62)),
-            "mode": "between",
+            "mode": "between_selections",
             "exclusive": True,
         },
-        "wide_internal": {"selection": list(range(min(1024, n_atoms))), "mode": "internal"},
+        "wide_internal": {"selection": list(range(min(1024, n_atoms))), "mode": "within_selection"},
     }
     workloads = {f"structures_{axis}": {"structure_indices": value} for axis, value in axes.items()}
     workloads.update(

@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [`explicit_interaction_selection_mode_names.md`](explicit_interaction_selection_mode_names.md) — #168: canonical query names in Python/Studio, targeted v1 filter migration to extension v2, public rejection guards and real provider/browser qualification.
+
 - [`region_enablement_and_visibility.md`](region_enablement_and_visibility.md) — #167: enable/disable preserves region configuration; enabled Hide masks Whole in every representation state, with Python/Studio/session guards and human retest pending.
 
 - [`group_panel_unit_dom_missing_query_selector.md`](group_panel_unit_dom_missing_query_selector.md) — #166: scoped option lookup and prepend support repair the GroupPanel test DOM; the focused owner passes 35 tests and the complete JS unit lane passes 322.

@@ -136,38 +136,41 @@ def test_nonconsecutive_frames_preserve_parallel_identity_and_empty_coverage(vie
 def test_atom_queries_include_hydrogen_and_all_group_members(view):
     _attach(view)
     assert view.interactions.query("contacts", selection=1).n_interactions == 2
-    assert view.interactions.query("contacts", selection=[0, 2], mode="internal").n_interactions == 0
-    assert view.interactions.query("contacts", selection=[0, 1, 2], mode="internal").n_interactions == 2
-    assert view.interactions.query("contacts", selection=[0, 2], mode="cross").n_interactions == 2
+    assert view.interactions.query("contacts", selection=[0, 2], mode="within_selection").n_interactions == 0
+    assert view.interactions.query("contacts", selection=[0, 1, 2], mode="within_selection").n_interactions == 2
+    assert view.interactions.query("contacts", selection=[0, 2], mode="across_selection_boundary").n_interactions == 2
     assert view.interactions.query("contacts", selection=[3], interaction_types="pi_stacking").n_interactions == 1
-    assert view.interactions.query("contacts", selection=[3, 5], mode="internal").n_interactions == 0
-    assert view.interactions.query("contacts", selection=[3, 4, 5, 6], mode="internal").n_interactions == 1
+    assert view.interactions.query("contacts", selection=[3, 5], mode="within_selection").n_interactions == 0
+    assert view.interactions.query("contacts", selection=[3, 4, 5, 6], mode="within_selection").n_interactions == 1
     assert view.interactions.query("contacts", selection="atom_index == 1").n_interactions == 2
 
 
 def test_between_queries_delegate_disjoint_and_exclusive_semantics(view):
     _attach(view)
-    assert view.interactions.query("contacts", mode="between", selection=[0], selection_2=[2]).n_interactions == 2
+    assert (
+        view.interactions.query("contacts", mode="between_selections", selection=[0], selection_2=[2]).n_interactions
+        == 2
+    )
     assert (
         view.interactions.query(
-            "contacts", mode="between", selection=[0], selection_2=[2], exclusive=True
+            "contacts", mode="between_selections", selection=[0], selection_2=[2], exclusive=True
         ).n_interactions
         == 0
     )
     assert (
         view.interactions.query(
-            "contacts", mode="between", selection=[0, 1], selection_2=[2], exclusive=True
+            "contacts", mode="between_selections", selection=[0, 1], selection_2=[2], exclusive=True
         ).n_interactions
         == 2
     )
     with pytest.raises(ValueError, match="disjoint"):
-        view.interactions.query("contacts", mode="between", selection=[0], selection_2=[0])
+        view.interactions.query("contacts", mode="between_selections", selection=[0], selection_2=[0])
 
 
 @pytest.mark.parametrize(
     "kwargs",
     [
-        {"mode": "between"},
+        {"mode": "between_selections"},
         {"selection_2": [2]},
         {"exclusive": True},
         {"structure_indices": [-1]},
@@ -393,3 +396,24 @@ def test_no_system_calculation_fails_explicitly_and_discovery_is_empty():
     assert view.interactions.analyses() == []
     with pytest.raises(InteractionAnalysisError, match="Load a molecular system"):
         view.interactions.hbonds.get_buch_hbonds(name="buch")
+
+
+@pytest.mark.parametrize("mode", ["incident", "internal", "cross", "between"])
+@pytest.mark.parametrize("skip_digestion", [False, True])
+def test_legacy_query_names_are_rejected_on_all_public_routes(view, mode, skip_digestion):
+    _attach(view)
+    obj = view.interactions.add("contacts", tag="keep")
+    before = view.export_state()
+    for operation in (
+        lambda: view.interactions.query("contacts", mode=mode, skip_digestion=skip_digestion),
+        lambda: view.interactions.add("contacts", mode=mode, skip_digestion=skip_digestion),
+        lambda: obj.set_filter(mode=mode, skip_digestion=skip_digestion),
+    ):
+        with pytest.raises(ValueError) as error:
+            operation()
+        if skip_digestion:
+            assert "involving_selection" in str(error.value)
+            assert "within_selection" in str(error.value)
+            assert "across_selection_boundary" in str(error.value)
+            assert "between_selections" in str(error.value)
+        assert view.export_state() == before
