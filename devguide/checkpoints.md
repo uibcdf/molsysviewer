@@ -5,30 +5,47 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-**0.24.0 staging preparation (2026-10-06): build 1 is next.** MolSysMT
-0.23.0, commit `46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9`, build 0 ABI3,
-is verified in staging. Viewer build 0 is produced from `6c4ddba31c289a27f761576c07fa641603c4392e`;
-both installed packages' member hashes and `pip check` pass. The ordinary wheel
-passes 194 bounded scientific checks; the installed Conda passes 41 loading cases.
-All 25 hosted notebooks and native Windows launchers pass. The once-run installed
-regression returns **2,877 passed/25 skipped/one failed**: temporary candidate tags
-pollute capability history, fixed in [#171](archive/temporary_candidate_tags_change_release_history.md).
-After removing only that owned local tag, all 208 capability checks pass and
-installed version 0.24.0 is preserved. The hosted core lane passes 38 suites and
-finds premature Movie completion, fixed in [#172](archive/movie_done_precedes_final_canvas_draw.md).
-The completion callback now observes the rendered final camera; all three affected
-real-browser suites and both Movie unit cases pass. Source/workflow checks pass
-231 cases and governance checks 234. These corrections require a new immutable
-build 1, preserving build 0 and its original failed full/browser outcomes.
+**0.24.0 stabilization candidate (2026-10-06): staging and canonical source qualified.**
+Viewer **`1a4c97a58b68b69f3a836546c9e4ac6187c3efa2`**, noarch **build 1**, pairs
+with MolSysMT **0.23.0**, **build 0 ABI3**, commit
+**`46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9`**. The provider's fixed branch
+`candidate/0.23.0-build0` enables exact dispatch. All **16/16** installed staging
+cells pass in [37541876875](https://github.com/uibcdf/molsysmt/actions/runs/37541876875).
+Independent reads verify all sixteen actual environment ZIPs/digests, package
+coordinates, hashes and staging repodata. Native Windows launchers pass in
+[37542333568](https://github.com/uibcdf/molsysviewer/actions/runs/37542333568), bound
+to the same Viewer commit, version, build and file SHA-256. All **39/39** hosted
+core browser suites pass in [37541292806](https://github.com/uibcdf/molsysviewer/actions/runs/37541292806).
+The six Linux/macOS Python 3.11–3.13 regression cells pass; aggregate CI still
+fails on the separate experimental Qt/WebGL job (#109).
 
-The four-platform installed matrix needs a provider-owned branch/tag at the exact
-MolSysMT package commit: GitHub dispatch rejects a bare SHA and provider `main`
-has advanced. The maintainer has been asked for that reference; independent
-qualification continues. Public-channel CI fails before tests because 0.23.0
-is currently staging-only; the diagnostic ranking observation is reported as
-uibcdf/gh-run-receptor#61. Qt's WebGL failure remains experimental #109.
-No public tag, release or promotion is created. See
-[the candidate preparation](stabilization_024_preparation_20261006.json).
+The installed build 1 matches all 620 Viewer archive members and passes
+`pip check`, **298 affected checks/one expected omission**, and **eight real
+offline-export browser checks**. The ordinary corrected wheel also passes its
+runtime/version validator. Build 0 and its original failed full/browser outcomes
+remain recorded: temporary history tags and premature Movie completion are
+resolved in [#171](archive/temporary_candidate_tags_change_release_history.md)
+and [#172](archive/movie_done_precedes_final_canvas_draw.md).
+[Source version handling](archive/automatic_source_pair_runtime_version.md) (#173),
+[hosted control-job interpretation](archive/hosted_core_inactive_backlog_gate.md)
+(#174), and [development runtime synchronization](archive/automatic_source_version_retags_development.md)
+(#175) are developer-tooling corrections; the immutable package candidate
+stays `1a4c97a5`. The initial #173 approach conflicts with an existing policy guard
+and is preserved as refuted evidence. The correction at `d5ac10f0` passes
+310 closure/policy/gate/link checks and eight real development offline exports;
+automatic hosted follow-up [37545069147](https://github.com/uibcdf/molsysviewer/actions/runs/37545069147)
+is pending and supplies no complete verdict yet.
+
+Canonical exact-source Python 3.14 integration passes in
+[37542642197](https://github.com/uibcdf/molsysviewer/actions/runs/37542642197).
+Linux passes 2,879 cases/27 skips, macOS 2,852/54 and Windows 2,853/53,
+with zero failures; Linux additionally passes 39 core suites and all 25 notebooks.
+Public-channel CI fails before tests because MolSysMT 0.23.0 is staging-only;
+the public installed gate remains BLOCKED. No public tag, release or promotion
+is created. Next: observe the corrected automatic-development hosted follow-up, review
+coordinated publication,
+then qualify the exact public pair and verify GitHub Release/Zenodo preservation.
+See [the candidate preparation](stabilization_024_preparation_20261006.json).
 
 **Published support-library receiving check (2026-10-06): bounded pass.**
 Exact Conda SMonitor **0.19.0 `py_1`** and ArgDigest **0.15.0 `py_0`** pass
@@ -1373,48 +1390,29 @@ documents carry it.
 
 Resume toward **1.0** in this order:
 
-**Current session priority (2026-10-06):** the cumulative source has been reviewed,
-committed and pushed. Loading #151 has an accepted and implemented contract;
-it is no longer an undecided design. The preceding clean source regression passes
-**2,812 tests, 23 skipped** after the scientific usability correction. Provider #307/#309
-repairs are verified in the editable provider, with published-artifact
-qualification still outstanding.
-The original 2026-10-06 local complete attempt and focused guard correction
-remain recorded separately. The later three-platform complete source verdict
-and real browser pass are in the current handoff above.
-Continue in the maintainer's order:
+**Current session priority (2026-10-06):** the immutable stabilization pair
+and its staging/core gates are verified in the current handoff above. Observe
+the corrected automatic-development hosted follow-up before publication.
+Use the fixed Viewer producer `1a4c97a58b68b69f3a836546c9e4ac6187c3efa2` and
+MolSysMT producer `46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9`; earlier source
+handoffs do not replace these artifact identities.
 
-1. Give MolSysMT the qualified Viewer
-   `d7939f08d604138112edfe84ccc9bc4a40428057` and provider
-   `a0ceca86ec99c89377e78fac15cbdf32145a362e` for coordinated staging.
-   #169/#170 are resolved and the complete source/native/browser/notebook
-   run passes.
-   The earlier c046fca/5e272169 handoff predates the canonical query vocabulary.
-   Preserve the completed source integration and bounded scientific review
-   records and their limits.
-2. Candidate prevalidation #157 and the source-level fixes in
-   uibcdf/molsysmt#312/#313 are resolved. Direct SDF and mixed protein/caffeine
-   batch/progressive workflows pass in the editable provider. Repeat them
-   against the compatible published candidate before declaring installed support.
-3. The version assessment recommends 0.24.0. Freeze no tag before compatible
-   dependency and exact-candidate gates pass. The five-stage human walkthrough
-   is complete. First-contact observation with the actual installed candidate
-   remains separate; do not restart the completed notebook review.
-4. Repeat the now-passing Interactions workflows against a compatible published
-   MolSysMT artifact once available. Keep #114 experimental until installed
-   evidence exists; uibcdf/molsysmt#250 owns scientific APIs. Existing source
-   qualification remains bounded by its recorded inputs.
-5. Qualify a concrete artifact for repaired Conda/Windows launchers (#101), the
-   current 16-cell installed pair and hosted core browser lane. CI enforcement
-   (#116), ecosystem adoption (#110), scalar units (#98), the shared verifier and
-   promotion preconditions (#133/#134) are implemented; their earlier hosted
-   results do not certify the new candidate.
-6. After functional and dependency qualification, finish public documentation
-   and reconcile support promises. Standalone remains experimental; remotes
-   and the Mol* dependency update remain post-1.0.
-7. Freeze the final candidate and validate installed artifacts, scientific
-   workflows, first-contact experience and publication evidence. Preserve
-   separate human observations.
+1. Exact canonical-source integration passes and #175 is locally resolved.
+   Observe automatic hosted follow-up 37545069147; preserve native verdicts
+   and Linux notebook/core results without repeating the local full suite.
+2. Review the 0.24.0 publication with MolSysMT. Staging is qualified; the public
+   dependency/pair is not yet published. Keep already staged files and SHA-256
+   identities fixed through the coordinated promotion.
+3. With publication authorization, create the canonical tag and GitHub Release,
+   promote the verified immutable package and complete the sixteen-cell public
+   pair qualification plus npm/Conda and Zenodo checks. No staging verdict
+   supplies those public/archival results.
+4. Close the supported-provider boundary of Interactions (#114/#140) using the
+   actual public package, preserving earlier experimental/source evidence.
+5. Reconcile public documentation and remaining support promises. The five-stage
+   human notebook review is complete; retain it. Installed first-contact review
+   and final 1.0 candidate qualification remain separate. Standalone is
+   experimental; remotes and the Mol* dependency update remain post-1.0.
 
 The older general growth checklist below is a follow-up inventory. It does
 not replace this session's ordered priorities.

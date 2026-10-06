@@ -1,7 +1,7 @@
 {
   "schema": "molsysviewer.stabilization_preparation@1",
   "date": "2026-10-06",
-  "status": "build_0_preserved; source_qualification_defects_fixed; preparing_build_1",
+  "status": "immutable_staging_candidate_qualified; corrected_automatic_development_hosted_followup_running",
   "viewer": {
     "version": "0.24.0",
     "build_number": 0,
@@ -70,7 +70,10 @@
     },
     "diagnosed_initial_attempts": [
       "The distribution guard retained the older provider SHA/count; updated to the new candidate and its four pin uses.",
-      "The new receipt link was tested before its file entered the Git index; staged it and verified all 218 guidance/report checks."
+      "The new receipt link was tested before its file entered the Git index; staged it and verified all 218 guidance/report checks.",
+      "The evidence CLI does not support -I because it imports its sibling release_evidence module; used the supported script invocation outside the molecular checkout, then an isolated reader invocation with only devtools exposed.",
+      "Original exact gate passed staging but rejected the inactive hosted backlog control (#174); corrected reader verifies both staging and hosted core. Public remains blocked.",
+      "A closure check used a nonexistent link-test filename and collected zero tests; corrected selector before 302 passing closure checks."
     ],
     "full_installed_suite": {
       "result": "fail",
@@ -162,11 +165,10 @@
     }
   },
   "remaining": [
-    "Finish the once-run installed Conda regression and hosted scientific/browser/source gates",
-    "Obtain a provider branch/tag at the fixed MolSysMT package commit and execute the four-platform/Python 3.11\u20133.14 installed staging matrix",
-    "Verify native Windows launchers",
-    "Review publication readiness, then publish and promote exact artifacts only with maintainer authorization",
-    "Complete public-channel and archival gates before declaring publication complete"
+    "Observe automatic-development hosted follow-up 37545069147; local policy/workflow and real offline export guards pass",
+    "Review publication readiness and coordinate public MolSysMT 0.23.0 / Viewer 0.24.0 release",
+    "Publish and promote exact artifacts only with maintainer authorization",
+    "Complete public-channel 16-cell qualification, GitHub Release and Zenodo archival verification before declaring publication complete"
   ],
   "hosted": {
     "staging_producer": {
@@ -202,13 +204,15 @@
     "source_pair": {
       "id": 37538525412,
       "status": "running"
-    }
+    },
+    "scope": "Preserved build 0 observations; historical running statuses precede build 1 qualification."
   },
   "pair_matrix_prerequisite": {
-    "status": "waiting_for_provider_ref",
+    "status": "satisfied",
     "commit": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9",
     "observed_provider_main": "1d4a8354b084f19cf0d9f87b0e2b33010ff22ede",
-    "reason": "GitHub workflow_dispatch rejects a bare commit SHA (422). The exact-candidate verifier requires the original provider commit, not the newer main workflow commit. No existing branch points to the candidate; request a provider-owned temporary branch."
+    "reason": "Provider-owned fixed branch points exactly at the package commit. Installed matrix dispatched from that branch.",
+    "ref": "candidate/0.23.0-build0"
   },
   "public_channel_ci": {
     "id": 37538525423,
@@ -242,12 +246,418 @@
       "passed": 223,
       "failed": 0,
       "log": "/tmp/msv-024-fixes-final-records-20261006.log"
+    },
+    "automatic_source_version": "uibcdf/molsysviewer#173",
+    "hosted_control_job_interpretation": "uibcdf/molsysviewer#174",
+    "tooling_followup_checks": {
+      "passed": 302,
+      "failed": 0,
+      "note": "Reporting/link/source/evidence/release-gate checks; no second full local suite."
+    },
+    "tooling_commit": "e0ae8a05099fce944b45355387f44d23d9458b13",
+    "tooling_hosted_policy": {
+      "id": 37543267367,
+      "conclusion": "success"
+    },
+    "tooling_hosted_conda_governance": {
+      "id": 37543267314,
+      "conclusion": "success"
+    },
+    "automatic_source_workflow_followup": {
+      "id": 37543266635,
+      "commit": "e0ae8a05099fce944b45355387f44d23d9458b13",
+      "status": "completed",
+      "scope": "Tooling successor source feasibility; does not replace fixed package producer 1a4c97a.",
+      "linux": {
+        "passed": 2890,
+        "skipped": 27,
+        "failed": 1,
+        "owner": "uibcdf/molsysviewer#175"
+      },
+      "note": "The earlier bounded selection omitted the neighboring no-retagging policy guard. Correct development provenance by rebuilding/reinstalling its runtime, preserving explicit candidate tagging.",
+      "conclusion": "failure",
+      "macos": {
+        "failed": 1,
+        "passed": 2863,
+        "skipped": 54,
+        "owner": "uibcdf/molsysviewer#175"
+      },
+      "windows": {
+        "failed": 1,
+        "passed": 2864,
+        "skipped": 53,
+        "owner": "uibcdf/molsysviewer#175"
+      }
+    },
+    "automatic_development_runtime": "uibcdf/molsysviewer#175",
+    "automatic_development_runtime_commit": "d5ac10f0604b3cbdb9d80d6774a7aad72df5e731",
+    "automatic_development_runtime_checks": {
+      "policy_and_workflow_passed": 11,
+      "final_closure_passed": 310,
+      "offline_browser_passed": 8,
+      "offline_browser_failed": 0,
+      "offline_browser_seconds": 41.6,
+      "pip_check": "pass",
+      "initial_viewer_version": "0.23.4+110.ge0ae8a05",
+      "reinstalled_viewer_version": "0.23.4+110.ge0ae8a05.dirty",
+      "provider_version": "0.23.0",
+      "viewer_origin": "/tmp/msv-024-development-env-20261006/lib/python3.14/site-packages/molsysviewer",
+      "provider_origin": "/tmp/msv-024-staging-20261006/lib/python3.14/site-packages/molsysmt",
+      "origin_checks": "all loaded scientific modules remain under their recorded installed directories",
+      "log": "/tmp/msv-024-development-offline-20261006.log",
+      "scope": "Bounded development workflow qualification; not a new release artifact or full regression."
+    },
+    "corrected_automatic_source_hosted": {
+      "id": 37545069147,
+      "commit": "d5ac10f0604b3cbdb9d80d6774a7aad72df5e731",
+      "status": "queued",
+      "scope": "Automatic development provenance and current tooling; does not replace fixed canonical-source/artifact results."
+    },
+    "corrected_tooling_policy": {
+      "id": 37545070019,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "corrected_tooling_conda_governance": {
+      "id": 37545070316,
+      "conclusion": "success"
     }
   },
   "next_candidate": {
     "version": "0.24.0",
     "build_number": 1,
-    "status": "source ready; commit and staging build pending",
-    "reason": "Immutable build 0 precedes the reviewed temporary-tag and Movie render fixes."
-  }
+    "status": "exact installed staging/core/canonical source qualified; public lifecycle not started",
+    "reason": "Immutable build 0 precedes the reviewed temporary-tag and Movie render fixes.",
+    "commit": "1a4c97a58b68b69f3a836546c9e4ac6187c3efa2",
+    "ordinary_wheel": {
+      "filename": "molsysviewer-0.24.0-py3-none-any.whl",
+      "sha256": "ea616abbe63a42629f1da2197bd8796cd8ca080edcc3018854c4c89111774cb5",
+      "runtime_validation": "pass",
+      "local_build_tag_removed": true
+    },
+    "hosted": {
+      "staging_producer": {
+        "id": 37541289485,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "core_browser": {
+        "id": 37541292806,
+        "status": "completed",
+        "conclusion": "success",
+        "passed_suites": 39,
+        "attempt": 1,
+        "log": "/tmp/msv-024-build1-core-20261006.log"
+      },
+      "staging_python_matrix": {
+        "id": 37541296208,
+        "status": "completed",
+        "conclusion": "failure",
+        "required_python_cells": [
+          {
+            "platform": "linux-64",
+            "python": "3.11",
+            "passed": 2879,
+            "skipped": 27,
+            "failed": 0,
+            "duration_seconds": 631.11
+          },
+          {
+            "platform": "linux-64",
+            "python": "3.12",
+            "passed": 2879,
+            "skipped": 27,
+            "failed": 0,
+            "duration_seconds": 551.31
+          },
+          {
+            "platform": "linux-64",
+            "python": "3.13",
+            "passed": 2879,
+            "skipped": 27,
+            "failed": 0,
+            "duration_seconds": 363.52
+          },
+          {
+            "platform": "osx-arm64",
+            "python": "3.11",
+            "passed": 2852,
+            "skipped": 54,
+            "failed": 0,
+            "duration_seconds": 584.64
+          },
+          {
+            "platform": "osx-arm64",
+            "python": "3.12",
+            "passed": 2852,
+            "skipped": 54,
+            "failed": 0,
+            "duration_seconds": 633.65
+          },
+          {
+            "platform": "osx-arm64",
+            "python": "3.13",
+            "passed": 2852,
+            "skipped": 54,
+            "failed": 0,
+            "duration_seconds": 546.46
+          }
+        ],
+        "qt": {
+          "conclusion": "failure",
+          "owner": "uibcdf/molsysviewer#109",
+          "reason": "Qt message bridge failed to become ready. Status: Frontend error: Exported scene has no WebGL canvas."
+        },
+        "note": "All six Python cells pass; aggregate CI fails on the separate experimental Qt job."
+      },
+      "source_pair": {
+        "id": 37541282162,
+        "status": "completed",
+        "conclusion": "failure",
+        "linux": {
+          "passed": 2878,
+          "skipped": 27,
+          "failed": 1,
+          "owner": "uibcdf/molsysviewer#173"
+        },
+        "macos": {
+          "passed": 2852,
+          "skipped": 54,
+          "failed": 0
+        },
+        "windows": {
+          "passed": 2853,
+          "skipped": 53,
+          "failed": 0
+        },
+        "note": "Automatic source run used a development version against the canonical runtime; workflow-only fix is separate from immutable package source."
+      },
+      "policy": {
+        "id": 37541283084,
+        "conclusion": "success"
+      },
+      "conda_governance": {
+        "id": 37541282964,
+        "conclusion": "success"
+      },
+      "installed_pair": {
+        "id": 37541876875,
+        "status": "completed",
+        "ref": "candidate/0.23.0-build0",
+        "commit": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9",
+        "expected_cells": 16,
+        "title": "MT 0.23.0 build 0 + Viewer 0.24.0 build 1 | Python 3.14 | all",
+        "conclusion": "success",
+        "passed_cells": 16,
+        "attempt": 1
+      },
+      "windows_launchers": {
+        "id": 37542333568,
+        "status": "completed",
+        "conclusion": "success",
+        "attempt": 1,
+        "log": "/tmp/msv-024-build1-windows-launchers-20261006.log"
+      },
+      "canonical_source_pair": {
+        "id": 37542642197,
+        "status": "completed",
+        "commit": "1a4c97a58b68b69f3a836546c9e4ac6187c3efa2",
+        "viewer_version": "0.24.0",
+        "molsysmt_commit": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9",
+        "conclusion": "success",
+        "cells": [
+          {
+            "platform": "linux",
+            "python": "3.14",
+            "passed": 2879,
+            "skipped": 27,
+            "failed": 0,
+            "duration_seconds": 306.03
+          },
+          {
+            "platform": "macos",
+            "python": "3.14",
+            "passed": 2852,
+            "skipped": 54,
+            "failed": 0,
+            "duration_seconds": 346.48
+          },
+          {
+            "platform": "windows",
+            "python": "3.14",
+            "passed": 2853,
+            "skipped": 53,
+            "failed": 0,
+            "duration_seconds": 495.68
+          }
+        ],
+        "linux_core_suites": 39,
+        "linux_notebooks_executed": 25,
+        "linux_notebooks_failed": 0
+      }
+    },
+    "files": [
+      {
+        "subdir": "noarch",
+        "filename": "molsysviewer-0.24.0-py_1.tar.bz2",
+        "sha256": "e31dfb114ab2e49f22b372992d0201455b91849f2631d0165b802069e13abeaa"
+      }
+    ],
+    "installed_provenance": {
+      "prefix": "/tmp/msv-024-staging-20261006",
+      "python": "3.14.8 | packaged by conda-forge | (main, Oct  6 2026, 13:38:01) [GCC 15.3.0]",
+      "molsysviewer": {
+        "version": "0.24.0",
+        "import": "/tmp/msv-024-staging-20261006/lib/python3.14/site-packages/molsysviewer/__init__.py",
+        "record_url": "https://conda.anaconda.org/uibcdf/label/staging/noarch/molsysviewer-0.24.0-py_1.tar.bz2",
+        "sha256": "e31dfb114ab2e49f22b372992d0201455b91849f2631d0165b802069e13abeaa",
+        "build_number": 1,
+        "matching_package_members": 620
+      },
+      "molsysmt": {
+        "version": "0.23.0",
+        "import": "/tmp/msv-024-staging-20261006/lib/python3.14/site-packages/molsysmt/__init__.py"
+      }
+    },
+    "pip_check": "pass",
+    "unchanged_python_members_from_build_0": 616,
+    "affected_installed_checks": {
+      "passed": 298,
+      "skipped": 1,
+      "failed": 0,
+      "duration_seconds": 27.78,
+      "log": "/tmp/msv-024-build1-focused-20261006.log",
+      "note": "ImageIO is present; ImportError-path case is the single expected omission."
+    },
+    "offline_browser_checks": {
+      "passed": 8,
+      "skipped": 0,
+      "failed": 0,
+      "duration_seconds": 40.91,
+      "log": "/tmp/msv-024-build1-offline-20261006.log"
+    },
+    "independent_evidence": {
+      "conda": "PASS; all sixteen actual installed environment artifacts and digests verified against staging registry and repodata",
+      "hosted_e2e": "PASS; exact candidate commit and 39-suite core step",
+      "windows": "PASS; version/build/SHA-256 and actual commands outside checkout",
+      "public_conda": "BLOCKED; no exact public run exists",
+      "promotion_gate": "PASS: installed-pair run 37541876875 and Windows launcher run 37542333568",
+      "log": "/tmp/msv-024-build1-exact-gates-corrected-20261006.log",
+      "environment_artifacts": [
+        {
+          "id": 11449630956,
+          "name": "conda-staging-win-64-py3.12",
+          "digest": "sha256:9937e33adbb3240465b4cb59ce360049e547c72d13d4371784d4175c71726254",
+          "size_in_bytes": 6461,
+          "expires_at": "2026-11-05T22:42:11Z"
+        },
+        {
+          "id": 11449596785,
+          "name": "conda-staging-osx-arm64-py3.13",
+          "digest": "sha256:d729b5566e9433b79c7a365b039ba674c9d13ef30c57af29506308e487ef0687",
+          "size_in_bytes": 5670,
+          "expires_at": "2026-11-05T22:45:17Z"
+        },
+        {
+          "id": 11449566522,
+          "name": "conda-staging-osx-arm64-py3.12",
+          "digest": "sha256:da3c6d90ab762b9748ac8d6928667b8fa3329af5a97340625e089b04ad7d7cfb",
+          "size_in_bytes": 5739,
+          "expires_at": "2026-11-05T22:43:56Z"
+        },
+        {
+          "id": 11449550760,
+          "name": "conda-staging-linux-64-py3.13",
+          "digest": "sha256:29a824305a07e31377deefe49d86615975b90b0935087f212babc88f7b52812f",
+          "size_in_bytes": 8263,
+          "expires_at": "2026-11-05T22:40:03Z"
+        },
+        {
+          "id": 11449486532,
+          "name": "conda-staging-win-64-py3.11",
+          "digest": "sha256:f19b2464309446520cb242bc917d7973fb75e910eba5c71753bfbfda46bb7cf8",
+          "size_in_bytes": 6458,
+          "expires_at": "2026-11-05T22:42:39Z"
+        },
+        {
+          "id": 11449451277,
+          "name": "conda-staging-win-64-py3.14",
+          "digest": "sha256:ac6ff86569f99600d23bb3d3255bfc5a6b0871ae541a89b766cf46713a28c816",
+          "size_in_bytes": 6395,
+          "expires_at": "2026-11-05T22:41:09Z"
+        },
+        {
+          "id": 11449426283,
+          "name": "conda-staging-linux-64-py3.12",
+          "digest": "sha256:3bf747c370e080482ca730643ee0bb32735a7cfb8afd1298d211f3f046be1fbc",
+          "size_in_bytes": 8345,
+          "expires_at": "2026-11-05T22:40:33Z"
+        },
+        {
+          "id": 11449311342,
+          "name": "conda-staging-linux-aarch64-py3.11",
+          "digest": "sha256:d39394a611867df26b33e2e6de0785637482054a5c249872b8f0da03d8e516fa",
+          "size_in_bytes": 6071,
+          "expires_at": "2026-11-05T22:39:52Z"
+        },
+        {
+          "id": 11449176669,
+          "name": "conda-staging-win-64-py3.13",
+          "digest": "sha256:80e578f347dc8a9fe9612b407364c75814ed8d240349d42bc343ac945035ea05",
+          "size_in_bytes": 6376,
+          "expires_at": "2026-11-05T22:42:04Z"
+        },
+        {
+          "id": 11449166768,
+          "name": "conda-staging-linux-aarch64-py3.12",
+          "digest": "sha256:03c72b5d6bf6108804e77b1e02fd529f9bc5497cb2801f6b2dc583ad39f5d21c",
+          "size_in_bytes": 6061,
+          "expires_at": "2026-11-05T22:40:44Z"
+        },
+        {
+          "id": 11449156674,
+          "name": "conda-staging-osx-arm64-py3.11",
+          "digest": "sha256:612612f0556dec184cb2557f33dbedff4ec6748c83db157700462e9127d58e3b",
+          "size_in_bytes": 5744,
+          "expires_at": "2026-11-05T22:42:37Z"
+        },
+        {
+          "id": 11448886782,
+          "name": "conda-staging-linux-aarch64-py3.13",
+          "digest": "sha256:68aaa853becf0ae56a0e128af01d94f6f2403ab64e2efb4f09270f9a8a3f9f9e",
+          "size_in_bytes": 8249,
+          "expires_at": "2026-11-05T22:39:47Z"
+        },
+        {
+          "id": 11448821914,
+          "name": "conda-staging-linux-64-py3.11",
+          "digest": "sha256:c2dbb75954a34199cdfaf2cadf5d36baf74572a62c8f9c68bfe5a14b31cde27a",
+          "size_in_bytes": 8355,
+          "expires_at": "2026-11-05T22:40:02Z"
+        },
+        {
+          "id": 11448641959,
+          "name": "conda-staging-linux-64-py3.14",
+          "digest": "sha256:33ee0abda2bd4933c95ac2c077869beabed3bb6836f6e15bcb334603e34b4aa1",
+          "size_in_bytes": 8236,
+          "expires_at": "2026-11-05T22:40:09Z"
+        },
+        {
+          "id": 11448419361,
+          "name": "conda-staging-linux-aarch64-py3.14",
+          "digest": "sha256:c7db476faf31229d900adc2cf530d5b69fa0fb9fea60ab6d9b91a8ab4e87ea90",
+          "size_in_bytes": 8251,
+          "expires_at": "2026-11-05T22:39:58Z"
+        },
+        {
+          "id": 11448339820,
+          "name": "conda-staging-osx-arm64-py3.14",
+          "digest": "sha256:90353cf99d6160d971637216bd43965d33a1ac64fc5c988b7fd421d1ede9e2cd",
+          "size_in_bytes": 5662,
+          "expires_at": "2026-11-05T22:41:17Z"
+        }
+      ]
+    }
+  },
+  "current_candidate": "next_candidate; immutable Viewer 0.24.0 py_1 from 1a4c97a58b68b69f3a836546c9e4ac6187c3efa2"
 }

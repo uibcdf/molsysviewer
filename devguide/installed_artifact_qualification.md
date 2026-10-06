@@ -1,5 +1,17 @@
 # Installed-artifact qualification
 
+**Stabilization candidate — 2026-10-06:** Viewer 0.24.0 noarch build 1 from
+`1a4c97a58b68b69f3a836546c9e4ac6187c3efa2` with MolSysMT 0.23.0 ABI3 build 0
+from `46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9` passes all sixteen installed
+staging cells and the exact Windows launcher check. Independent verification
+checks the actual installed inventories/digests, coordinates and staging repodata.
+All 39 hosted core suites pass. The installed Linux build passes 298 affected
+checks (one expected omission) and eight offline-browser checks; all 620 Viewer
+members match the staged archive. Public-channel qualification and preserved
+release remain pending; canonical-source Python 3.14 passes on all three native hosts,
+with 39 core suites and all 25 notebooks passing on Linux.
+Earlier failed attempts remain in [the preparation receipt](stabilization_024_preparation_20261006.json).
+
 **Support-library follow-up — 2026-10-06:** exact published SMonitor 0.19.0
 and ArgDigest 0.15.0 pass 122 bounded installed checks (14 expected skips)
 with a wheel from fixed Viewer source and public MolSysMT 0.22.4, in a fresh
@@ -9,7 +21,7 @@ pair and complete release matrix remain pending. See
 [the receiving check](python_ecosystem_policy_adoption.md#published-support-library-receiving-check--2026-10-06)
 and [its receipt](support_library_receiving_20261006.json).
 
-**Current status — 2026-10-03:** an integrated design wheel is prepared and
+**Earlier status — 2026-10-03:** an integrated design wheel is prepared and
 bounded public/experimental installed checks pass. Its complete Python attempt
 failed; the core browser follow-up was interrupted for the maintainer's design
 discussion. The principal maintainer

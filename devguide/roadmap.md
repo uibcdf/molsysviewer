@@ -1,48 +1,42 @@
 # Development roadmap
 
-**Updated:** 2026-10-04
+**Updated:** 2026-10-06
 
 This roadmap states current priorities. Release gating lives in
 [`path_to_1_0.md`](path_to_1_0.md), normative behavior in
 [`scene_contracts.md`](scene_contracts.md), and concrete open designs in
 [`pending_proposals/`](pending_proposals/).
 
-## Current execution order — 2026-10-04
+## Current execution order — 2026-10-06
 
-The accumulated Interactions, composite loading, public API and scene corrections
-are reviewed and integrated in `main` at `0dea171d`. The latest complete source
-regression after the usability corrections passes **2,812 tests, 23 skipped** in the required Python 3.14
-development environment. The integration review also corrected repeated-frame
-display transfer (#156). Ruff, TypeScript and runtime rebuild pass. Prior local
-core-browser evidence is **39/39** under the normal deadline; installed evidence
-retains its original artifact boundaries. See [the handoff](checkpoints.md).
+The fixed stabilization package is Viewer **0.24.0 noarch build 1** from
+`1a4c97a58b68b69f3a836546c9e4ac6187c3efa2`, paired with MolSysMT **0.23.0 ABI3
+build 0** from `46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9`. All **16/16** installed
+staging cells, exact Windows launchers and **39/39** hosted core suites pass;
+independent reads verify the actual installed artifact inventories and hashes.
+All six Linux/macOS Python 3.11–3.13 regression cells pass. The separate Qt job
+still fails on its known experimental WebGL path (#109). Canonical-source
+Python 3.14 integration passes on all three native hosts, with 39 core suites
+and all 25 notebooks passing on Linux.
+See [the current handoff](checkpoints.md#resume-in-one-page) and
+[the preparation receipt](stabilization_024_preparation_20261006.json).
 
-CI enforcement (#116), ecosystem adoption (#110), scalar units (#98), diagnostics
-(#107) and dependency contracts (#106) are resolved. PR #135 merged after
-updated-commit hosted checks; its results remain tied to that commit. Work with
-the principal maintainer uses reviewed commits and direct pushes, without PRs.
-This source integration uses the existing internal deferred CI route: ordinary
-CI still selects public MolSysMT 0.22.4, which lacks Interactions. No exact
-hosted-candidate pass is claimed.
+The cumulative scene/API, Interactions, mixed-source loading and support-library
+changes are integrated. The five-stage human review is complete. Temporary-tag,
+Movie completion, automatic-source version and hosted-control evidence defects
+(#171–#175) are resolved; developer-tooling successors do not replace the frozen
+package producer. Earlier failed attempts retain their original verdicts.
 
-Devguide is reconciled; a minor version 0.24.0 is recommended without a tag.
-The bounded real scientific review passes the trajectory, interaction and
-four-PDB workflows. Consumer prevalidation #157 now refuses unusable candidates
-before mutation, with five targeted guards. Provider uibcdf/molsysmt#312/#313
-are now closed: their local public fixes pass direct SDF and real protein/caffeine
-batch/progressive loading, history/state/session and identical coordinates.
-Studio usability defects #158/#159 are corrected with real query-staging and
-independent calculation/display scope guards; all 17 scientific forms pass.
-See [the follow-up](scientific_usability_review_20261004.md). These source
-results remove the immediate provider blockers; published artifact availability
-remains unqualified.
-Then qualify Interactions with a compatible published provider
-(#114/#140), repaired exact Conda/Windows artifacts (#101), the current 16-cell
-installed pair and hosted core browser requirements. Public documentation
-follows functional closure. Finally freeze the release candidate and retain
-scientific dogfooding, first-contact and exact-artifact evidence. Historical
-outcomes remain in their dated records; see
-[the integration review](integration_review_20261003.md).
+Observe the corrected automatic-development hosted follow-up, then review
+publication of 0.24.0 with MolSysMT. No public tag, GitHub Release or promotion is created. MolSysMT 0.23.0
+is staging-only, so public-channel CI cannot yet solve the required dependency;
+the exact public pair gate remains blocked. Coordinate public releases and
+promote the already verified immutable files after maintainer authorization,
+then run the sixteen public installed cells and verify GitHub Release/Zenodo
+preservation. Keep Interactions' public qualification (#114/#140), complete
+public documentation reconciliation, installed first-contact observations and
+the final 1.0 candidate decision as distinct remaining work. Standalone remains
+experimental; remotes and the Mol* dependency update remain post-1.0.
 
 ## Pre-1.0 distribution milestone completed — 2026-09-25
 

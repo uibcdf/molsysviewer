@@ -2,6 +2,21 @@
 
 This document is the authoritative release plan for the **v1.0.0** release of MolSysViewer. 
 
+**Current stabilization checkpoint (2026-10-06):** Viewer 0.24.0 noarch build 1
+from `1a4c97a58b68b69f3a836546c9e4ac6187c3efa2` with MolSysMT 0.23.0 ABI3 build 0
+from `46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9` passes all sixteen installed
+staging cells, exact Windows launchers and all 39 hosted core browser suites.
+Independent verification checks actual environment archives/digests and staging
+repodata. Canonical-source Python 3.14 integration passes on all three native hosts,
+with 39 core suites and all 25 notebooks passing on Linux. The public
+pair gate is blocked until the coordinated public release; no tag, Release,
+promotion or strict 1.0 clearance is created. Observe the corrected automatic-development hosted follow-up, review
+publication, qualify the exact public pair and verify preserved citation records.
+Public documentation and final 1.0 first-contact/candidate review remain separate.
+The older checkpoints below preserve their original scope; use
+[the current handoff](checkpoints.md#resume-in-one-page) and
+[its preparation receipt](stabilization_024_preparation_20261006.json).
+
 **Scientific usability follow-up (2026-10-04):** Studio #158/#159 are corrected
 and guarded in real Chromium/Mol*: successful query staging and independent
 calculation/display scopes, including 20 calculated observations with one
