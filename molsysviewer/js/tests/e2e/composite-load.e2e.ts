@@ -7,6 +7,77 @@ import { chromium } from "./e2e-browser";
 
 const dir = dirname(fileURLToPath(import.meta.url));
 
+async function checkProgressiveWelcome(page: any, fixture: any) {
+    const welcome = page.locator('[data-molsysviewer-welcome-card="true"]');
+    const apply = async (messages: unknown[]) => page.evaluate(async items => {
+        for (const item of items) await (window as any).__controller.handleMessage(item, { throwOnError: true });
+    }, messages);
+    await apply([{ op: "clear_all" }]);
+    assert.equal(await welcome.count(), 1, "an explicitly empty viewer offers Welcome");
+    await apply(fixture.progressive_wire[0]);
+    assert.equal(await welcome.count(), 0);
+    await page.evaluate(() => {
+        const w = window as any;
+        w.__welcomeInsertions = 0;
+        w.__countWelcome = (records: MutationRecord[]) => {
+            for (const record of records) for (const node of record.addedNodes) {
+                if (!(node instanceof Element)) continue;
+                if (node.matches('[data-molsysviewer-welcome-card="true"]')) w.__welcomeInsertions++;
+                w.__welcomeInsertions += node.querySelectorAll('[data-molsysviewer-welcome-card="true"]').length;
+            }
+        };
+        w.__welcomeObserver = new MutationObserver(w.__countWelcome);
+        w.__welcomeObserver.observe(document.getElementById("root"), { childList: true, subtree: true });
+    });
+    for (const messages of fixture.progressive_wire.slice(1)) {
+        await apply(messages);
+        assert.equal(await welcome.count(), 0);
+    }
+    const labels = ["Proteína", "Cafeína", "Cafeína__2", "配体"];
+    assert.deepEqual(fixture.records.map((record: any) => record.region_tag), labels);
+    await page.locator('[data-molsysviewer-group-panel-toggle="true"]').click();
+    await page.locator('[data-molsysviewer-group-panel-tab="regions"]').click();
+    const cards = await page.evaluate(() => Array.from(
+        document.querySelectorAll('[data-molsysviewer-region-focus]'),
+        node => node.textContent,
+    ));
+    assert.deepEqual(cards.sort(), [...labels].sort(), "Studio renders the original Unicode labels and unique suffix");
+    // Use the same tag that is displayed in Studio to act on real Mol* regions.
+    const masks = await page.evaluate(async () => {
+        const w = window as any, c = w.__controller;
+        await c.handleMessage({ op: "hide_region", tag: "Cafeína" }, { throwOnError: true });
+        const hidden = w.Harness.inspectSceneTransparency(c, [0, 22, 44, 66]);
+        await c.handleMessage({ op: "show_region", tag: "Cafeína" }, { throwOnError: true });
+        return { hidden, shown: w.Harness.inspectSceneTransparency(c, [0, 22, 44, 66]) };
+    });
+    for (const representation of masks.hidden.whole) assert.deepEqual(representation.values, [0, 1, 0, 0]);
+    for (const representation of masks.shown.whole) assert.deepEqual(representation.values, [0, 0, 0, 0]);
+    assert.ok(masks.hidden.whole.length > 0);
+    await apply(fixture.replacement_wire);
+    assert.equal(await welcome.count(), 0);
+    const insertions = await page.evaluate(() => {
+        const w = window as any;
+        w.__countWelcome(w.__welcomeObserver.takeRecords());
+        w.__welcomeObserver.disconnect();
+        return w.__welcomeInsertions;
+    });
+    assert.equal(insertions, 0, "Welcome must never enter the DOM during progressive loading or replacement");
+    await apply([{ op: "clear_all" }]);
+    assert.equal(await welcome.count(), 1);
+    const failed = await page.evaluate(async () => {
+        const c = (window as any).__controller;
+        await c.handleMessage({ op: "clear_all", awaiting_structure: true });
+        try {
+            await c.handleMessage({ op: "load_structure_from_string", format: "invalid-format", data: "invalid" },
+                { throwOnError: true });
+            return false;
+        } catch { return true; }
+    });
+    assert.equal(failed, true, "the failure control must actually reject loading");
+    assert.equal(await welcome.count(), 1, "a failed prepared load returns to the empty welcome state");
+    console.log("[E2E load usability] no transient Welcome; Unicode cards/actions; clear and failed-load controls passed");
+}
+
 async function checkStudioLoading(page: any) {
     const authority = spawn(process.env.PYTHON || "python", [resolve(dir, "composite-load-bridge.py"), "--studio"],
         { cwd: resolve(dir, "../../../.."), stdio: ["pipe", "pipe", "pipe"] });
@@ -243,6 +314,7 @@ async function run() {
         for (const representation of extracted.mask.whole) {
             assert.deepEqual(representation.values, [1, 0, 0, 0]);
         }
+        await checkProgressiveWelcome(page, fixture);
         await checkStudioLoading(page);
         assert.deepEqual(errors, []);
         console.log("[E2E composite-load] loading, session reopening, extraction, coordinates and source visibility passed");

@@ -116,6 +116,23 @@ it verifies browser-generated requests against MolSysMT calculations. A Python
 test constructing an already-correct request cannot guard a TypeScript emission
 defect. Other targets retain the default pytest profile until explicitly adopted.
 
+### Composite loading browser guard profile
+
+The second bounded non-pytest selector is exactly
+`molsysviewer/js/tests/e2e/composite-load.e2e.ts`, without suffixes, globs or
+commands. From `molsysviewer/js`, run `npm run build:harness`,
+`npm run build:e2e:all`, then `node tests/e2e/composite-load.e2e.js`.
+It also belongs to `npm run test:e2e:core`; browser/WebGL failure remains an
+error and `E2E_ALLOW_SKIP=1` does not qualify a closure.
+
+The validator checks its entrypoint, real-Python fixture, failing catch handler
+and build/core registration. The fixture loads real molecular demos through
+the public Python API. `checkProgressiveWelcome` observes DOM insertions across
+the actual progressive-load messages, including intermediate states that a
+final screenshot cannot cover. Explicit clear and failed loading provide empty
+viewer controls. Unicode card text and actions guard source-region naming.
+Other browser targets still require explicit adoption.
+
 **Archive, never delete.** A repository that deletes a closed entry breaks every reference
 into it.
 

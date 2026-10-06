@@ -79,12 +79,22 @@ if "--studio" in sys.argv:
     sys.exit(0)
 
 batch = msv.new_view()
-batch.load(sources, multiple=True, labels=["A", "A", "C", "D"])
+labels = ["Proteína", "Cafeína", "Cafeína", "配体"]
+batch.load(sources, multiple=True, labels=labels)
 progressive = msv.new_view()
+progressive._ready = True
+sent = []
+progressive.widget.send = sent.append
 stages = []
-for source, label in zip(sources, ["A", "A", "C", "D"]):
+wire_stages = []
+for source, label in zip(sources, labels):
+    sent.clear()
     progressive.load(source, label=label)
+    wire_stages.append(list(sent))
     stages.append(progressive._build_embedded_runtime_snapshot())
+sent.clear()
+progressive.load(sources[0], mode="replace", label="Proteína")
+replacement = list(sent)
 initial = batch._build_embedded_runtime_snapshot()
 batch.regions[batch.load_blocks[1]["region_tag"]].hide()
 hidden = batch._build_embedded_runtime_snapshot()
@@ -100,6 +110,8 @@ print(
         {
             "batch": initial,
             "progressive": stages,
+            "progressive_wire": wire_stages,
+            "replacement_wire": replacement,
             "hidden": hidden,
             "reopened": reopened,
             "extracted": subset,

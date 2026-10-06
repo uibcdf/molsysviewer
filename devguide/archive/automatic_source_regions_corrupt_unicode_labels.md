@@ -1,13 +1,13 @@
 ---
 summary: Automatic source regions corrupt Unicode labels shown in Studio
 issue: uibcdf/molsysviewer#165
-status: open
+status: resolved
 opened: 2026-10-06
-closed:
+closed: 2026-10-06
 severity: low
 verification: reproduced
 area: [loading, regions, ui]
-guard:
+guard: tests/test_load_usability.py::test_source_region_labels_preserve_unicode_and_identity
 normative:
 blocked_by: []
 supersedes: []
@@ -61,5 +61,31 @@ class name `RegionMixin`; reading the actual declaration and using
 
 ## Resolution
 
-Pending. No runtime edit is made during the human review. Preserve the fixed
-source handoff to MolSysMT while collecting the remaining observations.
+Resolved on 2026-10-06. Automatic
+load-source tags use the trimmed readable source label. The existing tag
+registry and collision owner remain responsible for uniqueness; a duplicate
+`Cafeína` becomes `Cafeína__2`. Other region-building recipes retain their
+existing rules. No new naming field or session migration is introduced.
+
+`tests/test_load_usability.py::test_source_region_labels_preserve_unicode_and_identity`
+asserts exact accented, decomposed-accent and CJK tags for both batch and
+progressive loading, source atom ranges, rename/UID continuity and MSV
+round-trip. The companion test retains existing ASCII tags and their source
+records when adding a Unicode-named source to a reopened session. All four
+module cases pass.
+
+The real Chromium composite-load guard opens Studio Regions, reads the actual
+card text (including a duplicate suffix), and applies hide/show using the
+Unicode tag against real Mol* transparency masks. Existing composite checks
+also retain reopened and extracted source scenes. Human confirmation after
+restarting the notebook kernel and refreshing the runtime is still pending.
+The old source handoff is preserved at its original SHA. #166 separately
+tracks an existing unit DOM fixture incompatibility, without changing naming
+or browser runtime behavior.
+
+The complete real-browser lane passes **39/39 core suites**. The once-run
+Python suite returns 2,816 passed, 22 sandbox permission failures and 23
+skipped in 524.08 s; normal pytest outside the sandbox passes the explicit
+22 failed nodes. This selected follow-up is not a second complete run.
+Environment, tested source hashes and validation limits are retained in
+`devguide/load_usability_fixes_20261006.json`.

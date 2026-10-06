@@ -220,7 +220,9 @@ class LoadMixin:
     def _load_region_base_tag(self, block: Mapping[str, Any]) -> str:
         label = block.get("label")
         if isinstance(label, str) and label.strip():
-            return self._slugify_region_tag(label)
+            # Tags are labels, not filenames: the registry accepts Unicode and
+            # owns collision handling. Keep the source's readable name.
+            return label.strip()
         load_index = int(block.get("index", 0)) + 1
         return f"Load{load_index}"
 
@@ -367,7 +369,7 @@ class LoadMixin:
         else:
             # A replacement clears plots/overlays only after source preparation.
             if mode == "replace":
-                self.reset_viewer(skip_digestion=True)
+                self._reset_viewer(awaiting_structure=True)
             else:
                 self.trajectory_plot._check_structure_axis(candidate.structures.n_structures)
             prepared = (

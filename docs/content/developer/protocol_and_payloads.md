@@ -18,6 +18,13 @@ Guidelines
 - Keep option keys consistent with the TS types.
 - Prefer additive changes to preserve backward compatibility.
 
+`clear_all` normally declares an empty session and restores Welcome. A prepared
+system rebuild or replacement adds `awaiting_structure: true`: the canvas is
+cleared while Welcome stays hidden until the following load succeeds or fails.
+Loader cleanup releases this state, including failed array-native decoding.
+Panel-only endpoints never show Welcome. Empty-state detection reads the
+actual Mol* structure hierarchy, rather than cached references to deleted nodes.
+
 ## MolSys payload schema (Python → JS)
 
 When loading MolSysMT-native systems, Python sends a stable payload:

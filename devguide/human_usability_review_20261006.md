@@ -49,12 +49,12 @@ legibility and source-region semantics remain for subsequent steps.
 Diego reports that caffeine appears alongside the protein, the final framing
 is appropriate and Whole shows the combined system. Before the new system is
 drawn, Welcome briefly reappears; this is tracked as
-[#164](pending_bugs/welcome_card_flashes_during_system_rebuild.md).
+[#164](archive/welcome_card_flashes_during_system_rebuild.md).
 
 Regions contains the two sources but displays `Cafe_na` and `Prote_na`,
 instead of the supplied accented labels. The existing ASCII slug rule is
 reproduced directly; this is tracked as
-[#165](pending_bugs/automatic_source_regions_corrupt_unicode_labels.md).
+[#165](archive/automatic_source_regions_corrupt_unicode_labels.md).
 
 The cell emits the provider's box mismatch warning (incoming caffeine has no
 box; the protein's box is retained) and structural-attribute warning
@@ -65,7 +65,19 @@ chemically prepared.
 
 ## Next observations
 
-Continue in the same notebook and existing protein view:
+The source corrections for #164/#165 and their regression guards pass,
+including all 39 core browser suites. The once-run Python suite has 2,816
+passed, 22 sandbox permission failures and 23 skipped; the explicit 22 nodes
+pass with normal pytest outside the sandbox. This selected follow-up is not
+a second complete run. The unit JS fixture failure is separately tracked as
+[#166](pending_bugs/group_panel_unit_dom_missing_query_selector.md).
+[The validation receipt](load_usability_fixes_20261006.json) preserves the scope.
+Human confirmation has not been reported. Restart the
+notebook kernel, refresh the browser and create the protein/caffeine view
+again so both the Python module and widget runtime use the new code. Check
+that Welcome does not flash and Regions displays `Proteína` and `Cafeína`.
+
+Then continue in the same notebook:
 
 1. Hide/show/isolate source regions, restore them and add a dedicated representation.
 2. Compare batch loading with progressive loading.

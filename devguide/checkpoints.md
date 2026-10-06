@@ -11,8 +11,19 @@ menu/reset, both Help routes, full screen and its return, floating Studio
 controls/docking/popup lifecycle and canvas-popup movement synchronization
 are reported passing. Progressive caffeine loading displays both sources with
 appropriate framing; the provider warnings are understood. It reveals a
-transient Welcome card (#164) and lossy accented source-region tags (#165),
-now tracked without runtime edits. Next: source-region visibility controls.
+transient Welcome card (#164) and lossy accented source-region tags (#165).
+Both are now resolved in source: [#164](archive/welcome_card_flashes_during_system_rebuild.md)
+uses an explicit pending-load state, and [#165](archive/automatic_source_regions_corrupt_unicode_labels.md)
+preserves readable Unicode tags. All **39/39 core browser suites** pass.
+The once-run Python suite returns 2,816 passed, 22 sandbox permission failures
+and 23 skipped; normal pytest outside the sandbox passes those explicit 22
+nodes. The full Python suite is not repeated. See
+[the loading-fix receipt](load_usability_fixes_20261006.json).
+The human review repeats the protein/caffeine load with a restarted kernel and
+refreshed browser before proceeding to source-region visibility controls.
+The JS unit run separately exposes [#166](pending_bugs/group_panel_unit_dom_missing_query_selector.md): GroupPanel's test DOM lacks
+`querySelector`, although the real browser route passes. That fixture remains
+an open 1.0 validation task.
 Keep these direct human
 observations separate from automated evidence in
 [the current review](human_usability_review_20261006.md).

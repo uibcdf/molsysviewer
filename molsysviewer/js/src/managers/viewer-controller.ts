@@ -841,6 +841,7 @@ export class MolSysViewerController {
     private lastMeasurementSummary: LastMeasurementSummary | null = null;
     private measurementTagCounter = 0;
     private welcomeCard: HTMLDivElement | null = null;
+    private structureLoadPending = false;
     private readonly model?: any;
 
     private localViewerMode = "integrated";
@@ -2290,16 +2291,16 @@ export class MolSysViewerController {
         // rebuild. This is idempotent and returns immediately once tracking is on.
         this.state?.ensureCameraInputTracking?.();
 
+        const isLoaderOp = msg.op === "load_structure_from_string" ||
+            msg.op === "load_pdb_string" ||
+            msg.op === "load_molsys_payload" ||
+            msg.op === "load_molsys_payload_ref" ||
+            (msg as any).op === "load_molsys_array_payload_ref" ||
+            msg.op === "load_structure_from_url" ||
+            msg.op === "load_pdb_id";
         try {
-            const isLoaderOp = msg.op === "load_structure_from_string" ||
-                               msg.op === "load_pdb_string" ||
-                               msg.op === "load_molsys_payload" ||
-                               msg.op === "load_molsys_payload_ref" ||
-                               (msg as any).op === "load_molsys_array_payload_ref" ||
-                               msg.op === "load_structure_from_url" ||
-                               msg.op === "load_pdb_id";
             if (isLoaderOp) {
-                this.hideWelcomeCard();
+                this.setStructureLoadPending(true);
             }
 
             if ((msg as any).op === "load_molsys_payload" || (msg as any).op === "load_molsys_payload_ref" || (msg as any).op === "load_molsys_array_payload_ref") {
@@ -2435,7 +2436,11 @@ export class MolSysViewerController {
                         await this.scene.clearScene(msg);
                         this.checkCameraAfterSceneMutation("clear_scene");
                     break;
-                case "clear_all": this.interactions.clear(); await this.scene.clearAll(); break;
+                case "clear_all":
+                    this.setStructureLoadPending(msg.awaiting_structure === true);
+                    this.interactions.clear();
+                    await this.scene.clearAll();
+                    break;
                 case "clear_shapes_by_tag": await this.scene.clearShapesByTag(msg); break;
 
                 // State/Region Ops
@@ -2982,6 +2987,8 @@ export class MolSysViewerController {
         } catch (error) {
             console.error("[MolSysViewer] Error handling message:", msg, error);
             if (options.throwOnError) throw error;
+        } finally {
+            if (isLoaderOp) this.setStructureLoadPending(false);
         }
     }
 
@@ -2989,17 +2996,26 @@ export class MolSysViewerController {
         msg: LoadMolSysArrayPayloadMessage,
         buffers: readonly DataView[],
     ): Promise<void> {
-        const payload = decodeArrayNativeMolSys(msg, buffers);
-        await this.loadArrayNativeMolSysPayload(payload, msg.label);
+        this.setStructureLoadPending(true);
+        try {
+            const payload = decodeArrayNativeMolSys(msg, buffers);
+            await this.loadArrayNativeMolSysPayload(payload, msg.label);
+        } finally {
+            this.setStructureLoadPending(false);
+        }
     }
 
     async loadArrayNativeMolSysPayload(
         payload: DecodedArrayNativeMolSys,
         label?: string,
     ): Promise<void> {
-        this.hideWelcomeCard();
-        this.trajectory.setExpectedFrameCount(payload.nStructures);
-        await this.loader.loadArrayNativeMolSysPayload(payload, label);
+        this.setStructureLoadPending(true);
+        try {
+            this.trajectory.setExpectedFrameCount(payload.nStructures);
+            await this.loader.loadArrayNativeMolSysPayload(payload, label);
+        } finally {
+            this.setStructureLoadPending(false);
+        }
     }
 
     // Helper accessors for internal state management
@@ -3845,6 +3861,11 @@ export class MolSysViewerController {
         document.head.appendChild(style);
     }
 
+    private setStructureLoadPending(pending: boolean): void {
+        this.structureLoadPending = pending;
+        this.updateWelcomeState();
+    }
+
     private updateWelcomeState(isInitPhase = false): void {
         // A panel-only endpoint (the popped-out Studio/Add-ons window) has its
         // canvas hidden and never loads a structure: the panel snapshot carries
@@ -3853,11 +3874,11 @@ export class MolSysViewerController {
         // Showing the card there covers the panels that are the entire point of
         // the window, and offers a "Load Crambin" button that would load into a
         // canvas the user cannot see.
-        if (this.isPanelOnly) {
+        if (this.isPanelOnly || this.structureLoadPending) {
             this.hideWelcomeCard();
             return;
         }
-        const hasStructure = !!this.currentStructure || !!this.loadedStructure;
+        const hasStructure = !!this.getStructureData();
         if (hasStructure) {
             this.hideWelcomeCard();
         } else {

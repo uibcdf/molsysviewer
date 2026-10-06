@@ -1,13 +1,13 @@
 ---
 summary: Welcome card flashes during progressive system rebuilding
 issue: uibcdf/molsysviewer#164
-status: open
+status: resolved
 opened: 2026-10-06
-closed:
+closed: 2026-10-06
 severity: low
 verification: inspected
 area: [loading, ui, lifecycle]
-guard:
+guard: molsysviewer/js/tests/e2e/composite-load.e2e.ts
 normative:
 blocked_by: []
 supersedes: []
@@ -65,5 +65,37 @@ across hosts have not been measured.
 
 ## Resolution
 
-Pending. No runtime edit is made during the human review. Preserve the fixed
-source handoff to MolSysMT while collecting the remaining observations.
+Resolved on 2026-10-06. Rebuilds
+and prepared replacements send `clear_all` with `awaiting_structure: true`.
+The controller suppresses Welcome across the intervening structure removal
+and releases its pending state in loader cleanup, including failed native
+decoding. Public `reset_viewer()` still declares a genuinely empty session.
+The actual Mol* hierarchy determines whether a structure exists after failure.
+
+`composite-load.e2e.ts::checkProgressiveWelcome` consumes actual Python load
+messages and records every Welcome DOM insertion across three progressive
+additions and a replacement: zero. A final-state-only assertion could miss
+the defect, while this observer retains nodes removed before assertion.
+Explicit clear and invalid loading restore one Welcome card. The array-native
+suite checks success, explicit clear and decoding failure; panel-popup checks
+that the panel-only endpoint remains free of Welcome. All focused browser
+cases pass in real Chromium/Mol*, without opt-out.
+
+The bounded browser guard profile is adopted in `reporting_protocol.md` and
+resolved by its validator. Python's four-case usability module passes and
+checks both rebuild declarations and ordinary reset. The new test initially
+assumed list atom indices and an accumulating message log; the owning APIs
+return tuples and reset the recorder on `clear_all`. Correcting those test
+assumptions produced the passing run without changing product behavior.
+
+Diego's human retest is pending. The previous fixed source handoff remains
+historical evidence for its original SHA. #166 separately tracks the unit
+DOM fixture failure found in `npm run test:js`; it is not a browser failure.
+
+Complete browser regression passes **39/39 core suites**, with canonical
+Python selected for both fixture and export paths. The once-run Python suite
+returns 2,816 passed, 22 sandbox permission failures and 23 skipped in 524.08 s.
+Normal pytest outside the sandbox passes the explicit 22 failed nodes. The
+full Python suite is not repeated or represented as a fresh clean full run.
+Exact source hashes, environment, controls and interrupted setup attempts are
+retained in `devguide/load_usability_fixes_20261006.json`.

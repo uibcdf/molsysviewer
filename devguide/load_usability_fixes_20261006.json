@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-06",
+  "purpose": "Close uibcdf/molsysviewer#164 and #165 before resuming the remote-Jupyter human review.",
+  "viewer_base_commit": "7bbd420b4af57fcfd255b5153a401921ae24b9b3",
+  "source_identity": "The commit adding this receipt carries the corrections; hashes identify the tested source files.",
+  "source_sha256": {
+    "molsysviewer/viewer/core.py": "1e1f00bc331075cfb06b953f89e3ff6687645ffdaa95c6ec60aea88f9f0b842d",
+    "molsysviewer/viewer/load.py": "07e4ef9849c526d434b90311b856683b77cf3494918a4dea5af4b284f00c5fb2",
+    "molsysviewer/viewer/scene.py": "b4972b51c1f440ea715d4c911c77bb0df2d22f955026813261271991b09f9136",
+    "molsysviewer/js/src/managers/viewer-controller.ts": "c062f2d2a8ac9f2710132426d8fc672c4740c478508128ae1dc0fea8363bfb85",
+    "molsysviewer/js/src/messages/viewer-messages.ts": "d1c9a632a3c3ebe46ff2dff6074cf32ffc6f8f0f678f3e628205271372985362",
+    "molsysviewer/js/tests/e2e/composite-load.e2e.ts": "d509a6faa61581cf44004cbbbf621e7f8115533c629b359c7213e01bcf249b95",
+    "molsysviewer/js/tests/e2e/composite-load-bridge.py": "86059d26002bd6429fbe90b7ff3938e616799ddb0de6affbf6e70d86997adb85",
+    "molsysviewer/js/tests/e2e/array-native-load.e2e.ts": "531e5448eca4288e86a33fb50fcf1c5c5317cf28304abfdf4bb306670e212cd2",
+    "tests/test_load_usability.py": "369f88195cb3ab53a644876d9e9119f2af0369d055b8e4c219a3bb52946a020b",
+    "tests/test_reporting_protocol.py": "2f7a649174f8728d67d9c514c5ca908daae9358d8b3dfb33a9bd29c1c3e5db68"
+  },
+  "environment": {
+    "conda": "molsyssuite@uibcdf_3.14",
+    "python_executable": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "python": "3.14.7",
+    "chrome": "149.0.7827.53",
+    "node": "24.11.1",
+    "packages": {
+      "molsysviewer": "0.23.4+27.gfed1c4b8.dirty",
+      "molsysmt": "0.22.4+24.g42b487869",
+      "pytest": "9.1.1",
+      "pytest-receptor": "1.1.0+19.g6d87a24",
+      "rdkit": "2025.9.5",
+      "openmm": "8.6.1"
+    },
+    "metadata_limit": "Editable installed metadata predates current checkout commits; it is not a public artifact identity.",
+    "provider_heads_observed": [
+      "bb4781c5ae0b725d0c904cfd8bae1f44a1b13123",
+      "a1440c1ce2ff2dea1f917d13e0fba5714567139a",
+      "3cf1c8e53e082df79db2fb82776482e969995ea0"
+    ],
+    "provider_runtime_delta_from_pin": [
+      "molsysmt/basic/compare.py"
+    ],
+    "provider_runtime_delta_during_observed_heads": [],
+    "provider_limit": "The development provider has a missing-metadata compare improvement (equal_nan=True), unlike the frozen CI pin. Its observed later commits leave package sources unchanged. This local run does not replace the exact-source handoff."
+  },
+  "focused_python": {
+    "passed": 4,
+    "exit_code": 0,
+    "module": "tests/test_load_usability.py"
+  },
+  "reporting_profile_before_archiving": {
+    "passed": 217,
+    "exit_code": 0
+  },
+  "guide_validation_after_archiving": {
+    "passed": 224,
+    "exit_code": 0,
+    "modules": ["tests/test_reporting_protocol.py", "tests/test_devguide_links.py", "tests/test_devguide_architecture_status.py"]
+  },
+  "python_complete_once": {
+    "command": "python -m pytest --receptor=llm -o receptor_rerun_command=\"python -m pytest\" tests/",
+    "exit_code": 1,
+    "passed": 2816,
+    "failed": 22,
+    "skipped": 23,
+    "seconds": 524.08,
+    "failure_scope": "Sandbox prevents local socket binding and Chromium/Qt subprocess startup.",
+    "full_suite_repeated": false
+  },
+  "normal_pytest_permission_recheck": {
+    "exit_code": 0,
+    "passed": 22,
+    "selectors": [
+      "tests/test_exported_page_opens_from_disk.py::test_a_matching_pair_stays_quiet",
+      "tests/test_exported_page_opens_from_disk.py::test_a_scene_from_another_release_says_so",
+      "tests/test_exported_page_opens_from_disk.py::test_a_self_contained_export_renders_with_no_server_and_no_network",
+      "tests/test_exported_page_opens_from_disk.py::test_failed_scene_restoration_never_declares_the_export_rendered",
+      "tests/test_exported_page_opens_from_disk.py::test_the_exported_file_is_the_only_file_needed",
+      "tests/test_exported_page_opens_from_disk.py::test_the_notice_names_both_versions",
+      "tests/test_exported_page_opens_from_disk.py::test_the_studio_says_it_cannot_act_here",
+      "tests/test_internal_render_worker_host.py::test_internal_host_authenticates_registration_and_preserves_binary_frames",
+      "tests/test_internal_render_worker_host.py::test_internal_host_rejects_a_worker_with_the_wrong_session_identity",
+      "tests/test_preview_server.py::test_preview_moves_on_when_the_port_is_taken",
+      "tests/test_preview_server.py::test_preview_serves_the_directory",
+      "tests/test_remote_cli.py::test_client_rendering_cli_runs_a_real_demo_session_and_emits_json",
+      "tests/test_remote_cli.py::test_foreground_server_process_reports_ready_and_stops",
+      "tests/test_remote_cli.py::test_load_worker_and_bind_failures_have_distinct_exit_codes",
+      "tests/test_remote_session_service.py::test_auth_and_client_websocket_have_limits_separate_from_molecular_uploads",
+      "tests/test_remote_session_service.py::test_authentication_failures_are_bounded_without_locking_out_the_valid_token",
+      "tests/test_remote_session_service.py::test_client_rendering_uses_the_same_authenticated_gateway_without_a_worker",
+      "tests/test_remote_session_service.py::test_rejected_websocket_peers_do_not_poison_health_or_consume_the_client_slot",
+      "tests/test_remote_session_service.py::test_session_auth_registration_signaling_input_and_command_share_one_identity",
+      "tests/test_remote_session_service.py::test_two_loopback_sessions_keep_cookies_and_artifacts_isolated",
+      "tests/test_standalone.py::test_qt_event_transport_smoke_real_qt",
+      "tests/test_standalone.py::test_qt_payload_refs_replace_across_two_real_generations"
+    ],
+    "runner": "Canonical Python calls pytest.main([\"-q\", *selectors]) outside the sandbox.",
+    "limit": "This is a successful selected follow-up, not a second clean full-suite run. Qt transport passes do not establish visible-window standalone certification."
+  },
+  "core_browser": {
+    "command": "node tests/e2e/e2e-runner.js --lane=core",
+    "build": [
+      "npm run build:harness",
+      "npm run build:e2e:all"
+    ],
+    "exit_code": 0,
+    "passed": 39,
+    "selected": 39,
+    "opt_out": false,
+    "python_selection": "PATH, CONDA_PREFIX, PYTHON and PYTHON_BIN explicitly select molsyssuite@uibcdf_3.14.",
+    "suite_timeout_ms": 600000,
+    "renderer": "Real Mol* in headless Chromium/WebGL2.",
+    "welcome_insertions_during_progressive_and_replacement_loads": 0,
+    "controls": [
+      "Explicit clear restores Welcome",
+      "Invalid string loading restores Welcome",
+      "Native decoding failure restores Welcome",
+      "Panel-only endpoint has no Welcome",
+      "Unicode Studio cards and real region transparency masks"
+    ]
+  },
+  "unit_js": {
+    "command": "npm run test:js",
+    "exit_code": 1,
+    "cause": "GroupPanel FakeElement lacks querySelector consumed by InteractionsPanel.paint.",
+    "issue": "uibcdf/molsysviewer#166",
+    "limit": "No clean unit-suite result is claimed."
+  },
+  "other_checks": [
+    "npx tsc --noEmit passes",
+    "Ruff check and format checks pass",
+    "npm run build:runtime regenerates the bundle without package version metadata changes"
+  ],
+  "interrupted_attempts": [
+    "First core attempt stopped before export tests after finding PYTHON_BIN would inherit the 3.13 default; corrected environment used for complete core run.",
+    "A --lf permission follow-up stopped because its shared cache contained historical entries; explicit 22 selectors from the preserved report used instead."
+  ],
+  "human_confirmation": "Pending after kernel restart, browser refresh and recreating protein/caffeine view.",
+  "release_limit": "No public artifact, 1.0 release, remote-session or visible-window standalone certification is created."
+}

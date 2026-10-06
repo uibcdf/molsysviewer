@@ -284,6 +284,8 @@ export type ClearSceneMessage = {
 
 export type ClearAllMessage = {
     op: "clear_all";
+    /** Clear for a prepared replacement, rather than an empty session. */
+    awaiting_structure?: boolean;
 };
 
 export type ClearByTagMessage = {

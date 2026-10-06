@@ -1,5 +1,8 @@
 # Archived implementation plans
 
+- [`welcome_card_flashes_during_system_rebuild.md`](welcome_card_flashes_during_system_rebuild.md) — #164: explicit pending-load state prevents transient Welcome during rebuilding; DOM insertion guard, empty/failure controls and 39 core browser suites pass.
+- [`automatic_source_regions_corrupt_unicode_labels.md`](automatic_source_regions_corrupt_unicode_labels.md) — #165: source regions preserve Unicode labels and deterministic duplicate suffixes; batch/progressive identity, session guards and actual Studio card checks pass.
+
 - [`amber_test_environments_missing_openmm.md`](amber_test_environments_missing_openmm.md) — #163: provision the AMBER backend in all scientific test/development recipes; the real complementary-file workflow and full exact-source suites pass on Linux, macOS and Windows.
 
 - [`scientific_test_environments_missing_rdkit.md`](scientific_test_environments_missing_rdkit.md) — #161: provision RDKit for real chemical fixtures in all test/development recipes; the guard rejects three omissions and the native source-pair matrices collect their scientific cases.

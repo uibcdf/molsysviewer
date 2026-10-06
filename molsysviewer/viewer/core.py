@@ -2406,7 +2406,7 @@ class MolSysView(
         if history is not None:
             history.clear()
 
-        self._send({"op": "clear_all"})
+        self._send({"op": "clear_all", "awaiting_structure": True})
         self._send(molecular_projection)
 
         if self.whole.preset is not None or self.whole.representation is not None:

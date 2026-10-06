@@ -163044,6 +163044,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.lastMeasurementSummary = null;
     this.measurementTagCounter = 0;
     this.welcomeCard = null;
+    this.structureLoadPending = false;
     this.localViewerMode = "integrated";
     this.localControlsMode = "classic";
     this.localPanelModeStyle = "drawer";
@@ -164517,10 +164518,10 @@ var MolSysViewerController = class _MolSysViewerController {
       return;
     }
     this.state?.ensureCameraInputTracking?.();
+    const isLoaderOp = msg.op === "load_structure_from_string" || msg.op === "load_pdb_string" || msg.op === "load_molsys_payload" || msg.op === "load_molsys_payload_ref" || msg.op === "load_molsys_array_payload_ref" || msg.op === "load_structure_from_url" || msg.op === "load_pdb_id";
     try {
-      const isLoaderOp = msg.op === "load_structure_from_string" || msg.op === "load_pdb_string" || msg.op === "load_molsys_payload" || msg.op === "load_molsys_payload_ref" || msg.op === "load_molsys_array_payload_ref" || msg.op === "load_structure_from_url" || msg.op === "load_pdb_id";
       if (isLoaderOp) {
-        this.hideWelcomeCard();
+        this.setStructureLoadPending(true);
       }
       if (msg.op === "load_molsys_payload" || msg.op === "load_molsys_payload_ref" || msg.op === "load_molsys_array_payload_ref") {
         const structures = msg.payload?.structures;
@@ -164735,6 +164736,7 @@ var MolSysViewerController = class _MolSysViewerController {
           this.checkCameraAfterSceneMutation("clear_scene");
           break;
         case "clear_all":
+          this.setStructureLoadPending(msg.awaiting_structure === true);
           this.interactions.clear();
           await this.scene.clearAll();
           break;
@@ -165289,16 +165291,27 @@ var MolSysViewerController = class _MolSysViewerController {
     } catch (error2) {
       console.error("[MolSysViewer] Error handling message:", msg, error2);
       if (options.throwOnError) throw error2;
+    } finally {
+      if (isLoaderOp) this.setStructureLoadPending(false);
     }
   }
   async handleArrayNativeMolSysMessage(msg, buffers) {
-    const payload = decodeArrayNativeMolSys(msg, buffers);
-    await this.loadArrayNativeMolSysPayload(payload, msg.label);
+    this.setStructureLoadPending(true);
+    try {
+      const payload = decodeArrayNativeMolSys(msg, buffers);
+      await this.loadArrayNativeMolSysPayload(payload, msg.label);
+    } finally {
+      this.setStructureLoadPending(false);
+    }
   }
   async loadArrayNativeMolSysPayload(payload, label2) {
-    this.hideWelcomeCard();
-    this.trajectory.setExpectedFrameCount(payload.nStructures);
-    await this.loader.loadArrayNativeMolSysPayload(payload, label2);
+    this.setStructureLoadPending(true);
+    try {
+      this.trajectory.setExpectedFrameCount(payload.nStructures);
+      await this.loader.loadArrayNativeMolSysPayload(payload, label2);
+    } finally {
+      this.setStructureLoadPending(false);
+    }
   }
   // Helper accessors for internal state management
   getStructureData() {
@@ -166004,12 +166017,16 @@ var MolSysViewerController = class _MolSysViewerController {
         `;
     document.head.appendChild(style);
   }
+  setStructureLoadPending(pending) {
+    this.structureLoadPending = pending;
+    this.updateWelcomeState();
+  }
   updateWelcomeState(isInitPhase = false) {
-    if (this.isPanelOnly) {
+    if (this.isPanelOnly || this.structureLoadPending) {
       this.hideWelcomeCard();
       return;
     }
-    const hasStructure = !!this.currentStructure || !!this.loadedStructure;
+    const hasStructure = !!this.getStructureData();
     if (hasStructure) {
       this.hideWelcomeCard();
     } else {

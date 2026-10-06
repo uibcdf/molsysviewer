@@ -24,10 +24,24 @@ async function run(): Promise<void> {
         const result = await page.evaluate(async () => {
             const harness = (window as any).Harness;
             const controller = await harness.createController("root");
-            return harness.loadArrayNativeFixture(controller);
+            await controller.handleMessage({ op: "clear_all", awaiting_structure: true });
+            const welcome = () => document.querySelectorAll('[data-molsysviewer-welcome-card="true"]').length;
+            const pendingWelcome = welcome();
+            const loaded = await harness.loadArrayNativeFixture(controller);
+            const loadedWelcome = welcome();
+            await controller.handleMessage({ op: "clear_all" });
+            const clearedWelcome = welcome();
+            await controller.handleMessage({ op: "clear_all", awaiting_structure: true });
+            let decodeFailed = false;
+            try {
+                await controller.handleArrayNativeMolSysMessage({ op: "load_molsys_array_payload" }, []);
+            } catch { decodeFailed = true; }
+            return { loaded, welcome: [pendingWelcome, loadedWelcome, clearedWelcome, welcome()], decodeFailed };
         });
 
-        assert.deepEqual(result, {
+        assert.equal(result.decodeFailed, true);
+        assert.deepEqual(result.welcome, [0, 0, 1, 1], "native completion and decoding failure release the pending state");
+        assert.deepEqual(result.loaded, {
             atomCount: 3,
             frameCount: 2,
             firstAtomX: 0,

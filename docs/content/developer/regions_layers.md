@@ -27,6 +27,10 @@ These concepts are user-visible and must remain stable.
 - For viewer-generated semantic regions such as `make_regions_by(element="chain" | "molecule" | "entity")`, the tag should be derived from a human-readable MolSysMT label when possible and then sanitized to a stable tag token.
 - Preserve semantic clarity in generated tags: concise chain labels can stand alone (`A`), while broader classes should keep an element prefix (`molecule_peptide_0`, `entity_peptide_0`) to avoid ambiguity.
 - If two generated tags collide, resolve the collision deterministically with suffixes such as `__2`, `__3`, ...
+- Automatic load-source regions preserve the trimmed source label, including
+  Unicode, spaces and punctuation; their tags are readable names, not filename
+  tokens. Batch and progressive loading use the same rule and collision suffixes.
+  Existing saved tags and region UIDs are preserved when a session is reopened.
 - Generated tags must be replay-safe and merge-safe: they should survive rebuild/export/replay and later multi-view composition without ambiguity.
 
 ## JS responsibilities
