@@ -473,7 +473,9 @@ own representation. On a state-**None** region:
 - Enablement integration (#167): `show_only()` requires an enabled selected
   region and rejects before mutation otherwise. It never enables disabled other
   regions. Disabling the isolated region releases its isolation without restoring
-  other hidden requests. The temporary-isolation/return design remains undecided.
+  other hidden requests. Maintainer decision 2026-10-06: retain the existing
+  Python operation and Saved Regions controls; no Show Only button or temporary
+  isolation/return mechanism is introduced for this review.
 - `set_representation(alpha=…)` without a type is meaningless; the caller wants `"inherit"`.
 
 Isolation belongs to one region, identified by its existing UID and recipe.

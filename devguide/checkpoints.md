@@ -25,9 +25,14 @@ and the section 2 Python API are reported passing. Own-region Hide reveals
 Whole under the earlier contract. Diego approved #167: enabled Hide constrains
 Whole in every representation state; enable/disable independently suspends and
 reapplies visual configuration while preserving the hidden request. The API,
-Studio, colors and scene lifecycle now have passing regression coverage. Human
-retest remains pending. Studio isolation's return control remains for discussion after this
-change; no temporary-isolation redesign is authorized.
+Studio, colors and scene lifecycle now have passing regression coverage. Diego
+confirms the implemented Hide/Enabled behavior works after `845d34b6`. He agrees
+to keep Python `show_only()` and Studio controls unchanged; no isolation button
+or temporary-isolation redesign is added. Diego also confirms notebook section 3:
+batch loading of protein and caffeine has appropriate framing and source regions,
+Whole contains both, caffeine Hide/Show preserves the protein, and the exact
+coordinate comparison cell passes. Next is notebook section 4: Interactions
+and the three selected pentalanine structures.
 The separate [#166](archive/group_panel_unit_dom_missing_query_selector.md)
 GroupPanel test DOM defect is fixed: the complete JS unit lane passes 322 tests.
 [#167](archive/region_enablement_and_visibility.md) has 12 focused Python tests

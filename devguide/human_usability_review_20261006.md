@@ -77,21 +77,47 @@ revision: enabled Hide hides own representations and masks its atoms on Whole
 in every representation state. Separate `enable()` / `disable()` suspends and
 reapplies visual configuration, preserving identity, style and hidden request.
 Studio offers Enabled independently. Other region representations remain
-independent. The implementation has passing regression coverage; a human retest remains
-pending after publication.
+independent. The implementation has passing regression coverage.
+After publication in `845d34b6ae6a9ce07d84145b1ca44278174afa4e`, Diego reports
+that the implemented behavior works correctly. This confirms the requested
+Hide/Enabled retest; he does not enumerate additional lifecycle routes.
 The additional independent Whole hide/show check has not been explicitly
 reported.
 
 Diego also asks whether Saved Regions should offer Show Only and how users
-should return from it. Discuss a plain action using scene Undo versus a
+should return from it. The discussion considered a plain action using scene Undo versus a
 temporary isolation with an explicit visibility restore. A restore must
 preserve earlier hidden regions and Whole visibility; showing everything is
 not equivalent. Current `show_only()` changes region hidden flags and does
 not itself retain a dedicated visibility restoration snapshot.
 
 The Hide/enablement revision is accepted and tracked in
-[#167](archive/region_enablement_and_visibility.md). The temporary
-isolation API and return control remain open for discussion after this change.
+[#167](archive/region_enablement_and_visibility.md).
+**Decision — 2026-10-06:** keep the existing Python `show_only()` and Saved
+Regions controls unchanged. Do not add a Show Only button or introduce temporary
+isolation and a return control in this review. Continue to the notebook's
+section 3, batch loading of the same protein and caffeine.
+
+## 4. Same sources loaded together — observed passing
+
+The notebook step creates a separate `batch` view with
+`load([protein, caffeine], multiple=True, structure_indices=[0],
+labels=["Proteína", "Cafeína"])`. Diego reports that both protein and caffeine
+appear with appropriate framing, the regions are properly defined, and Whole
+contains both. Hide of caffeine removes it while preserving the protein; Show
+restores it. He confirms the following cell executes correctly: its exact
+coordinate-array equality assertion passes against the progressive view, and
+it reports the batch source records. The reference source counts are 596 and
+24 atoms; the user does not separately transcribe the output table.
+The manually added orange representation in the progressive view is not
+expected in the fresh batch scene.
+
+## 5. Interactions and trajectory — next human step
+
+Notebook section 4 loads real pentalanine structures in source order [0, 8, 3],
+mapped to local frames 0, 1 and 2. The next step is to inspect trajectory controls
+and Studio's Calculate workflow before running the Python reference calculation.
+No human outcome has yet been reported for this step.
 
 ## Next observations
 
@@ -109,15 +135,15 @@ initial 26 suites and a 13-suite follow-up after updating a stale tooltip
 assertion. Its once-run full Python suite had eight diagnosed failures, with
 passing selected follow-ups; it was not repeated. See
 [the enablement receipt](region_enablement_20261006.json). This automated result
-does not replace Diego's pending retest of the changed Hide behavior.
+is separate from Diego's subsequent confirmation of the changed Hide behavior.
 
 **Human confirmation — 2026-10-06:** after publication of the corrections in
 `66a924404feadaef7aa7147fea573533c21d40c8`, Diego reports that both errors
 are corrected: Welcome no longer flashes and the source-region labels are
 correct. This closes the pending human retest for #164/#165. Kernel/browser
 restart details and client version were not separately reported. Region
-observations are recorded above; Hide/enablement is now accepted and isolation's
-return control remains open.
+observations and the later Hide/Enabled confirmation are recorded above. The
+Show Only controls remain unchanged by the subsequent maintainer decision.
 
 For this stage, use Studio's Hide/Show buttons first, then the notebook's
 Python cells for `show_only()` and restoration. The notebook prose suggests
@@ -129,20 +155,18 @@ Before adding an own representation, hiding caffeine masks its atoms on Whole.
 Under #167, adding orange ball-and-stick keeps Hide's Whole constraint:
 caffeine disappears through both its own representation and Whole. Disabling
 the hidden region releases its constraint and permits Whole to draw it again;
-re-enabling restores the hidden request. This is the new expected retest result,
-not a human observation already reported. Other overlapping representations
+re-enabling restores the hidden request. Diego reports the implemented behavior
+works correctly, without separately itemizing these steps. Other overlapping representations
 and Whole's global visibility remain independent.
 An additional independent-visibility check is to hide Whole with caffeine's
 own representation visible, then show Whole again. Resetting the region's
 representation returns it to the base visibility behavior. These are expected
-results for the pending human observation, not newly observed passes.
+results for an additional human observation, not newly observed passes.
 
 Continue in the same notebook:
 
-1. Retest #167's Hide/enablement revision, then discuss the isolation return control.
-2. Compare batch loading with progressive loading.
-3. Review Studio Interactions calculation, inspection/display filters and trajectory controls.
-4. Save/reopen a recognizable session and compare the restored scene.
+1. Review Studio Interactions calculation, inspection/display filters and trajectory controls (notebook section 4).
+2. Save/reopen a recognizable session and compare the restored scene.
 
 Record actual observations as they arrive. This review remains open until those
 steps have been discussed; the current result does not close installed-package,
