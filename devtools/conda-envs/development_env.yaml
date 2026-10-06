@@ -23,7 +23,7 @@ dependencies:
   # --- Scientific stack (lightweight) ---
   - numpy
   - pandas
-  - molsysmt>=0.22.0
+  - molsysmt>=0.23.0
   - pyunitwizard>=0.25.0
 
   # --- Dev tools: formatting, linting, testing ---

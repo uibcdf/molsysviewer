@@ -21,10 +21,15 @@ on:
         description: Full MolSysMT source candidate commit SHA
         required: true
         type: string
+      molsysmt_version:
+        description: Intended MolSysMT version at the exact source candidate
+        required: true
+        default: 0.23.0
+        type: string
       viewer_version:
         description: Intended Viewer release version for the exact source candidate
         required: true
-        default: 0.23.4
+        default: 0.24.0
         type: string
   pull_request:
     branches: [main]
@@ -68,7 +73,7 @@ jobs:
           repository: uibcdf/molsysmt
           # Exact source baseline for Interactions/H5MSM and mixed-source loading.
           # Source feasibility does not establish a compatible published package.
-          ref: ${{ inputs.molsysmt_sha || 'a0ceca86ec99c89377e78fac15cbdf32145a362e' }}
+          ref: ${{ inputs.molsysmt_sha || '46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9' }}
           path: molsysmt-source
           fetch-depth: 0
           persist-credentials: false
@@ -76,7 +81,7 @@ jobs:
       - name: Require an exact MolSysMT commit
         shell: bash
         env:
-          MOLSYSMT_SHA: ${{ inputs.molsysmt_sha || 'a0ceca86ec99c89377e78fac15cbdf32145a362e' }}
+          MOLSYSMT_SHA: ${{ inputs.molsysmt_sha || '46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9' }}
         run: |
           [[ "$MOLSYSMT_SHA" =~ ^[0-9a-f]{40}$ ]]
           test "$(git -C molsysmt-source rev-parse HEAD)" = "$MOLSYSMT_SHA"
@@ -115,6 +120,22 @@ jobs:
             git tag "$EXPECTED_VERSION" HEAD
           fi
 
+      - name: Locally tag the exact MolSysMT candidate version
+        shell: bash -l {0}
+        working-directory: molsysmt-source
+        env:
+          EXPECTED_VERSION: ${{ inputs.molsysmt_version || '0.23.0' }}
+          MOLSYSMT_SHA: ${{ inputs.molsysmt_sha || '46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9' }}
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]
+          test "$(git rev-parse HEAD)" = "$MOLSYSMT_SHA"
+          if git show-ref --verify --quiet "refs/tags/$EXPECTED_VERSION"; then
+            test "$(git rev-list -n 1 "$EXPECTED_VERSION")" = "$MOLSYSMT_SHA"
+          else
+            git tag "$EXPECTED_VERSION" HEAD
+          fi
+
       - name: Install both exact source candidates
         shell: bash -l {0}
         run: |
@@ -127,7 +148,7 @@ jobs:
         shell: bash -l {0}
         working-directory: molsysviewer-source
         env:
-          MOLSYSMT_SHA: ${{ inputs.molsysmt_sha || 'a0ceca86ec99c89377e78fac15cbdf32145a362e' }}
+          MOLSYSMT_SHA: ${{ inputs.molsysmt_sha || '46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9' }}
         run: |
           python devtools/audit_dependency_contract.py \
             --installed-source "molsysmt=../molsysmt-source@$MOLSYSMT_SHA"

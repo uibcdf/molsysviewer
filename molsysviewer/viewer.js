@@ -172056,7 +172056,7 @@ function makeMissingAuthorityReporter(el) {
   };
 }
 function reportSceneRuntimeMismatch(el, sceneVersion) {
-  const runtimeVersion = true ? "0.23.4+71.g3b475639.dirty" : "";
+  const runtimeVersion = true ? "0.24.0" : "";
   if (typeof sceneVersion !== "string" || !sceneVersion || !runtimeVersion) return;
   const release = (version) => version.split("+")[0].split(".dev")[0];
   if (release(sceneVersion) === release(runtimeVersion)) return;

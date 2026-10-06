@@ -5,6 +5,16 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+**0.24.0 staging preparation (2026-10-06): in progress.** MolSysMT supplies
+version 0.23.0, commit `46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9`, build 0
+ABI3 in `uibcdf/label/staging`. The downloaded Linux archive matches the supplied
+SHA-256; the registry confirms all four platform filenames and hashes. Viewer
+now declares `molsysmt>=0.23.0` consistently and prepares citations, staged route
+and runtime for 0.24.0. Local-only CI tags bind both candidate versions before
+installation; source feasibility remains separate from installed-package gates.
+No public tag, release or promotion is created. See
+[the candidate preparation](stabilization_024_preparation_20261006.json).
+
 **Published support-library receiving check (2026-10-06): bounded pass.**
 Exact Conda SMonitor **0.19.0 `py_1`** and ArgDigest **0.15.0 `py_0`** pass
 **122 installed checks, 14 expected skips** on Linux x86_64 / Python 3.14.8,
@@ -17,7 +27,7 @@ source regression returns **2,879 passed/23 skipped, two failed**: the offscreen
 Qt transport/payload processes cannot initialize their OpenGL RHI, tracked
 under experimental #109. This is not a full-suite pass. The receiving guard
 and receipt are published at `a48478fc`; policy and Conda governance pass.
-Its three-platform source-pair CI is in progress. Compatible installed
+Its three-platform source-pair CI now passes; Linux also passes 39 core browser suites and all 25 documented notebooks. Compatible installed
 scientific-pair and cross-platform release qualification remain pending. See
 [the maintained adoption record](python_ecosystem_policy_adoption.md#published-support-library-receiving-check--2026-10-06)
 and [the receiving receipt](support_library_receiving_20261006.json).

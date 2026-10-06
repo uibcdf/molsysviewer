@@ -24,11 +24,11 @@ spec.loader.exec_module(route)
 
 def test_staged_plan_is_bound_to_the_new_version():
     plan = route.read_plan()
-    assert plan["version"] == "0.23.4"
+    assert plan["version"] == "0.24.0"
     assert plan["route"] == "staged"
     assert plan["reason"].strip()
-    assert route.select_route("0.23.4", "workflow_dispatch") == "staged"
-    assert route.select_route("0.23.4", "release") == "staged"
+    assert route.select_route("0.24.0", "workflow_dispatch") == "staged"
+    assert route.select_route("0.24.0", "release") == "staged"
     with pytest.raises(ValueError, match="release plan is for"):
         route.select_route("9.9.9", "release")
 
@@ -40,7 +40,7 @@ def test_dispatch_command_emits_the_selected_route(tmp_path):
             sys.executable,
             str(ROUTE_FILE),
             "--version",
-            "0.23.4",
+            "0.24.0",
             "--event",
             "workflow_dispatch",
             "--github-output",

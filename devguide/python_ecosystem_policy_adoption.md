@@ -40,8 +40,8 @@ Public dependency minima remain `smonitor>=0.13.0` and `argdigest>=0.13.0`.
 No new default capture policy, pipeline-only mode or explicit provider-policy
 opt-in is selected. This validates the existing consumer against the released
 providers; it does not qualify older bounds, other platforms, a compatible
-published Interactions backend or the complete installed pair. MolSysMT's
-compatible candidate and the separate package/1.0 gates remain pending.
+published Interactions backend or the complete installed pair. MolSysMT's compatible 0.23.0 candidate has subsequently arrived in staging;
+the separate installed-package/1.0 gates remain pending.
 Hashes, provenance, test selections and reproduction commands are retained in
 [the receiving receipt](support_library_receiving_20261006.json).
 
@@ -53,7 +53,11 @@ experimental `uibcdf/molsysviewer#109`; no graphical workaround or second
 complete run is made. This is not a passing full suite. Commit `a48478fc`
 publishes the receiving guard and installed evidence, with successful hosted
 MolSysSuite policy and Conda governance checks. Its three-platform source-pair
-CI remains in progress.
+CI now passes on Linux, macOS arm64 and Windows: 2,875/2,848/2,849 passes,
+27/54/53 skips respectively. Linux also passes all 39 core browser suites and
+25 documented notebooks. Run `37530734789` uses exact MolSysMT source
+`a0ceca86ec99c89377e78fac15cbdf32145a362e`; this completes source evidence
+without replacing the installed-package gates.
 
 ## Applicable support boundaries
 

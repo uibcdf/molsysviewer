@@ -46,7 +46,7 @@ requirements:
     - anywidget >=0.9.15
     - argdigest >=0.13.0
     - depdigest
-    - molsysmt >=0.22.0
+    - molsysmt >=0.23.0
     - numpy
     - packaging >=23
     - pyunitwizard >=0.25.0
@@ -65,7 +65,7 @@ test:
     - python -c "from importlib.resources import files; assert files('molsysviewer').joinpath('runtime_actions.json').is_file()"
     - python -c "from importlib.resources import files; assert files('molsysviewer').joinpath('viewer.js').is_file()"
     # The floor is not merely declared: the environment conda actually solved honours it.
-    - python -c "import molsysmt; from packaging.version import Version; assert Version(molsysmt.__version__.split('+')[0]) >= Version('0.22.0'), molsysmt.__version__"
+    - python -c "import molsysmt; from packaging.version import Version; assert Version(molsysmt.__version__.split('+')[0]) >= Version('0.23.0'), molsysmt.__version__"
     # The interpreter this artefact was installed onto is one we claim to support.
     - python -c "import sys; assert sys.version_info[:2] >= (3, 11), sys.version_info"
 

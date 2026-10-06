@@ -1,0 +1,76 @@
+{
+  "schema": "molsysviewer.stabilization_preparation@1",
+  "date": "2026-10-06",
+  "status": "release_preparation_checks_pass; installed_scientific_pair_pending",
+  "viewer": {
+    "version": "0.24.0",
+    "build_number": 0,
+    "route": "staged",
+    "base_commit": "5bb59c0e13045ee0aaf34cf336a3533d611197bf"
+  },
+  "molsysmt": {
+    "version": "0.23.0",
+    "commit": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9",
+    "build_number": 0,
+    "channel": "uibcdf/label/staging",
+    "files": [
+      {
+        "subdir": "linux-aarch64",
+        "filename": "molsysmt-0.23.0-pyabi3hecc93d8_0.conda",
+        "sha256": "d588b52c843b43774ff59d4a627e4cffc0fcc86c39118f279815f4c6ec31a4dd"
+      },
+      {
+        "subdir": "linux-64",
+        "filename": "molsysmt-0.23.0-pyabi3h03bb3b7_0.conda",
+        "sha256": "7ff102db1ceb3a6098b5c020193a2bef1c5eaa4dbcbc5a0b472ee2fa44a1971b"
+      },
+      {
+        "subdir": "win-64",
+        "filename": "molsysmt-0.23.0-pyabi3h2d2bc06_0.conda",
+        "sha256": "d74d69f2ef45e6f44ae9bfc43b89ae8a48d1422c0ad32df8302f17418139eb6b"
+      },
+      {
+        "subdir": "osx-arm64",
+        "filename": "molsysmt-0.23.0-pyabi3ha0bc463_0.conda",
+        "sha256": "b2fe891f6e4fe9b167b0383a0f11c9772a5450e3fb93ad030ea5139d5aa54317"
+      }
+    ],
+    "linux_download_sha256_verified": true
+  },
+  "dependency_floor": "molsysmt>=0.23.0",
+  "candidate_version_unoccupied_at_receiving": true,
+  "publication": {
+    "public_tag_created": false,
+    "github_release_created": false,
+    "artifacts_promoted": false
+  },
+  "qualification": {
+    "dependency_contract_audit": "pass",
+    "citation_validation": "pass",
+    "committed_runtime_version": "0.24.0; pass",
+    "ruff": "lint and format pass",
+    "packaging_version_workflow_followup": {
+      "passed": 31,
+      "failed": 0,
+      "log": "/tmp/msv-024-preparation-followup-20261006.log",
+      "note": "Packaging/version/workflow selectors pass before the later clean-checkout link failure in the same attempt."
+    },
+    "final_guidance_checks": {
+      "passed": 218,
+      "failed": 0,
+      "log": "/tmp/msv-024-preparation-records-20261006.log"
+    },
+    "diagnosed_initial_attempts": [
+      "The distribution guard retained the older provider SHA/count; updated to the new candidate and its four pin uses.",
+      "The new receipt link was tested before its file entered the Git index; staged it and verified all 218 guidance/report checks."
+    ],
+    "full_installed_suite": "not yet run"
+  },
+  "remaining": [
+    "Freeze and review the Viewer candidate commit",
+    "Build immutable noarch staging artifact",
+    "Qualify exact installed pair on four platforms and Python 3.11\u20133.14",
+    "Qualify native Windows launchers and hosted core browser workflows",
+    "Complete public-channel and archival gates before declaring publication complete"
+  ]
+}

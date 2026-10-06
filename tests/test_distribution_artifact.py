@@ -41,7 +41,7 @@ REQUIRED_RUNTIME_RESOURCES = {
 REQUIRED_RUNTIME_VERSION_FLOORS = {
     "aiohttp": "3.10",
     "argdigest": "0.13.0",
-    "molsysmt": "0.22.0",
+    "molsysmt": "0.23.0",
     "pyunitwizard": "0.25.0",
 }
 
@@ -186,7 +186,7 @@ def test_every_environment_installed_without_deps_carries_the_runtime_dependenci
     Both halves failed on hosted CI (uibcdf/molsysviewer#88). `test_env.yaml` lacked
     `aiohttp`, so four remote test modules died at import. It also listed `molsysmt` with
     no floor, so the solver quietly picked 0.12.0 on 3.11 and 3.12 -- nine months older
-    than the `>=0.22.0` this package declares -- and the jobs ran against it. Carrying the
+    than the `>=0.23.0` this package declares -- and the jobs ran against it. Carrying the
     floor turns that into a solve failure that names the missing release.
 
     Derived from the workflows rather than enumerated, so an environment that starts being
@@ -345,7 +345,7 @@ def test_every_publicly_exported_name_resolves():
 
 SUPPORTED_PYTHON_VERSIONS = ("3.11", "3.12", "3.13", "3.14")
 #: The badge remains at the centrally admitted public range until the
-#: coordinated 0.23.4 release passes the independent installed-pair gate.
+#: coordinated 0.24.0 release passes the independent installed-pair gate.
 PUBLIC_PYTHON_VERSIONS = ("3.11", "3.12", "3.13")
 #: The routine development version remains 3.13 during the suite transition.
 RECOMMENDED_PYTHON_VERSION = "3.13"
@@ -430,7 +430,7 @@ def test_python_314_source_pair_uses_exact_provider_commit_without_metadata_bypa
     assert "repository: uibcdf/molsysmt" in workflow
     assert "inputs.molsysmt_sha" in workflow
     # Exact scientific source baseline; public package qualification remains separate.
-    assert workflow.count("${{ inputs.molsysmt_sha || 'a0ceca86ec99c89377e78fac15cbdf32145a362e' }}") == 3
+    assert workflow.count("${{ inputs.molsysmt_sha || '46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9' }}") == 4
     assert "^[0-9a-f]{40}$" in workflow
     assert "git -C molsysmt-source rev-parse HEAD" in workflow
     assert "--ignore-requires-python" not in workflow

@@ -1,7 +1,7 @@
 {
   "schema": "molsysviewer.support_library_receiving@1",
   "date": "2026-10-06",
-  "status": "bounded_published_support_checks_pass; full_source_fails_experimental_qt_host; hosted_source_pending",
+  "status": "bounded_published_support_checks_pass; hosted_source_pair_pass; local_full_source_fails_experimental_qt_host",
   "coordination": "uibcdf/molsyssuite#106",
   "scope": "Existing MolSysViewer consumer behavior with exact published support archives on Linux x86_64 / Python 3.14.8",
   "source_commit": "6be2bcd272ef6eda014c4bb3cf6f50f04695e8ef",
@@ -301,7 +301,8 @@
     "/tmp/msv-support-governance-20261006.log",
     "/tmp/msv-support-hosted-qt-20261006.log",
     "/tmp/msv-support-hosted-e2e-20261006.log",
-    "/tmp/msv-support-final-records-20261006.log"
+    "/tmp/msv-support-final-records-20261006.log",
+    "/tmp/msv-support-sourcepair-completed-20261006.log"
   ],
   "guard_commit": "a48478fcab579095ed6eb7ab2a3620cc8fb3a8df",
   "hosted": {
@@ -318,9 +319,29 @@
     },
     "source_pair": {
       "id": 37530734789,
-      "status": "in_progress",
+      "status": "completed",
       "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37530734789",
-      "molsysmt_commit": "a0ceca86ec99c89377e78fac15cbdf32145a362e"
+      "molsysmt_commit": "a0ceca86ec99c89377e78fac15cbdf32145a362e",
+      "conclusion": "success",
+      "results": {
+        "linux": {
+          "job": 112499150472,
+          "passed": 2875,
+          "skipped": 27
+        },
+        "macos_arm64": {
+          "job": 112499149724,
+          "passed": 2848,
+          "skipped": 54
+        },
+        "windows": {
+          "job": 112499150091,
+          "passed": 2849,
+          "skipped": 53
+        }
+      },
+      "core_browser_suites": 39,
+      "documented_notebooks": 25
     },
     "public_ci": {
       "id": 37530734861,
@@ -350,11 +371,6 @@
     "observed_utc": "2026-10-06T21:06:27Z"
   },
   "remaining_checks": [
-    {
-      "scope": "Complete three-platform source-pair CI for the guard commit",
-      "owning_issue": "uibcdf/molsysviewer#93",
-      "route": "Inspect run 37530734789 when its jobs and Linux notebook/core-browser steps finish; preserve this local and installed evidence independently."
-    },
     {
       "scope": "Compatible public/staging MolSysMT scientific pair and installed release matrix",
       "owning_issue": "uibcdf/molsysviewer#114",
