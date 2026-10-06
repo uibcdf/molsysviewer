@@ -52,6 +52,10 @@ sections:
         path: "docs/content/user/cookbook"
         index_file: "docs/content/user/cookbook/index.md"
         pages:
+          - path: "docs/content/user/cookbook/molecular_workbench.ipynb"
+            agents_file: "docs/content/user/cookbook/molecular_workbench.AGENTS.md"
+            status: "experimental"
+            description: "Progressive/batch source loading, regions, trajectory interactions and session recovery."
           - path: "docs/content/user/cookbook/interactions_workbench.ipynb"
             agents_file: "docs/content/user/cookbook/interactions_workbench.AGENTS.md"
             status: "experimental"

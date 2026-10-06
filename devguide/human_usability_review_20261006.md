@@ -1,6 +1,6 @@
 # Human usability review — 2026-10-06
 
-**In progress.** Diego is reviewing `sandbox/revision_pre_1_0.ipynb` through
+**Completed for the five-stage notebook.** Diego reviewed `sandbox/revision_pre_1_0.ipynb` through
 Jupyter running on the remote development machine, accessed through an SSH
 tunnel from his own browser. Observations below are his direct reports in this
 session, distinct from automated source/browser qualification.
@@ -178,10 +178,12 @@ MolSysMT coordination and a saved-filter compatibility decision. Both are now
 implemented against provider `a0ceca86ec99c89377e78fac15cbdf32145a362e`:
 new calls use the canonical names; version-1 saved visual filters migrate to
 extension 2, leaving scientific metadata/H5MSM untouched. Automated qualification
-is in [the receipt](interactions_query_modes_20261006.json). Direct human retest
-of the renamed controls is pending. The open scratch notebook is preserved;
-after kernel restart, change its explicit `mode="incident"` to
-`mode="involving_selection"` before repeating the atom-filter check.
+is in [the receipt](interactions_query_modes_20261006.json). Diego subsequently
+confirms that the change works and asks to continue directly with notebook
+section 5, Guardar y recuperar. He does not itemize each renamed mode or report
+restart details separately. This records his general confirmation without
+turning it into an exhaustive manual matrix. The open scratch notebook is
+preserved.
 
 ## Next observations
 
@@ -227,14 +229,45 @@ own representation visible, then show Whole again. Resetting the region's
 representation returns it to the base visibility behavior. These are expected
 results for an additional human observation, not newly observed passes.
 
-Continue in the same notebook:
+## 5. Saving and recovering — general human confirmation
 
-1. Review Studio Interactions calculation, inspection/display filters and trajectory controls (notebook section 4).
-2. Save/reopen a recognizable session and compare the restored scene.
+Diego reports that everything appears to have worked after the requested save
+and reopen checks, and proposes preserving or rewriting the notebook as a
+tutorial. This records general acceptance of the recovery step. He does not
+supply screenshots, exact frame/count values or separate per-control results;
+it is not an exhaustive manual matrix. The section saves both a complete `.msv`
+session and an analyses-only H5MSM file, and reopens the `.msv`. Independent
+H5MSM import was not separately exercised in his report.
 
-Record actual observations as they arrive. This review remains open until those
-steps have been discussed; the current result does not close installed-package,
-hosted-public, standalone Qt or final 1.0 qualification. Scientific background
-and previous automated limits remain in
+The human walkthrough of the five notebook stages is complete. This does not
+close installed-package, hosted-public or final 1.0 qualification. Standalone
+and remote scope keep their existing experimental/post-1.0 decisions.
+
+## Tutorial follow-up
+
+A byte-for-byte snapshot of the original `sandbox/revision_pre_1_0.ipynb` is
+retained as `sandbox/revision_pre_1_0_20261006.ipynb`; the open original remains
+untouched. This is the review artifact; its prepared metadata and blank observation fields are not
+rewritten as if Diego had entered detailed observations. This document is the
+record of the reports he actually supplied. His suggestion is implemented as
+`docs/content/user/cookbook/molecular_workbench.ipynb`, an English public
+workflow with bundled sources, the corrected Regions controls, explicit
+calculation/display scopes and query names, temporary session/analysis files,
+recovery and declared same-axis H5MSM import. It complements the focused
+Interactions tutorial. Its complete executable walkthrough passes in
+`molsyssuite@uibcdf_3.14`, including restored frame/filter/style and independent
+same-axis H5MSM import. Two HTML previews are generated from the maintained
+script, with transparent backgrounds and the shared local runtime. This
+automated execution is separate from the human review of the original.
+
+Tutorial validation in `molsyssuite@uibcdf_3.14`: all 21 code cells in the new
+notebook execute successfully with the repository executor and stripped widget
+state; all seven code cells of the linked Interactions tutorial are refreshed.
+`tests/test_docs_static_views.py` passes 29 checks, including the two new local
+runtime previews. `make -C docs html SPHINXOPTS='-j 2 -W --keep-going'` succeeds
+without warnings, and the preview generator passes Ruff. The original review
+snapshot SHA-256 is `198d9ccce0731fee97df6e65ac7c8b3db7d5df7e8b07a90ea99aa36972301532`. No library runtime code is changed.
+
+Scientific background and earlier automated limits remain in
 [the scientific follow-up](scientific_usability_review_20261004.md) and
 [the fixed source handoff](source_pair_handoff_20261006.json).

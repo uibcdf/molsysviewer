@@ -1,4 +1,4 @@
 
-[NbConvertApp] Converting notebook docs/content/user/cookbook/interactions_workbench.ipynb to notebook
+[NbConvertApp] Converting notebook docs/content/user/cookbook/molecular_workbench.ipynb to notebook
 [IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
-[NbConvertApp] Writing 24818 bytes to docs/content/user/cookbook/interactions_workbench.ipynb
+[NbConvertApp] Writing 56965 bytes to docs/content/user/cookbook/molecular_workbench.ipynb

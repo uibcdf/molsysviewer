@@ -5,7 +5,7 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-**Human review (2026-10-06): in progress with Diego through remote Jupyter.**
+**Human review (2026-10-06): the five-stage notebook walkthrough is complete.**
 The initial protein displays correctly. Rotation, zoom, translation, context
 menu/reset, both Help routes, full screen and its return, floating Studio
 controls/docking/popup lifecycle and canvas-popup movement synchronization
@@ -56,9 +56,21 @@ The new full Linux Python run passes 2,869/23 skipped with zero failures;
 four display modes and 17 calculation forms. Version-1 saved display filters
 migrate to extension 2; new public calls reject old names. Scientific coverage
 metadata/H5MSM are unchanged. See [the receipt](interactions_query_modes_20261006.json).
-The updated hosted matrix and installed-package gate remain pending. Restart
-the Jupyter kernel and update the open notebook's explicit `mode="incident"`
-to `mode="involving_selection"` before the next human atom-filter check.
+The updated hosted matrix and installed-package gate remain pending. Diego
+subsequently confirms that the change works and asks to proceed to notebook
+section 5, Guardar y recuperar. Session/frame/filter/visibility restoration and
+the distinction between complete sessions and analyses-only H5MSM are the next
+human observations; the notebook remains untouched. Diego subsequently reports
+that saving/reopening appears to work throughout the requested checks. This is
+general recovery acceptance, without an exhaustive per-control record or a
+separate independent-H5MSM reload observation. The five-stage human walkthrough
+is complete. An unchanged snapshot is saved as
+`sandbox/revision_pre_1_0_20261006.ipynb`, and his tutorial suggestion
+is implemented in `docs/content/user/cookbook/molecular_workbench.ipynb`.
+The new tutorial passes all 21 executable cells; the linked Interactions
+notebook is refreshed, 29 static-runtime checks pass and the strict Sphinx
+build succeeds. This review does not clear the distinct remaining 1.0
+package/CI gates.
 The separate [#166](archive/group_panel_unit_dom_missing_query_selector.md)
 GroupPanel test DOM defect is fixed: the complete JS unit lane passes 322 tests.
 [#167](archive/region_enablement_and_visibility.md) has 12 focused Python tests

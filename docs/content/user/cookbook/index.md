@@ -12,6 +12,7 @@ Each recipe will include: minimal code, expected visuals (static HTML via `view.
 
 Scientific tutorials (provisional):
 
+- {doc}`molecular_workbench` — progressive and batch loading, regions, interactions and session recovery
 - {doc}`tutorial_trajectory_analysis` — RMSF colouring, region annotation, movie export
 
 Exporting a view and putting it on a website is documented once, in
@@ -30,6 +31,7 @@ High-value runtime recipes:
 :maxdepth: 2
 :hidden:
 
+molecular_workbench
 tutorial_trajectory_analysis
 pocket_surface
 pocket_blob
