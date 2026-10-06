@@ -1,6 +1,7 @@
 name: Python 3.14 source pair
 
-# Feasibility gate for the coordinated source branches. It does not establish
+# Feasibility gate for Python, notebooks and core browser workflows on the
+# coordinated source branches. It does not establish
 # resolver-consistent package installation or authorize a public Python badge.
 on:
   push:
@@ -13,6 +14,7 @@ on:
       - pyproject.toml
       - molsysviewer/**
       - tests/**
+      - docs/**
   workflow_dispatch:
     inputs:
       molsysmt_sha:
@@ -34,6 +36,7 @@ on:
       - pyproject.toml
       - molsysviewer/**
       - tests/**
+      - docs/**
 
 permissions:
   contents: read
@@ -160,3 +163,52 @@ jobs:
         shell: bash -l {0}
         working-directory: molsysviewer-source
         run: python -m pytest -o receptor_rerun_command="python -m pytest" --receptor=ci tests/
+
+      # Keep the published/staging notebook and E2E gates independent. This
+      # Linux source observation supplies the coordinated development handoff;
+      # it cannot satisfy an installed-artifact or public release gate (#170).
+      - name: Register the exact source-pair notebook kernel
+        id: notebook-kernel
+        if: runner.os == 'Linux'
+        shell: bash -l {0}
+        run: python -m ipykernel install --sys-prefix --name python3 --display-name "Python source pair 3.14"
+
+      - name: Build the source-pair browser runtime and harness
+        if: runner.os == 'Linux'
+        shell: bash -l {0}
+        working-directory: molsysviewer-source/molsysviewer/js
+        run: |
+          npm run build:runtime
+          npm run build:harness
+          npm run build:e2e:all
+
+      - name: Verify the hosted source-pair browser
+        if: runner.os == 'Linux'
+        shell: bash -l {0}
+        run: |
+          test -x /usr/bin/google-chrome
+          /usr/bin/google-chrome --version
+
+      - name: Run all core browser suites against the exact source pair
+        if: runner.os == 'Linux'
+        shell: bash -l {0}
+        working-directory: molsysviewer-source/molsysviewer/js
+        env:
+          PW_CHROMIUM_BIN: /usr/bin/google-chrome
+        run: npm run test:e2e:core
+
+      - name: Execute every documented notebook against the exact source pair
+        if: always() && runner.os == 'Linux' && steps.notebook-kernel.outcome == 'success'
+        shell: bash -l {0}
+        working-directory: molsysviewer-source
+        run: python docs/execute_notebooks.py -q -n 4 -r -f docs/content
+
+      - name: Preserve source-pair notebook failure logs
+        if: failure() && runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-pair-notebook-failure-logs
+          path: |
+            molsysviewer-source/docs/notebook_errors.log
+            molsysviewer-source/docs/content/**/*.nbconvert.log
+          if-no-files-found: ignore

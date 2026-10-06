@@ -5,6 +5,26 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+**CI closure (2026-10-06): #160 resolved; #169/#170 awaiting hosted confirmation.**
+The query-vocabulary source run `37508347848` passes Linux and macOS; Windows
+fails six source-inspection/reporting tests because unspecified text reads use
+cp1252. #169 declares UTF-8 at each affected read and adds a regression guard.
+The current published-provider notebook and browser runs `37519346853` and
+`37519346977` also fail: the old MolSysMT lacks the caffeine SDF fixture,
+Interactions contract and public H5MSM writer. #170 extends the existing Linux
+exact-source lane to every documented notebook and all 39 core browser suites,
+using the same installed/audited provider and Python 3.14 interpreter. The
+independent released/staging gates remain pending; source success cannot clear
+them. #160 corrects the actual Whole mask examples to resolve queries into
+indices. The 302 focused checks pass. The once-run full Python suite returns
+2,883 passed/23 skipped and one new-report Git-index link failure. Staging the
+reports fixes that failure. Final archive/link/reporting/example checks pass
+229 tests after correcting the moved #160 link; no second full run is made.
+All 25 notebooks execute and strict Sphinx passes. All 39 core browser suites pass, including 17 real calculation forms and
+10 geometry fixtures. New native/source-workflow CI confirmation is pending. See
+[the closure receipt](ci_workflow_closure_20261006.json). No library runtime
+behavior or release tag changes.
+
 **Human review (2026-10-06): the five-stage notebook walkthrough is complete.**
 The initial protein displays correctly. Rotation, zoom, translation, context
 menu/reset, both Help routes, full screen and its return, floating Studio
@@ -83,7 +103,7 @@ Keep these direct human
 observations separate from automated evidence in
 [the current review](human_usability_review_20261006.md).
 
-**Coordinated source handoff (2026-10-06): validated and ready for MolSysMT.**
+**Previous coordinated source handoff (2026-10-06): validated before #168.**
 Fixed Viewer commit `c046fca173f501c6e259761ef8f3d6b1825f17e8` passes exact
 source-pair run `37441973999` against MolSysMT
 `5e2721691b6a3c175406a8e4c0926dfb7b160671` on Python 3.14.7: Linux
@@ -95,11 +115,13 @@ including 17 Interactions calculation forms. Exact native job identities,
 local provider provenance and excluded scope are retained in
 [the handoff receipt](source_pair_handoff_20261006.json).
 
-MolSysMT needs this stable Viewer commit before preparing its compatible
-package. Use these fixed identities for coordinated staging preparation;
-this handoff precedes compatible package qualification and does not depend
-on a provider release arriving first. The separate public CI/core-browser
-runs still fail with the old provider. No tag or 1.0 clearance is created.
+These fixed identities preserve the earlier handoff. The subsequent #168
+query-vocabulary integration uses a newer exact provider commit and needs its
+own completed native/browser/notebook evidence before the next coordinated
+staging preparation. Source handoff precedes compatible package qualification
+and does not depend on a provider release arriving first. The separate public
+CI/core-browser runs still fail with the old provider. No tag or 1.0 clearance
+is created.
 
 **CI environment repair (2026-10-06): #161/#162/#163 resolved in source.**
 RDKit is now declared in both scientific test environments and the local

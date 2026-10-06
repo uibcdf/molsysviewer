@@ -83,7 +83,7 @@ The notebook run [37191306553](https://github.com/uibcdf/molsysviewer/actions/ru
 executed 24 notebooks and failed two: the Interactions workbench requires a
 compatible published provider (#114/#140), and the Whole get notebook still
 advertises query strings for the index-only mask argument. The latter is now
-tracked in [#160](pending_bugs/documented_whole_mask_queries.md) for the agreed
+tracked in [#160](archive/documented_whole_mask_queries.md) for the agreed
 final documentation block; public notebook sources are not changed here.
 These hosted failures remain failures, separate from the passing local scientific
 and browser observations. Other hosted lanes were still running at inspection;

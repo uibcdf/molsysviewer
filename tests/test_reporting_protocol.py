@@ -49,9 +49,9 @@ def validate_guard(root: Path, selector: str) -> list[str]:
     if selector == GROUP_PANEL_UNIT_GUARD:
         js_root = root / "molsysviewer/js"
         try:
-            entry = (root / selector).read_text()
-            index = (js_root / "tests/unit/index.test.ts").read_text()
-            scripts = json.loads((js_root / "package.json").read_text())["scripts"]
+            entry = (root / selector).read_text(encoding="utf-8")
+            index = (js_root / "tests/unit/index.test.ts").read_text(encoding="utf-8")
+            scripts = json.loads((js_root / "package.json").read_text(encoding="utf-8"))["scripts"]
         except (OSError, ValueError, KeyError) as error:
             return [f"guard {selector!r} cannot be indexed: {error}"]
         requirements = (
@@ -68,10 +68,10 @@ def validate_guard(root: Path, selector: str) -> list[str]:
         return validate_pytest_guard(root, selector)
     js_root = root / "molsysviewer/js"
     try:
-        entry = (root / selector).read_text()
-        owner = (js_root / "tests/e2e/interactions-subpanel-scenarios.ts").read_text()
-        runner = (js_root / "tests/e2e/e2e-runner.ts").read_text()
-        scripts = json.loads((js_root / "package.json").read_text())["scripts"]
+        entry = (root / selector).read_text(encoding="utf-8")
+        owner = (js_root / "tests/e2e/interactions-subpanel-scenarios.ts").read_text(encoding="utf-8")
+        runner = (js_root / "tests/e2e/e2e-runner.ts").read_text(encoding="utf-8")
+        scripts = json.loads((js_root / "package.json").read_text(encoding="utf-8"))["scripts"]
     except (OSError, ValueError, KeyError) as error:
         return [f"guard {selector!r} cannot be indexed: {error}"]
     name = "interactions-calculation" if selector == INTERACTIONS_BROWSER_GUARD else "composite-load"

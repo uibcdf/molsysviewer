@@ -1,0 +1,103 @@
+{
+  "schema": "molsysviewer.ci_workflow_closure@1",
+  "recorded_at": "2026-10-06T19:57:56+00:00",
+  "issues": [
+    "uibcdf/molsysviewer#160",
+    "uibcdf/molsysviewer#169",
+    "uibcdf/molsysviewer#170"
+  ],
+  "viewer_base_commit": "a3535cb413248d2f947abc483c1a2c57f57dae46",
+  "provider_source_commit": "a0ceca86ec99c89377e78fac15cbdf32145a362e",
+  "environment": {
+    "conda": "molsyssuite@uibcdf_3.14",
+    "python_executable": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "python_version": "3.14.7",
+    "node": "22.13.0",
+    "provider_route": "clean editable source checkout; separate from installed-artifact qualification",
+    "provider_distribution_version": "0.22.4+24.g42b487869",
+    "pytest": "9.1.1",
+    "pytest_receptor": "1.1.0+19.g6d87a24",
+    "nbconvert": "7.17.1",
+    "ipykernel": "7.3.0"
+  },
+  "local": {
+    "focused_python": {
+      "passed": 302,
+      "failed": 0
+    },
+    "full_python_once": {
+      "passed": 2883,
+      "skipped": 23,
+      "failed": 1,
+      "seconds": 595.0,
+      "failed_node": "tests/test_devguide_links.py::test_relative_links_resolve_in_a_clean_checkout",
+      "diagnosis": "The two new maintained reports were not yet in the Git index. Their tracked links were correctly rejected.",
+      "fix": "Stage the reviewed reports.",
+      "followup_devguide_links": {
+        "passed": 4,
+        "failed": 0
+      },
+      "full_suite_repeated": false
+    },
+    "final_archive_contract_checks": {
+      "passed": 229,
+      "failed": 0,
+      "files": [
+        "tests/test_devguide_links.py",
+        "tests/test_reporting_protocol.py",
+        "tests/test_documented_whole_masks.py",
+        "tests/test_source_text_encoding.py",
+        "tests/test_source_workflow_coverage.py"
+      ],
+      "initial_archive_failure": "Moving #160 left one active-review link pointing to the pending path; corrected to archive before the final run."
+    },
+    "documented_notebooks": {
+      "executed": 25,
+      "failed": 0,
+      "seconds": 82,
+      "scope": "all docs/content notebooks in an isolated copy with the real python3 kernel; only the corrected get notebook outputs/log/mark are copied back",
+      "get_code_cells": 13
+    },
+    "sphinx": {
+      "strict": true,
+      "exit_code": 0
+    },
+    "core_browser": {
+      "status": "passed",
+      "suites": 39,
+      "failed": 0,
+      "skipped": 0,
+      "node": "22.13.0",
+      "runtime_rebuilt": true,
+      "calculation_forms": 17,
+      "geometry_fixtures": 10,
+      "scope": "real Mol*/WebGL2; local core lane, excludes the three remote preview suites"
+    },
+    "ruff": {
+      "exit_code": 0
+    }
+  },
+  "hosted": {
+    "initial_source_pair": "https://github.com/uibcdf/molsysviewer/actions/runs/37508347848",
+    "initial_published_notebooks": "https://github.com/uibcdf/molsysviewer/actions/runs/37519346853",
+    "initial_published_browser": "https://github.com/uibcdf/molsysviewer/actions/runs/37519346977",
+    "new_source_pair": "pending push"
+  },
+  "limits": [
+    "Native Windows confirmation is pending until the new source-pair run finishes.",
+    "Published/staging gates remain independent and fail until the compatible provider is available.",
+    "No tag, artifact promotion or strict 1.0 qualification is authorized by these source observations."
+  ],
+  "source_sha256": {
+    ".github/workflows/ci-python-314-source-pair.yaml": "db3e2324d543940bcfe182fe5dc999b46b8b4e6ce61d8d8b1e8d7ebcad171ce5",
+    "devtools/conda-envs/test_source_pair_py314.yaml": "af8def2dbd34b7a3af451ddd5ca7f49ce16c7cfe178c398a7c38f68b8ae5739a",
+    "docs/content/developer/docs_workflow.md": "e48c5bbb3a5790127ed9307e82feda46e2d1b5a0f15008ba6ee44954fb8ef454",
+    "docs/content/user/molecular_system/get.ipynb": "9d60753da612573a069877516800ddad13e7e6c70cf519310e4866e3ebf7faad",
+    "tests/loaders/test_load_from_molsysmt.py": "c284abf306f6b97e935c770466962dde3ddaf851818daf00a0aed43f5ff84900",
+    "tests/test_e2e_reliability.py": "3e58e48b3d400a786463174e64c2558e55af959da7956b085cf2b773b149fd48",
+    "tests/test_reporting_protocol.py": "c0b480469e56bbf925dbb1dbb6b7d0016df4bb347e4b302c7327aca39926f9e9",
+    "tests/test_documented_whole_masks.py": "f6aef13a127874988853a66f7673ec83a96deace1793c4a37a2bcec4ae39fde7",
+    "tests/test_source_text_encoding.py": "2e5ba133f44f58d43cbfadb05429893be8c7c4bc50c3a5c23b84170fac3c19c2",
+    "tests/test_source_workflow_coverage.py": "7d8e702a429baeac44ed4016c8026f4447d2db5e34ad4596297f281e788aa9f2"
+  }
+}

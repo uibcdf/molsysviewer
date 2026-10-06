@@ -8,7 +8,7 @@ E2E_ROOT = JS_ROOT / "tests" / "e2e"
 
 
 def test_default_e2e_command_runs_the_complete_suite():
-    package = json.loads((JS_ROOT / "package.json").read_text())
+    package = json.loads((JS_ROOT / "package.json").read_text(encoding="utf-8"))
 
     assert package["scripts"]["test:e2e"] == "npm run test:e2e:all"
     assert package["scripts"]["test:e2e:one"] == "npm run test:e2e:region-hide"
@@ -16,9 +16,9 @@ def test_default_e2e_command_runs_the_complete_suite():
 
 
 def test_core_and_remote_evidence_lanes_are_explicit():
-    package = json.loads((JS_ROOT / "package.json").read_text())
-    runner = (E2E_ROOT / "e2e-runner.ts").read_text()
-    workflow = (ROOT / ".github" / "workflows" / "CI_e2e.yaml").read_text()
+    package = json.loads((JS_ROOT / "package.json").read_text(encoding="utf-8"))
+    runner = (E2E_ROOT / "e2e-runner.ts").read_text(encoding="utf-8")
+    workflow = (ROOT / ".github" / "workflows" / "CI_e2e.yaml").read_text(encoding="utf-8")
 
     assert "--lane=core" in package["scripts"]["test:e2e:core"]
     assert "--lane=portable" in package["scripts"]["test:e2e:portable"]
@@ -42,8 +42,8 @@ def test_core_and_remote_evidence_lanes_are_explicit():
 def test_e2e_runner_inventory_matches_every_scientific_suite():
     suite_paths = sorted(E2E_ROOT.glob("*.e2e.ts"))
     expected = {path.name.removesuffix(".e2e.ts") for path in suite_paths}
-    package = json.loads((JS_ROOT / "package.json").read_text())
-    runner = (E2E_ROOT / "e2e-runner.ts").read_text()
+    package = json.loads((JS_ROOT / "package.json").read_text(encoding="utf-8"))
+    runner = (E2E_ROOT / "e2e-runner.ts").read_text(encoding="utf-8")
     suite_block = runner.split("const SUITES = [", 1)[1].split("] as const;", 1)[0]
     declared = set(re.findall(r'"([^"]+)"', suite_block))
 
@@ -94,20 +94,20 @@ def test_e2e_runner_inventory_matches_every_scientific_suite():
 
 
 def test_all_interactions_scenarios_keep_default_deadlines_and_fresh_worker():
-    scenarios = (E2E_ROOT / "interactions-subpanel-scenarios.ts").read_text()
+    scenarios = (E2E_ROOT / "interactions-subpanel-scenarios.ts").read_text(encoding="utf-8")
     for suite, mode in (
         ("interactions-subpanel", "lifecycle"),
         ("interactions-geometry", "geometry"),
         ("interactions-calculation", "calculation"),
     ):
-        source = (E2E_ROOT / f"{suite}.e2e.ts").read_text()
+        source = (E2E_ROOT / f"{suite}.e2e.ts").read_text(encoding="utf-8")
         assert f'runInteractionsSuite(chromium, "{mode}")' in source
     assert "new PythonFixtureBridge" in scenarios
     assert "fixtureWorker.request(events, family)" in scenarios
     assert "await fixtureWorker.close()" in scenarios
     assert "__controller?.dispose()" in scenarios
     assert 'page.goto("about:blank")' not in scenarios
-    assert "process.env.E2E_SUITE_TIMEOUT_MS ?? 180_000" in (E2E_ROOT / "e2e-runner.ts").read_text()
+    assert "process.env.E2E_SUITE_TIMEOUT_MS ?? 180_000" in (E2E_ROOT / "e2e-runner.ts").read_text(encoding="utf-8")
 
 
 def test_e2e_suites_use_the_shared_browser_without_silent_success_paths():
@@ -119,7 +119,7 @@ def test_e2e_suites_use_the_shared_browser_without_silent_success_paths():
     )
 
     for path in E2E_ROOT.glob("*.e2e.ts"):
-        source = path.read_text()
+        source = path.read_text(encoding="utf-8")
         assert 'from "./e2e-browser"' in source, path.name
         for marker in forbidden:
             assert marker not in source, f"{path.name} contains {marker!r}"
@@ -133,7 +133,7 @@ def test_e2e_failures_cannot_leave_chromium_alive_until_timeout():
     alive, turning a useful assertion failure into a CI timeout.
     """
     offenders = [
-        path.name for path in E2E_ROOT.glob("*.e2e.ts") if re.search(r"process\.exitCode\s*=\s*1", path.read_text())
+        path.name for path in E2E_ROOT.glob("*.e2e.ts") if re.search(r"process\.exitCode\s*=\s*1", path.read_text(encoding="utf-8"))
     ]
     assert offenders == [], (
         f"E2E catch paths must close Chromium in finally and terminate with process.exit(1); unsafe suites: {offenders}"
@@ -141,7 +141,7 @@ def test_e2e_failures_cannot_leave_chromium_alive_until_timeout():
 
 
 def test_e2e_skip_is_centralized_and_requires_explicit_opt_in():
-    source = (E2E_ROOT / "e2e-browser.ts").read_text()
+    source = (E2E_ROOT / "e2e-browser.ts").read_text(encoding="utf-8")
 
     assert 'process.env.E2E_ALLOW_SKIP === "1"' in source
     assert source.count("process.exit(0)") == 1

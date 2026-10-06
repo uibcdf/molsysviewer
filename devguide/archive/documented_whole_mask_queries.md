@@ -1,13 +1,13 @@
 ---
 summary: Documented Whole mask examples still pass query strings to an index-only argument
 issue: uibcdf/molsysviewer#160
-status: open
+status: resolved
 opened: 2026-10-04
-closed:
+closed: 2026-10-06
 severity: medium
 verification: reproduced
 area: [documentation, selection]
-guard:
+guard: tests/test_documented_whole_masks.py::test_documented_whole_masks_resolve_expressions_before_refining
 normative:
 blocked_by: []
 supersedes: []
@@ -55,4 +55,16 @@ defect. The Studio #158/#159 changes do not alter the Python mask contract.
 
 ## Resolution
 
-Pending the agreed final public-documentation correction and notebook execution.
+The notebook now resolves CA and PHE expressions with `view.whole.select`
+and supplies their atom indices as masks. The PHE example refines the full
+protein CA selection instead of silently limiting it to the first five atoms.
+The actual example cells run against the real bundled 181L demo in
+`tests/test_documented_whole_masks.py`; the guard checks the exact combined
+protein/CA result and nonempty PHE refinement. All 13 code cells of the
+corrected notebook execute, as do all 25 documented notebooks against the
+fixed source provider. The strict Sphinx build passes. The full Python run has 2,883 passes,
+23 skips and one clean-checkout link failure caused by the new reports not yet
+being in the Git index. Staging those reports makes all four devguide-link
+checks pass. The full suite is not repeated. Native/source workflow evidence
+is retained separately; the two published-provider tutorial failures do not
+reopen the corrected mask contract.

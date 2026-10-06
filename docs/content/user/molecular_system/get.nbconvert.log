@@ -1,4 +1,4 @@
 
-[NbConvertApp] Converting notebook docs/content/user/molecular_system/get.ipynb to notebook
+[NbConvertApp] Converting notebook /tmp/msv-source-workflows-mjd6b6py/docs/content/user/molecular_system/get.ipynb to notebook
 [IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
-[NbConvertApp] Writing 22833 bytes to docs/content/user/molecular_system/get.ipynb
+[NbConvertApp] Writing 23159 bytes to /tmp/msv-source-workflows-mjd6b6py/docs/content/user/molecular_system/get.ipynb

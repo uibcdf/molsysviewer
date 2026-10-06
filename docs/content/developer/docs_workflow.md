@@ -56,3 +56,19 @@ If you truly need a widget-based output to survive, tag the cell with:
 - Keep external downloads optional or clearly documented (network access may be restricted).
 - Keep notebooks reproducible from a clean environment.
 - If you add new docs dependencies, update the docs environment files under `devtools/conda-envs/`.
+
+## Coordinated source and installed-package evidence
+
+The `Python 3.14 source pair` workflow installs and audits an exact MolSysMT
+commit together with the current Viewer source. Its Linux job registers that
+environment's interpreter as the notebook kernel, then executes every notebook
+under `docs/content` with `--force` and all core browser suites. Documentation
+changes trigger this lane as well as library changes. Notebook failure logs are
+retained even if an earlier browser check fails.
+
+This is development integration evidence. The separate `Documentation notebooks`
+and `CI_e2e` workflows continue to use released dependencies on normal pushes,
+or an explicitly selected coordinated staging version on manual dispatch. They
+must pass with compatible installed packages before release qualification.
+Passing the source lane does not clear a missing published provider, an
+installed-artifact gate or the strict 1.0 gate.

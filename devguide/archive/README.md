@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [`documented_whole_mask_queries.md`](documented_whole_mask_queries.md) — #160: resolve CA/PHE queries into atom-index masks; actual tutorial cells, all 25 notebooks and strict Sphinx build pass.
+
 - [`explicit_interaction_selection_mode_names.md`](explicit_interaction_selection_mode_names.md) — #168: canonical query names in Python/Studio, targeted v1 filter migration to extension v2, public rejection guards and real provider/browser qualification.
 
 - [`region_enablement_and_visibility.md`](region_enablement_and_visibility.md) — #167: enable/disable preserves region configuration; enabled Hide masks Whole in every representation state, with Python/Studio/session guards and human retest pending.

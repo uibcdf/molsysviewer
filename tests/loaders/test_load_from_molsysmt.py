@@ -48,7 +48,7 @@ def test_product_python_never_requests_a_viewerjson_intermediate():
     package_root = Path(__file__).parents[2] / "molsysviewer"
     offenders: list[str] = []
     for path in package_root.rglob("*.py"):
-        tree = ast.parse(path.read_text(), filename=str(path))
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
         if any(isinstance(node, ast.Constant) and node.value == "molsysmt.ViewerJSON" for node in ast.walk(tree)):
             offenders.append(str(path.relative_to(package_root)))
 

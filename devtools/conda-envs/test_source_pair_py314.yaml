@@ -14,6 +14,9 @@ dependencies:
   - pytest-receptor ==1.2.0
   - pytest-cov
   - pyyaml
+  # Execute every documented notebook against this same exact source pair.
+  - nbconvert
+  - ipykernel
   - nodejs>=22,<23
   - h5py
   - numpy>=1.26,<3
