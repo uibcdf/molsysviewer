@@ -19,6 +19,7 @@ reference, and the reader who most needs it is the one who does not have that ma
 from __future__ import annotations
 
 import re
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -67,6 +68,28 @@ def test_every_relative_link_resolves(links):
             broken.append(f"{document.relative_to(ROOT)} -> {target}")
 
     assert broken == [], "broken links in the devguide:\n  " + "\n  ".join(broken)
+
+
+def test_relative_links_resolve_in_a_clean_checkout(links):
+    """An existing untracked scratch file cannot satisfy a maintained reference."""
+    tracked = set(subprocess.check_output(["git", "ls-files", "-z"], cwd=ROOT, text=True).split("\0")) - {""}
+    assert tracked, "the clean-checkout guard must inspect the repository index"
+    directories = {parent.as_posix() for path in tracked for parent in Path(path).parents}
+    missing = []
+    for document, target in links:
+        if target.startswith(EXTERNAL):
+            continue
+        path = target.split("#", 1)[0]
+        if not path:
+            continue
+        resolved = (document.parent / path).resolve()
+        if not resolved.is_relative_to(ROOT):
+            missing.append(f"{document.relative_to(ROOT)} -> {target}")
+            continue
+        relative = resolved.relative_to(ROOT).as_posix()
+        if relative not in tracked and relative not in directories:
+            missing.append(f"{document.relative_to(ROOT)} -> {target}")
+    assert missing == [], "links unavailable in a clean checkout:\n  " + "\n  ".join(missing)
 
 
 def test_no_link_resolves_only_on_the_machine_that_wrote_it(links):

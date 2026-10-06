@@ -148,3 +148,17 @@ Qt import worker crashes, at `standalone_qt/utils.py:104`, in
 browser suite and its targeted inventory/protocol selection passed 130 tests.
 No second full-suite run or Qt environment change was made. The current Qt
 qualification remains the finding recorded above, not a passing standalone gate.
+
+### Hosted WebGL initialization observation — 2026-10-06
+
+At Viewer commit `0f7b386a0c1ce132d93fdaaa962f96bdf8219dba`, CI run
+`37438222739`, Qt job `112185249716`, completes environment provisioning
+including RDKit but fails `test_qt_live_model_smoke_real_window`: the bridge
+reports `Exported scene has no WebGL canvas`. Native stderr identifies
+`Could not create a WebGL rendering context` and Mol* initialization failure.
+The D-Bus and Vulkan messages are accompanying diagnostics, not a demonstrated
+root cause. No frame was rendered and this result supplies no visual certificate.
+
+This remains an experimental-host qualification finding under #109. It does
+not establish a new core product defect or alter the accepted standalone
+experimental boundary for 1.0. No Qt workaround or opt-out is introduced.

@@ -454,6 +454,14 @@ def test_scientific_test_environments_include_rdkit():
         assert "rdkit" in dependencies, f"{filename} cannot import the real interaction-family fixtures"
 
 
+def test_amber_test_environments_include_openmm():
+    """Complementary prmtop/inpcrd tests use the provider's OpenMM-backed forms."""
+    for filename in ("test_env.yaml", "test_source_pair_py314.yaml", "development_env.yaml"):
+        environment = yaml.safe_load((ROOT / "devtools/conda-envs" / filename).read_text(encoding="utf-8"))
+        dependencies = _conda_dependencies_by_name(environment["dependencies"])
+        assert "openmm" in dependencies, f"{filename} cannot load the real complementary AMBER fixture"
+
+
 def test_hosted_gates_can_select_the_exact_coordinated_staging_candidate():
     """The dependency cycle must be testable before either package reaches `main`.
 

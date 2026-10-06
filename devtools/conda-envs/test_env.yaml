@@ -38,3 +38,5 @@ dependencies:
   - jinja2
   # Real interaction-family fixtures construct molecular topology with RDKit.
   - rdkit
+  # The complementary AMBER prmtop/inpcrd fixture uses MolSysMT's OpenMM forms.
+  - openmm

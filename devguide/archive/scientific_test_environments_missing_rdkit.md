@@ -1,9 +1,9 @@
 ---
 summary: Scientific test environments omit RDKit and fail during collection
 issue: uibcdf/molsysviewer#161
-status: partial
+status: resolved
 opened: 2026-10-06
-closed:
+closed: 2026-10-06
 severity: high
 verification: reproduced
 area: [ci, testing, interactions]
@@ -60,12 +60,22 @@ fail with the affected filename (three rejected mutations).
 
 The real nine-family scientific module passes 30 tests in
 `molsyssuite@uibcdf_3.14`, using the local MolSysMT source. This confirms that
-the fixtures execute locally; hosted provisioning and collection still need
-confirmation at the pushed commit. Keep the report partial until that evidence
-exists. Compatible public-provider qualification is a separate open gate.
+the fixtures execute locally. Compatible public-provider qualification is a
+separate open gate.
 
 The once-run complete source suite executes all 2,844 cases without collection
 errors: 2,820 pass, 23 skip and the single failure is the independent profiler
 guard #162. That guard is corrected and its 22-case scene module passes; the
 complete suite is not repeated. Retain the actual outcome in
 [the receipt](../ci_environment_repair_20261006.json).
+
+Exact commit `0f7b386a0c1ce132d93fdaaa962f96bdf8219dba` supplies hosted
+confirmation in source-pair run `37438220076`: all three native platforms
+provision and install the pair, pass the immediate dependency/origin checks,
+and collect/execute the scientific suite without the original RDKit error.
+Linux runs 2,843 cases (2,814 passed, 27 skipped, two independent failures);
+macOS runs the same total (2,787 passed, 54 skipped, the same two failures).
+The remaining failures are OpenMM provisioning (#163) and a reference to an
+untracked local prototype (#114), corrected in the follow-up. Windows also
+completes the suite; its detailed verdict is retained in the hosted follow-up.
+This closes the omitted RDKit dependency, not the overall CI or release gate.

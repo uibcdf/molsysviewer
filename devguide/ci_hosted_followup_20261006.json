@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-06",
+  "issues": ["uibcdf/molsysviewer#161", "uibcdf/molsysviewer#163", "uibcdf/molsysviewer#114", "uibcdf/molsysviewer#109"],
+  "tested_commit": "0f7b386a0c1ce132d93fdaaa962f96bdf8219dba",
+  "provider_commit": "5e2721691b6a3c175406a8e4c0926dfb7b160671",
+  "source_pair": {
+    "run_id": 37438220076,
+    "attempt": 1,
+    "conclusion": "failure",
+    "all_native_environments_provisioned": true,
+    "all_native_installed_pairs_and_dependency_origin_checks_passed": true,
+    "rdkit_collection_error_resolved": true,
+    "results": [
+      {"platform": "ubuntu-latest", "job_id": 112185204331, "passed": 2814, "failed": 2, "skipped": 27, "seconds": 243.05},
+      {"platform": "macos-15", "job_id": 112185204079, "passed": 2787, "failed": 2, "skipped": 54, "seconds": 315.15},
+      {"platform": "windows-2025", "job_id": 112185204238, "passed": 2788, "failed": 2, "skipped": 53, "seconds": 470.22}
+    ],
+    "failed_nodes": [
+      "tests/test_studio_loading.py::test_complementary_amber_files_remain_one_system",
+      "tests/test_devguide_links.py::test_every_relative_link_resolves"
+    ],
+    "causes": [
+      "OpenMM is absent from the source test recipe; MolSysMT declares it as the backend for prmtop/inpcrd forms.",
+      "The current Interactions report links an untracked local HTML prototype unavailable in a clean checkout."
+    ]
+  },
+  "public_dependencies": {
+    "ci_run_id": 37438222739,
+    "ci_conclusion": "failure",
+    "sample_job_id": 112185249506,
+    "sample_result": {"passed": 2589, "failed": 115, "errors": 112, "skipped": 27},
+    "dominant_native_diagnostics": [
+      "AttributeError: module 'molsysmt' has no attribute 'Interactions'",
+      "AttributeError: module 'molsysmt' has no attribute 'h5msm'",
+      "InteractionAnalysisError: This interaction workflow requires the experimental public MolSysMT Interactions API and H5MSM 0.5 support."
+    ],
+    "core_e2e_run_id": 37438219905,
+    "core_e2e_conclusion": "failure",
+    "core_e2e_diagnostic": "composite-load-bridge.py:26 calls msm.h5msm.write; published MolSysMT lacks h5msm.",
+    "qualification": "Compatible published-provider and exact-artifact/hosted candidate evidence remain open."
+  },
+  "experimental_qt": {
+    "job_id": 112185249716,
+    "conclusion": "failure",
+    "node": "tests/test_standalone.py::test_qt_live_model_smoke_real_window",
+    "diagnostic": "Qt bridge is not ready: Exported scene has no WebGL canvas; native stderr says Could not create a WebGL rendering context.",
+    "canvas_rendered": false,
+    "scope": "Experimental host observation, not a core 1.0 visual certificate."
+  },
+  "followup": {
+    "openmm_added_to": ["test_env.yaml", "test_source_pair_py314.yaml", "development_env.yaml"],
+    "fixture_guard": "tests/test_distribution_artifact.py::test_amber_test_environments_include_openmm",
+    "guard_mutations": {"missing_rdkit_rejected": 3, "missing_openmm_rejected": 3, "existing_untracked_reference_rejected": 1},
+    "prototype_link_replaced_by": "devguide/pending_proposals/post_1.0/studio_interactions_subpanel_ui_design.md",
+    "clean_checkout_guard": "tests/test_devguide_links.py::test_relative_links_resolve_in_a_clean_checkout",
+    "local_selection": {
+      "modules": ["tests/test_studio_loading.py", "tests/test_distribution_artifact.py", "tests/test_devguide_links.py"],
+      "passed": 47,
+      "seconds": 32.57,
+      "scope": "Before adding the clean-checkout index guard; its specific module is verified separately."
+    },
+    "final_index_and_protocol_selection": {
+      "modules": ["tests/test_devguide_links.py", "tests/test_reporting_protocol.py"],
+      "passed": 216,
+      "seconds": 2.51
+    },
+    "full_local_suite_repeated": false,
+    "hosted_verification": "pending at the followup commit"
+  },
+  "diagnostics": {
+    "gh_run_receptor_version": "1.1.1",
+    "authority": "Native GitHub job steps and logs.",
+    "limit": "The compact public-CI report selected tolerated invalid-argument and D-Bus stderr as causes. Native pytest summaries and the actual Qt assertion were inspected instead."
+  },
+  "limits": [
+    "Do not sum overlapping local and hosted case counts as disjoint coverage.",
+    "The first source-pair run fails in every platform; successful provisioning does not imply a passing scientific matrix.",
+    "Source-pair installation does not establish compatible public distributions or the 16-cell candidate Conda gate.",
+    "No tag, publication, promotion or final candidate clearance is produced by this record."
+  ]
+}

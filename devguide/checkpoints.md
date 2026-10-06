@@ -5,14 +5,14 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-**CI environment repair (2026-10-06): #161 implemented; hosted evidence pending.**
+**CI environment repair (2026-10-06): #161/#162 resolved; #163 follow-up pending.**
 RDKit is now declared in both scientific test environments and the local
 development recipe. The guard rejects its removal from each of the three
 recipes; the distribution module passes 19 tests and the real Interactions
 family module passes 30. Python 3.14 source-pair CI uses exact MolSysMT commit
 `5e2721691b6a3c175406a8e4c0926dfb7b160671`, with its own runtime floors,
 Node 22 and immediate `pip check`. Public dependency floors are unchanged.
-See [the bug record](pending_bugs/scientific_test_environments_missing_rdkit.md)
+See [the resolved bug record](archive/scientific_test_environments_missing_rdkit.md)
 and [the source-pair baseline](pending_proposals/extend_python_support_to_3_14.md#current-scientific-source-pair-baseline--2026-10-06).
 
 The once-run complete regression returns **2,820 passed, 23 skipped and one
@@ -22,6 +22,19 @@ and a real serialization positive control; its 22-case scene module passes.
 The complete suite was not repeated. Preserve this distinction in
 [the receipt](ci_environment_repair_20261006.json); hosted full-suite confirmation
 remains pending.
+
+The first hosted source-pair run `37438220076` installs the pair on all three
+native platforms and collects its scientific cases without the RDKit defect.
+Linux/macOS full suites expose an OpenMM omission for complementary AMBER
+files (#163) and a link to the untracked local design mockup (#114). The
+follow-up declares OpenMM in test/development recipes and links the tracked
+Studio design record, preserving the scratch artifacts. A clean-checkout
+reference guard now rejects existing untracked targets. The 47-case local
+AMBER/distribution/link selection passes; exact hosted confirmation remains
+pending. The public core lane still fails on absent `molsysmt.h5msm`, and the
+experimental Qt lane fails to create WebGL; neither is the repaired RDKit defect.
+Exact job counts, diagnostics and the bounded follow-up are in
+[the hosted record](ci_hosted_followup_20261006.json).
 
 The preceding audit identified three separate hosted causes: missing RDKit
 during Python collection; published MolSysMT 0.22.4 missing Interactions/H5MSM
@@ -1198,8 +1211,9 @@ The 2026-10-06 complete attempt and focused guard correction are recorded in
 the current handoff above; they do not create a new clean full-suite verdict.
 Continue in the maintainer's order:
 
-1. Confirm the #161 environment repair and the current exact source-provider
-   pair in hosted CI. The source integration and bounded scientific review are
+1. Confirm the #163 OpenMM and clean-checkout-reference follow-up with the
+   current exact source-provider pair in hosted CI. #161/#162 are resolved.
+   The source integration and bounded scientific review are
    complete; preserve their dated records and qualification limits.
 2. Candidate prevalidation #157 and the source-level fixes in
    uibcdf/molsysmt#312/#313 are resolved. Direct SDF and mixed protein/caffeine

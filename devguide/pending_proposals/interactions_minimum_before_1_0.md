@@ -603,9 +603,11 @@ evidence, plus the scene/Studio work and joint memory measurements.
 **Status:** Design reviewed and implemented in the working tree. The section
 below retains the design rationale; the implementation record names the
 current minimum and differences from the initial draft.
-The independent, interactive [layout prototype](../../sandbox/interactions_panel_design.html)
-uses synthetic data and performs no calculations or file access. It is a
-review aid; this section owns the proposed behavior. Advanced UI remains in
+The independent, interactive prototype in the local scratch area used synthetic
+data and performed no calculations or file access. It is an untracked review
+aid, unavailable in a clean checkout; this section owns the proposed behavior.
+The tracked [Studio design record](post_1.0/studio_interactions_subpanel_ui_design.md)
+retains the panel rationale and the implemented minimum. Advanced UI remains in
 `uibcdf/molsysviewer#56`.
 
 ### Reusing the current Studio patterns

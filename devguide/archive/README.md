@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [`scientific_test_environments_missing_rdkit.md`](scientific_test_environments_missing_rdkit.md) — #161: provision RDKit for real chemical fixtures in all test/development recipes; the guard rejects three omissions and the native source-pair matrices collect their scientific cases.
+
 - [`interactions_materialization_guard_shared_wrapper.md`](interactions_materialization_guard_shared_wrapper.md) — #162: profile the concrete serializer rather than shared decorators; a real serialization control and the 22-case scene module verify the bounded large-frame guard.
 
 - [`compound_interaction_projection_dispatches_per_group.md`](compound_interaction_projection_dispatches_per_group.md) — #141: bounded public geometry batches preserve projection semantics and cut the measured 1,000-observation preparation to 281–291 ms; real-call guards and the complete Interactions browser suite pass.
