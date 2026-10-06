@@ -1,10 +1,49 @@
 # Python ecosystem policy adoption
 
-**Reviewed: 2026-10-01.** The support-library and developer-tool reviews remain
+**Reviewed: 2026-10-06.** The support-library and developer-tool reviews remain
 independent: support libraries are **adopted** and developer tools are
 **adopted**, under `uibcdf/molsysviewer#110`. The shared policy
 is owned by `uibcdf/molsyssuite#56`; local dependency declarations alone do not
 establish adoption.
+
+## Published support-library receiving check — 2026-10-06
+
+**Done on Linux x86_64 / Python 3.14.8:** published SMonitor **0.19.0, build
+`py_1`**, and ArgDigest **0.15.0, build `py_0`**, pass the bounded installed
+MolSysViewer integration. A fresh public-channel Conda environment uses public
+MolSysMT 0.22.4, DepDigest 0.13.0 and PyUnitWizard 0.28.1. No package is editable;
+all inspected imports come from that environment's site-packages. Archive
+SHA-256 values match the providers' release receipts, and every installed
+SMonitor/ArgDigest package member matches its archive (50/47 files).
+
+Viewer is a locally built wheel from fixed commit
+`6be2bcd272ef6eda014c4bb3cf6f50f04695e8ef`, version
+`0.23.4+105.g6be2bcd2.dirty`. The snapshot's generated runtime is rebuilt for
+that version; all 615 library Python files other than generated `_version.py`
+match the fixed source. All 620 installed package members match the wheel.
+Source/wheel runtime-version validation and `pip check` pass. This wheel is
+development evidence, not a public Viewer release or a frozen 1.0 candidate.
+
+The six receiving guards in `tests/test_smonitor_application_policy.py` pass
+with both the editable development providers and the exact published packages.
+Cold imports in Viewer/MolSysMT/ArgDigest order, Viewer reload and rendering
+for an explicit audience preserve the application's profile, level, capture
+flags, enabled state and installed warning/logging handlers. Catalog registration
+still supplies templates with diagnostics disabled. These guards require the
+additive SMonitor 0.19.0 provider-registration API and explicitly skip older
+supported versions; the receiving coordination is `uibcdf/molsyssuite#106`.
+Existing installed catalog, signal, public argument validation and explicit
+bypass checks pass **116 tests, 14 expected skips** (templates without
+placeholders). Together with the six import guards, this is **122 passes**.
+
+Public dependency minima remain `smonitor>=0.13.0` and `argdigest>=0.13.0`.
+No new default capture policy, pipeline-only mode or explicit provider-policy
+opt-in is selected. This validates the existing consumer against the released
+providers; it does not qualify older bounds, other platforms, a compatible
+published Interactions backend or the complete installed pair. MolSysMT's
+compatible candidate and the separate package/1.0 gates remain pending.
+Hashes, provenance, test selections and reproduction commands are retained in
+[the receiving receipt](support_library_receiving_20261006.json).
 
 ## Applicable support boundaries
 

@@ -1,0 +1,269 @@
+{
+  "schema": "molsysviewer.support_library_receiving@1",
+  "date": "2026-10-06",
+  "status": "bounded_published_support_checks_pass; source_regression_pending",
+  "coordination": "uibcdf/molsyssuite#106",
+  "scope": "Existing MolSysViewer consumer behavior with exact published support archives on Linux x86_64 / Python 3.14.8",
+  "source_commit": "6be2bcd272ef6eda014c4bb3cf6f50f04695e8ef",
+  "artifacts": {
+    "smonitor": {
+      "version": "0.19.0",
+      "build": "py_1",
+      "filename": "smonitor-0.19.0-py_1.tar.bz2",
+      "url": "https://conda.anaconda.org/uibcdf/noarch/smonitor-0.19.0-py_1.tar.bz2",
+      "sha256": "4b876b4993b1e2caeed40851402a931f3b245ed7c1916d9483d81bc90274e31c",
+      "installed_files_matching_archive": 50
+    },
+    "argdigest": {
+      "version": "0.15.0",
+      "build": "py_0",
+      "filename": "argdigest-0.15.0-py_0.tar.bz2",
+      "url": "https://conda.anaconda.org/uibcdf/noarch/argdigest-0.15.0-py_0.tar.bz2",
+      "sha256": "b0f22038a8ad1c888dca10adedaca0fa14d2383a685a97c0602b7ca05f29d6a1",
+      "installed_files_matching_archive": 47
+    },
+    "molsysviewer": {
+      "version": "0.23.4+105.g6be2bcd2.dirty",
+      "filename": "molsysviewer-0.23.4+105.g6be2bcd2.dirty-py3-none-any.whl",
+      "sha256": "729e921256bbf7e2ae27badcade9d098dfe3679220a903189022d270dcdc9d57",
+      "source_commit": "6be2bcd272ef6eda014c4bb3cf6f50f04695e8ef",
+      "snapshot_dirty_reason": "Only the rebuilt tracked runtime differs from the fixed source; library Python files are unchanged.",
+      "member_verification": {
+        "all_installed_package_members_match_wheel": 620,
+        "library_python_members_match_fixed_source": 615,
+        "excluded_generated_version_file": "molsysviewer/_version.py"
+      }
+    }
+  },
+  "installed_provenance": {
+    "python": "3.14.8 | packaged by conda-forge | (main, Oct  6 2026, 13:38:01) [GCC 15.3.0]",
+    "platform": "Linux-7.0.0-28-generic-x86_64-with-glibc2.39",
+    "prefix": "/tmp/msv-support-public-20261006",
+    "packages": {
+      "smonitor": {
+        "version": "0.19.0",
+        "import_path": "/tmp/msv-support-public-20261006/lib/python3.14/site-packages/smonitor/__init__.py",
+        "direct_url": {
+          "dir_info": {},
+          "url": "file:///home/runner/micromamba/envs/build/conda-bld/smonitor_1791315669680/work"
+        }
+      },
+      "argdigest": {
+        "version": "0.15.0",
+        "import_path": "/tmp/msv-support-public-20261006/lib/python3.14/site-packages/argdigest/__init__.py",
+        "direct_url": {
+          "dir_info": {},
+          "url": "file:///home/runner/miniconda3/envs/noarch-publisher/conda-bld/argdigest_1791317734110/work"
+        }
+      },
+      "molsysviewer": {
+        "version": "0.23.4+105.g6be2bcd2.dirty",
+        "import_path": "/tmp/msv-support-public-20261006/lib/python3.14/site-packages/molsysviewer/__init__.py",
+        "direct_url": {
+          "archive_info": {
+            "hash": "sha256=729e921256bbf7e2ae27badcade9d098dfe3679220a903189022d270dcdc9d57",
+            "hashes": {
+              "sha256": "729e921256bbf7e2ae27badcade9d098dfe3679220a903189022d270dcdc9d57"
+            }
+          },
+          "url": "file:///tmp/msv-support-wheel-20261006/molsysviewer-0.23.4%2B105.g6be2bcd2.dirty-py3-none-any.whl"
+        }
+      },
+      "molsysmt": {
+        "version": "0.22.4",
+        "import_path": "/tmp/msv-support-public-20261006/lib/python3.14/site-packages/molsysmt/__init__.py",
+        "direct_url": {
+          "dir_info": {},
+          "url": "file:///home/runner/micromamba/envs/build/conda-bld/molsysmt_1790325290796/work"
+        }
+      },
+      "depdigest": {
+        "version": "0.13.0",
+        "import_path": "/tmp/msv-support-public-20261006/lib/python3.14/site-packages/depdigest/__init__.py",
+        "direct_url": {
+          "dir_info": {},
+          "url": "file:///home/runner/micromamba/envs/build/conda-bld/depdigest_1791108193170/work"
+        }
+      },
+      "pyunitwizard": {
+        "version": "0.28.1",
+        "import_path": "/tmp/msv-support-public-20261006/lib/python3.14/site-packages/pyunitwizard/__init__.py",
+        "direct_url": {
+          "dir_info": {},
+          "url": "file:///home/runner/micromamba/envs/build/conda-bld/pyunitwizard_1791202252997/work"
+        }
+      },
+      "pytest_receptor": {
+        "version": "1.2.0",
+        "import_path": "/tmp/msv-support-public-20261006/lib/python3.14/site-packages/pytest_receptor/__init__.py",
+        "direct_url": {
+          "dir_info": {},
+          "url": "file:///home/runner/micromamba/envs/build/conda-bld/pytest-receptor_1790452431854/work"
+        }
+      },
+      "numpy": {
+        "version": "2.5.3",
+        "import_path": "/tmp/msv-support-public-20261006/lib/python3.14/site-packages/numpy/__init__.py",
+        "direct_url": {
+          "archive_info": {
+            "hash": "sha256=9378cccd36d631fc721fd8d9ccca70243a01b44bdeca11cbd65361a7d90f4d23",
+            "hashes": {
+              "sha256": "9378cccd36d631fc721fd8d9ccca70243a01b44bdeca11cbd65361a7d90f4d23"
+            }
+          },
+          "url": "file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_numpy_1788731986/work/dist/numpy-2.5.3-cp314-cp314-linux_x86_64.whl"
+        }
+      },
+      "pandas": {
+        "version": "3.0.6",
+        "import_path": "/tmp/msv-support-public-20261006/lib/python3.14/site-packages/pandas/__init__.py",
+        "direct_url": {
+          "dir_info": {},
+          "url": "file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_pandas_1789803361/work"
+        }
+      },
+      "anywidget": {
+        "version": "0.11.0",
+        "import_path": "/tmp/msv-support-public-20261006/lib/python3.14/site-packages/anywidget/__init__.py",
+        "direct_url": {
+          "dir_info": {},
+          "url": "file:///home/conda/feedstock_root/build_artifacts/anywidget_1777337776394/work"
+        }
+      }
+    },
+    "replaced_solver_viewer_record": "molsysviewer-0.23.4-py_5; the Conda solver record is superseded by the installed development wheel. Actual import paths, importlib distribution metadata and wheel bytes establish the Viewer identity."
+  },
+  "source_regression_provenance": {
+    "interpreter": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "provider_checkouts": {
+      "smonitor": {
+        "commit": "f604b940ab281df4554869fdd24f796ea6d42c27",
+        "tracked_and_untracked_status": ""
+      },
+      "argdigest": {
+        "commit": "5c6711ebfe23b9516ef0e8f830abee70589ec406",
+        "tracked_and_untracked_status": ""
+      },
+      "molsysmt": {
+        "commit": "ce4cfe2b817e3721ac4681be2c251ad4a13c520e",
+        "tracked_and_untracked_status": ""
+      }
+    },
+    "python": "3.14.7 | packaged by conda-forge | (main, Sep  2 2026, 21:08:32) [GCC 15.3.0]",
+    "prefix": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14",
+    "installed_metadata_versions": {
+      "smonitor": "0.19.0",
+      "argdigest": "0.15.0+1.g5c6711e",
+      "molsysmt": "0.22.4+24.g42b487869"
+    },
+    "provider_library_changes_since_qualified_handoff": "MolSysMT ce4cfe2b8 changes only guide/controlled-source/test receipt files relative to a0ceca86e; ArgDigest 5c6711e changes publication evidence relative to tagged 57447cc."
+  },
+  "gates": {
+    "archive_hashes_and_installed_bytes": {
+      "result": "pass",
+      "smonitor_files": 50,
+      "argdigest_files": 47
+    },
+    "viewer_wheel_and_library_bytes": {
+      "result": "pass",
+      "all_installed_package_members_match_wheel": 620,
+      "library_python_members_match_fixed_source": 615,
+      "excluded_generated_version_file": "molsysviewer/_version.py"
+    },
+    "runtime_version": {
+      "result": "pass",
+      "command": "python devtools/validate_python_wheel_runtime.py --source-root /tmp/msv-support-source-20261006 --expected-version 0.23.4+105.g6be2bcd2.dirty --wheel /tmp/msv-support-wheel-20261006/molsysviewer-0.23.4+105.g6be2bcd2.dirty-py3-none-any.whl"
+    },
+    "pip_check": {
+      "result": "pass",
+      "exit_code": 0
+    },
+    "application_policy_source": {
+      "result": "pass",
+      "passed": 6,
+      "skipped": 0,
+      "exit_code": 0
+    },
+    "application_policy_installed": {
+      "result": "pass",
+      "passed": 6,
+      "skipped": 0,
+      "exit_code": 0
+    },
+    "support_integration_installed": {
+      "result": "pass",
+      "passed": 116,
+      "skipped": 14,
+      "exit_code": 0,
+      "skip_reason": "Catalog templates without placeholders"
+    },
+    "full_source_regression": {
+      "result": "pending",
+      "command": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python -m pytest --receptor=llm tests/"
+    },
+    "governance_and_dependency_checks": {
+      "result": "pass",
+      "passed": 256,
+      "exit_code": 0,
+      "selectors": [
+        "tests/test_devguide_links.py",
+        "tests/test_reporting_protocol.py",
+        "tests/test_dependency_contract.py"
+      ]
+    },
+    "dependency_contract_audit": {
+      "result": "pass",
+      "exit_code": 0
+    },
+    "ruff": {
+      "result": "pass",
+      "selection": "tests/test_smonitor_application_policy.py; lint and format"
+    }
+  },
+  "installed_test_files": [
+    "tests/test_smonitor_application_policy.py",
+    "tests/test_smonitor_integration.py",
+    "tests/test_catalog_templates_render.py",
+    "tests/test_support_integrations.py",
+    "tests/test_argdigest_public_api.py",
+    "tests/test_public_entrypoint_contract.py",
+    "tests/test_smonitor_signal_passthrough.py"
+  ],
+  "reproduction": {
+    "create_environment": "conda create --prefix /tmp/msv-support-public-20261006 --override-channels -c uibcdf -c conda-forge python=3.14 pip smonitor=0.19.0=py_1 argdigest=0.15.0=py_0 molsysmt=0.22.4 pytest pytest-receptor=1.2.0 pytest-cov pyyaml jinja2 imageio --yes",
+    "viewer_install": "/tmp/msv-support-public-20261006/bin/python -I -m pip install --no-deps --no-index /tmp/msv-support-wheel-20261006/molsysviewer-0.23.4+105.g6be2bcd2.dirty-py3-none-any.whl",
+    "installed_pytest": "From /tmp: MOLSYSVIEWER_TEST_INSTALLED=1 CONDA_PREFIX=/tmp/msv-support-public-20261006 /tmp/msv-support-public-20261006/bin/python -I -m pytest --import-mode=importlib --receptor=llm <absolute test selectors above> -x",
+    "build": "Clone the fixed source into /tmp; run versioningit --write, build:runtime using Node 22, then repeat versioningit --write and build:runtime if rebuilding makes the tracked runtime dirty. Build the wheel sequentially with the development interpreter and validate its source/wheel runtime version before installation.",
+    "archive_byte_verification": "SHA-256 each cached downloaded archive against its exact release receipt; compare every site-packages member of the noarch tar to its installed lib/python3.14/site-packages path."
+  },
+  "probe_correction": {
+    "initial_test_result": "1 failed; 5 unexecuted",
+    "diagnosis": "The test attempted to inspect an emitted event with the manager disabled. Disabled emission intentionally supplies no event.",
+    "correction": "Use the public non-emitting smonitor.resolve(profile=...) API, unpack message/hint and verify policy independently. No library behavior was changed."
+  },
+  "decision": {
+    "public_dependency_minima_changed": false,
+    "new_capture_default_selected": false,
+    "pipeline_only_mode_selected": false,
+    "provider_policy_opt_in_selected": false
+  },
+  "excluded": [
+    "Older dependency lower bounds",
+    "Cross-platform installed qualification",
+    "Compatible published MolSysMT Interactions/H5MSM pair",
+    "Browser/GPU or Qt standalone qualification",
+    "Frozen 1.0 candidate qualification",
+    "Release publication or artifact promotion"
+  ],
+  "local_evidence": [
+    "/tmp/msv-support-public-20261006-create.json",
+    "/tmp/msv-support-artifacts-20261006.json",
+    "/tmp/msv-support-provenance-20261006.json",
+    "/tmp/msv-support-wheel-members-20261006.json",
+    "/tmp/msv-support-policy-source-20261006.log",
+    "/tmp/msv-support-policy-installed-20261006.xml",
+    "/tmp/msv-support-integration-installed-20261006.xml",
+    "/tmp/msv-support-full-source-20261006.log",
+    "/tmp/msv-support-governance-20261006.log"
+  ]
+}

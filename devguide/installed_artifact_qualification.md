@@ -1,5 +1,14 @@
 # Installed-artifact qualification
 
+**Support-library follow-up — 2026-10-06:** exact published SMonitor 0.19.0
+and ArgDigest 0.15.0 pass 122 bounded installed checks (14 expected skips)
+with a wheel from fixed Viewer source and public MolSysMT 0.22.4, in a fresh
+Linux/Python 3.14.8 environment. Runtime/version, dependency consistency,
+origins and installed archive-member checks pass. The compatible scientific
+pair and complete release matrix remain pending. See
+[the receiving check](python_ecosystem_policy_adoption.md#published-support-library-receiving-check--2026-10-06)
+and [its receipt](support_library_receiving_20261006.json).
+
 **Current status — 2026-10-03:** an integrated design wheel is prepared and
 bounded public/experimental installed checks pass. Its complete Python attempt
 failed; the core browser follow-up was interrupted for the maintainer's design

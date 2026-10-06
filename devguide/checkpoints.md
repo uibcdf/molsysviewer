@@ -5,6 +5,19 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+**Published support-library receiving check (2026-10-06): bounded pass.**
+Exact Conda SMonitor **0.19.0 `py_1`** and ArgDigest **0.15.0 `py_0`** pass
+**122 installed checks, 14 expected skips** on Linux x86_64 / Python 3.14.8,
+with a Viewer wheel from `6be2bcd272ef6eda014c4bb3cf6f50f04695e8ef` and
+public MolSysMT 0.22.4. Archive/member hashes, isolated imports, runtime
+version and `pip check` pass. Six new cold-import/reload guards preserve
+application diagnostics and render a catalog without replacing its profile.
+No runtime source, dependency minimum or capture default changes. Complete
+source regression is in progress; compatible installed scientific-pair and
+cross-platform release qualification remain pending. See
+[the maintained adoption record](python_ecosystem_policy_adoption.md#published-support-library-receiving-check--2026-10-06)
+and [the receiving receipt](support_library_receiving_20261006.json).
+
 **Current qualified source handoff (2026-10-06): #160/#169/#170 resolved.**
 Viewer **`d7939f08d604138112edfe84ccc9bc4a40428057`** with MolSysMT
 **`a0ceca86ec99c89377e78fac15cbdf32145a362e`** passes source-pair run
