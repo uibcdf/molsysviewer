@@ -45,6 +45,16 @@ compatible candidate and the separate package/1.0 gates remain pending.
 Hashes, provenance, test selections and reproduction commands are retained in
 [the receiving receipt](support_library_receiving_20261006.json).
 
+The complete development-source suite runs once: **2,879 passed, 23 skipped,
+two failed**, exit 1, in 507.07 s. The failures are the real offscreen Qt event
+transport and payload-generation probes, which supply no readiness/report
+after native OpenGL RHI initialization failures. They are recorded under
+experimental `uibcdf/molsysviewer#109`; no graphical workaround or second
+complete run is made. This is not a passing full suite. Commit `a48478fc`
+publishes the receiving guard and installed evidence, with successful hosted
+MolSysSuite policy and Conda governance checks. Its three-platform source-pair
+CI remains in progress.
+
 ## Applicable support boundaries
 
 | Library | Applicable boundary and existing evidence | Remaining scope |

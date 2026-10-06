@@ -1,7 +1,7 @@
 {
   "schema": "molsysviewer.support_library_receiving@1",
   "date": "2026-10-06",
-  "status": "bounded_published_support_checks_pass; source_regression_pending",
+  "status": "bounded_published_support_checks_pass; full_source_fails_experimental_qt_host; hosted_source_pending",
   "coordination": "uibcdf/molsyssuite#106",
   "scope": "Existing MolSysViewer consumer behavior with exact published support archives on Linux x86_64 / Python 3.14.8",
   "source_commit": "6be2bcd272ef6eda014c4bb3cf6f50f04695e8ef",
@@ -198,8 +198,33 @@
       "skip_reason": "Catalog templates without placeholders"
     },
     "full_source_regression": {
-      "result": "pending",
-      "command": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python -m pytest --receptor=llm tests/"
+      "result": "fail",
+      "command": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python -m pytest --receptor=llm tests/",
+      "exit_code": 1,
+      "passed": 2879,
+      "skipped": 23,
+      "failed": 2,
+      "duration_seconds": 507.07,
+      "repeat_full_run": false,
+      "failures": [
+        {
+          "selector": "tests/test_standalone.py::test_qt_event_transport_smoke_real_qt",
+          "observation": "Native Qt host supplies no transport-ready marker; OpenGL RHI context initialization fails."
+        },
+        {
+          "selector": "tests/test_standalone.py::test_qt_payload_refs_replace_across_two_real_generations",
+          "observation": "Native Qt host supplies no JSON payload-generation report; OpenGL RHI context initialization fails."
+        }
+      ],
+      "owning_issue": "uibcdf/molsysviewer#109",
+      "owning_record": "devguide/pending_proposals/migrate_standalone_qt_to_canonical_pyside6_6_11_2.md",
+      "host": {
+        "pyside6": "6.11.2",
+        "qt_core_runtime": "6.11.2",
+        "display_configured": false,
+        "wayland_display_configured": false
+      },
+      "scope_note": "The test subprocesses force offscreen and use trivial pages without Mol* or WebGL. Native graphics initialization diagnostics precede the probes. This is not a passing complete source or standalone result, nor proof of a diagnostic-provider regression."
     },
     "governance_and_dependency_checks": {
       "result": "pass",
@@ -218,6 +243,15 @@
     "ruff": {
       "result": "pass",
       "selection": "tests/test_smonitor_application_policy.py; lint and format"
+    },
+    "final_record_checks": {
+      "result": "pass",
+      "passed": 218,
+      "exit_code": 0,
+      "selectors": [
+        "tests/test_devguide_links.py",
+        "tests/test_reporting_protocol.py"
+      ]
     }
   },
   "installed_test_files": [
@@ -264,6 +298,72 @@
     "/tmp/msv-support-policy-installed-20261006.xml",
     "/tmp/msv-support-integration-installed-20261006.xml",
     "/tmp/msv-support-full-source-20261006.log",
-    "/tmp/msv-support-governance-20261006.log"
+    "/tmp/msv-support-governance-20261006.log",
+    "/tmp/msv-support-hosted-qt-20261006.log",
+    "/tmp/msv-support-hosted-e2e-20261006.log",
+    "/tmp/msv-support-final-records-20261006.log"
+  ],
+  "guard_commit": "a48478fcab579095ed6eb7ab2a3620cc8fb3a8df",
+  "hosted": {
+    "guard_commit": "a48478fcab579095ed6eb7ab2a3620cc8fb3a8df",
+    "policy": {
+      "id": 37530735768,
+      "conclusion": "success",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37530735768"
+    },
+    "conda_governance": {
+      "id": 37530736000,
+      "conclusion": "success",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37530736000"
+    },
+    "source_pair": {
+      "id": 37530734789,
+      "status": "in_progress",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37530734789",
+      "molsysmt_commit": "a0ceca86ec99c89377e78fac15cbdf32145a362e"
+    },
+    "public_ci": {
+      "id": 37530734861,
+      "status": "in_progress",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37530734861",
+      "completed_qt_job": {
+        "id": 112499151380,
+        "conclusion": "failure",
+        "selector": "tests/test_standalone.py::test_qt_live_model_smoke_real_window",
+        "cause": "Could not create a WebGL rendering context; Exported scene has no WebGL canvas.",
+        "owning_issue": "uibcdf/molsysviewer#109"
+      }
+    },
+    "public_core_e2e": {
+      "id": 37530734902,
+      "status": "completed",
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/37530734902",
+      "conclusion": "failure",
+      "failing_suite": "composite-load",
+      "cause": "Published MolSysMT has no public h5msm module at msm.h5msm.write in the real-Python bridge.",
+      "owning_issues": [
+        "uibcdf/molsysviewer#114",
+        "uibcdf/molsysviewer#151"
+      ]
+    },
+    "inspection": "GH Run Receptor first inspection preserves PENDING for incomplete CI and FAIL for completed public E2E. Native completed-job logs identify the Qt WebGL and old-provider H5MSM causes.",
+    "observed_utc": "2026-10-06T21:06:27Z"
+  },
+  "remaining_checks": [
+    {
+      "scope": "Complete three-platform source-pair CI for the guard commit",
+      "owning_issue": "uibcdf/molsysviewer#93",
+      "route": "Inspect run 37530734789 when its jobs and Linux notebook/core-browser steps finish; preserve this local and installed evidence independently."
+    },
+    {
+      "scope": "Compatible public/staging MolSysMT scientific pair and installed release matrix",
+      "owning_issue": "uibcdf/molsysviewer#114",
+      "route": "Receive the provider candidate and qualify both exact installed packages before a release or new feature floor."
+    },
+    {
+      "scope": "Experimental Qt host initialization",
+      "owning_issue": "uibcdf/molsysviewer#109",
+      "route": "Use the owning native-host investigation and separate visible-window evidence; do not substitute this failure with a skipped or offscreen visual certificate."
+    }
   ]
 }

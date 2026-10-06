@@ -12,9 +12,13 @@ with a Viewer wheel from `6be2bcd272ef6eda014c4bb3cf6f50f04695e8ef` and
 public MolSysMT 0.22.4. Archive/member hashes, isolated imports, runtime
 version and `pip check` pass. Six new cold-import/reload guards preserve
 application diagnostics and render a catalog without replacing its profile.
-No runtime source, dependency minimum or capture default changes. Complete
-source regression is in progress; compatible installed scientific-pair and
-cross-platform release qualification remain pending. See
+No runtime source, dependency minimum or capture default changes. The once-run
+source regression returns **2,879 passed/23 skipped, two failed**: the offscreen
+Qt transport/payload processes cannot initialize their OpenGL RHI, tracked
+under experimental #109. This is not a full-suite pass. The receiving guard
+and receipt are published at `a48478fc`; policy and Conda governance pass.
+Its three-platform source-pair CI is in progress. Compatible installed
+scientific-pair and cross-platform release qualification remain pending. See
 [the maintained adoption record](python_ecosystem_policy_adoption.md#published-support-library-receiving-check--2026-10-06)
 and [the receiving receipt](support_library_receiving_20261006.json).
 

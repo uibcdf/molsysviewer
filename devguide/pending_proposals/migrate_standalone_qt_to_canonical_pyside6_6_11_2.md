@@ -162,3 +162,39 @@ root cause. No frame was rendered and this result supplies no visual certificate
 This remains an experimental-host qualification finding under #109. It does
 not establish a new core product defect or alter the accepted standalone
 experimental boundary for 1.0. No Qt workaround or opt-out is introduced.
+
+### Local support-library receiving observation — 2026-10-06
+
+The single complete Viewer source run during public SMonitor 0.19.0 / ArgDigest
+0.15.0 receiving returns **2,879 passed, 23 skipped, two failed**, exit 1, in
+507.07 s. Development uses `molsyssuite@uibcdf_3.14`, Python 3.14.7, editable
+SMonitor `f604b940ab281df4554869fdd24f796ea6d42c27`, ArgDigest
+`5c6711ebfe23b9516ef0e8f830abee70589ec406` and MolSysMT
+`ce4cfe2b817e3721ac4681be2c251ad4a13c520e`. The new application-policy guard
+and the library sources are those published at Viewer `a48478fc`.
+
+Both failures are in `tests/test_standalone.py`:
+`test_qt_event_transport_smoke_real_qt` supplies no `TRANSPORT_READY:yes`, and
+`test_qt_payload_refs_replace_across_two_real_generations` supplies no JSON
+report. Their trivial pages do not load Mol* or request a WebGL canvas.
+Nevertheless, native Qt stderr reports `QRhiGles2: Failed to create temporary
+context`, `Failed to create context` and `Failed to create RHI for backend:
+OpenGL`, with Vulkan/software fallback and D-Bus diagnostics. This is failure
+to initialize the host process, not a demonstrated protocol or support-library
+failure. The accompanying diagnostics do not identify the precise cause.
+
+Canonical PySide6/QtCore are both 6.11.2; the shared development process has
+neither `DISPLAY` nor `WAYLAND_DISPLAY`. The test fixtures already select
+offscreen, so this does not demonstrate why the native context fails. The
+same candidate's public CI run `37530734861`, completed Qt job
+`112499151380`, separately fails `test_qt_live_model_smoke_real_window` with
+`Exported scene has no WebGL canvas` and `Could not create a WebGL rendering
+context`. This repeats the hosted initialization observation above, rather
+than establishing a failure in SMonitor/ArgDigest receiving.
+
+These observations extend the existing experimental-host finding; they are
+not a passing full suite or standalone qualification. No graphical backend
+override, environment edit, opt-out or repeat full run is made. Separately,
+122 bounded tests with the exact public support archives in a fresh non-Qt
+installed environment pass. The exact receipts and full-source distinction
+are retained in [the receiving record](../support_library_receiving_20261006.json).
