@@ -1,0 +1,228 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-06",
+  "purpose": "Implement uibcdf/molsysviewer#167 and repair the owning JS fixture in #166 before continuing the human region review.",
+  "viewer_base_commit": "515e98edc74533e756809cffd3770f7fc08d1930",
+  "source_identity": "The commit adding this receipt carries the implementation; source hashes identify the reviewed code. No tag or release is prepared.",
+  "source_sha256": {
+    "molsysviewer/js/src/managers/handlers/state-handlers.ts": "a3bd1f9ae255473df2c13863d25d032e7980a04f6b0181bcec5a688a083adbe2",
+    "molsysviewer/js/src/managers/viewer-controller.ts": "f4f2b150c656fea3d5961e3ec0b85dda0704048848547ec67ef63d193fcbb4f9",
+    "molsysviewer/js/src/messages/viewer-messages.ts": "9ca807efc5619bfc27d6d12c10091d51432c104c12d9abaab0dd2c7b1e73a2ca",
+    "molsysviewer/js/src/remote/remote-workbench.ts": "35b9f124227320031c78ac73ddc77712e8726db9149fe4f33298ce5cf38e649b",
+    "molsysviewer/js/src/ui/context-menu.ts": "9b6a61e86951a5ffa25d4e2a3962dd2200b77645ec441e9549624bc234181959",
+    "molsysviewer/js/src/ui/group-panel.ts": "d9a6cd79758677e206327bf1e52ff6a6ae9fa956a3779f08c4b89fda202827d6",
+    "molsysviewer/js/src/ui/panels/regions-panel.ts": "9fe47edab5eb322f8ae625dfd537b0aa28b74c846390db4cf91a1bca6bb2ac5c",
+    "molsysviewer/js/src/ui/panels/types.ts": "469a5451fb93d54e3bcc21af8a7e845252f1c5c0e60703515534c87f35ae2c39",
+    "molsysviewer/js/tests/e2e/composite-load-bridge.py": "7466c7669df716ced4f2be89dcd92bcc3bbe17df1882c5b263af65fdfed7e6fd",
+    "molsysviewer/js/tests/e2e/composite-load.e2e.ts": "0022403d8b6afc6dd8bfea97da458172f0a2c344a7e225060d1c7229957cbe95",
+    "molsysviewer/js/tests/e2e/region-hide.e2e.ts": "26635efbde9ed56fc650c061383d7dc7a942081507b4c061cc6b3efad3c22a39",
+    "molsysviewer/js/tests/e2e/region-subpanel.e2e.ts": "9421ba3584dbc51913a69adf170f0aa11878e26fcd1c37a8fceca072fb16e442",
+    "molsysviewer/js/tests/unit/group-panel.test.ts": "685063b3f5395741f2ea4fd0f9469297e55f15c86e0b4e4ae6f04d43c42bb33a",
+    "molsysviewer/js/tests/unit/state-handler.test.ts": "c561aaa1ada7c411164ffdb783871924d0d3a3efc6a8a2f56fc6ea0922d6731c",
+    "molsysviewer/regions.py": "44f5b683ee6e48827fc95e6ab6a1cfc2250a13ffd175db48f180f1ced31d73a3",
+    "molsysviewer/viewer/core.py": "2cda2d9debeefb5968be1843c9c545c112e165d61be6952ba14f18ecf816e703",
+    "molsysviewer/viewer/panel_actions/regions.py": "4419a2bca8595b8e8d09cafcf8dcdf5b55d653c4b57eeb4d49ec756e6d62b622",
+    "molsysviewer/viewer/regions.py": "1bc04cc2522260dc9ffaf8b59fa10f7913d847d39ed231cb7ab8b5b398292f3d",
+    "molsysviewer/viewer/state.py": "dda9ef87b9c33b305811b8b0c0fa7d15759c3830da79f01d8accacec976cacbe",
+    "tests/test_region_enablement.py": "4f8d2310d751baa6c1406aaefdedce41dffb4a5258ccd698eac0ff3826d8216e",
+    "tests/test_reporting_protocol.py": "6fff0bbc1ac3ab2789988a2e04eec3c394cbb58778861cae290585df3472a593"
+  },
+  "environment": {
+    "conda": "molsyssuite@uibcdf_3.14",
+    "python_executable": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "python": "3.14.7",
+    "packages": {
+      "molsysviewer": "0.23.0+17.g3fa27e68",
+      "molsysmt": "0.22.4+24.g42b487869",
+      "pytest": "9.1.1",
+      "pytest-receptor": "1.1.0+19.g6d87a24"
+    },
+    "metadata_limit": "Editable installed metadata is not the checkout identity or a public artifact qualification.",
+    "provider_head": "3cf1c8e53e082df79db2fb82776482e969995ea0",
+    "provider_worktree": "clean at final review",
+    "browser": "149.0.7827.53",
+    "browser_binary": "/usr/bin/google-chrome",
+    "webgl2": true,
+    "renderer": "ANGLE Vulkan SwiftShader"
+  },
+  "python": {
+    "focused_feature": {
+      "module": "tests/test_region_enablement.py",
+      "passed": 12,
+      "exit_code": 0
+    },
+    "full_once": {
+      "command": "explicit Python 3.14 -m pytest --receptor=llm tests/",
+      "passed": 2839,
+      "failed": 8,
+      "skipped": 23,
+      "seconds": 500.58,
+      "exit_code": 1,
+      "repeated": false,
+      "compact_diagnosis": "FAIL exit=1 | 8 failed, 2839 passed, 23 skipped | 500.58s | 973 warnings | 8 root causes\n\n[1] AssertionError | 1 test | call\n    tests/regions/test_region_flow.py:187\n    AssertionError: assert {'op': 'creat...0, 1, 2], ...} == {'op': 'creat...0, 1, 2], ...}\n\n      Omitting 5 identical items, use -vv to show\n      Left contains 1 more item:\n      {'enabled': True}\n      Use -v to get more diff\n    rerun: pytest tests/regions/test_region_flow.py::test_new_region_with_visual_spec_preserves_representation_semantics -q\n\n[2] AssertionError | 1 test | call\n    tests/regions/test_region_flow.py:226\n    AssertionError: assert [{'op': 'crea..., 1, 2], ...}] == [{'op': 'crea..., 1, 2], ...}]\n\n      At index 0 diff: {'op': 'create_region', 'tag': 'styled-default', 'selection': 'all', 'atom_indices': [0, 1, 2], 'order': 1, 'enabled': True} != {'op': 'create_region', 'tag': 'styled-default', 'selection': 'all', 'atom_indices': [0, 1, 2], 'order': 1}\n      Use -v to get more diff\n    rerun: pytest tests/regions/test_region_flow.py::test_new_region_with_visual_params_preserves_none_representation -q\n\n[3] AssertionError | 1 test | call\n    tests/regions/test_region_flow.py:268\n    AssertionError: assert {'op': 'creat...0, 1, 2], ...} == {'op': 'creat...0, 1, 2], ...}\n\n      Omitting 5 identical items, use -vv to show\n      Left contains 1 more item:\n      {'enabled': True}\n      Use -v to get more diff\n    rerun: pytest tests/regions/test_region_flow.py::test_rebuild_replays_visual_region_as_bare_create_then_style -q\n\n[4] AssertionError | 1 test | call\n    tests/test_capability_audit.py:261\n    AssertionError: devguide/capability_audit.md is out of date; regenerate it with `python devtools/capability_audit.py --write`\n    assert '# Capability... changed.\\n\\n' == '# Capability... changed.\\n\\n'\n\n      Skipping 1017 identical leading characters in diff, use -v to show\n      Skipping 11975 identical trailing characters in diff, use -v to show\n      - s[…].` | 47 | 47 | MolSys\n      ?           ^    ^\n      + s[…].` | 45 | 45 | MolSys\n      ?           ^    ^\n    rerun: pytest tests/test_capability_audit.py::test_the_generated_document_is_current -q\n\n[5] AssertionError | 1 test | call\n    tests/test_devguide_links.py:92\n    AssertionError: links unavailable in a clean checkout:\n        devguide/pending_proposals/README.md -> region_enablement_and_visibility.md\n    assert ['devguide/pe...isibility.md'] == []\n\n      Left contains one more item: 'devguide/pending_proposals/README.md -> region_enablement_and_visibility.md'\n      Use -v to get more diff\n    rerun: pytest tests/test_devguide_links.py::test_relative_links_resolve_in_a_clean_checkout -q\n\n[6] AssertionError | 1 test | call\n    tests/test_public_api_inventory.py:81\n    AssertionError: assert {'public_call...empt': 0, ...} == {'public_call...empt': 0, ...}\n\n      Omitting 4 identical items, use -vv to show\n      Differing items:\n      {'public_callables': 717} != {'public_callables': 715}\n      {'digested': 717} != {'digested': 715}\n      Use -v to get more diff\n    rerun: pytest tests/test_public_api_inventory.py::test_the_totals_are_the_ones_the_gate_is_tracking -q\n\n[7] AssertionError | 1 test | call\n    tests/test_standalone.py:1724\n    AssertionError: real Qt event transport (fetch -> molsysviewer:// scheme handler -> bridge) failed.\n      stdout=\n      stderr=Sandboxing disabled by user.\n      QRhiGles2: Failed to create temporary context\n      QRhiGles2: Failed to create context\n      Failed to create RHI for backend: OpenGL\n      This plugin does not support createPlatformVulkanInstance\n      QVulkanInstance: Failed to initialize Vulkan\n      GBM is not supported with the current configuration and Vulkan is not available. Fallback to software rendering.\n      [396560:396568:1006/074932.294709:ERROR:../../../src/3rdparty/chromium/dbus/bus.cc:408] Failed to connect to the bus: In D-Bus address, character '@' should have been escaped\n\n\n    assert 'TRANSPORT_READY:yes' in ''\n     +  where '' = CompletedProcess(args=['/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python', '-c', '\\nimport os, sys.../chromium/dbus/bus.cc:408] Failed to connect to the bus: In D-Bus address, character '@' should have been escaped\\n\\n\").stdout\n    rerun: pytest tests/test_standalone.py::test_qt_event_transport_smoke_real_qt -q\n\n[8] AssertionError | 1 test | call\n    tests/test_standalone.py:1863\n    AssertionError: Qt payload-generation probe produced no report.\n      stderr=Sandboxing disabled by user.\n      QRhiGles2: Failed to create temporary context\n      QRhiGles2: Failed to create context\n      Failed to create RHI for backend: OpenGL\n      This plugin does not support createPlatformVulkanInstance\n      QVulkanInstance: Failed to initialize Vulkan\n      GBM is not supported with the current configuration and Vulkan is not available. Fallback to software rendering.\n      [396587:396594:1006/074934.825433:ERROR:../../../src/3rdparty/chromium/dbus/bus.cc:408] Failed to connect to the bus: In D-Bus address, character '@' should have been escaped\n\n\n    assert []\n    rerun: pytest tests/test_standalone.py::test_qt_payload_refs_replace_across_two_real_generations -q\n\nwarnings: 973 in 17 groups\n  LegacyH5MSMWarning x941 | ../molsysmt/molsysmt/form/molsysmt_H5MSMFileHandler/to_molsysmt_H5MSMFileHandler.py:44 | H5MSM 0.4 is deprecated; reading remains supported. Convert a copy to H5MSM 0.5 with molsysmt.h5msm.migrate_to_05(source, output). Docs: https://www.uibcdf.org/MolSysMT\n  DeprecationWarning x5 | ../argdigest/argdigest/core/decorator.py:168 | annotations.add_label() is deprecated; use add() instead.\n  DeprecationWarning x5 | ../argdigest/argdigest/core/decorator.py:168 | The group_index parameter is deprecated. Use selection or atom_indices instead.\n  StructuralAttributeDropWarning x5 | ../argdigest/argdigest/core/decorator.py:460 | Structural attributes were discarded during concatenation: b_factor, occupancy. Use attribute_policy='strict' to reject the operation instead. Docs: https://www.uibcdf.org/MolSysMT\n  IncompatibleBoxWarning x4 | ../argdigest/argdigest/core/decorator.py:460 | Atoms were added under a periodic box that does not match the one of the target system: the added atoms have no periodic box while the target system does. The target's box was kept. Coordinates expressed under a different unit cell are not directly comparable. Wrap or re-image the incoming coordinates into the target's box before adding them. Docs: https://www.uibcdf.org/MolSysMT\n  IncompatibleBoxWarning x2 | ../argdigest/argdigest/core/decorator.py:460 | Atoms were added under a periodic box that does not match the one of the target system: the target system has no periodic box while the added atoms do. The target's box was kept. Coordinates expressed under a different unit cell are not directly comparable. Wrap or re-image the incoming coordinates into the target's box before adding them. Docs: https://www.uibcdf.org/MolSysMT\n  DeprecationWarning x1 | molsysviewer/scene_history.py:65 | 'radii' is deprecated; use 'radius'.\n  DeprecationWarning x1 | molsysviewer/scene_history.py:65 | 'colors' is deprecated; use 'color'.\n  IncompatibleBoxWarning x1 | ../argdigest/argdigest/core/decorator.py:460 | Atoms were added under a periodic box that does not match the one of the target system: the boxes differ, first at structure 2: [4. 5. 6.] against [2. 2. 2.] nm. The target's box was kept. Coordinates expressed under a different unit cell are not directly comparable. Wrap or re-image the incoming coordinates into the target's box before adding them. Docs: https://www.uibcdf.org/MolSysMT\n  RegionOverlapWarning x1 | molsysviewer/scene_history.py:65 | Region 'second' overlaps visible represented region(s) first. Overlapping region representations can produce z-fighting; use difference(), intersection(), or union() to compose non-overlapping regions.\n  RegionOverlapWarning x1 | molsysviewer/scene_history.py:65 | Region 'element-cpk' overlaps visible represented region(s) chain-id. Overlapping region representations can produce z-fighting; use difference(), intersection(), or union() to compose non-overlapping regions.\n  RegionOverlapWarning x1 | molsysviewer/scene_history.py:65 | Region 'my-cpk' overlaps visible represented region(s) my-chain. Overlapping region representations can produce z-fighting; use difference(), intersection(), or union() to compose non-overlapping regions.\n  RegionOverlapWarning x1 | molsysviewer/scene_history.py:65 | Region 'f2' overlaps visible represented region(s) f1. Overlapping region representations can produce z-fighting; use difference(), intersection(), or union() to compose non-overlapping regions.\n  RegionOverlapWarning x1 | molsysviewer/scene_history.py:65 | Region 'sweep' overlaps visible represented region(s) reg. Overlapping region representations can produce z-fighting; use difference(), intersection(), or union() to compose non-overlapping regions.\n  StateStructureDiffersWarning x1 | ../argdigest/argdigest/core/decorator.py:660 | This state was saved from a different system (1441 atoms; this one has 22), so its stored atom indices do not address the same atoms here. Objects that kept a recipe were re-resolved against the loaded system; those that could not be are marked broken. Check that they landed where you expect.\n  StructuralAttributeDropWarning x1 | ../argdigest/argdigest/core/decorator.py:460 | Structural attributes were discarded during concatenation: b_factor. Use attribute_policy='strict' to reject the operation instead. Docs: https://www.uibcdf.org/MolSysMT\n  StructureStreamFallbackWarning x1 | molsysviewer/viewer/core.py:1017 | Array-native stream failed; using JSON fallback: no acknowledgement within 30s while awaiting 'waiting_begin_ack'\n\nskipped: 23 in 8 groups\n  x14 | template has no placeholders\n  x2 | Requires installed scientific artifacts\n  x2 | requires an explicitly selected real Chromium/GPU environment\n  x1 | imageio is installed; cannot test ImportError path\n  x1 | molsysviewer_elastnetmt is not installed\n  x1 | Windows process memory API\n  x1 | Requires a real X11 display context to initialize WebGL (run manually, not in headless CI).\n  x1 | Set MOLSYSVIEWER_QT_GPU_TEST=1 (WebGL-capable env) to run the full render test.\n"
+    },
+    "followup": {
+      "passed": 264,
+      "exit_code": 0,
+      "scope": "Feature, region flow, capability audit and public API inventory; selected checks after diagnosis, not a second full suite.",
+      "diagnoses": [
+        {
+          "failed_nodes": 3,
+          "cause": "Default create_region payload gained enabled=True, violating existing exact wire checks.",
+          "resolution": "Omit the optional flag at the true default; emit enabled=False for disabled projections."
+        },
+        {
+          "failed_nodes": 1,
+          "cause": "Generated capability audit was stale.",
+          "resolution": "Regenerate from the owning capability tool."
+        },
+        {
+          "failed_nodes": 1,
+          "cause": "New report was absent from the Git index used by clean-checkout link validation.",
+          "resolution": "Stage owning new files; all four link checks pass."
+        },
+        {
+          "failed_nodes": 1,
+          "cause": "API inventory baseline counted 715 rather than 717 callables.",
+          "resolution": "Regenerate baseline: 717 digested, zero undigested, zero missing digesters."
+        },
+        {
+          "failed_nodes": 2,
+          "cause": "Qt subprocess resource discovery used ambient CONDA_PREFIX for Python 3.13 although the selected interpreter was Python 3.14.",
+          "resolution": "Recheck the two exact nodes with PATH and CONDA_PREFIX set to the approved Python 3.14 environment. Both pass; no Qt product change or GPU qualification."
+        }
+      ],
+      "compact_report": "receptor: 100% 264/264 30s\nPASS exit=0 | 264 passed | 29.74s | 34 warnings\n\nwarnings: 34 in 1 groups\n  LegacyH5MSMWarning x34 | ../molsysmt/molsysmt/form/molsysmt_H5MSMFileHandler/to_molsysmt_H5MSMFileHandler.py:44 | H5MSM 0.4 is deprecated; reading remains supported. Convert a copy to H5MSM 0.5 with molsysmt.h5msm.migrate_to...\n\n"
+    },
+    "qt_environment_followup": {
+      "passed": 2,
+      "exit_code": 0,
+      "nodes": [
+        "tests/test_standalone.py::test_qt_event_transport_smoke_real_qt",
+        "tests/test_standalone.py::test_qt_payload_refs_replace_across_two_real_generations"
+      ]
+    },
+    "reporting_profile_before_archiving": {
+      "passed": 219,
+      "exit_code": 0
+    },
+    "links_before_archiving": {
+      "passed": 4,
+      "exit_code": 0
+    }
+  },
+  "javascript": {
+    "initial_sandbox_result": "Node reported a generic child-file failure; the native trace below supplies the diagnosis.",
+    "native_full_before_fixture_fix": {
+      "passed": 287,
+      "failed": 33,
+      "exit_code": 1,
+      "cause": "All 33 failures lack scope.querySelector in the owning GroupPanel DOM fixture."
+    },
+    "focused_group_panel_after_fix": {
+      "passed": 35,
+      "exit_code": 0
+    },
+    "final_full_unit": {
+      "command": "npm run test:js",
+      "passed": 322,
+      "failed": 0,
+      "skipped": 0,
+      "exit_code": 0
+    },
+    "typescript_no_emit": {
+      "exit_code": 0
+    },
+    "runtime_build": {
+      "command": "npm run build:runtime",
+      "exit_code": 0,
+      "generated_files_not_edited_manually": true
+    }
+  },
+  "browser": {
+    "focused_feature": {
+      "command": "node tests/e2e/composite-load.e2e.js --regions-only",
+      "exit_code": 0,
+      "authority": "Persistent real Python demo viewer, Studio semantic actions, actual Mol* Whole masks and independent representations."
+    },
+    "full_core_initial": {
+      "command": "npm run test:e2e:core",
+      "exit_code": 1,
+      "passed_suites": [
+        "annotations-interaction",
+        "annotations-subpanel",
+        "array-native-load",
+        "coordinate-edits",
+        "composite-load",
+        "popup-channel",
+        "endpoint-lifecycle",
+        "panel-popup-welcome",
+        "structure-data-relay",
+        "widget-seam",
+        "broken-anchors",
+        "export-replay",
+        "exported-page-colour",
+        "exported-page-framing",
+        "global-reprs-across-loads",
+        "group-panel-interaction",
+        "hierarchy-interaction",
+        "history-coalescing",
+        "measurements-interaction",
+        "measures-subpanel",
+        "interactions-subpanel",
+        "interactions-geometry",
+        "interactions-calculation",
+        "range-selection",
+        "qt-live-reload",
+        "region-hide"
+      ],
+      "stopped_at": "region-subpanel",
+      "cause": "Tooltip assertion still expected the old Whole-only wording; update only the assertion to the approved own-plus-Whole scope."
+    },
+    "remaining_core_followup": {
+      "runner": "Sequential timeout 600 node tests/e2e/<suite>.e2e.js with Python/PATH/CONDA_PREFIX 3.14 and PW_CHROMIUM_BIN selected; new Chromium per suite.",
+      "exit_code": 0,
+      "passed_suites": [
+        "region-subpanel",
+        "selection-subpanel",
+        "layers-subpanel",
+        "shape-trajectory",
+        "shapes-subpanel",
+        "workflow-integration",
+        "scientific-workflow",
+        "scene-contracts",
+        "scene-object-identity",
+        "scene-object-panel-roundtrip",
+        "bioassembly-chain-identity",
+        "trajectory-plot",
+        "movie-playback"
+      ]
+    },
+    "coverage": "All 39 core suites have passing results across the two runs. This is not one clean full-core runner result; initial runner exit remains 1.",
+    "skips": 0
+  },
+  "limits": [
+    "Human retest of new Hide and Enabled behavior is pending.",
+    "Show Only temporary isolation and return-control design remain for discussion; only integration with enablement is implemented.",
+    "Standalone remains experimental; headless Qt transport checks do not certify a visible-window GPU host.",
+    "Remote sessions remain post-1.0; their exclusion from core does not constitute a passing remote result.",
+    "This local source evidence does not replace installed/public package or exact-head hosted CI qualification.",
+    "The open scratch notebook and unrelated sandbox files are preserved."
+  ],
+  "guide_validation_after_archiving": {
+    "command": "explicit Python 3.14 -m pytest --receptor=llm tests/test_reporting_protocol.py tests/test_devguide_links.py tests/test_devguide_architecture_status.py -x",
+    "passed": 223,
+    "exit_code": 0,
+    "seconds": 2.8
+  },
+  "final_review": {
+    "ruff_exit_code": 0,
+    "staged_diff_check_exit_code": 0,
+    "origin_main_drift_before_commit": {
+      "ahead": 0,
+      "behind": 0
+    },
+    "runtime_regenerated_after_review": true,
+    "hosted_ci": "Exact new commit results will be checked after push; local results do not establish hosted success."
+  }
+}

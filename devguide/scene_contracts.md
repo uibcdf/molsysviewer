@@ -270,8 +270,9 @@ three cases, through the viewer's own hover/click/context-menu paths:
 
 ### Requirements (in force, not advisory)
 
-**R-O1 — Ownership is by fully opaque drawing.** The whole masks a region's atoms **only if that
-region draws them fully opaquely**: `alpha` absent, or `alpha == 1`, on **every** representation
+**R-O1 — Ownership is by fully opaque drawing.** An enabled, shown region
+contributes an ownership mask to Whole **only if that region draws them fully
+opaquely**: `alpha` absent, or `alpha == 1`, on **every** representation
 the region owns (a preset generates several; one translucent surface makes the region translucent).
 Anything less is translucent and owns nothing: the whole keeps painting beneath it, which is exactly
 what translucency promises, and stays pickable.
@@ -290,7 +291,8 @@ the visual meaning of `alpha` *and* picking safety at once, and it does not coup
 invariant to a renderer parameter someone might change.
 
 Blending between a translucent surface and what lies behind it is not z-fighting. It is what the
-user asked for.
+user asked for. Enabled hidden regions contribute a separate Whole visibility
+constraint under §A.3 (#167); disabling suspends both contributions.
 
 **R-O2 — The mask is updated by deltas**, never recomputed in full. Contract R's `dynamic` regions
 re-evaluate their atom set per frame; a full mask recompute costs 26 ms at 50% ownership and the
@@ -386,8 +388,8 @@ as this sentinel.
    `?? "cartoon"` fallbacks are removed.
 2. State **None** ⇒ the region has a Mol\* *component* (needed for `focus` and
    for index bookkeeping) but **no representation child**. Those atoms are
-   painted by the whole's representation, if the whole is visible and no hidden
-   state-**None** region masks them (§A.3).
+   painted by the whole's representation, if the whole is visible and no
+   enabled hidden region masks them (§A.3).
 3. State **Inherit** ⇒ the region gets its own representation whose *type* is
    the whole's current type (or preset), with the region's own `params`
    (`alpha`, `quality`, colour theme) applied on top.
@@ -407,24 +409,49 @@ uibcdf/molsysviewer#151:** a region in state **None** can be hidden without
 creating a representation. `hide()` masks its atoms on **whole only**; `show()`
 releases that region's constraint. Neither changes another region's
 representations or any shape, annotation, measurement or interaction visual.
-The Studio visibility control is enabled and explains this scope.
+The Studio visibility control explains this scope.
+
+**Amended 2026-10-06, principal-maintainer decision within
+uibcdf/molsysviewer#167:** enablement and requested visibility are independent.
+`Region.enable()` / `disable()` and read-only `enabled` control participation
+in the visual composition. An enabled hidden region masks its atoms on **whole
+only** and hides its own representations in every representation state. This
+replaces the represented-region fallback-on-hide rule. Other region
+representations and overlays stay independent; overlapping enabled hidden
+regions keep their own Whole constraints.
+
+Disabling suspends own representations, ownership, Whole constraints and
+region-owned color contributions. The definition, UID, order, style, stored
+color layer, hidden request, molecular indices and dependencies remain intact.
+Re-enabling applies that configuration and the current dynamic membership.
+Disabled regions remain usable in scientific queries and derived recipes;
+dynamic recipes remain current. `show()` / `hide()`, layer visibility and bulk
+visibility can update the saved hidden request without enabling a region or
+showing a globally hidden Whole. `visible` means `enabled and not hidden`, not
+a guarantee that every atom is drawn by the current Whole representation.
+
+`_active` retains its retirement meaning. State v2 saves boolean `enabled`
+(missing means true for older documents); invalid values are rejected before
+scene mutation. State/session/history, copy/extract, rebuild and popup/static
+projections preserve both booleans. Whole masks are derived, never saved as
+additional atom arrays. Studio offers a separate Enabled switch, marks disabled
+cards and disables their Hide/Show control until re-enabled; styles remain
+editable while suspended. Python remains the sole authority.
 
 Whole's effective full-transparency mask is the union of visible opaque owners,
-the atoms of all hidden state-**None** regions, and any active `show_only()`
+the atoms of all enabled hidden regions, and any active `show_only()`
 whole mask. During explicit isolation, §A.4 replaces the hidden-base constraints
 with the isolation mask. Showing one base region cannot release an overlapping hidden base
 region's constraint or the opaque ownership mask. It cannot show a globally
 hidden whole. Focus fade is composed beneath full hiding, and its value is
 restored when the last full-hiding constraint is released.
 
-Python's existing region `hidden` field remains the only authority. The mask is
+Python's region `hidden` and `enabled` fields are the authorities. The mask is
 derived, never a separately mutable/saved atom mask. Session/state/history,
-rebuild, layer visibility and dynamic membership reuse that field. Deleting a
-hidden base region releases its constraint. Regions keep their hidden flag when
-their representation changes: **None → Own/Inherit** releases the base mask and
-hides the new representations; **Own/Inherit → None** masks the current atoms on
-whole instead. The whole may become visible beneath a hidden represented region,
-as required by the existing fallback contract.
+rebuild, layer visibility and dynamic membership reuse those fields. Deleting a
+region releases its constraint. Regions keep both flags when their representation
+changes: an enabled hidden region continues masking Whole across **None ↔
+Own/Inherit**; a disabled region continues contributing no mask or visual.
 
 ### A.4 Operations that assume an own visual
 
@@ -443,13 +470,17 @@ own representation. On a state-**None** region:
   isolation. Shapes, annotations, measurements and interactions are unchanged.
   Own/Inherit isolation continues to mask whole entirely and show the region's
   independent representations.
+- Enablement integration (#167): `show_only()` requires an enabled selected
+  region and rejects before mutation otherwise. It never enables disabled other
+  regions. Disabling the isolated region releases its isolation without restoring
+  other hidden requests. The temporary-isolation/return design remains undecided.
 - `set_representation(alpha=…)` without a type is meaningless; the caller wants `"inherit"`.
 
 Isolation belongs to one region, identified by its existing UID and recipe.
 An optional `show_only: true` in its v2 record preserves that choice without
 duplicating atom lists. State with several isolated regions, a hidden isolated
-region or a non-boolean flag is rejected before mutation. Old documents without
-the field remain valid. State/session/history, copy/extract, rebuild and
+region, a disabled isolated region or a non-boolean flag is rejected before
+mutation. Old documents without the field remain valid. State/session/history, copy/extract, rebuild and
 popup/static projection restore the isolation against current/remapped membership.
 The `show_only_region` wire operation's `restore_only` flag applies the mask
 without hiding regions added later or changing saved whole visibility.
@@ -502,7 +533,7 @@ helpers reach the runtime directly. That is the whole reason `show_orientation_a
 ### A.6 Python must describe reality
 
 `_region_has_visible_representation()` becomes true exactly when the region has
-an own representation (states **Inherit** and **Own**) and is not hidden. With
+an own representation (states **Inherit** and **Own**), is enabled and is not hidden. With
 that, overlap detection reports what Mol\* actually paints, and the ⚠ badge
 starts working for the first time.
 
@@ -543,7 +574,8 @@ sends only the affected atoms to the frontend; the Mol\* per-atom colour theme
 > no region owns, and atoms under a **translucent** region (R-O1). `order` still decides which of
 > two overlapping opaque regions is the owner.
 
-1. Any region layer beats the whole's base layer.
+1. Any enabled region layer beats the whole's base layer. Disabled layers are
+   retained but excluded from color resolution (§A.3).
 2. Between two overlapping region layers, **the most recently created or updated
    region wins**.
 
@@ -575,8 +607,9 @@ zero silently inverts the precedence of every overlap. `view.regions` exposes `r
   change; see §Migration.)
 - `Whole.reset_colors()` clears **the base layer across the whole system**. The
   regions keep their layers, so the screen may not change where a region covers.
-  The reset becomes visible under a region only once that region is hidden or
-  its own layer is cleared. This is the intended, user-confirmed semantics.
+  The reset becomes visible under a region once that region is disabled or its
+  own color layer is cleared. Enabled Hide retains the color configuration and
+  masks Whole; disable releases the visual effects (§A.3, #167).
 - A canvas-wide wipe is an explicit, separate operation: **`view.reset_all_colors()`**.
 
 ### B.4 A region with no representation may still be coloured
@@ -814,6 +847,8 @@ These are semantic changes to a **published** public API. Each is deliberate:
 
 | Change | Before | After |
 |---|---|---|
+| region visibility and suspension (2026-10-06, #167) | represented Hide revealed Whole; no independent enablement | enabled Hide masks Whole in every representation state; enable/disable suspends and reapplies visual configuration, preserving the hidden request |
+| region state (2026-10-06, #167) | `hidden` only | boolean `enabled` and `hidden`; old state defaults to enabled and adopts the revised Hide contract |
 | annotation creation (2026-09-30) | `add_annotation` plus alias `add` | only `view.annotations.add`, with the full named signature |
 | public digestion (2026-09-30) | exemptions and implicit bypass on some routes | every ordinary public function uses ArgDigest and explicit `skip_digestion=False` |
 | scene registries and handles (2026-09-30) | raw dictionary writes and reused handles could alter replacement objects | manager verbs own writes; retired handles raise; reacquire after restore |

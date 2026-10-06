@@ -1,13 +1,13 @@
 ---
 summary: GroupPanel unit DOM fixture lacks querySelector required by Interactions
 issue: uibcdf/molsysviewer#166
-status: open
+status: resolved
 opened: 2026-10-06
-closed:
+closed: 2026-10-06
 severity: medium
 verification: reproduced
 area: [testing, ui, interactions]
-guard:
+guard: molsysviewer/js/tests/unit/group-panel.test.ts
 normative:
 blocked_by: []
 supersedes: []
@@ -51,5 +51,17 @@ provider change is justified by this trace.
 
 ## Resolution
 
-Pending. Recorded separately from #164/#165; no test fixture or runtime
-change has been made for this issue.
+The fixture now preserves element tags/option values, resolves scoped descendant
+selectors and implements prepend ordering. Missing options return null; wrong
+selectors cannot silently resolve to an arbitrary option. The regression
+`GroupPanel test DOM resolves scoped options and preserves prepend order`
+guards this behavior, and GroupPanel construction exercises the actual
+InteractionsPanel selector. Runtime Interactions code is unchanged.
+
+The unsandboxed complete pre-fix trace has 287 passed and 33 failed, all with
+the missing querySelector cause. The focused owner passes 35 tests and the
+final complete JS unit lane passes 322 tests, zero failures/skips. The initial
+sandboxed Node child emitted only a generic failed-file result; the subsequent
+unsandboxed trace is the diagnosis evidence. The bounded unit guard profile is
+declared in `devguide/reporting_protocol.md` and checked by the local validator.
+See `devguide/region_enablement_20261006.json` for retained validation scope.

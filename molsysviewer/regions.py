@@ -56,6 +56,7 @@ class Region:
         self._repr_params = repr_params or {}
         self.order: int = view._next_region_order()  # noqa: SLF001
         self._active = True
+        self._enabled = True
         self._hidden = False
         self._show_only = False
         # Layer membership (Contract B3, Phase 9): the tag of the layer this
@@ -162,9 +163,17 @@ class Region:
         )
 
     @property
+    def enabled(self) -> bool:
+        """Whether this region's visual configuration participates in the scene."""
+        return self._enabled
+
+    @property
     def visible(self) -> bool:
-        """Whether this region's own representation is currently shown."""
-        return not self._hidden
+        """Whether this region is enabled and requested to be shown.
+
+        Whole visibility and overlapping representations remain independent.
+        """
+        return self._enabled and not self._hidden
 
     @property
     def layer(self) -> str | None:
@@ -521,6 +530,7 @@ class Region:
             "selection": self.selection,
             "atom_indices": atom_indices,
             "order": self.order,
+            **({"enabled": False} if not self._enabled else {}),
         }
         if include_visual and self._has_own_visual():
             payload["representation"] = self.representation
@@ -697,7 +707,11 @@ class Region:
             },
             {
                 "field": "visible",
-                "value": not self._hidden,
+                "value": self.visible,
+            },
+            {
+                "field": "enabled",
+                "value": self.enabled,
             },
             {
                 "field": "representation",
@@ -1105,9 +1119,9 @@ class Region:
     @signal(tags=["region", "visibility"])
     @digest()
     def show(self, skip_digestion: bool = False) -> None:
-        """Show attached representations, or release this region's mask on whole.
+        """Request visible representations and release this region's Whole mask.
 
-        Other regions' visibility and the whole's global visibility are unchanged.
+        Enablement, other regions and Whole's global visibility are unchanged.
         """
         self._view._clear_region_isolation()  # noqa: SLF001
         self._hidden = False
@@ -1118,14 +1132,39 @@ class Region:
     @signal(tags=["region", "visibility"])
     @digest()
     def hide(self, skip_digestion: bool = False) -> None:
-        """Hide attached representations, or mask this region's atoms on whole.
+        """Hide own representations and mask this region's atoms on Whole.
 
-        A region without a representation affects only whole, never another
-        region's representations or scene overlays.
+        The request takes effect while enabled. Other regions' representations
+        and scene overlays keep their independent visibility.
         """
         self._show_only = False
         self._hidden = True
         self._send("hide_region")
+        self._view._sync_region_summaries_runtime()  # noqa: SLF001
+
+    @records_scene_history
+    @signal(tags=["region", "visibility"])
+    @digest()
+    def enable(self, skip_digestion: bool = False) -> None:
+        """Apply this region's visual configuration, preserving its hidden state."""
+        self._set_enabled(True)
+
+    @records_scene_history
+    @signal(tags=["region", "visibility"])
+    @digest()
+    def disable(self, skip_digestion: bool = False) -> None:
+        """Suspend visual effects, preserving selection, style and hidden state."""
+        self._set_enabled(False)
+
+    def _set_enabled(self, enabled: bool) -> None:
+        self._assert_current()
+        if self._enabled == enabled:
+            return
+        self._enabled = enabled
+        if not enabled:
+            self._show_only = False
+        self._send("set_region_enabled", enabled=enabled)
+        self._view._send_resolved_atom_colors()  # noqa: SLF001
         self._view._sync_region_summaries_runtime()  # noqa: SLF001
 
     @records_scene_history
@@ -1137,6 +1176,8 @@ class Region:
         Without a representation, show its atoms through whole, activating
         whole if necessary. Scene overlays keep their own visibility.
         """
+        if not self.enabled:
+            raise ValueError("Enable this region before calling show_only().")
         if self.atom_indices is None:
             raise ValueError("Cannot show only a region without known atom indices.")
         for tag, region in self._view._regions.items():  # noqa: SLF001
@@ -1456,6 +1497,7 @@ class RegionsManager(SceneRegistry):
                 "dependencies": region.dependencies,
                 "dependents": region.dependents,
                 "visible": region.visible,
+                "enabled": region.enabled,
                 "active": region._active,  # noqa: SLF001
             }
 

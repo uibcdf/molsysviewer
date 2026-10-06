@@ -14,7 +14,7 @@ These concepts are user-visible and must remain stable.
 - `view.regions.add(selection, tag=None, representation=None, **repr_params) -> Region`
 - `view.layers.add(tag, *, kind=None, meta=None) -> Layer`
 - Public registries: `view.regions` / `view.layers` (example: `view.regions["set1"].hide()`).
-- `Region`: `set_representation(...)`, `reset_representation()`, `hide()/show()`, `focus()`, `show_only()`, `delete()`, complements (`new_complementary_region()`), boolean composition, and `mode`/`provenance` metadata.
+- `Region`: `set_representation(...)`, `reset_representation()`, `hide()/show()`, `enable()/disable()`, read-only `enabled`, `focus()`, `show_only()`, `delete()`, complements (`new_complementary_region()`), boolean composition, and `mode`/`provenance` metadata.
 - `Layer`: `hide()/show()`, `delete()`, `set_tag()` (and possibly `merge()` in the future).
 - Whole: `view.whole` (`set_representation`, `reset_representation`, `set_color`, `set_color_scheme`, `reset_colors`, `hide()/show()`, `focus()`), not deletable and not retaggable.
 - Region builders on the viewer: `make_regions_by(element=...)` with `element in {"chain", "molecule", "entity"}`.
@@ -36,7 +36,7 @@ These concepts are user-visible and must remain stable.
 ## JS responsibilities
 
 - Source of truth for Mol* refs:
-  - regions: `tag -> { componentRef, reprRefs[], atomIndices[], selection, hidden }`
+  - regions: `tag -> { componentRef, reprRefs[], atomIndices[], selection, hidden, enabled }`
   - layers: `tag -> { refs, kind/meta }`
 - whole reps: `globalReprs` internally, exposed through `set_whole_representation`, `show_whole`, and `hide_whole`.
 - Handlers: create/set/show/hide/delete region; same for layers; set/hide/show whole; clear/reset/load cleans registries and notifies Python.
@@ -45,7 +45,8 @@ These concepts are user-visible and must remain stable.
 
 ## Visibility (whole vs regions vs display)
 
-- `region.hide()/show()`: controls its own/inherited representations, or masks/releases its atoms on whole only when it has no representation. Other region representations and overlays remain independent. Overlapping hidden base regions retain their own constraints. The `hidden` state is remembered; `viewer.show()` must not re-enable hidden regions. See `devguide/scene_contracts.md` §A.3 for representation transitions.
+- `region.hide()/show()`: requests hiding/showing its own/inherited representations and masks/releases its atoms on Whole in every representation state while enabled. Other region representations and overlays remain independent. Overlapping enabled hidden regions retain their own Whole constraints. Neither operation enables a disabled region or changes Whole's global visibility.
+- `region.disable()/enable()`: suspends/reapplies its visual configuration, including owned colors and Whole masks, while preserving its hidden request, identity, selection and style. Disabled regions remain available for queries and derived recipes. `enabled` is independent of retirement; `visible` reports `enabled and not hidden`. State/session/history, transfer and popup/static projection preserve both flags; older documents default to enabled. Studio offers Enabled separately and disables Hide/Show while suspended.
 - `whole.hide()/show()`: affects only the baseline representation. It does not touch region visibility; regions in state None disappear because they have no own visual.
 - `viewer.show()`: displays the notebook widget. It does not change whole or region visibility. There is no viewer-wide `hide()` or atom mask; visibility belongs to scene objects that can be saved and replayed.
 - `region.show_only()`: hides other regions and preserves a durable isolation choice on the selected region. Without a representation it activates whole and masks the complement; with Own/Inherit it masks whole entirely. Restore uses the saved choice without re-hiding later regions or changing saved whole visibility. Ordinary show/hide releases isolation as specified in `devguide/scene_contracts.md` §A.4.

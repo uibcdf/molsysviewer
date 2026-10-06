@@ -145979,6 +145979,7 @@ var StateHandlers = class {
       atom_count: entry.atomIndices.length,
       selection: entry.selection,
       hidden: !!entry.hidden,
+      enabled: entry.enabled,
       representation_params: {},
       overlap_tags: [],
       available_attributes: []
@@ -146054,13 +146055,13 @@ var StateHandlers = class {
   }
   ownedOpaqueRegionEntries() {
     return Array.from(this.regionIndex.values()).filter(
-      (entry) => !entry.hidden && entry.representationState !== "none" && this.isFullyOpaque(entry.params)
+      (entry) => entry.enabled && !entry.hidden && entry.representationState !== "none" && this.isFullyOpaque(entry.params)
     ).sort((left, right) => left.order - right.order);
   }
-  hiddenUnrepresentedAtomIndices() {
+  hiddenRegionAtomIndices() {
     const hidden = /* @__PURE__ */ new Set();
     for (const entry of this.regionIndex.values()) {
-      if (!entry.hidden || entry.representationState !== "none") continue;
+      if (!entry.enabled || !entry.hidden) continue;
       for (const index of entry.atomIndices) hidden.add(index);
     }
     return Array.from(hidden).sort((a8, b8) => a8 - b8);
@@ -146168,7 +146169,7 @@ var StateHandlers = class {
       this.ownedOpaqueAtomIndices(),
       // Explicit isolation reveals the selected base set, even where
       // other base regions (hidden by show_only) overlap it.
-      isolated ? void 0 : this.hiddenUnrepresentedAtomIndices(),
+      isolated ? void 0 : this.hiddenRegionAtomIndices(),
       showOnlyWholeMask
     );
     const fadedKey = this.atomIndexKey(faded);
@@ -146393,6 +146394,7 @@ var StateHandlers = class {
         atomIndices,
         selection: msg.selection,
         hidden: false,
+        enabled: msg.enabled !== false,
         representationState,
         representation: msg.representation,
         preset: msg.preset,
@@ -146400,6 +146402,9 @@ var StateHandlers = class {
         params: { ...msg.params ?? {} },
         order: typeof msg.order === "number" ? msg.order : 0
       });
+      if (msg.enabled === false) {
+        representations.forEach((ref) => setSubtreeVisibility(this.plugin.state.data, ref, true));
+      }
       await this.applyComposedTransparency();
       this.callbacks.notify({ event: "region_ack", tag, atom_indices: atomIndices, selection: msg.selection });
     } catch (err) {
@@ -146452,7 +146457,7 @@ var StateHandlers = class {
     if ((msg.preset || msg.user_preset) && typeof alpha === "number") {
       await this.applyAlphaToRepresentations(entry.representations, alpha);
     }
-    if (entry.hidden) {
+    if (entry.hidden || !entry.enabled) {
       entry.representations.forEach(
         (ref) => setSubtreeVisibility(this.plugin.state.data, ref, true)
       );
@@ -146510,7 +146515,7 @@ var StateHandlers = class {
       if (!component.selector.isOk || !componentRef) return;
       entry.component = componentRef;
       await this.addRepresentationsForRegionEntry(entry, tag, componentRef);
-      if (entry.hidden) {
+      if (entry.hidden || !entry.enabled) {
         entry.representations.forEach((ref) => setSubtreeVisibility(this.plugin.state.data, ref, true));
       }
     }
@@ -146540,12 +146545,13 @@ var StateHandlers = class {
     const regionTag = msg.tag ?? "region";
     const entry = this.regionIndex.get(regionTag);
     if (!entry) return;
+    if (!entry.enabled) throw new Error("Enable this region before calling show_only().");
     this.showOnlyRegionTag = regionTag;
     if (!msg.restore_only) {
       this.regionIndex.forEach((candidate, tag) => {
         candidate.hidden = tag !== regionTag;
         candidate.representations.forEach(
-          (ref) => setSubtreeVisibility(this.plugin.state.data, ref, tag !== regionTag)
+          (ref) => setSubtreeVisibility(this.plugin.state.data, ref, tag !== regionTag || !candidate.enabled)
         );
       });
       if (entry.representationState === "none") await this.handleShowHideGlobal(false);
@@ -146554,6 +146560,17 @@ var StateHandlers = class {
   }
   async hideRegion(msg) {
     await this.toggleRegionVisibility(msg.tag, true);
+  }
+  async setRegionEnabled(msg) {
+    const tag = msg.tag ?? "region";
+    const entry = this.regionIndex.get(tag);
+    if (!entry) return;
+    entry.enabled = msg.enabled;
+    if (!entry.enabled && this.showOnlyRegionTag === tag) this.showOnlyRegionTag = void 0;
+    entry.representations.forEach(
+      (ref) => setSubtreeVisibility(this.plugin.state.data, ref, !entry.enabled || !!entry.hidden)
+    );
+    await this.applyComposedTransparency();
   }
   async setRegionsVisibility(msg) {
     const tags = Array.isArray(msg.tags) ? msg.tags : Array.from(this.regionIndex.keys());
@@ -146572,6 +146589,7 @@ var StateHandlers = class {
       atom_count: typeof item2.atom_count === "number" ? item2.atom_count : Array.isArray(item2.atom_indices) ? item2.atom_indices.length : 0,
       selection: typeof item2.selection === "string" ? item2.selection : void 0,
       hidden: !!item2.hidden,
+      enabled: item2.enabled !== false,
       // Layer membership (Phase 9) must survive the summary mapping,
       // or the Layers subpanel can never group a region under its layer.
       layer: typeof item2.layer === "string" ? item2.layer : null,
@@ -146662,6 +146680,9 @@ var StateHandlers = class {
           break;
         case "hide_region":
           await this.hideRegion(operation2);
+          break;
+        case "set_region_enabled":
+          await this.setRegionEnabled(operation2);
           break;
         default:
           console.warn("[MolSysViewer] unsupported batched region op:", operation2.op);
@@ -147151,7 +147172,7 @@ var StateHandlers = class {
     const hiddenRegionReprRefs = /* @__PURE__ */ new Set();
     this.regionIndex.forEach((entry) => entry.representations.forEach((ref) => {
       regionReprRefs.add(ref);
-      if (entry.hidden) hiddenRegionReprRefs.add(ref);
+      if (entry.hidden || !entry.enabled) hiddenRegionReprRefs.add(ref);
     }));
     if (target === "whole") {
       this.globalReprs.forEach((ref) => {
@@ -147215,7 +147236,7 @@ var StateHandlers = class {
       this.showOnlyRegionTag = void 0;
     }
     entry.hidden = hide;
-    entry.representations.forEach((ref) => setSubtreeVisibility(this.plugin.state.data, ref, hide));
+    entry.representations.forEach((ref) => setSubtreeVisibility(this.plugin.state.data, ref, hide || !entry.enabled));
     await this.applyComposedTransparency();
   }
   async toggleLayerVisibility(tag, hide, kind) {
@@ -152432,7 +152453,7 @@ var RegionsPanel = class extends BasePanel {
       marginBottom: "10px"
     });
     const totalRegions = this.regions.length;
-    const visibleRegionsCount = this.regions.filter((region) => !region.hidden).length;
+    const visibleRegionsCount = this.regions.filter((region) => region.enabled !== false && !region.hidden).length;
     const row1 = document.createElement("div");
     Object.assign(row1.style, {
       display: "flex",
@@ -152570,6 +152591,8 @@ var RegionsPanel = class extends BasePanel {
     const card8 = document.createElement("div");
     card8.setAttribute("data-molsysviewer-region-card", item2.tag);
     card8.setAttribute("data-molsysviewer-region-hidden", String(item2.hidden));
+    const enabled = item2.enabled !== false;
+    card8.setAttribute("data-molsysviewer-region-enabled", String(enabled));
     Object.assign(card8.style, {
       display: "flex",
       flexDirection: "column",
@@ -152578,7 +152601,7 @@ var RegionsPanel = class extends BasePanel {
       border: "1px solid rgba(255,255,255,0.08)",
       borderRadius: "8px",
       background: "rgba(255,255,255,0.035)",
-      opacity: item2.hidden ? "0.58" : "1",
+      opacity: !enabled || item2.hidden ? "0.58" : "1",
       transition: "background 0.1s ease",
       cursor: "pointer"
     });
@@ -152588,7 +152611,7 @@ var RegionsPanel = class extends BasePanel {
     card8.addEventListener("mouseleave", () => {
       card8.style.background = "rgba(255,255,255,0.035)";
     });
-    const isVisible = !item2.hidden;
+    const isVisible = enabled && !item2.hidden;
     const hasVisual = this.regionHasOwnVisual(item2);
     const dot = document.createElement("span");
     dot.setAttribute("data-molsysviewer-region-visibility", item2.tag);
@@ -152602,9 +152625,10 @@ var RegionsPanel = class extends BasePanel {
       marginRight: "6px",
       cursor: "pointer"
     });
-    const visibilityTitle = hasVisual ? "Show or hide this region's representations." : "Show or hide these atoms in Whole only; other representations stay independent.";
+    const visibilityTitle = enabled ? "Show or hide this region's representations and its atoms in Whole; other representations stay independent." : "Enable this region to apply its saved visibility.";
     dot.title = visibilityTitle;
     const toggleVisibility = () => {
+      if (!enabled) return;
       this.ctx.onAction("toggle_region_visibility", { tag: item2.tag });
     };
     dot.addEventListener("click", (e) => {
@@ -152670,6 +152694,22 @@ var RegionsPanel = class extends BasePanel {
     const visibilityBtn = makeButton(item2.hidden ? "Show" : "Hide", () => toggleVisibility());
     visibilityBtn.setAttribute("data-molsysviewer-region-visibility", item2.tag);
     visibilityBtn.title = visibilityTitle;
+    visibilityBtn.disabled = !enabled;
+    const enabledControl = document.createElement("label");
+    Object.assign(enabledControl.style, { display: "flex", alignItems: "center", gap: "4px", fontSize: "10px" });
+    enabledControl.title = "Apply this region's visual configuration. Disabling preserves its style and visibility request.";
+    const enabledToggle = document.createElement("input");
+    enabledToggle.type = "checkbox";
+    enabledToggle.checked = enabled;
+    enabledToggle.setAttribute("data-molsysviewer-region-enable", item2.tag);
+    enabledToggle.setAttribute("aria-label", `Enabled: ${item2.tag}`);
+    enabledToggle.addEventListener("change", () => {
+      enabledToggle.checked = enabled;
+      this.ctx.onAction("toggle_region_enabled", { tag: item2.tag });
+    });
+    enabledControl.appendChild(enabledToggle);
+    enabledControl.appendChild(document.createTextNode("Enabled"));
+    btnRow.appendChild(enabledControl);
     const renameBtn = makeButton("Rename", () => {
       this.regionRenameTag = item2.tag;
       this.scheduleRender();
@@ -163379,7 +163419,7 @@ var MolSysViewerController = class _MolSysViewerController {
         }
         return;
       }
-      if (action === "toggle_region_visibility") {
+      if (action === "toggle_region_visibility" || action === "toggle_region_enabled") {
         const tag = typeof details?.tag === "string" ? details.tag : null;
         if (!tag) return;
         this.notify?.({ event: "interaction_context_action", action, tag });
@@ -164769,6 +164809,9 @@ var MolSysViewerController = class _MolSysViewerController {
         case "hide_region":
           await this.state.hideRegion(msg);
           break;
+        case "set_region_enabled":
+          await this.state.setRegionEnabled(msg);
+          break;
         case "set_regions_visibility":
           await this.state.setRegionsVisibility(msg);
           break;
@@ -165776,6 +165819,7 @@ var MolSysViewerController = class _MolSysViewerController {
         tag: item2.tag,
         atom_count: item2.atom_count,
         hidden: item2.hidden,
+        enabled: item2.enabled,
         // Forward layer membership (Phase 9) to the panel; without it the
         // Layers subpanel never groups a region under its layer.
         layer: item2.layer,
@@ -170738,6 +170782,7 @@ var RemoteWorkbench = class {
           ...item2,
           atom_count: typeof item2.atom_count === "number" ? item2.atom_count : Array.isArray(item2.atom_indices) ? item2.atom_indices.length : 0,
           hidden: !!item2.hidden,
+          enabled: item2.enabled !== false,
           layer: typeof item2.layer === "string" ? item2.layer : null,
           mode: item2.mode === "dynamic" ? "dynamic" : "static"
         })).sort((a8, b8) => a8.tag.localeCompare(b8.tag));
@@ -170975,6 +171020,7 @@ var REMOTE_CONTEXT_ACTIONS = /* @__PURE__ */ new Set([
   "focus_target",
   "focus_region",
   "toggle_region_visibility",
+  "toggle_region_enabled",
   "delete_region",
   "rename_region",
   "hide_measurement",

@@ -136,6 +136,17 @@ Other browser targets still require explicit adoption.
 **Archive, never delete.** A repository that deletes a closed entry breaks every reference
 into it.
 
+### GroupPanel unit guard profile
+
+The bounded frontend unit selector is exactly
+`molsysviewer/js/tests/unit/group-panel.test.ts`, with no suffixes, globs or
+commands. From `molsysviewer/js`, run `npm run test:js`; its bundled Node test
+index imports this owner. The selector guards GroupPanel's DOM fixture and
+panel action assertions. It is test infrastructure evidence; real rendering
+continues to require the browser lanes above. `validate_guard` verifies the
+owner, index import, scoped-selector regression and documented build/runner.
+Other unit files retain the default profile until explicitly adopted.
+
 ## Filing one
 
 Start from [`templates/report.md`](templates/report.md). **Open the issue first**, to

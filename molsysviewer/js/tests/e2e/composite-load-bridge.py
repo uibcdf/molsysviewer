@@ -12,6 +12,67 @@ import molsysviewer as msv
 from molsysviewer import pyunitwizard as puw
 
 
+def region_enablement_bridge():
+    """Exercise Studio requests against the real public Region API and MolSys."""
+    from molsysviewer.interactions import _to_plain
+
+    view = msv.demo["dialanine"]
+    view.whole.set_representation("ball-and-stick")
+    view.regions.add(atom_indices=[0, 1], tag="source", representation="ball-and-stick", color="orange")
+    view.regions.add(atom_indices=[1, 2], tag="other", representation="line", alpha=0.5)
+    view._ready = True
+    sent = []
+    view.widget.send = sent.append
+    print(json.dumps({"messages": view._build_embedded_runtime_snapshot()}), flush=True)
+    try:
+        for line in sys.stdin:
+            request = json.loads(line)
+            if request.get("review_command") == "reopen":
+                with tempfile.TemporaryDirectory(prefix="msv-enabled-") as directory:
+                    path = Path(directory) / "disabled.msv"
+                    view.save_session(path)
+                    restored = msv.load_session(path)
+                    view.close()
+                    view = restored
+                    view._ready = True
+                    view.widget.send = sent.append
+                    sent[:] = view._build_embedded_runtime_snapshot()
+            elif request.get("review_command") == "style":
+                view.regions["source"].set_representation(request.get("representation"))
+            elif request.get("review_command") == "whole":
+                (view.whole.show if request["visible"] else view.whole.hide)()
+            elif request.get("review_command") == "color":
+                view.regions["source"].set_color("red")
+            elif request.get("review_command") == "api":
+                method = request["method"]
+                if method not in {"enable", "disable", "show", "hide", "show_only"}:
+                    raise ValueError(f"Unsupported review method {method!r}")
+                getattr(view.regions["source"], method)()
+            else:
+                view._handle_frontend_event(request)
+            print(
+                json.dumps(
+                    _to_plain(
+                        {
+                            "messages": list(sent),
+                            "enabled": view.regions["source"].enabled,
+                            "hidden": view.regions["source"]._hidden,
+                            "colors": view._atom_color_map,
+                        }
+                    )
+                ),
+                flush=True,
+            )
+            sent.clear()
+    finally:
+        view.close()
+
+
+if "--regions" in sys.argv:
+    region_enablement_bridge()
+    raise SystemExit(0)
+
+
 def studio_bridge(sources):
     """Keep a real Python authority alive for browser-produced JSON-line requests."""
     from molsysviewer.interactions import _to_plain

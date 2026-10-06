@@ -43,6 +43,7 @@ export type PanelAction =
     | "delete_region"
     | "rename_region"
     | "toggle_region_visibility"
+    | "toggle_region_enabled"
     | "show_only_region"
     | "raise_region_to_front"
     | "send_region_to_back"

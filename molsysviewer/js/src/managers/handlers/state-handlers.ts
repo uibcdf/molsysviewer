@@ -27,6 +27,7 @@ import {
     HideWholeMessage,
     HideLayerMessage,
     HideRegionMessage,
+    SetRegionEnabledMessage,
     SetAtomColorsMessage,
     SetWholeRepresentationMessage,
     SetFocusFadeMessage,
@@ -62,6 +63,7 @@ interface RegionEntry {
     atomIndices: number[];
     selection?: string;
     hidden?: boolean;
+    enabled: boolean;
     representationState: RegionRepresentationState;
     representation?: string;
     preset?: string;
@@ -77,6 +79,7 @@ export interface RegionSummary {
     atom_count: number;
     selection?: string;
     hidden: boolean;
+    enabled: boolean;
     /** Tag of the layer this region belongs to, or null (Phase 9). */
     layer?: string | null;
     representation?: string;
@@ -295,6 +298,7 @@ export class StateHandlers {
                 atom_count: entry.atomIndices.length,
                 selection: entry.selection,
                 hidden: !!entry.hidden,
+                enabled: entry.enabled,
                 representation_params: {},
                 overlap_tags: [],
                 available_attributes: [],
@@ -391,17 +395,17 @@ export class StateHandlers {
     private ownedOpaqueRegionEntries(): RegionEntry[] {
         return Array.from(this.regionIndex.values())
             .filter(entry =>
-                !entry.hidden
+                entry.enabled && !entry.hidden
                 && entry.representationState !== "none"
                 && this.isFullyOpaque(entry.params)
             )
             .sort((left, right) => left.order - right.order);
     }
 
-    private hiddenUnrepresentedAtomIndices(): number[] {
+    private hiddenRegionAtomIndices(): number[] {
         const hidden = new Set<number>();
         for (const entry of this.regionIndex.values()) {
-            if (!entry.hidden || entry.representationState !== "none") continue;
+            if (!entry.enabled || !entry.hidden) continue;
             for (const index of entry.atomIndices) hidden.add(index);
         }
         return Array.from(hidden).sort((a, b) => a - b);
@@ -541,13 +545,13 @@ export class StateHandlers {
                 ? this.complementAtomIndices(structure, isolated.atomIndices)
                 : this.allAtomIndices(structure))
             : undefined;
-        // Unrepresented regions constrain only whole. Own/inherited visuals
-        // keep their independent visibility and ownership rules.
+        // Enabled hidden regions constrain whole in every representation state.
+        // Other regions' visuals retain their independent visibility.
         const wholeHidden = this.unionAtomIndices(
             this.ownedOpaqueAtomIndices(),
             // Explicit isolation reveals the selected base set, even where
             // other base regions (hidden by show_only) overlap it.
-            isolated ? undefined : this.hiddenUnrepresentedAtomIndices(),
+            isolated ? undefined : this.hiddenRegionAtomIndices(),
             showOnlyWholeMask,
         );
 
@@ -826,6 +830,7 @@ export class StateHandlers {
                 atomIndices,
                 selection: msg.selection,
                 hidden: false,
+                enabled: msg.enabled !== false,
                 representationState,
                 representation: msg.representation,
                 preset: msg.preset,
@@ -833,6 +838,9 @@ export class StateHandlers {
                 params: { ...(msg.params ?? {}) },
                 order: typeof msg.order === "number" ? msg.order : 0,
             });
+            if (msg.enabled === false) {
+                representations.forEach(ref => setSubtreeVisibility(this.plugin.state.data, ref, true));
+            }
             await this.applyComposedTransparency();
             
             this.callbacks.notify({ event: "region_ack", tag, atom_indices: atomIndices, selection: msg.selection });
@@ -902,7 +910,7 @@ export class StateHandlers {
         }
 
         // Restore visibility state.
-        if (entry.hidden) {
+        if (entry.hidden || !entry.enabled) {
             entry.representations.forEach(ref =>
                 setSubtreeVisibility(this.plugin.state.data, ref, true)
             );
@@ -965,7 +973,7 @@ export class StateHandlers {
             if (!component.selector.isOk || !componentRef) return;
             entry.component = componentRef;
             await this.addRepresentationsForRegionEntry(entry, tag, componentRef);
-            if (entry.hidden) {
+            if (entry.hidden || !entry.enabled) {
                 entry.representations.forEach(ref => setSubtreeVisibility(this.plugin.state.data, ref, true));
             }
         }
@@ -1001,12 +1009,13 @@ export class StateHandlers {
         const regionTag = msg.tag ?? "region";
         const entry = this.regionIndex.get(regionTag);
         if (!entry) return;
+        if (!entry.enabled) throw new Error("Enable this region before calling show_only().");
         this.showOnlyRegionTag = regionTag;
         if (!msg.restore_only) {
             this.regionIndex.forEach((candidate, tag) => {
                 candidate.hidden = tag !== regionTag;
                 candidate.representations.forEach(ref =>
-                    setSubtreeVisibility(this.plugin.state.data, ref, tag !== regionTag)
+                    setSubtreeVisibility(this.plugin.state.data, ref, tag !== regionTag || !candidate.enabled)
                 );
             });
             if (entry.representationState === "none") await this.handleShowHideGlobal(false);
@@ -1016,6 +1025,18 @@ export class StateHandlers {
 
     async hideRegion(msg: HideRegionMessage) {
         await this.toggleRegionVisibility(msg.tag, true);
+    }
+
+    async setRegionEnabled(msg: SetRegionEnabledMessage) {
+        const tag = msg.tag ?? "region";
+        const entry = this.regionIndex.get(tag);
+        if (!entry) return;
+        entry.enabled = msg.enabled;
+        if (!entry.enabled && this.showOnlyRegionTag === tag) this.showOnlyRegionTag = undefined;
+        entry.representations.forEach(ref =>
+            setSubtreeVisibility(this.plugin.state.data, ref, !entry.enabled || !!entry.hidden)
+        );
+        await this.applyComposedTransparency();
     }
 
     async setRegionsVisibility(msg: SetRegionsVisibilityMessage) {
@@ -1047,6 +1068,7 @@ export class StateHandlers {
                     : Array.isArray(item.atom_indices) ? item.atom_indices.length : 0,
                 selection: typeof item.selection === "string" ? item.selection : undefined,
                 hidden: !!item.hidden,
+                enabled: item.enabled !== false,
                 // Layer membership (Phase 9) must survive the summary mapping,
                 // or the Layers subpanel can never group a region under its layer.
                 layer: typeof item.layer === "string" ? item.layer : null,
@@ -1156,6 +1178,9 @@ export class StateHandlers {
                     break;
                 case "hide_region":
                     await this.hideRegion(operation as unknown as HideRegionMessage);
+                    break;
+                case "set_region_enabled":
+                    await this.setRegionEnabled(operation as unknown as SetRegionEnabledMessage);
                     break;
                 default:
                     console.warn("[MolSysViewer] unsupported batched region op:", operation.op);
@@ -1743,7 +1768,7 @@ export class StateHandlers {
         const hiddenRegionReprRefs = new Set<string>();
         this.regionIndex.forEach(entry => entry.representations.forEach(ref => {
             regionReprRefs.add(ref as any);
-            if (entry.hidden) hiddenRegionReprRefs.add(ref as any);
+            if (entry.hidden || !entry.enabled) hiddenRegionReprRefs.add(ref as any);
         }));
 
         if (target === "whole") {
@@ -1812,7 +1837,7 @@ export class StateHandlers {
             this.showOnlyRegionTag = undefined;
         }
         entry.hidden = hide;
-        entry.representations.forEach(ref => setSubtreeVisibility(this.plugin.state.data, ref, hide));
+        entry.representations.forEach(ref => setSubtreeVisibility(this.plugin.state.data, ref, hide || !entry.enabled));
         await this.applyComposedTransparency();
     }
 

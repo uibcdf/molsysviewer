@@ -439,6 +439,7 @@ export type CreateRegionMessage = {
     selection?: string;
     atom_indices?: number[];
     order?: number;
+    enabled?: boolean;
     representation?: string;
     preset?: string;
     user_preset?: any;
@@ -473,6 +474,12 @@ export type HideRegionMessage = {
     tag?: string;
 };
 
+export type SetRegionEnabledMessage = {
+    op: "set_region_enabled";
+    tag?: string;
+    enabled: boolean;
+};
+
 export type SetRegionsVisibilityMessage = {
     op: "set_regions_visibility";
     tags?: string[];
@@ -488,6 +495,7 @@ export type SetRegionSummariesMessage = {
         atom_count?: number;
         selection?: string;
         hidden?: boolean;
+        enabled?: boolean;
         /** Tag of the layer this region belongs to, or null (Phase 9). */
         layer?: string | null;
         mode?: "static" | "dynamic";
@@ -951,6 +959,7 @@ export type KnownViewerMessage =
     SetRegionRepresentationMessage |
     ShowRegionMessage |
     HideRegionMessage |
+    SetRegionEnabledMessage |
     SetRegionsVisibilityMessage |
     SetRegionSummariesMessage |
     SetLayerSummariesMessage |

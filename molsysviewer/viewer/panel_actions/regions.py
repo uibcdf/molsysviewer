@@ -246,7 +246,12 @@ def get_region_details(view: Any, content: Mapping[str, Any]) -> None:
 
 def toggle_region_visibility(view: Any, content: Mapping[str, Any]) -> None:
     region = _region(view, content, "toggle_region_visibility")
-    (region.show if not region.visible else region.hide)(skip_digestion=True)
+    (region.show if region._hidden else region.hide)(skip_digestion=True)
+
+
+def toggle_region_enabled(view: Any, content: Mapping[str, Any]) -> None:
+    region = _region(view, content, "toggle_region_enabled")
+    (region.disable if region.enabled else region.enable)(skip_digestion=True)
 
 
 def delete_region(view: Any, content: Mapping[str, Any]) -> None:
@@ -293,6 +298,7 @@ HANDLERS = {
     "delete_layer_and_contents": delete_layer_and_contents,
     "get_region_details": get_region_details,
     "toggle_region_visibility": toggle_region_visibility,
+    "toggle_region_enabled": toggle_region_enabled,
     "delete_region": delete_region,
     "rename_region": rename_region,
     "set_region_representation": set_region_representation,

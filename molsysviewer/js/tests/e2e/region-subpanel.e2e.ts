@@ -113,7 +113,9 @@ async function run() {
 
         const baseToggle = page.locator('button[data-molsysviewer-region-visibility="base"]');
         assert.strictEqual(await baseToggle.isEnabled(), true);
-        assert.ok((await baseToggle.getAttribute("title"))?.includes("Whole only"));
+        const visibilityTitle = await baseToggle.getAttribute("title");
+        assert.ok(visibilityTitle?.includes("its atoms in Whole"));
+        assert.ok(visibilityTitle?.includes("other representations stay independent"));
         await baseToggle.click();
         assert.strictEqual((await latestAction(page, "toggle_region_visibility")).tag, "base");
 

@@ -466,7 +466,7 @@ class RegionsMixin:
             (
                 region
                 for region in self._regions.values()
-                if region._active and not region._hidden and region._show_only
+                if region._active and region.enabled and not region._hidden and region._show_only
             ),
             None,
         )
@@ -482,7 +482,7 @@ class RegionsMixin:
         return {"op": "show_only_region", "tag": region.tag, "restore_only": True}
 
     def _restore_region_isolation(self, region: Region | None) -> None:
-        if region is None or not region._active or self._regions.get(region.tag) is not region:
+        if region is None or not region._active or not region.enabled or self._regions.get(region.tag) is not region:
             return
         self._clear_region_isolation()
         # Layer restoration can hide a member that was subsequently isolated.
@@ -592,6 +592,7 @@ class RegionsMixin:
                     "atom_count": len(atom_indices),
                     "selection": region.selection if isinstance(region.selection, str) else None,
                     "hidden": bool(region._hidden),  # noqa: SLF001
+                    "enabled": region.enabled,
                     # Layer membership (Phase 9) so the Layers subpanel can group
                     # regions under their layer; None for a region in no layer.
                     "layer": region.layer,
@@ -711,6 +712,7 @@ class RegionsMixin:
     def _region_has_visible_representation(self, region: Region) -> bool:
         return (
             bool(getattr(region, "_active", False))
+            and region.enabled
             and not bool(getattr(region, "_hidden", False))
             and (region.representation is not None or region.preset is not None)
         )

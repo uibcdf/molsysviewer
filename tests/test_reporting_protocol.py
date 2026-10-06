@@ -41,10 +41,29 @@ GUARD_POLICY_EFFECTIVE_DATE = "2026-09-20"
 PYTEST_ROOTS = (PurePosixPath("tests"), PurePosixPath("devtools/tests"))
 INTERACTIONS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/interactions-calculation.e2e.ts"
 COMPOSITE_LOAD_BROWSER_GUARD = "molsysviewer/js/tests/e2e/composite-load.e2e.ts"
+GROUP_PANEL_UNIT_GUARD = "molsysviewer/js/tests/unit/group-panel.test.ts"
 
 
 def validate_guard(root: Path, selector: str) -> list[str]:
-    """Resolve the default Python and explicitly adopted browser profiles."""
+    """Resolve the default Python and explicitly adopted frontend profiles."""
+    if selector == GROUP_PANEL_UNIT_GUARD:
+        js_root = root / "molsysviewer/js"
+        try:
+            entry = (root / selector).read_text()
+            index = (js_root / "tests/unit/index.test.ts").read_text()
+            scripts = json.loads((js_root / "package.json").read_text())["scripts"]
+        except (OSError, ValueError, KeyError) as error:
+            return [f"guard {selector!r} cannot be indexed: {error}"]
+        requirements = (
+            'import test from "node:test";' in entry,
+            'import { GroupPanel } from "../../src/ui/group-panel";' in entry,
+            'test("GroupPanel test DOM resolves scoped options and preserves prepend order"' in entry,
+            'import "./group-panel.test";' in index,
+            "tests/unit/index.test.ts" in scripts.get("build:test:js", ""),
+            "npm run build:test:js" in scripts.get("test:js", ""),
+            "node --test tests/unit/dist-index.js" in scripts.get("test:js", ""),
+        )
+        return [] if all(requirements) else [f"guard {selector!r} does not resolve to its documented unit lane"]
     if selector not in (INTERACTIONS_BROWSER_GUARD, COMPOSITE_LOAD_BROWSER_GUARD):
         return validate_pytest_guard(root, selector)
     js_root = root / "molsysviewer/js"
@@ -400,6 +419,13 @@ def test_newly_resolved_archive_guards_are_addressable(path: Path) -> None:
 def test_browser_guard_resolves_its_build_entrypoint_and_core_lane() -> None:
     assert validate_guard(ROOT, INTERACTIONS_BROWSER_GUARD) == []
     assert validate_guard(ROOT, COMPOSITE_LOAD_BROWSER_GUARD) == []
+
+
+def test_group_panel_unit_guard_is_bounded_and_registered() -> None:
+    assert validate_guard(ROOT, GROUP_PANEL_UNIT_GUARD) == []
+    assert validate_guard(Path("/nonexistent"), GROUP_PANEL_UNIT_GUARD)
+    assert validate_guard(ROOT, GROUP_PANEL_UNIT_GUARD + "::FakeElement")
+    assert validate_guard(ROOT, "molsysviewer/js/tests/unit/state-handler.test.ts")
 
 
 def test_browser_guard_rejects_missing_or_unadopted_targets(tmp_path: Path) -> None:

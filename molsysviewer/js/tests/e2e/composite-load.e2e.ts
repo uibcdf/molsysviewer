@@ -230,6 +230,137 @@ async function checkStudioLoading(page: any) {
     }
 }
 
+async function checkRegionEnablement(page: any) {
+    const authority = spawn(process.env.PYTHON || "python", [resolve(dir, "composite-load-bridge.py"), "--regions"],
+        { cwd: resolve(dir, "../../../.."), stdio: ["pipe", "pipe", "pipe"] });
+    const lines = createInterface({ input: authority.stdout })[Symbol.asyncIterator]();
+    let stderr = "";
+    authority.stderr.on("data", chunk => { stderr += chunk; });
+    const receive = async () => {
+        let timeout: ReturnType<typeof setTimeout> | undefined;
+        try {
+            const line = await Promise.race([lines.next(), new Promise<never>((_, reject) => {
+                timeout = setTimeout(() => reject(new Error(`Region authority timed out: ${stderr}`)), 60_000);
+            })]);
+            assert.ok(!line.done, stderr);
+            const result = JSON.parse(line.value);
+            await page.evaluate(async (messages: unknown[]) => {
+                for (const message of messages) await (window as any).__controller.handleMessage(message, { throwOnError: true });
+            }, result.messages);
+            if (typeof result.enabled === "boolean") {
+                await page.waitForFunction(({ enabled, hidden }: { enabled: boolean; hidden: boolean }) => {
+                    const card = document.querySelector('[data-molsysviewer-region-card="source"]');
+                    return card?.getAttribute("data-molsysviewer-region-enabled") === String(enabled)
+                        && card?.getAttribute("data-molsysviewer-region-hidden") === String(hidden);
+                }, { enabled: result.enabled, hidden: result.hidden }, { timeout: 10_000 });
+            }
+            return result;
+        } finally { if (timeout) clearTimeout(timeout); }
+    };
+    const command = async (request: any) => {
+        authority.stdin.write(JSON.stringify(request) + "\n");
+        return receive();
+    };
+    const api = (method: string) => command({ review_command: "api", method });
+    const inspect = () => page.evaluate(() => {
+        const w = window as any;
+        return w.Harness.inspectSceneTransparency(w.__controller, [0, 1, 2, 3]);
+    });
+    const expectWhole = async (expected: number[], hidden = false) => {
+        const snapshot = await inspect();
+        assert.ok(snapshot.whole.length > 0);
+        for (const repr of snapshot.whole) {
+            assert.deepEqual(repr.values, expected);
+            assert.equal(repr.hidden, hidden);
+        }
+        assert.ok(snapshot.regions.other.length > 0);
+        assert.ok(snapshot.regions.other.every((repr: any) => !repr.hidden));
+        assert.ok(snapshot.regions.other.every((repr: any) => repr.values.every((value: number) => value === 0)));
+        return snapshot;
+    };
+    const studio = async (selector: string, action: string) => {
+        const before = await page.evaluate(() => (window as any).__messages.length);
+        await page.locator(selector).click();
+        const requests = await page.evaluate((start: number) => (window as any).__messages.slice(start), before);
+        const request = requests.find((item: any) => item.action === action);
+        assert.ok(request, `Studio must emit ${action}`);
+        assert.equal(request.tag, "source");
+        return command(request);
+    };
+    try {
+        await page.goto("about:blank");
+        await page.setContent('<div id="root" style="width:1000px;height:850px"></div>');
+        await page.addScriptTag({ path: resolve(dir, "harness.bundle.js") });
+        await page.evaluate(async () => {
+            const w = window as any;
+            w.__messages = [];
+            w.__controller = await w.Harness.createController("root");
+        });
+        await receive();
+        await page.locator('[data-molsysviewer-group-panel-toggle="true"]').click();
+        await page.locator('[data-molsysviewer-group-panel-tab="regions"]').click();
+        const visibility = '[data-molsysviewer-region-buttons-row="source"] [data-molsysviewer-region-visibility="source"]';
+        const enabled = '[data-molsysviewer-region-enable="source"]';
+        await studio(visibility, "toggle_region_visibility");
+        let snapshot = await expectWhole([1, 1, 0, 0]);
+        assert.ok(snapshot.regions.source.every((repr: any) => repr.hidden));
+        const disabled = await studio(enabled, "toggle_region_enabled");
+        assert.equal(disabled.enabled, false);
+        assert.equal(disabled.hidden, true);
+        snapshot = await expectWhole([0, 0, 0, 0]);
+        assert.ok(snapshot.regions.source.every((repr: any) => repr.hidden));
+        assert.ok(await page.locator(visibility).isDisabled());
+        assert.equal(await page.locator(enabled).isChecked(), false);
+        await command({ review_command: "reopen" });
+        await expectWhole([0, 0, 0, 0]);
+        assert.equal(await page.locator(enabled).isChecked(), false);
+        // The fixture forwards region actions; restored Python panel state can
+        // legitimately be collapsed. Open Studio before continuing the review.
+        await page.evaluate(async () => {
+            await (window as any).__controller.handleMessage({ op: "set_panel_mode", panel: "navigate", expanded: true });
+        });
+        await page.locator('[data-molsysviewer-group-panel-tab="regions"]').click();
+        const reenabled = await studio(enabled, "toggle_region_enabled");
+        assert.equal(reenabled.enabled, true);
+        assert.equal(reenabled.hidden, true);
+        await expectWhole([1, 1, 0, 0]);
+        await studio(visibility, "toggle_region_visibility");
+        snapshot = await expectWhole([1, 1, 0, 0]); // own opaque representation owns these atoms
+        assert.ok(snapshot.regions.source.every((repr: any) => !repr.hidden));
+        await command({ review_command: "color" });
+        const suspendedColors = await api("disable");
+        assert.deepEqual(suspendedColors.colors, {});
+        const restoredColors = await api("enable");
+        assert.deepEqual(restoredColors.colors, { "0": 0xFF0000, "1": 0xFF0000 });
+        for (const representation of [null, "inherit", "ball-and-stick"]) {
+            await api("hide");
+            await command({ review_command: "style", representation });
+            await expectWhole([1, 1, 0, 0]);
+            await api("disable");
+            await expectWhole([0, 0, 0, 0]);
+            await api("show"); // a visibility request must not reactivate a disabled region
+            await expectWhole([0, 0, 0, 0]);
+            await api("hide");
+            await api("enable");
+            await expectWhole([1, 1, 0, 0]);
+        }
+        await command({ review_command: "whole", visible: false });
+        await api("disable");
+        await expectWhole([0, 0, 0, 0], true);
+        await api("enable");
+        await expectWhole([1, 1, 0, 0], true);
+        await command({ review_command: "whole", visible: true });
+        await api("show_only");
+        await api("disable");
+        const afterIsolation = await inspect();
+        assert.ok(afterIsolation.whole.every((repr: any) => repr.values[3] === 0), "disabling releases its isolation mask");
+        console.log("[E2E regions] real-demo Studio/API hide, suspension, colors, session and independent Whole/regions passed");
+    } finally {
+        authority.stdin.end();
+        authority.kill();
+    }
+}
+
 async function run() {
     const result = spawnSync(process.env.PYTHON || "python", [resolve(dir, "composite-load-bridge.py")],
         { encoding: "utf8", cwd: resolve(dir, "../../../.."), maxBuffer: 16 * 1024 * 1024 });
@@ -241,6 +372,11 @@ async function run() {
     const errors: string[] = [];
     page.on("pageerror", error => errors.push(String(error)));
     try {
+        if (process.argv.includes("--regions-only")) {
+            await checkRegionEnablement(page);
+            assert.deepEqual(errors, []);
+            return;
+        }
         await page.setContent('<div id="root" style="width:800px;height:600px"></div>');
         await page.addScriptTag({ path: resolve(dir, "harness.bundle.js") });
         await page.evaluate(async () => {
@@ -316,6 +452,7 @@ async function run() {
         }
         await checkProgressiveWelcome(page, fixture);
         await checkStudioLoading(page);
+        await checkRegionEnablement(page);
         assert.deepEqual(errors, []);
         console.log("[E2E composite-load] loading, session reopening, extraction, coordinates and source visibility passed");
     } finally { await browser.close(); }

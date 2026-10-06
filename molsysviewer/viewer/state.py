@@ -148,6 +148,7 @@ class StateMixin:
                 "preset": region.preset,
                 "params": dict(region.repr_params),
                 "hidden": bool(region._hidden),  # noqa: SLF001
+                "enabled": region.enabled,
                 # Colour layer owned by this region, keyed by atom index.
                 "color_layer": self._color_layer_record(tag),
             }
@@ -476,11 +477,14 @@ class StateMixin:
         source_records = self._prepare_source_import(state.get("sources"))
 
         region_records = list(state.get("regions", []))
+        if any(not isinstance(record.get("enabled", True), bool) for record in region_records):
+            raise ValueError("Region enabled must be a boolean.")
         isolated_records = [record for record in region_records if record.get("show_only", False)]
         if (
             any(not isinstance(record.get("show_only", False), bool) for record in region_records)
             or len(isolated_records) > 1
             or any(record.get("hidden") for record in isolated_records)
+            or any(not record.get("enabled", True) for record in isolated_records)
         ):
             raise ValueError("State must name at most one visible show_only region.")
         ordered_records = self._topologically_ordered_regions(region_records)
@@ -1363,6 +1367,7 @@ class StateMixin:
                 provenance=provenance,
             )
         dict.__setitem__(self._regions, tag, region)
+        region._enabled = record.get("enabled", True)  # noqa: SLF001
 
         representation = record.get("representation")
         preset = record.get("preset")

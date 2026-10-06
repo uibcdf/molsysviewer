@@ -105,6 +105,7 @@ export type RegionSummary = {
     owner?: string;
     atom_count: number;
     hidden: boolean;
+    enabled?: boolean;
     layer?: string | null;
     mode?: "static" | "dynamic";
     frame_dependent?: boolean;

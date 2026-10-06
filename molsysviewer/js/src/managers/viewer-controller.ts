@@ -1332,7 +1332,7 @@ export class MolSysViewerController {
                 }
                 return;
             }
-            if (action === "toggle_region_visibility") {
+            if (action === "toggle_region_visibility" || action === "toggle_region_enabled") {
                 const tag = typeof details?.tag === "string" ? details.tag : null;
                 if (!tag) return;
                 this.notify?.({ event: "interaction_context_action", action, tag });
@@ -2459,6 +2459,7 @@ export class MolSysViewerController {
                 case "show_region": await this.state.showRegion(msg); break;
                 case "show_only_region": await this.state.showOnlyRegion(msg); break;
                 case "hide_region": await this.state.hideRegion(msg); break;
+                case "set_region_enabled": await this.state.setRegionEnabled(msg); break;
                 case "set_regions_visibility": await this.state.setRegionsVisibility(msg as any); break;
                 case "set_region_summaries": this.state.setRegionSummaries(msg as any); break;
                 case "set_layer_summaries": {
@@ -3604,6 +3605,7 @@ export class MolSysViewerController {
                 tag: item.tag,
                 atom_count: item.atom_count,
                 hidden: item.hidden,
+                enabled: item.enabled,
                 // Forward layer membership (Phase 9) to the panel; without it the
                 // Layers subpanel never groups a region under its layer.
                 layer: item.layer,

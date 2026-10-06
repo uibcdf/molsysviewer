@@ -163,7 +163,7 @@ export class RegionsPanel extends BasePanel {
         });
 
         const totalRegions = this.regions.length;
-        const visibleRegionsCount = this.regions.filter(region => !region.hidden).length;
+        const visibleRegionsCount = this.regions.filter(region => region.enabled !== false && !region.hidden).length;
 
         // Row 1: Visibility summary count and Show all/Hide all buttons
         const row1 = document.createElement("div");
@@ -325,6 +325,8 @@ export class RegionsPanel extends BasePanel {
         const card = document.createElement("div");
         card.setAttribute("data-molsysviewer-region-card", item.tag);
         card.setAttribute("data-molsysviewer-region-hidden", String(item.hidden));
+        const enabled = item.enabled !== false;
+        card.setAttribute("data-molsysviewer-region-enabled", String(enabled));
         Object.assign(card.style, {
             display: "flex",
             flexDirection: "column",
@@ -333,7 +335,7 @@ export class RegionsPanel extends BasePanel {
             border: "1px solid rgba(255,255,255,0.08)",
             borderRadius: "8px",
             background: "rgba(255,255,255,0.035)",
-            opacity: item.hidden ? "0.58" : "1",
+            opacity: !enabled || item.hidden ? "0.58" : "1",
             transition: "background 0.1s ease",
             cursor: "pointer",
         });
@@ -345,7 +347,7 @@ export class RegionsPanel extends BasePanel {
             card.style.background = "rgba(255,255,255,0.035)";
         });
 
-        const isVisible = !item.hidden;
+        const isVisible = enabled && !item.hidden;
         const hasVisual = this.regionHasOwnVisual(item);
 
         const dot = document.createElement("span");
@@ -360,12 +362,13 @@ export class RegionsPanel extends BasePanel {
             marginRight: "6px",
             cursor: "pointer",
         });
-        const visibilityTitle = hasVisual
-            ? "Show or hide this region's representations."
-            : "Show or hide these atoms in Whole only; other representations stay independent.";
+        const visibilityTitle = enabled
+            ? "Show or hide this region's representations and its atoms in Whole; other representations stay independent."
+            : "Enable this region to apply its saved visibility.";
         dot.title = visibilityTitle;
 
         const toggleVisibility = () => {
+            if (!enabled) return;
             this.ctx.onAction("toggle_region_visibility", { tag: item.tag });
         };
 
@@ -441,6 +444,24 @@ export class RegionsPanel extends BasePanel {
         const visibilityBtn = makeButton(item.hidden ? "Show" : "Hide", () => toggleVisibility());
         visibilityBtn.setAttribute("data-molsysviewer-region-visibility", item.tag);
         visibilityBtn.title = visibilityTitle;
+        visibilityBtn.disabled = !enabled;
+
+        const enabledControl = document.createElement("label");
+        Object.assign(enabledControl.style, { display: "flex", alignItems: "center", gap: "4px", fontSize: "10px" });
+        enabledControl.title = "Apply this region's visual configuration. Disabling preserves its style and visibility request.";
+        const enabledToggle = document.createElement("input");
+        enabledToggle.type = "checkbox";
+        enabledToggle.checked = enabled;
+        enabledToggle.setAttribute("data-molsysviewer-region-enable", item.tag);
+        enabledToggle.setAttribute("aria-label", `Enabled: ${item.tag}`);
+        enabledToggle.addEventListener("change", () => {
+            // Python owns enablement; the returned summary confirms the state.
+            enabledToggle.checked = enabled;
+            this.ctx.onAction("toggle_region_enabled", { tag: item.tag });
+        });
+        enabledControl.appendChild(enabledToggle);
+        enabledControl.appendChild(document.createTextNode("Enabled"));
+        btnRow.appendChild(enabledControl);
 
         const renameBtn = makeButton("Rename", () => {
             this.regionRenameTag = item.tag;

@@ -125,6 +125,7 @@ export class RemoteWorkbench {
                             ? item.atom_count
                             : Array.isArray(item.atom_indices) ? item.atom_indices.length : 0,
                         hidden: !!item.hidden,
+                        enabled: item.enabled !== false,
                         layer: typeof item.layer === "string" ? item.layer : null,
                         mode: item.mode === "dynamic" ? "dynamic" : "static",
                     }))
@@ -378,7 +379,7 @@ export class RemoteWorkbench {
 }
 
 const REMOTE_CONTEXT_ACTIONS: ReadonlySet<ContextMenuAction> = new Set([
-    "focus_target", "focus_region", "toggle_region_visibility", "delete_region", "rename_region",
+    "focus_target", "focus_region", "toggle_region_visibility", "toggle_region_enabled", "delete_region", "rename_region",
     "hide_measurement", "delete_annotation", "delete_shape", "delete_measurement",
     "focus_selection", "activate_selection", "save_selection", "remove_selection", "clear_selection",
     "expand_selection", "create_region_from_selection", "create_section_from_selection",

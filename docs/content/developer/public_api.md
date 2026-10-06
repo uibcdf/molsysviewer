@@ -270,6 +270,11 @@ Related object wrappers are also part of the intended public surface:
 - `view.regions[tag].focus(...)`
 - `view.regions[tag].set_color(color)`
 - `view.regions[tag].show_only(...)`
+- `view.regions[tag].enable(...)` / `.disable(...)` and read-only `.enabled`
+  - suspend/reapply visual effects while preserving selection, style and the
+    hidden request; `show()` / `hide()` do not enable a suspended region
+  - enabled Hide masks its atoms on Whole and hides its own representations;
+    other region representations remain independent
 - `view.regions[tag].rename(new_tag)`
   - renames the region in Python state and sends `rename_region` to JS
   - `_build_export_messages()` rewrites prior region ops to use the new tag, so the export replay uses the final name directly

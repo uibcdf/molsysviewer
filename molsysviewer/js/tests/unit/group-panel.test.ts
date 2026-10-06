@@ -5,18 +5,37 @@ import { GroupPanel } from "../../src/ui/group-panel";
 import type { AnnotationSummary } from "../../src/ui/panels/annotations-panel";
 
 class FakeElement {
+    constructor(public readonly tagName = "div") {}
     public readonly style: Record<string, string> = {};
     public readonly children: FakeElement[] = [];
     public textContent = "";
     public title = "";
     public type = "";
     public disabled = false;
+    public value = "";
     private attributes = new Map<string, string>();
     private listeners = new Map<string, Array<(event?: any) => void>>();
 
     appendChild(child: FakeElement) {
         this.children.push(child);
         return child;
+    }
+
+    prepend(...children: FakeElement[]) {
+        this.children.unshift(...children);
+    }
+
+    querySelector(selector: string): FakeElement | null {
+        const match = selector.match(/^([a-z][\w-]*)(?:\[([\w-]+)="([^"]*)"\])?$/i);
+        if (!match) throw new Error(`Unsupported test DOM selector ${selector}`);
+        const [, tag, attribute, value] = match;
+        for (const child of this.children) {
+            const actual = attribute === "value" ? child.value : child.getAttribute(attribute);
+            if (child.tagName.toLowerCase() === tag.toLowerCase() && (!attribute || actual === value)) return child;
+            const nested = child.querySelector(selector);
+            if (nested) return nested;
+        }
+        return null;
     }
 
     replaceChildren(...children: FakeElement[]) {
@@ -44,7 +63,7 @@ class FakeElement {
 function installFakeDom() {
     const previousDocument = (globalThis as any).document;
     (globalThis as any).document = {
-        createElement: () => new FakeElement(),
+        createElement: (tag: string) => new FakeElement(tag),
         createTextNode: (text: string) => {
             const node = new FakeElement();
             node.textContent = text;
@@ -74,6 +93,47 @@ function findFirstByAttribute(root: FakeElement, attributeName: string, value?: 
 function findFirstGroupButton(root: FakeElement): FakeElement | null {
     return findFirstByAttribute(root, "data-molsysviewer-group-item");
 }
+
+test("GroupPanel test DOM resolves scoped options and preserves prepend order", () => {
+    const select = new FakeElement("select");
+    const group = new FakeElement("optgroup");
+    const internal = new FakeElement("option"); internal.value = "a";
+    const between = new FakeElement("option"); between.value = "between";
+    group.appendChild(between);
+    select.appendChild(group);
+    select.prepend(internal);
+    assert.strictEqual(select.children[0], internal);
+    assert.strictEqual(select.querySelector('option[value="between"]'), between);
+    assert.strictEqual(select.querySelector('option[value="missing"]'), null);
+    assert.strictEqual(select.querySelector('select[value="between"]'), null);
+});
+
+test("GroupPanel region enablement stays separate from requested visibility", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: Array<{ action: string; details: any }> = [];
+        const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {},
+            () => {}, (action, details) => actions.push({ action, details }));
+        panel.setRegions([{ tag: "source", atom_count: 2, enabled: false, hidden: true }]);
+        (panel as any).switchTab("regions");
+        const root = host.children[0];
+        const row = findFirstByAttribute(root, "data-molsysviewer-region-buttons-row", "source")!;
+        const visibility = findFirstByAttribute(row, "data-molsysviewer-region-visibility", "source")!;
+        const enabled = findFirstByAttribute(row, "data-molsysviewer-region-enable", "source")!;
+        assert.strictEqual(visibility.disabled, true);
+        assert.strictEqual(visibility.textContent, "Show");
+        visibility.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions, []);
+        enabled.dispatch("change");
+        assert.deepStrictEqual(actions.at(-1), { action: "toggle_region_enabled", details: { tag: "source" } });
+        panel.setRegions([{ tag: "source", atom_count: 2, enabled: true, hidden: true }]);
+        const restoredRow = findFirstByAttribute(root, "data-molsysviewer-region-buttons-row", "source")!;
+        const restoredVisibility = findFirstByAttribute(restoredRow, "data-molsysviewer-region-visibility", "source")!;
+        assert.strictEqual(restoredVisibility.disabled, false);
+        assert.strictEqual(restoredVisibility.textContent, "Show");
+    } finally { restore(); }
+});
 
 function collectByAttribute(root: FakeElement, attributeName: string, value?: string): FakeElement[] {
     const out: FakeElement[] = [];

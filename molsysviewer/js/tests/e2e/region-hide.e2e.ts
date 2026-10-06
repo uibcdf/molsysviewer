@@ -148,8 +148,8 @@ async function run() {
     expectWhole("showBoth", [0, 0, 0, 0]);
     expectWhole("wholeStyle", [1, 1, 0, 0]);
     expectWhole("wholeStaysHidden", [0, 0, 0, 0], true);
-    expectWhole("hiddenOwn", [0, 0, 0, 0]);
-    expectWhole("hiddenInherit", [0, 0, 0, 0]);
+    expectWhole("hiddenOwn", [1, 1, 0, 0]);
+    expectWhole("hiddenInherit", [1, 1, 0, 0]);
     for (const name of ["hiddenOwn", "hiddenInherit"]) {
         const reprs = visibility[name].transparency.regions["base-a"];
         assert.ok(reprs.length > 0, `${name}: no region representation`);
@@ -161,7 +161,7 @@ async function run() {
     expectWhole("focusReleased", [0, 0.4, 0.4, 0.4]);
     expectWhole("dynamic", [0, 0, 1, 1]);
     expectWhole("deleted", [0, 0, 0, 0]);
-    expectWhole("bulkHidden", [0, 1, 1, 0]);
+    expectWhole("bulkHidden", [1, 1, 1, 0]);
     expectWhole("bulkShown", [0, 0, 0, 0]);
     expectWhole("cleared", [0, 0, 0, 0]);
     for (const [name, snapshot] of Object.entries(visibility)) {
@@ -225,9 +225,9 @@ async function run() {
     expectIsolationWhole("baseStyle", [0, 0, 1, 1]);
     expectIsolationWhole("restore", [1, 0, 1, 1], true);
     assert.strictEqual(isolation.restore.scene.regions.later.hidden, false, "Restoration hid a later visible region");
-    expectIsolationWhole("released", [0, 1, 1, 0]);
+    expectIsolationWhole("released", [1, 1, 1, 0]);
     expectIsolationWhole("showOther", [1, 1, 1, 0]);
-    expectIsolationWhole("deleted", [0, 1, 1, 0]);
+    expectIsolationWhole("deleted", [1, 1, 1, 0]);
     for (const name of ["base", "renamed", "dynamic", "empty", "ownStyle", "inheritStyle", "baseStyle"]) {
         assert.strictEqual(isolation[name].scene.regions.overlap.hidden, true);
         assert.strictEqual(isolation[name].scene.regions.own.hidden, true);

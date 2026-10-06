@@ -33,10 +33,9 @@ list.
 - [`trajectory_plot_card_lifecycle.md`](trajectory_plot_card_lifecycle.md) — [#143](https://github.com/uibcdf/molsysviewer/issues/143) — Trajectory plot cards lose state and disagree on hide and clear semantics *(medium, measured)*
 - [`trajectory_plot_numeric_axis.md`](trajectory_plot_numeric_axis.md) — [#150](https://github.com/uibcdf/molsysviewer/issues/150) — Trajectory plot x coordinates and nonfinite values have inconsistent rendering semantics *(medium, measured)*
 
-### Open (2)
+### Open (1)
 
 - [`documented_whole_mask_queries.md`](documented_whole_mask_queries.md) — [#160](https://github.com/uibcdf/molsysviewer/issues/160) — Documented Whole mask examples still pass query strings to an index-only argument *(medium, reproduced)*
-- [`group_panel_unit_dom_missing_query_selector.md`](group_panel_unit_dom_missing_query_selector.md) — [#166](https://github.com/uibcdf/molsysviewer/issues/166) — GroupPanel unit DOM fixture lacks querySelector required by Interactions *(medium, reproduced)*
 
 ### Deferred until after 1.0 (1)
 

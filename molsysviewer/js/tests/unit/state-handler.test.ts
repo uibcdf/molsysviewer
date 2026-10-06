@@ -155,6 +155,7 @@ test("state handler accepts authoritative enriched region summaries", () => {
         atom_indices: [0, 1],
         atom_count: 2,
         hidden: false,
+        enabled: true,
         // Layer membership (Phase 9) must survive the summary mapping so the
         // Layers subpanel can group the region under its layer.
         layer: "analysis",
@@ -209,6 +210,7 @@ test("state handler applies consolidated dynamic region atom deltas", async () =
     });
     const regionIndex = (handler as any).regionIndex as Map<string, any>;
     regionIndex.set("shell", {
+        enabled: true,
         atomIndices: [0],
         representations: [],
         representationState: "none",
@@ -576,6 +578,7 @@ function makeOwnershipHarness() {
         params: Record<string, unknown> = {},
     ) => {
         regionIndex.set(tag, {
+            enabled: true,
             component,
             representations: [],
             atomIndices,
@@ -1206,6 +1209,7 @@ test("state handler renameRegion preserves hidden state in the renamed entry", a
     // Inject a hidden region entry directly
     const regionIndex = (handler as any).regionIndex as Map<string, any>;
     regionIndex.set("pocket", {
+        enabled: true,
         component: "comp-ref",
         representations: ["repr-ref"],
         atomIndices: [0, 1, 2],

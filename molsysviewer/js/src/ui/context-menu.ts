@@ -23,6 +23,7 @@ export type ContextMenuAction =
     | "focus_target"
     | "focus_region"
     | "toggle_region_visibility"
+    | "toggle_region_enabled"
     | "delete_region"
     | "rename_region"
     | "hide_measurement"
@@ -79,6 +80,7 @@ export type RegionSummary = {
     atom_count: number;
     selection?: string;
     hidden: boolean;
+    enabled?: boolean;
     representation?: string;
     preset?: string;
     overlap_tags?: string[];

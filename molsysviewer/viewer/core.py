@@ -2265,7 +2265,7 @@ class MolSysView(
     def _resolved_atom_color_map(self) -> dict[int, int]:
         resolved: dict[int, int] = dict(self._atom_color_layers.get("whole", {}))
         ordered_regions = sorted(
-            (region for region in self._regions.values() if getattr(region, "_active", False)),
+            (region for region in self._regions.values() if getattr(region, "_active", False) and region.enabled),
             key=lambda region: getattr(region, "order", 0),
         )
         for region in ordered_regions:

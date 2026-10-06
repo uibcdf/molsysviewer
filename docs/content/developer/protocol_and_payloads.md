@@ -25,6 +25,15 @@ Loader cleanup releases this state, including failed array-native decoding.
 Panel-only endpoints never show Welcome. Empty-state detection reads the
 actual Mol* structure hierarchy, rather than cached references to deleted nodes.
 
+Region enablement uses `set_region_enabled` with `tag` and boolean `enabled`.
+`create_region` accepts optional `enabled` (default true); Python creation and
+snapshot messages include false for suspended regions. Region summaries carry
+both `enabled` and `hidden`, and Studio forwards `toggle_region_enabled` through
+the existing `interaction_context_action` event to Python. Hide masks Whole
+and hides own representations while enabled; disabling releases that region's
+Whole/color effects while retaining its hidden request. State-v2 region records
+save both booleans. See {doc}`regions_layers` for scope and overlapping regions.
+
 ## MolSys payload schema (Python → JS)
 
 When loading MolSysMT-native systems, Python sends a stable payload:

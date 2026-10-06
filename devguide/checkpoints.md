@@ -22,13 +22,20 @@ nodes. The full Python suite is not repeated. See
 Diego now confirms both corrections in the human review after the source fix
 `66a924404feadaef7aa7147fea573533c21d40c8`. Studio base-region Hide/Show
 and the section 2 Python API are reported passing. Own-region Hide reveals
-Whole as contracted, but Diego questions that user experience and asks how
-Studio isolation should offer a return. Both design decisions are reopened
-for discussion; no runtime semantics change is authorized. Next: agree those
-rules before continuing the notebook review.
-The JS unit run separately exposes [#166](pending_bugs/group_panel_unit_dom_missing_query_selector.md): GroupPanel's test DOM lacks
-`querySelector`, although the real browser route passes. That fixture remains
-an open 1.0 validation task.
+Whole under the earlier contract. Diego approved #167: enabled Hide constrains
+Whole in every representation state; enable/disable independently suspends and
+reapplies visual configuration while preserving the hidden request. The API,
+Studio, colors and scene lifecycle now have passing regression coverage. Human
+retest remains pending. Studio isolation's return control remains for discussion after this
+change; no temporary-isolation redesign is authorized.
+The separate [#166](archive/group_panel_unit_dom_missing_query_selector.md)
+GroupPanel test DOM defect is fixed: the complete JS unit lane passes 322 tests.
+[#167](archive/region_enablement_and_visibility.md) has 12 focused Python tests
+and 264 passing selected follow-up tests. All 39 core browser suites pass
+across 26 initial suites and a 13-suite follow-up after a stale tooltip assertion.
+The once-run full Python suite returned 2,839 passed, eight failures and 23
+skipped; diagnosed failures pass selected follow-ups, without a second full run.
+[The enablement receipt](region_enablement_20261006.json) preserves these limits.
 Keep these direct human
 observations separate from automated evidence in
 [the current review](human_usability_review_20261006.md).
