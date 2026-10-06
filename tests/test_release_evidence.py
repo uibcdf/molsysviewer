@@ -524,6 +524,65 @@ def test_hosted_core_is_independent_of_a_successful_remote_job(candidate):
         check_run(run, expected, "uibcdf/molsysviewer", ".github/workflows/CI_e2e.yaml", plan["molsysviewer"]["commit"])
 
 
+@pytest.mark.parametrize(
+    "change,expected",
+    [
+        ("none", "PASS"),
+        ("control-success", "PASS"),
+        ("control-failure", "FAIL"),
+        ("unknown-skip", "FAIL"),
+        ("core-job-skipped", "FAIL"),
+        ("core-step-skipped", "FAIL"),
+        ("duplicate-control", "FAIL"),
+        ("other-attempt", "FAIL"),
+        ("incomplete", "FAIL"),
+    ],
+)
+def test_hosted_core_allows_only_inactive_backlog_control(candidate, change, expected):
+    checkout, plan, path = candidate
+    path.write_text(json.dumps(plan))
+    identity = plan["hosted_e2e"]
+    run, _ = pair_snapshot(plan, "staging")
+    run.update(
+        id=identity["id"],
+        head_sha=plan["molsysviewer"]["commit"],
+        repository={"full_name": "uibcdf/molsysviewer"},
+        path=".github/workflows/CI_e2e.yaml",
+    )
+    core = {
+        "name": "Core E2E",
+        "run_id": identity["id"],
+        "run_attempt": identity["attempt"],
+        "status": "completed",
+        "conclusion": "success",
+        "steps": [{"name": "Run core E2E tests", "conclusion": "success"}],
+    }
+    control = dict(core, name="Check skipped-commit backlog", conclusion="skipped", steps=[])
+    jobs = {"total_count": 2, "jobs": [core, control]}
+    if change == "control-success":
+        control["conclusion"] = "success"
+    elif change == "control-failure":
+        control["conclusion"] = "failure"
+    elif change == "unknown-skip":
+        control["name"] = "Other validation"
+    elif change == "core-job-skipped":
+        core["conclusion"] = "skipped"
+    elif change == "core-step-skipped":
+        core["steps"][0]["conclusion"] = "skipped"
+    elif change == "duplicate-control":
+        jobs["jobs"].append(dict(control))
+        jobs["total_count"] += 1
+    elif change == "other-attempt":
+        control["run_attempt"] += 1
+    elif change == "incomplete":
+        jobs["total_count"] += 1
+    reader = LiveEvidence()
+    base = f"repos/uibcdf/molsysviewer/actions/runs/{identity['id']}"
+    reader.cache[base] = json.dumps(run).encode()
+    reader.cache[base + f"/attempts/{identity['attempt']}/jobs?per_page=100"] = json.dumps(jobs).encode()
+    assert CandidateEvidence(path, checkout, reader=reader).evaluate("hosted_e2e")[0] == expected
+
+
 @pytest.mark.parametrize("selection", ["does-not-exist", "conda,", "conda,conda"])
 def test_partial_selection_cannot_succeed_without_running_any_gate(selection):
     result = subprocess.run(

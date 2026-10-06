@@ -81,6 +81,11 @@ the exact versions/builds, all-platform Python 3.14 matrix and staging/public
 source. Jobs must include all 16 distinct platform/Python cells and preparation;
 every cell must run its scientific/resource validation successfully.
 
+The hosted core profile permits the completed/skipped state only for the exact
+conditional `Check skipped-commit backlog` control job. A duplicate control,
+failed control, unknown skipped job or omitted core-test step fails. This rule
+does not relax the installed scientific matrices.
+
 Each installed environment comes from the exact named artifact, with its
 GitHub SHA-256 checked against the downloaded ZIP. The archive is bounded,
 contains only the expected environment text, belongs to the selected run/commit

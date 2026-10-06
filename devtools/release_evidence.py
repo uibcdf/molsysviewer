@@ -146,13 +146,19 @@ def check_run(run, expected, repository, workflow, commit):
     require(run.get("conclusion") == "success", "GitHub run did not succeed")
 
 
-def check_jobs(document, run_id, attempt):
+def check_jobs(document, run_id, attempt, *, allowed_skipped=()):
     jobs = document.get("jobs")
     require(isinstance(jobs, list) and document.get("total_count") == len(jobs), "incomplete GitHub job inventory")
+    for name in allowed_skipped:
+        require(sum(job.get("name") == name for job in jobs) <= 1, "ambiguous conditional control job")
     for job in jobs:
         require(job.get("run_id") == run_id and job.get("run_attempt") == attempt, "job belongs to another run/attempt")
         require(
-            job.get("status") == "completed" and job.get("conclusion") == "success",
+            job.get("status") == "completed"
+            and (
+                job.get("conclusion") == "success"
+                or (job.get("name") in allowed_skipped and job.get("conclusion") == "skipped")
+            ),
             "required job did not complete successfully",
         )
     return jobs
@@ -358,7 +364,7 @@ class CandidateEvidence:
             ".github/workflows/CI_e2e.yaml",
             plan["molsysviewer"]["commit"],
         )
-        jobs = check_jobs(document, run["id"], run["run_attempt"])
+        jobs = check_jobs(document, run["id"], run["run_attempt"], allowed_skipped=("Check skipped-commit backlog",))
         core = [item for job in jobs for item in job.get("steps", []) if item.get("name") == "Run core E2E tests"]
         require(len(core) == 1 and core[0].get("conclusion") == "success", "hosted core E2E was absent or skipped")
 

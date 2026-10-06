@@ -2,6 +2,7 @@
 
 import subprocess
 import sys
+import tomllib
 from pathlib import Path
 
 import yaml
@@ -92,3 +93,21 @@ def test_temporary_candidate_tags_are_removed_after_installation():
                 if sys.platform != "win32":
                     syntax = subprocess.run(["bash", "-n"], input=cleanup["run"], text=True, capture_output=True)
                     assert syntax.returncode == 0, syntax.stderr
+
+
+def test_automatic_source_pair_uses_the_prepared_runtime_version():
+    """Push/PR installs must agree with the committed release-preparation runtime."""
+    workflow = yaml.load(
+        (ROOT / ".github/workflows/ci-python-314-source-pair.yaml").read_text(encoding="utf-8"),
+        Loader=yaml.BaseLoader,
+    )
+    plan = tomllib.loads((ROOT / "devtools/conda-build/release_plan.toml").read_text(encoding="utf-8"))
+    expected = "${{ inputs.viewer_version || '" + plan["version"] + "' }}"
+    steps = workflow["jobs"]["source-pair"]["steps"]
+    tag = next(step for step in steps if step.get("id") == "viewer-candidate-tag")
+    cleanup = next(step for step in steps if step["name"] == "Remove the temporary Viewer tag after installation")
+    install = next(step for step in steps if step["name"] == "Install both exact source candidates")
+    assert "if" not in tag, "automatic source builds must also bind the intended version"
+    assert tag["env"]["EXPECTED_VERSION"] == cleanup["env"]["EXPECTED_VERSION"] == expected
+    assert "validate_python_wheel_runtime.py" in tag["run"]
+    assert steps.index(tag) < steps.index(install) < steps.index(cleanup)

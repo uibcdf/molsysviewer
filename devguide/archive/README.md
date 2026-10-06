@@ -1,5 +1,8 @@
 # Archived implementation plans
 
+- [`automatic_source_pair_runtime_version.md`](automatic_source_pair_runtime_version.md) — #173: automatic source builds bind the prepared runtime version before installation and remove only the owned temporary tag; workflow and real offline-export guards pass.
+- [`hosted_core_inactive_backlog_gate.md`](hosted_core_inactive_backlog_gate.md) — #174: exact hosted evidence permits only the inactive backlog control while rejecting omitted scientific checks; live staging/core verification and 66 evidence guards pass.
+
 - [`temporary_candidate_tags_change_release_history.md`](temporary_candidate_tags_change_release_history.md) — #171: remove only owned local version tags after installation; staged metadata stays exact and 208 installed capability checks pass.
 - [`movie_done_precedes_final_canvas_draw.md`](movie_done_precedes_final_canvas_draw.md) — #172: shared fresh-draw synchronization makes Movie completion observe the final camera; both unit cases and three affected browser suites pass.
 

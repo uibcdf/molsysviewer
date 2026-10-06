@@ -105,11 +105,10 @@ jobs:
 
       - name: Validate and locally tag the exact Viewer source candidate
         id: viewer-candidate-tag
-        if: github.event_name == 'workflow_dispatch'
         shell: bash -l {0}
         working-directory: molsysviewer-source
         env:
-          EXPECTED_VERSION: ${{ inputs.viewer_version }}
+          EXPECTED_VERSION: ${{ inputs.viewer_version || '0.24.0' }}
         run: |
           set -euo pipefail
           [[ "$EXPECTED_VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]
@@ -153,7 +152,7 @@ jobs:
         shell: bash -l {0}
         working-directory: molsysviewer-source
         env:
-          EXPECTED_VERSION: ${{ inputs.viewer_version }}
+          EXPECTED_VERSION: ${{ inputs.viewer_version || '0.24.0' }}
         run: |
           set -euo pipefail
           test "$(git rev-list -n 1 "$EXPECTED_VERSION")" = "$GITHUB_SHA"
