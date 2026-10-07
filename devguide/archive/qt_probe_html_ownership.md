@@ -94,3 +94,17 @@ the focused repair. Full CI/E2E debt remains owned by the component developers
 (Diego/Liliana) under uibcdf/molsysviewer#93, with existing scheduled/manual CI.yaml
 and CI_e2e.yaml recovery routes. Administrative evidence does not clear that debt
 or qualify a new release. All full tool/retrospective reviews keep #104 partial.
+
+## Active-owner integration checkpoint — 2026-10-07
+
+While preparing this local repair, origin/main advanced to 484686524d4b928fddc96b98db7e01e3821edbc6 with existing
+public Windows, installed-fixture, E2E-worker and box qualification closures.
+Integrate those documentation changes; preserve all archive-index entries.
+The helper, both parent/child probes, lifecycle guard and build script bytes are
+unchanged from the measured local repair, so the eight lifecycle cases and two
+original real-Qt results remain applicable. The earlier reporting counts describe
+their dated inputs. All 180 current integrated reporting checks, dependency audit,
+whole-repository Ruff, generated queue indexes and bash syntax check also pass.
+The maintained flat archive receives its customary one-line index entry; the
+local generator manages queue indexes. Final exact-head administrative evidence
+is retained separately from postponed scientific/full-browser source evidence.
