@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [`qt_probe_html_ownership.md`](qt_probe_html_ownership.md) — #178: parent-owned HTML survives real Qt reads and cleans on success/failure/timeout; eight lifecycle regressions and both original probes pass.
+
 - [`noarch_conda_launchers_missing_on_windows.md`](noarch_conda_launchers_missing_on_windows.md) — #101: build 1 passes staged and public Windows installed-command checks; exact promotion and historical broken file retained.
 
 - [`installed_scientific_cli_fixture_namespace.md`](installed_scientific_cli_fixture_namespace.md) — #153: fixture-only namespace and isolated direct CLI qualified with four fresh installed import guards.

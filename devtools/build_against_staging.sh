@@ -8,6 +8,14 @@
 #
 #   ./devtools/build_against_staging.sh [output-dir]
 #
+# Output lifecycle: the invoking release/qualification task owns OUT, including
+# the generated directory when output-dir is omitted. Record its printed path
+# in that owning issue. Retain original candidate bytes and needed evidence
+# through installed qualification, promotion and public verification, or while
+# investigating a failed build. Once those uses end, review active/human work
+# and remove obsolete task-owned output. Caller-supplied output remains under
+# caller control; this script deliberately does not remove OUT at exit.
+#
 # What it proves, which is the list MolSysMT asked the candidate to demonstrate from the
 # noarch artefact itself:
 #

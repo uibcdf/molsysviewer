@@ -18,6 +18,7 @@ from molsysviewer.standalone_qt import QT_IMPORT_ERROR, QtViewChannel, create_st
 from molsysviewer.standalone_qt import main as qt_main
 
 from molsysviewer import demo
+from tests._qt_probe import run_qt_html_probe
 
 
 def test_build_standalone0_html_writes_file(tmp_path):
@@ -1650,7 +1651,8 @@ def test_qt_bridge_reports_view_event_failure_without_raising(caplog):
 # (doing so alongside the rest of the suite aborts the interpreter). The render
 # (which needs WebGL) is validated separately in test_qt_live_model_full_render_gpu.
 _QT_TRANSPORT_SMOKE_SCRIPT = r"""
-import os, sys, tempfile, time
+import os, sys, time
+from pathlib import Path
 os.environ.setdefault("QTWEBENGINE_DISABLE_SANDBOX", "1")
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 import molsysviewer.standalone_qt as sq
@@ -1670,8 +1672,8 @@ html = ("<!doctype html><html><body><script>"
         "fetch('molsysviewer://event?payload='+"
         "encodeURIComponent(JSON.stringify({event:'ready'})));});"
         "</script></body></html>")
-with tempfile.NamedTemporaryFile("w", suffix=".html", delete=False) as fh:
-    fh.write(html); path = fh.name
+path = sys.argv[1]
+Path(path).write_text(html, encoding="utf-8")
 view.setUrl(qt["QUrl"].fromLocalFile(path))
 start = time.time()
 while time.time() - start < 15.0:
@@ -1691,8 +1693,6 @@ def test_qt_event_transport_smoke_real_qt():
     Runs in a subprocess (QtWebEngine is single-init-per-process). Headless,
     no GPU/display: this is the always-on CI gate for the transport.
     """
-    import subprocess
-
     try:
         standalone_qt._import_qt()
     except ImportError as exc:
@@ -1714,13 +1714,7 @@ def test_qt_event_transport_smoke_real_qt():
     env["QT_QPA_PLATFORM"] = "offscreen"
     env["QTWEBENGINE_DISABLE_SANDBOX"] = "1"
 
-    result = subprocess.run(
-        [sys.executable, "-c", _QT_TRANSPORT_SMOKE_SCRIPT],
-        capture_output=True,
-        text=True,
-        timeout=90,
-        env=env,
-    )
+    result = run_qt_html_probe(_QT_TRANSPORT_SMOKE_SCRIPT, env=env, timeout=90)
     assert "TRANSPORT_READY:yes" in result.stdout, (
         "real Qt event transport (fetch -> molsysviewer:// scheme handler -> bridge) "
         f"failed.\nstdout={result.stdout}\nstderr={result.stderr[-1500:]}"
@@ -1728,7 +1722,8 @@ def test_qt_event_transport_smoke_real_qt():
 
 
 _QT_TWO_GENERATION_PAYLOAD_SCRIPT = r'''
-import json, os, sys, tempfile, time
+import json, os, sys, time
+from pathlib import Path
 os.environ.setdefault("QTWEBENGINE_DISABLE_SANDBOX", "1")
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 os.environ["MOLSYSVIEWER_QT_PAYLOAD_REF_THRESHOLD"] = "1"
@@ -1774,9 +1769,8 @@ window.addEventListener("load", () => {
   postHost({event:"ready"});
 });
 </script></body></html>"""
-with tempfile.NamedTemporaryFile("w", suffix=".html", delete=False) as fh:
-    fh.write(html)
-    path = fh.name
+path = sys.argv[1]
+Path(path).write_text(html, encoding="utf-8")
 view.setUrl(qt["QUrl"].fromLocalFile(path))
 
 def spin_until(predicate, timeout=15.0):
@@ -1833,8 +1827,6 @@ sys.exit(0 if first_ok and second_ok else 1)
 
 def test_qt_payload_refs_replace_across_two_real_generations():
     """Real Qt bridge serves and acknowledges two successive payload generations."""
-    import subprocess
-
     try:
         standalone_qt._import_qt()
     except ImportError as exc:
@@ -1852,13 +1844,7 @@ def test_qt_payload_refs_replace_across_two_real_generations():
     env["QT_QPA_PLATFORM"] = "offscreen"
     env["QTWEBENGINE_DISABLE_SANDBOX"] = "1"
 
-    result = subprocess.run(
-        [sys.executable, "-c", _QT_TWO_GENERATION_PAYLOAD_SCRIPT],
-        capture_output=True,
-        text=True,
-        timeout=90,
-        env=env,
-    )
+    result = run_qt_html_probe(_QT_TWO_GENERATION_PAYLOAD_SCRIPT, env=env, timeout=90)
     output_lines = [line for line in result.stdout.splitlines() if line.startswith("{")]
     assert output_lines, f"Qt payload-generation probe produced no report.\nstderr={result.stderr[-1500:]}"
     report = json.loads(output_lines[-1])
