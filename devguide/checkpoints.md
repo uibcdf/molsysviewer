@@ -5,7 +5,7 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-**0.24.0 stabilization candidate (2026-10-06): staging and canonical source qualified.**
+**0.24.0 stabilization candidate (2026-10-07): exact staging and source gates qualified.**
 Viewer **`1a4c97a58b68b69f3a836546c9e4ac6187c3efa2`**, noarch **build 1**, pairs
 with MolSysMT **0.23.0**, **build 0 ABI3**, commit
 **`46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9`**. The provider's fixed branch
@@ -18,6 +18,17 @@ to the same Viewer commit, version, build and file SHA-256. All **39/39** hosted
 core browser suites pass in [37541292806](https://github.com/uibcdf/molsysviewer/actions/runs/37541292806).
 The six Linux/macOS Python 3.11–3.13 regression cells pass; aggregate CI still
 fails on the separate experimental Qt/WebGL job (#109).
+
+The provider's final-source gate
+[37577738386](https://github.com/uibcdf/molsysmt/actions/runs/37577738386)
+passes all eight Linux/macOS Python 3.11–3.14 cells with the exact final Viewer
+commit. Independent downloads verify sixteen artifact digests, eight scientific
+certificates (54/54 cases each, zero failures/errors/skips, clean exact provider
+source) and eight JUnit reports (13,323 cases each, zero failures/errors).
+The full-suite optional/environment omissions remain 26 on Linux and 27 on
+macOS, with their reasons retained. The controlled Viewer wheel has development
+version metadata; this gate supplies source integration evidence. Canonical
+0.24.0 source/wheel and the installed staging pair retain their separate checks.
 
 The installed build 1 matches all 620 Viewer archive members and passes
 `pip check`, **298 affected checks/one expected omission**, and **eight real
@@ -46,7 +57,9 @@ with zero failures; Linux additionally passes 39 core suites and all 25 notebook
 Public-channel CI fails before tests because MolSysMT 0.23.0 is staging-only;
 the public installed gate remains BLOCKED. No public tag, release or promotion
 is created. Devguide reconciliation passes 277 bounded checks and all 45 active
-reports agree with the issue board. Next: review coordinated publication,
+reports agree with the issue board. MolSysMT confirms the exact candidates and
+publication order in its evidence commit `832e01210`. Next: obtain Diego's final
+publication authorization, publish/verify MolSysMT first and Viewer second,
 then qualify the exact public pair and verify GitHub Release/Zenodo preservation.
 See [the candidate preparation](stabilization_024_preparation_20261006.json).
 
@@ -1396,8 +1409,8 @@ documents carry it.
 
 Resume toward **1.0** in this order:
 
-**Current session priority (2026-10-06):** the immutable stabilization pair
-and its staging/core gates are verified in the current handoff above. The
+**Current session priority (2026-10-07):** the immutable stabilization pair
+and its staging/core/provider-source gates are verified in the current handoff above. The
 corrected automatic-development hosted follow-up also passes on all three hosts.
 Use the fixed Viewer producer `1a4c97a58b68b69f3a836546c9e4ac6187c3efa2` and
 MolSysMT producer `46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9`; earlier source
@@ -1406,7 +1419,8 @@ handoffs do not replace these artifact identities.
 1. Exact canonical-source integration and automatic hosted follow-up 37545069147
    pass. #175 is resolved; native verdicts and Linux notebook/core results are
    preserved. Review the completed candidate evidence before publication.
-2. Review the 0.24.0 publication with MolSysMT. Staging is qualified; the public
+2. Obtain Diego's final authorization for the agreed MolSysMT-first / Viewer-second
+   publication. Staging and the final provider-source gate are qualified; the public
    dependency/pair is not yet published. Keep already staged files and SHA-256
    identities fixed through the coordinated promotion.
 3. With publication authorization, create the canonical tag and GitHub Release,

@@ -1,13 +1,13 @@
 # Development roadmap
 
-**Updated:** 2026-10-06
+**Updated:** 2026-10-07
 
 This roadmap states current priorities. Release gating lives in
 [`path_to_1_0.md`](path_to_1_0.md), normative behavior in
 [`scene_contracts.md`](scene_contracts.md), and concrete open designs in
 [`pending_proposals/`](pending_proposals/).
 
-## Current execution order — 2026-10-06
+## Current execution order — 2026-10-07
 
 The fixed stabilization package is Viewer **0.24.0 noarch build 1** from
 `1a4c97a58b68b69f3a836546c9e4ac6187c3efa2`, paired with MolSysMT **0.23.0 ABI3
@@ -18,6 +18,10 @@ All six Linux/macOS Python 3.11–3.13 regression cells pass. The separate Qt jo
 still fails on its known experimental WebGL path (#109). Canonical-source
 Python 3.14 integration passes on all three native hosts, with 39 core suites
 and all 25 notebooks passing on Linux.
+The provider's final-source gate also passes all eight Linux/macOS Python
+3.11–3.14 cells with the exact Viewer commit: 54/54 scientific cases per cell
+without omissions, and 13,323 full-suite cases per cell with zero failures/errors.
+Independent certificate/JUnit downloads preserve the optional/environment skips.
 See [the current handoff](checkpoints.md#resume-in-one-page) and
 [the preparation receipt](stabilization_024_preparation_20261006.json).
 
@@ -29,7 +33,9 @@ package producer. Earlier failed attempts retain their original verdicts.
 
 The corrected automatic-development hosted follow-up passes on all three native
 hosts, including 39 core suites and 25 notebooks on Linux. Devguide reconciliation
-and its issue-board checks pass. Review publication of 0.24.0 with MolSysMT.
+and its issue-board checks pass. Both owners confirm the fixed candidates and
+MolSysMT-first / Viewer-second publication sequence. Obtain Diego's final
+publication authorization for that agreement.
 No public tag, GitHub Release or promotion is created. MolSysMT 0.23.0
 is staging-only, so public-channel CI cannot yet solve the required dependency;
 the exact public pair gate remains blocked. Coordinate public releases and

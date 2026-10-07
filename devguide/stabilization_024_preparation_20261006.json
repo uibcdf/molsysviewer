@@ -1,7 +1,7 @@
 {
   "schema": "molsysviewer.stabilization_preparation@1",
   "date": "2026-10-06",
-  "status": "immutable_staging_candidate_and_corrected_automatic_development_qualified; publication_review_next",
+  "status": "exact_staging_canonical_and_provider_source_gates_qualified; awaiting_Diego_final_publication_authorization",
   "viewer": {
     "version": "0.24.0",
     "build_number": 0,
@@ -165,7 +165,7 @@
     }
   },
   "remaining": [
-    "Review publication readiness and coordinate public MolSysMT 0.23.0 / Viewer 0.24.0 release",
+    "Obtain Diego final authorization for the agreed exact MolSysMT-first / Viewer-second publication",
     "Publish and promote exact artifacts only with maintainer authorization",
     "Complete public-channel 16-cell qualification, GitHub Release and Zenodo archival verification before declaring publication complete"
   ],
@@ -556,6 +556,378 @@
         "linux_core_suites": 39,
         "linux_notebooks_executed": 25,
         "linux_notebooks_failed": 0
+      },
+      "molsysmt_final_source_pair": {
+        "id": 37577738386,
+        "url": "https://github.com/uibcdf/molsysmt/actions/runs/37577738386",
+        "status": "completed",
+        "conclusion": "success",
+        "received_on": "2026-10-07",
+        "molsysmt_commit": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9",
+        "viewer_commit": "1a4c97a58b68b69f3a836546c9e4ac6187c3efa2",
+        "successful_cells": 8,
+        "platforms": [
+          "ubuntu-latest",
+          "macos-15"
+        ],
+        "python_versions": [
+          "3.11",
+          "3.12",
+          "3.13",
+          "3.14"
+        ],
+        "expected_pr_only_control": "PR full suite; completed/skipped on manual CI full dispatch",
+        "independent_verification": {
+          "downloaded_artifacts": 16,
+          "archive_digests_match_github": true,
+          "artifact_run_and_head_sha_match": true,
+          "all_eight_certificate_and_junit_body_hashes_match_provider_receipt": true,
+          "all_eight_skip_reason_counts_match_provider_receipt": true,
+          "viewer_source_commit_verified_in_controlled_wheel_build_log": true,
+          "local_directory": "/tmp/msv-mt-final-pair-20261007",
+          "controlled_wheel_log": "/tmp/msv-mt-final-controlled-viewer-20261007.log"
+        },
+        "controlled_viewer_source_wheel": {
+          "version": "0.23.4+109.g1a4c97a",
+          "filename": "molsysviewer-0.23.4+109.g1a4c97a-py3-none-any.whl",
+          "sha256": "9a90e790897eb727c413419b55c724d4ced7ea914fc856e9b727122fd74bcfa7",
+          "scope": "Exact source SHA with development version metadata; supplements canonical-source and installed 0.24.0 qualification, not a new public release artifact."
+        },
+        "cells": [
+          {
+            "cell": "macos-15-py3.11",
+            "full_suite": {
+              "tests": 13323,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 27,
+              "passed": 13296,
+              "junit_sha256": "f5459ba681627340ab163660437f3f838005599a48efe49f69dc6f348d6868c2",
+              "skip_reasons": {
+                "could not import 'ackredit': No module named 'ackredit'": 17,
+                "This test can only be run in linux": 1,
+                "could not import 'vina': No module named 'vina'": 5,
+                "with rdkit CCO is recognized as valid SMILES": 1,
+                "CuPy is not available.": 1,
+                "Optional unyt quantity backend": 1,
+                "Optional astropy quantity backend": 1
+              }
+            },
+            "junit_artifact": {
+              "id": 11464895127,
+              "name": "full-suite-results-macos-15-py3.11",
+              "digest": "sha256:65105e518f73793dc50618b8218d009509d279b7a905d5a1a6218a79d364be30"
+            },
+            "scientific": {
+              "python": "3.11.17",
+              "registered_nodes": 47,
+              "collected_cases": 54,
+              "passed": 54,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "tracked_source_dirty": false,
+              "release_eligible": true,
+              "certificate_sha256": "ca04355f08be04f341271be50beab08385fb1623affcf27fb8fe5df7cd04b2bc"
+            },
+            "scientific_artifact": {
+              "id": 11463159745,
+              "name": "scientific-evidence-macos-15-py3.11",
+              "digest": "sha256:1bf6535ea1fe731c8048cb9af48eaaa23cb13744a456bfffc2fb94a6bbdfa073"
+            }
+          },
+          {
+            "cell": "macos-15-py3.12",
+            "full_suite": {
+              "tests": 13323,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 27,
+              "passed": 13296,
+              "junit_sha256": "da98d24a55b96c54cc428a98c51199071ac1f88e340caa17df3420f3f782e41b",
+              "skip_reasons": {
+                "could not import 'ackredit': No module named 'ackredit'": 17,
+                "This test can only be run in linux": 1,
+                "could not import 'vina': No module named 'vina'": 5,
+                "with rdkit CCO is recognized as valid SMILES": 1,
+                "CuPy is not available.": 1,
+                "Optional unyt quantity backend": 1,
+                "Optional astropy quantity backend": 1
+              }
+            },
+            "junit_artifact": {
+              "id": 11464851676,
+              "name": "full-suite-results-macos-15-py3.12",
+              "digest": "sha256:34b48114a1b966452cc90f41718ffd4f9c0e7e5a8ee78e58291450457b8f95aa"
+            },
+            "scientific": {
+              "python": "3.12.15",
+              "registered_nodes": 47,
+              "collected_cases": 54,
+              "passed": 54,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "tracked_source_dirty": false,
+              "release_eligible": true,
+              "certificate_sha256": "52adc5d8b394936b2289498cc2d3d77aea74cc9c505369de4e11f355c88d0b14"
+            },
+            "scientific_artifact": {
+              "id": 11463407235,
+              "name": "scientific-evidence-macos-15-py3.12",
+              "digest": "sha256:af82872f86ce6d7f43bace6fe6d481e020049d42d039f42024aa3dce5b00922f"
+            }
+          },
+          {
+            "cell": "macos-15-py3.13",
+            "full_suite": {
+              "tests": 13323,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 27,
+              "passed": 13296,
+              "junit_sha256": "b84b3921b7e8132b5b20ee49f70fffb769e440456629fb9370269b46b7f0e2d6",
+              "skip_reasons": {
+                "could not import 'ackredit': No module named 'ackredit'": 17,
+                "This test can only be run in linux": 1,
+                "could not import 'vina': No module named 'vina'": 5,
+                "with rdkit CCO is recognized as valid SMILES": 1,
+                "CuPy is not available.": 1,
+                "Optional unyt quantity backend": 1,
+                "Optional astropy quantity backend": 1
+              }
+            },
+            "junit_artifact": {
+              "id": 11464457363,
+              "name": "full-suite-results-macos-15-py3.13",
+              "digest": "sha256:4af74407582b485975e6b7bab16fd61d09625f6151044556a79fd113bf5a97c9"
+            },
+            "scientific": {
+              "python": "3.13.16",
+              "registered_nodes": 47,
+              "collected_cases": 54,
+              "passed": 54,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "tracked_source_dirty": false,
+              "release_eligible": true,
+              "certificate_sha256": "5e114917e034816e0e5f6825804015a4ff1c27c1a264bd31673f6a98c492cb19"
+            },
+            "scientific_artifact": {
+              "id": 11463631600,
+              "name": "scientific-evidence-macos-15-py3.13",
+              "digest": "sha256:e878637b45d093fd3f5622cd44f5f196798769fa38d4e2975310f7f6a5d9e566"
+            }
+          },
+          {
+            "cell": "macos-15-py3.14",
+            "full_suite": {
+              "tests": 13323,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 27,
+              "passed": 13296,
+              "junit_sha256": "a345b57bc42003670996e86de5b58bd074283d821ea7406f3744b1f7be7ceaa6",
+              "skip_reasons": {
+                "could not import 'ackredit': No module named 'ackredit'": 17,
+                "This test can only be run in linux": 1,
+                "could not import 'vina': No module named 'vina'": 5,
+                "with rdkit CCO is recognized as valid SMILES": 1,
+                "CuPy is not available.": 1,
+                "Optional unyt quantity backend": 1,
+                "Optional astropy quantity backend": 1
+              }
+            },
+            "junit_artifact": {
+              "id": 11464162495,
+              "name": "full-suite-results-macos-15-py3.14",
+              "digest": "sha256:3f3ad120fb097406e2a07c8c9cc270240fd0183ba2431ced70b780c74cc1c289"
+            },
+            "scientific": {
+              "python": "3.14.8",
+              "registered_nodes": 47,
+              "collected_cases": 54,
+              "passed": 54,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "tracked_source_dirty": false,
+              "release_eligible": true,
+              "certificate_sha256": "fb79d1a32f2f3bfca7267dea4f52f24750a429d49a87c9b50861cf4d62349137"
+            },
+            "scientific_artifact": {
+              "id": 11462988891,
+              "name": "scientific-evidence-macos-15-py3.14",
+              "digest": "sha256:e95a1ac47db893329944ef11148ae0d53f999d4f1c5a932cbbee41a8452cfbec"
+            }
+          },
+          {
+            "cell": "ubuntu-latest-py3.11",
+            "full_suite": {
+              "tests": 13323,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 26,
+              "passed": 13297,
+              "junit_sha256": "cc44c8838cbf62e4c7128073ede857abdda021875f7c7a72a125fcc792a7a057",
+              "skip_reasons": {
+                "could not import 'ackredit': No module named 'ackredit'": 17,
+                "could not import 'vina': No module named 'vina'": 5,
+                "with rdkit CCO is recognized as valid SMILES": 1,
+                "CuPy is not available.": 1,
+                "Optional unyt quantity backend": 1,
+                "Optional astropy quantity backend": 1
+              }
+            },
+            "junit_artifact": {
+              "id": 11464478827,
+              "name": "full-suite-results-ubuntu-latest-py3.11",
+              "digest": "sha256:156ce40e163923f99a3be2a31f34ee510991ae3b6370c24f4147568524af1743"
+            },
+            "scientific": {
+              "python": "3.11.17",
+              "registered_nodes": 47,
+              "collected_cases": 54,
+              "passed": 54,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "tracked_source_dirty": false,
+              "release_eligible": true,
+              "certificate_sha256": "bbac5e7d1b88110c209697f96a4151207b333b5c1b989a39a770243f1f7f5363"
+            },
+            "scientific_artifact": {
+              "id": 11462584322,
+              "name": "scientific-evidence-ubuntu-latest-py3.11",
+              "digest": "sha256:9d34abef5cdd6f3fe2194fd46ce9dced32df3dbbdde8232ca48b0c4f48beb5c8"
+            }
+          },
+          {
+            "cell": "ubuntu-latest-py3.12",
+            "full_suite": {
+              "tests": 13323,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 26,
+              "passed": 13297,
+              "junit_sha256": "128e1a1b920c83bf0c4737f1ea1685af6d8c619f9110cf29000082cff77f1b7f",
+              "skip_reasons": {
+                "could not import 'ackredit': No module named 'ackredit'": 17,
+                "could not import 'vina': No module named 'vina'": 5,
+                "with rdkit CCO is recognized as valid SMILES": 1,
+                "CuPy is not available.": 1,
+                "Optional unyt quantity backend": 1,
+                "Optional astropy quantity backend": 1
+              }
+            },
+            "junit_artifact": {
+              "id": 11464874107,
+              "name": "full-suite-results-ubuntu-latest-py3.12",
+              "digest": "sha256:46bdcb6c6ec87a7f48465ea849373ae8abab263f6624f75c3f3cdf554a3c84b4"
+            },
+            "scientific": {
+              "python": "3.12.15",
+              "registered_nodes": 47,
+              "collected_cases": 54,
+              "passed": 54,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "tracked_source_dirty": false,
+              "release_eligible": true,
+              "certificate_sha256": "dac2960f11d8da7b3971c9a2572bf78d76d3acc413b8dd1405328635f8fecafb"
+            },
+            "scientific_artifact": {
+              "id": 11463406952,
+              "name": "scientific-evidence-ubuntu-latest-py3.12",
+              "digest": "sha256:b2966b1fd061a5336a29f24906784daea20a3331384cb5f38811e130cfac750a"
+            }
+          },
+          {
+            "cell": "ubuntu-latest-py3.13",
+            "full_suite": {
+              "tests": 13323,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 26,
+              "passed": 13297,
+              "junit_sha256": "20412b086a73b906766a6915ecd8f2635ba01891eed2a7dfc9bac3352deef5f5",
+              "skip_reasons": {
+                "could not import 'ackredit': No module named 'ackredit'": 17,
+                "could not import 'vina': No module named 'vina'": 5,
+                "with rdkit CCO is recognized as valid SMILES": 1,
+                "CuPy is not available.": 1,
+                "Optional unyt quantity backend": 1,
+                "Optional astropy quantity backend": 1
+              }
+            },
+            "junit_artifact": {
+              "id": 11464432108,
+              "name": "full-suite-results-ubuntu-latest-py3.13",
+              "digest": "sha256:91168f0bab2d0573408733f525a317591bbb9c1bc654361edc23740100eb3c6f"
+            },
+            "scientific": {
+              "python": "3.13.16",
+              "registered_nodes": 47,
+              "collected_cases": 54,
+              "passed": 54,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "tracked_source_dirty": false,
+              "release_eligible": true,
+              "certificate_sha256": "0be8d1ebeb8a6f05bb1647b678fdde477dd84829c7c8e8ab6b87033df53949f7"
+            },
+            "scientific_artifact": {
+              "id": 11462429458,
+              "name": "scientific-evidence-ubuntu-latest-py3.13",
+              "digest": "sha256:c5b775959ebac2adc9438ae4156c3a58f8111bc12a7911fea458e26a6375a9eb"
+            }
+          },
+          {
+            "cell": "ubuntu-latest-py3.14",
+            "full_suite": {
+              "tests": 13323,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 26,
+              "passed": 13297,
+              "junit_sha256": "f91945e948b5ae804fd411767b0fe2a8f1efc00ff7531321f3e1d2b677e137de",
+              "skip_reasons": {
+                "could not import 'ackredit': No module named 'ackredit'": 17,
+                "could not import 'vina': No module named 'vina'": 5,
+                "with rdkit CCO is recognized as valid SMILES": 1,
+                "CuPy is not available.": 1,
+                "Optional unyt quantity backend": 1,
+                "Optional astropy quantity backend": 1
+              }
+            },
+            "junit_artifact": {
+              "id": 11464388081,
+              "name": "full-suite-results-ubuntu-latest-py3.14",
+              "digest": "sha256:5d65d7db183865624aa5b0ef6aff45847b85133c0795ff8bacf71323d116c3aa"
+            },
+            "scientific": {
+              "python": "3.14.8",
+              "registered_nodes": 47,
+              "collected_cases": 54,
+              "passed": 54,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "tracked_source_dirty": false,
+              "release_eligible": true,
+              "certificate_sha256": "f1fb87d952fad9b302f356b22896e651986df4cd5d266fea2bce546276e6a52c"
+            },
+            "scientific_artifact": {
+              "id": 11463835089,
+              "name": "scientific-evidence-ubuntu-latest-py3.14",
+              "digest": "sha256:13920da5dca1deb00ad8008928ead01b7ab7788b0308dbbf80a15d737fc9b563"
+            }
+          }
+        ],
+        "scope": "Provider source/full scientific integration with the final Viewer code. The 16-cell installed staging matrix and original immutable release packages keep their separate qualification."
       }
     },
     "files": [
@@ -793,5 +1165,19 @@
         "conclusion": "success"
       }
     }
+  },
+  "coordinated_publication_agreement": {
+    "received_on": "2026-10-07",
+    "provider_receipt_commit": "832e012104a5af154eefff2cd2c931be3fbeced3",
+    "provider_receipt_path": "devtools/data/stabilization_023_staging_handoff_20261006.json",
+    "provider_receipt_url": "https://github.com/uibcdf/molsysmt/blob/832e012104a5af154eefff2cd2c931be3fbeced3/devtools/data/stabilization_023_staging_handoff_20261006.json",
+    "sequence": [
+      "Obtain final publication authorization from Diego",
+      "MolSysMT owner publishes 0.23.0 and promotes/verifies its four original build-0 files",
+      "MolSysViewer owner publishes 0.24.0, promotes/verifies its original build-1 noarch file and verifies npm/CDN",
+      "Qualify all sixteen public installed-pair cells and independently verify both Zenodo records"
+    ],
+    "publication_authorized": false,
+    "package_commits_and_sha256_unchanged": true
   }
 }
