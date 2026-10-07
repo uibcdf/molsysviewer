@@ -102,6 +102,32 @@ Saving a MolSysViewer session preserves the system, complete analyses and visual
 references together. A visual state file alone needs the corresponding scientific
 analyses already loaded.
 
+## Saving named analyses
+
+Use `view.interactions.save` to keep scientific results in an interactions-only
+H5MSM file. Choose one analysis name or a nonempty list; omit `analysis_names`
+to save every named analysis in the view. The file retains complete analyses
+and their atom/structure index domains, rather than the visual set's filter.
+It contains neither molecular coordinates nor scene styles.
+
+```python
+view.interactions.save("hydrogen_bonds.h5msm", analysis_names="hydrogen_bonds")
+reloaded = view.interactions.load(
+    "hydrogen_bonds.h5msm", analysis_name="hydrogen_bonds",
+    name="hydrogen_bonds_reloaded", assume_aligned=True,
+)
+```
+
+Here the file was saved from the same unchanged system, so its indices are
+aligned. For an independent file, verify correspondence before declaring
+`assume_aligned=True`. Loading adds scientific data; call `add` when you also
+want a visual set. Existing analysis names are not overwritten.
+
+Saving refuses an existing destination unless you supply `overwrite=True`.
+Names are validated before writing, and a completed file replaces the destination
+only after serialization succeeds. Saving analyses is distinct from saving a
+session, which retains the molecular system and scene together.
+
 ## Filtering and inspecting a set
 
 The display filter is independent of the calculation scope. Filtering cannot
@@ -129,6 +155,53 @@ evidence, periodic images and occurrence identities. It also states the
 calculation scope. Compound participants remain inspectable even when their
 graphic representation is unsupported. Inspect the recorded measurement and unit
 when interpreting a guide or candidate link.
+
+### Reading another inspection page
+
+`inspect` returns a bounded page of observations for one structure. Its `total`
+counts filtered occurrences; `next_offset` identifies the next page. Stop when
+it is `None`, and check `limit_reason` before treating inspection as complete.
+Use the returned offset instead of assuming that every page has the requested
+length. In this demo, switch to local structure 1 to inspect its hydrogen bonds:
+
+```python
+view.player.go_to_structure(1)
+page = view.interactions.inspect("hbonds", offset=0, limit=1)
+if page["next_offset"] is not None:
+    page = view.interactions.inspect("hbonds", offset=page["next_offset"], limit=1)
+```
+
+Inspection remains available when the selected set is too large to draw. It
+does not require copying every occurrence into a Python dictionary. Check the
+page's `status` and `limit_reason`: excluded or unevaluated structures and
+participant/byte limits are explicit, rather than silently incomplete results.
+
+### Selecting or focusing an observation
+
+Studio's inspector offers **Select participants** and **Focus participants**
+for each observation. Python provides the same operations. Inspect the visible
+structure first, then use the occurrence identifier and revisions from that
+latest page:
+
+```python
+page = view.interactions.inspect("hbonds", limit=50)
+if page["observations"]:
+    occurrence = page["observations"][0]["occurrence_index"]
+    identity = dict(
+        structure_index=page["frame"],
+        analysis_revision=page["analysis_revision"],
+        query_revision=page["query_revision"],
+    )
+    atoms = view.interactions.select_observation("hbonds", occurrence, **identity)
+    view.interactions.focus_observation("hbonds", occurrence, **identity)
+```
+
+Selection includes every atom in each participant, including compound rings or
+groups. Focus uses their canonical molecular coordinates; it does not unwrap
+periodic images. After changing the visible structure, filter or analysis,
+inspect again. A stale identity or an occurrence absent from the latest page
+is rejected before selection or camera changes. Editing the returned dictionary
+does not change the internally retained participants.
 
 ## Understanding limits
 

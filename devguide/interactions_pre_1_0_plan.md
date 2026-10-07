@@ -7,8 +7,11 @@ are published in Viewer 0.24.0 build 1 with MolSysMT 0.23.0 ABI3 build 0.
 All sixteen public installed cells pass in `37587631519`; the actual environment
 archives and the exact-source public gate are independently verified. The user
 page now describes the supported provider, all nine projections, explicit
-calculation/display scopes and bounded inspection. Its two Python blocks run
-against the exact installed pair.
+calculation/display scopes and bounded inspection. Its five Python blocks run
+against the exact installed pair, including named H5MSM save/reload and participant
+actions. #142/#144/#145 are resolved; 47 fresh installed workflow/scene checks
+pass, including paging 50 observations from a 50,001-occurrence frame without
+whole-query materialization.
 
 The implementation records #114/#140 close at this pre-1.0 delivery boundary.
 The original #114 requirement to recertify the eventual **1.0** candidate is

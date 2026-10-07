@@ -2336,5 +2336,18 @@
     "record": "devguide/domain_closure_20261007.json",
     "fresh_installed_checks_passed": 207,
     "strict_1_0_cleared": false
+  },
+  "interactions_workflow_closure": {
+    "date": "2026-10-07",
+    "issues": [
+      142,
+      144,
+      145
+    ],
+    "record": "devguide/interactions_workflow_closure_20261007.json",
+    "fresh_installed_checks": 47,
+    "documentation_blocks": 5,
+    "production_logic_or_runtime_changed": false,
+    "strict_1_0_cleared": false
   }
 }

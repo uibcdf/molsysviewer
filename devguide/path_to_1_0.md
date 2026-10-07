@@ -28,7 +28,9 @@ source preservation is verified at [10.5281/zenodo.23206053](https://doi.org/10.
 Coordinated stabilization publication and public-pair qualification are complete.
 The bounded supported-provider records #114/#140/#151 are resolved with this
 evidence and the corrected Interactions user guide; 207 fresh installed checks
-pass. Their final-candidate obligation is retained explicitly below.
+pass. Workflow follow-ups #142/#144/#145 are also resolved with 47 fresh
+installed checks and five executable user-guide blocks. The final-candidate
+obligation is retained explicitly below.
 Public documentation and final 1.0 first-contact/candidate review remain separate.
 The older checkpoints below preserve their original scope; use
 [the current handoff](checkpoints.md#resume-in-one-page) and

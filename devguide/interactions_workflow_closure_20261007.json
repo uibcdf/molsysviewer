@@ -1,0 +1,136 @@
+{
+  "schema": "molsysviewer.interactions_workflow_closure@1",
+  "date": "2026-10-07",
+  "issues": [
+    142,
+    144,
+    145
+  ],
+  "base_commit": "ebb1a925cd76604f0b1398c775c85e78d1ce9912",
+  "production_logic_or_runtime_changed": false,
+  "capability_declaration_changed": "Evidence note only; experimental status retained pending final 1.0 decision/recertification. Generated audit rebuilt with its writer.",
+  "qualification_environment": "/tmp/msv-024-staging-20261006",
+  "local_environment_scope": "Original canonical staging artifacts promoted unchanged; separate sixteen-cell run verifies public URLs/availability.",
+  "viewer": {
+    "version": "0.24.0",
+    "build": 1,
+    "producer": "1a4c97a58b68b69f3a836546c9e4ac6187c3efa2",
+    "sha256": "e31dfb114ab2e49f22b372992d0201455b91849f2631d0165b802069e13abeaa"
+  },
+  "provider": {
+    "version": "0.23.0",
+    "build": 0,
+    "producer": "46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9"
+  },
+  "runner": "devtools/qualify_installed_interactions.py with -I and before/after installed import verification",
+  "fresh_checks": [
+    {
+      "file": "msv-issues-142-144-145-public-completion-20261007.xml",
+      "sha256": "edeaf865a5de185a724e01932ffd89a7bfb1440f45d2a79d44059728d1098d12",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "msv-issues-142-144-145-scene-20261007.xml",
+      "sha256": "25824fc1c5a08a85b7e384d31b57e0404277ed736a92a8c34c2089c3a4604552",
+      "tests": 37,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "public_pair": {
+    "run": 37587631519,
+    "verified_cells": 16,
+    "evidence": "devguide/stabilization_024_preparation_20261006.json"
+  },
+  "unchanged_base_hosted_workflows": {
+    "head": "ebb1a925cd76604f0b1398c775c85e78d1ce9912",
+    "core": {
+      "run": 37594417204,
+      "conclusion": "success"
+    },
+    "notebooks": {
+      "run": 37594417273,
+      "conclusion": "success"
+    },
+    "source_pair_py314": {
+      "run": 37594417292,
+      "conclusion": "success"
+    },
+    "standard_ci": {
+      "run": 37594417392,
+      "status_at_inspection": "queued",
+      "conclusion_at_inspection": null
+    }
+  },
+  "documentation_examples": {
+    "blocks": 5,
+    "viewer": "0.24.0",
+    "provider": "0.23.0",
+    "viewer_origin": "/tmp/msv-024-staging-20261006/lib/python3.14/site-packages/molsysviewer/__init__.py",
+    "provider_origin": "/tmp/msv-024-staging-20261006/lib/python3.14/site-packages/molsysmt/__init__.py",
+    "observations": 3,
+    "structures": 3,
+    "selected_atoms": [
+      16,
+      26,
+      27
+    ],
+    "visible_local_structure": 1,
+    "save_load_page_select_focus": "PASS"
+  },
+  "documentation_sha256": "0f870930ea7560f23a0a3d3cec18c3a0620934129885c1df7ad3a1770db53e15",
+  "sphinx": {
+    "command": "conda run --no-capture-output -n molsyssuite@uibcdf_3.14 make -C docs html SPHINXOPTS=\"-W --keep-going -j 2\"",
+    "exit_code": 0,
+    "log": "msv-issues-142-144-145-sphinx-final-20261007.log"
+  },
+  "initial_example_validator": {
+    "error": "KeyError: atoms in verification harness after all blocks ran",
+    "diagnosis": "Visible local structure 0 has zero observations; the guarded selection block correctly does not set atoms. Local counts are [0, 3, 0].",
+    "correction": "The documented paging example explicitly navigates to local structure 1, exercising paging and the action branch. Corrected validation passes all five blocks.",
+    "production_defect_found": false
+  },
+  "guards": {
+    "142": "tests/test_interactions_scene.py::test_oversized_frame_is_refused_before_occurrence_materialization",
+    "144": "tests/test_interactions_public_completion.py::test_save_refusals_preserve_destination_and_analysis_collection",
+    "145": "tests/test_interactions_public_completion.py::test_stale_observations_cannot_change_selection"
+  },
+  "strict_1_0_cleared": false,
+  "full_python_suite_repeated": false,
+  "validation_scope": "Documentation/report closure and declarative capability note only; unchanged production/source/browser evidence remains applicable.",
+  "governance_and_documentation_checks": [
+    {
+      "file": "msv-workflow-capability-20261007.xml",
+      "sha256": "462c2606d86e0330f1d4bbe6f495bd0d5b5f854d88150aadaf98f8aea2aa3008",
+      "tests": 208,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "msv-workflow-links-20261007.xml",
+      "sha256": "3b6a3925de1770c975fe5430fb3f4a18f7f6ec2410b08ad6a81bfb25409361b0",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "msv-workflow-governance-20261007.xml",
+      "sha256": "186f2b64a927dcc5d24f5362aeecf1d5d6beedb4591cee8a7ed5fc42e0a19894",
+      "tests": 218,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "ruff": {
+    "check": "PASS",
+    "format_check": "PASS",
+    "file": "devtools/capability_audit.py"
+  }
+}

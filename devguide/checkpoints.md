@@ -94,8 +94,12 @@ its 45-report board snapshot precedes #176. MolSysMT confirms the exact candidat
 and publication order in its evidence commit `832e01210`.
 The bounded reports #114/#140/#151 are resolved: public qualification and
 updated Interactions documentation are complete, with 207 fresh installed
-scientific/loading checks passing. Final 1.0 recertification remains mandatory
-in the release plan. Next: reconcile the broader public documentation and
+scientific/loading checks passing. Their workflow follow-ups #142/#144/#145
+are now also resolved: 47 fresh installed tests and five executable user-guide
+blocks cover bounded pages, native H5MSM save and participant select/focus.
+Final 1.0 recertification remains mandatory in the release plan.
+Next: review remaining partially completed bug reports and reconcile broader
+documentation, then
 complete installed first-contact/final-candidate review, retaining the completed
 public pair and Release/Conda/npm/Zenodo checks.
 See [the candidate preparation](stabilization_024_preparation_20261006.json).
@@ -1465,8 +1469,11 @@ handoffs do not replace these artifact identities.
 4. Done: #114/#140/#151 are resolved and archived with the public package
    evidence, updated Interactions guide and 207 fresh installed checks.
    Preserve earlier experimental/source verdicts and the normative obligation
-   to recertify the eventual 1.0 candidate.
-5. Reconcile public documentation and remaining support promises. The five-stage
+   to recertify the eventual 1.0 candidate. #142/#144/#145 are also resolved
+   with 47 installed workflow/scene checks and the completed user-guide examples.
+5. Review the remaining partially completed bug reports against the published
+   baseline; distinguish unmet behavior from obsolete qualification blockers.
+6. Reconcile public documentation and remaining support promises. The five-stage
    human notebook review is complete; retain it. Installed first-contact review
    and final 1.0 candidate qualification remain separate. Standalone is
    experimental; remotes and the Mol* dependency update remain post-1.0.

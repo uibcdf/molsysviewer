@@ -52,7 +52,10 @@ required steps per cell are independently verified. The exact-source
 `public_conda` gate also passes. Coordinated stabilization publication is complete.
 Supported-provider records #114/#140/#151 are resolved with that evidence,
 the updated Interactions guide and 207 fresh installed scientific/loading checks.
-Next reconcile the broader public documentation and complete installed first-contact observations
+Workflow follow-ups #142/#144/#145 are resolved with 47 fresh installed tests and
+five executable guide blocks for paging, scientific files and participant actions.
+Next review remaining partial bug reports against the published baseline,
+reconcile broader documentation and complete installed first-contact observations
 and the final 1.0 candidate decision as distinct remaining work. Standalone remains
 experimental; remotes and the Mol* dependency update remain post-1.0.
 

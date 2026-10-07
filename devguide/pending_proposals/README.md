@@ -27,12 +27,6 @@ list. Deferred entries also carry the `post-1.0` milestone on the issue board.
 - [`extend_python_support_to_3_14.md`](extend_python_support_to_3_14.md) — [#93](https://github.com/uibcdf/molsysviewer/issues/93) — Extend MolSysViewer Python support to 3.14 alongside MolSysMT. *(measured)*
 - [`migrate_standalone_qt_to_canonical_pyside6_6_11_2.md`](migrate_standalone_qt_to_canonical_pyside6_6_11_2.md) — [#109](https://github.com/uibcdf/molsysviewer/issues/109) — Migrate the optional standalone Qt host to canonical PySide6 6.11.2. *(measured)*
 
-### Partially done (3)
-
-- [`bounded_interaction_inspection_pages.md`](bounded_interaction_inspection_pages.md) — [#142](https://github.com/uibcdf/molsysviewer/issues/142) — Use bounded public occurrence pages in the Interactions inspector *(measured)*
-- [`interaction_observation_actions.md`](interaction_observation_actions.md) — [#145](https://github.com/uibcdf/molsysviewer/issues/145) — Select and focus observation participants from the Interactions inspector *(measured)*
-- [`native_interaction_h5msm_save.md`](native_interaction_h5msm_save.md) — [#144](https://github.com/uibcdf/molsysviewer/issues/144) — Save named interaction analyses through the native Viewer API *(measured)*
-
 ### Blocked (1)
 
 - [`molsysmt_known_source_form_and_large_string_detection.md`](molsysmt_known_source_form_and_large_string_detection.md) — [#42](https://github.com/uibcdf/molsysviewer/issues/42) — A large in-memory molecular string enters unbounded filename extension detection. *(measured)* — waiting on uibcdf/molsysmt#151

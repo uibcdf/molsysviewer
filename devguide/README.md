@@ -65,11 +65,13 @@ documents, and historical audits.
   secondary packaging/environment routes and installed source-provider checks.
 - [`roadmap.md`](roadmap.md): current execution priorities.
 - [`interactions_pre_1_0_plan.md`](interactions_pre_1_0_plan.md): approved
-  bounded Interactions sequence; the active `uibcdf/molsysviewer#114`
-  proposal records the experimental Python, renderer and Studio implementation.
+  delivered bounded Interactions sequence; archived #114/#140 and workflow
+  records #142/#144/#145 retain the public-pair qualification and guards.
+  Final 1.0 recertification remains in the release plan.
 - [`interactions_performance.md`](interactions_performance.md): measured combined
   coordinate/analysis residency, real detector timing and sparse queries;
-  published-provider and larger GPU qualification remain open.
+  public-pair qualification is complete; native-GPU throughput and arbitrary
+  large-system limits remain uncertified.
 - [`interactions_qualification.md`](interactions_qualification.md): real scientific
   query/geometry, H5MSM/session and calculated-link browser evidence, with the
   explicit published-provider boundary.

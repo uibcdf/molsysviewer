@@ -1,9 +1,9 @@
 ---
 summary: Save named interaction analyses through the native Viewer API
 issue: uibcdf/molsysviewer#144
-status: partial
+status: resolved
 opened: 2026-10-02
-closed:
+closed: 2026-10-07
 verification: measured
 area: [interactions, export]
 guard: tests/test_interactions_public_completion.py::test_save_refusals_preserve_destination_and_analysis_collection
@@ -13,6 +13,13 @@ supersedes: []
 ---
 
 # Save named interaction analyses through the native Viewer API
+
+**Resolved — 2026-10-07:** Native save exports complete selected named analyses through the public H5MSM 0.5 writer. Parallel/compound observations, periodic images, units and empty evaluated frames survive reload. Names, overwrite policy and atomic destination publication are documented and qualified.
+
+The original compatible-public-provider/candidate boundary is complete in the
+published Viewer 0.24.0 build 1 / MolSysMT 0.23.0 ABI3 build 0 pair. The user
+guide now includes executable paging, named-file and observation-action examples.
+The earlier dated sections retain their original source/publication scope.
 
 **Current qualification — 2026-10-06:** implementation is committed and
 integrated in Viewer 0.24.0 build 1 with MolSysMT 0.23.0 ABI3 build 0. All
@@ -49,3 +56,31 @@ The native save method delegates complete named analyses to public H5MSM write_l
 The implementation is locally verified against clean experimental MolSysMT commit `396e6979f3f686b110431f18bba0d41933ce71e2`, not a qualified public provider release. All new public functions carry ArgDigest and explicit `skip_digestion=False`; the regenerated inventory passes with 713 public callables and 437 declared digesters. Exact run counts, environmental failures, scoped corrections, source hashes and browser limits are retained in [the shared evidence](../public_workflow_completion_20261002.json).
 
 **Partial:** source implementation and bounded regression evidence are complete. Source changes are reviewed, committed and pushed at `0dea171d`; compatible published dependencies and exact-candidate installed/core CI qualification remain under uibcdf/molsysviewer#114 and #140. Public documentation is intentionally deferred to the final block. No full final-candidate pass or release is claimed.
+
+## Final closure evidence — 2026-10-07
+
+Viewer producer `1a4c97a58b68b69f3a836546c9e4ac6187c3efa2` and provider
+`46ef28eb60a258aa77d82ff1bc39ee0d1591e3c9` remain unchanged. Public installed
+run `37587631519` passes all sixteen cells, independently verified from original
+environment ZIPs/digests and exact public package coordinates. The exact-source
+public gate passes; recorded browser/scientific evidence retains its own scope.
+The successor documentation/domain-close commit `ebb1a925` also has successful
+hosted core (`37594417204`), notebooks (`37594417273`) and Python 3.14 source-pair
+(`37594417292`) workflow verdicts; its standard CI remained queued at inspection.
+
+Fresh installed qualification passes **47 tests, zero failures/errors/skips**:
+10 public-completion and 37 scene cases. Both scientific libraries import from
+site-packages and match versions 0.24.0 / 0.23.0; no editable provider substitutes
+for that pair. The unchanged canonical files originally qualified in staging are
+now promoted unchanged; public channel availability is verified separately by
+the sixteen-cell run, not inferred from this local environment.
+Five user-guide Python blocks execute against the installed pair: calculation,
+inspection, save/reload, paging and participant selection/focus. Strict Sphinx
+passes with warnings as errors. Legacy H5MSM demo warnings remain visible.
+
+Guard: `tests/test_interactions_public_completion.py::test_save_refusals_preserve_destination_and_analysis_collection`. Invalid/missing/duplicate analysis names and existing destinations leave the prior bytes and scientific collection unchanged; the related real H5MSM round-trip cases cover parallel/compound observations, evaluated coverage, images and units.
+Normative contract: `devguide/scene_contracts.md`.
+[The closure receipt](../interactions_workflow_closure_20261007.json) records
+exact evidence and the corrected example-validation assumption. No production
+Python/TypeScript logic, runtime, tag or package is changed by this closure.
+The final 1.0 candidate still requires its own normative recertification.

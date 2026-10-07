@@ -1,5 +1,9 @@
 # Archived implementation plans
 
+- [`bounded_interaction_inspection_pages.md`](bounded_interaction_inspection_pages.md) — #142: public bounded inspection pages remain readable beyond render limits without whole-query materialization.
+- [`native_interaction_h5msm_save.md`](native_interaction_h5msm_save.md) — #144: named complete H5MSM export/reload preserves scientific data and refuses non-atomic destination changes.
+- [`interaction_observation_actions.md`](interaction_observation_actions.md) — #145: current-page participant select/focus rejects stale identities and preserves compound atom membership.
+
 - [`interactions_minimum_before_1_0.md`](interactions_minimum_before_1_0.md) — #114: native Interactions, documentation and exact public-pair qualification delivered; future 1.0 recertification retained in the release plan.
 - [`align_interactions_with_molsysmt_families.md`](align_interactions_with_molsysmt_families.md) — #140: nine explicit family wrappers and role/image projections qualified with published MolSysMT 0.23.0.
 - [`multiple_system_loading_contract.md`](multiple_system_loading_contract.md) — #151: single-entry batch/progressive composition, source maps, first-box policy and Studio qualified with the public pair.

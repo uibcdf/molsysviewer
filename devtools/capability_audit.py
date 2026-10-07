@@ -199,12 +199,13 @@ CAPABILITIES: tuple[Capability, ...] = (
         e2e=("interactions-subpanel", "interactions-geometry", "interactions-calculation"),
         status="experimental",
         benchmark="interactions_performance.md",
-        note="Named scientific analyses, tagged visual sets and native Studio workflows are implemented "
-        "in the working tree. Synthetic residency and bounded real detector/query/geometry, "
-        "H5MSM/session and calculated-link browser qualification are recorded in "
-        "interactions_qualification.md. Published-provider, larger GPU and exact-candidate "
-        "qualification remain open under "
-        "uibcdf/molsysviewer#114. Public bounded occurrence pages are requested in uibcdf/molsysmt#264.",
+        note="Named scientific analyses, tagged visual sets and native Studio workflows are published "
+        "in Viewer 0.24.0 with MolSysMT 0.23.0, including bounded inspection pages, named H5MSM "
+        "save and observation selection/focus. The exact public pair passes 16 installed cells; "
+        "scientific, browser and measured residency evidence is recorded in interactions_qualification.md. "
+        "The API remains experimental before the final 1.0 compatibility decision and exact-candidate "
+        "recertification in path_to_1_0.md; native-GPU throughput and arbitrary large-system limits "
+        "are not certified.",
     ),
     Capability(
         name="Trajectories and frames",

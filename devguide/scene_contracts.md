@@ -2419,9 +2419,11 @@ contain compiled geometry rather than the complete observation table.
 
 Studio actions use the public Python workflow and one Apply checkpoint for
 visual edits. The file form addresses the Python filesystem and requires an
-explicit alignment declaration. The result/provider contract and representative
-large-system qualification remain experimental under uibcdf/molsysviewer#114
-and uibcdf/molsysmt#250.
+explicit alignment declaration. The bounded result/provider workflow is qualified
+in the published Viewer 0.24.0 / MolSysMT 0.23.0 pair. The public experimental
+API classification and
+unmeasured native-GPU/arbitrary large-system limits remain explicit; closing
+uibcdf/molsysviewer#114 does not certify a future 1.0 candidate.
 
 Guards: `tests/test_interactions_scene.py`; graphical and Studio outcomes:
 `js/tests/e2e/interactions-subpanel.e2e.ts` against real Mol* and the provider.
